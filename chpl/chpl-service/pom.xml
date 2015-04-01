@@ -14,14 +14,41 @@
   <name>chpl-service Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
+  		<dependency>
+      		<groupId>junit</groupId>
+      		<artifactId>junit</artifactId>
+      		<version>3.8.1</version>
+      		<scope>test</scope>
+    	</dependency>
+		<!-- Core utilities used by other modules. Define this if you use Spring 
+			Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<!-- Spring MVC for Servlet Environments (depends on spring-core, spring-beans, 
+			spring-context, spring-web) Define this if you use Spring MVC with a Servlet 
+			Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+    
   </dependencies>
   <build>
     <finalName>chpl-service</finalName>
+  	<plugins>
+  		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>2.0.2</version>
+			<configuration>
+				<source>1.8</source>
+				<target>1.8</target>
+			</configuration>
+		</plugin>
+	</plugins>
   </build>
 </project>

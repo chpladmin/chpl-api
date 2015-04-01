@@ -11,4 +11,7 @@
   	<module>chpl-api</module>
     <module>chpl-service</module>
   </modules>
+  <properties>
+  	<org.springframework.version>4.1.1.RELEASE</org.springframework.version>
+  </properties>
 </project>
