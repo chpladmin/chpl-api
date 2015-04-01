@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CHPLServiceController {
 	
-	@RequestMapping(value="/helloWorld/{name}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String validateCode(@PathVariable String name) {
-		return "Hello " + name;
+	@RequestMapping(value="/hello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
+	public String validateCode(@PathVariable String firstName, @PathVariable String lastName) {
+		
+		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
+		
 	}
 
 }
