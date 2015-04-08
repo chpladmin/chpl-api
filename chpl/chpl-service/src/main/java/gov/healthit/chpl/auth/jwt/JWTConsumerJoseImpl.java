@@ -1,10 +1,8 @@
-package gov.healthit.chpl.web.jwt;
+package gov.healthit.chpl.auth.jwt;
 
-import java.security.Key;
+import java.util.Map;
 
 import org.jose4j.jwk.JsonWebKey;
-import org.jose4j.jwk.RsaJsonWebKey;
-import org.jose4j.jwk.RsaJwkGenerator;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
@@ -31,25 +29,20 @@ public class JWTConsumerJoseImpl implements JWTConsumer {
         	.build(); // create the JwtConsumer instance
 	}
 	
-	@Override
-	public boolean verify(String jwt){
+	public Map<String, Object> consume(String jwt){
 		
 		try
 	    {
-	        //Validate the JWT and process it to the Claims
+	        //Validate the JWT and process it
 	        JwtClaims jwtClaims = jwtConsumer.processToClaims(jwt);
 	        System.out.println("JWT validation succeeded! " + jwtClaims);
-	        return true;
+	        return jwtClaims.getClaimsMap();
 	    }
 	    catch (InvalidJwtException e)
 	    {
 	        System.out.println("Invalid JWT! " + e);
-	        return false;
+	        return null;
 	    }
-		
 	}
-
-	
-	
 	
 }

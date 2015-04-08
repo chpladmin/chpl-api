@@ -1,11 +1,8 @@
-package gov.healthit.chpl.web.jwt;
+package gov.healthit.chpl.auth.jwt;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
-import org.jose4j.jwk.JsonWebKey;
 import org.jose4j.jwk.RsaJsonWebKey;
 import org.jose4j.jwk.RsaJwkGenerator;
 import org.jose4j.jws.AlgorithmIdentifiers;
@@ -15,10 +12,9 @@ import org.jose4j.lang.JoseException;
 
 public class JWTAuthorJoseImpl implements JWTAuthor {
 	
-	RsaJsonWebKey rsaJsonWebKey = null;
+	RsaJsonWebKey rsaJsonWebKey = RsaJwkGenerator.generateJwk(2048);
 	
 	JWTAuthorJoseImpl() throws JoseException{
-	    rsaJsonWebKey = RsaJwkGenerator.generateJwk(2048);
 	    // Give the JWK a Key ID (kid), which is just the polite thing to do
 	    rsaJsonWebKey.setKeyId("k1");
 	}
@@ -29,18 +25,16 @@ public class JWTAuthorJoseImpl implements JWTAuthor {
 	    JwtClaims claimsObj = new JwtClaims();
 	    claimsObj.setIssuer("ONCCHPL");  // who creates the token and signs it
 	    claimsObj.setAudience("ONCCHPL"); // to whom the token is intended to be sent
-	    claimsObj.setExpirationTimeMinutesInTheFuture(10); // time when the token will expire (10 minutes from now)
+	    claimsObj.setExpirationTimeMinutesInTheFuture(30); // time when the token will expire (10 minutes from now)
 	    claimsObj.setGeneratedJwtId(); // a unique identifier for the token
 	    claimsObj.setIssuedAtToNow();  // when the token was issued/created (now)
 	    claimsObj.setNotBeforeMinutesInThePast(2); // time before which the token is not yet valid (2 minutes ago)
 	    claimsObj.setSubject(subject); // the subject/principal is whom the token is about
-	    //List<String> groups = Arrays.asList("group-one", "other-group", "group-three");
-	    //claimsObj.setStringListClaim("groups", groups); // multi-valued claims work too and will end up as a JSON array
+
 	    for (Map.Entry<String, List<String> > claim : claims.entrySet())
 	    {
-	    	claimsObj.setStringListClaim("groups", claim.getValue());	
+	    	claimsObj.setStringListClaim(claim.getKey(), claim.getValue());	
 	    }
-	    
 	    
 	    // A JWT is a JWS and/or a JWE with JSON claims as the payload.
 	    // In this example it is a JWS so we create a JsonWebSignature object.
