@@ -16,6 +16,7 @@ public class RestAuthAdvisor extends AbstractPointcutAdvisor {
 	
 	private final StaticMethodMatcherPointcut pointcut = new
 			StaticMethodMatcherPointcut() {
+				@Override
 				public boolean matches(Method method, Class<?> targetClass) {
 					return method.isAnnotationPresent(CheckAuthorization.class);
 				}
@@ -24,10 +25,12 @@ public class RestAuthAdvisor extends AbstractPointcutAdvisor {
 	@Autowired
 	private RestAuthInterceptor interceptor;
 	
+	@Override
 	public Pointcut getPointcut() {
 	        return this.pointcut;
 	}
 	
+	@Override
 	public Advice getAdvice() {
 		return this.interceptor;
 	}

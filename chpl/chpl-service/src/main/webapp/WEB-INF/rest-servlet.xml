@@ -10,6 +10,16 @@
         http://www.springframework.org/schema/context/spring-context-4.0.xsd
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
- <context:component-scan base-package="gov.healthit.chpl.web" />
- <mvc:annotation-driven />
+ 
+     
+   <mvc:annotation-driven />
+   <context:annotation-config/>
+   <context:component-scan base-package="gov.healthit.chpl" />
+   
+   <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
+   		<property name="proxyTargetClass" value="true"/>
+   </bean>
+    	     
+ 
+ 
  </beans>
