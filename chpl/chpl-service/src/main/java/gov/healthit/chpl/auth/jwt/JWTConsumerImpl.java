@@ -12,12 +12,12 @@ import org.jose4j.lang.JoseException;
 
 
 
-public class JWTConsumerJoseImpl implements JWTConsumer {
+public class JWTConsumerImpl implements JWTConsumer {
 
 	
 	JwtConsumer jwtConsumer = null;
 	
-	JWTConsumerJoseImpl(JsonWebKey jwk) throws JoseException{
+	JWTConsumerImpl(JsonWebKey jwk) throws JoseException{
 		
 		jwtConsumer = new JwtConsumerBuilder()
         	.setRequireExpirationTime() // the JWT must have an expiration time

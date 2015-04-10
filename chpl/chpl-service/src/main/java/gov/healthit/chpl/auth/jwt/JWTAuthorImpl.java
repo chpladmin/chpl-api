@@ -10,16 +10,16 @@ import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.lang.JoseException;
 
-public class JWTAuthorJoseImpl implements JWTAuthor {
+public class JWTAuthorImpl implements JWTAuthor {
 	
 	RsaJsonWebKey rsaJsonWebKey = RsaJwkGenerator.generateJwk(2048);
 	
-	JWTAuthorJoseImpl() throws JoseException{
+	JWTAuthorImpl() throws JoseException{
 	    // Give the JWK a Key ID (kid), which is just the polite thing to do
 	    rsaJsonWebKey.setKeyId("k1");
 	}
 	
-	public String createJWT(String subject, Map<String, List<String> > claims) throws JoseException{
+	public String createJWT(String subject, Map<String, List<String> > claims) throws JoseException {
 		
 	    // Create the Claims, which will be the content of the JWT
 	    JwtClaims claimsObj = new JwtClaims();

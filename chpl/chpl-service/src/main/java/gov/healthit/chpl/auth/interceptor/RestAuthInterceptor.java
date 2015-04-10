@@ -13,6 +13,7 @@ public class RestAuthInterceptor implements MethodInterceptor {
 		System.out.println("hello.");
 	    //System.out.println("method "+invocation.getMethod()+" is called on "+
         //        invocation.getThis()+" with args "+invocation.getArguments());
+		invocation.getArguments();
 	    return invocation.proceed();
 	}
 

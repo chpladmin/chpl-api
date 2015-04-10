@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.user;
+package gov.healthit.chpl.auth.authentication;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,11 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UserJoseImpl implements User {
+public class UserImpl implements User {
 
 	private String subjectName;
 	private Map<String, List<String>> claims = 
 			new HashMap<String, List<String>>();
+	
+	
+	public UserImpl(){};
+	
+	public UserImpl(String subjectName, Map<String, List<String>> claims){
+		this.subjectName = subjectName;
+		this.claims = claims;
+	}
 	
 	public String getSubjectName() {
 		return subjectName;
