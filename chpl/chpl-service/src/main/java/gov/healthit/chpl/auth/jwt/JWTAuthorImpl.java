@@ -1,25 +1,86 @@
 package gov.healthit.chpl.auth.jwt;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.security.KeyPair;
 import java.util.List;
 import java.util.Map;
 
+import org.jose4j.jwk.PublicJsonWebKey;
 import org.jose4j.jwk.RsaJsonWebKey;
-import org.jose4j.jwk.RsaJwkGenerator;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
+import org.jose4j.keys.RsaKeyUtil;
 import org.jose4j.lang.JoseException;
 
 public class JWTAuthorImpl implements JWTAuthor {
 	
-	RsaJsonWebKey rsaJsonWebKey = RsaJwkGenerator.generateJwk(2048);
+	RsaJsonWebKey rsaJsonWebKey = null;
+	String keyLocation = "D:\\CHPL\\Keys\\key.txt";
 	
-	JWTAuthorImpl() throws JoseException{
-	    // Give the JWK a Key ID (kid), which is just the polite thing to do
-	    rsaJsonWebKey.setKeyId("k1");
+	JWTAuthorImpl(){};
+	
+	public void createKey() {
+
+		try {
+	        RsaKeyUtil keyUtil = new RsaKeyUtil();
+	        KeyPair keyPair;
+			keyPair = keyUtil.generateKeyPair(2048);
+	        rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(keyPair.getPublic());
+	        rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
+	        writeKey(this.keyLocation);
+		} catch (JoseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
-	public String createJWT(String subject, Map<String, List<String> > claims) throws JoseException {
+	
+	public void writeKey(String keyPairPath) {
+		
+		try {
+			FileOutputStream fileOut = new FileOutputStream(keyPairPath);
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(rsaJsonWebKey);
+			out.close();
+			fileOut.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	public void readKey(String keyPairPath) throws IOException, ClassNotFoundException {
+		
+		FileInputStream fileIn = new FileInputStream(keyPairPath);
+		ObjectInputStream is = new ObjectInputStream(fileIn);
+		
+		KeyPair keyPair = (KeyPair) is.readObject();
+        try {
+			rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(keyPair.getPublic());
+		} catch (JoseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
+		is.close();
+		fileIn.close();
+		
+	}
+	
+	
+	public String createJWT(String subject, Map<String, List<String> > claims) {
+		
+		if (rsaJsonWebKey == null){
+			createKey();
+		}
 		
 	    // Create the Claims, which will be the content of the JWT
 	    JwtClaims claimsObj = new JwtClaims();
@@ -49,7 +110,7 @@ public class JWTAuthorImpl implements JWTAuthor {
 	    // Set the Key ID (kid) header because it's just the polite thing to do.
 	    // We only have one key in this example but a using a Key ID helps
 	    // facilitate a smooth key rollover process
-	    jws.setKeyIdHeaderValue(rsaJsonWebKey.getKeyId());
+	    //jws.setKeyIdHeaderValue(rsaJsonWebKey.getKeyId());
 
 	    // Set the signature algorithm on the JWT/JWS that will integrity protect the claims
 	    jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
@@ -59,7 +120,13 @@ public class JWTAuthorImpl implements JWTAuthor {
 	    // base64url-encoded parts in the form Header.Payload.Signature
 	    // If you wanted to encrypt it, you can simply set this jwt as the payload
 	    // of a JsonWebEncryption object and set the cty (Content Type) header to "jwt".
-	    String jwt = jws.getCompactSerialization();
+	    String jwt = null;
+		try {
+			jwt = jws.getCompactSerialization();
+		} catch (JoseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    
 	    return jwt;
 

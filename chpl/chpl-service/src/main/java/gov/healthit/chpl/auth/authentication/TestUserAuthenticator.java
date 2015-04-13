@@ -55,7 +55,6 @@ public class TestUserAuthenticator implements Authenticator {
 		try {
 			user = getUser(credentials);
 		} catch (BadCredentialsException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
