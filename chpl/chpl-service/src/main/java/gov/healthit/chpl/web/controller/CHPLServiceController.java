@@ -35,7 +35,7 @@ public class CHPLServiceController {
 	
 	@CheckAuthorization
 	@RequestMapping(value="/authhello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String authHello(@RequestHeader(value="JWT") String jwt, @PathVariable String firstName, @PathVariable String lastName) {
+	public String authHello(@RequestHeader(value="Token") String jwt, @PathVariable String firstName, @PathVariable String lastName) {
 		
 		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
 		

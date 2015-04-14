@@ -24,7 +24,19 @@ public class JWTAuthorImpl implements JWTAuthor {
 	RsaJsonWebKey rsaJsonWebKey = null;
 	String keyLocation = "D:\\CHPL\\Keys\\key.txt";
 	
-	JWTAuthorImpl(){};
+	JWTAuthorImpl(){
+		
+		if (rsaJsonWebKey == null){
+			try { 
+				readKey(keyLocation);
+			} catch (IOException e) {
+				createKey();
+			} catch (ClassNotFoundException e) {
+				createKey();
+				e.printStackTrace();
+			}
+		}
+	};
 	
 	public void createKey() {
 

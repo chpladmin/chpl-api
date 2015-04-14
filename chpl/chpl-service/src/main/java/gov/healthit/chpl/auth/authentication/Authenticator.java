@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth.authentication;
 
+import gov.healthit.chpl.auth.User;
+
 
 
 public interface Authenticator {

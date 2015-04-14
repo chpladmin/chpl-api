@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.authentication;
+package gov.healthit.chpl.auth;
 
 import java.util.List;
 import java.util.Map;

@@ -11,11 +11,10 @@ import org.jose4j.lang.JoseException;
 
 
 
-
 public class JWTConsumerImpl implements JWTConsumer {
 
 	
-	JwtConsumer jwtConsumer = null;
+	private JwtConsumer jwtConsumer = null;
 	
 	JWTConsumerImpl(JsonWebKey jwk) throws JoseException{
 		
@@ -29,7 +28,7 @@ public class JWTConsumerImpl implements JWTConsumer {
         	.build(); // create the JwtConsumer instance
 	}
 	
-	public Map<String, Object> consume(String jwt){
+	public Map<String, Object> consume(String jwt) {
 		
 		try
 	    {
@@ -40,6 +39,7 @@ public class JWTConsumerImpl implements JWTConsumer {
 	    }
 	    catch (InvalidJwtException e)
 	    {
+	    	//TODO: Add logging here
 	        System.out.println("Invalid JWT! " + e);
 	        return null;
 	    }
