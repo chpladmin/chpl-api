@@ -8,9 +8,10 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
 import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.lang.JoseException;
+import org.springframework.stereotype.Service;
 
 
-
+@Service
 public class JWTConsumerImpl implements JWTConsumer {
 
 	

@@ -7,31 +7,31 @@ import java.util.Map;
 import gov.healthit.chpl.auth.User;
 import gov.healthit.chpl.auth.UserImpl;
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
+import gov.healthit.chpl.auth.jwt.JWTValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class AuthorizorImpl {
+@Service
+public class AuthorizorImpl implements Authorizor {
 	
 	@Autowired
 	JWTConsumer jwtConsumer;
 	
-	public User getUser(String jwt){
+	public User getUser(String jwt) throws JWTValidationException{
 		
 		User user = null;
 		
 		Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
 		
 		if (validatedClaims == null){
-			user = null;
+			throw new JWTValidationException();
 		} else {
-			
 			
 			/*
 			 * Handle the standard claim types. These won't be lists of Strings,
 			 * which we'll be expecting from the claims we are creating ourselves
-			 * 
 			 */
-			
 			Object issuer = validatedClaims.remove("iss");
 			Object audience = validatedClaims.remove("aud");
 			Object issuedAt = validatedClaims.remove("iat");
