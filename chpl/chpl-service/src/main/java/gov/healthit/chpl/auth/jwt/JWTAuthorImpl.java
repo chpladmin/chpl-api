@@ -16,7 +16,9 @@ import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.keys.RsaKeyUtil;
 import org.jose4j.lang.JoseException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class JWTAuthorImpl implements JWTAuthor {
 	
 	RsaJsonWebKey rsaJsonWebKey = null;
@@ -37,7 +39,6 @@ public class JWTAuthorImpl implements JWTAuthor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 	
 	

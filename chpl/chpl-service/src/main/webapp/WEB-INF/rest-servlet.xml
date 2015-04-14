@@ -19,7 +19,10 @@
    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
    		<property name="proxyTargetClass" value="true"/>
    </bean>
-    	     
- 
+   
+   <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+   		<property name="prefixJson" value="false"/>
+   		<property name="supportedMediaTypes" value="application/json"/>
+   </bean>
  
  </beans>

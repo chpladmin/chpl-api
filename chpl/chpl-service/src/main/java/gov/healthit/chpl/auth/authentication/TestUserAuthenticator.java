@@ -7,13 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+
+@Service
 public class TestUserAuthenticator implements Authenticator {
 
 	
-	private String userID = "testuser";
+	private static String userID = "testuser";
+	private static String password = "pass";
 	private Map<String, List<String>> claims = 
 			new HashMap<String, List<String>>() {{
 			    put("Groups",  Arrays.asList("ACB123"));
@@ -30,7 +33,7 @@ public class TestUserAuthenticator implements Authenticator {
 	@Override
 	public User getUser(LoginCredentials credentials) throws BadCredentialsException {
 		
-		if  ((credentials.getUserName() == "testuser") && (credentials.getPassword() == "pass" )){
+		if  ((credentials.getUserName().equals(userID)) && (credentials.getPassword().equals(password))){
 			return user;
 		} else {
 			throw new BadCredentialsException();
@@ -40,23 +43,26 @@ public class TestUserAuthenticator implements Authenticator {
 	public String getJWT(User user) throws JWTCreationException {
 		
 		String jwt = null;
-		
-		try {
-			jwt = jwtAuthor.createJWT(user.getSubjectName(), user.getClaims());
-		} catch (JoseException e) {
-			throw new JWTCreationException(e);
-		}
+		jwt = jwtAuthor.createJWT(user.getSubjectName(), user.getClaims());
 		return jwt;
+		
 	}
 	
 	public String getJWT(LoginCredentials credentials) throws JWTCreationException {
 		
-		User user;
+		String jwt = null;
+		User user = null;
 		try {
 			user = getUser(credentials);
 		} catch (BadCredentialsException e1) {
+			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		if (user != null){
+			jwt = jwtAuthor.createJWT(user.getSubjectName(), user.getClaims());
+		}
+		return jwt;
 		
 	}
 }
