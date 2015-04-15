@@ -1,99 +1,25 @@
 package gov.healthit.chpl.auth.jwt;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.security.KeyPair;
+
 import java.util.List;
 import java.util.Map;
 
-import org.jose4j.jwk.PublicJsonWebKey;
-import org.jose4j.jwk.RsaJsonWebKey;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
-import org.jose4j.keys.RsaKeyUtil;
 import org.jose4j.lang.JoseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JWTAuthorImpl implements JWTAuthor {
+public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 	
-	RsaJsonWebKey rsaJsonWebKey = null;
-	String keyLocation = "D:\\CHPL\\Keys\\key.txt";
-	
-	JWTAuthorImpl(){
-		
-		if (rsaJsonWebKey == null){
-			try { 
-				readKey(keyLocation);
-			} catch (IOException e) {
-				createKey();
-			} catch (ClassNotFoundException e) {
-				createKey();
-				e.printStackTrace();
-			}
-		}
-	};
-	
-	public void createKey() {
-
-		try {
-	        RsaKeyUtil keyUtil = new RsaKeyUtil();
-	        KeyPair keyPair;
-			keyPair = keyUtil.generateKeyPair(2048);
-	        rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(keyPair.getPublic());
-	        rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
-	        writeKey(this.keyLocation);
-		} catch (JoseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	
-	public void writeKey(String keyPairPath) {
-		
-		try {
-			FileOutputStream fileOut = new FileOutputStream(keyPairPath);
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(rsaJsonWebKey);
-			out.close();
-			fileOut.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-	}
-	
-	public void readKey(String keyPairPath) throws IOException, ClassNotFoundException {
-		
-		FileInputStream fileIn = new FileInputStream(keyPairPath);
-		ObjectInputStream is = new ObjectInputStream(fileIn);
-		
-		KeyPair keyPair = (KeyPair) is.readObject();
-        try {
-			rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(keyPair.getPublic());
-		} catch (JoseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
-		is.close();
-		fileIn.close();
-		
-	}
-	
+	@Autowired
+	@Qualifier("RsaJose4JWebKey")
+	JSONWebKey jwk;
 	
 	public String createJWT(String subject, Map<String, List<String> > claims) {
-		
-		if (rsaJsonWebKey == null){
-			createKey();
-		}
 		
 	    // Create the Claims, which will be the content of the JWT
 	    JwtClaims claimsObj = new JwtClaims();
@@ -118,7 +44,7 @@ public class JWTAuthorImpl implements JWTAuthor {
 	    jws.setPayload(claimsObj.toJson());
 
 	    // The JWT is signed using the private key
-	    jws.setKey(rsaJsonWebKey.getPrivateKey());
+	    jws.setKey(jwk.getPrivateKey());
 
 	    // Set the Key ID (kid) header because it's just the polite thing to do.
 	    // We only have one key in this example but a using a Key ID helps
@@ -142,7 +68,5 @@ public class JWTAuthorImpl implements JWTAuthor {
 		}
 	    
 	    return jwt;
-
 	}
-	
 }
