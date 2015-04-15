@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorizorImpl implements Authorizor {
+public class JWTUserRetrieverImpl implements JWTUserRetriever {
 	
 	@Autowired
 	JWTConsumer jwtConsumer;
