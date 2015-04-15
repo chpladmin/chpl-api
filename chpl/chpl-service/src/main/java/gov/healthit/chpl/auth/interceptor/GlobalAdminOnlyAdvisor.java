@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RestAuthAdvisor extends AbstractPointcutAdvisor {
+public class GlobalAdminOnlyAdvisor extends AbstractPointcutAdvisor {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -18,12 +18,12 @@ public class RestAuthAdvisor extends AbstractPointcutAdvisor {
 			StaticMethodMatcherPointcut() {
 				@Override
 				public boolean matches(Method method, Class<?> targetClass) {
-					return method.isAnnotationPresent(CheckAuthorization.class);
+					return method.isAnnotationPresent(GlobalAdminOnly.class);
 				}
 			};
 			
 	@Autowired
-	private RestAuthInterceptor interceptor;
+	private CheckAuthInterceptor interceptor;
 	
 	@Override
 	public Pointcut getPointcut() {

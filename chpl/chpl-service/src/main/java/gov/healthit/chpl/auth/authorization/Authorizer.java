@@ -10,4 +10,5 @@ public class Authorizer {
 		List<String> values = user.getClaims().get(claimName);
 		return (values.indexOf(claimValue) > -1);
 	}
+	
 }

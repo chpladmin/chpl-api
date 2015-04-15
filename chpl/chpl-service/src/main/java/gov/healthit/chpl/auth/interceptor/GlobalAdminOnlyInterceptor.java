@@ -12,28 +12,22 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class RestAuthInterceptor implements MethodInterceptor {
+public class GlobalAdminOnlyInterceptor implements MethodInterceptor {
 
 	@Autowired
 	JWTUserRetriever retriever;
 	
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		System.out.println("hello from the interceptor.");
-	    System.out.println("method "+invocation.getMethod()+" is called on "+
-                invocation.getThis()+" with args "+invocation.getArguments());
-	    
+		System.out.println("hello from the Global Admin Only interceptor.");
+		
 		String jwt = (String) invocation.getArguments()[0];
 		User user = retriever.getUser(jwt);
-		String group = (String) invocation.getArguments()[1];
-		
-		if (Authorizer.authorize(user, "group", group)){
+		if (Authorizer.authorize(user, "global-group", "admin")){
 			return invocation.proceed();
 		} else {
 			throw new AuthorizationException();
 		}
-		
-	    
 	}
 
 }

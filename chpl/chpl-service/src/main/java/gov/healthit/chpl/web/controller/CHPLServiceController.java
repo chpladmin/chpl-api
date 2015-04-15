@@ -5,6 +5,7 @@ import gov.healthit.chpl.auth.authentication.JWTCreationException;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.interceptor.Bean;
 import gov.healthit.chpl.auth.interceptor.CheckAuthorization;
+import gov.healthit.chpl.auth.interceptor.GlobalAdminOnly;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,6 +42,13 @@ public class CHPLServiceController {
 		
 	}
 	
+	@GlobalAdminOnly
+	@RequestMapping(value="/secrethello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
+	public String secretHello(@RequestHeader(value="Token") String jwt, @PathVariable String firstName, @PathVariable String lastName) {
+		
+		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
+		
+	}
 	
 	@CheckAuthorization
 	@RequestMapping(value="/hellolist/{group}/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
