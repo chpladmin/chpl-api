@@ -102,5 +102,4 @@ public class CHPLServiceController {
 		this.bean = bn;
 	}
 	
-	
 }

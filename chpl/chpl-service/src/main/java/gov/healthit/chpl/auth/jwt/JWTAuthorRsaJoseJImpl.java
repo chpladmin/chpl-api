@@ -1,6 +1,9 @@
 package gov.healthit.chpl.auth.jwt;
 
 
+import gov.healthit.chpl.auth.Claim;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +22,8 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 	@Qualifier("RsaJose4JWebKey")
 	JSONWebKey jwk;
 	
-	public String createJWT(String subject, Map<String, List<String> > claims) {
+	@Override
+	public String createJWT(String subject, Map<String, List<Claim> > claims) {
 		
 	    // Create the Claims, which will be the content of the JWT
 	    JwtClaims claimsObj = new JwtClaims();
@@ -30,10 +34,16 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 	    claimsObj.setIssuedAtToNow();  // when the token was issued/created (now)
 	    claimsObj.setNotBeforeMinutesInThePast(2); // time before which the token is not yet valid (2 minutes ago)
 	    claimsObj.setSubject(subject); // the subject/principal is whom the token is about
-
-	    for (Map.Entry<String, List<String> > claim : claims.entrySet())
+	    
+	    
+	    for (Map.Entry<String, List<Claim> > claim : claims.entrySet())
 	    {
-	    	claimsObj.setStringListClaim(claim.getKey(), claim.getValue());	
+	    	List<Claim> claimList = claim.getValue();
+	    	List<String> claimStrings = new ArrayList<String>();
+	    	for (Claim clm : claimList){
+	    		claimStrings.add(clm.getAuthority());
+	    	}
+	    	claimsObj.setStringListClaim(claim.getKey(), claimStrings);	
 	    }
 	    
 	    // A JWT is a JWS and/or a JWE with JSON claims as the payload.

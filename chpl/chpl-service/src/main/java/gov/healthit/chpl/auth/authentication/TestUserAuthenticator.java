@@ -1,5 +1,6 @@
 package gov.healthit.chpl.auth.authentication;
 
+import gov.healthit.chpl.auth.Claim;
 import gov.healthit.chpl.auth.User;
 import gov.healthit.chpl.auth.UserImpl;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
@@ -19,11 +20,11 @@ public class TestUserAuthenticator implements Authenticator {
 	
 	private static String userID = "testuser";
 	private static String password = "pass";
-	private Map<String, List<String>> claims = 
-			new HashMap<String, List<String>>() {{
-			    put("Groups",  Arrays.asList("ACB123"));
-			    put("Roles", Arrays.asList("admin","team_lead","farmer")) ;
-			    put("Other",   Arrays.asList("1","2","3") );
+	private Map<String, List<Claim>> claims = 
+			new HashMap<String, List<Claim>>() {{
+			    put("Groups",  Arrays.asList(new Claim("ACB123")));
+			    put("Roles", Arrays.asList(new Claim("team_lead"),new Claim("farmer")));
+			    put("Other",   Arrays.asList(new Claim("1"),new Claim("2"),new Claim("3")));
 			}};
 	
 	User user = new UserImpl(userID, claims);

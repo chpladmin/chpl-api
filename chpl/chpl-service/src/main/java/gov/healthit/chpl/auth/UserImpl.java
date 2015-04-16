@@ -6,16 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
 public class UserImpl implements User {
 
 	private String subjectName;
-	private Map<String, List<String>> claims = 
-			new HashMap<String, List<String>>();
+	private Map<String, List<Claim>> claims = 
+			new HashMap<String, List<Claim>>();
 	
 	
 	public UserImpl(){};
 	
-	public UserImpl(String subjectName, Map<String, List<String>> claims){
+	public UserImpl(String subjectName, Map<String, List<Claim>> claims){
 		this.subjectName = subjectName;
 		this.claims = claims;
 	}
@@ -28,11 +30,11 @@ public class UserImpl implements User {
 		this.subjectName = subject;
 	}
 
-	public Map<String, List<String>> getClaims() {
+	public Map<String, List<Claim>> getClaims() {
 		return this.claims;
 	}
 
-	public void setClaims(Map<String, List<String>> claims) {
+	public void setClaims(Map<String, List<Claim>> claims) {
 		this.claims = claims;
 	}
 
@@ -41,12 +43,14 @@ public class UserImpl implements User {
 		if (claims.get(claimName) != null){
 			
 			claims.get(claimName).removeAll(Arrays.asList(claimValue));
-			claims.get(claimName).add(claimValue);
+			Claim auth = new Claim(claimValue);
+			claims.get(claimName).add(auth);
 		
 		} else {
 			
-			ArrayList<String> newValArray = new ArrayList<String>();
-			newValArray.add(claimValue);
+			ArrayList<Claim> newValArray = new ArrayList<Claim>();
+			Claim auth = new Claim(claimValue);
+			newValArray.add(auth);
 			claims.put(claimName, newValArray);
 		}
 		
@@ -58,6 +62,6 @@ public class UserImpl implements User {
 			claims.get(claimName).removeAll(Arrays.asList(claimValue));
 		}
 		
-	}	
+	}
 	
 }
