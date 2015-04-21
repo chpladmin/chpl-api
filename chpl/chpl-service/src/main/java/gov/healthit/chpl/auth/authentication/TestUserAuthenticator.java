@@ -2,7 +2,7 @@ package gov.healthit.chpl.auth.authentication;
 
 import gov.healthit.chpl.auth.Claim;
 import gov.healthit.chpl.auth.User;
-import gov.healthit.chpl.auth.UserImpl;
+import gov.healthit.chpl.auth.AuthenticatedUser;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 
 import java.util.Arrays;
@@ -20,21 +20,15 @@ public class TestUserAuthenticator implements Authenticator {
 	
 	private static String userID = "testuser";
 	private static String password = "pass";
-	private Map<String, List<Claim>> claims = 
-			new HashMap<String, List<Claim>>() {{
-			    put("Groups",  Arrays.asList(new Claim("ACB123")));
-			    put("Roles", Arrays.asList(new Claim("team_lead"),new Claim("farmer")));
-			    put("Other",   Arrays.asList(new Claim("1"),new Claim("2"),new Claim("3")));
-			}};
-	
-	User user = new UserImpl(userID, claims);
+	private List<Claim> claims =  Arrays.asList(new Claim("GROUP_ACB123"),new Claim("ROLE_team_lead"),new Claim("ROLE_farmer"));
+	User user = new AuthenticatedUser(userID, claims);
 	
 	@Autowired
 	JWTAuthor jwtAuthor;
 	
 	
-	@Override
-	public User getUser(LoginCredentials credentials) throws BadCredentialsException {
+	//@Override
+	private User getUser(LoginCredentials credentials) throws BadCredentialsException {
 		
 		if  ((credentials.getUserName().equals(userID)) && (credentials.getPassword().equals(password))){
 			return user;
@@ -46,7 +40,17 @@ public class TestUserAuthenticator implements Authenticator {
 	public String getJWT(User user) throws JWTCreationException {
 		
 		String jwt = null;
-		jwt = jwtAuthor.createJWT(user.getSubjectName(), user.getClaims());
+		Map<String, List<String>> claims = new HashMap<String, List<String>>();
+		
+		List<String> claimStrings = new ArrayList<String, List<String>>();
+		
+		for (Claim claim : user.getClaims()){
+			claimStrings.add(claim.getAuthority);
+		}
+		claims.put("Authorities", claimStrings);
+		
+		jwt = jwtAuthor.createJWT(user.getSubjectName(), claimStrings);
+		
 		return jwt;
 		
 	}
@@ -63,7 +67,7 @@ public class TestUserAuthenticator implements Authenticator {
 		}
 		
 		if (user != null){
-			jwt = jwtAuthor.createJWT(user.getSubjectName(), user.getClaims());
+			jwt = getJWT(user);
 		}
 		return jwt;
 		

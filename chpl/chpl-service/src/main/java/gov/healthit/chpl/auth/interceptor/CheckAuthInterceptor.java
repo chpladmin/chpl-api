@@ -24,18 +24,21 @@ public class CheckAuthInterceptor implements MethodInterceptor {
                 invocation.getThis()+" with args "+invocation.getArguments());
 	    
 		String jwt = (String) invocation.getArguments()[0];
+		
+		//try {
 		User user = retriever.getUser(jwt);
-		String group = (String) invocation.getArguments()[1];
+		Authorizer.setAuthorization(user);
 		
-		System.out.println(invocation.getMethod().getAnnotation(CheckAuthorization.class).toString());
-		
+		//} catch JWTValidationException(e){
+		//}
+		/*
 		if (Authorizer.authorize(user, "group", group)){
 			return invocation.proceed();
 		} else {
 			throw new AuthorizationException();
 		}
-		
-	    
+		*/
+		return invocation.proceed();
 	}
 
 }

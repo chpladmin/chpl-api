@@ -9,6 +9,7 @@ import gov.healthit.chpl.auth.interceptor.GlobalAdminOnly;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -35,6 +36,7 @@ public class CHPLServiceController {
 	
 	
 	@CheckAuthorization
+	@PreAuthorize("@authorizerService.hasPermission('special')")
 	@RequestMapping(value="/authhello/{group}/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String authHello(@RequestHeader(value="Token") String jwt, @PathVariable String group, @PathVariable String firstName, @PathVariable String lastName) {
 		

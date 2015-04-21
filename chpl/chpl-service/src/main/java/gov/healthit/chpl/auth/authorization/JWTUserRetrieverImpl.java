@@ -1,11 +1,12 @@
 package gov.healthit.chpl.auth.authorization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import gov.healthit.chpl.auth.User;
-import gov.healthit.chpl.auth.UserImpl;
+import gov.healthit.chpl.auth.AuthenticatedUser;
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
 
@@ -18,9 +19,9 @@ public class JWTUserRetrieverImpl implements JWTUserRetriever {
 	@Autowired
 	JWTConsumer jwtConsumer;
 	
-	public User getUser(String jwt) throws JWTValidationException{
+	public User getUser(String jwt) throws JWTValidationException {
 		
-		User user = null;
+		User user = new AuthenticatedUser();
 		
 		Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
 		
@@ -41,17 +42,15 @@ public class JWTUserRetrieverImpl implements JWTUserRetriever {
 			Object typ = validatedClaims.remove("typ");
 			
 			String subject = (String) validatedClaims.remove("sub");
-			Map<String, List<String>> claims = new HashMap<String, List<String>>();
+			user.setSubjectName(subject);
+			
+			List<String> claims = new ArrayList<String>();
 			
 			for (Map.Entry<String, Object> claim : validatedClaims.entrySet())
 			{
-			    System.out.println(claim.getKey() + "/" + claim.getValue());
-			    String key = claim.getKey();
 			    List<String> values = (List<String>) claim.getValue();
-			    claims.put(key, values);
-			    
+			    claims.addAll(values);
 			}
-			user = new UserImpl(subject, claims);
 		}
 		return user;
 	}

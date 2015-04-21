@@ -23,7 +23,7 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 	JSONWebKey jwk;
 	
 	@Override
-	public String createJWT(String subject, Map<String, List<Claim> > claims) {
+	public String createJWT(String subject, Map<String, List<String> > claims) {
 		
 	    // Create the Claims, which will be the content of the JWT
 	    JwtClaims claimsObj = new JwtClaims();
@@ -36,14 +36,10 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 	    claimsObj.setSubject(subject); // the subject/principal is whom the token is about
 	    
 	    
-	    for (Map.Entry<String, List<Claim> > claim : claims.entrySet())
+	    
+	    for (Map.Entry<String, List<String> > claim : claims.entrySet())
 	    {
-	    	List<Claim> claimList = claim.getValue();
-	    	List<String> claimStrings = new ArrayList<String>();
-	    	for (Claim clm : claimList){
-	    		claimStrings.add(clm.getAuthority());
-	    	}
-	    	claimsObj.setStringListClaim(claim.getKey(), claimStrings);	
+	    	claimsObj.setStringListClaim(claim.getKey(), claim.getValue());	
 	    }
 	    
 	    // A JWT is a JWS and/or a JWE with JSON claims as the payload.
