@@ -5,6 +5,7 @@ import gov.healthit.chpl.auth.User;
 import gov.healthit.chpl.auth.AuthenticatedUser;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -41,16 +42,13 @@ public class TestUserAuthenticator implements Authenticator {
 		
 		String jwt = null;
 		Map<String, List<String>> claims = new HashMap<String, List<String>>();
-		
-		List<String> claimStrings = new ArrayList<String, List<String>>();
+		List<String> claimStrings = new ArrayList<String>();
 		
 		for (Claim claim : user.getClaims()){
-			claimStrings.add(claim.getAuthority);
+			claimStrings.add(claim.getAuthority());
 		}
 		claims.put("Authorities", claimStrings);
-		
-		jwt = jwtAuthor.createJWT(user.getSubjectName(), claimStrings);
-		
+		jwt = jwtAuthor.createJWT(user.getSubjectName(), claims);
 		return jwt;
 		
 	}
