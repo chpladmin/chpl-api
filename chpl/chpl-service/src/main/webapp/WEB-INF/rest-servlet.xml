@@ -17,9 +17,11 @@
  
      
    <mvc:annotation-driven />
-   <sec:global-method-security pre-post-annotations="enabled" />
    <context:annotation-config/>
    <context:component-scan base-package="gov.healthit.chpl" />
+   <sec:global-method-security pre-post-annotations="enabled" />
+   
+   
    
    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
    		<property name="proxyTargetClass" value="true"/>
@@ -29,5 +31,9 @@
    		<property name="prefixJson" value="false"/>
    		<property name="supportedMediaTypes" value="application/json"/>
    </bean>
+ 
+ 	<sec:http auto-config='true'>
+    	<sec:intercept-url pattern="/**" access="ROLE_USER"/>
+	</sec:http>
  
  </beans>

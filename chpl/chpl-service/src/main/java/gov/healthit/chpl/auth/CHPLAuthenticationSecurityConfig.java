@@ -16,18 +16,24 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 
 
-@Configuration
+
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
-@Order(1)
+@Configuration
+//@EnableGlobalMethodSecurity(securedEnabled = true)
+@Order(3)
 public class CHPLAuthenticationSecurityConfig extends
 		WebSecurityConfigurerAdapter {
 	
+	//@Autowired
+	//private JWTUserConverter userConverter;
+	
 	@Autowired
-	private JWTUserConverter userConverter;
+	private UserDetailsService userDetailsService;
+	
 	
 	public CHPLAuthenticationSecurityConfig() {
 		super(true);
@@ -61,7 +67,7 @@ public class CHPLAuthenticationSecurityConfig extends
 				//.anyRequest().authenticated().and()
 				.antMatchers("/").permitAll().and()
 				// custom Token based authentication based on the header previously given to the client
-				.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
+				//.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
 			.headers().cacheControl();
 		
 	}
@@ -75,13 +81,13 @@ public class CHPLAuthenticationSecurityConfig extends
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		//auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+		auth.userDetailsService(userDetailsService()).passwordEncoder(new BCryptPasswordEncoder());
 	}
 
 	@Override
 	protected UserDetailsService userDetailsService() {
-		//return userDetailsService;
-		return null;
+		return userDetailsService;
+		//return null;
 	}
 	
 

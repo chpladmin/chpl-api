@@ -8,9 +8,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			classpath*:rest-servlet.xml
-	    	classpath*:applicationContext.xml
-	        gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig
+			classpath*:rest-servlet.xml, classpath*:applicationContext.xml, gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig
 		</param-value>
 	</context-param>
 
@@ -54,13 +52,6 @@
 	    <param-name>contextClass</param-name>
 	    <param-value>
 	        org.springframework.web.context.support.AnnotationConfigWebApplicationContext
-	    </param-value>
-	</context-param>
-	 
-	<context-param>
-	    <param-name>contextConfigLocation</param-name>
-	    <param-value>
-
 	    </param-value>
 	</context-param>
 	 
