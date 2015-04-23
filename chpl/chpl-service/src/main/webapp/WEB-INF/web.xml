@@ -7,14 +7,17 @@
 
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<!--<param-value>classpath*:spring/app-context.xml</param-value>-->
-		<param-value>classpath*:applicationContext.xml</param-value>
+		<param-value>
+			classpath*:rest-servlet.xml
+	    	classpath*:applicationContext.xml
+	        gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig
+		</param-value>
 	</context-param>
 
-	<!--<listener>
+	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-	-->
+	
 	<!--  
 	<listener>
     	<listener-class>
@@ -45,5 +48,31 @@
     	<servlet-name>AboutPage</servlet-name>
     	<url-pattern>/About</url-pattern>
 	</servlet-mapping>
+	
+	
+	<context-param>
+	    <param-name>contextClass</param-name>
+	    <param-value>
+	        org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+	    </param-value>
+	</context-param>
+	 
+	<context-param>
+	    <param-name>contextConfigLocation</param-name>
+	    <param-value>
+
+	    </param-value>
+	</context-param>
+	 
+	<filter>
+	    <filter-name>springSecurityFilterChain</filter-name>
+	    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	 
+	<filter-mapping>
+	    <filter-name>springSecurityFilterChain</filter-name>
+	    <url-pattern>/*</url-pattern>
+	    <dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
 
 </web-app>

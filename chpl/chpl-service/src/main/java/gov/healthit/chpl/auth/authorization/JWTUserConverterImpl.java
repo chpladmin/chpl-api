@@ -12,11 +12,14 @@ import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Service
-public class JWTUserRetrieverImpl implements JWTUserRetriever {
+public class JWTUserConverterImpl implements JWTUserConverter {
 	
 	@Autowired
 	JWTConsumer jwtConsumer;
+	
+	public JWTUserConverterImpl(){}
 	
 	public User getUser(String jwt) throws JWTValidationException {
 		

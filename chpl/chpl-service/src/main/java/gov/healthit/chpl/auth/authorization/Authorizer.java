@@ -17,7 +17,9 @@ import gov.healthit.chpl.auth.authentication.Authenticator;
 public class Authorizer {
 	
 	
-	
+	public static boolean isChris(String name){
+		return name.equals("Chris");
+	}
 	
 	
 	/*

@@ -3,7 +3,7 @@ package gov.healthit.chpl.auth.interceptor;
 import gov.healthit.chpl.auth.User;
 import gov.healthit.chpl.auth.authorization.AuthorizationException;
 import gov.healthit.chpl.auth.authorization.Authorizer;
-import gov.healthit.chpl.auth.authorization.JWTUserRetriever;
+import gov.healthit.chpl.auth.authorization.JWTUserConverter;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class CheckAuthInterceptor implements MethodInterceptor {
 
 	@Autowired
-	JWTUserRetriever retriever;
+	JWTUserConverter retriever;
 	
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -26,9 +26,10 @@ public class CheckAuthInterceptor implements MethodInterceptor {
 		String jwt = (String) invocation.getArguments()[0];
 		
 		//try {
+		/*
 		User user = retriever.getUser(jwt);
 		Authorizer.setAuthorization(user);
-		
+		*/
 		//} catch JWTValidationException(e){
 		//}
 		/*
