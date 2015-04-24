@@ -8,7 +8,9 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			classpath*:rest-servlet.xml, classpath*:applicationContext.xml, gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig
+			<!--classpath*:rest-servlet.xml, classpath*:applicationContext.xml, gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig-->
+			gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig,
+			classpath*:applicationContext.xml
 		</param-value>
 	</context-param>
 

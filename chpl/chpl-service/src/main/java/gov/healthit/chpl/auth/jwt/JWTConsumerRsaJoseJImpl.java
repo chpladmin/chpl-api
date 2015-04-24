@@ -23,8 +23,10 @@ public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
 	
 	private JwtConsumer jwtConsumer = null;
 	
+	/*
 	@PostConstruct
 	private void buildJwtConsumer(){
+		
 		jwtConsumer = new JwtConsumerBuilder()
 	    	.setRequireExpirationTime() // the JWT must have an expiration time
 	    	.setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
@@ -34,9 +36,20 @@ public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
 	    	.setVerificationKey(jwk.getKey()) // verify the signature with the public key
 	    	.build(); // create the JwtConsumer instance
 	}
-	
+	*/
 	
 	public Map<String, Object> consume(String jwt) {
+		
+		jwtConsumer = new JwtConsumerBuilder()
+	    	.setRequireExpirationTime() // the JWT must have an expiration time
+	    	.setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
+	    	.setRequireSubject() // the JWT must have a subject claim
+	    	.setExpectedIssuer("ONCCHPL") // whom the JWT needs to have been issued by
+	    	.setExpectedAudience("ONCCHPL") // to whom the JWT is intended for
+	    	.setVerificationKey(jwk.getKey()) // verify the signature with the public key
+	    	.build(); // create the JwtConsumer instance
+		
+		
 		
 		try
 	    {

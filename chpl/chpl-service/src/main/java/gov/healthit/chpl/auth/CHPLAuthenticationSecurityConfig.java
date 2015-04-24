@@ -4,36 +4,32 @@ import gov.healthit.chpl.auth.authorization.JWTUserConverter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
 
 
-
-@EnableWebSecurity
 @Configuration
-//@EnableGlobalMethodSecurity(securedEnabled = true)
-@Order(3)
+@EnableWebSecurity
+@ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLAuthenticationSecurityConfig extends
 		WebSecurityConfigurerAdapter {
 	
-	//@Autowired
-	//private JWTUserConverter userConverter;
+	@Autowired
+	private JWTUserConverter userConverter;
 	
 	@Autowired
 	private UserDetailsService userDetailsService;
-	
 	
 	public CHPLAuthenticationSecurityConfig() {
 		super(true);
@@ -67,7 +63,7 @@ public class CHPLAuthenticationSecurityConfig extends
 				//.anyRequest().authenticated().and()
 				.antMatchers("/").permitAll().and()
 				// custom Token based authentication based on the header previously given to the client
-				//.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
 			.headers().cacheControl();
 		
 	}

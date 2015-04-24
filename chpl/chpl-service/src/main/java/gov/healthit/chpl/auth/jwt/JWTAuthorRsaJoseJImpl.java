@@ -1,9 +1,7 @@
 package gov.healthit.chpl.auth.jwt;
 
 
-import gov.healthit.chpl.auth.Claim;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +27,7 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 	    JwtClaims claimsObj = new JwtClaims();
 	    claimsObj.setIssuer("ONCCHPL");  // who creates the token and signs it
 	    claimsObj.setAudience("ONCCHPL"); // to whom the token is intended to be sent
-	    claimsObj.setExpirationTimeMinutesInTheFuture(30); // time when the token will expire (10 minutes from now)
+	    claimsObj.setExpirationTimeMinutesInTheFuture(30); // time when the token will expire (from now)
 	    claimsObj.setGeneratedJwtId(); // a unique identifier for the token
 	    claimsObj.setIssuedAtToNow();  // when the token was issued/created (now)
 	    claimsObj.setNotBeforeMinutesInThePast(2); // time before which the token is not yet valid (2 minutes ago)
