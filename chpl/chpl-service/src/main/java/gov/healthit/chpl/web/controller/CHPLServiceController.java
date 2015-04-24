@@ -37,11 +37,8 @@ public class CHPLServiceController {
 	}
 	
 	
-	//@CheckAuthorization
-	//@PreAuthorize("@authorizerService.hasPermission(#jwt , #group)")
-	//@PreAuthorize("@authorizerService.isChris(#firstName)")
+	@PreAuthorize("@authorizerService.isChris(#firstName)")
 	@RequestMapping(value="/authhello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	//public String authHello(@RequestHeader(value="Token") String jwt, @PathVariable String group, @PathVariable String firstName, @PathVariable String lastName) {
 	public String authHello(@PathVariable String firstName, @PathVariable String lastName) {
 			
 		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
