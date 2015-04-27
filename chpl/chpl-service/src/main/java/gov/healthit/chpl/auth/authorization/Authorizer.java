@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.auth.Claim;
 import gov.healthit.chpl.auth.User;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 
@@ -21,19 +22,37 @@ public class Authorizer {
 		return name.equals("Chris");
 	}
 	
-	
-	/*
 	public static boolean hasGroup(String group){
+		return hasAuthority(group);
+	}
+	
+	public static boolean hasAuthority(String claim){
 		
 		Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
-		//Collection<GrantedAuthority> authorities = currentUser.getAuthorities();
+		Collection<? extends GrantedAuthority> authorities = currentUser.getAuthorities();
 		
+		for (GrantedAuthority authority : authorities){
+			if (authority.getAuthority().equals(claim)){
+				return true;
+			}
+		}
+		return false;
 	}
-	*/
 	
-	//public static boolean authorize(User user, String claimName, String claimValue){
-		//List<Claims> claims = user.getClaims().get(claimName);
-		//return (values.indexOf(claimValue) > -1);
-	//}
+	public static boolean userIsGlobalAdmin(){
+		
+		Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
+		Collection<? extends GrantedAuthority> authorities = currentUser.getAuthorities();
+		
+		for (GrantedAuthority authority : authorities){
+			
+			if (authority.getAuthority().equals("ROLE_GLOBAL_ADMIN")){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
 	
 }

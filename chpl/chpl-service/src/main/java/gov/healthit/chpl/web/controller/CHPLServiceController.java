@@ -40,7 +40,7 @@ public class CHPLServiceController {
 	@PreAuthorize("@authorizerService.isChris(#firstName)")
 	@RequestMapping(value="/authhello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String authHello(@PathVariable String firstName, @PathVariable String lastName) {
-			
+		
 		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
 		
 	}
