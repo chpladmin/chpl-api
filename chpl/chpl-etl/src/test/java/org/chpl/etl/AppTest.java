@@ -36,8 +36,4 @@ public class AppTest
         assertTrue( true );
     }
     
-    public void testShouldReturnPlugins() {
-    	App thisApp = new App();
-    	assertNotNull(thisApp.getPlugins());
-    }
 }
