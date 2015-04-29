@@ -4,14 +4,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.concurrent.Future;
 
+import org.jetel.graph.Node;
 import org.jetel.graph.Result;
 import org.jetel.graph.TransformationGraph;
 import org.jetel.graph.TransformationGraphXMLReaderWriter;
 import org.jetel.graph.runtime.EngineInitializer;
 import org.jetel.graph.runtime.GraphRuntimeContext;
 import org.jetel.main.runGraph;
+import org.joda.time.Partial.Property;
 
 /**
  * Hello world!
@@ -56,6 +59,22 @@ public class App
         }
 
         graph.dumpGraphConfiguration();
+        Map<String, Node> nodes = graph.getNodes();
+        Node n;
+        for (String s : nodes.keySet()) {
+        	n = nodes.get(s);
+        	if (n.getName().equals("Read in CSV")) {
+
+            	System.out.println(n.getName());
+        		for (String name : n.getAttributes().stringPropertyNames()) {
+        			
+        			System.out.println(name);
+        		}
+        		System.out.println(n.getAttributes().getProperty("fileURL"));
+        		n.getAttributes().setProperty("fileURL", "c:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/CHPL_pipe.csv");
+        		System.out.println(n.getAttributes().getProperty("fileURL"));
+        	}
+        }
         
         //execute graph
         Future<Result> result;
