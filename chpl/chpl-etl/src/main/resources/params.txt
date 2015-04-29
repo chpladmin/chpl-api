@@ -1,0 +1,1 @@
+plugins = c:/Users/alarned/cloverETL.rel-4-0-4/cloverETL/plugins
