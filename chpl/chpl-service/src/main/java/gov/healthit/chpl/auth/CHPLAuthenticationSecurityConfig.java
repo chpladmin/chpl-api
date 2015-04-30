@@ -83,7 +83,6 @@ public class CHPLAuthenticationSecurityConfig extends
 	@Override
 	protected UserDetailsService userDetailsService() {
 		return userDetailsService;
-		//return null;
 	}
 	
 

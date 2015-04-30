@@ -1,5 +1,9 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.List;
+
+import gov.healthit.chpl.acb.CertificationBody;
+import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTCreationException;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
@@ -8,6 +12,7 @@ import gov.healthit.chpl.auth.interceptor.CheckAuthorization;
 import gov.healthit.chpl.auth.interceptor.GlobalAdminOnly;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.method.P;
@@ -27,6 +32,11 @@ public class CHPLServiceController {
 	private Bean bean;
 	
 	@Autowired
+	@Qualifier("acbManager")
+	private CertificationBodyManager acbManager;
+	
+	
+	@Autowired
 	private Authenticator authenticator;
 	
 	@RequestMapping(value="/hello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
@@ -40,10 +50,22 @@ public class CHPLServiceController {
 	@PreAuthorize("@authorizerService.isChris(#firstName)")
 	@RequestMapping(value="/authhello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String authHello(@PathVariable String firstName, @PathVariable String lastName) {
-		
-		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
-		
+		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";	
 	}
+	
+	
+	@RequestMapping(value="/adminACB/{acbID}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
+	public String adminACB(@PathVariable String acbID) {
+		
+		List<CertificationBody> authorizedACBs = acbManager.getAll();
+		
+		if (authorizedACBs.size() > 0){
+			return "{\"AdminsteringACB:\" : \""+acbID+"\"}";
+		} else {
+			return "{\"AdminsteringACB:\" : \"-1\"}";
+		}
+	}
+	
 	
 	@GlobalAdminOnly
 	@RequestMapping(value="/secrethello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")

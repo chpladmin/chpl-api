@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.CertificationBody;
+import gov.healthit.chpl.acb.CertificationBody;
 import gov.healthit.chpl.auth.Claim;
 import gov.healthit.chpl.auth.User;
 import gov.healthit.chpl.auth.authentication.Authenticator;
@@ -54,6 +54,7 @@ public class Authorizer {
 		return false;
 	}
 	
+	/*
 	public static boolean hasAuthority(CertificationBody acb){
 		
 		Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
@@ -69,4 +70,5 @@ public class Authorizer {
 		}
 		return false;
 	}
+	*/
 }
