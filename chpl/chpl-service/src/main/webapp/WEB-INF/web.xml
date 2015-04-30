@@ -10,7 +10,10 @@
 		<param-value>
 			<!--classpath*:rest-servlet.xml, classpath*:applicationContext.xml, gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig-->
 			gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig,
-			classpath*:applicationContext.xml
+			classpath*:applicationContext.xml,
+			classpath*:applicationContext-common-authorization.xml,
+			classpath*:applicationContext-common-business.xml,
+			classpath*:applicationContext-security.xml
 		</param-value>
 	</context-param>
 
