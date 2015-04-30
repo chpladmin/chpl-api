@@ -14,7 +14,7 @@ import org.jetel.graph.runtime.GraphRuntimeContext;
 import org.jetel.main.runGraph;
 
 public class EtlGraph {
-	
+
 	private final String IN_NODE_ID = "READ_IN_CSV";
 	private final String IN_FILE_URL_KEY = "fileURL";
 
@@ -23,14 +23,14 @@ public class EtlGraph {
 	private TransformationGraph graph;
 	private TransformationGraphXMLReaderWriter graphReader;
 
-	public EtlGraph() {
-        try {
-			EngineInitializer.initEngine(App.class.getResource("/plugins").toURI().getPath(), null, null);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+	public EtlGraph() throws URISyntaxException {
+		this("/plugins");
 	}
-	
+
+	public EtlGraph(String pluginDir) throws URISyntaxException {
+		EngineInitializer.initEngine(App.class.getResource(pluginDir).toURI().getPath(), null, null);
+	}
+
 	public void setGraph(String graphResource) {
 		try {
 			this.graphResource = new FileInputStream(App.class.getResource(graphResource).toURI().getPath());
@@ -39,9 +39,9 @@ public class EtlGraph {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-        //prepare runtime parameters - JMX is turned off
-        runtimeContext = new GraphRuntimeContext();
-        runtimeContext.setUseJMX(false);
+		//prepare runtime parameters - JMX is turned off
+		runtimeContext = new GraphRuntimeContext();
+		runtimeContext.setUseJMX(false);
 
 		//create transformation graph from xml file
 		graph = new TransformationGraph();
@@ -58,22 +58,22 @@ public class EtlGraph {
 	public TransformationGraph getGraph() {
 		return this.graph;
 	}
-	
+
 	public boolean execute() {
-        Future<Result> result;
-        try {
-            result = runGraph.executeGraph(this.graph, this.runtimeContext);
-            if (!result.get().equals(Result.FINISHED_OK)) {
-                System.out.println("Failed graph execution!\n");
-                return false;
-            }
-        } catch (Exception e) {
-            System.out.println("Failed graph execution!\n" + e.getMessage());
-            return false;
-        }
-        return true;
+		Future<Result> result;
+		try {
+			result = runGraph.executeGraph(this.graph, this.runtimeContext);
+			if (!result.get().equals(Result.FINISHED_OK)) {
+				System.out.println("Failed graph execution!\n");
+				return false;
+			}
+		} catch (Exception e) {
+			System.out.println("Failed graph execution!\n" + e.getMessage());
+			return false;
+		}
+		return true;
 	}
-	
+
 	public String getInputFile() {
 		String retval = "";
 		for (Node n : graph.getNodes().values()) {
@@ -83,7 +83,7 @@ public class EtlGraph {
 		}
 		return retval;
 	}
-	
+
 	public void setInputFile(String newInput) {
 		for (Node n : graph.getNodes().values()) {
 			if (n.getId().equalsIgnoreCase(IN_NODE_ID)) {

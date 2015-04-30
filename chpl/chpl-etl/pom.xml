@@ -149,6 +149,16 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.saxon</groupId>
+			<artifactId>saxon-dom</artifactId>
+			<version>9</version>
+		</dependency>
+		<dependency>
+          <groupId>com.google.code.sqlsheet</groupId>
+          <artifactId>sqlsheet</artifactId>
+          <version>6.5</version>
+      </dependency>
 	</dependencies>
 
 	<repositories>
@@ -157,5 +167,9 @@
 			<name>project</name>
 			<url>file:${project.basedir}/repo</url>
 		</repository>
+		  <repository>
+    <id>opencast-public</id>
+    <url>http://repository.opencastproject.org/nexus/content/repositories/public/</url>
+  </repository>
 	</repositories>
 </project>
