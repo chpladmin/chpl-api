@@ -1,0 +1,1236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Thu Apr 30 13:45:56 EDT 2015" modifiedBy="alarned" name="LoadVendorsAndProducts" revision="1.109" showComponentDetails="true">
+<Global>
+<Metadata id="Metadata5">
+<Record fieldDelimiter="|" name="CHPL_3_0_All_STG_Certification_04_17_15_report1429292935749_All" recordDelimiter="\r\n" type="delimited">
+<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field label="Published" name="Published" type="string"/>
+<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
+<Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field label="Additional Software" name="Additional_Software" type="string"/>
+<Field label="Version" name="Version" type="string"/>
+<Field label="Certification Date" name="Certification_Date" type="string"/>
+<Field label="170.302(a) Drug-drug, drug-allergy" name="_170_302_a_Drug_drug_drug_allergy" type="string"/>
+<Field label="170.302(b) Drug formulary checks" name="_170_302_b_Drug_formulary_checks" type="string"/>
+<Field label="170.302(c) Maintain up-to-date prob" name="_170_302_c_Maintain_up_to_date_prob" type="string"/>
+<Field label="170.302(d) Maintain active med list" name="_170_302_d_Maintain_active_med_list" type="string"/>
+<Field label="170.302(e) Maintain active allergy list" name="_170_302_e_Maintain_active_allergy_list" type="string"/>
+<Field label="170.302(f) Record and Chart Vital Signs" name="_170_302_f_Record_and_Chart_Vital_Signs" type="string"/>
+<Field label="170.302(f)(1) Record and Chart Vital" name="_170_302_f_1_Record_and_Chart_Vital" type="string"/>
+<Field label="170.302(f)(2) Calculate BMI" name="_170_302_f_2_Calculate_BMI" type="string"/>
+<Field label="170.302(f)(3) Plot and display growth" name="_170_302_f_3_Plot_and_display_growth" type="string"/>
+<Field label="170.302(g) Smoking status" name="_170_302_g_Smoking_status" type="string"/>
+<Field label="170.302(h) Incorporate lab test results" name="_170_302_h_Incorporate_lab_test_results" type="string"/>
+<Field label="170.302(i) Generate patient lists" name="_170_302_i_Generate_patient_lists" type="string"/>
+<Field label="170.302(j) Medication Reconciliation" name="_170_302_j_Medication_Reconciliation" type="string"/>
+<Field label="170.302(k) Submission to immun" name="_170_302_k_Submission_to_immun" type="string"/>
+<Field label="170.302(l) Public Health Surveillance" name="_170_302_l_Public_Health_Surveillance" type="string"/>
+<Field label="170.302(m) Patient Specific Education" name="_170_302_m_Patient_Specific_Education" type="string"/>
+<Field label="170.302(n) Automated measure calc" name="_170_302_n_Automated_measure_calc" type="string"/>
+<Field label="170.302(o) Access Control" name="_170_302_o_Access_Control" type="string"/>
+<Field label="170.302(p) Emergency Access" name="_170_302_p_Emergency_Access" type="string"/>
+<Field label="170.302(q) Automatic log-off" name="_170_302_q_Automatic_log_off" type="string"/>
+<Field label="170.302(r) Audit Log" name="_170_302_r_Audit_Log" type="string"/>
+<Field label="170.302(s) Integrity" name="_170_302_s_Integrity" type="string"/>
+<Field label="170.302(t) Authentication" name="_170_302_t_Authentication" type="string"/>
+<Field label="170.302(u) General Encryption" name="_170_302_u_General_Encryption" type="string"/>
+<Field label="170.302(v) Encryption when exchanging" name="_170_302_v_Encryption_when_exchanging" type="string"/>
+<Field label="170.302(w) Accounting of disclosures" name="_170_302_w_Accounting_of_disclosures" type="string"/>
+<Field label="170.304(a) Computerized provider OE" name="_170_304_a_Computerized_provider_OE" type="string"/>
+<Field label="170.304(b) Electronic Prescribing" name="_170_304_b_Electronic_Prescribing" type="string"/>
+<Field label="170.304(c) Record Demographics" name="_170_304_c_Record_Demographics" type="string"/>
+<Field label="170.304(d) Patient Reminders" name="_170_304_d_Patient_Reminders" type="string"/>
+<Field label="170.304(e) Clinical Decision Support" name="_170_304_e_Clinical_Decision_Support" type="string"/>
+<Field label="170.304(f) Electronic Copy of Health" name="_170_304_f_Electronic_Copy_of_Health" type="string"/>
+<Field label="170.304(g) Timely Access" name="_170_304_g_Timely_Access" type="string"/>
+<Field label="170.304(h) Clinical Summaries" name="_170_304_h_Clinical_Summaries" type="string"/>
+<Field label="170.304(i) Exchange Clinical Info" name="_170_304_i_Exchange_Clinical_Info" type="string"/>
+<Field label="170.304(j) Calculate and Submit Clinical" name="_170_304_j_Calculate_and_Submit_Clinical" type="string"/>
+<Field label="170.306(a) Computerized Provider OE" name="_170_306_a_Computerized_Provider_OE" type="string"/>
+<Field label="170.306(b) Record Demographics" name="_170_306_b_Record_Demographics" type="string"/>
+<Field label="170.306(c) Clinical Decision Support" name="_170_306_c_Clinical_Decision_Support" type="string"/>
+<Field label="170.306(d) Electronic copy of Health Inf" name="_170_306_d_Electronic_copy_of_Health_Inf" type="string"/>
+<Field label="170.306(d)(1) Electronic copy of health" name="_170_306_d_1_Electronic_copy_of_health" type="string"/>
+<Field label="170.306(d)(2) E-copy of health info" name="_170_306_d_2_E_copy_of_health_info" type="string"/>
+<Field label="170.306(e) Electronic copy of discharge" name="_170_306_e_Electronic_copy_of_discharge" type="string"/>
+<Field label="170.306(f) Exchange Clinical Info" name="_170_306_f_Exchange_Clinical_Info" type="string"/>
+<Field label="170.306(g) Reportable Lab Results" name="_170_306_g_Reportable_Lab_Results" type="string"/>
+<Field label="170.306(h) Advance Directives" name="_170_306_h_Advance_Directives" type="string"/>
+<Field label="170.306(i) Calculate and Submit Clinical" name="_170_306_i_Calculate_and_Submit_Clinical" type="string"/>
+<Field label="NQF 0001(A) Asthma Assessment" name="NQF_0001_A_Asthma_Assessment" type="string"/>
+<Field label="NQF 0002(A) Pharyngitis Testing" name="NQF_0002_A_Pharyngitis_Testing" type="string"/>
+<Field label="NQF 0004(A) Alcohol and Other Drug Depe" name="NQF_0004_A_Alcohol_and_Other_Drug_Depe" type="string"/>
+<Field label="NQF 0012(A) Prenatal Care: HIV" name="NQF_0012_A_Prenatal_Care_HIV" type="string"/>
+<Field label="NQF 0013(A) Hypertension: Blood Pressure" name="NQF_0013_A_Hypertension_Blood_Pressure" type="string"/>
+<Field label="NQF 0014(A) Prenatal Care: Immune Globul" name="NQF_0014_A_Prenatal_Care_Immune_Globul" type="string"/>
+<Field label="NQF 0018(A) Controlling High Blood Pres" name="NQF_0018_A_Controlling_High_Blood_Pres" type="string"/>
+<Field label="NQF 0024(A) Weight Assessment for Child" name="NQF_0024_A_Weight_Assessment_for_Child" type="string"/>
+<Field label="NQF 0027(A) Smoking and Tobacco Use" name="NQF_0027_A_Smoking_and_Tobacco_Use" type="string"/>
+<Field label="NQF 0028(A) Preventive Care &amp; Screening" name="NQF_0028_A_Preventive_Care_Screening" type="string"/>
+<Field label="NQF 0031(A) Breast Cancer Screening" name="NQF_0031_A_Breast_Cancer_Screening" type="string"/>
+<Field label="NQF 0032(A) Cervical Cancer Screening" name="NQF_0032_A_Cervical_Cancer_Screening" type="string"/>
+<Field label="NQF 0033(A) Chlamydia Screening for Wome" name="NQF_0033_A_Chlamydia_Screening_for_Wome" type="string"/>
+<Field label="NQF 0034(A) Colorectal Cancer Screening" name="NQF_0034_A_Colorectal_Cancer_Screening" type="string"/>
+<Field label="NQF 0036(A) Use of Medication for Asthma" name="NQF_0036_A_Use_of_Medication_for_Asthma" type="string"/>
+<Field label="NQF 0038(A) Child Immunization Status" name="NQF_0038_A_Child_Immunization_Status" type="string"/>
+<Field label="NQF 0041(A) Preventive Care &amp; Screening" name="NQF_0041_A_Preventive_Care_Screening" type="string"/>
+<Field label="NQF 0043(A) Pneomonia Vaccination Status" name="NQF_0043_A_Pneomonia_Vaccination_Status" type="string"/>
+<Field label="NQF 0047(A) Asthma Pharmacologic Therapy" name="NQF_0047_A_Asthma_Pharmacologic_Therapy" type="string"/>
+<Field label="NQF 0052(A) Low Back Pain: Imaging" name="NQF_0052_A_Low_Back_Pain_Imaging" type="string"/>
+<Field label="NQF 0055(A) Diabetes: Eye Exam" name="NQF_0055_A_Diabetes_Eye_Exam" type="string"/>
+<Field label="NQF 0056(A) Diabetes: Foot Exam" name="NQF_0056_A_Diabetes_Foot_Exam" type="string"/>
+<Field label="NQF 0059(A) Diabetes: Hemoglobin A1c" name="NQF_0059_A_Diabetes_Hemoglobin_A1c" type="string"/>
+<Field label="NQF 0061(A) Diabetes: BP Management" name="NQF_0061_A_Diabetes_BP_Management" type="string"/>
+<Field label="NQF 0062(A) Diabates: Urine Screening" name="NQF_0062_A_Diabates_Urine_Screening" type="string"/>
+<Field label="NQF 0064(A) Diabetes: LDL" name="NQF_0064_A_Diabetes_LDL" type="string"/>
+<Field label="NQF 0067(A) Coronary Artery Disease" name="NQF_0067_A_Coronary_Artery_Disease" type="string"/>
+<Field label="NQF 0068(A) Vascular Disease: Aspirin" name="NQF_0068_A_Vascular_Disease_Aspirin" type="string"/>
+<Field label="NQF 0070(A) CAD: Beta-Blocker Therapy" name="NQF_0070_A_CAD_Beta_Blocker_Therapy" type="string"/>
+<Field label="NQF 0073(A) Vascular Disease: BP Mgmt" name="NQF_0073_A_Vascular_Disease_BP_Mgmt" type="string"/>
+<Field label="NQF 0074(A) Coronary Artery Disease" name="NQF_0074_A_Coronary_Artery_Disease" type="string"/>
+<Field label="NQF 0075(A) Vascular Disease: LDL" name="NQF_0075_A_Vascular_Disease_LDL" type="string"/>
+<Field label="NQF 0081(A) Heart Failure: ACE Inhibitor" name="NQF_0081_A_Heart_Failure_ACE_Inhibitor" type="string"/>
+<Field label="NQF 0083(A) Heart Failure: LVSD Therapy" name="NQF_0083_A_Heart_Failure_LVSD_Therapy" type="string"/>
+<Field label="NQF 0084(A) Heart Failure: Warfarin" name="NQF_0084_A_Heart_Failure_Warfarin" type="string"/>
+<Field label="NQF 0086(A) Primary Open Angle Glaucoma" name="NQF_0086_A_Primary_Open_Angle_Glaucoma" type="string"/>
+<Field label="NQF 0088(A) Diabetic Retinopathy: Docs" name="NQF_0088_A_Diabetic_Retinopathy_Docs" type="string"/>
+<Field label="NQF 0089(A) Diabetic Retinopathy: Com" name="NQF_0089_A_Diabetic_Retinopathy_Com" type="string"/>
+<Field label="NQF 0105(A) Anti-depressant Med Mgmt" name="NQF_0105_A_Anti_depressant_Med_Mgmt" type="string"/>
+<Field label="NQF 0371(I) VTE: Prophylaxis" name="NQF_0371_I_VTE_Prophylaxis" type="string"/>
+<Field label="NQF 0372(I) VTE: Intensive Care Unit" name="NQF_0372_I_VTE_Intensive_Care_Unit" type="string"/>
+<Field label="NQF 0373(I) VTE: Anticoagulation Overlap" name="NQF_0373_I_VTE_Anticoagulation_Overlap" type="string"/>
+<Field label="NQF 0374(I) VTE: Platelet Monitoring" name="NQF_0374_I_VTE_Platelet_Monitoring" type="string"/>
+<Field label="NQF 0375(I) VTE: Discharge Instructions" name="NQF_0375_I_VTE_Discharge_Instructions" type="string"/>
+<Field label="NQF 0376(I) VTE: Incidence of Preventabl" name="NQF_0376_I_VTE_Incidence_of_Preventabl" type="string"/>
+<Field label="NQF 0385(A) Oncology Colon Cancer" name="NQF_0385_A_Oncology_Colon_Cancer" type="string"/>
+<Field label="NQF 0387(A) Oncology Brest Cancer" name="NQF_0387_A_Oncology_Brest_Cancer" type="string"/>
+<Field label="NQF 0389(A) Prostate Cancer: Bone Scan" name="NQF_0389_A_Prostate_Cancer_Bone_Scan" type="string"/>
+<Field label="NQF 0421(A) Adult Weight Screening" name="NQF_0421_A_Adult_Weight_Screening" type="string"/>
+<Field label="NQF 0435(I) Stroke: Discharge" name="NQF_0435_I_Stroke_Discharge" type="string"/>
+<Field label="NQF 0436(I) Stroke: Anticoagulation" name="NQF_0436_I_Stroke_Anticoagulation" type="string"/>
+<Field label="NQF 0437(I) Stroke: Thrombolytic" name="NQF_0437_I_Stroke_Thrombolytic" type="string"/>
+<Field label="NQF 0438(I) Stroke: Ischemic/Hemorrhagic" name="NQF_0438_I_Stroke_Ischemic_Hemorrhagic" type="string"/>
+<Field label="NQF 0439(I) Stroke: Discharge on Statins" name="NQF_0439_I_Stroke_Discharge_on_Statins" type="string"/>
+<Field label="NQF 0440(I) Stroke: Stroke Education" name="NQF_0440_I_Stroke_Stroke_Education" type="string"/>
+<Field label="NQF 0441(I) Stroke: Rehabilitation" name="NQF_0441_I_Stroke_Rehabilitation" type="string"/>
+<Field label="NQF 0495(I) ED: Median Time" name="NQF_0495_I_ED_Median_Time" type="string"/>
+<Field label="NQF 0497(I) ED: Admission Decision" name="NQF_0497_I_ED_Admission_Decision" type="string"/>
+<Field label="NQF 0575(A) Diabetes: Hemoglobin A1c" name="NQF_0575_A_Diabetes_Hemoglobin_A1c" type="string"/>
+<Field label="170.314(a)(1) Computerized provider OE" name="_170_314_a_1_Computerized_provider_OE" type="string"/>
+<Field label="170.314(a)(2) Drug-drug, drug-allergy" name="_170_314_a_2_Drug_drug_drug_allergy" type="string"/>
+<Field label="170.314(a)(3) Demographics" name="_170_314_a_3_Demographics" type="string"/>
+<Field label="170.314(a)(4) Vital signs, body mass ind" name="_170_314_a_4_Vital_signs_body_mass_ind" type="string"/>
+<Field label="170.314(a)(5) Problem List" name="_170_314_a_5_Problem_List" type="string"/>
+<Field label="170.314(a)(6) Medication List" name="_170_314_a_6_Medication_List" type="string"/>
+<Field label="170.314(a)(7) Medication Allergy List" name="_170_314_a_7_Medication_Allergy_List" type="string"/>
+<Field label="170.314(a)(8) Clinical Decision Support" name="_170_314_a_8_Clinical_Decision_Support" type="string"/>
+<Field label="170.314(a)(9) Electronic Notes" name="_170_314_a_9_Electronic_Notes" type="string"/>
+<Field label="170.314(a)(10) Drug-Formulary Checks" name="_170_314_a_10_Drug_Formulary_Checks" type="string"/>
+<Field label="170.314(a)(11) Smoking Status" name="_170_314_a_11_Smoking_Status" type="string"/>
+<Field label="170.314(a)(12) Image Results" name="_170_314_a_12_Image_Results" type="string"/>
+<Field label="170.314(a)(13) Family Health History" name="_170_314_a_13_Family_Health_History" type="string"/>
+<Field label="170.314(a)(14) Patient List Creation" name="_170_314_a_14_Patient_List_Creation" type="string"/>
+<Field label="170.314(a)(15) Patient-Specific Educatio" name="_170_314_a_15_Patient_Specific_Educatio" type="string"/>
+<Field label="170.314(a)(16) Electronic Medication Adm" name="_170_314_a_16_Electronic_Medication_Adm" type="string"/>
+<Field label="170.314(a)(17) Advance Directives" name="_170_314_a_17_Advance_Directives" type="string"/>
+<Field label="170.314(b)(1) Transitions of Care - rece" name="_170_314_b_1_Transitions_of_Care_rece" type="string"/>
+<Field label="170.314(b)(2) Transitions of Care - crea" name="_170_314_b_2_Transitions_of_Care_crea" type="string"/>
+<Field label="170.314(b)(3) Electronic Prescribing" name="_170_314_b_3_Electronic_Prescribing" type="string"/>
+<Field label="170.314(b)(4) Clinical Information Recon" name="_170_314_b_4_Clinical_Information_Recon" type="string"/>
+<Field label="170.314(b)(5) Incorporate Laboratory Tes" name="_170_314_b_5_Incorporate_Laboratory_Tes" type="string"/>
+<Field label="170.314(b)(6) Transmission of Electronic" name="_170_314_b_6_Transmission_of_Electronic" type="string"/>
+<Field label="170.314(b)(7) Data Portability" name="_170_314_b_7_Data_Portability" type="string"/>
+<Field label="170.314(c)(1) Clinical Quality Measures" name="_170_314_c_1_Clinical_Quality_Measures" type="string"/>
+<Field label="170.314(c)(2) Clinical Quality Measures" name="_170_314_c_2_Clinical_Quality_Measures" type="string"/>
+<Field label="170.314(c)(3) Clinical Quality Measures" name="_170_314_c_3_Clinical_Quality_Measures" type="string"/>
+<Field label="170.314(d)(1) Authentication, access con" name="_170_314_d_1_Authentication_access_con" type="string"/>
+<Field label="170.314(d)(2) Auditable Events and Tampe" name="_170_314_d_2_Auditable_Events_and_Tampe" type="string"/>
+<Field label="170.314(d)(3) Audit Report(s)" name="_170_314_d_3_Audit_Report_s" type="string"/>
+<Field label="170.314(d)(4) Amendments" name="_170_314_d_4_Amendments" type="string"/>
+<Field label="170.314(d)(5) Automatic log-off" name="_170_314_d_5_Automatic_log_off" type="string"/>
+<Field label="170.314(d)(6) Emergency access" name="_170_314_d_6_Emergency_access" type="string"/>
+<Field label="170.314(d)(7) End-User Device Encryption" name="_170_314_d_7_End_User_Device_Encryption" type="string"/>
+<Field label="170.314(d)(8) Integrity" name="_170_314_d_8_Integrity" type="string"/>
+<Field label="170.314(d)(9) Accounting of Disclosures" name="_170_314_d_9_Accounting_of_Disclosures" type="string"/>
+<Field label="170.314(e)(1) View, Download, and Transm" name="_170_314_e_1_View_Download_and_Transm" type="string"/>
+<Field label="170.314(e)(2) Clinical Summary" name="_170_314_e_2_Clinical_Summary" type="string"/>
+<Field label="170.314(e)(3) Secure Messaging" name="_170_314_e_3_Secure_Messaging" type="string"/>
+<Field label="170.314(f)(1) Immunization Information" name="_170_314_f_1_Immunization_Information" type="string"/>
+<Field label="170.314(f)(2) Transmission to Immunizati" name="_170_314_f_2_Transmission_to_Immunizati" type="string"/>
+<Field label="170.314(f)(3) Transmission to Public Hea" name="_170_314_f_3_Transmission_to_Public_Hea" type="string"/>
+<Field label="170.314(f)(4) Transmission of Reportable" name="_170_314_f_4_Transmission_of_Reportable" type="string"/>
+<Field label="170.314(f)(5) Cancer Case Information" name="_170_314_f_5_Cancer_Case_Information" type="string"/>
+<Field label="170.314(f)(6) Transmission to Cancer Reg" name="_170_314_f_6_Transmission_to_Cancer_Reg" type="string"/>
+<Field label="170.314(g)(1) Automated Numerator Record" name="_170_314_g_1_Automated_Numerator_Record" type="string"/>
+<Field label="170.314(g)(2) Automated Measure Calculat" name="_170_314_g_2_Automated_Measure_Calculat" type="string"/>
+<Field label="170.314(g)(3) Safety-Enhanced Design" name="_170_314_g_3_Safety_Enhanced_Design" type="string"/>
+<Field label="170.314(g)(4) Quality Management System" name="_170_314_g_4_Quality_Management_System" type="string"/>
+<Field label="CMS100 AMI‑2‑Aspirin Prescribed at Dis" name="CMS100_AMI_2_Aspirin_Prescribed_at_Dis" type="string"/>
+<Field label="CMS102 Stroke‑10 Ischemic or hemorrhag" name="CMS102_Stroke_10_Ischemic_or_hemorrhag" type="string"/>
+<Field label="CMS104 Stroke‑2 Ischemic stroke – Dis" name="CMS104_Stroke_2_Ischemic_stroke_Dis" type="string"/>
+<Field label="CMS105 Stroke‑6 Ischemic stroke – Disc" name="CMS105_Stroke_6_Ischemic_stroke_Disc" type="string"/>
+<Field label="CMS107 Stroke‑8 Ischemic or hemorrhagi" name="CMS107_Stroke_8_Ischemic_or_hemorrhagi" type="string"/>
+<Field label="CMS108 Venous Thromboembolism (VTE)‑1" name="CMS108_Venous_Thromboembolism_VTE_1" type="string"/>
+<Field label="CMS109 VTE‑4 VTE Patients Receiving Un" name="CMS109_VTE_4_VTE_Patients_Receiving_Un" type="string"/>
+<Field label="CMS110 VTE‑5 VTE discharge instruction" name="CMS110_VTE_5_VTE_discharge_instruction" type="string"/>
+<Field label="CMS111 ED‑2 Emergency Department Throu" name="CMS111_ED_2_Emergency_Department_Throu" type="string"/>
+<Field label="CMS113 PC‑01 Elective Delivery Prior t" name="CMS113_PC_01_Elective_Delivery_Prior_t" type="string"/>
+<Field label="CMS114 VTE‑6 Incidence of potentially" name="CMS114_VTE_6_Incidence_of_potentially" type="string"/>
+<Field label="CMS117 Childhood Immunization Status" name="CMS117_Childhood_Immunization_Status" type="string"/>
+<Field label="CMS122 Diabetes: Hemoglobin A1c Poor" name="CMS122_Diabetes_Hemoglobin_A1c_Poor" type="string"/>
+<Field label="CMS123 Diabetes: Foot Exam" name="CMS123_Diabetes_Foot_Exam" type="string"/>
+<Field label="CMS124 Cervical Cancer Screening" name="CMS124_Cervical_Cancer_Screening" type="string"/>
+<Field label="CMS125 Breast Cancer Screening" name="CMS125_Breast_Cancer_Screening" type="string"/>
+<Field label="CMS126 Use of Appropriate Medications" name="CMS126_Use_of_Appropriate_Medications" type="string"/>
+<Field label="CMS127 Pneumonia Vaccination Status fo" name="CMS127_Pneumonia_Vaccination_Status_fo" type="string"/>
+<Field label="CMS128 Anti‑depressant Medication Mana" name="CMS128_Anti_depressant_Medication_Mana" type="string"/>
+<Field label="CMS129 Prostate Cancer: Avoidance of" name="CMS129_Prostate_Cancer_Avoidance_of" type="string"/>
+<Field label="CMS130 Colorectal Cancer Screening" name="CMS130_Colorectal_Cancer_Screening" type="string"/>
+<Field label="CMS131 Diabetes: Eye Exam" name="CMS131_Diabetes_Eye_Exam" type="string"/>
+<Field label="CMS132 Cataracts: Complications withi" name="CMS132_Cataracts_Complications_withi" type="string"/>
+<Field label="CMS133 Cataracts: 20/40 or Better Vis" name="CMS133_Cataracts_20_40_or_Better_Vis" type="string"/>
+<Field label="CMS134 Diabetes: Urine Protein Screen" name="CMS134_Diabetes_Urine_Protein_Screen" type="string"/>
+<Field label="CMS135 Heart Failure (HF): Angiotensi" name="CMS135_Heart_Failure_HF_Angiotensi" type="string"/>
+<Field label="CMS136 ADHD: Follow‑Up Care for Child" name="CMS136_ADHD_Follow_Up_Care_for_Child" type="string"/>
+<Field label="CMS137 Initiation and Engagement of Al" name="CMS137_Initiation_and_Engagement_of_Al" type="string"/>
+<Field label="CMS138 Preventive Care and Screening:" name="CMS138_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS139 Screening for Future Fall Risk" name="CMS139_Screening_for_Future_Fall_Risk" type="string"/>
+<Field label="CMS140 Breast Cancer: Hormonal Therapy" name="CMS140_Breast_Cancer_Hormonal_Therapy" type="string"/>
+<Field label="CMS141 Colon Cancer: Chemotherapy for" name="CMS141_Colon_Cancer_Chemotherapy_for" type="string"/>
+<Field label="CMS142 Diabetic Retinopathy: Communic" name="CMS142_Diabetic_Retinopathy_Communic" type="string"/>
+<Field label="CMS143 Primary Open Angle Glaucoma (PO" name="CMS143_Primary_Open_Angle_Glaucoma_PO" type="string"/>
+<Field label="CMS144 Heart Failure (HF): Beta‑Block" name="CMS144_Heart_Failure_HF_Beta_Block" type="string"/>
+<Field label="CMS145 Coronary Artery Disease (CAD):" name="CMS145_Coronary_Artery_Disease_CAD" type="string"/>
+<Field label="CMS146 Appropriate Testing for Childre" name="CMS146_Appropriate_Testing_for_Childre" type="string"/>
+<Field label="CMS147 Preventative Care and Screening" name="CMS147_Preventative_Care_and_Screening" type="string"/>
+<Field label="CMS148 Hemoglobin A1c Test for Pediatr" name="CMS148_Hemoglobin_A1c_Test_for_Pediatr" type="string"/>
+<Field label="CMS149 Dementia: Cognitive Assessment" name="CMS149_Dementia_Cognitive_Assessment" type="string"/>
+<Field label="CMS153 Chlamydia Screening for Women" name="CMS153_Chlamydia_Screening_for_Women" type="string"/>
+<Field label="CMS154 Appropriate Treatment for Child" name="CMS154_Appropriate_Treatment_for_Child" type="string"/>
+<Field label="CMS155 Weight Assessment and Counselin" name="CMS155_Weight_Assessment_and_Counselin" type="string"/>
+<Field label="CMS156 Use of High‑Risk Medications in" name="CMS156_Use_of_High_Risk_Medications_in" type="string"/>
+<Field label="CMS157 Oncology: Medical and Radiatio" name="CMS157_Oncology_Medical_and_Radiatio" type="string"/>
+<Field label="CMS158 Pregnant women that had HBsAg t" name="CMS158_Pregnant_women_that_had_HBsAg_t" type="string"/>
+<Field label="CMS159 Depression Remission at Twelve" name="CMS159_Depression_Remission_at_Twelve" type="string"/>
+<Field label="CMS160 Depression Utilization of the P" name="CMS160_Depression_Utilization_of_the_P" type="string"/>
+<Field label="CMS161 Major Depressive Disorder (MDD)" name="CMS161_Major_Depressive_Disorder_MDD" type="string"/>
+<Field label="CMS163 Diabetes: Low Density Lipoprot" name="CMS163_Diabetes_Low_Density_Lipoprot" type="string"/>
+<Field label="CMS164 Ischemic Vascular Disease (IVD)" name="CMS164_Ischemic_Vascular_Disease_IVD" type="string"/>
+<Field label="CMS165 Controlling High Blood Pressure" name="CMS165_Controlling_High_Blood_Pressure" type="string"/>
+<Field label="CMS166 Use of Imaging Studies for Low" name="CMS166_Use_of_Imaging_Studies_for_Low" type="string"/>
+<Field label="CMS167 Diabetic Retinopathy: Document" name="CMS167_Diabetic_Retinopathy_Document" type="string"/>
+<Field label="CMS169 Bipolar Disorder and Major Depr" name="CMS169_Bipolar_Disorder_and_Major_Depr" type="string"/>
+<Field label="CMS171 SCIP‑INF‑1 Prophylactic Antibio" name="CMS171_SCIP_INF_1_Prophylactic_Antibio" type="string"/>
+<Field label="CMS172 SCIP‑INF‑2‑Prophylactic Antibio" name="CMS172_SCIP_INF_2_Prophylactic_Antibio" type="string"/>
+<Field label="CMS177 Child and Adolescent Major Depr" name="CMS177_Child_and_Adolescent_Major_Depr" type="string"/>
+<Field label="CMS178 SCIP‑INF‑9‑ Urinary catheter re" name="CMS178_SCIP_INF_9_Urinary_catheter_re" type="string"/>
+<Field label="CMS179 ADE Prevention and Monitoring:" name="CMS179_ADE_Prevention_and_Monitoring" type="string"/>
+<Field label="CMS182 Ischemic Vascular Disease (IVD)" name="CMS182_Ischemic_Vascular_Disease_IVD" type="string"/>
+<Field label="CMS185 Healthy Term Newborn" name="CMS185_Healthy_Term_Newborn" type="string"/>
+<Field label="CMS188 PN‑6‑ Initial Antibiotic Select" name="CMS188_PN_6_Initial_Antibiotic_Select" type="string"/>
+<Field label="CMS190 VTE‑2 Intensive Care Unit (ICU)" name="CMS190_VTE_2_Intensive_Care_Unit_ICU" type="string"/>
+<Field label="CMS22 Preventive Care and Screening:" name="CMS22_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS26V1 Home Management Plan of Care (H" name="CMS26V1_Home_Management_Plan_of_Care_H" type="string"/>
+<Field label="CMS2 Preventive Care and Screening: S" name="CMS2_Preventive_Care_and_Screening_S" type="string"/>
+<Field label="CMS30 AMI‑10 Statin Prescribed at Disc" name="CMS30_AMI_10_Statin_Prescribed_at_Disc" type="string"/>
+<Field label="CMS31 EHDI‑1a ‑ Hearing screening prio" name="CMS31_EHDI_1a_Hearing_screening_prio" type="string"/>
+<Field label="CMS32 ED‑3‑Median time from ED arrival" name="CMS32_ED_3_Median_time_from_ED_arrival" type="string"/>
+<Field label="CMS50 Closing the referral loop: rece" name="CMS50_Closing_the_referral_loop_rece" type="string"/>
+<Field label="CMS52 HIV/AIDS: Pneumocystis jiroveci" name="CMS52_HIV_AIDS_Pneumocystis_jiroveci" type="string"/>
+<Field label="CMS53 AMI‑8a‑ Primary PCI Received Wit" name="CMS53_AMI_8a_Primary_PCI_Received_Wit" type="string"/>
+<Field label="CMS55 Emergency Department (ED)‑1 Emer" name="CMS55_Emergency_Department_ED_1_Emer" type="string"/>
+<Field label="CMS56 Functional status assessment for" name="CMS56_Functional_status_assessment_for" type="string"/>
+<Field label="CMS60 AMI‑7a‑ Fibrinolytic Therapy Rec" name="CMS60_AMI_7a_Fibrinolytic_Therapy_Rec" type="string"/>
+<Field label="CMS61 Preventive Care and Screening:" name="CMS61_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS62 HIV/AIDS: Medical Visit" name="CMS62_HIV_AIDS_Medical_Visit" type="string"/>
+<Field label="CMS64 Preventive Care and Screening:" name="CMS64_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS65 Hypertension: Improvement in bl" name="CMS65_Hypertension_Improvement_in_bl" type="string"/>
+<Field label="CMS66 Functional status assessment for" name="CMS66_Functional_status_assessment_for" type="string"/>
+<Field label="CMS68 Documentation of Current Medicat" name="CMS68_Documentation_of_Current_Medicat" type="string"/>
+<Field label="CMS69 Preventive Care and Screening: B" name="CMS69_Preventive_Care_and_Screening_B" type="string"/>
+<Field label="CMS71 Stroke‑3 Ischemic stroke – Antic" name="CMS71_Stroke_3_Ischemic_stroke_Antic" type="string"/>
+<Field label="CMS72 Stroke‑5 Ischemic stroke – Antit" name="CMS72_Stroke_5_Ischemic_stroke_Antit" type="string"/>
+<Field label="CMS73 VTE‑3 VTE Patients with Anticoag" name="CMS73_VTE_3_VTE_Patients_with_Anticoag" type="string"/>
+<Field label="CMS74 Primary Caries Prevention Interv" name="CMS74_Primary_Caries_Prevention_Interv" type="string"/>
+<Field label="CMS75 Children who have dental decay o" name="CMS75_Children_who_have_dental_decay_o" type="string"/>
+<Field label="CMS77 HIV/AIDS: RNA control for Patie" name="CMS77_HIV_AIDS_RNA_control_for_Patie" type="string"/>
+<Field label="CMS82 Maternal depression screening" name="CMS82_Maternal_depression_screening" type="string"/>
+<Field label="CMS90 Functional status assessment for" name="CMS90_Functional_status_assessment_for" type="string"/>
+<Field label="CMS91 Stroke‑4 Ischemic stroke – Throm" name="CMS91_Stroke_4_Ischemic_stroke_Throm" type="string"/>
+<Field label="CMS9V1 Exclusive Breast Milk Feeding" name="CMS9V1_Exclusive_Breast_Milk_Feeding" type="string"/>
+<Field label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field format="excel:@" label="CHP-006401" name="CHP_006401" type="string"/>
+<Field format="excel:@" label="2011" name="_2011" type="long"/>
+<Field format="excel:@" label="1" name="_1" type="long"/>
+<Field format="excel:@" label="IG-2556-11-0094" name="IG_2556_11_0094" type="string"/>
+<Field format="excel:@" label="Ambulatory" name="Ambulatory" type="string"/>
+<Field format="excel:@" label="Modular EHR" name="Modular_EHR" type="string"/>
+<Field format="excel:@" label="i2iTracks" name="i2iTracks" type="string"/>
+<Field format="excel:@" label="i2i Systems" name="i2i_Systems" type="string"/>
+<Field label="N/A" name="N_A" type="string"/>
+<Field format="excel:@" label="7" name="_7" type="long"/>
+<Field format="excel:m/d/yy" label="7/1/2011" name="_7_1_2011" type="date"/>
+<Field format="excel:@" label="0" name="_0" type="long"/>
+<Field format="excel:@" label="0" name="_0_1" type="long"/>
+<Field format="excel:@" label="0" name="_0_2" type="long"/>
+<Field format="excel:@" label="0" name="_0_3" type="long"/>
+<Field format="excel:@" label="0" name="_0_4" type="long"/>
+<Field format="excel:@" label="0" name="_0_5" type="long"/>
+<Field format="excel:@" label="0" name="_0_6" type="long"/>
+<Field format="excel:@" label="0" name="_0_7" type="long"/>
+<Field format="excel:@" label="0" name="_0_8" type="long"/>
+<Field format="excel:@" label="1" name="_1_1" type="long"/>
+<Field format="excel:@" label="0" name="_0_9" type="long"/>
+<Field format="excel:@" label="1" name="_1_2" type="long"/>
+<Field format="excel:@" label="0" name="_0_10" type="long"/>
+<Field format="excel:@" label="1" name="_1_3" type="long"/>
+<Field format="excel:@" label="0" name="_0_11" type="long"/>
+<Field format="excel:@" label="0" name="_0_12" type="long"/>
+<Field format="excel:@" label="0" name="_0_13" type="long"/>
+<Field format="excel:@" label="1" name="_1_4" type="long"/>
+<Field format="excel:@" label="1" name="_1_5" type="long"/>
+<Field format="excel:@" label="1" name="_1_6" type="long"/>
+<Field format="excel:@" label="1" name="_1_7" type="long"/>
+<Field format="excel:@" label="1" name="_1_8" type="long"/>
+<Field format="excel:@" label="1" name="_1_9" type="long"/>
+<Field format="excel:@" label="1" name="_1_10" type="long"/>
+<Field format="excel:@" label="1" name="_1_11" type="long"/>
+<Field format="excel:@" label="0" name="_0_14" type="long"/>
+<Field format="excel:@" label="0" name="_0_15" type="long"/>
+<Field format="excel:@" label="0" name="_0_16" type="long"/>
+<Field format="excel:@" label="0" name="_0_17" type="long"/>
+<Field format="excel:@" label="1" name="_1_12" type="long"/>
+<Field format="excel:@" label="1" name="_1_13" type="long"/>
+<Field format="excel:@" label="0" name="_0_18" type="long"/>
+<Field format="excel:@" label="0" name="_0_19" type="long"/>
+<Field format="excel:@" label="0" name="_0_20" type="long"/>
+<Field format="excel:@" label="0" name="_0_21" type="long"/>
+<Field format="excel:@" label="1" name="_1_14" type="long"/>
+<Field format="excel:@" label="0" name="_0_22" type="long"/>
+<Field format="excel:@" label="0" name="_0_23" type="long"/>
+<Field format="excel:@" label="0" name="_0_24" type="long"/>
+<Field format="excel:@" label="0" name="_0_25" type="long"/>
+<Field format="excel:@" label="0" name="_0_26" type="long"/>
+<Field format="excel:@" label="0" name="_0_27" type="long"/>
+<Field format="excel:@" label="0" name="_0_28" type="long"/>
+<Field format="excel:@" label="0" name="_0_29" type="long"/>
+<Field format="excel:@" label="0" name="_0_30" type="long"/>
+<Field format="excel:@" label="0" name="_0_31" type="long"/>
+<Field format="excel:@" label="0" name="_0_32" type="long"/>
+<Field format="excel:@" label="0" name="_0_33" type="long"/>
+<Field format="excel:@" label="0" name="_0_34" type="long"/>
+<Field format="excel:@" label="0" name="_0_35" type="long"/>
+<Field format="excel:@" label="0" name="_0_36" type="long"/>
+<Field format="excel:@" label="1" name="_1_15" type="long"/>
+<Field format="excel:@" label="0" name="_0_37" type="long"/>
+<Field format="excel:@" label="0" name="_0_38" type="long"/>
+<Field format="excel:@" label="1" name="_1_16" type="long"/>
+<Field format="excel:@" label="0" name="_0_39" type="long"/>
+<Field format="excel:@" label="1" name="_1_17" type="long"/>
+<Field format="excel:@" label="1" name="_1_18" type="long"/>
+<Field format="excel:@" label="0" name="_0_40" type="long"/>
+<Field format="excel:@" label="0" name="_0_41" type="long"/>
+<Field format="excel:@" label="0" name="_0_42" type="long"/>
+<Field format="excel:@" label="0" name="_0_43" type="long"/>
+<Field format="excel:@" label="1" name="_1_19" type="long"/>
+<Field format="excel:@" label="1" name="_1_20" type="long"/>
+<Field format="excel:@" label="0" name="_0_44" type="long"/>
+<Field format="excel:@" label="0" name="_0_45" type="long"/>
+<Field format="excel:@" label="0" name="_0_46" type="long"/>
+<Field format="excel:@" label="0" name="_0_47" type="long"/>
+<Field format="excel:@" label="0" name="_0_48" type="long"/>
+<Field format="excel:@" label="1" name="_1_21" type="long"/>
+<Field format="excel:@" label="0" name="_0_49" type="long"/>
+<Field format="excel:@" label="0" name="_0_50" type="long"/>
+<Field format="excel:@" label="1" name="_1_22" type="long"/>
+<Field format="excel:@" label="0" name="_0_51" type="long"/>
+<Field format="excel:@" label="0" name="_0_52" type="long"/>
+<Field format="excel:@" label="0" name="_0_53" type="long"/>
+<Field format="excel:@" label="0" name="_0_54" type="long"/>
+<Field format="excel:@" label="0" name="_0_55" type="long"/>
+<Field format="excel:@" label="0" name="_0_56" type="long"/>
+<Field format="excel:@" label="0" name="_0_57" type="long"/>
+<Field format="excel:@" label="0" name="_0_58" type="long"/>
+<Field format="excel:@" label="0" name="_0_59" type="long"/>
+<Field format="excel:@" label="0" name="_0_60" type="long"/>
+<Field format="excel:@" label="0" name="_0_61" type="long"/>
+<Field format="excel:@" label="0" name="_0_62" type="long"/>
+<Field format="excel:@" label="0" name="_0_63" type="long"/>
+<Field format="excel:@" label="0" name="_0_64" type="long"/>
+<Field format="excel:@" label="0" name="_0_65" type="long"/>
+<Field format="excel:@" label="0" name="_0_66" type="long"/>
+<Field format="excel:@" label="0" name="_0_67" type="long"/>
+<Field format="excel:@" label="0" name="_0_68" type="long"/>
+<Field format="excel:@" label="0" name="_0_69" type="long"/>
+<Field format="excel:@" label="0" name="_0_70" type="long"/>
+<Field format="excel:@" label="0" name="_0_71" type="long"/>
+<Field format="excel:@" label="0" name="_0_72" type="long"/>
+<Field format="excel:@" label="1" name="_1_23" type="long"/>
+<Field format="excel:@" label="0" name="_0_73" type="long"/>
+<Field format="excel:@" label="0" name="_0_74" type="long"/>
+<Field format="excel:@" label="0" name="_0_75" type="long"/>
+<Field format="excel:@" label="0" name="_0_76" type="long"/>
+<Field format="excel:@" label="0" name="_0_77" type="long"/>
+<Field format="excel:@" label="0" name="_0_78" type="long"/>
+<Field format="excel:@" label="0" name="_0_79" type="long"/>
+<Field format="excel:@" label="0" name="_0_80" type="long"/>
+<Field format="excel:@" label="0" name="_0_81" type="long"/>
+<Field format="excel:@" label="0" name="_0_82" type="long"/>
+<Field format="excel:@" label="0" name="_0_83" type="long"/>
+<Field format="excel:@" label="0" name="_0_84" type="long"/>
+<Field format="excel:@" label="0" name="_0_85" type="long"/>
+<Field format="excel:@" label="0" name="_0_86" type="long"/>
+<Field format="excel:@" label="0" name="_0_87" type="long"/>
+<Field format="excel:@" label="0" name="_0_88" type="long"/>
+<Field format="excel:@" label="0" name="_0_89" type="long"/>
+<Field format="excel:@" label="0" name="_0_90" type="long"/>
+<Field format="excel:@" label="0" name="_0_91" type="long"/>
+<Field format="excel:@" label="0" name="_0_92" type="long"/>
+<Field format="excel:@" label="0" name="_0_93" type="long"/>
+<Field format="excel:@" label="0" name="_0_94" type="long"/>
+<Field format="excel:@" label="0" name="_0_95" type="long"/>
+<Field format="excel:@" label="0" name="_0_96" type="long"/>
+<Field format="excel:@" label="0" name="_0_97" type="long"/>
+<Field format="excel:@" label="0" name="_0_98" type="long"/>
+<Field format="excel:@" label="0" name="_0_99" type="long"/>
+<Field format="excel:@" label="0" name="_0_100" type="long"/>
+<Field format="excel:@" label="0" name="_0_101" type="long"/>
+<Field format="excel:@" label="0" name="_0_102" type="long"/>
+<Field format="excel:@" label="0" name="_0_103" type="long"/>
+<Field format="excel:@" label="0" name="_0_104" type="long"/>
+<Field format="excel:@" label="0" name="_0_105" type="long"/>
+<Field format="excel:@" label="0" name="_0_106" type="long"/>
+<Field format="excel:@" label="0" name="_0_107" type="long"/>
+<Field format="excel:@" label="0" name="_0_108" type="long"/>
+<Field format="excel:@" label="0" name="_0_109" type="long"/>
+<Field format="excel:@" label="0" name="_0_110" type="long"/>
+<Field format="excel:@" label="0" name="_0_111" type="long"/>
+<Field format="excel:@" label="0" name="_0_112" type="long"/>
+<Field format="excel:@" label="0" name="_0_113" type="long"/>
+<Field format="excel:@" label="0" name="_0_114" type="long"/>
+<Field format="excel:@" label="0" name="_0_115" type="long"/>
+<Field format="excel:@" label="0" name="_0_116" type="long"/>
+<Field format="excel:@" label="0" name="_0_117" type="long"/>
+<Field format="excel:@" label="0" name="_0_118" type="long"/>
+<Field format="excel:@" label="0" name="_0_119" type="long"/>
+<Field format="excel:@" label="0" name="_0_120" type="long"/>
+<Field format="excel:@" label="0" name="_0_121" type="long"/>
+<Field format="excel:@" label="0" name="_0_122" type="long"/>
+<Field format="excel:@" label="0" name="_0_123" type="long"/>
+<Field format="excel:@" label="0" name="_0_124" type="long"/>
+<Field format="excel:@" label="0" name="_0_125" type="long"/>
+<Field format="excel:@" label="0" name="_0_126" type="long"/>
+<Field format="excel:@" label="0" name="_0_127" type="long"/>
+<Field format="excel:@" label="0" name="_0_128" type="long"/>
+<Field format="excel:@" label="0" name="_0_129" type="long"/>
+<Field format="excel:@" label="0" name="_0_130" type="long"/>
+<Field format="excel:@" label="0" name="_0_131" type="long"/>
+<Field label="ColumnFK" name="ColumnFK" type="string"/>
+<Field label="ColumnFL" name="ColumnFL" type="string"/>
+<Field label="ColumnFM" name="ColumnFM" type="string"/>
+<Field label="ColumnFN" name="ColumnFN" type="string"/>
+<Field label="ColumnFO" name="ColumnFO" type="string"/>
+<Field label="ColumnFP" name="ColumnFP" type="string"/>
+<Field label="ColumnFQ" name="ColumnFQ" type="string"/>
+<Field label="ColumnFR" name="ColumnFR" type="string"/>
+<Field label="ColumnFS" name="ColumnFS" type="string"/>
+<Field label="ColumnFT" name="ColumnFT" type="string"/>
+<Field label="ColumnFU" name="ColumnFU" type="string"/>
+<Field label="ColumnFV" name="ColumnFV" type="string"/>
+<Field label="ColumnFW" name="ColumnFW" type="string"/>
+<Field label="ColumnFX" name="ColumnFX" type="string"/>
+<Field label="ColumnFY" name="ColumnFY" type="string"/>
+<Field label="ColumnFZ" name="ColumnFZ" type="string"/>
+<Field label="ColumnGA" name="ColumnGA" type="string"/>
+<Field label="ColumnGB" name="ColumnGB" type="string"/>
+<Field label="ColumnGC" name="ColumnGC" type="string"/>
+<Field label="ColumnGD" name="ColumnGD" type="string"/>
+<Field label="ColumnGE" name="ColumnGE" type="string"/>
+<Field label="ColumnGF" name="ColumnGF" type="string"/>
+<Field label="ColumnGG" name="ColumnGG" type="string"/>
+<Field label="ColumnGH" name="ColumnGH" type="string"/>
+<Field label="ColumnGI" name="ColumnGI" type="string"/>
+<Field label="ColumnGJ" name="ColumnGJ" type="string"/>
+<Field label="ColumnGK" name="ColumnGK" type="string"/>
+<Field label="ColumnGL" name="ColumnGL" type="string"/>
+<Field label="ColumnGM" name="ColumnGM" type="string"/>
+<Field label="ColumnGN" name="ColumnGN" type="string"/>
+<Field label="ColumnGO" name="ColumnGO" type="string"/>
+<Field label="ColumnGP" name="ColumnGP" type="string"/>
+<Field label="ColumnGQ" name="ColumnGQ" type="string"/>
+<Field label="ColumnGR" name="ColumnGR" type="string"/>
+<Field label="ColumnGS" name="ColumnGS" type="string"/>
+<Field label="ColumnGT" name="ColumnGT" type="string"/>
+<Field label="ColumnGU" name="ColumnGU" type="string"/>
+<Field label="ColumnGV" name="ColumnGV" type="string"/>
+<Field label="ColumnGW" name="ColumnGW" type="string"/>
+<Field label="ColumnGX" name="ColumnGX" type="string"/>
+<Field label="ColumnGY" name="ColumnGY" type="string"/>
+<Field label="ColumnGZ" name="ColumnGZ" type="string"/>
+<Field label="ColumnHA" name="ColumnHA" type="string"/>
+<Field label="ColumnHB" name="ColumnHB" type="string"/>
+<Field label="ColumnHC" name="ColumnHC" type="string"/>
+<Field label="ColumnHD" name="ColumnHD" type="string"/>
+<Field label="ColumnHE" name="ColumnHE" type="string"/>
+<Field label="ColumnHF" name="ColumnHF" type="string"/>
+<Field label="ColumnHG" name="ColumnHG" type="string"/>
+<Field label="ColumnHH" name="ColumnHH" type="string"/>
+<Field label="ColumnHI" name="ColumnHI" type="string"/>
+<Field label="ColumnHJ" name="ColumnHJ" type="string"/>
+<Field label="ColumnHK" name="ColumnHK" type="string"/>
+<Field label="ColumnHL" name="ColumnHL" type="string"/>
+<Field label="ColumnHM" name="ColumnHM" type="string"/>
+<Field label="ColumnHN" name="ColumnHN" type="string"/>
+<Field label="ColumnHO" name="ColumnHO" type="string"/>
+<Field label="ColumnHP" name="ColumnHP" type="string"/>
+<Field label="ColumnHQ" name="ColumnHQ" type="string"/>
+<Field label="ColumnHR" name="ColumnHR" type="string"/>
+<Field label="ColumnHS" name="ColumnHS" type="string"/>
+<Field label="ColumnHT" name="ColumnHT" type="string"/>
+<Field label="ColumnHU" name="ColumnHU" type="string"/>
+<Field label="ColumnHV" name="ColumnHV" type="string"/>
+<Field label="ColumnHW" name="ColumnHW" type="string"/>
+<Field label="ColumnHX" name="ColumnHX" type="string"/>
+<Field label="ColumnHY" name="ColumnHY" type="string"/>
+<Field label="ColumnHZ" name="ColumnHZ" type="string"/>
+<Field label="ColumnIA" name="ColumnIA" type="string"/>
+<Field label="ColumnIB" name="ColumnIB" type="string"/>
+<Field label="ColumnIC" name="ColumnIC" type="string"/>
+<Field label="ColumnID" name="ColumnID" type="string"/>
+<Field label="ColumnIE" name="ColumnIE" type="string"/>
+<Field label="ColumnIF" name="ColumnIF" type="string"/>
+<Field label="ColumnIG" name="ColumnIG" type="string"/>
+<Field label="ColumnIH" name="ColumnIH" type="string"/>
+<Field label="ColumnII" name="ColumnII" type="string"/>
+<Field label="ColumnIJ" name="ColumnIJ" type="string"/>
+<Field label="ColumnIK" name="ColumnIK" type="string"/>
+<Field label="ColumnIL" name="ColumnIL" type="string"/>
+<Field label="ColumnIM" name="ColumnIM" type="string"/>
+<Field label="ColumnIN" name="ColumnIN" type="string"/>
+<Field label="ColumnIO" name="ColumnIO" type="string"/>
+<Field label="ColumnIP" name="ColumnIP" type="string"/>
+<Field label="ColumnIQ" name="ColumnIQ" type="string"/>
+<Field label="ColumnIR" name="ColumnIR" type="string"/>
+<Field label="ColumnIS" name="ColumnIS" type="string"/>
+<Field label="ColumnIT" name="ColumnIT" type="string"/>
+<Field label="ColumnIU" name="ColumnIU" type="string"/>
+<Field label="ColumnIV" name="ColumnIV" type="string"/>
+<Field label="ColumnIW" name="ColumnIW" type="string"/>
+<Field label="ColumnIX" name="ColumnIX" type="string"/>
+<Field label="ColumnIY" name="ColumnIY" type="string"/>
+<Field format="excel:@" label="InfoGard" name="InfoGard" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata6" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_Min" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field label="Published" name="Published" type="string"/>
+<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
+<Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field label="Additional Software" name="Additional_Software" type="string"/>
+<Field label="Version" name="Version" type="string"/>
+<Field label="Certification Date" name="Certification_Date" type="string"/>
+<Field format="excel:@" label="InfoGard" name="Certifying_ATCB" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata3" previewAttachment="${DATAIN_DIR}/CHPL_pipe.csv" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" label="CHPL_pipe.csv" name="CHPL_Piped" previewAttachment="${DATAIN_DIR}/CHPL_pipe.csv" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="true" recordDelimiter="\r\n" skipSourceRows="1" type="delimited">
+<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field label="Published" name="Published" type="string"/>
+<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
+<Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field label="Additional Software" name="Additional_Software" type="string"/>
+<Field label="Version" name="Version" type="string"/>
+<Field label="Certification Date" name="Certification_Date" type="string"/>
+<Field label="170.302(a) Drug-drug, drug-allergy" name="_170_302_a_Drug_drug_drug_allergy" type="integer"/>
+<Field label="170.302(b) Drug formulary checks" name="_170_302_b_Drug_formulary_checks" type="integer"/>
+<Field label="170.302(c) Maintain up-to-date prob" name="_170_302_c_Maintain_up_to_date_prob" type="integer"/>
+<Field label="170.302(d) Maintain active med list" name="_170_302_d_Maintain_active_med_list" type="integer"/>
+<Field label="170.302(e) Maintain active allergy list" name="_170_302_e_Maintain_active_allergy_list" type="integer"/>
+<Field label="170.302(f) Record and Chart Vital Signs" name="_170_302_f_Record_and_Chart_Vital_Signs" type="integer"/>
+<Field label="170.302(f)(1) Record and Chart Vital" name="_170_302_f_1_Record_and_Chart_Vital" type="integer"/>
+<Field label="170.302(f)(2) Calculate BMI" name="_170_302_f_2_Calculate_BMI" type="integer"/>
+<Field label="170.302(f)(3) Plot and display growth" name="_170_302_f_3_Plot_and_display_growth" type="integer"/>
+<Field label="170.302(g) Smoking status" name="_170_302_g_Smoking_status" type="integer"/>
+<Field label="170.302(h) Incorporate lab test results" name="_170_302_h_Incorporate_lab_test_results" type="integer"/>
+<Field label="170.302(i) Generate patient lists" name="_170_302_i_Generate_patient_lists" type="integer"/>
+<Field label="170.302(j) Medication Reconciliation" name="_170_302_j_Medication_Reconciliation" type="integer"/>
+<Field label="170.302(k) Submission to immun" name="_170_302_k_Submission_to_immun" type="integer"/>
+<Field label="170.302(l) Public Health Surveillance" name="_170_302_l_Public_Health_Surveillance" type="integer"/>
+<Field label="170.302(m) Patient Specific Education" name="_170_302_m_Patient_Specific_Education" type="integer"/>
+<Field label="170.302(n) Automated measure calc" name="_170_302_n_Automated_measure_calc" type="integer"/>
+<Field label="170.302(o) Access Control" name="_170_302_o_Access_Control" type="integer"/>
+<Field label="170.302(p) Emergency Access" name="_170_302_p_Emergency_Access" type="integer"/>
+<Field label="170.302(q) Automatic log-off" name="_170_302_q_Automatic_log_off" type="integer"/>
+<Field label="170.302(r) Audit Log" name="_170_302_r_Audit_Log" type="integer"/>
+<Field label="170.302(s) Integrity" name="_170_302_s_Integrity" type="integer"/>
+<Field label="170.302(t) Authentication" name="_170_302_t_Authentication" type="integer"/>
+<Field label="170.302(u) General Encryption" name="_170_302_u_General_Encryption" type="integer"/>
+<Field label="170.302(v) Encryption when exchanging" name="_170_302_v_Encryption_when_exchanging" type="integer"/>
+<Field label="170.302(w) Accounting of disclosures" name="_170_302_w_Accounting_of_disclosures" type="integer"/>
+<Field label="170.304(a) Computerized provider OE" name="_170_304_a_Computerized_provider_OE" type="integer"/>
+<Field label="170.304(b) Electronic Prescribing" name="_170_304_b_Electronic_Prescribing" type="integer"/>
+<Field label="170.304(c) Record Demographics" name="_170_304_c_Record_Demographics" type="integer"/>
+<Field label="170.304(d) Patient Reminders" name="_170_304_d_Patient_Reminders" type="integer"/>
+<Field label="170.304(e) Clinical Decision Support" name="_170_304_e_Clinical_Decision_Support" type="integer"/>
+<Field label="170.304(f) Electronic Copy of Health" name="_170_304_f_Electronic_Copy_of_Health" type="integer"/>
+<Field label="170.304(g) Timely Access" name="_170_304_g_Timely_Access" type="integer"/>
+<Field label="170.304(h) Clinical Summaries" name="_170_304_h_Clinical_Summaries" type="integer"/>
+<Field label="170.304(i) Exchange Clinical Info" name="_170_304_i_Exchange_Clinical_Info" type="integer"/>
+<Field label="170.304(j) Calculate and Submit Clinical" name="_170_304_j_Calculate_and_Submit_Clinical" type="integer"/>
+<Field label="170.306(a) Computerized Provider OE" name="_170_306_a_Computerized_Provider_OE" type="integer"/>
+<Field label="170.306(b) Record Demographics" name="_170_306_b_Record_Demographics" type="integer"/>
+<Field label="170.306(c) Clinical Decision Support" name="_170_306_c_Clinical_Decision_Support" type="integer"/>
+<Field label="170.306(d) Electronic copy of Health Inf" name="_170_306_d_Electronic_copy_of_Health_Inf" type="integer"/>
+<Field label="170.306(d)(1) Electronic copy of health" name="_170_306_d_1_Electronic_copy_of_health" type="integer"/>
+<Field label="170.306(d)(2) E-copy of health info" name="_170_306_d_2_E_copy_of_health_info" type="integer"/>
+<Field label="170.306(e) Electronic copy of discharge" name="_170_306_e_Electronic_copy_of_discharge" type="integer"/>
+<Field label="170.306(f) Exchange Clinical Info" name="_170_306_f_Exchange_Clinical_Info" type="integer"/>
+<Field label="170.306(g) Reportable Lab Results" name="_170_306_g_Reportable_Lab_Results" type="integer"/>
+<Field label="170.306(h) Advance Directives" name="_170_306_h_Advance_Directives" type="integer"/>
+<Field label="170.306(i) Calculate and Submit Clinical" name="_170_306_i_Calculate_and_Submit_Clinical" type="integer"/>
+<Field label="NQF 0001(A) Asthma Assessment" name="NQF_0001_A_Asthma_Assessment" type="integer"/>
+<Field label="NQF 0002(A) Pharyngitis Testing" name="NQF_0002_A_Pharyngitis_Testing" type="integer"/>
+<Field label="NQF 0004(A) Alcohol and Other Drug Depe" name="NQF_0004_A_Alcohol_and_Other_Drug_Depe" type="integer"/>
+<Field label="NQF 0012(A) Prenatal Care: HIV" name="NQF_0012_A_Prenatal_Care_HIV" type="integer"/>
+<Field label="NQF 0013(A) Hypertension: Blood Pressure" name="NQF_0013_A_Hypertension_Blood_Pressure" type="integer"/>
+<Field label="NQF 0014(A) Prenatal Care: Immune Globul" name="NQF_0014_A_Prenatal_Care_Immune_Globul" type="integer"/>
+<Field label="NQF 0018(A) Controlling High Blood Pres" name="NQF_0018_A_Controlling_High_Blood_Pres" type="integer"/>
+<Field label="NQF 0024(A) Weight Assessment for Child" name="NQF_0024_A_Weight_Assessment_for_Child" type="integer"/>
+<Field label="NQF 0027(A) Smoking and Tobacco Use" name="NQF_0027_A_Smoking_and_Tobacco_Use" type="integer"/>
+<Field label="NQF 0028(A) Preventive Care &amp; Screening" name="NQF_0028_A_Preventive_Care_Screening" type="integer"/>
+<Field label="NQF 0031(A) Breast Cancer Screening" name="NQF_0031_A_Breast_Cancer_Screening" type="integer"/>
+<Field label="NQF 0032(A) Cervical Cancer Screening" name="NQF_0032_A_Cervical_Cancer_Screening" type="integer"/>
+<Field label="NQF 0033(A) Chlamydia Screening for Wome" name="NQF_0033_A_Chlamydia_Screening_for_Wome" type="integer"/>
+<Field label="NQF 0034(A) Colorectal Cancer Screening" name="NQF_0034_A_Colorectal_Cancer_Screening" type="integer"/>
+<Field label="NQF 0036(A) Use of Medication for Asthma" name="NQF_0036_A_Use_of_Medication_for_Asthma" type="integer"/>
+<Field label="NQF 0038(A) Child Immunization Status" name="NQF_0038_A_Child_Immunization_Status" type="integer"/>
+<Field label="NQF 0041(A) Preventive Care &amp; Screening" name="NQF_0041_A_Preventive_Care_Screening" type="integer"/>
+<Field label="NQF 0043(A) Pneomonia Vaccination Status" name="NQF_0043_A_Pneomonia_Vaccination_Status" type="integer"/>
+<Field label="NQF 0047(A) Asthma Pharmacologic Therapy" name="NQF_0047_A_Asthma_Pharmacologic_Therapy" type="integer"/>
+<Field label="NQF 0052(A) Low Back Pain: Imaging" name="NQF_0052_A_Low_Back_Pain_Imaging" type="integer"/>
+<Field label="NQF 0055(A) Diabetes: Eye Exam" name="NQF_0055_A_Diabetes_Eye_Exam" type="integer"/>
+<Field label="NQF 0056(A) Diabetes: Foot Exam" name="NQF_0056_A_Diabetes_Foot_Exam" type="integer"/>
+<Field label="NQF 0059(A) Diabetes: Hemoglobin A1c" name="NQF_0059_A_Diabetes_Hemoglobin_A1c" type="integer"/>
+<Field label="NQF 0061(A) Diabetes: BP Management" name="NQF_0061_A_Diabetes_BP_Management" type="integer"/>
+<Field label="NQF 0062(A) Diabates: Urine Screening" name="NQF_0062_A_Diabates_Urine_Screening" type="integer"/>
+<Field label="NQF 0064(A) Diabetes: LDL" name="NQF_0064_A_Diabetes_LDL" type="integer"/>
+<Field label="NQF 0067(A) Coronary Artery Disease" name="NQF_0067_A_Coronary_Artery_Disease" type="integer"/>
+<Field label="NQF 0068(A) Vascular Disease: Aspirin" name="NQF_0068_A_Vascular_Disease_Aspirin" type="integer"/>
+<Field label="NQF 0070(A) CAD: Beta-Blocker Therapy" name="NQF_0070_A_CAD_Beta_Blocker_Therapy" type="integer"/>
+<Field label="NQF 0073(A) Vascular Disease: BP Mgmt" name="NQF_0073_A_Vascular_Disease_BP_Mgmt" type="integer"/>
+<Field label="NQF 0074(A) Coronary Artery Disease" name="NQF_0074_A_Coronary_Artery_Disease" type="integer"/>
+<Field label="NQF 0075(A) Vascular Disease: LDL" name="NQF_0075_A_Vascular_Disease_LDL" type="integer"/>
+<Field label="NQF 0081(A) Heart Failure: ACE Inhibitor" name="NQF_0081_A_Heart_Failure_ACE_Inhibitor" type="integer"/>
+<Field label="NQF 0083(A) Heart Failure: LVSD Therapy" name="NQF_0083_A_Heart_Failure_LVSD_Therapy" type="integer"/>
+<Field label="NQF 0084(A) Heart Failure: Warfarin" name="NQF_0084_A_Heart_Failure_Warfarin" type="integer"/>
+<Field label="NQF 0086(A) Primary Open Angle Glaucoma" name="NQF_0086_A_Primary_Open_Angle_Glaucoma" type="integer"/>
+<Field label="NQF 0088(A) Diabetic Retinopathy: Docs" name="NQF_0088_A_Diabetic_Retinopathy_Docs" type="integer"/>
+<Field label="NQF 0089(A) Diabetic Retinopathy: Com" name="NQF_0089_A_Diabetic_Retinopathy_Com" type="integer"/>
+<Field label="NQF 0105(A) Anti-depressant Med Mgmt" name="NQF_0105_A_Anti_depressant_Med_Mgmt" type="integer"/>
+<Field label="NQF 0371(I) VTE: Prophylaxis" name="NQF_0371_I_VTE_Prophylaxis" type="integer"/>
+<Field label="NQF 0372(I) VTE: Intensive Care Unit" name="NQF_0372_I_VTE_Intensive_Care_Unit" type="integer"/>
+<Field label="NQF 0373(I) VTE: Anticoagulation Overlap" name="NQF_0373_I_VTE_Anticoagulation_Overlap" type="integer"/>
+<Field label="NQF 0374(I) VTE: Platelet Monitoring" name="NQF_0374_I_VTE_Platelet_Monitoring" type="integer"/>
+<Field label="NQF 0375(I) VTE: Discharge Instructions" name="NQF_0375_I_VTE_Discharge_Instructions" type="integer"/>
+<Field label="NQF 0376(I) VTE: Incidence of Preventabl" name="NQF_0376_I_VTE_Incidence_of_Preventabl" type="integer"/>
+<Field label="NQF 0385(A) Oncology Colon Cancer" name="NQF_0385_A_Oncology_Colon_Cancer" type="integer"/>
+<Field label="NQF 0387(A) Oncology Brest Cancer" name="NQF_0387_A_Oncology_Brest_Cancer" type="integer"/>
+<Field label="NQF 0389(A) Prostate Cancer: Bone Scan" name="NQF_0389_A_Prostate_Cancer_Bone_Scan" type="integer"/>
+<Field label="NQF 0421(A) Adult Weight Screening" name="NQF_0421_A_Adult_Weight_Screening" type="integer"/>
+<Field label="NQF 0435(I) Stroke: Discharge" name="NQF_0435_I_Stroke_Discharge" type="integer"/>
+<Field label="NQF 0436(I) Stroke: Anticoagulation" name="NQF_0436_I_Stroke_Anticoagulation" type="integer"/>
+<Field label="NQF 0437(I) Stroke: Thrombolytic" name="NQF_0437_I_Stroke_Thrombolytic" type="integer"/>
+<Field label="NQF 0438(I) Stroke: Ischemic/Hemorrhagic" name="NQF_0438_I_Stroke_Ischemic_Hemorrhagic" type="integer"/>
+<Field label="NQF 0439(I) Stroke: Discharge on Statins" name="NQF_0439_I_Stroke_Discharge_on_Statins" type="integer"/>
+<Field label="NQF 0440(I) Stroke: Stroke Education" name="NQF_0440_I_Stroke_Stroke_Education" type="integer"/>
+<Field label="NQF 0441(I) Stroke: Rehabilitation" name="NQF_0441_I_Stroke_Rehabilitation" type="integer"/>
+<Field label="NQF 0495(I) ED: Median Time" name="NQF_0495_I_ED_Median_Time" type="integer"/>
+<Field label="NQF 0497(I) ED: Admission Decision" name="NQF_0497_I_ED_Admission_Decision" type="integer"/>
+<Field label="NQF 0575(A) Diabetes: Hemoglobin A1c" name="NQF_0575_A_Diabetes_Hemoglobin_A1c" type="integer"/>
+<Field label="170.314(a)(1) Computerized provider OE" name="_170_314_a_1_Computerized_provider_OE" type="integer"/>
+<Field label="170.314(a)(2) Drug-drug, drug-allergy" name="_170_314_a_2_Drug_drug_drug_allergy" type="integer"/>
+<Field label="170.314(a)(3) Demographics" name="_170_314_a_3_Demographics" type="integer"/>
+<Field label="170.314(a)(4) Vital signs, body mass ind" name="_170_314_a_4_Vital_signs_body_mass_ind" type="integer"/>
+<Field label="170.314(a)(5) Problem List" name="_170_314_a_5_Problem_List" type="integer"/>
+<Field label="170.314(a)(6) Medication List" name="_170_314_a_6_Medication_List" type="integer"/>
+<Field label="170.314(a)(7) Medication Allergy List" name="_170_314_a_7_Medication_Allergy_List" type="integer"/>
+<Field label="170.314(a)(8) Clinical Decision Support" name="_170_314_a_8_Clinical_Decision_Support" type="integer"/>
+<Field label="170.314(a)(9) Electronic Notes" name="_170_314_a_9_Electronic_Notes" type="integer"/>
+<Field label="170.314(a)(10) Drug-Formulary Checks" name="_170_314_a_10_Drug_Formulary_Checks" type="integer"/>
+<Field label="170.314(a)(11) Smoking Status" name="_170_314_a_11_Smoking_Status" type="integer"/>
+<Field label="170.314(a)(12) Image Results" name="_170_314_a_12_Image_Results" type="integer"/>
+<Field label="170.314(a)(13) Family Health History" name="_170_314_a_13_Family_Health_History" type="integer"/>
+<Field label="170.314(a)(14) Patient List Creation" name="_170_314_a_14_Patient_List_Creation" type="integer"/>
+<Field label="170.314(a)(15) Patient-Specific Educatio" name="_170_314_a_15_Patient_Specific_Educatio" type="integer"/>
+<Field label="170.314(a)(16) Electronic Medication Adm" name="_170_314_a_16_Electronic_Medication_Adm" type="integer"/>
+<Field label="170.314(a)(17) Advance Directives" name="_170_314_a_17_Advance_Directives" type="integer"/>
+<Field label="170.314(b)(1) Transitions of Care - rece" name="_170_314_b_1_Transitions_of_Care_rece" type="integer"/>
+<Field label="170.314(b)(2) Transitions of Care - crea" name="_170_314_b_2_Transitions_of_Care_crea" type="integer"/>
+<Field label="170.314(b)(3) Electronic Prescribing" name="_170_314_b_3_Electronic_Prescribing" type="integer"/>
+<Field label="170.314(b)(4) Clinical Information Recon" name="_170_314_b_4_Clinical_Information_Recon" type="integer"/>
+<Field label="170.314(b)(5) Incorporate Laboratory Tes" name="_170_314_b_5_Incorporate_Laboratory_Tes" type="integer"/>
+<Field label="170.314(b)(6) Transmission of Electronic" name="_170_314_b_6_Transmission_of_Electronic" type="integer"/>
+<Field label="170.314(b)(7) Data Portability" name="_170_314_b_7_Data_Portability" type="integer"/>
+<Field label="170.314(c)(1) Clinical Quality Measures" name="_170_314_c_1_Clinical_Quality_Measures" type="integer"/>
+<Field label="170.314(c)(2) Clinical Quality Measures" name="_170_314_c_2_Clinical_Quality_Measures" type="integer"/>
+<Field label="170.314(c)(3) Clinical Quality Measures" name="_170_314_c_3_Clinical_Quality_Measures" type="integer"/>
+<Field label="170.314(d)(1) Authentication, access con" name="_170_314_d_1_Authentication_access_con" type="integer"/>
+<Field label="170.314(d)(2) Auditable Events and Tampe" name="_170_314_d_2_Auditable_Events_and_Tampe" type="integer"/>
+<Field label="170.314(d)(3) Audit Report(s)" name="_170_314_d_3_Audit_Report_s" type="integer"/>
+<Field label="170.314(d)(4) Amendments" name="_170_314_d_4_Amendments" type="integer"/>
+<Field label="170.314(d)(5) Automatic log-off" name="_170_314_d_5_Automatic_log_off" type="integer"/>
+<Field label="170.314(d)(6) Emergency access" name="_170_314_d_6_Emergency_access" type="integer"/>
+<Field label="170.314(d)(7) End-User Device Encryption" name="_170_314_d_7_End_User_Device_Encryption" type="integer"/>
+<Field label="170.314(d)(8) Integrity" name="_170_314_d_8_Integrity" type="integer"/>
+<Field label="170.314(d)(9) Accounting of Disclosures" name="_170_314_d_9_Accounting_of_Disclosures" type="integer"/>
+<Field label="170.314(e)(1) View, Download, and Transm" name="_170_314_e_1_View_Download_and_Transm" type="integer"/>
+<Field label="170.314(e)(2) Clinical Summary" name="_170_314_e_2_Clinical_Summary" type="integer"/>
+<Field label="170.314(e)(3) Secure Messaging" name="_170_314_e_3_Secure_Messaging" type="integer"/>
+<Field label="170.314(f)(1) Immunization Information" name="_170_314_f_1_Immunization_Information" type="integer"/>
+<Field label="170.314(f)(2) Transmission to Immunizati" name="_170_314_f_2_Transmission_to_Immunizati" type="integer"/>
+<Field label="170.314(f)(3) Transmission to Public Hea" name="_170_314_f_3_Transmission_to_Public_Hea" type="integer"/>
+<Field label="170.314(f)(4) Transmission of Reportable" name="_170_314_f_4_Transmission_of_Reportable" type="integer"/>
+<Field label="170.314(f)(5) Cancer Case Information" name="_170_314_f_5_Cancer_Case_Information" type="integer"/>
+<Field label="170.314(f)(6) Transmission to Cancer Reg" name="_170_314_f_6_Transmission_to_Cancer_Reg" type="integer"/>
+<Field label="170.314(g)(1) Automated Numerator Record" name="_170_314_g_1_Automated_Numerator_Record" type="integer"/>
+<Field label="170.314(g)(2) Automated Measure Calculat" name="_170_314_g_2_Automated_Measure_Calculat" type="integer"/>
+<Field label="170.314(g)(3) Safety-Enhanced Design" name="_170_314_g_3_Safety_Enhanced_Design" type="integer"/>
+<Field label="170.314(g)(4) Quality Management System" name="_170_314_g_4_Quality_Management_System" type="integer"/>
+<Field label="CMS100 AMI?2?Aspirin Prescribed at Dis" name="CMS100_AMI_2_Aspirin_Prescribed_at_Dis" type="string"/>
+<Field label="CMS102 Stroke?10 Ischemic or hemorrhag" name="CMS102_Stroke_10_Ischemic_or_hemorrhag" type="string"/>
+<Field label="CMS104 Stroke?2 Ischemic stroke \u0096 Dis" name="CMS104_Stroke_2_Ischemic_stroke_Dis" type="string"/>
+<Field label="CMS105 Stroke?6 Ischemic stroke \u0096 Disc" name="CMS105_Stroke_6_Ischemic_stroke_Disc" type="string"/>
+<Field label="CMS107 Stroke?8 Ischemic or hemorrhagi" name="CMS107_Stroke_8_Ischemic_or_hemorrhagi" type="string"/>
+<Field label="CMS108 Venous Thromboembolism (VTE)?1" name="CMS108_Venous_Thromboembolism_VTE_1" type="string"/>
+<Field label="CMS109 VTE?4 VTE Patients Receiving Un" name="CMS109_VTE_4_VTE_Patients_Receiving_Un" type="string"/>
+<Field label="CMS110 VTE?5 VTE discharge instruction" name="CMS110_VTE_5_VTE_discharge_instruction" type="string"/>
+<Field label="CMS111 ED?2 Emergency Department Throu" name="CMS111_ED_2_Emergency_Department_Throu" type="string"/>
+<Field label="CMS113 PC?01 Elective Delivery Prior t" name="CMS113_PC_01_Elective_Delivery_Prior_t" type="string"/>
+<Field label="CMS114 VTE?6 Incidence of potentially" name="CMS114_VTE_6_Incidence_of_potentially" type="string"/>
+<Field label="CMS117 Childhood Immunization Status" name="CMS117_Childhood_Immunization_Status" type="string"/>
+<Field label="CMS122 Diabetes: Hemoglobin A1c Poor" name="CMS122_Diabetes_Hemoglobin_A1c_Poor" type="string"/>
+<Field label="CMS123 Diabetes: Foot Exam" name="CMS123_Diabetes_Foot_Exam" type="string"/>
+<Field label="CMS124 Cervical Cancer Screening" name="CMS124_Cervical_Cancer_Screening" type="string"/>
+<Field label="CMS125 Breast Cancer Screening" name="CMS125_Breast_Cancer_Screening" type="string"/>
+<Field label="CMS126 Use of Appropriate Medications" name="CMS126_Use_of_Appropriate_Medications" type="string"/>
+<Field label="CMS127 Pneumonia Vaccination Status fo" name="CMS127_Pneumonia_Vaccination_Status_fo" type="string"/>
+<Field label="CMS128 Anti?depressant Medication Mana" name="CMS128_Anti_depressant_Medication_Mana" type="string"/>
+<Field label="CMS129 Prostate Cancer: Avoidance of" name="CMS129_Prostate_Cancer_Avoidance_of" type="string"/>
+<Field label="CMS130 Colorectal Cancer Screening" name="CMS130_Colorectal_Cancer_Screening" type="string"/>
+<Field label="CMS131 Diabetes: Eye Exam" name="CMS131_Diabetes_Eye_Exam" type="string"/>
+<Field label="CMS132 Cataracts: Complications withi" name="CMS132_Cataracts_Complications_withi" type="string"/>
+<Field label="CMS133 Cataracts: 20/40 or Better Vis" name="CMS133_Cataracts_20_40_or_Better_Vis" type="string"/>
+<Field label="CMS134 Diabetes: Urine Protein Screen" name="CMS134_Diabetes_Urine_Protein_Screen" type="string"/>
+<Field label="CMS135 Heart Failure (HF): Angiotensi" name="CMS135_Heart_Failure_HF_Angiotensi" type="string"/>
+<Field label="CMS136 ADHD: Follow?Up Care for Child" name="CMS136_ADHD_Follow_Up_Care_for_Child" type="string"/>
+<Field label="CMS137 Initiation and Engagement of Al" name="CMS137_Initiation_and_Engagement_of_Al" type="string"/>
+<Field label="CMS138 Preventive Care and Screening:" name="CMS138_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS139 Screening for Future Fall Risk" name="CMS139_Screening_for_Future_Fall_Risk" type="string"/>
+<Field label="CMS140 Breast Cancer: Hormonal Therapy" name="CMS140_Breast_Cancer_Hormonal_Therapy" type="string"/>
+<Field label="CMS141 Colon Cancer: Chemotherapy for" name="CMS141_Colon_Cancer_Chemotherapy_for" type="string"/>
+<Field label="CMS142 Diabetic Retinopathy: Communic" name="CMS142_Diabetic_Retinopathy_Communic" type="string"/>
+<Field label="CMS143 Primary Open Angle Glaucoma (PO" name="CMS143_Primary_Open_Angle_Glaucoma_PO" type="string"/>
+<Field label="CMS144 Heart Failure (HF): Beta?Block" name="CMS144_Heart_Failure_HF_Beta_Block" type="string"/>
+<Field label="CMS145 Coronary Artery Disease (CAD):" name="CMS145_Coronary_Artery_Disease_CAD" type="string"/>
+<Field label="CMS146 Appropriate Testing for Childre" name="CMS146_Appropriate_Testing_for_Childre" type="string"/>
+<Field label="CMS147 Preventative Care and Screening" name="CMS147_Preventative_Care_and_Screening" type="string"/>
+<Field label="CMS148 Hemoglobin A1c Test for Pediatr" name="CMS148_Hemoglobin_A1c_Test_for_Pediatr" type="string"/>
+<Field label="CMS149 Dementia: Cognitive Assessment" name="CMS149_Dementia_Cognitive_Assessment" type="string"/>
+<Field label="CMS153 Chlamydia Screening for Women" name="CMS153_Chlamydia_Screening_for_Women" type="string"/>
+<Field label="CMS154 Appropriate Treatment for Child" name="CMS154_Appropriate_Treatment_for_Child" type="string"/>
+<Field label="CMS155 Weight Assessment and Counselin" name="CMS155_Weight_Assessment_and_Counselin" type="string"/>
+<Field label="CMS156 Use of High?Risk Medications in" name="CMS156_Use_of_High_Risk_Medications_in" type="string"/>
+<Field label="CMS157 Oncology: Medical and Radiatio" name="CMS157_Oncology_Medical_and_Radiatio" type="string"/>
+<Field label="CMS158 Pregnant women that had HBsAg t" name="CMS158_Pregnant_women_that_had_HBsAg_t" type="string"/>
+<Field label="CMS159 Depression Remission at Twelve" name="CMS159_Depression_Remission_at_Twelve" type="string"/>
+<Field label="CMS160 Depression Utilization of the P" name="CMS160_Depression_Utilization_of_the_P" type="string"/>
+<Field label="CMS161 Major Depressive Disorder (MDD)" name="CMS161_Major_Depressive_Disorder_MDD" type="string"/>
+<Field label="CMS163 Diabetes: Low Density Lipoprot" name="CMS163_Diabetes_Low_Density_Lipoprot" type="string"/>
+<Field label="CMS164 Ischemic Vascular Disease (IVD)" name="CMS164_Ischemic_Vascular_Disease_IVD" type="string"/>
+<Field label="CMS165 Controlling High Blood Pressure" name="CMS165_Controlling_High_Blood_Pressure" type="string"/>
+<Field label="CMS166 Use of Imaging Studies for Low" name="CMS166_Use_of_Imaging_Studies_for_Low" type="string"/>
+<Field label="CMS167 Diabetic Retinopathy: Document" name="CMS167_Diabetic_Retinopathy_Document" type="string"/>
+<Field label="CMS169 Bipolar Disorder and Major Depr" name="CMS169_Bipolar_Disorder_and_Major_Depr" type="string"/>
+<Field label="CMS171 SCIP?INF?1 Prophylactic Antibio" name="CMS171_SCIP_INF_1_Prophylactic_Antibio" type="string"/>
+<Field label="CMS172 SCIP?INF?2?Prophylactic Antibio" name="CMS172_SCIP_INF_2_Prophylactic_Antibio" type="string"/>
+<Field label="CMS177 Child and Adolescent Major Depr" name="CMS177_Child_and_Adolescent_Major_Depr" type="string"/>
+<Field label="CMS178 SCIP?INF?9? Urinary catheter re" name="CMS178_SCIP_INF_9_Urinary_catheter_re" type="string"/>
+<Field label="CMS179 ADE Prevention and Monitoring:" name="CMS179_ADE_Prevention_and_Monitoring" type="string"/>
+<Field label="CMS182 Ischemic Vascular Disease (IVD)" name="CMS182_Ischemic_Vascular_Disease_IVD" type="string"/>
+<Field label="CMS185 Healthy Term Newborn" name="CMS185_Healthy_Term_Newborn" type="string"/>
+<Field label="CMS188 PN?6? Initial Antibiotic Select" name="CMS188_PN_6_Initial_Antibiotic_Select" type="string"/>
+<Field label="CMS190 VTE?2 Intensive Care Unit (ICU)" name="CMS190_VTE_2_Intensive_Care_Unit_ICU" type="string"/>
+<Field label="CMS22 Preventive Care and Screening:" name="CMS22_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS26V1 Home Management Plan of Care (H" name="CMS26V1_Home_Management_Plan_of_Care_H" type="string"/>
+<Field label="CMS2 Preventive Care and Screening: S" name="CMS2_Preventive_Care_and_Screening_S" type="string"/>
+<Field label="CMS30 AMI?10 Statin Prescribed at Disc" name="CMS30_AMI_10_Statin_Prescribed_at_Disc" type="string"/>
+<Field label="CMS31 EHDI?1a ? Hearing screening prio" name="CMS31_EHDI_1a_Hearing_screening_prio" type="string"/>
+<Field label="CMS32 ED?3?Median time from ED arrival" name="CMS32_ED_3_Median_time_from_ED_arrival" type="string"/>
+<Field label="CMS50 Closing the referral loop: rece" name="CMS50_Closing_the_referral_loop_rece" type="string"/>
+<Field label="CMS52 HIV/AIDS: Pneumocystis jiroveci" name="CMS52_HIV_AIDS_Pneumocystis_jiroveci" type="string"/>
+<Field label="CMS53 AMI?8a? Primary PCI Received Wit" name="CMS53_AMI_8a_Primary_PCI_Received_Wit" type="string"/>
+<Field label="CMS55 Emergency Department (ED)?1 Emer" name="CMS55_Emergency_Department_ED_1_Emer" type="string"/>
+<Field label="CMS56 Functional status assessment for" name="CMS56_Functional_status_assessment_for" type="string"/>
+<Field label="CMS60 AMI?7a? Fibrinolytic Therapy Rec" name="CMS60_AMI_7a_Fibrinolytic_Therapy_Rec" type="string"/>
+<Field label="CMS61 Preventive Care and Screening:" name="CMS61_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS62 HIV/AIDS: Medical Visit" name="CMS62_HIV_AIDS_Medical_Visit" type="string"/>
+<Field label="CMS64 Preventive Care and Screening:" name="CMS64_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS65 Hypertension: Improvement in bl" name="CMS65_Hypertension_Improvement_in_bl" type="string"/>
+<Field label="CMS66 Functional status assessment for" name="CMS66_Functional_status_assessment_for" type="string"/>
+<Field label="CMS68 Documentation of Current Medicat" name="CMS68_Documentation_of_Current_Medicat" type="string"/>
+<Field label="CMS69 Preventive Care and Screening: B" name="CMS69_Preventive_Care_and_Screening_B" type="string"/>
+<Field label="CMS71 Stroke?3 Ischemic stroke \u0096 Antic" name="CMS71_Stroke_3_Ischemic_stroke_Antic" type="string"/>
+<Field label="CMS72 Stroke?5 Ischemic stroke \u0096 Antit" name="CMS72_Stroke_5_Ischemic_stroke_Antit" type="string"/>
+<Field label="CMS73 VTE?3 VTE Patients with Anticoag" name="CMS73_VTE_3_VTE_Patients_with_Anticoag" type="string"/>
+<Field label="CMS74 Primary Caries Prevention Interv" name="CMS74_Primary_Caries_Prevention_Interv" type="string"/>
+<Field label="CMS75 Children who have dental decay o" name="CMS75_Children_who_have_dental_decay_o" type="string"/>
+<Field label="CMS77 HIV/AIDS: RNA control for Patie" name="CMS77_HIV_AIDS_RNA_control_for_Patie" type="string"/>
+<Field label="CMS82 Maternal depression screening" name="CMS82_Maternal_depression_screening" type="string"/>
+<Field label="CMS90 Functional status assessment for" name="CMS90_Functional_status_assessment_for" type="string"/>
+<Field label="CMS91 Stroke?4 Ischemic stroke \u0096 Throm" name="CMS91_Stroke_4_Ischemic_stroke_Throm" type="string"/>
+<Field label="CMS9V1 Exclusive Breast Milk Feeding" name="CMS9V1_Exclusive_Breast_Milk_Feeding" type="string"/>
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata2" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field name="Vendor_id" type="integer"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_Vendor" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Vendor" name="Vendor" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata0">
+<Record fieldDelimiter="|" name="VendorId" recordDelimiter="\r\n" type="delimited">
+<Field name="VendorName" type="string"/>
+<Field name="VendorId" type="integer"/>
+</Record>
+</Metadata>
+<Connection database="POSTGRE" dbURL="jdbc:postgresql://localhost/chpl" id="JDBC0" jdbcSpecific="POSTGRE" name="PostgreSQL" password="chpl" type="JDBC" user="chpl"/>
+<GraphParameters/>
+<Dictionary/>
+</Global>
+<Phase number="0">
+<Node enabled="enabled" guiName="Pare down to useful data" guiX="266" guiY="75" id="PARE_DOWN_TO_USEFUL_DATA" type="REFORMAT">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.Product_Classification = $in.0.Product_Classification;
+	$out.1.Product = $in.0.Product;
+	$out.0.Vendor = $in.0.Vendor;
+	$out.1.Vendor = $in.0.Vendor;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node enabled="enabled" fileURL="C:/Users/alarned/cloverETL/Customers/data-in/CHPL_04_17_15.xlsx" guiName="Read in XLSX" guiX="-110" guiY="167" id="READ_IN_XLSX" sheet="report1429292935749_All" type="SPREADSHEET_READER">
+<attr name="mapping"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mapping>
+    <globalAttributes>
+        <orientation>VERTICAL</orientation>
+        <step>1</step>
+        <writeHeader>true</writeHeader>
+    </globalAttributes>
+    <defaultSkip>1</defaultSkip>
+    <headerGroups>
+        <headerGroup skip="1">
+            <autoMappingType>NAME</autoMappingType>
+            <headerRanges>
+                <headerRange begin="A2"/>
+                <headerRange begin="B2"/>
+                <headerRange begin="C2"/>
+                <headerRange begin="D2"/>
+                <headerRange begin="E2"/>
+                <headerRange begin="F2"/>
+                <headerRange begin="G2"/>
+                <headerRange begin="H2"/>
+                <headerRange begin="I2"/>
+                <headerRange begin="J2"/>
+                <headerRange begin="K2"/>
+                <headerRange begin="L2"/>
+                <headerRange begin="M2"/>
+                <headerRange begin="N2"/>
+                <headerRange begin="O2"/>
+                <headerRange begin="P2"/>
+                <headerRange begin="Q2"/>
+                <headerRange begin="R2"/>
+                <headerRange begin="S2"/>
+                <headerRange begin="T2"/>
+                <headerRange begin="U2"/>
+                <headerRange begin="V2"/>
+                <headerRange begin="W2"/>
+                <headerRange begin="X2"/>
+                <headerRange begin="Y2"/>
+                <headerRange begin="Z2"/>
+                <headerRange begin="AA2"/>
+                <headerRange begin="AB2"/>
+                <headerRange begin="AC2"/>
+                <headerRange begin="AD2"/>
+                <headerRange begin="AE2"/>
+                <headerRange begin="AF2"/>
+                <headerRange begin="AG2"/>
+                <headerRange begin="AH2"/>
+                <headerRange begin="AI2"/>
+                <headerRange begin="AJ2"/>
+                <headerRange begin="AK2"/>
+                <headerRange begin="AL2"/>
+                <headerRange begin="AM2"/>
+                <headerRange begin="AN2"/>
+                <headerRange begin="AO2"/>
+                <headerRange begin="AP2"/>
+                <headerRange begin="AQ2"/>
+                <headerRange begin="AR2"/>
+                <headerRange begin="AS2"/>
+                <headerRange begin="AT2"/>
+                <headerRange begin="AU2"/>
+                <headerRange begin="AV2"/>
+                <headerRange begin="AW2"/>
+                <headerRange begin="AX2"/>
+                <headerRange begin="AY2"/>
+                <headerRange begin="AZ2"/>
+                <headerRange begin="BA2"/>
+                <headerRange begin="BB2"/>
+                <headerRange begin="BC2"/>
+                <headerRange begin="BD2"/>
+                <headerRange begin="BE2"/>
+                <headerRange begin="BF2"/>
+                <headerRange begin="BG2"/>
+                <headerRange begin="BH2"/>
+                <headerRange begin="BI2"/>
+                <headerRange begin="BJ2"/>
+                <headerRange begin="BK2"/>
+                <headerRange begin="BL2"/>
+                <headerRange begin="BM2"/>
+                <headerRange begin="BN2"/>
+                <headerRange begin="BO2"/>
+                <headerRange begin="BP2"/>
+                <headerRange begin="BQ2"/>
+                <headerRange begin="BR2"/>
+                <headerRange begin="BS2"/>
+                <headerRange begin="BT2"/>
+                <headerRange begin="BU2"/>
+                <headerRange begin="BV2"/>
+                <headerRange begin="BW2"/>
+                <headerRange begin="BX2"/>
+                <headerRange begin="BY2"/>
+                <headerRange begin="BZ2"/>
+                <headerRange begin="CA2"/>
+                <headerRange begin="CB2"/>
+                <headerRange begin="CC2"/>
+                <headerRange begin="CD2"/>
+                <headerRange begin="CE2"/>
+                <headerRange begin="CF2"/>
+                <headerRange begin="CG2"/>
+                <headerRange begin="CH2"/>
+                <headerRange begin="CI2"/>
+                <headerRange begin="CJ2"/>
+                <headerRange begin="CK2"/>
+                <headerRange begin="CL2"/>
+                <headerRange begin="CM2"/>
+                <headerRange begin="CN2"/>
+                <headerRange begin="CO2"/>
+                <headerRange begin="CP2"/>
+                <headerRange begin="CQ2"/>
+                <headerRange begin="CR2"/>
+                <headerRange begin="CS2"/>
+                <headerRange begin="CT2"/>
+                <headerRange begin="CU2"/>
+                <headerRange begin="CV2"/>
+                <headerRange begin="CW2"/>
+                <headerRange begin="CX2"/>
+                <headerRange begin="CY2"/>
+                <headerRange begin="CZ2"/>
+                <headerRange begin="DA2"/>
+                <headerRange begin="DB2"/>
+                <headerRange begin="DC2"/>
+                <headerRange begin="DD2"/>
+                <headerRange begin="DE2"/>
+                <headerRange begin="DF2"/>
+                <headerRange begin="DG2"/>
+                <headerRange begin="DH2"/>
+                <headerRange begin="DI2"/>
+                <headerRange begin="DJ2"/>
+                <headerRange begin="DK2"/>
+                <headerRange begin="DL2"/>
+                <headerRange begin="DM2"/>
+                <headerRange begin="DN2"/>
+                <headerRange begin="DO2"/>
+                <headerRange begin="DP2"/>
+                <headerRange begin="DQ2"/>
+                <headerRange begin="DR2"/>
+                <headerRange begin="DS2"/>
+                <headerRange begin="DT2"/>
+                <headerRange begin="DU2"/>
+                <headerRange begin="DV2"/>
+                <headerRange begin="DW2"/>
+                <headerRange begin="DX2"/>
+                <headerRange begin="DY2"/>
+                <headerRange begin="DZ2"/>
+                <headerRange begin="EA2"/>
+                <headerRange begin="EB2"/>
+                <headerRange begin="EC2"/>
+                <headerRange begin="ED2"/>
+                <headerRange begin="EE2"/>
+                <headerRange begin="EF2"/>
+                <headerRange begin="EG2"/>
+                <headerRange begin="EH2"/>
+                <headerRange begin="EI2"/>
+                <headerRange begin="EJ2"/>
+                <headerRange begin="EK2"/>
+                <headerRange begin="EL2"/>
+                <headerRange begin="EM2"/>
+                <headerRange begin="EN2"/>
+                <headerRange begin="EO2"/>
+                <headerRange begin="EP2"/>
+                <headerRange begin="EQ2"/>
+                <headerRange begin="ER2"/>
+                <headerRange begin="ES2"/>
+                <headerRange begin="ET2"/>
+                <headerRange begin="EU2"/>
+                <headerRange begin="EV2"/>
+                <headerRange begin="EW2"/>
+                <headerRange begin="EX2"/>
+                <headerRange begin="EY2"/>
+                <headerRange begin="EZ2"/>
+                <headerRange begin="FA2"/>
+                <headerRange begin="FB2"/>
+                <headerRange begin="FC2"/>
+                <headerRange begin="FD2"/>
+                <headerRange begin="FE2"/>
+                <headerRange begin="FF2"/>
+                <headerRange begin="FG2"/>
+                <headerRange begin="FH2"/>
+                <headerRange begin="FI2"/>
+                <headerRange begin="FJ2"/>
+                <headerRange begin="FK2"/>
+                <headerRange begin="FL2"/>
+                <headerRange begin="FM2"/>
+                <headerRange begin="FN2"/>
+                <headerRange begin="FO2"/>
+                <headerRange begin="FP2"/>
+                <headerRange begin="FQ2"/>
+                <headerRange begin="FR2"/>
+                <headerRange begin="FS2"/>
+                <headerRange begin="FT2"/>
+                <headerRange begin="FU2"/>
+                <headerRange begin="FV2"/>
+                <headerRange begin="FW2"/>
+                <headerRange begin="FX2"/>
+                <headerRange begin="FY2"/>
+                <headerRange begin="FZ2"/>
+                <headerRange begin="GA2"/>
+                <headerRange begin="GB2"/>
+                <headerRange begin="GC2"/>
+                <headerRange begin="GD2"/>
+                <headerRange begin="GE2"/>
+                <headerRange begin="GF2"/>
+                <headerRange begin="GG2"/>
+                <headerRange begin="GH2"/>
+                <headerRange begin="GI2"/>
+                <headerRange begin="GJ2"/>
+                <headerRange begin="GK2"/>
+                <headerRange begin="GL2"/>
+                <headerRange begin="GM2"/>
+                <headerRange begin="GN2"/>
+                <headerRange begin="GO2"/>
+                <headerRange begin="GP2"/>
+                <headerRange begin="GQ2"/>
+                <headerRange begin="GR2"/>
+                <headerRange begin="GS2"/>
+                <headerRange begin="GT2"/>
+                <headerRange begin="GU2"/>
+                <headerRange begin="GV2"/>
+                <headerRange begin="GW2"/>
+                <headerRange begin="GX2"/>
+                <headerRange begin="GY2"/>
+                <headerRange begin="GZ2"/>
+                <headerRange begin="HA2"/>
+                <headerRange begin="HB2"/>
+                <headerRange begin="HC2"/>
+                <headerRange begin="HD2"/>
+                <headerRange begin="HE2"/>
+                <headerRange begin="HF2"/>
+                <headerRange begin="HG2"/>
+                <headerRange begin="HH2"/>
+                <headerRange begin="HI2"/>
+                <headerRange begin="HJ2"/>
+                <headerRange begin="HK2"/>
+                <headerRange begin="HL2"/>
+                <headerRange begin="HM2"/>
+                <headerRange begin="HN2"/>
+                <headerRange begin="HO2"/>
+                <headerRange begin="HP2"/>
+                <headerRange begin="HQ2"/>
+                <headerRange begin="HR2"/>
+                <headerRange begin="HS2"/>
+                <headerRange begin="HT2"/>
+                <headerRange begin="HU2"/>
+                <headerRange begin="HV2"/>
+                <headerRange begin="HW2"/>
+                <headerRange begin="HX2"/>
+                <headerRange begin="HY2"/>
+                <headerRange begin="HZ2"/>
+                <headerRange begin="IA2"/>
+                <headerRange begin="IB2"/>
+                <headerRange begin="IC2"/>
+                <headerRange begin="ID2"/>
+                <headerRange begin="IE2"/>
+                <headerRange begin="IF2"/>
+                <headerRange begin="IG2"/>
+                <headerRange begin="IH2"/>
+                <headerRange begin="II2"/>
+                <headerRange begin="IJ2"/>
+                <headerRange begin="IK2"/>
+                <headerRange begin="IL2"/>
+                <headerRange begin="IM2"/>
+                <headerRange begin="IN2"/>
+                <headerRange begin="IO2"/>
+                <headerRange begin="IP2"/>
+                <headerRange begin="IQ2"/>
+                <headerRange begin="IR2"/>
+                <headerRange begin="IS2"/>
+                <headerRange begin="IT2"/>
+                <headerRange begin="IU2"/>
+                <headerRange begin="IV2"/>
+                <headerRange begin="IW2"/>
+                <headerRange begin="IX2"/>
+                <headerRange begin="IY2"/>
+                <headerRange begin="IZ2"/>
+                <headerRange begin="JA2"/>
+                <headerRange begin="JB2"/>
+                <headerRange begin="JC2"/>
+                <headerRange begin="JD2"/>
+                <headerRange begin="JE2"/>
+                <headerRange begin="JF2"/>
+                <headerRange begin="JG2"/>
+                <headerRange begin="JH2"/>
+                <headerRange begin="JI2"/>
+                <headerRange end="inf2" begin="JJ2"/>
+            </headerRanges>
+        </headerGroup>
+    </headerGroups>
+</mapping>
+]]></attr>
+</Node>
+<Node dedupKey="Vendor(a)" enabled="enabled" guiName="Remove duplicates" guiX="636" guiY="71" id="REMOVE_DUPLICATES" type="DEDUP"/>
+<Node dedupKey="Product(a);Vendor(a);Product_Classification(a)" enabled="enabled" guiName="Remove duplicates" guiX="596" guiY="210" id="REMOVE_DUPLICATES1" type="DEDUP"/>
+<Node enabled="enabled" guiName="Remove invalid rows" guiX="89" guiY="101" id="REMOVE_INVALID_ROWS" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.Certification_Edition_Year!=null]]></attr>
+</Node>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Vendors" guiX="864" guiY="71" id="SAVE_NEW_VENDORS" type="DB_OUTPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[BEGIN;
+LOCK TABLE public.vendor IN SHARE ROW EXCLUSIVE MODE;
+INSERT INTO public.vendor (name)
+	SELECT $Vendor
+	WHERE NOT EXISTS (
+		SELECT 1 FROM public.vendor WHERE name = $Vendor
+	);
+COMMIT;]]></attr>
+</Node>
+<Node enabled="enabled" guiName="Sort" guiX="461" guiY="71" id="SORT" sortKey="Vendor(a)" type="EXT_SORT"/>
+<Node enabled="enabled" guiName="Sort" guiX="421" guiY="208" id="SORT1" sortKey="Product(a);Vendor(a);Product_Classification(a)" type="EXT_SORT"/>
+<Node enabled="enabled" guiName="Trash" guiX="252" guiY="208" id="TRASH" type="TRASH"/>
+<Edge debugMode="false" fromNode="PARE_DOWN_TO_USEFUL_DATA:0" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="SORT:0"/>
+<Edge fromNode="PARE_DOWN_TO_USEFUL_DATA:1" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 1 (out)" toNode="SORT1:0"/>
+<Edge fromNode="READ_IN_XLSX:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata5" outPort="Port 0 (output)" toNode="REMOVE_INVALID_ROWS:0"/>
+<Edge debugMode="false" fromNode="REMOVE_DUPLICATES:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata1" toNode="SAVE_NEW_VENDORS:0"/>
+<Edge debugMode="false" fromNode="REMOVE_DUPLICATES1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata2" toNode="JOIN_PRODUCT_X_VENDOR:0"/>
+<Edge debugMode="false" fromNode="REMOVE_INVALID_ROWS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata5" toNode="PARE_DOWN_TO_USEFUL_DATA:0"/>
+<Edge fromNode="REMOVE_INVALID_ROWS:1" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 0 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata5" toNode="TRASH:0"/>
+<Edge debugMode="false" fromNode="SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="REMOVE_DUPLICATES:0"/>
+<Edge debugMode="false" fromNode="SORT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata2" toNode="REMOVE_DUPLICATES1:0"/>
+</Phase>
+<Phase number="1">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing Vendors" guiX="243" guiY="337" id="GET_EXISTING_VENDORS" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT $VendorId:=public.vendor.v_id,
+	   $VendorName:=public.vendor.name 
+FROM public.vendor;]]></attr>
+</Node>
+<Node enabled="enabled" guiName="Join Product x Vendor" guiX="765" guiY="283" id="JOIN_PRODUCT_X_VENDOR" joinKey="$Vendor=$VendorName" joinType="leftOuter" type="EXT_HASH_JOIN">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.Product_Classification = $in.0.Product_Classification;
+	$out.0.Product = $in.0.Product;
+	$out.0.Vendor = $in.0.Vendor;
+	$out.0.Vendor_id = $in.1.VendorId;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Products" guiX="886" guiY="167" id="SAVE_NEW_PRODUCTS" type="DB_OUTPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[BEGIN;
+LOCK TABLE public.product IN SHARE ROW EXCLUSIVE MODE;
+INSERT INTO public.product (name, classification, v_id)
+       SELECT $Product, $Product_Classification, $Vendor_id
+       WHERE NOT EXISTS (
+             SELECT 1 FROM public.product WHERE
+                    name = $Product AND
+                    classification = $Product_Classification AND
+                    v_id = $Vendor_id
+       );
+COMMIT;]]></attr>
+</Node>
+<Edge debugMode="false" fromNode="GET_EXISTING_VENDORS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 1 (slave)" metadata="Metadata0" outPort="Port 0 (out)" toNode="JOIN_PRODUCT_X_VENDOR:1"/>
+<Edge debugMode="false" fromNode="JOIN_PRODUCT_X_VENDOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="SAVE_NEW_PRODUCTS:0"/>
+</Phase>
+</Graph>
