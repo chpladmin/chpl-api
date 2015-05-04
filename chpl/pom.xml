@@ -11,6 +11,15 @@
   	<module>chpl-api</module>
     <module>chpl-service</module>
   </modules>
+  
+  <dependencies>
+  		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+  </dependencies>
+  
   <properties>
   	<org.springframework.version>4.1.1.RELEASE</org.springframework.version>
   </properties>

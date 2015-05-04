@@ -2,10 +2,7 @@ package gov.healthit.chpl.acb;
 
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
@@ -24,14 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-//@Transactional
 public class CertificationBodyManagerImpl extends ApplicationObjectSupport implements CertificationBodyManager {
 
 	@Autowired
-	@Qualifier("acbManager")
-	private CertificationBodyDAO acbDAO;
+	private CertificationBodyDAO certificationBodyDAO;
 	
-	@Autowired
 	private MutableAclService mutableAclService;
 	
 	private static int counter = 1000;
@@ -55,11 +49,15 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 				+ " acb " + acb);
 	}
 	
+	public MutableAclService getMutableAclService() {
+		return mutableAclService;
+	}
+
 	@Transactional
 	public void create(CertificationBody acb) {
 		// Create the ACB itself
 		acb.setId(new Long(counter++));
-		acbDAO.create(acb);
+		certificationBodyDAO.create(acb);
 
 		// Grant the current principal administrative permission to the ACB
 		addPermission(acb, new PrincipalSid(getUsername()),
@@ -74,7 +72,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Transactional
 	public void delete(CertificationBody acb) {
 		
-		acbDAO.delete(acb.getId());
+		certificationBodyDAO.delete(acb.getId());
 		// Delete the ACL information as well
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, acb.getId());
 		mutableAclService.deleteAcl(oid, false);
@@ -111,7 +109,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	public List<CertificationBody> getAll() {
 		logger.debug("Returning all acbs");
 
-		return acbDAO.findAll();
+		return certificationBodyDAO.findAll();
 	}
 
 	@Transactional(readOnly = true)
@@ -120,7 +118,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			logger.debug("Returning acb with id: " + id);
 		}
 
-		return acbDAO.getById(id);
+		return certificationBodyDAO.getById(id);
 	}
 	
 	@Transactional
@@ -136,8 +134,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		}
 	}
 	
-	public void setAcbDAO(CertificationBodyDAO acbDAO) {
-		this.acbDAO = acbDAO;
+	public void setCertificationBodyDAO(CertificationBodyDAO acbDAO) {
+		this.certificationBodyDAO = acbDAO;
 	}
 
 	public void setMutableAclService(MutableAclService mutableAclService) {
@@ -145,7 +143,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 
 	public void update(CertificationBody acb) {
-		acbDAO.update(acb);
+		certificationBodyDAO.update(acb);
 		logger.debug("Updated acb " + acb);
 	}
 }
