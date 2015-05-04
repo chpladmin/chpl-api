@@ -8,12 +8,14 @@ import java.util.List;
 
 
 
+
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.stereotype.Repository;
 
 
-//@Repository
+@Repository
 public class CertificationBodyDAOImpl implements CertificationBodyDAO {
 	
 	

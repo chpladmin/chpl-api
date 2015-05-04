@@ -64,5 +64,9 @@
 	<constructor-arg ref="lookupStrategy"/>
 	<constructor-arg ref="aclCache"/>
   </bean>
+  
+  
+  
+  
 
 </beans>

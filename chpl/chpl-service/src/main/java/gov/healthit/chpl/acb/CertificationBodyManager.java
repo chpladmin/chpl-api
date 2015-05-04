@@ -6,9 +6,8 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
-import org.springframework.stereotype.Component;
 
-@Component
+
 public interface CertificationBodyManager {
 	
 	@PreAuthorize("hasPermission(#acb, admin)")
