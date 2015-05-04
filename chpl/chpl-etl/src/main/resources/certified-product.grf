@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Mon May 04 11:33:35 EDT 2015" modifiedBy="alarned" name="LoadVendorsAndProducts" revision="1.126" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Mon May 04 14:20:25 EDT 2015" modifiedBy="alarned" name="LoadVendorsAndProducts" revision="1.164" showComponentDetails="true">
 <Global>
+<Metadata id="Metadata5" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_Certified_Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field name="Edition_id" type="long"/>
+<Field label="Version" name="Version" type="string"/>
+<Field name="Version_id" type="long"/>
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field name="Certbody_id" type="long"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+</Record>
+</Metadata>
 <Metadata id="Metadata3" previewAttachment="${DATAIN_DIR}/CHPL_pipe.csv" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="^" label="CHPL_pipe.csv" name="CHPL_Piped" previewAttachment="${DATAIN_DIR}/CHPL_pipe.csv" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="true" recordDelimiter="\r\n" skipSourceRows="1" type="delimited">
 <Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
@@ -265,32 +277,6 @@
 <Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata2" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CHPL_Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field label="Product" name="Product" type="string"/>
-<Field label="Vendor" name="Vendor" type="string"/>
-<Field name="Vendor_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="Metadata4" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CHPL_Product_Version" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field label="Product" name="Version" type="string"/>
-<Field label="Vendor" name="Product" type="string"/>
-<Field name="Product_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CHPL_Vendor" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field label="Vendor" name="Vendor" type="string"/>
-<Field name="Vendor_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="Metadata7" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="ProductId" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field name="ProductName" type="string"/>
-<Field name="ProductId" type="long"/>
-</Record>
-</Metadata>
 <MetadataGroup name="Implicit metadata" type="implicit">
 <Metadata id="__static_metadata_DATA_READER_UniversalDataReader_Error">
 <Record fieldDelimiter="|" name="UniversalDataReader_Error" recordDelimiter="\n" type="delimited">
@@ -307,19 +293,19 @@
 <Dictionary/>
 </Global>
 <Phase number="0">
-<Node dedupKey="Product(a);Version(a)" enabled="enabled" guiName="Dedup" guiX="695" guiY="244" id="DEDUP" type="DEDUP"/>
-<Node enabled="enabled" guiName="ExtSort" guiX="470" guiY="244" id="EXT_SORT" sortKey="Product(a);Version(a)" type="EXT_SORT"/>
-<Node enabled="enabled" fileURL="./src/main/resources/log.txt" guiName="Log failed rows" guiX="245" guiY="356" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
-<Node enabled="enabled" guiName="Pare down to useful data" guiX="245" guiY="20" id="PARE_DOWN_TO_USEFUL_DATA" type="REFORMAT">
+<Node enabled="enabled" guiName="ExtHashJoin" guiX="470" guiY="20" id="EXT_HASH_JOIN" joinKey="$Certification_Edition_Year=$Certification_Edition_Year#$Certifying_ATCB=$Certifying_ATCB#$Version=$Version;$Product=$Product;$Vendor=$Vendor" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
 function integer transform() {
-	$out.1.Product = $in.0.Product;
+	$out.0.Certification_Edition_Year = $in.0.Certification_Edition_Year;
+	$out.0.Version = $in.0.Version;
+	$out.0.Certifying_ATCB = $in.0.Certifying_ATCB;
+	$out.0.Product = $in.0.Product;
 	$out.0.Vendor = $in.0.Vendor;
-	$out.1.Vendor = $in.0.Vendor;
-	$out.2.Version = $in.0.Version;
-	$out.2.Product = $in.0.Product;
+	$out.0.Edition_id = $in.1.Edition_id;
+	$out.0.Certbody_id = $in.2.Certbody_id;
+	$out.0.Version_id = $in.3.Version_id;
 
 	return ALL;
 }
@@ -341,137 +327,70 @@ function integer transform() {
 
 // Called to return a user-defined error message when an error occurs.
 // function string getMessage() {}
+]]></attr>
+</Node>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get cert_body_id" guiX="20" guiY="356" id="GET_CERT_BODY_ID" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT 
+  $Certbody_id:=certification_body.certification_body_id,
+  $Certifying_ATCB:=certification_body.certification_body
+FROM 
+  public.certification_body;]]></attr>
+</Node>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get edition_id" guiX="20" guiY="244" id="GET_EDITION_ID" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT 
+  $Edition_id:=certification_edition.certification_edition_id,
+  $Certification_Edition_Year:=certification_edition.certification_edition
+FROM 
+  public.certification_edition;]]></attr>
+</Node>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_id" guiX="20" guiY="468" id="GET_PRODUCT_VERSION_ID" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT 
+  $Version_id:=product_version.product_version_id,
+  $Product:=product.name,
+  $Vendor:=vendor.website,
+  $Version:=product_version.product_version
+FROM 
+  public.vendor, 
+  public.product, 
+  public.product_version
+WHERE 
+  product.vendor_id = vendor.vendor_id AND
+  product_version.product_id = product.product_id;]]></attr>
+</Node>
+<Node enabled="enabled" fileURL="./src/main/resources/log.txt" guiName="Log failed rows" guiX="245" guiY="132" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
+<Node enabled="enabled" guiName="Pare down to useful data" guiX="245" guiY="20" id="PARE_DOWN_TO_USEFUL_DATA" type="REFORMAT">
+<attr name="transform"><![CDATA[//#CTL2
+function integer transform() {
+	$out.0.Certification_Edition_Year = $in.0.Certification_Edition_Year;
+	$out.0.Version = $in.0.Version;
+	$out.0.Certifying_ATCB = $in.0.Certifying_ATCB;
+	$out.0.Product = $in.0.Product;
+	$out.0.Vendor = $in.0.Vendor;
+
+	return ALL;
+}
 ]]></attr>
 </Node>
 <Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" skipRows="3" type="DATA_READER"/>
-<Node dedupKey="Vendor(a)" enabled="enabled" guiName="Remove duplicates" guiX="695" guiY="20" id="REMOVE_DUPLICATES" type="DEDUP"/>
-<Node dedupKey="Product(a);Vendor(a)" enabled="enabled" guiName="Remove duplicates" guiX="695" guiY="132" id="REMOVE_DUPLICATES1" type="DEDUP"/>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Vendors" guiX="920" guiY="20" id="SAVE_NEW_VENDORS" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save Certifed Product" guiX="695" guiY="20" id="SAVE_CERTIFED_PRODUCT" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
-LOCK TABLE public.vendor IN SHARE ROW EXCLUSIVE MODE;
-INSERT INTO public.vendor (website)
-	SELECT $Vendor
-	WHERE NOT EXISTS (
-		SELECT 1 FROM public.vendor WHERE website = $Vendor
-	);
+LOCK TABLE public.certified_product IN SHARE ROW EXCLUSIVE MODE;
+INSERT INTO public.certified_product (certification_edition_id, product_version_id, certification_body_id)
+       SELECT $Edition_id, $Version_id, $Certbody_id
+       WHERE NOT EXISTS (
+             SELECT 1 FROM public.certified_product WHERE
+                    certification_edition_id = $Edition_id AND
+                    product_version_id= $Version_id AND
+					certification_body_id = $Certbody_id
+       );
 COMMIT;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Sort" guiX="470" guiY="20" id="SORT" sortKey="Vendor(a)" type="EXT_SORT"/>
-<Node enabled="enabled" guiName="Sort" guiX="470" guiY="132" id="SORT1" sortKey="Product(a);Vendor(a)" type="EXT_SORT"/>
-<Edge fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata4" toNode="JOIN_PRODUCT_X_PRODUCT_VERSION:0"/>
-<Edge fromNode="EXT_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata4" toNode="DEDUP:0"/>
-<Edge debugMode="false" fromNode="PARE_DOWN_TO_USEFUL_DATA:0" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="SORT:0"/>
-<Edge fromNode="PARE_DOWN_TO_USEFUL_DATA:1" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 1 (out)" toNode="SORT1:0"/>
-<Edge fromNode="PARE_DOWN_TO_USEFUL_DATA:2" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata4" outPort="Port 2 (out)" toNode="EXT_SORT:0"/>
+<Edge debugMode="false" fromNode="EXT_HASH_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata5" outPort="Port 0 (out)" toNode="SAVE_CERTIFED_PRODUCT:0"/>
+<Edge fromNode="GET_CERT_BODY_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 2 (slave)" metadata="Metadata5" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:2"/>
+<Edge fromNode="GET_EDITION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Metadata5" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:1"/>
+<Edge fromNode="GET_PRODUCT_VERSION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 3 (slave)" metadata="Metadata5" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:3"/>
+<Edge debugMode="false" fromNode="PARE_DOWN_TO_USEFUL_DATA:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (driver)" metadata="Metadata5" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:0"/>
 <Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (output)" toNode="PARE_DOWN_TO_USEFUL_DATA:0"/>
-<Edge debugMode="true" fromNode="READ_IN_CSV:1" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="LOG_FAILED_ROWS:0"/>
-<Edge debugMode="false" fromNode="REMOVE_DUPLICATES:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata1" toNode="SAVE_NEW_VENDORS:0"/>
-<Edge debugMode="false" fromNode="REMOVE_DUPLICATES1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata2" toNode="JOIN_PRODUCT_X_VENDOR:0"/>
-<Edge debugMode="false" fromNode="SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="REMOVE_DUPLICATES:0"/>
-<Edge debugMode="false" fromNode="SORT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata2" toNode="REMOVE_DUPLICATES1:0"/>
-</Phase>
-<Phase number="1">
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing Vendors" guiX="20" guiY="468" id="GET_EXISTING_VENDORS" type="DB_INPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[SELECT $Vendor_id:=public.vendor.vendor_id,
-	   $Vendor:=public.vendor.website 
-FROM public.vendor;]]></attr>
-</Node>
-<Node enabled="enabled" guiName="Join Product x Vendor" guiX="920" guiY="132" id="JOIN_PRODUCT_X_VENDOR" joinKey="$Vendor=$Vendor" joinType="leftOuter" type="EXT_HASH_JOIN">
-<attr name="transform"><![CDATA[//#CTL2
-
-// Transforms input record into output record.
-function integer transform() {
-	$out.0.Product = $in.0.Product;
-	$out.0.Vendor = $in.0.Vendor;
-	$out.0.Vendor_id = $in.1.Vendor_id;
-
-	return ALL;
-}
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
-]]></attr>
-</Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Products" guiX="1145" guiY="132" id="SAVE_NEW_PRODUCTS" type="DB_OUTPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[BEGIN;
-LOCK TABLE public.product IN SHARE ROW EXCLUSIVE MODE;
-INSERT INTO public.product (name, vendor_id)
-       SELECT $Product, $Vendor_id
-       WHERE NOT EXISTS (
-             SELECT 1 FROM public.product WHERE
-                    name = $Product AND
-                    vendor_id = $Vendor_id
-       );
-COMMIT;]]></attr>
-</Node>
-<Edge debugMode="false" fromNode="GET_EXISTING_VENDORS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 1 (slave)" metadata="Metadata1" outPort="Port 0 (out)" toNode="JOIN_PRODUCT_X_VENDOR:1"/>
-<Edge debugMode="false" fromNode="JOIN_PRODUCT_X_VENDOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="SAVE_NEW_PRODUCTS:0"/>
-</Phase>
-<Phase number="2">
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing products" guiX="20" guiY="580" id="GET_EXISTING_PRODUCTS" type="DB_INPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[SELECT $ProductId:=public.product.product_id,
-	   $ProductName:=public.product.name 
-FROM public.product;]]></attr>
-</Node>
-<Node enabled="enabled" guiName="Join Product x Product_Version" guiX="920" guiY="244" id="JOIN_PRODUCT_X_PRODUCT_VERSION" joinKey="$Product=$ProductName" joinType="leftOuter" type="EXT_HASH_JOIN">
-<attr name="transform"><![CDATA[//#CTL2
-
-// Transforms input record into output record.
-function integer transform() {
-	$out.0.Version = $in.0.Version;
-	$out.0.Product = $in.0.Product;
-	$out.0.Product_id = $in.1.ProductId;
-
-	return ALL;
-}
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
-]]></attr>
-</Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Product_Versions" guiX="1145" guiY="244" id="SAVE_NEW_PRODUCT_VERSIONS" type="DB_OUTPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[BEGIN;
-LOCK TABLE public.product_version IN SHARE ROW EXCLUSIVE MODE;
-INSERT INTO public.product_version (product_version, product_id)
-       SELECT $Version, $Product_id
-       WHERE NOT EXISTS (
-             SELECT 1 FROM public.product_version WHERE
-                    product_version = $Version AND
-                    product_id = $Product_id
-       );
-COMMIT;]]></attr>
-</Node>
-<Edge fromNode="GET_EXISTING_PRODUCTS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 1 (slave)" metadata="Metadata7" outPort="Port 0 (out)" toNode="JOIN_PRODUCT_X_PRODUCT_VERSION:1"/>
-<Edge fromNode="JOIN_PRODUCT_X_PRODUCT_VERSION:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" metadata="Metadata4" outPort="Port 0 (out)" toNode="SAVE_NEW_PRODUCT_VERSIONS:0"/>
+<Edge debugMode="false" fromNode="READ_IN_CSV:1" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="LOG_FAILED_ROWS:0"/>
 </Phase>
 </Graph>
