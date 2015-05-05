@@ -1,13 +1,20 @@
 package org.chpl.etl;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
@@ -18,12 +25,17 @@ public class ExcelConverter {
 
 	private File xlsxFile;
 	private File csvFile;
+	private File csvHashFile;
+	private String delimeter = "^";
+
+	public ExcelConverter() {
+	}
 
 	public ExcelConverter(String xlsxName, String csvName) {
 		xlsxFile = new File(xlsxName);
 		csvFile = new File(csvName);		
 	}
-
+	
 	public void convert() {
 		OPCPackage p;
 		try {
@@ -35,5 +47,65 @@ public class ExcelConverter {
 				ParserConfigurationException | SAXException e) {
 			Logger.getLogger(ExcelConverter.class.getName()).log(Level.SEVERE, null, e);
 		}
+	}
+	
+	public void calculateHash() {
+		FileInputStream fIn = null;
+		FileOutputStream fOut = null;
+		BufferedReader bIn = null;
+		BufferedWriter bOut = null;
+		String line, hash;
+		
+		try {
+			fIn = new FileInputStream(csvFile);
+			fOut = new FileOutputStream(csvHashFile);
+			bIn = new BufferedReader(new InputStreamReader(fIn));
+			bOut = new BufferedWriter(new OutputStreamWriter(fOut));
+			
+			line = bIn.readLine();
+			while (line != null) {
+				hash = hashString(line);
+				bOut.write(line);
+				bOut.write(delimeter);;
+				bOut.write(hash);
+				bOut.newLine();
+				line = bIn.readLine();
+			}
+		} catch (IOException e) {
+			Logger.getLogger(ExcelConverter.class.getName()).log(Level.SEVERE, null, e);
+		} finally {
+			try {
+				bIn.close();
+				bOut.close();
+				fIn.close();
+				fOut.close();
+			} catch (IOException e) {
+				Logger.getLogger(ExcelConverter.class.getName()).log(Level.SEVERE, null, e);
+			}
+		}
+	}
+	
+	private String hashString(String l) {
+		return(DigestUtils.sha1Hex(l));
+	}
+	
+	public void setXlsx(String xlsxName) {
+		xlsxFile = new File(xlsxName);
+	}
+	
+	public void setCsv(String csvName) {
+		csvFile = new File(csvName);
+	}
+	
+	public void setCsvHash(String csvHashName) {
+		csvHashFile = new File(csvHashName);
+	}
+	
+	public void setDelimeter(String delimeter) {
+		this.delimeter = delimeter;
+	}
+	
+	public String getDelimeter() {
+		return this.delimeter;
 	}
 }

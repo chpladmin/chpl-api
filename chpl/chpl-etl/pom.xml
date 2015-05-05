@@ -164,6 +164,11 @@
 			<artifactId>jets3t</artifactId>
 			<version>0.9.0</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
