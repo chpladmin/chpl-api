@@ -22,7 +22,7 @@ public class EtlGraphTest {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		graph.setGraph("/chpl.grf");		
+		graph.setGraph("/vendor-product.grf");
 	}
 	
 	@Test

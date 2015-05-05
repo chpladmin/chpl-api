@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.concurrent.Future;
 
-import org.jetel.graph.Node;
 import org.jetel.graph.Result;
 import org.jetel.graph.TransformationGraph;
 import org.jetel.graph.TransformationGraphXMLReaderWriter;
@@ -14,9 +13,6 @@ import org.jetel.graph.runtime.GraphRuntimeContext;
 import org.jetel.main.runGraph;
 
 public class EtlGraph {
-
-	private final String IN_NODE_ID = "READ_IN_CSV";
-	private final String IN_FILE_URL_KEY = "fileURL";
 
 	private FileInputStream graphResource;
 	private GraphRuntimeContext runtimeContext;
@@ -64,7 +60,7 @@ public class EtlGraph {
 		try {
 			result = runGraph.executeGraph(this.graph, this.runtimeContext);
 			if (!result.get().equals(Result.FINISHED_OK)) {
-				System.out.println("Failed graph execution!\n");
+				Logger.getLogger(EtlGraph.class.getName()).log(Level.SEVERE, "Failed graph execution!\n");
 				return false;
 			}
 		} catch (Exception e) {
