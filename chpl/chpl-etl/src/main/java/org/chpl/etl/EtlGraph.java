@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jetel.graph.Result;
 import org.jetel.graph.TransformationGraph;
@@ -31,9 +33,9 @@ public class EtlGraph {
 		try {
 			this.graphResource = new FileInputStream(App.class.getResource(graphResource).toURI().getPath());
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			Logger.getLogger(EtlGraph.class.getName()).log(Level.SEVERE, null, e);
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			Logger.getLogger(EtlGraph.class.getName()).log(Level.SEVERE, null, e);
 		}
 		//prepare runtime parameters - JMX is turned off
 		runtimeContext = new GraphRuntimeContext();
@@ -46,7 +48,7 @@ public class EtlGraph {
 		try {
 			graph = graphReader.read(this.graphResource);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.getLogger(EtlGraph.class.getName()).log(Level.SEVERE, null, e);
 			return;
 		}
 	}
@@ -64,27 +66,9 @@ public class EtlGraph {
 				return false;
 			}
 		} catch (Exception e) {
-			System.out.println("Failed graph execution!\n" + e.getMessage());
+			Logger.getLogger(EtlGraph.class.getName()).log(Level.SEVERE, null, e);
 			return false;
 		}
 		return true;
-	}
-
-	public String getInputFile() {
-		String retval = "";
-		for (Node n : graph.getNodes().values()) {
-			if (n.getId().equalsIgnoreCase(IN_NODE_ID)) {
-				retval = n.getAttributes().getProperty(IN_FILE_URL_KEY);
-			}
-		}
-		return retval;
-	}
-
-	public void setInputFile(String newInput) {
-		for (Node n : graph.getNodes().values()) {
-			if (n.getId().equalsIgnoreCase(IN_NODE_ID)) {
-				n.getAttributes().setProperty(IN_FILE_URL_KEY, newInput);
-			}
-		}
 	}
 }

@@ -1,11 +1,11 @@
 package org.chpl.etl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -20,7 +20,7 @@ public class EtlGraphTest {
 		try {
 			graph = new EtlGraph();
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			Logger.getLogger(EtlGraphTest.class.getName()).log(Level.SEVERE, null, e);
 		}
 		graph.setGraph("/vendor-product.grf");
 	}
@@ -34,14 +34,6 @@ public class EtlGraphTest {
 	@Ignore
 	public void shallExecuteGraph() {
 		assertTrue(graph.execute());
-	}
-	
-	@Test
-	public void shallSetInputFile() {
-		String newFile = "c:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/CHPL_pipe.csv";
-		assertNotEquals(newFile, graph.getInputFile());
-		graph.setInputFile(newFile);
-		assertEquals(newFile, graph.getInputFile());
 	}
 	
 	@Test (expected = NullPointerException.class)
