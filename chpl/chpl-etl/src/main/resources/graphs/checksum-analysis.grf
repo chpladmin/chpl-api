@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 06 11:54:51 EDT 2015" modifiedBy="alarned" name="ChecksumAnalysis" revision="1.211" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 06 14:26:28 EDT 2015" modifiedBy="alarned" name="ChecksumAnalysis" revision="1.217" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata1">
 <Record fieldDelimiter="^" name="CHPL_All_Data" recordDelimiter="\r\n" type="delimited">
@@ -554,7 +554,7 @@
 <Dictionary/>
 </Global>
 <Phase number="0">
-<Node enabled="enabled" guiName="ExtHashJoin" guiX="245" guiY="20" id="EXT_HASH_JOIN" joinKey="$STG_Certification_Certification_ID=$STG_Certification_ID" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Add DB Checksum" guiX="245" guiY="20" id="ADD_DB_CHECKSUM" joinKey="$STG_Certification_Certification_ID=$STG_Certification_ID" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -826,23 +826,24 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get Product Checksum" guiX="20" guiY="244" id="GET_PRODUCT_CHECKSUM" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get Product Checksum" guiX="20" guiY="169" id="GET_PRODUCT_CHECKSUM" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT 
 	$Stored_Checksum:=certified_product_checksum.certified_product_checksum,
 	$STG_Certification_ID:=certified_product_checksum.stg_certification_certification_id
 FROM certified_product_checksum]]></attr>
 </Node>
-<Node enabled="enabled" fileURL="./src/main/resources/log_checksum-analysis.txt" guiName="Log failed rows" guiX="245" guiY="132" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
+<Node enabled="enabled" fileURL="./src/main/resources/log_checksum-analysis.txt" guiName="Log failed rows" guiX="245" guiY="143" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
+<Node enabled="enabled" fileURL="./src/main/resources/log_unchanged-rows.csv" guiName="Log unchanged products" guiX="920" guiY="132" id="LOG_UNCHANGED_PRODUCTS" outputFieldNames="true" type="DATA_WRITER"/>
 <Node enabled="enabled" guiName="Modified" guiX="695" guiY="244" id="MODIFIED" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.Checksum != $in.0.Stored_Checksum AND $in.0.Stored_Checksum != null]]></attr>
 </Node>
-<Node enabled="enabled" guiName="New Product" guiX="653" guiY="13" id="NEW_PRODUCT" type="EXT_FILTER">
+<Node enabled="enabled" guiName="New Product" guiX="695" guiY="20" id="NEW_PRODUCT" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.Stored_Checksum == null]]></attr>
 </Node>
 <Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl-wChecksum.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" skipRows="3" type="DATA_READER"/>
-<Node enabled="enabled" guiName="Reformat" guiX="822" guiY="6" id="REFORMAT" type="REFORMAT">
+<Node enabled="enabled" guiName="Remove DB checksum" guiX="920" guiY="20" id="REMOVE_DB_CHECKSUM" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -1131,7 +1132,7 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Reformat" guiX="882" guiY="275" id="REFORMAT1" type="REFORMAT">
+<Node enabled="enabled" guiName="Remove DB checksum" guiX="920" guiY="244" id="REMOVE_DB_CHECKSUM1" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -1420,25 +1421,24 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
+<Node enabled="enabled" fileURL="./src/main/resources/chpl_to-insert.csv" guiName="Save to-insert products" guiX="1145" guiY="20" id="SAVE_TO_INSERT_PRODUCTS" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
+<Node enabled="enabled" fileURL="./src/main/resources/chpl_to-update.csv" guiName="Save to-update products" guiX="1145" guiY="244" id="SAVE_TO_UPDATE_PRODUCTS" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
 <Node enabled="enabled" guiName="SimpleCopy" guiX="470" guiY="20" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
 <Node enabled="enabled" guiName="Unchanged" guiX="695" guiY="132" id="UNCHANGED" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.Checksum == $in.0.Stored_Checksum]]></attr>
 </Node>
-<Node enabled="enabled" fileURL="./src/main/resources/chpl_to-insert.csv" guiName="UniversalDataWriter" guiX="1009" guiY="13" id="UNIVERSAL_DATA_WRITER" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
-<Node enabled="enabled" fileURL="./src/main/resources/chpl_to-update.csv" guiName="UniversalDataWriter" guiX="1082" guiY="231" id="UNIVERSAL_DATA_WRITER1" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
-<Node enabled="enabled" fileURL="./src/main/resources/log_unchanged-rows.csv" guiName="UniversalDataWriter" guiX="1009" guiY="145" id="UNIVERSAL_DATA_WRITER2" outputFieldNames="true" type="DATA_WRITER"/>
-<Edge debugMode="false" fromNode="EXT_HASH_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="SIMPLE_COPY:0"/>
-<Edge fromNode="GET_PRODUCT_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Metadata0" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:1"/>
-<Edge debugMode="false" fromNode="MODIFIED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="REFORMAT1:0"/>
-<Edge debugMode="false" fromNode="NEW_PRODUCT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="REFORMAT:0"/>
-<Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="Metadata3" outPort="Port 0 (output)" toNode="EXT_HASH_JOIN:0"/>
+<Edge debugMode="false" fromNode="ADD_DB_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="SIMPLE_COPY:0"/>
+<Edge debugMode="false" fromNode="GET_PRODUCT_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Metadata0" outPort="Port 0 (out)" toNode="ADD_DB_CHECKSUM:1"/>
+<Edge debugMode="false" fromNode="MODIFIED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="REMOVE_DB_CHECKSUM1:0"/>
+<Edge debugMode="false" fromNode="NEW_PRODUCT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="REMOVE_DB_CHECKSUM:0"/>
+<Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="Metadata3" outPort="Port 0 (output)" toNode="ADD_DB_CHECKSUM:0"/>
 <Edge debugMode="false" fromNode="READ_IN_CSV:1" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="LOG_FAILED_ROWS:0"/>
-<Edge debugMode="false" fromNode="REFORMAT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (out)" toNode="UNIVERSAL_DATA_WRITER:0"/>
-<Edge fromNode="REFORMAT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (out)" toNode="UNIVERSAL_DATA_WRITER1:0"/>
-<Edge debugMode="true" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata1" toNode="NEW_PRODUCT:0"/>
+<Edge debugMode="false" fromNode="REMOVE_DB_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (out)" toNode="SAVE_TO_INSERT_PRODUCTS:0"/>
+<Edge fromNode="REMOVE_DB_CHECKSUM1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (out)" toNode="SAVE_TO_UPDATE_PRODUCTS:0"/>
+<Edge debugMode="false" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata1" toNode="NEW_PRODUCT:0"/>
 <Edge fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (in)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata1" toNode="UNCHANGED:0"/>
 <Edge fromNode="SIMPLE_COPY:2" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 0 (in)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata1" toNode="MODIFIED:0"/>
-<Edge debugMode="false" fromNode="UNCHANGED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="UNIVERSAL_DATA_WRITER2:0"/>
+<Edge debugMode="false" fromNode="UNCHANGED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="LOG_UNCHANGED_PRODUCTS:0"/>
 </Phase>
 </Graph>

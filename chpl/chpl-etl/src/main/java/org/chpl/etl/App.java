@@ -16,9 +16,14 @@ public class App
 	private static final String csvChecksummedFileName = "./src/main/resources/chpl-wChecksum.csv";
 
 	public static void main( String[] args ) {
-		String xlsxFileName = "./src/main/resources/chpl-small.xlsx";
-
-		ExcelConverter excelConverter = new ExcelConverter(xlsxFileName,csvRawFileName);
+		String fileBase = "./src/main/resources/chpl-small-";
+		for (int i = 0; i < 6; i++) {
+			parseFile(fileBase + i + ".xlsx");
+		}
+	}
+	
+	public static void parseFile(String filename) {
+		ExcelConverter excelConverter = new ExcelConverter(filename,csvRawFileName);
 		excelConverter.convert();
 		excelConverter.setCsvHash(csvChecksummedFileName);
 		excelConverter.calculateHash();
@@ -35,6 +40,6 @@ public class App
 		etlGraph.setGraph("/graphs/create_vendor-product.grf");
         etlGraph.execute();
 		etlGraph.setGraph("/graphs/create_certified-product.grf");
-        etlGraph.execute();
+        etlGraph.execute();		
 	}
 }

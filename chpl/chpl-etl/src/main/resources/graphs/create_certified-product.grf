@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 06 11:39:16 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.205" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 06 14:24:14 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.207" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata6" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="^" name="CHPL_Full_Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
@@ -564,7 +564,7 @@
 <Dictionary/>
 </Global>
 <Phase number="0">
-<Node enabled="enabled" guiName="ExtHashJoin" guiX="470" guiY="20" id="EXT_HASH_JOIN" joinKey="$Certification_Edition_Year=$Certification_Edition_Year#$Certifying_ATCB=$Certifying_ATCB#$Product=$Product;$Vendor=$Vendor;$Version=$Version" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="ExtHashJoin" guiX="267" guiY="20" id="EXT_HASH_JOIN" joinKey="$Certification_Edition_Year=$Certification_Edition_Year#$Certifying_ATCB=$Certifying_ATCB#$Product=$Product;$Vendor=$Vendor;$Version=$Version" joinType="inner" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -838,21 +838,21 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get cert_body_id" guiX="20" guiY="356" id="GET_CERT_BODY_ID" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get cert_body_id" guiX="20" guiY="224" id="GET_CERT_BODY_ID" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT 
   $Certbody_id:=certification_body.certification_body_id,
   $Certifying_ATCB:=certification_body.certification_body
 FROM 
   public.certification_body;]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get edition_id" guiX="20" guiY="244" id="GET_EDITION_ID" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get edition_id" guiX="20" guiY="132" id="GET_EDITION_ID" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT 
   $Edition_id:=certification_edition.certification_edition_id,
   $Certification_Edition_Year:=certification_edition.certification_edition
 FROM 
   public.certification_edition;]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_id" guiX="20" guiY="468" id="GET_PRODUCT_VERSION_ID" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_id" guiX="20" guiY="314" id="GET_PRODUCT_VERSION_ID" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT 
   $Version_id:=product_version.product_version_id,
   $Product:=product.name,
@@ -866,9 +866,9 @@ WHERE
   product.vendor_id = vendor.vendor_id AND
   product_version.product_id = product.product_id;]]></attr>
 </Node>
-<Node enabled="enabled" fileURL="./src/main/resources/log-create_certified-product.txt" guiName="Log failed rows" guiX="245" guiY="132" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
+<Node enabled="enabled" fileURL="./src/main/resources/log-create_certified-product.txt" guiName="Log failed rows" guiX="267" guiY="158" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
 <Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl_to-insert.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" skipRows="0" type="DATA_READER"/>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save Certifed Product" guiX="819" guiY="20" id="SAVE_CERTIFED_PRODUCT" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save Certifed Product" guiX="695" guiY="20" id="SAVE_CERTIFED_PRODUCT" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE public.certified_product IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO public.certified_product (certification_edition_id, product_version_id, certification_body_id)
@@ -881,7 +881,7 @@ INSERT INTO public.certified_product (certification_edition_id, product_version_
        );
 COMMIT;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="SimpleCopy" guiX="615" guiY="155" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
+<Node enabled="enabled" guiName="SimpleCopy" guiX="470" guiY="20" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
 <Edge debugMode="true" fromNode="EXT_HASH_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 0 (out)" toNode="SIMPLE_COPY:0"/>
 <Edge fromNode="GET_CERT_BODY_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 2 (slave)" metadata="Metadata4" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:2"/>
 <Edge fromNode="GET_EDITION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Metadata4" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:1"/>
@@ -892,7 +892,7 @@ COMMIT;]]></attr>
 <Edge fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (driver)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata6" toNode="EXT_HASH_JOIN1:0"/>
 </Phase>
 <Phase number="1">
-<Node dbConnection="JDBC0" enabled="enabled" guiName="DBOutputTable" guiX="1044" guiY="224" id="DBOUTPUT_TABLE" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="DBOutputTable" guiX="920" guiY="132" id="DBOUTPUT_TABLE" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE certification_result IN SHARE ROW EXCLUSIVE MODE;
 
@@ -4126,7 +4126,7 @@ INSERT INTO certification_result (certification_criterion_id, certified_product_
 COMMIT;
 ]]></attr>
 </Node>
-<Node enabled="enabled" guiName="ExtHashJoin" guiX="813" guiY="256" id="EXT_HASH_JOIN1" joinKey="$Edition_id=$Edition_id;$Version_id=$Version_id;$Certbody_id=$Certbody_id" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="ExtHashJoin" guiX="695" guiY="132" id="EXT_HASH_JOIN1" joinKey="$Edition_id=$Edition_id;$Version_id=$Version_id;$Certbody_id=$Certbody_id" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -4401,7 +4401,7 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_id" guiX="597" guiY="371" id="GET_PRODUCT_VERSION_ID1" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_id" guiX="454" guiY="158" id="GET_PRODUCT_VERSION_ID1" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[select $CertifiedProduct_id:=certified_product.certified_product_id,
 $Edition_id:=certified_product.certification_edition_id,
 $Version_id:=certified_product.product_version_id,
