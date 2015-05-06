@@ -217,3 +217,12 @@ pip-log.txt
 /chpl/chpl-etl/src/main/resources/log.txt
 /chpl/chpl-etl/src/main/resources/chpl.csv
 /chpl/chpl-etl/src/main/resources/chpl-hash.csv
+/chpl/chpl-etl/src/main/resources/chpl-raw.csv
+/chpl/chpl-etl/src/main/resources/chpl-small.xlsx
+/chpl/chpl-etl/src/main/resources/chpl-wChecksum.csv
+/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv
+/chpl/chpl-etl/src/main/resources/chpl_to-update.csv
+/chpl/chpl-etl/src/main/resources/log-create_certified-product.txt
+/chpl/chpl-etl/src/main/resources/log_checksum-analysis.txt
+/chpl/chpl-etl/src/main/resources/log_create_vendor-product.txt
+/chpl/chpl-etl/src/main/resources/log_unchanged-rows.csv

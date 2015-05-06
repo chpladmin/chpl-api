@@ -12,15 +12,15 @@ import java.util.logging.Logger;
 public class App 
 {
 
-	private static final String csvFileName = "./src/main/resources/chpl.csv";
-	private static final String csvHashedFileName = "./src/main/resources/chpl-hash.csv";
+	private static final String csvRawFileName = "./src/main/resources/chpl-raw.csv";
+	private static final String csvChecksummedFileName = "./src/main/resources/chpl-wChecksum.csv";
 
 	public static void main( String[] args ) {
-		String xlsxFileName = "./src/main/resources/chpl-large.xlsx";
+		String xlsxFileName = "./src/main/resources/chpl-small.xlsx";
 
-		ExcelConverter excelConverter = new ExcelConverter(xlsxFileName,csvFileName);
+		ExcelConverter excelConverter = new ExcelConverter(xlsxFileName,csvRawFileName);
 		excelConverter.convert();
-		excelConverter.setCsvHash(csvHashedFileName);
+		excelConverter.setCsvHash(csvChecksummedFileName);
 		excelConverter.calculateHash();
 
 		EtlGraph etlGraph = null;
@@ -30,7 +30,11 @@ public class App
 			Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
 		}
 		
-//		etlGraph.setGraph("/vendor-product.grf");
-//        etlGraph.execute();
+		etlGraph.setGraph("/graphs/checksum-analysis.grf");
+        etlGraph.execute();
+		etlGraph.setGraph("/graphs/create_vendor-product.grf");
+        etlGraph.execute();
+		etlGraph.setGraph("/graphs/create_certified-product.grf");
+        etlGraph.execute();
 	}
 }

@@ -26,7 +26,7 @@ public class ExcelConverter {
 	private File xlsxFile;
 	private File csvFile;
 	private File csvHashFile;
-	private String delimeter = "^";
+	private String delimiter = "^";
 
 	public ExcelConverter() {
 	}
@@ -66,7 +66,7 @@ public class ExcelConverter {
 			while (line != null) {
 				hash = hashString(line);
 				bOut.write(line);
-				bOut.write(delimeter);;
+				bOut.write(delimiter);;
 				bOut.write(hash);
 				bOut.newLine();
 				line = bIn.readLine();
@@ -102,10 +102,10 @@ public class ExcelConverter {
 	}
 	
 	public void setDelimeter(String delimeter) {
-		this.delimeter = delimeter;
+		this.delimiter = delimeter;
 	}
 	
 	public String getDelimeter() {
-		return this.delimeter;
+		return this.delimiter;
 	}
 }
