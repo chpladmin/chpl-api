@@ -4,7 +4,6 @@ import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  * Hello world!
  *
@@ -16,10 +15,13 @@ public class App
 	private static final String csvChecksummedFileName = "./src/main/resources/chpl-wChecksum.csv";
 
 	public static void main( String[] args ) {
-		String fileBase = "./src/main/resources/chpl-small-";
-		for (int i = 0; i < 6; i++) {
-			parseFile(fileBase + i + ".xlsx");
-		}
+//		String fileBase = "./src/main/resources/chpl-small-";
+//		for (int i = 0; i < 12; i++) {
+//			parseFile(fileBase + i + ".xlsx");
+//		}
+		
+		String singleFile = "./src/main/resources/chpl-large.xlsx";
+		parseFile(singleFile);
 	}
 	
 	public static void parseFile(String filename) {
