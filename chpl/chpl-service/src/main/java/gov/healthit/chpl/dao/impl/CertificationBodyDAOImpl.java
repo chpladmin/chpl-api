@@ -1,4 +1,7 @@
-package gov.healthit.chpl.acb;
+package gov.healthit.chpl.dao.impl;
+
+import gov.healthit.chpl.acb.CertificationBody;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +12,11 @@ import java.util.List;
 
 
 
+
+
+
+import javax.persistence.Query;
+
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
@@ -16,24 +24,30 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public class CertificationBodyDAOImpl implements CertificationBodyDAO {
+public class CertificationBodyDAOImpl extends BaseDAOImpl implements CertificationBodyDAO {
 	
 	
 	@Override
 	public void create(CertificationBody acb) {
-		/*getJdbcTemplate().update("insert into certification_body values (?, ?)",
-				new PreparedStatementSetter() {
-					public void setValues(PreparedStatement ps) throws SQLException {
-						ps.setLong(1, acb.getId());
-						ps.setString(2, acb.getName());
-					}
-				});
+		
+		entityManager.persist(acb);
+		
+		/*
+		Query query = entityManager.createNativeQuery("insert into certification_body values (:acbid, :acbname)");
+		query.setParameter("acbid", acb.getId());
+		query.setParameter("acbname", acb.getName());
+		query.executeUpdate();
 		*/
 	}
 	
 	
 	@Override
 	public void delete(Long acbId) {
+		
+		Query query = entityManager.createNativeQuery("delete FROM certification_body WHERE id = :acbid");
+		query.setParameter("acbid", acbId);
+		query.executeUpdate();
+		
 		/*
 		getJdbcTemplate().update("delete from certification_body where id = ?",
 				new PreparedStatementSetter() {
@@ -47,7 +61,14 @@ public class CertificationBodyDAOImpl implements CertificationBodyDAO {
 	
 	@Override
 	public List<CertificationBody> findAll() {
-		return null;
+		
+		entityManager.getTransaction().begin();
+		List<CertificationBody> result = entityManager.createQuery( "from CertificationBody", CertificationBody.class ).getResultList();
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		
+		return result;
+		
 		/*
 		return getJdbcTemplate().query(
 				"select id, name from contacts order by id",
