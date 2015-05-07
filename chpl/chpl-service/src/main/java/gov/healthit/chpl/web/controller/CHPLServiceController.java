@@ -31,10 +31,7 @@ public class CHPLServiceController {
 	@Autowired
 	private Bean bean;
 	
-	@Autowired
-	@Qualifier("acbManager")
-	private CertificationBodyManager acbManager;
-	
+	private CertificationBodyManager certificationBodyManager;
 	
 	@Autowired
 	private Authenticator authenticator;
@@ -57,7 +54,7 @@ public class CHPLServiceController {
 	@RequestMapping(value="/adminACB/{acbID}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String adminACB(@PathVariable String acbID) {
 		
-		List<CertificationBody> authorizedACBs = acbManager.getAll();
+		List<CertificationBody> authorizedACBs = certificationBodyManager.getAll();
 		
 		if (authorizedACBs.size() > 0){
 			return "{\"AdminsteringACB:\" : \""+acbID+"\"}";
@@ -99,7 +96,6 @@ public class CHPLServiceController {
 		}
 		return jwt;
 	}
-	
 	
 	@RequestMapping(value="/authenticate", method= RequestMethod.POST, 
 			headers = {"content-type=application/x-www-form-urlencoded"},

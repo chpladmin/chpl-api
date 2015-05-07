@@ -102,12 +102,10 @@
 		<constructor-arg ref="dataSource"/>
 		<constructor-arg ref="lookupStrategy"/>
 		<constructor-arg ref="aclCache"/>
-	</bean>
+	</bean>	
 	
-	<!--  
 	<bean id="certificationBodyManager" class="gov.healthit.chpl.acb.CertificationBodyManagerImpl">
 		<property name="mutableAclService" ref="mutableAclService" />
 	</bean>
-	-->
 	
 </beans>
