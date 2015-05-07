@@ -48,7 +48,7 @@ public class CertificationBodyDAOImpl implements CertificationBodyDAO {
 	@Override
 	public List<CertificationBody> findAll() {
 		return null;
-		/*
+		
 		return getJdbcTemplate().query(
 				"select id, name from contacts order by id",
 				new RowMapper<CertificationBody>() {
@@ -56,7 +56,7 @@ public class CertificationBodyDAOImpl implements CertificationBodyDAO {
 						return mapCertificationBody(rs);
 					}
 				});
-		*/
+		
 	}
 
 	@Override
