@@ -1,10 +1,25 @@
 package gov.healthit.chpl.acb;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name="certification_body")
 public class CertificationBody {
 	
-	Long id;
-	String name;
+	
+	@Id
+	@Column(name="id")
+	@GeneratedValue( strategy = GenerationType.IDENTITY )
+	private Long id;
+	
+	@Column(name="name")
+	private String name;
+	
 	
 	public Long getId() {
 		return id;

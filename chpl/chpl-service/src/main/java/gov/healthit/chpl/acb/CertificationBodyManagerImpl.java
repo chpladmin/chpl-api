@@ -1,5 +1,7 @@
 package gov.healthit.chpl.acb;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
