@@ -31,10 +31,12 @@ public class CHPLServiceController {
 	@Autowired
 	private Bean bean;
 	
+	//@Autowired
 	private CertificationBodyManager certificationBodyManager;
 	
 	@Autowired
 	private Authenticator authenticator;
+	
 	
 	@RequestMapping(value="/hello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String hello(@PathVariable String firstName, @PathVariable String lastName) {
@@ -62,6 +64,19 @@ public class CHPLServiceController {
 			return "{\"AdminsteringACB:\" : \"-1\"}";
 		}
 	}
+	
+	@RequestMapping(value="/createACB/{acbName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
+	public String createACB(@PathVariable String acbName) {
+		
+		CertificationBody acb = new CertificationBody();
+		acb.setName(acbName);
+		certificationBodyManager.create(acb);
+		
+		return acb.toString();
+		
+	}
+	
+	
 	
 	
 	@GlobalAdminOnly
@@ -121,6 +136,17 @@ public class CHPLServiceController {
 	
 	public void setBean(Bean bn){
 		this.bean = bn;
+	}
+
+
+	public CertificationBodyManager getCertificationBodyManager() {
+		return certificationBodyManager;
+	}
+
+
+	public void setCertificationBodyManager(
+			CertificationBodyManager certificationBodyManager) {
+		this.certificationBodyManager = certificationBodyManager;
 	}
 	
 }
