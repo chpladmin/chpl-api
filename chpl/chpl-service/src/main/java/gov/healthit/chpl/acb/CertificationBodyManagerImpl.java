@@ -29,7 +29,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	private MutableAclService mutableAclService;
 	
-	private static int counter = 1000;
 	
 	@Transactional
 	public void addPermission(CertificationBody acb, Sid recipient, Permission permission) {
@@ -57,13 +56,12 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Transactional
 	public void create(CertificationBody acb) {
 		// Create the ACB itself
-		acb.setId(new Long(counter++));
 		certificationBodyDAO.create(acb);
 
 		// Grant the current principal administrative permission to the ACB
 		addPermission(acb, new PrincipalSid(getUsername()),
 				BasePermission.ADMINISTRATION);
-
+		
 		if (logger.isDebugEnabled()) {
 			logger.debug("Created acb " + acb
 					+ " and granted admin permission to recipient " + getUsername());
@@ -77,7 +75,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		// Delete the ACL information as well
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, acb.getId());
 		mutableAclService.deleteAcl(oid, false);
-
+		
 		if (logger.isDebugEnabled()) {
 			logger.debug("Deleted acb " + acb + " including ACL permissions");
 		}

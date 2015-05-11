@@ -81,8 +81,17 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 
 	@Override
-	public CertificationBody getById(Long id) {
-		return null;	
+	public CertificationBody getById(Long acbId) {
+		
+		CertificationBody cb = null;
+		
+		Query query = entityManager.createQuery( "from CertificationBody where id = :acbid", CertificationBody.class );
+		query.setParameter("acbid", acbId);
+		List<CertificationBody> result = query.getResultList();
+		cb = result.get(0);
+		
+		return cb;
+		
 		/*
 		List<CertificationBody> list = getJdbcTemplate().query(
 				"select id, name from contacts where id = ? order by id",
@@ -104,6 +113,12 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Override
 	public void update(CertificationBody contact) {
 		
+		
+		Query query = entityManager.createNativeQuery("update certification_body set name = :name WHERE id = :acbid");
+		query.setParameter("acbid", contact.getId());
+		query.setParameter("name", contact.getName());
+		query.executeUpdate();
+		
 		/*
 		getJdbcTemplate().update(
 				"update contacts set name = ? where id = ?",
@@ -124,8 +139,5 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		return acb;
 		
 	}
-	
-	
-	
 	
 }
