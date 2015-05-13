@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -13,14 +14,16 @@ public class CertificationBody {
 	
 	
 	@Id
-	@Column(name="id")
-	@GeneratedValue( strategy = GenerationType.IDENTITY )
+	@Column(name="certification_body_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column(name="name")
 	private String name;
 	
-	
+	@Column(name="website")
+	private String website;
+
 	public Long getId() {
 		return id;
 	}
@@ -35,6 +38,14 @@ public class CertificationBody {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getWebsite() {
+		return website;
+	}
+
+	public void setWebsite(String website) {
+		this.website = website;
 	}
 
 }

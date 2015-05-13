@@ -103,7 +103,12 @@
 	<tx:annotation-driven transaction-manager="transactionManager"
 		proxy-target-class="true" />
 	
-	  
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+                <property name="persistenceUnitName" value="chpl_acl" />
+    </bean>
+	
+	
+	 <!--  
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="persistenceXmlLocation" value="classpath*:META-INF/persistence.xml"></property>
         <property name="persistenceUnitName" value="chpl_acl" />
@@ -114,7 +119,7 @@
             </bean>
         </property>
     </bean>
-	
+	-->
 	
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
