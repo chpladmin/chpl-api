@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 13 09:02:04 EDT 2015" modifiedBy="alarned" name="CreateVendorProduct" revision="1.139" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 13 11:34:30 EDT 2015" modifiedBy="alarned" name="CreateVendorProduct" revision="1.144" showComponentDetails="true">
 <Global>
+<Metadata id="Metadata0" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_Practice_Type" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="Practice_Setting" type="string"/>
+<Field name="Practice_Type_Id" type="long"/>
+</Record>
+</Metadata>
 <Metadata id="Metadata2" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CHPL_Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field label="Product" name="Product" type="string"/>
 <Field label="Vendor" name="Vendor" type="string"/>
 <Field name="Vendor_id" type="long"/>
+<Field name="Practice_Setting" type="string"/>
+<Field name="Practice_Type_Id" type="long"/>
+<Field name="Product_Classification" type="string"/>
+<Field name="Product_Classification_Id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata3">
+<Record fieldDelimiter="|" name="CHPL_Product_Classification" recordDelimiter="\r\n" type="delimited">
+<Field name="Product_Classification_Type_Id" type="long"/>
+<Field name="Product_Classification_Name" type="string"/>
 </Record>
 </Metadata>
 <Metadata id="Metadata4" previewAttachmentCharset="ISO-8859-1">
@@ -13,6 +29,10 @@
 <Field label="Product" name="Version" type="string"/>
 <Field label="Vendor" name="Product" type="string"/>
 <Field name="Product_id" type="long"/>
+<Field name="Practice_Setting" type="string"/>
+<Field name="Practice_Type_Id" type="long"/>
+<Field name="Product_Classification" type="string"/>
+<Field name="Product_Classification_Id" type="long"/>
 </Record>
 </Metadata>
 <Metadata id="Metadata5" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1">
@@ -303,15 +323,25 @@
 </Record>
 </Metadata>
 </MetadataGroup>
-<Connection database="POSTGRE" dbURL="jdbc:postgresql://localhost/chpl" id="JDBC0" jdbcSpecific="POSTGRE" name="PostgreSQL" password="${chpl_password}" type="JDBC" user="chpl"/>
+<Connection database="POSTGRE" dbURL="${openchpl_db_url}" id="JDBC0" jdbcSpecific="POSTGRE" name="PostgreSQL" password="${openchpl_password}" type="JDBC" user="openchpl"/>
 <GraphParameters>
 <GraphParameterFile fileURL="parameters.prm"/>
 </GraphParameters>
 <Dictionary/>
 </Global>
 <Phase number="0">
-<Node dedupKey="Product(a);Version(a)" enabled="enabled" guiName="Dedup" guiX="699" guiY="387" id="DEDUP" type="DEDUP"/>
-<Node enabled="enabled" guiName="ExtSort" guiX="470" guiY="387" id="EXT_SORT" sortKey="Product(a);Version(a)" type="EXT_SORT"/>
+<Node dedupKey="Product(a);Version(a);Practice_Setting(a);Product_Classification(a)" enabled="enabled" guiName="Dedup" guiX="699" guiY="506" id="DEDUP" type="DEDUP"/>
+<Node enabled="enabled" guiName="ExtSort" guiX="470" guiY="506" id="EXT_SORT" sortKey="Product(a);Version(a);Practice_Setting(a);Product_Classification(a)" type="EXT_SORT"/>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get practice types" guiX="494" guiY="330" id="GET_PRACTICE_TYPES" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT $Practice_Type_Id:=openchpl.practice_type.practice_type_id,
+	$Practice_Setting:=openchpl.practice_type.name
+FROM openchpl.practice_type]]></attr>
+</Node>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product classifications" guiX="485" guiY="417" id="GET_PRODUCT_CLASSIFICATIONS" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT $Product_Classification_Type_Id:=openchpl.product_classification_type.product_classification_type_id,
+	$Product_Classification_Name:=openchpl.product_classification_type.name
+FROM openchpl.product_classification_type]]></attr>
+</Node>
 <Node enabled="enabled" fileURL="./src/main/resources/log_create_vendor-product.txt" guiName="Log failed rows" guiX="245" guiY="159" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
 <Node enabled="enabled" guiName="Pare down to useful data" guiX="245" guiY="20" id="PARE_DOWN_TO_USEFUL_DATA" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
@@ -323,6 +353,10 @@ function integer transform() {
 	$out.1.Vendor = $in.0.Vendor;
 	$out.2.Version = $in.0.Version;
 	$out.2.Product = $in.0.Product;
+	$out.1.Practice_Setting = $in.0.Practice_Setting;
+	$out.1.Product_Classification = $in.0.Product_Classification;
+	$out.2.Practice_Setting = $in.0.Practice_Setting;
+	$out.2.Product_Classification = $in.0.Product_Classification;
 
 	return ALL;
 }
@@ -351,18 +385,22 @@ function integer transform() {
 <Node dedupKey="Product(a);Vendor(a)" enabled="enabled" guiName="Remove duplicates" guiX="695" guiY="132" id="REMOVE_DUPLICATES1" type="DEDUP"/>
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Vendors" guiX="920" guiY="20" id="SAVE_NEW_VENDORS" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
-LOCK TABLE public.vendor IN SHARE ROW EXCLUSIVE MODE;
-INSERT INTO public.vendor (website)
-	SELECT $Vendor
+LOCK TABLE openchpl.vendor IN SHARE ROW EXCLUSIVE MODE;
+INSERT INTO openchpl.vendor (name, last_modified_user)
+	SELECT $Vendor, -1
 	WHERE NOT EXISTS (
-		SELECT 1 FROM public.vendor WHERE website = $Vendor
+		SELECT 1 FROM openchpl.vendor WHERE name = $Vendor
 	);
 COMMIT;]]></attr>
 </Node>
+<Node enabled="enabled" guiName="SimpleCopy" guiX="710" guiY="328" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
+<Node enabled="enabled" guiName="SimpleCopy" guiX="710" guiY="417" id="SIMPLE_COPY1" type="SIMPLE_COPY"/>
 <Node enabled="enabled" guiName="Sort" guiX="470" guiY="20" id="SORT" sortKey="Vendor(a)" type="EXT_SORT"/>
 <Node enabled="enabled" guiName="Sort" guiX="470" guiY="132" id="SORT1" sortKey="Product(a);Vendor(a)" type="EXT_SORT"/>
 <Edge fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata4" toNode="JOIN_PRODUCT_X_PRODUCT_VERSION:0"/>
 <Edge fromNode="EXT_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata4" toNode="DEDUP:0"/>
+<Edge fromNode="GET_PRACTICE_TYPES:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (out)" toNode="SIMPLE_COPY:0"/>
+<Edge fromNode="GET_PRODUCT_CLASSIFICATIONS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (out)" toNode="SIMPLE_COPY1:0"/>
 <Edge debugMode="false" fromNode="PARE_DOWN_TO_USEFUL_DATA:0" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="SORT:0"/>
 <Edge fromNode="PARE_DOWN_TO_USEFUL_DATA:1" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 1 (out)" toNode="SORT1:0"/>
 <Edge fromNode="PARE_DOWN_TO_USEFUL_DATA:2" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata4" outPort="Port 2 (out)" toNode="EXT_SORT:0"/>
@@ -370,16 +408,20 @@ COMMIT;]]></attr>
 <Edge debugMode="true" fromNode="READ_IN_CSV:1" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="LOG_FAILED_ROWS:0"/>
 <Edge debugMode="false" fromNode="REMOVE_DUPLICATES:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata1" toNode="SAVE_NEW_VENDORS:0"/>
 <Edge debugMode="false" fromNode="REMOVE_DUPLICATES1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata2" toNode="JOIN_PRODUCT_X_VENDOR:0"/>
+<Edge debugMode="false" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 2 (slave)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="JOIN_PRODUCT_X_VENDOR:2"/>
+<Edge fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge19" inPort="Port 2 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata0" toNode="JOIN_PRODUCT_X_PRODUCT_VERSION:2"/>
+<Edge debugMode="false" fromNode="SIMPLE_COPY1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge18" inPort="Port 3 (slave)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata3" toNode="JOIN_PRODUCT_X_VENDOR:3"/>
+<Edge fromNode="SIMPLE_COPY1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 3 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata3" toNode="JOIN_PRODUCT_X_PRODUCT_VERSION:3"/>
 <Edge debugMode="false" fromNode="SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="REMOVE_DUPLICATES:0"/>
 <Edge debugMode="false" fromNode="SORT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata2" toNode="REMOVE_DUPLICATES1:0"/>
 </Phase>
 <Phase number="1">
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing Vendors" guiX="690" guiY="244" id="GET_EXISTING_VENDORS" type="DB_INPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[SELECT $Vendor_id:=public.vendor.vendor_id,
-	   $Vendor:=public.vendor.website 
-FROM public.vendor;]]></attr>
+<attr name="sqlQuery"><![CDATA[SELECT $Vendor_id:=openchpl.vendor.vendor_id,
+	   $Vendor:=openchpl.vendor.name 
+FROM openchpl.vendor;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join Product x Vendor" guiX="920" guiY="132" id="JOIN_PRODUCT_X_VENDOR" joinKey="$Vendor=$Vendor" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join Product x Vendor" guiX="920" guiY="132" id="JOIN_PRODUCT_X_VENDOR" joinKey="$Vendor=$Vendor#$Practice_Setting=$Practice_Setting#$Product_Classification=$Product_Classification_Name" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -387,6 +429,8 @@ function integer transform() {
 	$out.0.Product = $in.0.Product;
 	$out.0.Vendor = $in.0.Vendor;
 	$out.0.Vendor_id = $in.1.Vendor_id;
+	$out.0.Practice_Type_Id = $in.2.Practice_Type_Id;
+	$out.0.Product_Classification_Id = $in.3.Product_Classification_Type_Id;
 
 	return ALL;
 }
@@ -412,12 +456,15 @@ function integer transform() {
 </Node>
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Products" guiX="1145" guiY="132" id="SAVE_NEW_PRODUCTS" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
-LOCK TABLE public.product IN SHARE ROW EXCLUSIVE MODE;
-INSERT INTO public.product (name, vendor_id)
-       SELECT $Product, $Vendor_id
+LOCK TABLE openchpl.product IN SHARE ROW EXCLUSIVE MODE;
+INSERT INTO openchpl.product 
+	(vendor_id, practice_type_id, product_classification_type_id, name, last_modified_user)
+       SELECT $Vendor_id, $Practice_Type_Id, $Product_Classification_Id, $Product, -1
        WHERE NOT EXISTS (
-             SELECT 1 FROM public.product WHERE
+             SELECT 1 FROM openchpl.product WHERE
                     name = $Product AND
+					practice_type_id = $Practice_Type_Id AND
+					product_classification_type_id = $Product_Classification_Id AND
                     vendor_id = $Vendor_id
        );
 COMMIT;]]></attr>
@@ -426,12 +473,12 @@ COMMIT;]]></attr>
 <Edge debugMode="false" fromNode="JOIN_PRODUCT_X_VENDOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="SAVE_NEW_PRODUCTS:0"/>
 </Phase>
 <Phase number="2">
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing products" guiX="699" guiY="504" id="GET_EXISTING_PRODUCTS" type="DB_INPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[SELECT $ProductId:=public.product.product_id,
-	   $ProductName:=public.product.name 
-FROM public.product;]]></attr>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing products" guiX="699" guiY="623" id="GET_EXISTING_PRODUCTS" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT $ProductId:=openchpl.product.product_id,
+	   $ProductName:=openchpl.product.name 
+FROM openchpl.product;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join Product x Product_Version" guiX="920" guiY="387" id="JOIN_PRODUCT_X_PRODUCT_VERSION" joinKey="$Product=$ProductName" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join Product x Product_Version" guiX="920" guiY="506" id="JOIN_PRODUCT_X_PRODUCT_VERSION" joinKey="$Product=$ProductName#$Practice_Setting=$Practice_Setting#$Product_Classification=$Product_Classification_Name" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -462,14 +509,14 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Product_Versions" guiX="1145" guiY="387" id="SAVE_NEW_PRODUCT_VERSIONS" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Product_Versions" guiX="1145" guiY="506" id="SAVE_NEW_PRODUCT_VERSIONS" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
-LOCK TABLE public.product_version IN SHARE ROW EXCLUSIVE MODE;
-INSERT INTO public.product_version (product_version, product_id)
-       SELECT $Version, $Product_id
+LOCK TABLE openchpl.product_version IN SHARE ROW EXCLUSIVE MODE;
+INSERT INTO openchpl.product_version (version, product_id, last_modified_user)
+       SELECT $Version, $Product_id, -1
        WHERE NOT EXISTS (
-             SELECT 1 FROM public.product_version WHERE
-                    product_version = $Version AND
+             SELECT 1 FROM openchpl.product_version WHERE
+                    version = $Version AND
                     product_id = $Product_id
        );
 COMMIT;]]></attr>
