@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 06 14:25:02 EDT 2015" modifiedBy="alarned" name="CreateVendorProduct" revision="1.136" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 13 09:02:04 EDT 2015" modifiedBy="alarned" name="CreateVendorProduct" revision="1.139" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata2" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CHPL_Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
@@ -303,8 +303,10 @@
 </Record>
 </Metadata>
 </MetadataGroup>
-<Connection database="POSTGRE" dbURL="jdbc:postgresql://localhost/chpl" id="JDBC0" jdbcSpecific="POSTGRE" name="PostgreSQL" password="chpl" type="JDBC" user="chpl"/>
-<GraphParameters/>
+<Connection database="POSTGRE" dbURL="jdbc:postgresql://localhost/chpl" id="JDBC0" jdbcSpecific="POSTGRE" name="PostgreSQL" password="${chpl_password}" type="JDBC" user="chpl"/>
+<GraphParameters>
+<GraphParameterFile fileURL="parameters.prm"/>
+</GraphParameters>
 <Dictionary/>
 </Global>
 <Phase number="0">

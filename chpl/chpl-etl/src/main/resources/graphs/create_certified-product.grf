@@ -559,8 +559,10 @@
 </Record>
 </Metadata>
 </MetadataGroup>
-<Connection database="POSTGRE" dbURL="jdbc:postgresql://localhost/chpl" id="JDBC0" jdbcSpecific="POSTGRE" name="PostgreSQL" password="chpl" type="JDBC" user="chpl"/>
-<GraphParameters/>
+<Connection database="POSTGRE" dbURL="jdbc:postgresql://localhost/chpl" id="JDBC0" jdbcSpecific="POSTGRE" name="PostgreSQL" password="${chpl_password}" type="JDBC" user="chpl"/>
+<GraphParameters>
+<GraphParameterFile fileURL="parameters.prm"/>
+</GraphParameters>
 <Dictionary/>
 </Global>
 <Phase number="0">
