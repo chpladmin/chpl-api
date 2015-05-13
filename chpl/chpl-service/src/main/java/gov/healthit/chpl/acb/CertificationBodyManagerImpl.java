@@ -122,8 +122,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasPermission(#id, 'gov.healthit.chpl.CertificationBody', read) or "
-			+ "hasPermission(#id, 'gov.healthit.chpl.CertificationBody', admin)")
+	@PreAuthorize("hasPermission(#id, 'gov.healthit.chpl.acb.CertificationBody', read) or "
+			+ "hasPermission(#id, 'gov.healthit.chpl.acb.CertificationBody', admin)")
 	public CertificationBody getById(Long id) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Returning acb with id: " + id);

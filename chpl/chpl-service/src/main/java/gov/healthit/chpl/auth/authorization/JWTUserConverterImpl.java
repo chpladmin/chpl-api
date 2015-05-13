@@ -53,6 +53,11 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			    List<String> values = (List<String>) claim.getValue();
 			    claims.addAll(values);
 			}
+			
+			for (String claimValue : claims){
+				user.addClaim(claimValue);
+			}
+			
 		}
 		return user;
 	}
