@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<beans xmlns="http://www.springframework.org/schema/beans" 
+<beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
     xmlns:context="http://www.springframework.org/schema/context"
     xmlns:mvc="http://www.springframework.org/schema/mvc"
-    xmlns:tx="http://www.springframework.org/schema/tx"  
+    xmlns:tx="http://www.springframework.org/schema/tx"
     xmlns:p="http://www.springframework.org/schema/p"
     xmlns:sec="http://www.springframework.org/schema/security"
     xsi:schemaLocation="
@@ -18,94 +18,6 @@
         http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
         http://www.springframework.org/schema/security
         http://www.springframework.org/schema/security/spring-security-4.0.xsd">
-        
-   <mvc:annotation-driven />
-   <context:annotation-config/>
-   <context:component-scan base-package="gov.healthit.chpl" />
-   <sec:global-method-security pre-post-annotations="enabled" />
    
-   <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
-   		<property name="proxyTargetClass" value="true"/>
-   </bean>
-   
-   <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-   		<property name="prefixJson" value="false"/>
-   		<property name="supportedMediaTypes" value="application/json"/>
-   </bean>
-   
-   
-   
-   <!-- be sure to include the JavaConfig bean post-processor-->
-   <bean class="org.springframework.config.java.process.ConfigurationPostProcessor"/>
-   
- 	<sec:http auto-config='true'>
-    	<sec:intercept-url pattern="/**" access="ROLE_USER"/>
-	</sec:http>
-	
-	
-	
-	
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="jdbc:postgresql://localhost:5432/chpl_acl"/>
-        <property name="username" value="postgres"/>
-        <property name="password" value="Audac1ous"/>
-    </bean>
-	
-	<bean id="aclCache" class="org.springframework.security.acls.domain.EhCacheBasedAclCache">
-		<constructor-arg>
-		  <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-			<property name="cacheManager">
-			  <bean class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"/>
-			</property>
-			<property name="cacheName" value="aclCache"/>
-		  </bean>
-		</constructor-arg>
-		<constructor-arg>
-			<bean class="org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy">
-				<constructor-arg>
-					<bean class="org.springframework.security.acls.domain.ConsoleAuditLogger"/>
-				</constructor-arg>
-			</bean>
-		</constructor-arg>
-		<constructor-arg>
-			<bean class="org.springframework.security.acls.domain.AclAuthorizationStrategyImpl">
-				<constructor-arg>
-					<list>
-						<bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
-							<constructor-arg value="ROLE_ACL_ADMIN"/>
-						</bean>
-					</list>
-				</constructor-arg>
-			</bean>
-		</constructor-arg>
-	</bean>
-
-	<bean id="lookupStrategy" class="org.springframework.security.acls.jdbc.BasicLookupStrategy">
-		<constructor-arg ref="dataSource"/>
-		<constructor-arg ref="aclCache"/>
-		<constructor-arg>
-			<bean class="org.springframework.security.acls.domain.AclAuthorizationStrategyImpl">
-				<constructor-arg>
-					<bean class="org.springframework.security.core.authority.SimpleGrantedAuthority">
-						<constructor-arg value="ROLE_ADMINISTRATOR"/>
-					</bean>
-				</constructor-arg>
-			</bean>
-		</constructor-arg>
-		<constructor-arg>
-		  <bean class="org.springframework.security.acls.domain.ConsoleAuditLogger"/>
-		</constructor-arg>
-	</bean>
-	
-	<bean id="mutableAclService" class="org.springframework.security.acls.jdbc.JdbcMutableAclService">
-		<constructor-arg ref="dataSource"/>
-		<constructor-arg ref="lookupStrategy"/>
-		<constructor-arg ref="aclCache"/>
-	</bean>	
-	
-	<bean id="certificationBodyManager" class="gov.healthit.chpl.acb.CertificationBodyManagerImpl">
-		<property name="mutableAclService" ref="mutableAclService" />
-	</bean>
-	
+ 
 </beans>

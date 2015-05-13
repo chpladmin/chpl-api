@@ -31,7 +31,7 @@ public class CHPLServiceController {
 	@Autowired
 	private Bean bean;
 	
-	//@Autowired
+	@Autowired
 	private CertificationBodyManager certificationBodyManager;
 	
 	@Autowired

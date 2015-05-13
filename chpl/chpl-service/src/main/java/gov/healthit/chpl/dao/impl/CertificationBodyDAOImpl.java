@@ -3,10 +3,10 @@ package gov.healthit.chpl.dao.impl;
 import gov.healthit.chpl.acb.CertificationBody;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
 
 
 
@@ -21,23 +21,18 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
-@Repository
+@Repository(value="certificationBodyDAO")
 public class CertificationBodyDAOImpl extends BaseDAOImpl implements CertificationBodyDAO {
 	
-	
+	@Transactional
 	@Override
 	public void create(CertificationBody acb) {
 		
 		entityManager.persist(acb);
 		
-		/*
-		Query query = entityManager.createNativeQuery("insert into certification_body values (:acbid, :acbname)");
-		query.setParameter("acbid", acb.getId());
-		query.setParameter("acbname", acb.getName());
-		query.executeUpdate();
-		*/
 	}
 	
 	
@@ -62,10 +57,10 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Override
 	public List<CertificationBody> findAll() {
 		
-		entityManager.getTransaction().begin();
+		//entityManager.getTransaction().begin();
 		List<CertificationBody> result = entityManager.createQuery( "from CertificationBody", CertificationBody.class ).getResultList();
-		entityManager.getTransaction().commit();
-		entityManager.close();
+		//entityManager.getTransaction().commit();
+		//entityManager.close();
 		
 		return result;
 		
