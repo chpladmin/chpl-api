@@ -70,6 +70,7 @@ public class CHPLServiceController {
 		
 		CertificationBody acb = new CertificationBody();
 		acb.setName(acbName);
+		acb.setWebsite("www.zombo.com");
 		certificationBodyManager.create(acb);
 		
 		return acb.toString();
