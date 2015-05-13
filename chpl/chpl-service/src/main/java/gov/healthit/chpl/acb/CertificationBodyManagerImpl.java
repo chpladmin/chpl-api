@@ -30,8 +30,45 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
 	
-	private MutableAclService mutableAclService;
+	private MutableAclService mutableAclService;	
+
+
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public void create(CertificationBody acb) {
+		// Create the ACB itself
+		certificationBodyDAO.create(acb);
+
+		// Grant the current principal administrative permission to the ACB
+		addPermission(acb, new PrincipalSid(getUsername()),
+				BasePermission.ADMINISTRATION);
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("Created acb " + acb
+					+ " and granted admin permission to recipient " + getUsername());
+		}
+	}
 	
+	@PreAuthorize("hasPermission(#acb, admin)")
+	public void update(CertificationBody acb) {
+		certificationBodyDAO.update(acb);
+		logger.debug("Updated acb " + acb);
+	}
+	
+	@Transactional
+	@PreAuthorize("hasPermission(#acb, 'delete') or hasPermission(#acb, admin)")
+	public void delete(CertificationBody acb) {
+		
+		certificationBodyDAO.delete(acb.getId());
+		// Delete the ACL information as well
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, acb.getId());
+		mutableAclService.deleteAcl(oid, false);
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("Deleted acb " + acb + " including ACL permissions");
+		}
+		
+	}
 	
 	@Transactional
 	@PreAuthorize("hasPermission(#acb, admin)")
@@ -51,41 +88,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 		logger.debug("Added permission " + permission + " for Sid " + recipient
 				+ " acb " + acb);
-	}
-	
-	public MutableAclService getMutableAclService() {
-		return mutableAclService;
-	}
-
-	@Transactional
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void create(CertificationBody acb) {
-		// Create the ACB itself
-		certificationBodyDAO.create(acb);
-
-		// Grant the current principal administrative permission to the ACB
-		addPermission(acb, new PrincipalSid(getUsername()),
-				BasePermission.ADMINISTRATION);
-		
-		if (logger.isDebugEnabled()) {
-			logger.debug("Created acb " + acb
-					+ " and granted admin permission to recipient " + getUsername());
-		}
-	}
-
-	@Transactional
-	@PreAuthorize("hasPermission(#acb, 'delete') or hasPermission(#acb, admin)")
-	public void delete(CertificationBody acb) {
-		
-		certificationBodyDAO.delete(acb.getId());
-		// Delete the ACL information as well
-		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, acb.getId());
-		mutableAclService.deleteAcl(oid, false);
-		
-		if (logger.isDebugEnabled()) {
-			logger.debug("Deleted acb " + acb + " including ACL permissions");
-		}
-		
 	}
 
 	@Transactional
@@ -143,6 +145,10 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		}
 	}
 	
+	public MutableAclService getMutableAclService() {
+		return mutableAclService;
+	}
+	
 	public void setCertificationBodyDAO(CertificationBodyDAO acbDAO) {
 		this.certificationBodyDAO = acbDAO;
 	}
@@ -150,9 +156,5 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	public void setMutableAclService(MutableAclService mutableAclService) {
 		this.mutableAclService = mutableAclService;
 	}
-
-	public void update(CertificationBody acb) {
-		certificationBodyDAO.update(acb);
-		logger.debug("Updated acb " + acb);
-	}
+	
 }
