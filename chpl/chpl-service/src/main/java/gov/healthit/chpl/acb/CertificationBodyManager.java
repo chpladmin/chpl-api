@@ -20,6 +20,9 @@ public interface CertificationBodyManager {
 	public void create(CertificationBody acb);
 	
 	
+	public void update(CertificationBody acb);
+	
+	
 	public void delete(CertificationBody acb);
 	
 	

@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -68,6 +69,9 @@ public class CHPLServiceController {
 	@RequestMapping(value="/createACB/{acbName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String createACB(@PathVariable String acbName) {
 		
+		System.out.println("Claims:");
+		System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+		
 		CertificationBody acb = new CertificationBody();
 		acb.setName(acbName);
 		acb.setWebsite("www.zombo.com");
@@ -77,6 +81,29 @@ public class CHPLServiceController {
 		
 	}
 	
+	@RequestMapping(value="/renameACB/{acbId}/{acbName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
+	public String updateACBName(@PathVariable Long acbId, @PathVariable String acbName) {
+		
+		CertificationBody acb = certificationBodyManager.getById(acbId);
+		acb.setName(acbName);
+		certificationBodyManager.update(acb);
+		
+		return acb.toString();
+		
+	}
+	
+	@RequestMapping(value="/listMyACBs", method= RequestMethod.GET, produces="application/json; charset=utf-8")
+	public String listMyACBs() {
+		
+		for (CertificationBody cb : certificationBodyManager.getAll()){
+			
+			System.out.println(cb.toString());
+			
+		}
+		
+		return certificationBodyManager.getAll().toArray().toString();
+		
+	}
 	
 	
 	
