@@ -49,6 +49,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		}
 	}
 	
+	@Transactional
 	@PreAuthorize("hasPermission(#acb, admin)")
 	public void update(CertificationBody acb) {
 		certificationBodyDAO.update(acb);
@@ -116,13 +117,9 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Transactional(readOnly = true)
 	@PostFilter("hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<CertificationBody> getAll() {
-		System.out.println("Returning all acbs");
-		
-		System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-
-		System.out.println(getUsername());
 		
 		return certificationBodyDAO.findAll();
+		
 	}
 
 	@Transactional(readOnly = true)
