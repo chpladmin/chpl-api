@@ -116,8 +116,12 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Transactional(readOnly = true)
 	@PostFilter("hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<CertificationBody> getAll() {
-		logger.debug("Returning all acbs");
+		System.out.println("Returning all acbs");
+		
+		System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
+		System.out.println(getUsername());
+		
 		return certificationBodyDAO.findAll();
 	}
 

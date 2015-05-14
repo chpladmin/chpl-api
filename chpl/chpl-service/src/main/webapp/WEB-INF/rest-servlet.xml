@@ -7,6 +7,7 @@
     xmlns:tx="http://www.springframework.org/schema/tx"  
     xmlns:p="http://www.springframework.org/schema/p"
     xmlns:sec="http://www.springframework.org/schema/security"
+    xmlns:b="http://www.springframework.org/schema/beans"
     xsi:schemaLocation="
         http://www.springframework.org/schema/beans     
         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
@@ -22,7 +23,9 @@
    <mvc:annotation-driven />
    <context:annotation-config/>
    <context:component-scan base-package="gov.healthit.chpl" />
-   <sec:global-method-security pre-post-annotations="enabled" />
+   <sec:global-method-security pre-post-annotations="enabled" >
+   		<sec:expression-handler ref="expressionHandler" />
+   </sec:global-method-security>
    
    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
    		<property name="proxyTargetClass" value="true"/>
@@ -33,10 +36,11 @@
    		<property name="supportedMediaTypes" value="application/json"/>
    </bean>
    
+   <!--  
  	<sec:http auto-config='true'>
     	<sec:intercept-url pattern="/**" access="ROLE_USER"/>
 	</sec:http>
-	
+	-->
 	
 	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
 			<property name="jndiName" value="java:comp/env/jdbc/chpl_acl"/>
@@ -93,7 +97,10 @@
 		<constructor-arg ref="dataSource"/>
 		<constructor-arg ref="lookupStrategy"/>
 		<constructor-arg ref="aclCache"/>
-	</bean>	
+	</bean>
+	
+	
+	
 	
 	<bean id="certificationBodyManager" class="gov.healthit.chpl.acb.CertificationBodyManagerImpl">
 		<property name="mutableAclService" ref="mutableAclService" />
@@ -127,5 +134,18 @@
 	
 	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 	
+	
+	<b:bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+		<b:property name="permissionEvaluator" ref="permissionEvaluator"/>
+		<b:property name="permissionCacheOptimizer">
+			<b:bean class="org.springframework.security.acls.AclPermissionCacheOptimizer">
+				<b:constructor-arg ref="mutableAclService"/>
+			</b:bean>
+		</b:property>
+	</b:bean>
+
+	<b:bean id="permissionEvaluator" class="org.springframework.security.acls.AclPermissionEvaluator">
+		<b:constructor-arg ref="mutableAclService"/>
+	</b:bean>
 	
 </beans>
