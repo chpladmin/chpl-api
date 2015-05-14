@@ -95,7 +95,13 @@ public class CHPLServiceController {
 	@RequestMapping(value="/listMyACBs", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String listMyACBs() {
 		
-		for (CertificationBody cb : certificationBodyManager.getAll()){
+		List<CertificationBody> acbs = certificationBodyManager.getAll();
+		
+		System.out.println("found: ");
+		System.out.println(acbs.size());
+		System.out.println("ACBs");
+		
+		for (CertificationBody cb : acbs){
 			
 			System.out.println(cb.toString());
 			

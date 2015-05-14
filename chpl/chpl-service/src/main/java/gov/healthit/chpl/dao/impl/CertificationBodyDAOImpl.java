@@ -72,10 +72,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Override
 	public void update(CertificationBody acb) {
 		
-		Query query = entityManager.createNativeQuery("update certification_body set name = :name WHERE id = :acbid");
-		query.setParameter("acbid", acb.getId());
-		query.setParameter("name", acb.getName());
-		query.executeUpdate();
+		entityManager.merge(acb);
 		
 	}
 	
