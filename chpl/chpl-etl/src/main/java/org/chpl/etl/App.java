@@ -15,11 +15,6 @@ public class App
 	private static final String csvChecksummedFileName = "./src/main/resources/chpl-wChecksum.csv";
 
 	public static void main( String[] args ) {
-//		String fileBase = "./src/main/resources/chpl-small-";
-//		for (int i = 0; i < 12; i++) {
-//			parseFile(fileBase + i + ".xlsx");
-//		}
-		
 		String singleFile = "./src/main/resources/chpl-large.xlsx";
 		parseFile(singleFile);
 	}

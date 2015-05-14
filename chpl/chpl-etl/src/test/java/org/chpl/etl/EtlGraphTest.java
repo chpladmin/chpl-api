@@ -22,7 +22,7 @@ public class EtlGraphTest {
 		} catch (URISyntaxException e) {
 			Logger.getLogger(EtlGraphTest.class.getName()).log(Level.SEVERE, null, e);
 		}
-		graph.setGraph("/graphs/create_vendor-product.grf");
+		graph.setGraph("/graphs/openchpl_checksum_analysis.grf");
 	}
 	
 	@Test
