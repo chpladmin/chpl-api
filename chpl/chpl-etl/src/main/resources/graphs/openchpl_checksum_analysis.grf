@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 13 11:34:55 EDT 2015" modifiedBy="alarned" name="ChecksumAnalysis" revision="1.219" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Thu May 14 11:41:26 EDT 2015" modifiedBy="alarned" name="ChecksumAnalysis" revision="1.220" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata1">
 <Record fieldDelimiter="^" name="CHPL_All_Data" recordDelimiter="\r\n" type="delimited">
@@ -844,7 +844,7 @@ $in.0.Checksum != $in.0.Stored_Checksum AND $in.0.Stored_Checksum != null]]></at
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.Stored_Checksum == null]]></attr>
 </Node>
-<Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl-wChecksum.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" skipRows="3" type="DATA_READER"/>
+<Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl-wChecksum.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" quotedStrings="false" skipRows="3" type="DATA_READER"/>
 <Node enabled="enabled" guiName="Remove DB checksum" guiX="920" guiY="20" id="REMOVE_DB_CHECKSUM" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 

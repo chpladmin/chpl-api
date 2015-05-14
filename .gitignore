@@ -241,3 +241,4 @@ pip-log.txt
 /chpl/chpl-etl/parameters.prm
 /chpl/chpl-etl/src/main/resources/log-uncreated_certified.txt
 /chpl/chpl-etl/src/main/resources/log-unmerged_certified.txt
+/chpl/chpl-etl/src/main/resources/log-uncreated_products.txt
