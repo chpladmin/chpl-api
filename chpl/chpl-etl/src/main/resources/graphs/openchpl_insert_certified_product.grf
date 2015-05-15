@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Thu May 14 11:08:56 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.277" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Fri May 15 10:34:22 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.286" showComponentDetails="true">
 <Global>
+<Metadata id="Metadata2" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_CertBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field name="Certbody_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata4" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_CertifiedProduct_ids" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="CertifiedProduct_id" type="long"/>
+<Field name="Edition_id" type="long"/>
+<Field name="Version_id" type="long"/>
+<Field name="Certbody_id" type="long"/>
+<Field name="CqmEdition_id" type="long"/>
+<Field name="Setting_id" type="long"/>
+<Field name="Classification_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata0">
+<Record fieldDelimiter="|" name="CHPL_Classification_id" recordDelimiter="\r\n" type="delimited">
+<Field name="Classification_Name" type="string"/>
+<Field name="classification_type_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata3" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_CqmEdition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="CqmEdition" type="string"/>
+<Field name="CqmEdition_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_Edition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field name="Edition_id" type="long"/>
+</Record>
+</Metadata>
 <Metadata id="Metadata6" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="^" name="CHPL_Full_Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field name="CertifiedProduct_id" type="long"/>
@@ -17,7 +52,9 @@
 <Field label="Published" name="Published" type="string"/>
 <Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
 <Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field name="Practice_Setting_id" type="long"/>
 <Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field name="Product_Classification_id" type="long"/>
 <Field label="Additional Software" name="Additional_Software" type="string"/>
 <Field label="Certification Date" name="Certification_Date" type="string"/>
 <Field label="170.302(a)" name="Criteria170_302_a_" type="boolean"/>
@@ -271,19 +308,18 @@
 <Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata4" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CHPL_Product_IDs" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field name="CertifiedProduct_id" type="long"/>
-<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
-<Field name="Edition_id" type="long"/>
+<Metadata id="Metadata8" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_PracticeType_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Practice_Setting" type="string"/>
+<Field name="practice_type_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata5" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CHPL_ProductVersion_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field label="Version" name="Version" type="string"/>
 <Field name="Version_id" type="long"/>
-<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
-<Field name="Certbody_id" type="long"/>
 <Field label="Product" name="Product" type="string"/>
 <Field label="Vendor" name="Vendor" type="string"/>
-<Field name="CqmEdition" type="string"/>
-<Field name="CqmEdition_id" type="long"/>
 </Record>
 </Metadata>
 <Metadata id="Metadata7" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1">
@@ -573,7 +609,7 @@
 <attr name="filterExpression"><![CDATA[//#CTL2
 $Edition_id != null AND $Version_id != null AND $Certbody_id != null AND $CqmEdition_id != null]]></attr>
 </Node>
-<Node enabled="enabled" guiName="ExtHashJoin" guiX="267" guiY="20" id="EXT_HASH_JOIN" joinKey="$Certification_Edition_Year=$Certification_Edition_Year#$Certifying_ATCB=$Certifying_ATCB#$Product=$Product;$Vendor=$Vendor;$Version=$Version#$Certification_Edition_Year=$CqmEdition" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="ExtHashJoin" guiX="255" guiY="20" id="EXT_HASH_JOIN" joinKey="$Certification_Edition_Year=$Certification_Edition_Year#$Certifying_ATCB=$Certifying_ATCB#$Product=$Product;$Vendor=$Vendor;$Version=$Version#$Certification_Edition_Year=$CqmEdition#$Practice_Setting=$Practice_Setting#$Product_Classification=$Classification_Name" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 function boolean strToBool(string input) {
 	if (input == "1") { return true; }
@@ -585,6 +621,8 @@ function integer transform() {
 	$out.0.Edition_id = $in.1.Edition_id;
 	$out.0.Certbody_id = $in.2.Certbody_id;
 	$out.0.Version_id = $in.3.Version_id;
+	$out.0.Practice_Setting_id = $in.5.practice_type_id;
+	$out.0.Product_Classification_id = $in.6.classification_type_id;
 	$out.0.STG_Certification_Certification_ID = $in.0.STG_Certification_Certification_ID;
 	$out.0.Certification_Edition_Year = $in.0.Certification_Edition_Year;
 	$out.0.Published = $in.0.Published;
@@ -873,7 +911,21 @@ FROM
 FROM 
   openchpl.certification_edition;]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_id" guiX="20" guiY="314" id="GET_PRODUCT_VERSION_ID" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get practice_type_ids" guiX="20" guiY="482" id="GET_PRACTICE_TYPE_IDS" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT 
+  $practice_type_id:=practice_type.practice_type_id,
+  $Practice_Setting:=practice_type.name
+FROM 
+  openchpl.practice_type;]]></attr>
+</Node>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get practice_type_ids" guiX="20" guiY="567" id="GET_PRACTICE_TYPE_IDS1" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT 
+  $classification_type_id:=product_classification_type.product_classification_type_id,
+  $Classification_Name:=product_classification_type.name
+FROM 
+  openchpl.product_classification_type;]]></attr>
+</Node>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_id" guiX="20" guiY="313" id="GET_PRODUCT_VERSION_ID" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT 
   $Version_id:=product_version.product_version_id,
   $Product:=product.name,
@@ -893,14 +945,16 @@ WHERE
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.certified_product IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.certified_product 
-	(certification_edition_id, product_version_id, certification_body_id, cqm_edition_id, last_modified_user)
-       SELECT $Edition_id, $Version_id, $Certbody_id, $CqmEdition_id, -1
+	(certification_edition_id, product_version_id, certification_body_id, cqm_edition_id, practice_type_id, product_classification_type_id, last_modified_user)
+       SELECT $Edition_id, $Version_id, $Certbody_id, $CqmEdition_id, $Practice_Setting_id, $Product_Classification_id, -1
        WHERE NOT EXISTS (
              SELECT 1 FROM openchpl.certified_product WHERE
                     certification_edition_id = $Edition_id AND
                     product_version_id= $Version_id AND
 					certification_body_id = $Certbody_id AND
-					cqm_edition_id = $CqmEdition_id
+					cqm_edition_id = $CqmEdition_id AND
+					practice_type_id = $Practice_Setting_id AND
+					product_classification_type_id = $Product_Classification_id
        );
 COMMIT;]]></attr>
 </Node>
@@ -908,10 +962,12 @@ COMMIT;]]></attr>
 <Edge debugMode="false" fromNode="EXT_FILTER1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata6" toNode="SIMPLE_COPY:0"/>
 <Edge fromNode="EXT_FILTER1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 0 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata6" toNode="UNIVERSAL_DATA_WRITER1:0"/>
 <Edge debugMode="false" fromNode="EXT_HASH_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 0 (out)" toNode="EXT_FILTER1:0"/>
-<Edge fromNode="GET_CERT_BODY_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 2 (slave)" metadata="Metadata4" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:2"/>
-<Edge fromNode="GET_CQM_EDITION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 4 (slave)" metadata="Metadata4" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:4"/>
-<Edge fromNode="GET_EDITION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Metadata4" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:1"/>
-<Edge debugMode="false" fromNode="GET_PRODUCT_VERSION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 3 (slave)" metadata="Metadata4" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:3"/>
+<Edge fromNode="GET_CERT_BODY_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 2 (slave)" metadata="Metadata2" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:2"/>
+<Edge fromNode="GET_CQM_EDITION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 4 (slave)" metadata="Metadata3" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:4"/>
+<Edge fromNode="GET_EDITION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Metadata1" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:1"/>
+<Edge fromNode="GET_PRACTICE_TYPE_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 5 (slave)" metadata="Metadata8" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:5"/>
+<Edge fromNode="GET_PRACTICE_TYPE_IDS1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 6 (slave)" metadata="Metadata0" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:6"/>
+<Edge debugMode="false" fromNode="GET_PRODUCT_VERSION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 3 (slave)" metadata="Metadata5" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN:3"/>
 <Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="Metadata7" outPort="Port 0 (output)" toNode="EXT_HASH_JOIN:0"/>
 <Edge debugMode="false" fromNode="READ_IN_CSV:1" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="LOG_FAILED_ROWS:0"/>
 <Edge fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata6" toNode="SAVE_CERTIFED_PRODUCT:0"/>
@@ -2945,9 +3001,9 @@ COMMIT;
 </Node>
 <Node enabled="enabled" guiName="ExtFilter" guiX="911" guiY="177" id="EXT_FILTER" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
-$Edition_id != null AND $Version_id != null AND $Certbody_id != null AND $CqmEdition_id != null]]></attr>
+$Edition_id != null AND $Version_id != null AND $Certbody_id != null AND $CqmEdition_id != null AND $Practice_Setting_id != null AND $Product_Classification_id != null]]></attr>
 </Node>
-<Node enabled="enabled" guiName="ExtHashJoin" guiX="745" guiY="139" id="EXT_HASH_JOIN1" joinKey="$Edition_id=$Edition_id;$Version_id=$Version_id;$Certbody_id=$Certbody_id;$CqmEdition_id=$CqmEdition_id" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="ExtHashJoin" guiX="745" guiY="139" id="EXT_HASH_JOIN1" joinKey="$Edition_id=$Edition_id;$CqmEdition_id=$CqmEdition_id;$Version_id=$Version_id;$Certbody_id=$Certbody_id;$Practice_Setting_id=$Setting_id;$Product_Classification_id=$Classification_id" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -2965,7 +3021,9 @@ function integer transform() {
 	$out.0.Published = $in.0.Published;
 	$out.0.ATCB_Certification_ID = $in.0.ATCB_Certification_ID;
 	$out.0.Practice_Setting = $in.0.Practice_Setting;
+	$out.0.Practice_Setting_id = $in.0.Practice_Setting_id;
 	$out.0.Product_Classification = $in.0.Product_Classification;
+	$out.0.Product_Classification_id = $in.0.Product_Classification_id;
 	$out.0.Additional_Software = $in.0.Additional_Software;
 	$out.0.Certification_Date = $in.0.Certification_Date;
 	$out.0.Checksum = $in.0.Checksum;
@@ -3223,19 +3281,21 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_id" guiX="536" guiY="152" id="GET_PRODUCT_VERSION_ID1" type="DB_INPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[select $CertifiedProduct_id:=certified_product.certified_product_id,
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get certified_product_id" guiX="536" guiY="152" id="GET_CERTIFIED_PRODUCT_ID" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT $CertifiedProduct_id:=certified_product.certified_product_id,
 $Edition_id:=certified_product.certification_edition_id,
 $Version_id:=certified_product.product_version_id,
 $Certbody_id:=certified_product.certification_body_id,
-$CqmEdition_id:=certified_product.cqm_edition_id
-from openchpl.certified_product]]></attr>
+$CqmEdition_id:=certified_product.cqm_edition_id,
+$Setting_id:=certified_product.practice_type_id,
+$Classification_id:=certified_product.product_classification_type_id
+FROM openchpl.certified_product]]></attr>
 </Node>
 <Node enabled="enabled" fileURL="./src/main/resources/log-unmerged_certified.txt" guiName="UniversalDataWriter" guiX="1092" guiY="280" id="UNIVERSAL_DATA_WRITER" type="DATA_WRITER"/>
 <Node enabled="enabled" fileURL="./src/main/resources/log-uncreated_certified.txt" guiName="UniversalDataWriter" guiX="536" guiY="280" id="UNIVERSAL_DATA_WRITER1" type="DATA_WRITER"/>
 <Edge debugMode="false" fromNode="EXT_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata6" toNode="DBOUTPUT_TABLE2:0"/>
 <Edge fromNode="EXT_FILTER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata6" toNode="UNIVERSAL_DATA_WRITER:0"/>
-<Edge debugMode="true" fromNode="EXT_HASH_JOIN1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 0 (out)" toNode="EXT_FILTER:0"/>
-<Edge debugMode="false" fromNode="GET_PRODUCT_VERSION_ID1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 1 (slave)" metadata="Metadata4" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN1:1"/>
+<Edge debugMode="false" fromNode="EXT_HASH_JOIN1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 0 (out)" toNode="EXT_FILTER:0"/>
+<Edge debugMode="false" fromNode="GET_CERTIFIED_PRODUCT_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 1 (slave)" metadata="Metadata4" outPort="Port 0 (out)" toNode="EXT_HASH_JOIN1:1"/>
 </Phase>
 </Graph>
