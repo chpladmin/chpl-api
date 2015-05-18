@@ -44,9 +44,6 @@ public class CHPLAuthenticationSecurityConfig extends
 				.servletApi().and()
 				//.headers().cacheControl().and()
 				.authorizeRequests()
-								
-				//allow anonymous resource requests
-				//.antMatchers("/").permitAll()
 				.antMatchers("/favicon.ico").permitAll()
 				.antMatchers("/resources/**").permitAll()
 				
@@ -55,12 +52,12 @@ public class CHPLAuthenticationSecurityConfig extends
 				
 				//allow anonymous GETs to API
 				.antMatchers(HttpMethod.GET, "/api/**").permitAll()
+				
 				//defined Admin only API area
 				//.antMatchers("/admin/**").hasRole("ADMIN")
 				
-				//all other request need to be authenticated
-				//.anyRequest().hasRole("USER").and()
-				//.anyRequest().authenticated().and()
+				
+				//allow anonymous resource requests
 				.antMatchers("/").permitAll().and()
 				// custom Token based authentication based on the header previously given to the client
 				.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
@@ -73,7 +70,6 @@ public class CHPLAuthenticationSecurityConfig extends
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -85,5 +81,4 @@ public class CHPLAuthenticationSecurityConfig extends
 		return userDetailsService;
 	}
 	
-
 }

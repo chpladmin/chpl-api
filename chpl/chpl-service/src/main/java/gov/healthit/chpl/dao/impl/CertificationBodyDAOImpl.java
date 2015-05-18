@@ -35,7 +35,15 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		
 	}
 	
+	@Transactional
+	@Override
+	public void update(CertificationBody acb) {
+		
+		entityManager.merge(acb);
+		
+	}
 	
+	@Transactional
 	@Override
 	public void delete(Long acbId) {
 		
@@ -65,23 +73,6 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		List<CertificationBody> result = query.getResultList();
 		acb = result.get(0);
 		
-		return acb;
-		
-	}
-
-	@Override
-	public void update(CertificationBody acb) {
-		
-		entityManager.merge(acb);
-		
-	}
-	
-	private CertificationBody mapCertificationBody(ResultSet rs) throws SQLException {
-		
-		CertificationBody acb = new CertificationBody();
-		acb.setId(new Long(rs.getLong("id")));
-		acb.setName(rs.getString("name"));
-		acb.setWebsite(rs.getString("website"));
 		return acb;
 		
 	}
