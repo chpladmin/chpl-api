@@ -10,9 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.acb.CertificationBody;
-import gov.healthit.chpl.auth.Claim;
-import gov.healthit.chpl.auth.User;
 import gov.healthit.chpl.auth.authentication.Authenticator;
+import gov.healthit.chpl.auth.user.User;
 
 
 @Service("authorizerService")

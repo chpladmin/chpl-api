@@ -1,7 +1,8 @@
-package gov.healthit.chpl.auth;
+package gov.healthit.chpl.auth.filter;
 
 import gov.healthit.chpl.auth.authorization.JWTUserConverter;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
+import gov.healthit.chpl.auth.user.User;
 
 import java.io.IOException;
 
@@ -11,7 +12,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 

@@ -1,8 +1,8 @@
 package gov.healthit.chpl.auth.authentication;
 
-import gov.healthit.chpl.auth.Claim;
-import gov.healthit.chpl.auth.User;
-import gov.healthit.chpl.auth.AuthenticatedUser;
+import gov.healthit.chpl.auth.authorization.Claim;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.user.User;
 
 import java.util.Arrays;
 import java.util.List;

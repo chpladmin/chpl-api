@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth;
+package gov.healthit.chpl.auth.authorization;
 import org.springframework.security.core.GrantedAuthority;
 
 public class Claim implements GrantedAuthority {

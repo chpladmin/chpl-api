@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth;
 
+import gov.healthit.chpl.auth.user.User;
+
 import java.util.HashMap;
 
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
