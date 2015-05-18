@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.authentication;
 
-import gov.healthit.chpl.auth.User;
+import gov.healthit.chpl.auth.user.User;
 
 
 

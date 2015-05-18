@@ -7,15 +7,9 @@ import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTCreationException;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
-import gov.healthit.chpl.auth.interceptor.Bean;
-import gov.healthit.chpl.auth.interceptor.CheckAuthorization;
-import gov.healthit.chpl.auth.interceptor.GlobalAdminOnly;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,8 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CHPLServiceController {
 	
-	@Autowired
-	private Bean bean;
 	
 	@Autowired
 	private CertificationBodyManager certificationBodyManager;
@@ -111,9 +103,6 @@ public class CHPLServiceController {
 		
 	}
 	
-	
-	
-	@GlobalAdminOnly
 	@RequestMapping(value="/secrethello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String secretHello(@RequestHeader(value="Token") String jwt, @PathVariable String firstName, @PathVariable String lastName) {
 		
@@ -121,7 +110,6 @@ public class CHPLServiceController {
 		
 	}
 	
-	@CheckAuthorization
 	@RequestMapping(value="/hellolist/{group}/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String authHelloList(@RequestHeader(value="Token") String jwt, @PathVariable String firstName, @PathVariable String lastName) {
 		
@@ -164,15 +152,7 @@ public class CHPLServiceController {
 		return jwt;
 	}
 	
-	public Bean getBean(){
-		return bean;
-	}
 	
-	public void setBean(Bean bn){
-		this.bean = bn;
-	}
-
-
 	public CertificationBodyManager getCertificationBodyManager() {
 		return certificationBodyManager;
 	}

@@ -1,11 +1,10 @@
-package gov.healthit.chpl.auth;
+package gov.healthit.chpl.auth.user;
+
+import gov.healthit.chpl.auth.authorization.Claim;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 
