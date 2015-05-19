@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GraphParameters>
+<GraphParameter name="openchpl_password" value="sample password"/>
+<GraphParameter name="openchpl_db_url" value="database string"/>
+<GraphParameter name="openchpl_user" value="user name"/>
+</GraphParameters>
