@@ -6,8 +6,6 @@ import java.util.List;
 public interface UserDAO {
 	
 	public void create(User user);
-
-	public void deactivate(Long userId);
 	
 	public void deactivate(String uname);
 	

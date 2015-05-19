@@ -32,15 +32,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	@Transactional
 	@Override
-	public void deactivate(Long userId) {
-		/*TODO: De-activate rather than deleting
-		Query query = entityManager.createNativeQuery("delete FROM users WHERE id = :acbid");
-		query.setParameter("acbid", userId);
-		query.executeUpdate();
-		*/
-	}
-	
-	@Override
 	public void deactivate(String uname) {
 		// TODO Auto-generated method stub
 	}
