@@ -13,7 +13,7 @@
 			<!--classpath*:applicationContext-common-authorization.xml,
 			classpath*:applicationContext-common-business.xml,
 			classpath*:applicationContext-security.xml,-->
-			/WEB-INF/applicationContext.xml
+			<!--/WEB-INF/applicationContext.xml-->
 		</param-value>
 	</context-param>
 
