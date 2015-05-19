@@ -4,6 +4,7 @@ import gov.healthit.chpl.auth.authorization.Claim;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,8 +15,8 @@ public interface User extends UserDetails , Authentication {
 	public String getSubjectName();
 	public void setSubjectName(String subject);
 	
-	public List<Claim> getClaims();
-	public void setClaims(List<Claim> claims);
+	public Set<Claim> getClaims();
+	public void setClaims(Set<Claim> claims);
 	public void addClaim(String claimValue);
 	public void addClaim(Claim claim);
 	public void removeClaim(String claimValue);
