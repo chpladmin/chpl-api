@@ -1,5 +1,11 @@
 package gov.healthit.chpl.auth;
 
+import java.util.Properties;
+
+
+
+import javax.persistence.EntityManagerFactory;
+
 import gov.healthit.chpl.auth.authorization.JWTUserConverter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 
@@ -9,6 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpMethod;
+import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -64,6 +71,21 @@ public class CHPLAuthenticationSecurityConfig extends
 				.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
 			.headers().cacheControl();
 		
+	}
+	
+	
+	@Bean
+	public LocalEntityManagerFactoryBean entityManagerFactory(){
+		
+		
+		LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+		
+		Properties props = new Properties();
+		props.put("persistenceUnitName", "chpl_acl");
+		
+		bean.setJpaProperties(props);
+		
+		return bean;
 	}
 	
 	@Bean
