@@ -7,6 +7,7 @@ import gov.healthit.chpl.auth.user.dao.UserDAO;
 import java.util.List;
 
 import javax.persistence.Query;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,11 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		// TODO Auto-generated method stub
 	}
 	
-	
+	@Transactional
+	@Override
+	public void deactivate(Long userId){
+		// TODO Auto-generated method stub
+	}
 	
 	@Override
 	public List<User> findAll() {

@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
+public class DummyUserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 	 
     private final AccountStatusUserDetailsChecker detailsChecker = new AccountStatusUserDetailsChecker();
     private final HashMap<String, User> userMap = new HashMap<String, User>();

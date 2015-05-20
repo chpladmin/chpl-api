@@ -9,6 +9,8 @@ public interface UserDAO {
 	
 	public void deactivate(String uname);
 	
+	public void deactivate(Long userId);
+	
 	public List<User> findAll();
 
 	public User getById(Long userId);

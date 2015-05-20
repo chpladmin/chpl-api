@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 public interface User extends UserDetails , Authentication {
 	
 	public String getSubjectName();
-	public void setSubjectName(String subject);
 	
 	public Set<Claim> getClaims();
 	public void setClaims(Set<Claim> claims);

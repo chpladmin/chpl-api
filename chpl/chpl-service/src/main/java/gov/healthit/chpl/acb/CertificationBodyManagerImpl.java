@@ -30,7 +30,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
 	
-	private MutableAclService mutableAclService;	
+	private MutableAclService mutableAclService;
 
 
 	@Transactional
