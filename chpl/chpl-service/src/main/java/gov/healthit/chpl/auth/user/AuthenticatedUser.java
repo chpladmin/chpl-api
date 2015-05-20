@@ -68,11 +68,11 @@ public class AuthenticatedUser implements User {
 	public String getSubjectName() {
 		return subjectName;
 	}
-
+	/*
 	public void setSubjectName(String subject) {
 		this.subjectName = subject;
 	}
-
+	 */
 	public Set<Claim> getClaims() {
 		return this.claims;
 	}

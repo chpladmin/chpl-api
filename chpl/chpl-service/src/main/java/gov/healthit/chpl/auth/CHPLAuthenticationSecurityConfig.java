@@ -4,7 +4,6 @@ import java.util.Properties;
 
 
 
-import javax.persistence.EntityManagerFactory;
 
 import gov.healthit.chpl.auth.authorization.JWTUserConverter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
@@ -17,11 +16,9 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpMethod;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -36,8 +33,8 @@ public class CHPLAuthenticationSecurityConfig extends
 	@Autowired
 	private JWTUserConverter userConverter;
 	
-	@Autowired
-	private UserDetailsService userDetailsService;
+	//@Autowired
+	//private UserDetailsService userDetailsService;
 	
 	public CHPLAuthenticationSecurityConfig() {
 		super(true);
@@ -77,15 +74,18 @@ public class CHPLAuthenticationSecurityConfig extends
 	@Bean
 	public LocalEntityManagerFactoryBean entityManagerFactory(){
 		
-		
 		LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
 		
 		Properties props = new Properties();
 		props.put("persistenceUnitName", "chpl_acl");
-		
 		bean.setJpaProperties(props);
 		
 		return bean;
+	}
+	
+	@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder(){
+		return new BCryptPasswordEncoder();
 	}
 	
 	@Bean
@@ -94,6 +94,10 @@ public class CHPLAuthenticationSecurityConfig extends
 		return super.authenticationManagerBean();
 	}
 	
+	
+	
+	
+	/*
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService()).passwordEncoder(new BCryptPasswordEncoder());
@@ -103,5 +107,5 @@ public class CHPLAuthenticationSecurityConfig extends
 	protected UserDetailsService userDetailsService() {
 		return userDetailsService;
 	}
-	
+	*/
 }
