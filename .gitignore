@@ -230,3 +230,8 @@ pip-log.txt
 /chpl/chpl-etl/src/main/resources/log-uncreated_certified.txt
 /chpl/chpl-etl/src/main/resources/log-unmerged_certified.txt
 /chpl/chpl-etl/src/main/resources/log-uncreated_products.txt
+/chpl/chpl-etl/chpl_to-update.csv
+/chpl/chpl-etl/log-uncreated_certified.txt
+/chpl/chpl-etl/log-unmerged_certified.txt
+/chpl/chpl-etl/log_checksum-analysis.txt
+/chpl/chpl-etl/log_unchanged-rows.csv
