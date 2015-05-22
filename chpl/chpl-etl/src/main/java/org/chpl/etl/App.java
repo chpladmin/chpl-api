@@ -36,7 +36,14 @@ public class App
 			Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
 		}
 		
-		etlGraph.setGraph("/graphs/openchpl_etl.grf");
+//		etlGraph.setGraph("/graphs/openchpl_etl.grf");
+//		etlGraph.execute();
+		
+		etlGraph.setGraph("/graphs/openchpl_checksum_analysis.grf");
+		etlGraph.execute();
+		etlGraph.setGraph("/graphs/openchpl_insert_vendor_and_product.grf");
+		etlGraph.execute();
+		etlGraph.setGraph("/graphs/openchpl_insert_certified_product.grf");
 		etlGraph.execute();
 	}
 }

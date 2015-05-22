@@ -1,19 +1,429 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Fri May 15 10:10:07 EDT 2015" modifiedBy="alarned" name="CreateVendorProduct" revision="1.167" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Fri May 22 12:48:05 EDT 2015" modifiedBy="alarned" name="CreateVendorProduct" revision="1.174" showComponentDetails="true">
 <Global>
-<Metadata id="Metadata2" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CHPL_Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Metadata id="Metadata10" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CertificationBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field name="Certbody_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata8" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="^" name="CertifiedProduct" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="CertifiedProduct_id" type="long"/>
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field name="Edition_id" type="long"/>
+<Field name="CqmEdition_id" type="long"/>
+<Field label="Version" name="Version" type="string"/>
+<Field name="Version_id" type="long"/>
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field name="Certbody_id" type="long"/>
 <Field label="Product" name="Product" type="string"/>
 <Field label="Vendor" name="Vendor" type="string"/>
+<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
+<Field label="Published" name="Published" type="boolean"/>
+<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
+<Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field name="Practice_Setting_id" type="long"/>
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field name="Product_Classification_id" type="long"/>
+<Field label="Additional Software" name="Additional_Software" type="string"/>
+<Field label="Certification Date" name="Certification_Date" type="string"/>
+<Field label="170.302(a)" name="Criteria170_302_a_" type="boolean"/>
+<Field label="170.302(b)" name="Criteria170_302_b_" type="boolean"/>
+<Field label="170.302(c)" name="Criteria170_302_c_" type="boolean"/>
+<Field label="170.302(d)" name="Criteria170_302_d_" type="boolean"/>
+<Field label="170.302(e)" name="Criteria170_302_e_" type="boolean"/>
+<Field label="170.302(f)" name="Criteria170_302_f_" type="boolean"/>
+<Field label="170.302(f)(1)" name="Criteria170_302_f__1_" type="boolean"/>
+<Field label="170.302(f)(2)" name="Criteria170_302_f__2_" type="boolean"/>
+<Field label="170.302(f)(3)" name="Criteria170_302_f__3_" type="boolean"/>
+<Field label="170.302(g)" name="Criteria170_302_g_" type="boolean"/>
+<Field label="170.302(h)" name="Criteria170_302_h_" type="boolean"/>
+<Field label="170.302(i)" name="Criteria170_302_i_" type="boolean"/>
+<Field label="170.302(j)" name="Criteria170_302_j_" type="boolean"/>
+<Field label="170.302(k)" name="Criteria170_302_k_" type="boolean"/>
+<Field label="170.302(l)" name="Criteria170_302_l_" type="boolean"/>
+<Field label="170.302(m)" name="Criteria170_302_m_" type="boolean"/>
+<Field label="170.302(n)" name="Criteria170_302_n_" type="boolean"/>
+<Field label="170.302(o)" name="Criteria170_302_o_" type="boolean"/>
+<Field label="170.302(p)" name="Criteria170_302_p_" type="boolean"/>
+<Field label="170.302(q)" name="Criteria170_302_q_" type="boolean"/>
+<Field label="170.302(r)" name="Criteria170_302_r_" type="boolean"/>
+<Field label="170.302(s)" name="Criteria170_302_s_" type="boolean"/>
+<Field label="170.302(t)" name="Criteria170_302_t_" type="boolean"/>
+<Field label="170.302(u)" name="Criteria170_302_u_" type="boolean"/>
+<Field label="170.302(v)" name="Criteria170_302_v_" type="boolean"/>
+<Field label="170.302(w)" name="Criteria170_302_w_" type="boolean"/>
+<Field label="170.304(a)" name="Criteria170_304_a_" type="boolean"/>
+<Field label="170.304(b)" name="Criteria170_304_b_" type="boolean"/>
+<Field label="170.304(c)" name="Criteria170_304_c_" type="boolean"/>
+<Field label="170.304(d)" name="Criteria170_304_d_" type="boolean"/>
+<Field label="170.304(e)" name="Criteria170_304_e_" type="boolean"/>
+<Field label="170.304(f)" name="Criteria170_304_f_" type="boolean"/>
+<Field label="170.304(g)" name="Criteria170_304_g_" type="boolean"/>
+<Field label="170.304(h)" name="Criteria170_304_h_" type="boolean"/>
+<Field label="170.304(i)" name="Criteria170_304_i_" type="boolean"/>
+<Field label="170.304(j)" name="Criteria170_304_j_" type="boolean"/>
+<Field label="170.306(a)" name="Criteria170_306_a_" type="boolean"/>
+<Field label="170.306(b)" name="Criteria170_306_b_" type="boolean"/>
+<Field label="170.306(c)" name="Criteria170_306_c_" type="boolean"/>
+<Field label="170.306(d)" name="Criteria170_306_d_" type="boolean"/>
+<Field label="170.306(d)(1)" name="Criteria170_306_d__1_" type="boolean"/>
+<Field label="170.306(d)(2)" name="Criteria170_306_d__2_" type="boolean"/>
+<Field label="170.306(e)" name="Criteria170_306_e_" type="boolean"/>
+<Field label="170.306(f)" name="Criteria170_306_f_" type="boolean"/>
+<Field label="170.306(g)" name="Criteria170_306_g_" type="boolean"/>
+<Field label="170.306(h)" name="Criteria170_306_h_" type="boolean"/>
+<Field label="170.306(i)" name="Criteria170_306_i_" type="boolean"/>
+<Field label="170.314(a)(2)" name="Criteria170_314_a__1_" type="boolean"/>
+<Field label="170.314(a)(2)" name="Criteria170_314_a__2_" type="boolean"/>
+<Field label="170.314(a)(3)" name="Criteria170_314_a__3_" type="boolean"/>
+<Field label="170.314(a)(4)" name="Criteria170_314_a__4_" type="boolean"/>
+<Field label="170.314(a)(5)" name="Criteria170_314_a__5_" type="boolean"/>
+<Field label="170.314(a)(6)" name="Criteria170_314_a__6_" type="boolean"/>
+<Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="boolean"/>
+<Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="boolean"/>
+<Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="boolean"/>
+<Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="boolean"/>
+<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="boolean"/>
+<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="boolean"/>
+<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="boolean"/>
+<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="boolean"/>
+<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="boolean"/>
+<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="boolean"/>
+<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="boolean"/>
+<Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="boolean"/>
+<Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="boolean"/>
+<Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="boolean"/>
+<Field label="170.314(b)(4)" name="Criteria170_314_b__4_" type="boolean"/>
+<Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="boolean"/>
+<Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="boolean"/>
+<Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="boolean"/>
+<Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="boolean"/>
+<Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="boolean"/>
+<Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="boolean"/>
+<Field label="170.314(d)(1)" name="Criteria170_314_d__1_" type="boolean"/>
+<Field label="170.314(d)(2)" name="Criteria170_314_d__2_" type="boolean"/>
+<Field label="170.314(d)(3)" name="Criteria170_314_d__3_" type="boolean"/>
+<Field label="170.314(d)(4)" name="Criteria170_314_d__4_" type="boolean"/>
+<Field label="170.314(d)(5)" name="Criteria170_314_d__5_" type="boolean"/>
+<Field label="170.314(d)(6)" name="Criteria170_314_d__6_" type="boolean"/>
+<Field label="170.314(d)(7)" name="Criteria170_314_d__7_" type="boolean"/>
+<Field label="170.314(d)(8)" name="Criteria170_314_d__8_" type="boolean"/>
+<Field label="170.314(d)(9)" name="Criteria170_314_d__9_" type="boolean"/>
+<Field label="170.314(e)(1)" name="Criteria170_314_e__1_" type="boolean"/>
+<Field label="170.314(e)(2)" name="Criteria170_314_e__2_" type="boolean"/>
+<Field label="170.314(e)(3)" name="Criteria170_314_e__3_" type="boolean"/>
+<Field label="170.314(f)(1)" name="Criteria170_314_f__1_" type="boolean"/>
+<Field label="170.314(f)(2)" name="Criteria170_314_f__2_" type="boolean"/>
+<Field label="170.314(f)(3)" name="Criteria170_314_f__3_" type="boolean"/>
+<Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="boolean"/>
+<Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="boolean"/>
+<Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="boolean"/>
+<Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="boolean"/>
+<Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="boolean"/>
+<Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="boolean"/>
+<Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="boolean"/>
+<Field label="NQF 0001(A)" name="NQF_0001_A_" type="boolean"/>
+<Field label="NQF 0002(A)" name="NQF_0002_A_" type="boolean"/>
+<Field label="NQF 0004(A)" name="NQF_0004_A_" type="boolean"/>
+<Field label="NQF 0012(A)" name="NQF_0012_A_" type="boolean"/>
+<Field label="NQF 0013(A)" name="NQF_0013_A_" type="boolean"/>
+<Field label="NQF 0014(A)" name="NQF_0014_A_" type="boolean"/>
+<Field label="NQF 0018(A)" name="NQF_0018_A_" type="boolean"/>
+<Field label="NQF 0024(A)" name="NQF_0024_A_" type="boolean"/>
+<Field label="NQF 0027(A)" name="NQF_0027_A_" type="boolean"/>
+<Field label="NQF 0028(A)" name="NQF_0028_A_" type="boolean"/>
+<Field label="NQF 0031(A)" name="NQF_0031_A_" type="boolean"/>
+<Field label="NQF 0032(A)" name="NQF_0032_A_" type="boolean"/>
+<Field label="NQF 0033(A)" name="NQF_0033_A_" type="boolean"/>
+<Field label="NQF 0034(A)" name="NQF_0034_A_" type="boolean"/>
+<Field label="NQF 0036(A)" name="NQF_0036_A_" type="boolean"/>
+<Field label="NQF 0038(A)" name="NQF_0038_A_" type="boolean"/>
+<Field label="NQF 0041(A)" name="NQF_0041_A_" type="boolean"/>
+<Field label="NQF 0043(A)" name="NQF_0043_A_" type="boolean"/>
+<Field label="NQF 0047(A)" name="NQF_0047_A_" type="boolean"/>
+<Field label="NQF 0052(A)" name="NQF_0052_A_" type="boolean"/>
+<Field label="NQF 0055(A)" name="NQF_0055_A_" type="boolean"/>
+<Field label="NQF 0056(A)" name="NQF_0056_A_" type="boolean"/>
+<Field label="NQF 0059(A)" name="NQF_0059_A_" type="boolean"/>
+<Field label="NQF 0061(A)" name="NQF_0061_A_" type="boolean"/>
+<Field label="NQF 0062(A)" name="NQF_0062_A_" type="boolean"/>
+<Field label="NQF 0064(A)" name="NQF_0064_A_" type="boolean"/>
+<Field label="NQF 0067(A)" name="NQF_0067_A_" type="boolean"/>
+<Field label="NQF 0068(A)" name="NQF_0068_A_" type="boolean"/>
+<Field label="NQF 0070(A)" name="NQF_0070_A_" type="boolean"/>
+<Field label="NQF 0073(A)" name="NQF_0073_A_" type="boolean"/>
+<Field label="NQF 0074(A)" name="NQF_0074_A_" type="boolean"/>
+<Field label="NQF 0075(A)" name="NQF_0075_A_" type="boolean"/>
+<Field label="NQF 0081(A)" name="NQF_0081_A_" type="boolean"/>
+<Field label="NQF 0083(A)" name="NQF_0083_A_" type="boolean"/>
+<Field label="NQF 0084(A)" name="NQF_0084_A_" type="boolean"/>
+<Field label="NQF 0086(A)" name="NQF_0086_A_" type="boolean"/>
+<Field label="NQF 0088(A)" name="NQF_0088_A_" type="boolean"/>
+<Field label="NQF 0089(A)" name="NQF_0089_A_" type="boolean"/>
+<Field label="NQF 0105(A)" name="NQF_0105_A_" type="boolean"/>
+<Field label="NQF 0371(I)" name="NQF_0371_I_" type="boolean"/>
+<Field label="NQF 0372(I)" name="NQF_0372_I_" type="boolean"/>
+<Field label="NQF 0373(I)" name="NQF_0373_I_" type="boolean"/>
+<Field label="NQF 0374(I)" name="NQF_0374_I_" type="boolean"/>
+<Field label="NQF 0375(I)" name="NQF_0375_I_" type="boolean"/>
+<Field label="NQF 0376(I)" name="NQF_0376_I_" type="boolean"/>
+<Field label="NQF 0385(A)" name="NQF_0385_A_" type="boolean"/>
+<Field label="NQF 0387(A)" name="NQF_0387_A_" type="boolean"/>
+<Field label="NQF 0389(A)" name="NQF_0389_A_" type="boolean"/>
+<Field label="NQF 0421(A)" name="NQF_0421_A_" type="boolean"/>
+<Field label="NQF 0435(I)" name="NQF_0435_I_" type="boolean"/>
+<Field label="NQF 0436(I)" name="NQF_0436_I_" type="boolean"/>
+<Field label="NQF 0437(I)" name="NQF_0437_I_" type="boolean"/>
+<Field label="NQF 0438(I)" name="NQF_0438_I_" type="boolean"/>
+<Field label="NQF 0439(I)" name="NQF_0439_I_" type="boolean"/>
+<Field label="NQF 0440(I)" name="NQF_0440_I_" type="boolean"/>
+<Field label="NQF 0441(I)" name="NQF_0441_I_" type="boolean"/>
+<Field label="NQF 0495(I)" name="NQF_0495_I_" type="boolean"/>
+<Field label="NQF 0497(I)" name="NQF_0497_I_" type="boolean"/>
+<Field label="NQF 0575(A)" name="NQF_0575_A_" type="boolean"/>
+<Field label="CMS100" name="CMS100" type="string"/>
+<Field label="CMS100_2" name="CMS100_2" type="string"/>
+<Field label="CMS102" name="CMS102" type="string"/>
+<Field label="CMS102_2" name="CMS102_2" type="string"/>
+<Field label="CMS104" name="CMS104" type="string"/>
+<Field label="CMS104_2" name="CMS104_2" type="string"/>
+<Field label="CMS105" name="CMS105" type="string"/>
+<Field label="CMS105_2" name="CMS105_2" type="string"/>
+<Field label="CMS107" name="CMS107" type="string"/>
+<Field label="CMS107_2" name="CMS107_2" type="string"/>
+<Field label="CMS108" name="CMS108" type="string"/>
+<Field label="CMS108_2" name="CMS108_2" type="string"/>
+<Field label="CMS109" name="CMS109" type="string"/>
+<Field label="CMS109_2" name="CMS109_2" type="string"/>
+<Field label="CMS110" name="CMS110" type="string"/>
+<Field label="CMS110_2" name="CMS110_2" type="string"/>
+<Field label="CMS111" name="CMS111" type="string"/>
+<Field label="CMS111_2" name="CMS111_2" type="string"/>
+<Field label="CMS113" name="CMS113" type="string"/>
+<Field label="CMS113_2" name="CMS113_2" type="string"/>
+<Field label="CMS114" name="CMS114" type="string"/>
+<Field label="CMS114_2" name="CMS114_2" type="string"/>
+<Field label="CMS117" name="CMS117" type="string"/>
+<Field label="CMS117_2" name="CMS117_2" type="string"/>
+<Field label="CMS122" name="CMS122" type="string"/>
+<Field label="CMS122_2" name="CMS122_2" type="string"/>
+<Field label="CMS123" name="CMS123" type="string"/>
+<Field label="CMS123_2" name="CMS123_2" type="string"/>
+<Field label="CMS124" name="CMS124" type="string"/>
+<Field label="CMS124_2" name="CMS124_2" type="string"/>
+<Field label="CMS125" name="CMS125" type="string"/>
+<Field label="CMS125_2" name="CMS125_2" type="string"/>
+<Field label="CMS126" name="CMS126" type="string"/>
+<Field label="CMS126_2" name="CMS126_2" type="string"/>
+<Field label="CMS127" name="CMS127" type="string"/>
+<Field label="CMS127_2" name="CMS127_2" type="string"/>
+<Field label="CMS128" name="CMS128" type="string"/>
+<Field label="CMS128_2" name="CMS128_2" type="string"/>
+<Field label="CMS129" name="CMS129" type="string"/>
+<Field label="CMS129_2" name="CMS129_2" type="string"/>
+<Field label="CMS130" name="CMS130" type="string"/>
+<Field label="CMS130_2" name="CMS130_2" type="string"/>
+<Field label="CMS131" name="CMS131" type="string"/>
+<Field label="CMS131_2" name="CMS131_2" type="string"/>
+<Field label="CMS132" name="CMS132" type="string"/>
+<Field label="CMS132_2" name="CMS132_2" type="string"/>
+<Field label="CMS133" name="CMS133" type="string"/>
+<Field label="CMS133_2" name="CMS133_2" type="string"/>
+<Field label="CMS134" name="CMS134" type="string"/>
+<Field label="CMS134_2" name="CMS134_2" type="string"/>
+<Field label="CMS135" name="CMS135" type="string"/>
+<Field label="CMS135_2" name="CMS135_2" type="string"/>
+<Field label="CMS136" name="CMS136" type="string"/>
+<Field label="CMS136_2" name="CMS136_2" type="string"/>
+<Field label="CMS137" name="CMS137" type="string"/>
+<Field label="CMS137_2" name="CMS137_2" type="string"/>
+<Field label="CMS138" name="CMS138" type="string"/>
+<Field label="CMS138_2" name="CMS138_2" type="string"/>
+<Field label="CMS139" name="CMS139" type="string"/>
+<Field label="CMS139_2" name="CMS139_2" type="string"/>
+<Field label="CMS140" name="CMS140" type="string"/>
+<Field label="CMS140_2" name="CMS140_2" type="string"/>
+<Field label="CMS141" name="CMS141" type="string"/>
+<Field label="CMS141_2" name="CMS141_2" type="string"/>
+<Field label="CMS142" name="CMS142" type="string"/>
+<Field label="CMS142_2" name="CMS142_2" type="string"/>
+<Field label="CMS143" name="CMS143" type="string"/>
+<Field label="CMS143_2" name="CMS143_2" type="string"/>
+<Field label="CMS144" name="CMS144" type="string"/>
+<Field label="CMS144_2" name="CMS144_2" type="string"/>
+<Field label="CMS145" name="CMS145" type="string"/>
+<Field label="CMS145_2" name="CMS145_2" type="string"/>
+<Field label="CMS146" name="CMS146" type="string"/>
+<Field label="CMS146_2" name="CMS146_2" type="string"/>
+<Field label="CMS147" name="CMS147" type="string"/>
+<Field label="CMS147_2" name="CMS147_2" type="string"/>
+<Field label="CMS148" name="CMS148" type="string"/>
+<Field label="CMS148_2" name="CMS148_2" type="string"/>
+<Field label="CMS149" name="CMS149" type="string"/>
+<Field label="CMS149_2" name="CMS149_2" type="string"/>
+<Field label="CMS153" name="CMS153" type="string"/>
+<Field label="CMS153_2" name="CMS153_2" type="string"/>
+<Field label="CMS154" name="CMS154" type="string"/>
+<Field label="CMS154_2" name="CMS154_2" type="string"/>
+<Field label="CMS155" name="CMS155" type="string"/>
+<Field label="CMS155_2" name="CMS155_2" type="string"/>
+<Field label="CMS156" name="CMS156" type="string"/>
+<Field label="CMS156_2" name="CMS156_2" type="string"/>
+<Field label="CMS157" name="CMS157" type="string"/>
+<Field label="CMS157_2" name="CMS157_2" type="string"/>
+<Field label="CMS158" name="CMS158" type="string"/>
+<Field label="CMS158_2" name="CMS158_2" type="string"/>
+<Field label="CMS159" name="CMS159" type="string"/>
+<Field label="CMS159_2" name="CMS159_2" type="string"/>
+<Field label="CMS160" name="CMS160" type="string"/>
+<Field label="CMS160_2" name="CMS160_2" type="string"/>
+<Field label="CMS161" name="CMS161" type="string"/>
+<Field label="CMS161_2" name="CMS161_2" type="string"/>
+<Field label="CMS163" name="CMS163" type="string"/>
+<Field label="CMS163_2" name="CMS163_2" type="string"/>
+<Field label="CMS164" name="CMS164" type="string"/>
+<Field label="CMS164_2" name="CMS164_2" type="string"/>
+<Field label="CMS165" name="CMS165" type="string"/>
+<Field label="CMS165_2" name="CMS165_2" type="string"/>
+<Field label="CMS166" name="CMS166" type="string"/>
+<Field label="CMS166_2" name="CMS166_2" type="string"/>
+<Field label="CMS167" name="CMS167" type="string"/>
+<Field label="CMS167_2" name="CMS167_2" type="string"/>
+<Field label="CMS169" name="CMS169" type="string"/>
+<Field label="CMS169_2" name="CMS169_2" type="string"/>
+<Field label="CMS171" name="CMS171" type="string"/>
+<Field label="CMS171_2" name="CMS171_2" type="string"/>
+<Field label="CMS172" name="CMS172" type="string"/>
+<Field label="CMS172_2" name="CMS172_2" type="string"/>
+<Field label="CMS177" name="CMS177" type="string"/>
+<Field label="CMS177_2" name="CMS177_2" type="string"/>
+<Field label="CMS178" name="CMS178" type="string"/>
+<Field label="CMS178_2" name="CMS178_2" type="string"/>
+<Field label="CMS179" name="CMS179" type="string"/>
+<Field label="CMS179_2" name="CMS179_2" type="string"/>
+<Field label="CMS182" name="CMS182" type="string"/>
+<Field label="CMS182_2" name="CMS182_2" type="string"/>
+<Field label="CMS185" name="CMS185" type="string"/>
+<Field label="CMS185_2" name="CMS185_2" type="string"/>
+<Field label="CMS188" name="CMS188" type="string"/>
+<Field label="CMS188_2" name="CMS188_2" type="string"/>
+<Field label="CMS190" name="CMS190" type="string"/>
+<Field label="CMS190_2" name="CMS190_2" type="string"/>
+<Field label="CMS22" name="CMS22" type="string"/>
+<Field label="CMS22_2" name="CMS22_2" type="string"/>
+<Field label="CMS26V1" name="CMS26V1" type="string"/>
+<Field label="CMS26V1_2" name="CMS26V1_2" type="string"/>
+<Field label="CMS2" name="CMS2" type="string"/>
+<Field label="CMS2_2" name="CMS2_2" type="string"/>
+<Field label="CMS30" name="CMS30" type="string"/>
+<Field label="CMS30_2" name="CMS30_2" type="string"/>
+<Field label="CMS31" name="CMS31" type="string"/>
+<Field label="CMS31_2" name="CMS31_2" type="string"/>
+<Field label="CMS32" name="CMS32" type="string"/>
+<Field label="CMS32_2" name="CMS32_2" type="string"/>
+<Field label="CMS50" name="CMS50" type="string"/>
+<Field label="CMS50_2" name="CMS50_2" type="string"/>
+<Field label="CMS52" name="CMS52" type="string"/>
+<Field label="CMS52_2" name="CMS52_2" type="string"/>
+<Field label="CMS53" name="CMS53" type="string"/>
+<Field label="CMS53_2" name="CMS53_2" type="string"/>
+<Field label="CMS55" name="CMS55" type="string"/>
+<Field label="CMS55_2" name="CMS55_2" type="string"/>
+<Field label="CMS56" name="CMS56" type="string"/>
+<Field label="CMS56_2" name="CMS56_2" type="string"/>
+<Field label="CMS60" name="CMS60" type="string"/>
+<Field label="CMS60_2" name="CMS60_2" type="string"/>
+<Field label="CMS61" name="CMS61" type="string"/>
+<Field label="CMS61_2" name="CMS61_2" type="string"/>
+<Field label="CMS62" name="CMS62" type="string"/>
+<Field label="CMS62_2" name="CMS62_2" type="string"/>
+<Field label="CMS64" name="CMS64" type="string"/>
+<Field label="CMS64_2" name="CMS64_2" type="string"/>
+<Field label="CMS65" name="CMS65" type="string"/>
+<Field label="CMS65_2" name="CMS65_2" type="string"/>
+<Field label="CMS66" name="CMS66" type="string"/>
+<Field label="CMS66_2" name="CMS66_2" type="string"/>
+<Field label="CMS68" name="CMS68" type="string"/>
+<Field label="CMS68_2" name="CMS68_2" type="string"/>
+<Field label="CMS69" name="CMS69" type="string"/>
+<Field label="CMS69_2" name="CMS69_2" type="string"/>
+<Field label="CMS71" name="CMS71" type="string"/>
+<Field label="CMS71_2" name="CMS71_2" type="string"/>
+<Field label="CMS72" name="CMS72" type="string"/>
+<Field label="CMS72_2" name="CMS72_2" type="string"/>
+<Field label="CMS73" name="CMS73" type="string"/>
+<Field label="CMS73_2" name="CMS73_2" type="string"/>
+<Field label="CMS74" name="CMS74" type="string"/>
+<Field label="CMS74_2" name="CMS74_2" type="string"/>
+<Field label="CMS75" name="CMS75" type="string"/>
+<Field label="CMS75_2" name="CMS75_2" type="string"/>
+<Field label="CMS77" name="CMS77" type="string"/>
+<Field label="CMS77_2" name="CMS77_2" type="string"/>
+<Field label="CMS82" name="CMS82" type="string"/>
+<Field label="CMS82_2" name="CMS82_2" type="string"/>
+<Field label="CMS90" name="CMS90" type="string"/>
+<Field label="CMS90_2" name="CMS90_2" type="string"/>
+<Field label="CMS91" name="CMS91" type="string"/>
+<Field label="CMS91_2" name="CMS91_2" type="string"/>
+<Field label="CMS9V1" name="CMS9V1" type="string"/>
+<Field label="CMS9V1_2" name="CMS9V1_2" type="string"/>
+<Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata6" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CertifiedProduct_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="CertifiedProduct_id" type="long"/>
+<Field name="Edition_id" type="long"/>
+<Field name="Version_id" type="long"/>
+<Field name="Certbody_id" type="long"/>
+<Field name="CqmEdition_id" type="long"/>
+<Field name="Setting_id" type="long"/>
+<Field name="Classification_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata0">
+<Record fieldDelimiter="|" name="Classification_id" recordDelimiter="\r\n" type="delimited">
+<Field name="Classification_Name" type="string"/>
+<Field name="classification_type_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata12" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="cqm_edition_id" type="long"/>
+<Field name="certified_product_id" type="long"/>
+<Field name="certified_product_cqm_edition_map_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata2" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CqmEdition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="CqmEdition" type="string"/>
+<Field name="CqmEdition_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata9" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="Edition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field name="Edition_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata11" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="PracticeType_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Practice_Setting" type="string"/>
+<Field name="practice_type_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata3" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Product" name="Product" type="string"/>
+<Field name="Product_id" type="long"/>
+<Field label="Vendor" name="Vendor" type="string"/>
 <Field name="Vendor_id" type="long"/>
-<Field name="Practice_Setting" type="string"/>
-<Field name="Practice_Type_Id" type="long"/>
-<Field name="Product_Classification" type="string"/>
-<Field name="Product_Classification_Id" type="long"/>
 </Record>
 </Metadata>
 <Metadata id="Metadata4" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CHPL_Product_Version" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Record fieldDelimiter="|" name="Product_Version" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field label="Product" name="Version" type="string"/>
 <Field label="Vendor" name="Product" type="string"/>
 <Field name="Product_id" type="long"/>
@@ -286,18 +696,18 @@
 <Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CHPL_Vendor" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Metadata id="Metadata7" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="ProductVersion_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Version" name="Version" type="string"/>
+<Field name="Version_id" type="long"/>
+<Field label="Product" name="Product" type="string"/>
 <Field label="Vendor" name="Vendor" type="string"/>
-<Field name="Vendor_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata7" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="ProductId" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field name="ProductName" type="string"/>
-<Field name="ProductId" type="long"/>
-<Field name="Vendor" type="string"/>
-<Field name="VendorId" type="long"/>
+<Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="Vendor" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field name="Vendor_id" type="long"/>
 </Record>
 </Metadata>
 <MetadataGroup name="Implicit metadata" type="implicit">
@@ -318,10 +728,25 @@
 <Dictionary/>
 </Global>
 <Phase number="0">
-<Node dedupKey="Version(a);Product(a);Vendor(a)" enabled="enabled" guiName="Dedup" guiX="695" guiY="244" id="DEDUP" type="DEDUP"/>
-<Node enabled="enabled" guiName="ExtSort" guiX="470" guiY="244" id="EXT_SORT" sortKey="Version(a);Product(a);Vendor(a)" type="EXT_SORT"/>
-<Node enabled="enabled" fileURL="./src/main/resources/log_create_vendor-product.txt" guiName="Log failed rows" guiX="245" guiY="132" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
-<Node enabled="enabled" guiName="Pare down to useful data" guiX="245" guiY="20" id="PARE_DOWN_TO_USEFUL_DATA" type="REFORMAT">
+<Node dedupKey="Vendor(a);Product(a)" enabled="enabled" guiName="Dedup product" guiX="695" guiY="132" id="DEDUP_PRODUCT" type="DEDUP"/>
+<Node dedupKey="Version(a);Product(a);Vendor(a)" enabled="enabled" guiName="Dedup product_version" guiX="695" guiY="244" id="DEDUP_PRODUCT_VERSION" type="DEDUP"/>
+<Node dedupKey="Vendor(a)" enabled="enabled" guiName="Dedup vendor" guiX="695" guiY="20" id="DEDUP_VENDOR" type="DEDUP"/>
+<Node enabled="enabled" fileURL="./log_create-vendor-product.txt" guiName="Log failed rows" guiX="245" guiY="139" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
+<Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl_to-insert.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" skipRows="0" type="DATA_READER"/>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Vendors" guiX="920" guiY="20" id="SAVE_NEW_VENDORS" type="DB_OUTPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[BEGIN;
+LOCK TABLE openchpl.vendor IN SHARE ROW EXCLUSIVE MODE;
+INSERT INTO openchpl.vendor (name, last_modified_user)
+	SELECT $Vendor, -1
+	WHERE NOT EXISTS (
+		SELECT 1 FROM openchpl.vendor WHERE name = $Vendor
+	);
+COMMIT;]]></attr>
+</Node>
+<Node enabled="enabled" guiName="Sort product" guiX="470" guiY="132" id="SORT_PRODUCT1" sortKey="Vendor(a);Product(a)" type="EXT_SORT"/>
+<Node enabled="enabled" guiName="Sort product_version" guiX="470" guiY="244" id="SORT_PRODUCT_VERSION" sortKey="Version(a);Product(a);Vendor(a)" type="EXT_SORT"/>
+<Node enabled="enabled" guiName="Sort vendor" guiX="470" guiY="20" id="SORT_VENDOR1" sortKey="Vendor(a)" type="EXT_SORT"/>
+<Node enabled="enabled" guiName="Split data" guiX="245" guiY="20" id="SPLIT_DATA" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -355,32 +780,17 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl_to-insert.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" skipRows="0" type="DATA_READER"/>
-<Node dedupKey="Vendor(a)" enabled="enabled" guiName="Remove duplicates" guiX="695" guiY="20" id="REMOVE_DUPLICATES" type="DEDUP"/>
-<Node dedupKey="Vendor(a);Product(a)" enabled="enabled" guiName="Remove duplicates" guiX="695" guiY="132" id="REMOVE_DUPLICATES1" type="DEDUP"/>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Vendors" guiX="920" guiY="20" id="SAVE_NEW_VENDORS" type="DB_OUTPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[BEGIN;
-LOCK TABLE openchpl.vendor IN SHARE ROW EXCLUSIVE MODE;
-INSERT INTO openchpl.vendor (name, last_modified_user)
-	SELECT $Vendor, -1
-	WHERE NOT EXISTS (
-		SELECT 1 FROM openchpl.vendor WHERE name = $Vendor
-	);
-COMMIT;]]></attr>
-</Node>
-<Node enabled="enabled" guiName="Sort" guiX="470" guiY="20" id="SORT" sortKey="Vendor(a)" type="EXT_SORT"/>
-<Node enabled="enabled" guiName="Sort" guiX="470" guiY="132" id="SORT1" sortKey="Vendor(a);Product(a)" type="EXT_SORT"/>
-<Edge fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata4" toNode="JOIN_PRODUCT_X_PRODUCT_VERSION:0"/>
-<Edge fromNode="EXT_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata4" toNode="DEDUP:0"/>
-<Edge debugMode="false" fromNode="PARE_DOWN_TO_USEFUL_DATA:0" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="SORT:0"/>
-<Edge fromNode="PARE_DOWN_TO_USEFUL_DATA:1" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 1 (out)" toNode="SORT1:0"/>
-<Edge fromNode="PARE_DOWN_TO_USEFUL_DATA:2" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata4" outPort="Port 2 (out)" toNode="EXT_SORT:0"/>
-<Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" metadata="Metadata5" outPort="Port 0 (output)" toNode="PARE_DOWN_TO_USEFUL_DATA:0"/>
+<Edge debugMode="false" fromNode="DEDUP_PRODUCT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata3" toNode="JOIN_PRODUCT_X_VENDOR:0"/>
+<Edge fromNode="DEDUP_PRODUCT_VERSION:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata4" toNode="JOIN_PRODUCT_X_PRODUCT_VERSION:0"/>
+<Edge debugMode="false" fromNode="DEDUP_VENDOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata1" toNode="SAVE_NEW_VENDORS:0"/>
+<Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" metadata="Metadata5" outPort="Port 0 (output)" toNode="SPLIT_DATA:0"/>
 <Edge debugMode="false" fromNode="READ_IN_CSV:1" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="LOG_FAILED_ROWS:0"/>
-<Edge debugMode="false" fromNode="REMOVE_DUPLICATES:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata1" toNode="SAVE_NEW_VENDORS:0"/>
-<Edge debugMode="false" fromNode="REMOVE_DUPLICATES1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata2" toNode="JOIN_PRODUCT_X_VENDOR:0"/>
-<Edge debugMode="false" fromNode="SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="REMOVE_DUPLICATES:0"/>
-<Edge debugMode="false" fromNode="SORT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata2" toNode="REMOVE_DUPLICATES1:0"/>
+<Edge debugMode="false" fromNode="SORT_PRODUCT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata3" toNode="DEDUP_PRODUCT:0"/>
+<Edge fromNode="SORT_PRODUCT_VERSION:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata4" toNode="DEDUP_PRODUCT_VERSION:0"/>
+<Edge debugMode="false" fromNode="SORT_VENDOR1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="DEDUP_VENDOR:0"/>
+<Edge debugMode="false" fromNode="SPLIT_DATA:0" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="SORT_VENDOR1:0"/>
+<Edge fromNode="SPLIT_DATA:1" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 1 (out)" toNode="SORT_PRODUCT1:0"/>
+<Edge fromNode="SPLIT_DATA:2" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata4" outPort="Port 2 (out)" toNode="SORT_PRODUCT_VERSION:0"/>
 </Phase>
 <Phase number="1">
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing Vendors" guiX="677" guiY="356" id="GET_EXISTING_VENDORS" type="DB_INPUT_TABLE">
@@ -433,26 +843,26 @@ INSERT INTO openchpl.product
 COMMIT;]]></attr>
 </Node>
 <Edge debugMode="false" fromNode="GET_EXISTING_VENDORS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 1 (slave)" metadata="Metadata1" outPort="Port 0 (out)" toNode="JOIN_PRODUCT_X_VENDOR:1"/>
-<Edge debugMode="false" fromNode="JOIN_PRODUCT_X_VENDOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="SAVE_NEW_PRODUCTS:0"/>
+<Edge debugMode="false" fromNode="JOIN_PRODUCT_X_VENDOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (out)" toNode="SAVE_NEW_PRODUCTS:0"/>
 </Phase>
 <Phase number="2">
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing products" guiX="684" guiY="479" id="GET_EXISTING_PRODUCTS" type="DB_INPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[SELECT $ProductId:=openchpl.product.product_id,
-$ProductName:=openchpl.product.name,
-$VendorId:=openchpl.vendor.vendor_id,
+<attr name="sqlQuery"><![CDATA[SELECT $Product_id:=openchpl.product.product_id,
+$Product:=openchpl.product.name,
+$Vendor_id:=openchpl.vendor.vendor_id,
 $Vendor:=openchpl.vendor.name
 FROM openchpl.product,
 openchpl.vendor
 WHERE vendor.vendor_id = product.vendor_id;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join Product x Product_Version" guiX="920" guiY="297" id="JOIN_PRODUCT_X_PRODUCT_VERSION" joinKey="$Product=$ProductName;$Vendor=$Vendor" joinType="inner" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join Product x Product_Version" guiX="920" guiY="297" id="JOIN_PRODUCT_X_PRODUCT_VERSION" joinKey="$Product=$Product;$Vendor=$Vendor" joinType="inner" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
 function integer transform() {
 	$out.0.Version = $in.0.Version;
-	$out.0.Product_id = $in.1.ProductId;
-	$out.0.Vendor_id = $in.1.VendorId;
+	$out.0.Product_id = $in.1.Product_id;
+	$out.0.Vendor_id = $in.1.Vendor_id;
 
 	return ALL;
 }
@@ -490,7 +900,7 @@ INSERT INTO openchpl.product_version (version, product_id, last_modified_user)
        );
 COMMIT;]]></attr>
 </Node>
-<Edge fromNode="GET_EXISTING_PRODUCTS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 1 (slave)" metadata="Metadata7" outPort="Port 0 (out)" toNode="JOIN_PRODUCT_X_PRODUCT_VERSION:1"/>
+<Edge fromNode="GET_EXISTING_PRODUCTS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 1 (slave)" metadata="Metadata3" outPort="Port 0 (out)" toNode="JOIN_PRODUCT_X_PRODUCT_VERSION:1"/>
 <Edge debugMode="false" fromNode="JOIN_PRODUCT_X_PRODUCT_VERSION:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" metadata="Metadata4" outPort="Port 0 (out)" toNode="SAVE_NEW_PRODUCT_VERSIONS:0"/>
 </Phase>
 </Graph>

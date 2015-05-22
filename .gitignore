@@ -235,3 +235,8 @@ pip-log.txt
 /chpl/chpl-etl/log-unmerged_certified.txt
 /chpl/chpl-etl/log_checksum-analysis.txt
 /chpl/chpl-etl/log_unchanged-rows.csv
+/chpl/chpl-etl/log_create-vendor-product.txt
+/chpl/chpl-etl/log_create_certified-product.txt
+/chpl/chpl-etl/log_uncreated-certified.txt
+/chpl/chpl-etl/log_unmerged-certified.txt
+/chpl/chpl-etl/to-update.csv
