@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Fri May 22 12:24:39 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.315" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Fri May 22 14:33:31 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.318" showComponentDetails="true">
 <Global>
 <Metadata id="CertificationBody_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CertificationBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
@@ -383,45 +383,6 @@
 <Field name="Classification_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Classification_id">
-<Record fieldDelimiter="|" name="Classification_id" recordDelimiter="\r\n" type="delimited">
-<Field name="Classification_Name" type="string"/>
-<Field name="classification_type_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field name="cqm_edition_id" type="long"/>
-<Field name="certified_product_id" type="long"/>
-<Field name="certified_product_cqm_edition_map_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="CqmEdition_id" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CqmEdition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field name="CqmEdition" type="string"/>
-<Field name="CqmEdition_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="Edition_id" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="Edition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
-<Field name="Edition_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="PracticeType_id" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="PracticeType_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field eofAsDelimiter="true" label="Certifying ATCB" name="Practice_Setting" type="string"/>
-<Field name="practice_type_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="ProductVersion_id" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="ProductVersion_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field label="Version" name="Version" type="string"/>
-<Field name="Version_id" type="long"/>
-<Field label="Product" name="Product" type="string"/>
-<Field label="Vendor" name="Vendor" type="string"/>
-</Record>
-</Metadata>
 <Metadata id="CHPL_To_Insert" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="^" label="chpl_to-insert.csv" name="CHPL_To_Insert" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\r\n" skipSourceRows="1" type="delimited">
 <Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
@@ -687,6 +648,45 @@
 <Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
 </Record>
 </Metadata>
+<Metadata id="Classification_id">
+<Record fieldDelimiter="|" name="Classification_id" recordDelimiter="\r\n" type="delimited">
+<Field name="Classification_Name" type="string"/>
+<Field name="classification_type_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="cqm_edition_id" type="long"/>
+<Field name="certified_product_id" type="long"/>
+<Field name="certified_product_cqm_edition_map_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="CqmEdition_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CqmEdition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="CqmEdition" type="string"/>
+<Field name="CqmEdition_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Edition_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="Edition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field name="Edition_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="PracticeType_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="PracticeType_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Practice_Setting" type="string"/>
+<Field name="practice_type_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="ProductVersion_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="ProductVersion_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Version" name="Version" type="string"/>
+<Field name="Version_id" type="long"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+</Record>
+</Metadata>
 <Connection database="POSTGRE" dbURL="${openchpl_db_url}" id="JDBC0" jdbcSpecific="POSTGRE" name="PostgreSQL" password="${openchpl_password}" type="JDBC" user="${openchpl_user}"/>
 <GraphParameters>
 <GraphParameterFile fileURL="parameters.prm"/>
@@ -694,6 +694,10 @@
 <Dictionary/>
 </Global>
 <Phase number="0">
+<Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl_to-insert.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" skipRows="0" type="DATA_READER"/>
+<Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="CHPL_To_Insert" outPort="Port 0 (output)" toNode="JOIN_CERT_PRODUCT_X_IDS:0"/>
+</Phase>
+<Phase number="3">
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Get cert_body_ids" guiX="20" guiY="224" id="GET_CERT_BODY_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT 
   $Certbody_id:=certification_body.certification_body_id,
@@ -1126,7 +1130,6 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl_to-insert.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" skipRows="0" type="DATA_READER"/>
 <Node enabled="enabled" guiName="Remove null ids" guiX="422" guiY="20" id="REMOVE_NULL_IDS" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $Edition_id != null AND $Version_id != null AND $Certbody_id != null AND $CqmEdition_id != null]]></attr>
@@ -1149,6 +1152,7 @@ INSERT INTO openchpl.certified_product
 COMMIT;]]></attr>
 </Node>
 <Node enabled="enabled" guiName="SimpleCopy" guiX="581" guiY="18" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
+<Node enabled="enabled" fileURL="./cert_products_x_ids_null.txt" guiName="UniversalDataWriter" guiX="487" guiY="289" id="UNIVERSAL_DATA_WRITER" type="DATA_WRITER"/>
 <Edge fromNode="GET_CERT_BODY_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 2 (slave)" metadata="CertificationBody_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:2"/>
 <Edge fromNode="GET_CLASSIFICATION_TYPE_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 6 (slave)" metadata="Classification_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:6"/>
 <Edge fromNode="GET_CQM_EDITION_IDS1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 4 (slave)" metadata="CqmEdition_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:4"/>
@@ -1156,12 +1160,12 @@ COMMIT;]]></attr>
 <Edge fromNode="GET_PRACTICE_TYPE_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 5 (slave)" metadata="PracticeType_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:5"/>
 <Edge debugMode="false" fromNode="GET_PRODUCT_VERSION_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 3 (slave)" metadata="ProductVersion_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:3"/>
 <Edge debugMode="false" fromNode="JOIN_CERT_PRODUCT_X_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="CertifiedProduct" outPort="Port 0 (out)" toNode="REMOVE_NULL_IDS:0"/>
-<Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="CHPL_To_Insert" outPort="Port 0 (output)" toNode="JOIN_CERT_PRODUCT_X_IDS:0"/>
 <Edge debugMode="false" fromNode="REMOVE_NULL_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="CertifiedProduct" toNode="SIMPLE_COPY:0"/>
+<Edge fromNode="REMOVE_NULL_IDS:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="CertifiedProduct" toNode="UNIVERSAL_DATA_WRITER:0"/>
 <Edge fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="SAVE_CERTIFED_PRODUCT:0"/>
 <Edge fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (driver)" outPort="Port 1 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS:0"/>
 </Phase>
-<Phase number="1">
+<Phase number="4">
 <Node enabled="enabled" guiName="Filter null cert_prod_ids" guiX="1019" guiY="132" id="FILTER_NULL_CERT_PROD_IDS" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $Edition_id != null AND $Version_id != null AND $Certbody_id != null AND $Practice_Setting_id != null AND $Product_Classification_id != null]]></attr>
@@ -1566,7 +1570,7 @@ COMMIT;]]></attr>
 <Edge fromNode="SIMPLE_COPY1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="SAVE_CP_CQMEDITION_MAP:0"/>
 <Edge fromNode="SIMPLE_COPY1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge21" inPort="Port 0 (driver)" outPort="Port 1 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="JOIN_CERT_PROD_X_CP_CQM_ED_IDS:0"/>
 </Phase>
-<Phase number="2">
+<Phase number="5">
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Get cp-cqmedition-map ids" guiX="1149" guiY="313" id="GET_CP_CQMEDITION_MAP_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $cqm_edition_id:=certified_product_cqm_edition_map.cqm_edition_id,
 $certified_product_id:=certified_product_cqm_edition_map.certified_product_id,
