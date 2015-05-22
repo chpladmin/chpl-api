@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Fri May 22 12:48:03 EDT 2015" modifiedBy="alarned" name="ChecksumAnalysis" revision="1.226" showComponentDetails="true">
 <Global>
-<Metadata id="Metadata1">
+<Metadata id="All_data">
 <Record fieldDelimiter="^" name="All_data" recordDelimiter="\r\n" type="delimited">
 <Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
 <Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
@@ -267,13 +267,13 @@
 <Field name="Stored_Checksum" type="string"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata10" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="CertificationBody_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CertificationBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
 <Field name="Certbody_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata12" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="CertifiedProduct" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="^" name="CertifiedProduct" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field name="CertifiedProduct_id" type="long"/>
 <Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
@@ -638,7 +638,7 @@
 <Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata6" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="CertifiedProduct_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CertifiedProduct_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field name="CertifiedProduct_id" type="long"/>
 <Field name="Edition_id" type="long"/>
@@ -649,32 +649,32 @@
 <Field name="Classification_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata5">
+<Metadata id="Classification_id">
 <Record fieldDelimiter="|" name="Classification_id" recordDelimiter="\r\n" type="delimited">
 <Field name="Classification_Name" type="string"/>
 <Field name="classification_type_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata14" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field name="cqm_edition_id" type="long"/>
 <Field name="certified_product_id" type="long"/>
 <Field name="certified_product_cqm_edition_map_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata8" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="CqmEdition_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CqmEdition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field name="CqmEdition" type="string"/>
 <Field name="CqmEdition_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata13" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="Edition_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="Edition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
 <Field name="Edition_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata3" previewAttachment="${DATAIN_DIR}/CHPL_pipe.csv" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="From_csv" previewAttachment="${DATAIN_DIR}/CHPL_pipe.csv" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="^" label="CHPL_pipe.csv" name="From_csv" previewAttachment="${DATAIN_DIR}/CHPL_pipe.csv" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="true" recordDelimiter="\r\n" skipSourceRows="1" type="delimited">
 <Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
 <Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
@@ -939,13 +939,13 @@
 <Field name="Checksum" type="string"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata11" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="PracticeType_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="PracticeType_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field eofAsDelimiter="true" label="Certifying ATCB" name="Practice_Setting" type="string"/>
 <Field name="practice_type_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata2" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="Product" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field label="Product" name="Product" type="string"/>
 <Field name="Product_id" type="long"/>
@@ -953,13 +953,13 @@
 <Field name="Vendor_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata0">
+<Metadata id="Product_checksum">
 <Record fieldDelimiter="|" name="Product_checksum" recordDelimiter="\r\n" type="delimited">
 <Field name="STG_Certification_ID" type="string"/>
 <Field name="Stored_Checksum" type="string"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata4" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="Product_Version" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="Product_Version" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field label="Product" name="Version" type="string"/>
 <Field label="Vendor" name="Product" type="string"/>
@@ -968,7 +968,7 @@
 <Field name="Vendor_id" type="long"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata9" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="Product_Version_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="ProductVersion_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field label="Version" name="Version" type="string"/>
 <Field name="Version_id" type="long"/>
@@ -976,7 +976,7 @@
 <Field label="Vendor" name="Vendor" type="string"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata7" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="Vendor" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="Vendor" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field label="Vendor" name="Vendor" type="string"/>
 <Field name="Vendor_id" type="long"/>
@@ -1585,16 +1585,16 @@ function integer transform() {
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.Checksum == $in.0.Stored_Checksum]]></attr>
 </Node>
-<Edge debugMode="false" fromNode="ADD_DB_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (out)" toNode="SIMPLE_COPY:0"/>
-<Edge debugMode="false" fromNode="GET_PRODUCT_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Metadata0" outPort="Port 0 (out)" toNode="ADD_DB_CHECKSUM:1"/>
-<Edge fromNode="MODIFIED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="SAVE_TO_UPDATE_PRODUCTS:0"/>
-<Edge debugMode="false" fromNode="NEW_PRODUCT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="REMOVE_DB_CHECKSUM:0"/>
-<Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="Metadata3" outPort="Port 0 (output)" toNode="ADD_DB_CHECKSUM:0"/>
+<Edge debugMode="false" fromNode="ADD_DB_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="All_data" outPort="Port 0 (out)" toNode="SIMPLE_COPY:0"/>
+<Edge debugMode="false" fromNode="GET_PRODUCT_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Product_checksum" outPort="Port 0 (out)" toNode="ADD_DB_CHECKSUM:1"/>
+<Edge fromNode="MODIFIED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="SAVE_TO_UPDATE_PRODUCTS:0"/>
+<Edge debugMode="false" fromNode="NEW_PRODUCT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="REMOVE_DB_CHECKSUM:0"/>
+<Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="From_csv" outPort="Port 0 (output)" toNode="ADD_DB_CHECKSUM:0"/>
 <Edge debugMode="false" fromNode="READ_IN_CSV:1" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="LOG_FAILED_ROWS:0"/>
-<Edge debugMode="false" fromNode="REMOVE_DB_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (out)" toNode="SAVE_TO_INSERT_PRODUCTS:0"/>
-<Edge debugMode="false" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata1" toNode="NEW_PRODUCT:0"/>
-<Edge fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (in)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata1" toNode="UNCHANGED:0"/>
-<Edge fromNode="SIMPLE_COPY:2" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 0 (in)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata1" toNode="MODIFIED:0"/>
-<Edge debugMode="false" fromNode="UNCHANGED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="LOG_UNCHANGED_PRODUCTS:0"/>
+<Edge debugMode="false" fromNode="REMOVE_DB_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="From_csv" outPort="Port 0 (out)" toNode="SAVE_TO_INSERT_PRODUCTS:0"/>
+<Edge debugMode="false" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="All_data" toNode="NEW_PRODUCT:0"/>
+<Edge fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (in)" outPort="Port 1 (out)" persistedImplicitMetadata="All_data" toNode="UNCHANGED:0"/>
+<Edge fromNode="SIMPLE_COPY:2" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 0 (in)" outPort="Port 2 (out)" persistedImplicitMetadata="All_data" toNode="MODIFIED:0"/>
+<Edge debugMode="false" fromNode="UNCHANGED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="LOG_UNCHANGED_PRODUCTS:0"/>
 </Phase>
 </Graph>
