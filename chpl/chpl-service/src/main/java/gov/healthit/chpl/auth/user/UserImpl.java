@@ -34,7 +34,7 @@ public class UserImpl implements User {
 	private String subjectName;
 	
 	@Column(name="password")
-	private String password;
+	private String password = null;
 	
 	@ManyToMany
 	@JoinTable(
@@ -68,6 +68,15 @@ public class UserImpl implements User {
 	public UserImpl(String subjectName, String encodedPassword, Set<Claim> claims) {
 		this.subjectName = subjectName;
 		this.claims = claims;
+		this.password = encodedPassword;
+	}
+	
+	public UserImpl(String subjectName) {
+		this.subjectName = subjectName;
+	}
+	
+	public UserImpl(String subjectName, String encodedPassword) {
+		this.subjectName = subjectName;
 		this.password = encodedPassword;
 	}
 	

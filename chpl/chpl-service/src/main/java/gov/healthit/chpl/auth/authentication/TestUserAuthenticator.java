@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 
@@ -27,7 +28,7 @@ public class TestUserAuthenticator extends BaseUserAuthenticator {
 		if  ((credentials.getUserName().equals(userID)) && (credentials.getPassword().equals(password))){
 			return user;
 		} else {
-			throw new BadCredentialsException();
+			throw new BadCredentialsException("Bad user name and password combination.");
 		}
 	}
 	

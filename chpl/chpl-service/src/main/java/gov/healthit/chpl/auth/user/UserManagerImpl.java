@@ -45,6 +45,13 @@ public class UserManagerImpl implements UserManager {
 	@Transactional
 	@PreAuthorize("hasPermission(#user, admin)")
 	public void update(UserImpl user){
+		
+		if (user.getPassword() == null){
+			// TODO: Get password () 
+			// only update non-password fields if password has not
+			// been passed in (because JWT)
+		}
+		
 		userDAO.update(user);
 	}
 	

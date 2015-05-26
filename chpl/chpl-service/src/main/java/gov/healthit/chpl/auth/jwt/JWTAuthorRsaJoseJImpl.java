@@ -34,7 +34,6 @@ public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
 	    claimsObj.setSubject(subject); // the subject/principal is whom the token is about
 	    
 	    
-	    
 	    for (Map.Entry<String, List<String> > claim : claims.entrySet())
 	    {
 	    	claimsObj.setStringListClaim(claim.getKey(), claim.getValue());	
