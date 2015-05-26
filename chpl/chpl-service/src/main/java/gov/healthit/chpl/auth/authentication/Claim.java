@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.authorization;
+package gov.healthit.chpl.auth.authentication;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
