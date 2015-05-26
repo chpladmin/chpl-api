@@ -45,6 +45,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			Object typ = validatedClaims.remove("typ");
 			
 			String subject = (String) validatedClaims.remove("sub");
+			
 			user.setSubjectName(subject);
 			
 			List<String> claims = new ArrayList<String>();

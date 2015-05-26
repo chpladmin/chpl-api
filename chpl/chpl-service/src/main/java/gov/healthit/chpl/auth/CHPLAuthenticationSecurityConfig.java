@@ -6,6 +6,8 @@ import java.util.Properties;
 
 
 
+
+
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 
@@ -16,10 +18,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpMethod;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
+import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -33,9 +37,6 @@ public class CHPLAuthenticationSecurityConfig extends
 	
 	@Autowired
 	private JWTUserConverter userConverter;
-	
-	//@Autowired
-	//private UserDetailsService userDetailsService;
 	
 	public CHPLAuthenticationSecurityConfig() {
 		super(true);
@@ -89,23 +90,9 @@ public class CHPLAuthenticationSecurityConfig extends
 		return new BCryptPasswordEncoder();
 	}
 	
-	/*
 	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
+	public UserDetailsChecker userDetailsChecker(){
+		return new AccountStatusUserDetailsChecker();
 	}
-	*/
 	
-	/*
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService()).passwordEncoder(new BCryptPasswordEncoder());
-	}
-
-	@Override
-	protected UserDetailsService userDetailsService() {
-		return userDetailsService;
-	}
-	*/
 }
