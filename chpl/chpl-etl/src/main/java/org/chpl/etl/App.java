@@ -16,14 +16,18 @@ public class App
 
 	public static void main( String[] args ) {
 		String singleFile;
-		if (args.length > 0)
+		String pluginsDir;
+		if (args.length > 0) {
 			singleFile = args[0];
-		else
+			pluginsDir = args[1];
+		} else {
 			singleFile = "./src/main/resources/chpl-large.xlsx";
-		parseFile(singleFile);
+			pluginsDir = "./src/main/resources/plugins";
+		}
+		parseFile(singleFile, pluginsDir);
 	}
 	
-	public static void parseFile(String filename) {
+	public static void parseFile(String filename, String pluginsDir) {
 		ExcelConverter excelConverter = new ExcelConverter(filename,csvRawFileName);
 		excelConverter.convert();
 		excelConverter.setCsvHash(csvChecksummedFileName);
@@ -31,7 +35,7 @@ public class App
 
 		EtlGraph etlGraph = null;
 		try {
-			etlGraph = new EtlGraph();
+			etlGraph = new EtlGraph(pluginsDir);
 		} catch (URISyntaxException e) {
 			Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
 		}

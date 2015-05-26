@@ -35,10 +35,4 @@ public class EtlGraphTest {
 	public void shallExecuteGraph() {
 		assertTrue(graph.execute());
 	}
-	
-	@Test (expected = NullPointerException.class)
-	public void shallThrowExceptionIfNoPluginsDirectory() throws URISyntaxException {
-		String pluginDir = "/badDirectory";
-		graph = new EtlGraph(pluginDir);
-	}
 }

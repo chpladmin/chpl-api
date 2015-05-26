@@ -1,7 +1,7 @@
 package org.chpl.etl;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -16,27 +16,26 @@ import org.jetel.main.runGraph;
 
 public class EtlGraph {
 
-	private FileInputStream graphResource;
+	private InputStream graphStream;
 	private GraphRuntimeContext runtimeContext;
 	private TransformationGraph graph;
 	private TransformationGraphXMLReaderWriter graphReader;
 
 	public EtlGraph() throws URISyntaxException {
-		this("/plugins");
+		this("./src/main/resources/plugins");
 	}
 
 	public EtlGraph(String pluginDir) throws URISyntaxException {
-		EngineInitializer.initEngine(App.class.getResource(pluginDir).toURI().getPath(), null, null);
+		EngineInitializer.initEngine(new File(pluginDir).toURI().getPath(), "./src/main/resources/defaultProperties", null);
 	}
 
 	public void setGraph(String graphResource) {
 		try {
-			this.graphResource = new FileInputStream(App.class.getResource(graphResource).toURI().getPath());
-		} catch (FileNotFoundException e) {
-			Logger.getLogger(EtlGraph.class.getName()).log(Level.SEVERE, null, e);
-		} catch (URISyntaxException e) {
+			this.graphStream = getClass().getResourceAsStream(graphResource);
+		} catch (NullPointerException e) {
 			Logger.getLogger(EtlGraph.class.getName()).log(Level.SEVERE, null, e);
 		}
+
 		//prepare runtime parameters - JMX is turned off
 		runtimeContext = new GraphRuntimeContext();
 		runtimeContext.setUseJMX(false);
@@ -46,7 +45,7 @@ public class EtlGraph {
 		graphReader = new TransformationGraphXMLReaderWriter(runtimeContext);
 
 		try {
-			graph = graphReader.read(this.graphResource);
+			graph = graphReader.read(this.graphStream);
 		} catch (Exception e) {
 			Logger.getLogger(EtlGraph.class.getName()).log(Level.SEVERE, null, e);
 			return;
