@@ -31,11 +31,9 @@ public class UserManagerImpl implements UserManager {
 	@Autowired
 	private MutableAclService mutableAclService;
 	
-	
-	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void create(AuthenticatedUser user){
+	public void create(UserImpl user){
 		
 		userDAO.create(user);
 		// Grant the current principal administrative permission to the user
@@ -46,13 +44,13 @@ public class UserManagerImpl implements UserManager {
 	
 	@Transactional
 	@PreAuthorize("hasPermission(#user, admin)")
-	public void update(AuthenticatedUser user){
+	public void update(UserImpl user){
 		userDAO.update(user);
 	}
 	
 	@Transactional
 	@PreAuthorize("hasPermission(#user, 'delete') or hasPermission(#user, admin)")
-	public void delete(AuthenticatedUser user){
+	public void delete(UserImpl user){
 		
 		userDAO.deactivate(user.getId());
 		// Delete the ACL information as well
@@ -67,14 +65,24 @@ public class UserManagerImpl implements UserManager {
 		return userDAO.findAll();
 	}
 	
+	@Transactional(readOnly = true)
+	public User getByUserName(String uname){
+		return userDAO.getByName(uname);
+	}
+	
+	
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasPermission(#id, 'gov.healthit.chpl.auth.user.User', admin)")
 	public User getById(Long id){
 		return userDAO.getById(id);
 	}
 
-	public void addPermission(AuthenticatedUser user, Sid recipient, Permission permission){
+	@Transactional
+	@PreAuthorize("hasPermission(#user, admin)")
+	public void addPermission(UserImpl user, Sid recipient, Permission permission){
 		
 		MutableAcl acl;
-		ObjectIdentity oid = new ObjectIdentityImpl(AuthenticatedUser.class, user.getId());
+		ObjectIdentity oid = new ObjectIdentityImpl(UserImpl.class, user.getId());
 
 		try {
 			acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -88,9 +96,11 @@ public class UserManagerImpl implements UserManager {
 		
 	}
 	
-	public void deletePermission(AuthenticatedUser user, Sid recipient, Permission permission){
+	@Transactional
+	@PreAuthorize("hasPermission(#user, admin)")
+	public void deletePermission(UserImpl user, Sid recipient, Permission permission){
 		
-		ObjectIdentity oid = new ObjectIdentityImpl(AuthenticatedUser.class, user.getId());
+		ObjectIdentity oid = new ObjectIdentityImpl(UserImpl.class, user.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
 		
 		List<AccessControlEntry> entries = acl.getEntries();

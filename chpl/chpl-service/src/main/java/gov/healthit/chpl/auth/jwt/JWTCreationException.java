@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.authentication;
+package gov.healthit.chpl.auth.jwt;
 
 public class JWTCreationException extends Exception {
 	

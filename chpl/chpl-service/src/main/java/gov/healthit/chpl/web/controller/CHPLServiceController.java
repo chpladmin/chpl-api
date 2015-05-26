@@ -5,8 +5,8 @@ import java.util.List;
 import gov.healthit.chpl.acb.CertificationBody;
 import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.authentication.Authenticator;
-import gov.healthit.chpl.auth.authentication.JWTCreationException;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
+import gov.healthit.chpl.auth.jwt.JWTCreationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.auth.authentication;
 
+import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.user.User;
 
 
