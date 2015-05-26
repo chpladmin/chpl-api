@@ -5,7 +5,8 @@ import java.util.Properties;
 
 
 
-import gov.healthit.chpl.auth.authorization.JWTUserConverter;
+
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;

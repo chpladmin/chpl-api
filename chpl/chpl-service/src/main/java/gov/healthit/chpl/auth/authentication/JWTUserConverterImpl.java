@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.authorization;
+package gov.healthit.chpl.auth.authentication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,10 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 	
 	public JWTUserConverterImpl(){}
 	
-	public User getUser(String jwt) throws JWTValidationException {
+	public User getAuthenticatedUser(String jwt) throws JWTValidationException {
 		
 		User user = new UserImpl();
+		user.setAuthenticated(true);
 		
 		Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
 		

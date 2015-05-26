@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.filter;
 
-import gov.healthit.chpl.auth.authorization.JWTUserConverter;
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.user.User;
 
@@ -43,7 +43,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 		} else {
 			User authenticatedUser;
 			try {
-				authenticatedUser = userConverter.getUser(jwt);
+				authenticatedUser = userConverter.getAuthenticatedUser(jwt);
 				SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
 				chain.doFilter(req, res); //continue
 				SecurityContextHolder.getContext().setAuthentication(null);
