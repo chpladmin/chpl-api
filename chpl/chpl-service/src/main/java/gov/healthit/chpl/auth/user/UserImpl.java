@@ -21,7 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name="user")
-public class AuthenticatedUser implements User {
+public class UserImpl implements User {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -56,11 +56,11 @@ public class AuthenticatedUser implements User {
 	@Column(name="account_enabled")
 	private boolean accountEnabled;
 	
-	private boolean authenticated = true;
+	private boolean authenticated = false;
 	
-	public AuthenticatedUser(){};
+	public UserImpl(){};
 	
-	public AuthenticatedUser(String subjectName, Set<Claim> claims){
+	public UserImpl(String subjectName, Set<Claim> claims){
 		this.subjectName = subjectName;
 		this.claims = claims;
 	}
@@ -68,11 +68,11 @@ public class AuthenticatedUser implements User {
 	public String getSubjectName() {
 		return subjectName;
 	}
-	/*
+	
 	public void setSubjectName(String subject) {
 		this.subjectName = subject;
 	}
-	 */
+	
 	public Set<Claim> getClaims() {
 		return this.claims;
 	}

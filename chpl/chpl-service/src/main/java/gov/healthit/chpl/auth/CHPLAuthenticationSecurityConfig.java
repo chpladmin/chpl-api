@@ -88,14 +88,13 @@ public class CHPLAuthenticationSecurityConfig extends
 		return new BCryptPasswordEncoder();
 	}
 	
+	/*
 	@Bean
 	@Override
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-	
-	
-	
+	*/
 	
 	/*
 	@Override

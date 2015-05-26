@@ -6,7 +6,7 @@ import java.util.Map;
 
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.user.UserImpl;
 import gov.healthit.chpl.auth.user.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 	
 	public User getUser(String jwt) throws JWTValidationException {
 		
-		User user = new AuthenticatedUser();
+		User user = new UserImpl();
 		
 		Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
 		
