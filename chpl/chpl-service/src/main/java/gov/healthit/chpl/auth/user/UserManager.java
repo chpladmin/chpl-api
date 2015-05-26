@@ -33,6 +33,4 @@ public interface UserManager {
 	public User getByUserName(String uname);
 	
 	
-	
-	
 }

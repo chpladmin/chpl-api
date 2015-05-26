@@ -60,9 +60,15 @@ public class UserImpl implements User {
 	
 	public UserImpl(){};
 	
-	public UserImpl(String subjectName, Set<Claim> claims){
+	public UserImpl(String subjectName, Set<Claim> claims) {
 		this.subjectName = subjectName;
 		this.claims = claims;
+	}
+	
+	public UserImpl(String subjectName, String encodedPassword, Set<Claim> claims) {
+		this.subjectName = subjectName;
+		this.claims = claims;
+		this.password = encodedPassword;
 	}
 	
 	public String getSubjectName() {

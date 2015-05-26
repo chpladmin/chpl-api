@@ -18,7 +18,6 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 
 	abstract public User getUser(LoginCredentials credentials)  throws BadCredentialsException;
 	
-	
 	public String getJWT(User user) throws JWTCreationException {
 		
 		String jwt = null;
