@@ -18,7 +18,7 @@ public interface UserManager {
 	public void create(UserImpl user);
 	
 	
-	public void update(UserImpl user);
+	public void update(UserImpl user) throws UserRetrievalException;
 	
 	
 	public void delete(UserImpl user);
@@ -26,11 +26,11 @@ public interface UserManager {
 	
 	public List<User> getAll();
 	
-
-	public User getById(Long id);
+	
+	public User getById(Long id) throws UserRetrievalException;
 	
 	
-	public User getByUserName(String uname);
+	public User getByUserName(String uname) throws UserRetrievalException;
 	
 	
 }
