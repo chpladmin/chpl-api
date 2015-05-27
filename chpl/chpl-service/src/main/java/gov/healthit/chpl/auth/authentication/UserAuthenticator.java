@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserManager;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 public class UserAuthenticator extends BaseUserAuthenticator {
 
@@ -22,7 +23,7 @@ public class UserAuthenticator extends BaseUserAuthenticator {
 	private UserManager userManager;
 	
 	@Override
-	public User getUser(LoginCredentials credentials) throws BadCredentialsException, AccountStatusException {
+	public User getUser(LoginCredentials credentials) throws BadCredentialsException, AccountStatusException, UserRetrievalException {
 		
 		User user = userManager.getByUserName(credentials.getUserName());
 		

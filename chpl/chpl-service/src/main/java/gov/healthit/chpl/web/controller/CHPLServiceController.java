@@ -7,6 +7,7 @@ import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -123,13 +124,13 @@ public class CHPLServiceController {
 			produces="application/json; charset=utf-8")
 	public String authenticateJSON(@RequestBody LoginCredentials credentials) {
 		
-		System.out.println(credentials.getUserName()+" logged in with password "+credentials.getPassword());
-		
 		String jwt = null;
 		try {
 			jwt = authenticator.getJWT(credentials);
 		} catch (JWTCreationException e) {
 			e.printStackTrace();
+		} catch (UserRetrievalException e1){
+			e1.printStackTrace();
 		}
 		return jwt;
 	}

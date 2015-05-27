@@ -44,7 +44,7 @@ public class UserManagerImpl implements UserManager {
 	
 	@Transactional
 	@PreAuthorize("hasPermission(#user, admin)")
-	public void update(UserImpl user){
+	public void update(UserImpl user) throws UserRetrievalException{
 		
 		// In the case where the user has been created by a JWT, 
 		// the password field will be null.
@@ -69,7 +69,6 @@ public class UserManagerImpl implements UserManager {
 		mutableAclService.deleteAcl(oid, false);
 	}
 	
-	
 	@Transactional(readOnly = true)
 	@PostFilter("hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<User> getAll(){
@@ -77,14 +76,13 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Transactional(readOnly = true)
-	public User getByUserName(String uname){
+	public User getByUserName(String uname) throws UserRetrievalException {
 		return userDAO.getByName(uname);
 	}
 	
-	
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasPermission(#id, 'gov.healthit.chpl.auth.user.User', admin)")
-	public User getById(Long id){
+	public User getById(Long id) throws UserRetrievalException{
 		return userDAO.getById(id);
 	}
 

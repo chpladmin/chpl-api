@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
 
 import java.util.List;
@@ -52,7 +53,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public User getById(Long userId) {
+	public User getById(Long userId) throws UserRetrievalException {
 		
 		User user = null;
 		
@@ -61,7 +62,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		List<User> result = query.getResultList();
 		
 		if (result.size() > 1){
-			throw new RuntimeException("Data error. Duplicate user id in database.");
+			throw new UserRetrievalException("Data error. Duplicate user id in database.");
 		}
 		
 		if (result.size() < 0){
@@ -72,7 +73,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public User getByName(String uname) {
+	public User getByName(String uname) throws UserRetrievalException {
 		
 		User user = null;
 		
@@ -81,7 +82,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		List<User> result = query.getResultList();
 		
 		if (result.size() > 1){
-			throw new RuntimeException("Data error. Duplicate user name in database.");
+			throw new UserRetrievalException("Data error. Duplicate user name in database.");
 		}
 		
 		if (result.size() < 0){

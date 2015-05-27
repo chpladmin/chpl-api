@@ -6,18 +6,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 public abstract class BaseUserAuthenticator implements Authenticator {
 
 	@Autowired
 	private JWTAuthor jwtAuthor;
 
-	abstract public User getUser(LoginCredentials credentials)  throws BadCredentialsException;
+	abstract public User getUser(LoginCredentials credentials)  throws BadCredentialsException, AccountStatusException, UserRetrievalException;
 	
 	public String getJWT(User user) throws JWTCreationException {
 		
@@ -34,7 +36,7 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 		
 	}
 	
-	public String getJWT(LoginCredentials credentials) throws JWTCreationException {
+	public String getJWT(LoginCredentials credentials) throws JWTCreationException, AccountStatusException, UserRetrievalException {
 		
 		String jwt = null;
 		User user = null;
@@ -55,8 +57,7 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 	public JWTAuthor getJwtAuthor() {
 		return jwtAuthor;
 	}
-
-
+	
 	public void setJwtAuthor(JWTAuthor jwtAuthor) {
 		this.jwtAuthor = jwtAuthor;
 	}
