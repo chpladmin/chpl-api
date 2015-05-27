@@ -1,8 +1,8 @@
 #Default charset used when parsing data from text representation
-DataParser.DEFAULT_CHARSET_DECODER = UTF-8
+#DataParser.DEFAULT_CHARSET_DECODER = UTF-8
 
 #Default charset used when parsing data from text representation
-DataFormatter.DEFAULT_CHARSET_ENCODER = UTF-8
+#DataFormatter.DEFAULT_CHARSET_ENCODER = UTF-8
 
 #Default charset used when parsing source code (CTL or Java)
-DEFAULT_SOURCE_CODE_CHARSET = UTF-8
+#DEFAULT_SOURCE_CODE_CHARSET = UTF-8

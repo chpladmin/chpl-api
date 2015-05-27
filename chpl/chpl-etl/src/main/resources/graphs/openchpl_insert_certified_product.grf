@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Fri May 22 14:33:31 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.318" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 27 07:53:23 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.319" showComponentDetails="true">
 <Global>
 <Metadata id="CertificationBody_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CertificationBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
@@ -1138,8 +1138,8 @@ $Edition_id != null AND $Version_id != null AND $Certbody_id != null AND $CqmEdi
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.certified_product IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.certified_product 
-	(certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, deleted, last_modified_user)
-       SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, not($Published), -1
+	(certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, atcb_certification_id, deleted, last_modified_user)
+       SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ATCB_Certification_ID, not($Published), -1
        WHERE NOT EXISTS (
              SELECT 1 FROM openchpl.certified_product WHERE
                     certification_edition_id = $Edition_id AND

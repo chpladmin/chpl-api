@@ -39,6 +39,8 @@ public class EtlGraph {
 		//prepare runtime parameters - JMX is turned off
 		runtimeContext = new GraphRuntimeContext();
 		runtimeContext.setUseJMX(false);
+		runtimeContext.setDebugMode(false);
+		runtimeContext.setLogLevel(org.apache.log4j.Level.FATAL);
 
 		//create transformation graph from xml file
 		graph = new TransformationGraph();
