@@ -40,9 +40,6 @@ public class CHPLAuthenticationSecurityConfig extends
 	@Autowired
 	private JWTUserConverter userConverter;
 	
-	@Autowired
-	private LocalEntityManagerFactoryBean entityManagerFactory;
-	
 	public CHPLAuthenticationSecurityConfig() {
 		super(true);
 	}
@@ -89,10 +86,6 @@ public class CHPLAuthenticationSecurityConfig extends
 		
 		return bean;
 	}
-	
-	//<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-	//<property name="entityManagerFactory" ref="entityManagerFactory" />
-	//</bean>
 	
 	
 	@Bean

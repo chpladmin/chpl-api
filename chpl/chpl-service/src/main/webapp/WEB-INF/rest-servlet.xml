@@ -27,20 +27,17 @@
    		<sec:expression-handler ref="expressionHandler" />
    </sec:global-method-security>
    
+   <!--  
    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
    		<property name="proxyTargetClass" value="true"/>
    </bean>
+   -->
+   
    
    <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
    		<property name="prefixJson" value="false"/>
    		<property name="supportedMediaTypes" value="application/json"/>
    </bean>
-   
-   <!--  
- 	<sec:http auto-config='true'>
-    	<sec:intercept-url pattern="/**" access="ROLE_USER"/>
-	</sec:http>
-	-->
 	
 	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
 			<property name="jndiName" value="java:comp/env/jdbc/chpl_acl"/>
