@@ -104,21 +104,7 @@ public class CHPLServiceController {
 		
 	}
 	
-	@RequestMapping(value="/secrethello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String secretHello(@RequestHeader(value="Token") String jwt, @PathVariable String firstName, @PathVariable String lastName) {
-		
-		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
-		
-	}
-	
-	@RequestMapping(value="/hellolist/{group}/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String authHelloList(@RequestHeader(value="Token") String jwt, @PathVariable String firstName, @PathVariable String lastName) {
-		
-		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
-		
-	}
-	
-	
+	/*
 	@RequestMapping(value="/authenticate_json", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -129,8 +115,6 @@ public class CHPLServiceController {
 			jwt = authenticator.getJWT(credentials);
 		} catch (JWTCreationException e) {
 			e.printStackTrace();
-		} catch (UserRetrievalException e1){
-			e1.printStackTrace();
 		}
 		return jwt;
 	}
@@ -142,8 +126,6 @@ public class CHPLServiceController {
 		
 		LoginCredentials credentials = new LoginCredentials(userName, password);
 		
-		System.out.println(credentials.getUserName()+" logged in with password "+credentials.getPassword());
-		
 		String jwt = null;
 		try {
 			jwt = authenticator.getJWT(credentials);
@@ -152,7 +134,7 @@ public class CHPLServiceController {
 		}
 		return jwt;
 	}
-	
+	*/
 	
 	public CertificationBodyManager getCertificationBodyManager() {
 		return certificationBodyManager;
