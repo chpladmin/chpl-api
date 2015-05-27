@@ -59,7 +59,15 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		Query query = entityManager.createQuery( "from User where id = :userid", User.class );
 		query.setParameter("userid", userId);
 		List<User> result = query.getResultList();
-		user = result.get(0);
+		
+		if (result.size() > 1){
+			throw new RuntimeException("Data error. Duplicate user id in database.");
+		}
+		
+		if (result.size() < 0){
+			user = result.get(0);
+		}
+		
 		return user;
 	}
 
@@ -71,7 +79,15 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		Query query = entityManager.createQuery( "from User where uname = :uname", User.class );
 		query.setParameter("uname", uname);
 		List<User> result = query.getResultList();
-		user = result.get(0);
+		
+		if (result.size() > 1){
+			throw new RuntimeException("Data error. Duplicate user name in database.");
+		}
+		
+		if (result.size() < 0){
+			user = result.get(0);
+		}
+		
 		return user;
 	}
 	

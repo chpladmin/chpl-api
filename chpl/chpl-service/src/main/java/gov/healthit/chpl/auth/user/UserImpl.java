@@ -80,6 +80,11 @@ public class UserImpl implements User {
 		this.password = encodedPassword;
 	}
 	
+	public UserImpl(User other){
+		this.password = other.getPassword();
+		
+	}
+	
 	public String getSubjectName() {
 		return subjectName;
 	}
@@ -155,6 +160,10 @@ public class UserImpl implements User {
 	@Override
 	public String getPassword() {
 		return password;
+	}
+	
+	public void setPassword(String encodedPassword){
+		this.password = encodedPassword;
 	}
 
 	@Override

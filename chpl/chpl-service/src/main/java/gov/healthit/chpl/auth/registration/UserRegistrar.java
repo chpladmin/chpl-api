@@ -12,12 +12,12 @@ public class UserRegistrar {
 	@Autowired
 	private UserManager userManager;
 	
-	public boolean createUser(UserDTO userInfo){
+	public boolean createUser(UserDTO userInfo) throws UserCreationException{
 		
 		User user = userManager.getByUserName(userInfo.getUserName());
 		
 		if (user != null) {
-			throw new BadCredentialsException("user: "+userInfo.getUserName() +" already exists.");
+			throw new UserCreationException("user: "+userInfo.getUserName() +" already exists.");
 		} else {
 			
 			UserImpl userToCreate = new UserImpl(userInfo.getUserName(), userInfo.getPassword());
