@@ -8,6 +8,7 @@ import java.util.Properties;
 
 
 
+
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpMethod;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +39,9 @@ public class CHPLAuthenticationSecurityConfig extends
 	
 	@Autowired
 	private JWTUserConverter userConverter;
+	
+	@Autowired
+	private LocalEntityManagerFactoryBean entityManagerFactory;
 	
 	public CHPLAuthenticationSecurityConfig() {
 		super(true);
@@ -85,6 +90,11 @@ public class CHPLAuthenticationSecurityConfig extends
 		return bean;
 	}
 	
+	//<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+	//<property name="entityManagerFactory" ref="entityManagerFactory" />
+	//</bean>
+	
+	
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder(){
 		return new BCryptPasswordEncoder();
@@ -94,5 +104,6 @@ public class CHPLAuthenticationSecurityConfig extends
 	public UserDetailsChecker userDetailsChecker(){
 		return new AccountStatusUserDetailsChecker();
 	}
+	
 	
 }
