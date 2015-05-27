@@ -46,10 +46,14 @@ public class UserManagerImpl implements UserManager {
 	@PreAuthorize("hasPermission(#user, admin)")
 	public void update(UserImpl user){
 		
+		// In the case where the user has been created by a JWT, 
+		// the password field will be null.
+		// go to the database and get the stored password, set
+		// password on the current user object before persisting
+		// the updates.
 		if (user.getPassword() == null){
-			// TODO: Get password () 
-			// only update non-password fields if password has not
-			// been passed in (because JWT)
+			User orig = getByUserName(user.getUsername());
+			user.setPassword(orig.getPassword());
 		}
 		
 		userDAO.update(user);
