@@ -15,6 +15,12 @@ public interface UserManager {
 	public void deletePermission(UserImpl user, Sid recipient, Permission permission);
 	
 	
+	public void addRole(UserImpl user, String role);
+	
+	
+	public void deleteRole(UserImpl user, String role);
+	
+	
 	public void create(UserImpl user);
 	
 	

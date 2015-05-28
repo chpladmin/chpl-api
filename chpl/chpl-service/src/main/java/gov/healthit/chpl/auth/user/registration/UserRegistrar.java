@@ -7,9 +7,10 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserRegistrar {
 	
 	@Autowired
@@ -37,7 +38,7 @@ public class UserRegistrar {
 			userManager.create(userToCreate);
 			return true;
 		}
-	}	
+	}
 	
 	
 	public boolean updateUserPassword(UserDTO userInfo) throws UserRetrievalException {
@@ -45,7 +46,6 @@ public class UserRegistrar {
 		UserImpl user = (UserImpl) userManager.getByUserName(userInfo.getUserName());
 		String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
 		user.setPassword(encodedPassword);
-		
 		
 		return true;
 	}
