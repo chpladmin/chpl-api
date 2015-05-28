@@ -26,6 +26,9 @@ import java.util.Properties;
 
 
 
+
+
+
 import javax.sql.DataSource;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
@@ -44,6 +47,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.acls.AclPermissionCacheOptimizer;
+import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
 import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
@@ -234,23 +240,40 @@ public class CHPLAuthenticationSecurityConfig extends
 		return bean;
 	}
 	
+	
 	@Bean
 	public JdbcMutableAclService mutableAclService(){
 		
 		DataSource datasource = (DataSource) aclDataSource().getObject();
 		
 		JdbcMutableAclService bean = new JdbcMutableAclService(datasource, 
-				lookupStrategy(), aclCache());
+				lookupStrategy(), 
+				aclCache());
 		
 		return bean;
 	}
 	
-	/*
-	<bean id="mutableAclService" class="org.springframework.security.acls.jdbc.JdbcMutableAclService">
-		<constructor-arg ref="dataSource"/>
-		<constructor-arg ref="lookupStrategy"/>
-		<constructor-arg ref="aclCache"/>
-	</bean>
-	 */
+	
+	@Bean
+	public AclPermissionEvaluator permissionEvaluator(){
+		AclPermissionEvaluator bean = new AclPermissionEvaluator(mutableAclService());
+		return bean;
+	}
+	
+	@Bean
+	public AclPermissionCacheOptimizer aclPermissionCacheOptimizer(){
+		AclPermissionCacheOptimizer bean = new AclPermissionCacheOptimizer(mutableAclService());
+		return bean;
+	}
+	
+	
+	@Bean
+	public DefaultMethodSecurityExpressionHandler expressionHandler(){
+		
+		DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
+		bean.setPermissionEvaluator(permissionEvaluator());
+		bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
+		return bean;
+	}
 	
 }
