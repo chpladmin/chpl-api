@@ -6,6 +6,7 @@ import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -17,6 +18,8 @@ public class UserRegistrar {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
 	public boolean createUser(UserDTO userInfo) throws UserCreationException {
 		
 		User user = null;
@@ -27,7 +30,7 @@ public class UserRegistrar {
 		}
 		
 		if (user != null) {
-			throw new UserCreationException("user: "+userInfo.getUserName() +" already exists.");
+			throw new UserCreationException("user name: "+userInfo.getUserName() +" already exists.");
 		} else {
 			
 			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
@@ -35,7 +38,5 @@ public class UserRegistrar {
 			userManager.create(userToCreate);
 			return true;
 		}
-		
 	}
-
 }

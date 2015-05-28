@@ -32,7 +32,7 @@ public class UserManagerImpl implements UserManager {
 	private MutableAclService mutableAclService;
 	
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
 	public void create(UserImpl user){
 		
 		userDAO.create(user);
@@ -43,7 +43,7 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Transactional
-	@PreAuthorize("hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void update(UserImpl user) throws UserRetrievalException{
 		
 		// In the case where the user has been created by a JWT, 
