@@ -18,7 +18,6 @@ public class UserRegistrar {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
 	public boolean createUser(UserDTO userInfo) throws UserCreationException {
 		
@@ -38,5 +37,19 @@ public class UserRegistrar {
 			userManager.create(userToCreate);
 			return true;
 		}
+	}	
+	
+	
+	public boolean updateUserPassword(UserDTO userInfo) throws UserRetrievalException {
+		
+		UserImpl user = (UserImpl) userManager.getByUserName(userInfo.getUserName());
+		String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
+		user.setPassword(encodedPassword);
+		
+		
+		return true;
 	}
+	
+	
+	
 }
