@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.registration;
+package gov.healthit.chpl.auth.user.registration;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserImpl;
