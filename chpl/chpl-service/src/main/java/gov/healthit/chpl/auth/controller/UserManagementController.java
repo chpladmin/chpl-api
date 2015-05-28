@@ -1,8 +1,13 @@
 package gov.healthit.chpl.auth.controller;
 
-import gov.healthit.chpl.auth.authentication.Authenticator;
-import gov.healthit.chpl.auth.authentication.LoginCredentials;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
+
+import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserManager;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.auth.user.registration.UserCreationException;
+import gov.healthit.chpl.auth.user.registration.UserDTO;
+import gov.healthit.chpl.auth.user.registration.UserRegistrar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,20 +21,44 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserManagementController {
 	
-	@RequestMapping(value="/authenticate_json", method= RequestMethod.POST, 
+	@Autowired
+	UserRegistrar registrar;
+	
+	@Autowired
+	UserManager userManager;
+	
+	@RequestMapping(value="/create_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String authenticateJSON(@RequestBody LoginCredentials credentials) {
+	public String createUser(@RequestBody UserDTO userInfo) throws UserCreationException {
 		
-		String jwt = null;
-		try {
-			jwt = authenticator.getJWT(credentials);
-		} catch (JWTCreationException e) {
-			e.printStackTrace();
-		}
-		return jwt;
+		registrar.createUser(userInfo);
+		String isSuccess = String.valueOf(true);
+		return "{\"userCreated\" : "+isSuccess+" }";
 	}
 	
+	
+	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String resetPassword(@RequestBody UserDTO userInfo) throws UserRetrievalException {
+		
+		UserImpl user = (UserImpl) userManager.getByUserName(userInfo.getUserName());
+		user.setPassword(userInfo.getUserName());
+		userManager.update(user);
+		
+		String isSuccess = String.valueOf(true);
+		return "{\"userCreated\" : "+isSuccess+" }";
+		
+	}
+	
+	
+	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String updateUserDetails(@RequestBody UserDTO userInfo) throws UserRetrievalException {
+		return "";
+	}
 	
 	
 }
