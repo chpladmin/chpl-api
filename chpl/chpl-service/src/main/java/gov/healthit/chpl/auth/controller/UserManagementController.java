@@ -58,7 +58,7 @@ public class UserManagementController {
 		return "";
 	}
 	
-	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
+	@RequestMapping(value="/add_user_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public String addUserRole(@RequestBody UserDTO userInfo, String role) throws UserRetrievalException {

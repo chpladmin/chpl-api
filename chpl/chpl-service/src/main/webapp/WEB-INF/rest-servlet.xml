@@ -33,7 +33,7 @@
    </bean>
    -->
    
-   
+   <!--
    <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
    		<property name="prefixJson" value="false"/>
    		<property name="supportedMediaTypes" value="application/json"/>
@@ -95,6 +95,8 @@
 		<constructor-arg ref="lookupStrategy"/>
 		<constructor-arg ref="aclCache"/>
 	</bean>
+	
+	-->
 	
 	<bean id="certificationBodyManager" class="gov.healthit.chpl.acb.CertificationBodyManagerImpl">
 		<property name="mutableAclService" ref="mutableAclService" />
