@@ -21,8 +21,10 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Service
 public class UserManagerImpl implements UserManager {
 
 	@Autowired
@@ -44,23 +46,34 @@ public class UserManagerImpl implements UserManager {
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void update(UserImpl user) throws UserRetrievalException{
+	public void update(UserImpl user) throws UserRetrievalException {
 		
-		// In the case where the user has been created by a JWT, 
+		
+		// We need to do a few checks on the user being
+		// updated: 
+		User orig = getByUserName(user.getUsername());
+		
+		// In the case where the user has been created by a JWT,
 		// the password field will be null.
 		// go to the database and get the stored password, set
 		// password on the current user object before persisting
 		// the updates.
 		if (user.getPassword() == null){
-			User orig = getByUserName(user.getUsername());
+			
 			user.setPassword(orig.getPassword());
+		}
+		
+		// In order to preserve SIDs in ACL, usernames cannot
+		// be changed.
+		if (!(user.getSubjectName().equals(orig.getSubjectName()))){
+			user.setSubjectName(orig.getSubjectName());
 		}
 		
 		userDAO.update(user);
 	}
 	
 	@Transactional
-	@PreAuthorize("hasPermission(#user, 'delete') or hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, 'delete') or hasPermission(#user, admin)")
 	public void delete(UserImpl user){
 		
 		userDAO.deactivate(user.getId());
@@ -121,6 +134,20 @@ public class UserManagerImpl implements UserManager {
 			}
 		}
 		mutableAclService.updateAcl(acl);	
+	}
+	
+	@Override
+	@PreAuthorize("hasPermission(#user, admin)")
+	public void addRole(UserImpl user, String role) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	@PreAuthorize("hasPermission(#user, admin)")
+	public void deleteRole(UserImpl user, String role) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	protected String getUsername() {

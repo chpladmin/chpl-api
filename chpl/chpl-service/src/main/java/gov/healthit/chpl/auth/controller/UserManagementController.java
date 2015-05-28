@@ -41,8 +41,7 @@ public class UserManagementController {
 	public String resetPassword(@RequestBody UserDTO userInfo) throws UserRetrievalException {
 		
 		UserImpl user = (UserImpl) userManager.getByUserName(userInfo.getUserName());
-		//user.setPassword(userInfo.getUserName());
-		
+		user.setPassword(userInfo.getUserName());
 		
 		userManager.update(user);
 		
@@ -56,6 +55,13 @@ public class UserManagementController {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public String updateUserDetails(@RequestBody UserDTO userInfo) throws UserRetrievalException {
+		return "";
+	}
+	
+	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String addUserRole(@RequestBody UserDTO userInfo, String role) throws UserRetrievalException {
 		return "";
 	}
 	
