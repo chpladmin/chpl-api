@@ -14,18 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class AuthenticationController {
-	
-	@Autowired
-	private Authenticator authenticator;
-	
-	
-	@RequestMapping(value="/helloFromAuth/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String helloFromAuth(@PathVariable String firstName, @PathVariable String lastName) {
-		
-		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
-		
-	}
+public class UserManagementController {
 	
 	@RequestMapping(value="/authenticate_json", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
@@ -41,20 +30,6 @@ public class AuthenticationController {
 		return jwt;
 	}
 	
-	@RequestMapping(value="/authenticate", method= RequestMethod.POST, 
-			headers = {"content-type=application/x-www-form-urlencoded"},
-			produces="application/json; charset=utf-8")
-	public String authenticate(@RequestParam("userName") String userName, @RequestParam("password") String password) {
-		
-		LoginCredentials credentials = new LoginCredentials(userName, password);
-		
-		String jwt = null;
-		try {
-			jwt = authenticator.getJWT(credentials);
-		} catch (JWTCreationException e) {
-			e.printStackTrace();
-		}
-		return jwt;
-	}
+	
 	
 }
