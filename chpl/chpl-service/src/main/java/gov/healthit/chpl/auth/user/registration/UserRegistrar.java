@@ -7,6 +7,8 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,10 +48,40 @@ public class UserRegistrar {
 		UserImpl user = (UserImpl) userManager.getByUserName(userInfo.getUserName());
 		String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
 		user.setPassword(encodedPassword);
+		userManager.update(user);
 		
 		return true;
 	}
 	
 	
+	public String getEncodedPassword(String password){
+		String encodedPassword = bCryptPasswordEncoder.encode(password);
+		return encodedPassword;
+	}
+	
+	public void createAdminUser(){
+		
+		User adminUser = null;
+		try {
+			adminUser = userManager.getByUserName("admin");
+		} catch (UserRetrievalException e) {
+			//TODO: Add Logging here
+			e.printStackTrace();
+		}
+		if (adminUser == null){
+			
+			UserImpl admin = new UserImpl("admin");
+			admin.setPassword(getEncodedPassword("admin"));
+			admin.addClaim("ROLE_ADMIN");
+			admin.addClaim("ROLE_USER_CREATOR");
+			
+			admin.setAuthenticated(true);
+			
+			SecurityContextHolder.getContext().setAuthentication(admin);
+			userManager.create(admin);
+			SecurityContextHolder.getContext().setAuthentication(null);
+			
+		}
+	}
 	
 }
