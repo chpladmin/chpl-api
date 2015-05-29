@@ -84,7 +84,7 @@ public class UserManagerImpl implements UserManager {
 	
 	@Transactional(readOnly = true)
 	@PostFilter("hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
-	public List<User> getAll(){
+	public List<UserImpl> getAll(){
 		return userDAO.findAll();
 	}
 	

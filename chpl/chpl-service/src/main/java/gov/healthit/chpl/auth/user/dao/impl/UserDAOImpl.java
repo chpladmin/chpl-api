@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserImpl;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
 
@@ -18,7 +19,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	@Transactional
 	@Override
-	public void create(User user) {
+	public void create(UserImpl user) {
 		
 		entityManager.persist(user);
 		
@@ -26,7 +27,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	@Transactional
 	@Override
-	public void update(User user) {
+	public void update(UserImpl user) {
 		
 		entityManager.merge(user);
 		
@@ -45,21 +46,21 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	}
 	
 	@Override
-	public List<User> findAll() {
+	public List<UserImpl> findAll() {
 		
-		List<User> result = entityManager.createQuery( "from User", User.class ).getResultList();
+		List<UserImpl> result = entityManager.createQuery( "from UserImpl ", UserImpl.class ).getResultList();
 		
 		return result;
 	}
 
 	@Override
-	public User getById(Long userId) throws UserRetrievalException {
+	public UserImpl getById(Long userId) throws UserRetrievalException {
 		
-		User user = null;
+		UserImpl user = null;
 		
-		Query query = entityManager.createQuery( "from User where id = :userid", User.class );
+		Query query = entityManager.createQuery( "from user where user_id = :userid", UserImpl.class );
 		query.setParameter("userid", userId);
-		List<User> result = query.getResultList();
+		List<UserImpl> result = query.getResultList();
 		
 		if (result.size() > 1){
 			throw new UserRetrievalException("Data error. Duplicate user id in database.");
@@ -73,13 +74,13 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public User getByName(String uname) throws UserRetrievalException {
+	public UserImpl getByName(String uname) throws UserRetrievalException {
 		
-		User user = null;
+		UserImpl user = null;
 		
-		Query query = entityManager.createQuery( "from User where uname = :uname", User.class );
+		Query query = entityManager.createQuery( "from UserImpl where user_name = :uname", UserImpl.class );
 		query.setParameter("uname", uname);
-		List<User> result = query.getResultList();
+		List<UserImpl> result = query.getResultList();
 		
 		if (result.size() > 1){
 			throw new UserRetrievalException("Data error. Duplicate user name in database.");

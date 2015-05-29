@@ -30,7 +30,7 @@ public interface UserManager {
 	public void delete(UserImpl user);
 	
 	
-	public List<User> getAll();
+	public List<UserImpl> getAll();
 	
 	
 	public User getById(Long id) throws UserRetrievalException;
