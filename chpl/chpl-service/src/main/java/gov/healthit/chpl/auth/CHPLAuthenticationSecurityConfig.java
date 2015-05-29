@@ -124,6 +124,13 @@ public class CHPLAuthenticationSecurityConfig extends
 		return bean;
 	}
 	
+	/*
+ 	@Bean
+ 	@Override
+ 	public AuthenticationManager authenticationManagerBean() throws Exception {
+ 		return super.authenticationManagerBean();
+ 	}
+	*/
 	
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder(){

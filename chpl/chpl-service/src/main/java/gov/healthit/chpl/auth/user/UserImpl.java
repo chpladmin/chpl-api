@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,13 +32,13 @@ public class UserImpl implements User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name="user_name")
+	@Column(name="user_name", unique=true)
 	private String subjectName;
 	
 	@Column(name="password")
 	private String password = null;
 	
-	@ManyToMany
+	@ManyToMany(cascade = {CascadeType.ALL})
 	@JoinTable(
 			name="user_claim",
 			joinColumns={@JoinColumn(name="user_id")},
@@ -60,26 +61,52 @@ public class UserImpl implements User {
 	@Transient
 	private boolean authenticated = false;
 	
-	public UserImpl(){};
+	public UserImpl(){
+		this.subjectName = null;
+		this.password = null;
+		this.accountExpired = false;
+		this.accountLocked = false;
+		this.credentialsExpired = false;
+		this.accountEnabled = true;
+	}
 	
 	public UserImpl(String subjectName, Set<Claim> claims) {
 		this.subjectName = subjectName;
 		this.claims = claims;
+		this.password = null;
+		this.accountExpired = false;
+		this.accountLocked = false;
+		this.credentialsExpired = false;
+		this.accountEnabled = true;
 	}
 	
 	public UserImpl(String subjectName, String encodedPassword, Set<Claim> claims) {
 		this.subjectName = subjectName;
 		this.claims = claims;
 		this.password = encodedPassword;
+		this.accountExpired = false;
+		this.accountLocked = false;
+		this.credentialsExpired = false;
+		this.accountEnabled = true;
+		
 	}
 	
 	public UserImpl(String subjectName) {
 		this.subjectName = subjectName;
+		this.password = null;
+		this.accountExpired = false;
+		this.accountLocked = false;
+		this.credentialsExpired = false;
+		this.accountEnabled = true;
 	}
 	
 	public UserImpl(String subjectName, String encodedPassword) {
 		this.subjectName = subjectName;
 		this.password = encodedPassword;
+		this.accountExpired = false;
+		this.accountLocked = false;
+		this.credentialsExpired = false;
+		this.accountEnabled = true;
 	}
 	
 	public UserImpl(User other){
