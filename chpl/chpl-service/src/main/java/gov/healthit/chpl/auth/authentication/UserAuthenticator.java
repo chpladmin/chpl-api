@@ -29,6 +29,11 @@ public class UserAuthenticator extends BaseUserAuthenticator {
 		
 		User user = userManager.getByUserName(credentials.getUserName());
 		
+		System.out.println(credentials.getPassword());
+		System.out.println(user.getPassword());
+		System.out.println(checkPassword(credentials.getPassword(), user.getPassword()));
+		
+		
 		if (user != null){
 			if (checkPassword(credentials.getPassword(), user.getPassword())){
 				
