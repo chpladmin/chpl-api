@@ -35,16 +35,6 @@ public class JWTConsumerRsaJoseJImpl extends AuthPropertiesConsumer implements J
 	    	.setVerificationKey(jwk.getKey()) // verify the signature with the public key
 	    	.build(); // create the JwtConsumer instance
 		
-		/*
-		JwtConsumer jwtConsumer = new JwtConsumerBuilder()
-	    	.setRequireExpirationTime() // the JWT must have an expiration time
-	    	.setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
-	    	.setRequireSubject() // the JWT must have a subject claim
-	    	.setExpectedIssuer("ONCCHPL") // whom the JWT needs to have been issued by
-	    	.setExpectedAudience("ONCCHPL") // to whom the JWT is intended for
-	    	.setVerificationKey(jwk.getKey()) // verify the signature with the public key
-	    	.build(); // create the JwtConsumer instance
-		*/
 		try
 	    {
 	        //Validate the JWT and process it
