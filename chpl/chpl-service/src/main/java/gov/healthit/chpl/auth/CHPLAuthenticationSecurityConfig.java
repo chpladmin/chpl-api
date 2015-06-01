@@ -1,8 +1,12 @@
 package gov.healthit.chpl.auth;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
 
 
 
@@ -74,11 +78,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class CHPLAuthenticationSecurityConfig extends
 		WebSecurityConfigurerAdapter {
 	
+	
 	@Autowired
 	private JWTUserConverter userConverter;
 	
+	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "auth.properties";
+	
+	protected Properties props;
+	
+	
 	public CHPLAuthenticationSecurityConfig() {
 		super(true);
+	}
+	
+	protected void loadProperties() throws IOException {
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_AUTH_PROPERTIES_FILE);
+		
+		if (in == null)
+		{
+			props = null;
+			throw new FileNotFoundException("Auth Environment Properties File not found in class path.");
+		}
+		else
+		{
+			props = new Properties();
+			props.load(in);
+		}
 	}
 	
 	@Override
