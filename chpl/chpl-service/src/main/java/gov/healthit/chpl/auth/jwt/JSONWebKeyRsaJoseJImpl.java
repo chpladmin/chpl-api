@@ -128,15 +128,8 @@ public class JSONWebKeyRsaJoseJImpl extends AuthPropertiesConsumer implements JS
 		FileInputStream fileIn = new FileInputStream(keyPairPath);
 		ObjectInputStream is = new ObjectInputStream(fileIn);
 		
-		//KeyPair keyPair = (KeyPair) is.readObject();
-        //try {
-		//	rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(keyPair.getPublic());
-		///} catch (JoseException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
 		rsaJsonWebKey = (RsaJsonWebKey) is.readObject();
-        //rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
+		
 		is.close();
 		fileIn.close();
 		
