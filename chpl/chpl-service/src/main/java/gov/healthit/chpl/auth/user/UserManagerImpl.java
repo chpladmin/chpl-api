@@ -137,17 +137,17 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Override
-	@PreAuthorize("hasPermission(#user, admin)")
-	public void addRole(UserImpl user, String role) {
-		// TODO Auto-generated method stub
-		
+	@PreAuthorize("(hasRole('ROLE_ADMIN') or hasRole('ACB_ADMIN')) and hasPermission(#user, admin)")
+	public void addRole(UserImpl user, String role) throws UserRetrievalException {
+		user.addClaim(role);
+		update(user);
 	}
 
 	@Override
-	@PreAuthorize("hasPermission(#user, admin)")
-	public void deleteRole(UserImpl user, String role) {
-		// TODO Auto-generated method stub
-		
+	@PreAuthorize("(hasRole('ROLE_ADMIN') or hasRole('ACB_ADMIN')) and hasPermission(#user, admin)")
+	public void deleteRole(UserImpl user, String role) throws UserRetrievalException {
+		user.removeClaim(role);
+		update(user);
 	}
 	
 	protected String getUsername() {
