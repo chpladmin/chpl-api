@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class AuthPropertiesConsumer {
 
-	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "auth.properties";
+	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "environment.auth.properties";
 	
 	protected Properties props;
 	
@@ -25,4 +25,17 @@ public class AuthPropertiesConsumer {
 			props.load(in);
 		}
 	}
+	
+	protected Properties getProps(){
+		
+		if (this.props == null){
+			try {
+				this.loadProperties();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return this.props;
+	}
+	
 }
