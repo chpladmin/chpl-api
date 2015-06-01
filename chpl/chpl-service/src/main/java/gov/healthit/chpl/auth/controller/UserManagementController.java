@@ -11,7 +11,6 @@ import gov.healthit.chpl.auth.user.registration.UserRegistrar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,7 +38,6 @@ public class UserManagementController {
 		
 	}
 	
-	
 	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")
@@ -66,9 +64,18 @@ public class UserManagementController {
 	public String addUserRole(@RequestParam("userName") String userName, 
 			@RequestParam("role") String role) throws UserRetrievalException {
 		
-		UserImpl user = (UserImpl) userManager.getByUserName(userName);
-		userManager.addRole(user, role);
-		String isSuccess = String.valueOf(true);
+		
+		User fetchedUser = userManager.getByUserName(userName);
+		String isSuccess = String.valueOf(false);
+		
+		if (fetchedUser == null){
+			throw new UserRetrievalException("User not found");
+		} else {
+			UserImpl user = (UserImpl) fetchedUser;
+			userManager.addRole(user, role);
+			userManager.update(user);
+			isSuccess = String.valueOf(true);
+		}
 		
 		return "{\"roleAdded\" : "+isSuccess+" }";
 		

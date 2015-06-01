@@ -29,13 +29,8 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
 		
-		System.out.println("my filter:");
-		
 		HttpServletRequest request = (HttpServletRequest) req;
 		String jwt = request.getHeader("Bearer");
-		
-		System.out.println("jwt:");
-		System.out.println(jwt);
 		
 		if (jwt == null){
 			chain.doFilter(req, res); //continue

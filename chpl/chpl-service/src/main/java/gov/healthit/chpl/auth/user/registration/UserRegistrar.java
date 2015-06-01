@@ -42,18 +42,6 @@ public class UserRegistrar {
 		}
 	}
 	
-	
-	public boolean updateUserPassword(UserDTO userInfo) throws UserRetrievalException {
-		
-		UserImpl user = (UserImpl) userManager.getByUserName(userInfo.getUserName());
-		String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
-		user.setPassword(encodedPassword);
-		userManager.update(user);
-		
-		return true;
-	}
-	
-	
 	public boolean updateUserPassword(String userName, String password) throws UserRetrievalException {
 		
 		User fetchedUser = userManager.getByUserName(userName);
