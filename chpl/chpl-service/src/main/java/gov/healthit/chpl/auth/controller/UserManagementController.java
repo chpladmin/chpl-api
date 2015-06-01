@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.controller;
 
 
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserImpl;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -39,17 +41,14 @@ public class UserManagementController {
 	
 	
 	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_JSON_VALUE,
+			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")
-	public String resetPassword(@RequestBody UserDTO userInfo) throws UserRetrievalException {
+	public String resetPassword(@RequestParam("userName") String userName, 
+			@RequestParam("password") String password) throws UserRetrievalException {
 		
-		UserImpl user = (UserImpl) userManager.getByUserName(userInfo.getUserName());
-		user.setPassword(userInfo.getUserName());
-		
-		userManager.update(user);
-		
-		String isSuccess = String.valueOf(true);
-		return "{\"passwordReset\" : "+isSuccess+" }";
+		boolean passwordUpdated = registrar.updateUserPassword(userName, password);
+		String isSuccess = String.valueOf(passwordUpdated);
+		return "{\"passwordUpdated\" : "+isSuccess+" }";
 		
 	}
 	
@@ -64,8 +63,15 @@ public class UserManagementController {
 	@RequestMapping(value="/add_user_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String addUserRole(@RequestBody UserDTO userInfo, String role) throws UserRetrievalException {
-		return "";
+	public String addUserRole(@RequestParam("userName") String userName, 
+			@RequestParam("role") String role) throws UserRetrievalException {
+		
+		UserImpl user = (UserImpl) userManager.getByUserName(userName);
+		userManager.addRole(user, role);
+		String isSuccess = String.valueOf(true);
+		
+		return "{\"roleAdded\" : "+isSuccess+" }";
+		
 	}
 	
 	@RequestMapping(value="/init_admin", method= RequestMethod.GET)

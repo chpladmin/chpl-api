@@ -116,7 +116,6 @@ public class CHPLAuthenticationSecurityConfig extends
 		
 		
 		Properties jpaProps = new Properties();
-		//jpaProps.put("persistenceUnitName", "chpl_acl");
 		jpaProps.put("persistenceUnitName", this.props.getProperty("authPersistenceUnitName"));
 		
 		bean.setJpaProperties(jpaProps);
@@ -161,7 +160,7 @@ public class CHPLAuthenticationSecurityConfig extends
 				e.printStackTrace();
 			}
 		}
-		//bean.setJndiName("java:comp/env/jdbc/chpl_acl");
+		
 		bean.setJndiName(this.props.getProperty("authJndiName"));
 		return bean;
 	}

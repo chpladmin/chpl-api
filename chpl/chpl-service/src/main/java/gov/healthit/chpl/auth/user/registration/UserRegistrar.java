@@ -54,6 +54,22 @@ public class UserRegistrar {
 	}
 	
 	
+	public boolean updateUserPassword(String userName, String password) throws UserRetrievalException {
+		
+		User fetchedUser = userManager.getByUserName(userName);
+		
+		if (fetchedUser == null){
+			throw new UserRetrievalException("User not found");
+		} else {
+			UserImpl user = (UserImpl) fetchedUser;
+			String encodedPassword = getEncodedPassword(password);
+			user.setPassword(encodedPassword);
+			userManager.update(user);
+		}
+		return true;
+	}
+	
+	
 	public String getEncodedPassword(String password){
 		String encodedPassword = bCryptPasswordEncoder.encode(password);
 		return encodedPassword;
