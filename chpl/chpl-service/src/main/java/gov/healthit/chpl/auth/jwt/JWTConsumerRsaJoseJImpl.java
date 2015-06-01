@@ -1,8 +1,9 @@
 package gov.healthit.chpl.auth.jwt;
 
-import java.util.Map;
+import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 
-import javax.annotation.PostConstruct;
+import java.util.Map;
+import java.util.Properties;
 
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
+public class JWTConsumerRsaJoseJImpl extends AuthPropertiesConsumer implements JWTConsumer {
 
 	
 	@Autowired
@@ -23,6 +24,18 @@ public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
 	
 	public Map<String, Object> consume(String jwt) {
 		
+		Properties jwtProps = this.getProps();
+		
+		JwtConsumer jwtConsumer = new JwtConsumerBuilder()
+	    	.setRequireExpirationTime() // the JWT must have an expiration time
+	    	.setAllowedClockSkewInSeconds(Integer.parseInt(jwtProps.getProperty("jwtAllowedClockSkew"))) // allow some leeway in validating time based claims to account for clock skew
+	    	.setRequireSubject() // the JWT must have a subject claim
+	    	.setExpectedIssuer(jwtProps.getProperty("jwtIssuer")) // whom the JWT needs to have been issued by
+	    	.setExpectedAudience(jwtProps.getProperty("jwtAudience")) // to whom the JWT is intended for
+	    	.setVerificationKey(jwk.getKey()) // verify the signature with the public key
+	    	.build(); // create the JwtConsumer instance
+		
+		/*
 		JwtConsumer jwtConsumer = new JwtConsumerBuilder()
 	    	.setRequireExpirationTime() // the JWT must have an expiration time
 	    	.setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
@@ -31,7 +44,7 @@ public class JWTConsumerRsaJoseJImpl implements JWTConsumer {
 	    	.setExpectedAudience("ONCCHPL") // to whom the JWT is intended for
 	    	.setVerificationKey(jwk.getKey()) // verify the signature with the public key
 	    	.build(); // create the JwtConsumer instance
-		
+		*/
 		try
 	    {
 	        //Validate the JWT and process it

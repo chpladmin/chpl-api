@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth.jwt;
 
+import gov.healthit.chpl.auth.AuthPropertiesConsumer;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,13 +19,17 @@ import org.jose4j.lang.JoseException;
 import org.springframework.stereotype.Service;
 
 @Service("RsaJose4JWebKey")
-public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
+public class JSONWebKeyRsaJoseJImpl extends AuthPropertiesConsumer implements JSONWebKey {
 
-	private String keyLocation = "D:\\CHPL\\Keys\\JSONRsaJoseJWebKey.txt";
+	
+	//private String keyLocation = "D:\\CHPL\\Keys\\JSONRsaJoseJWebKey.txt";
+	
 	RsaJsonWebKey rsaJsonWebKey = null;
 	
 	
 	public JSONWebKeyRsaJoseJImpl() {
+		
+		String keyLocation = getProps().getProperty("keyLocation");
 		
 		if (rsaJsonWebKey == null){
 			
@@ -38,7 +44,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
 					keyPair = keyUtil.generateKeyPair(2048);
 			        rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(keyPair.getPublic());
 			        rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
-			        saveKey(this.keyLocation);
+			        saveKey(keyLocation);
 				} catch (JoseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -49,6 +55,10 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
 	}
 	
 	public void createOrLoadKey(){
+		
+		
+		String keyLocation = getProps().getProperty("keyLocation");
+		
 		if (rsaJsonWebKey == null){
 			
 			try {
@@ -62,7 +72,7 @@ public class JSONWebKeyRsaJoseJImpl implements JSONWebKey {
 					keyPair = keyUtil.generateKeyPair(2048);
 			        rsaJsonWebKey = (RsaJsonWebKey) PublicJsonWebKey.Factory.newPublicJwk(keyPair.getPublic());
 			        rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
-			        saveKey(this.keyLocation);
+			        saveKey(keyLocation);
 				} catch (JoseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

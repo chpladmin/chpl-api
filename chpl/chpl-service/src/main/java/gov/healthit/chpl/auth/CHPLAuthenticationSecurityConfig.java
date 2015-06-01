@@ -7,32 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import javax.sql.DataSource;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
@@ -45,11 +19,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.jndi.JndiObjectFactoryBean;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
@@ -61,7 +33,6 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -82,7 +53,7 @@ public class CHPLAuthenticationSecurityConfig extends
 	@Autowired
 	private JWTUserConverter userConverter;
 	
-	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "auth.properties";
+	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "environment.auth.properties";
 	
 	protected Properties props;
 	
@@ -118,15 +89,8 @@ public class CHPLAuthenticationSecurityConfig extends
 				.antMatchers("/favicon.ico").permitAll()
 				.antMatchers("/resources/**").permitAll()
 				
-				//allow anonymous POSTs to login
-				.antMatchers(HttpMethod.POST, "/api/login").permitAll()
-				
-				//allow anonymous GETs to API
-				.antMatchers(HttpMethod.GET, "/api/**").permitAll()
-				
 				//defined Admin only API area
 				//.antMatchers("/admin/**").hasRole("ADMIN")
-				
 				
 				//allow anonymous resource requests
 				.antMatchers("/").permitAll().and()
@@ -142,20 +106,23 @@ public class CHPLAuthenticationSecurityConfig extends
 		
 		LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
 		
-		Properties props = new Properties();
-		props.put("persistenceUnitName", "chpl_acl");
-		bean.setJpaProperties(props);
+		if (this.props == null){
+			try {
+				this.loadProperties();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		Properties jpaProps = new Properties();
+		//jpaProps.put("persistenceUnitName", "chpl_acl");
+		jpaProps.put("persistenceUnitName", this.props.getProperty("authPersistenceUnitName"));
+		
+		bean.setJpaProperties(jpaProps);
 		
 		return bean;
 	}
-	
-	/*
- 	@Bean
- 	@Override
- 	public AuthenticationManager authenticationManagerBean() throws Exception {
- 		return super.authenticationManagerBean();
- 	}
-	*/
 	
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder(){
@@ -172,9 +139,6 @@ public class CHPLAuthenticationSecurityConfig extends
 		
 		MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
 		
-		Properties props = new Properties();
-		props.put("persistenceUnitName", "chpl_acl");
-		
 		bean.setPrefixJson(false);
 		
 		List<MediaType> mediaTypes = new ArrayList<MediaType>();
@@ -189,8 +153,16 @@ public class CHPLAuthenticationSecurityConfig extends
 	public JndiObjectFactoryBean aclDataSource(){
 		
 		JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-		//TODO: Pull this into security props file
-		bean.setJndiName("java:comp/env/jdbc/chpl_acl");
+		
+		if (this.props == null){
+			try {
+				this.loadProperties();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		//bean.setJndiName("java:comp/env/jdbc/chpl_acl");
+		bean.setJndiName(this.props.getProperty("authJndiName"));
 		return bean;
 	}
 	
@@ -204,9 +176,20 @@ public class CHPLAuthenticationSecurityConfig extends
 	@Bean
 	public EhCacheFactoryBean ehCacheFactoryBean(){
 		
+		
+		if (this.props == null){
+			try {
+				this.loadProperties();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		EhCacheFactoryBean bean = new EhCacheFactoryBean();
 		bean.setCacheManager(ehCacheManagerFactoryBean().getObject());
-		bean.setCacheName("aclCache");
+		//bean.setCacheName("aclCache");
+		bean.setCacheName(this.props.getProperty("authAclCacheName"));
+		
 		return bean;
 	}
 	
