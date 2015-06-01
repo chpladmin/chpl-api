@@ -39,13 +39,13 @@ public class JWTConsumerRsaJoseJImpl extends AuthPropertiesConsumer implements J
 	    {
 	        //Validate the JWT and process it
 	        JwtClaims jwtClaims = jwtConsumer.processToClaims(jwt);
-	        System.out.println("JWT validation succeeded! " + jwtClaims);
+	      //TODO: Add logging here?
 	        return jwtClaims.getClaimsMap();
 	    }
 	    catch (InvalidJwtException e)
 	    {
 	    	//TODO: Add logging here
-	        System.out.println("Invalid JWT! " + e);
+	        //System.out.println("Invalid JWT! " + e);
 	        return null;
 	    }
 	}

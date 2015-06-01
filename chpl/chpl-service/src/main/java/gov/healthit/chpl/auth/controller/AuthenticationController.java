@@ -21,13 +21,6 @@ public class AuthenticationController {
 	private Authenticator authenticator;
 	
 	
-	@RequestMapping(value="/helloFromAuth/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String helloFromAuth(@PathVariable String firstName, @PathVariable String lastName) {
-		
-		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
-		
-	}
-	
 	@RequestMapping(value="/authenticate_json", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
