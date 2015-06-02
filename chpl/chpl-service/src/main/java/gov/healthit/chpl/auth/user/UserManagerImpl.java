@@ -83,7 +83,7 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Transactional(readOnly = true)
-	@PostFilter("hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
+	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<UserImpl> getAll(){
 		return userDAO.findAll();
 	}
@@ -94,13 +94,13 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasPermission(#id, 'gov.healthit.chpl.auth.user.User', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id, 'gov.healthit.chpl.auth.user.User', admin)")
 	public User getById(Long id) throws UserRetrievalException{
 		return userDAO.getById(id);
 	}
 
 	@Transactional
-	@PreAuthorize("hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void addPermission(UserImpl user, Sid recipient, Permission permission){
 		
 		MutableAcl acl;
@@ -119,7 +119,7 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Transactional
-	@PreAuthorize("hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void deletePermission(UserImpl user, Sid recipient, Permission permission){
 		
 		ObjectIdentity oid = new ObjectIdentityImpl(UserImpl.class, user.getId());
@@ -149,16 +149,15 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Override
-	@PreAuthorize("(hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void grantAdmin(UserImpl user) throws UserRetrievalException {
 		user.addClaim("ROLE_ADMIN");
 		update(user);
 	}
 	
-	
 
 	@Override
-	@PreAuthorize("(hasRole('ROLE_ADMIN') or hasRole('ACB_ADMIN')) and hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void deleteRole(UserImpl user, String role) throws UserRetrievalException {
 		user.removeClaim(role);
 		update(user);

@@ -47,7 +47,7 @@ public class UserAuthenticator extends BaseUserAuthenticator {
 		}
 	}
 
-	private boolean checkPassword(String rawPassword, String encodedPassword){
+	protected boolean checkPassword(String rawPassword, String encodedPassword){
 		return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
 	}
 	

@@ -3,6 +3,7 @@ package gov.healthit.chpl.auth.controller;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.registration.UserCreationException;
@@ -50,7 +51,6 @@ public class UserManagementController {
 		
 	}
 	
-	
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -58,11 +58,11 @@ public class UserManagementController {
 		return "";
 	}
 	
-	@RequestMapping(value="/add_user_role", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_JSON_VALUE,
+	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")
-	public String addUserRole(@RequestParam("userName") String userName, 
-			@RequestParam("role") String role) throws UserRetrievalException {
+	public String grantUserRole(@RequestParam("userName") String userName, 
+			@RequestParam("role") String role) throws UserRetrievalException, UserManagementException {
 		
 		
 		User fetchedUser = userManager.getByUserName(userName);
@@ -72,8 +72,7 @@ public class UserManagementController {
 			throw new UserRetrievalException("User not found");
 		} else {
 			UserImpl user = (UserImpl) fetchedUser;
-			userManager.addRole(user, role);
-			userManager.update(user);
+			userManager.grantRole(user, role);
 			isSuccess = String.valueOf(true);
 		}
 		
@@ -81,10 +80,30 @@ public class UserManagementController {
 		
 	}
 	
+	@RequestMapping(value="/grant_user_admin", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			produces="application/json; charset=utf-8")
+	public String grantUserAdmin(@RequestParam("userName") String userName) 
+			throws UserRetrievalException, UserManagementException {
+		
+		User fetchedUser = userManager.getByUserName(userName);
+		String isSuccess = String.valueOf(false);
+		
+		if (fetchedUser == null){
+			throw new UserRetrievalException("User not found");
+		} else {
+			UserImpl user = (UserImpl) fetchedUser;
+			userManager.grantAdmin(user);
+			isSuccess = String.valueOf(true);
+		}
+		
+		return "{\"grantedAdmin\" : "+isSuccess+" }";
+		
+	}
+	
 	@RequestMapping(value="/init_admin", method= RequestMethod.GET)
 	public void initAdminUser() {
 		registrar.createAdminUser();
 	}
-	
 	
 }
