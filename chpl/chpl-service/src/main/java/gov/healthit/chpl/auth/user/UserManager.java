@@ -15,9 +15,6 @@ public interface UserManager {
 	public void deletePermission(UserImpl user, Sid recipient, Permission permission);
 	
 	
-	public void addRole(UserImpl user, String role) throws UserRetrievalException;
-	
-	
 	public void deleteRole(UserImpl user, String role) throws UserRetrievalException;
 	
 	
@@ -37,6 +34,12 @@ public interface UserManager {
 	
 	
 	public User getByUserName(String uname) throws UserRetrievalException;
+
+
+	void grantRole(UserImpl user, String role) throws UserRetrievalException, UserManagementException;
+
+
+	void grantAdmin(UserImpl user) throws UserRetrievalException;
 	
 	
 }
