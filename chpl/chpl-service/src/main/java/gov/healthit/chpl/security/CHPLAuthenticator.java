@@ -37,8 +37,6 @@ public class CHPLAuthenticator extends UserAuthenticator {
 		}
 		claims.put("Authorities", roleStrings);
 		
-		
-		
 		jwt = jwtAuthor.createJWT(user.getSubjectName(), claims);
 		return jwt;
 		
