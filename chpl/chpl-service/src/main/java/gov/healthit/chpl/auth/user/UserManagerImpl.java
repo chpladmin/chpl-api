@@ -137,11 +137,25 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Override
-	@PreAuthorize("(hasRole('ROLE_ADMIN') or hasRole('ACB_ADMIN')) and hasPermission(#user, admin)")
-	public void addRole(UserImpl user, String role) throws UserRetrievalException {
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
+	public void grantRole(UserImpl user, String role) throws UserRetrievalException, UserManagementException {
+		
+		if ((role == "ROLE_ADMIN") || (role == "ROLE_ACL_ADMIN") || (role =="ROLE_ADMINISTRATOR")){
+			throw new UserManagementException("This role cannot be granted using the grant role functionality");
+		}
+		
 		user.addClaim(role);
 		update(user);
 	}
+	
+	@Override
+	@PreAuthorize("(hasRole('ROLE_ADMIN')")
+	public void grantAdmin(UserImpl user) throws UserRetrievalException {
+		user.addClaim("ROLE_ADMIN");
+		update(user);
+	}
+	
+	
 
 	@Override
 	@PreAuthorize("(hasRole('ROLE_ADMIN') or hasRole('ACB_ADMIN')) and hasPermission(#user, admin)")
