@@ -36,13 +36,17 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	@Transactional
 	@Override
 	public void deactivate(String uname) {
-		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery("UPDATE UserImpl SET deleted = true WHERE c.user_id = :uname");
+		query.setParameter("uname", uname);
+		query.executeUpdate();
 	}
 	
 	@Transactional
 	@Override
 	public void deactivate(Long userId){
-		// TODO Auto-generated method stub
+		Query query = entityManager.createQuery("UPDATE UserImpl SET deleted = true WHERE c.user_id = :userid");
+		query.setParameter("userid", userId);
+		query.executeUpdate();
 	}
 	
 	@Override
