@@ -1,7 +1,6 @@
 package gov.healthit.chpl.auth.user.dao.impl;
 
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserImpl;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
@@ -52,6 +51,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	@Override
 	public List<UserImpl> findAll() {
 		//TODO: Where not deleted
+		//List<UserImpl> result = entityManager.createQuery( "from UserImpl WHERE deleted is not true ", UserImpl.class ).getResultList();
+		//List<UserImpl> result = entityManager.createQuery( "from UserImpl WHERE NOT (deleted = true) ", UserImpl.class ).getResultList();
 		List<UserImpl> result = entityManager.createQuery( "from UserImpl ", UserImpl.class ).getResultList();
 		
 		return result;
@@ -62,6 +63,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		//TODO: Where not deleted
 		UserImpl user = null;
 		
+		//Query query = entityManager.createQuery( "from user where user_id = :userid and deleted is not true", UserImpl.class );
 		Query query = entityManager.createQuery( "from user where user_id = :userid", UserImpl.class );
 		query.setParameter("userid", userId);
 		List<UserImpl> result = query.getResultList();
@@ -79,10 +81,12 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
 	@Override
 	public UserImpl getByName(String uname) throws UserRetrievalException {
-		
+		//TODO: Where not deleted
 		UserImpl user = null;
 		
-		Query query = entityManager.createQuery( "from UserImpl where user_name = :uname", UserImpl.class );
+		//Query query = entityManager.createQuery( "from UserImpl where user_name = :uname and deleted is not true", UserImpl.class );
+		//Query query = entityManager.createQuery( "from UserImpl where user_name = :uname AND NOT (deleted = true) ", UserImpl.class );
+		Query query = entityManager.createQuery( "from UserImpl where user_name = :uname ", UserImpl.class );
 		query.setParameter("uname", uname);
 		List<UserImpl> result = query.getResultList();
 		
