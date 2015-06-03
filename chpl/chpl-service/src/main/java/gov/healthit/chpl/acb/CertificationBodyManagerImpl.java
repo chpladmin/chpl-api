@@ -72,7 +72,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 	
 	@Transactional
-	@PreAuthorize("hasPermission(#acb, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
 	public void addPermission(CertificationBody acb, Sid recipient, Permission permission) {
 		MutableAcl acl;
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, acb.getId());

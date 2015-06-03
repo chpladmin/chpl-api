@@ -87,6 +87,7 @@ public class UserRegistrar {
 		}
 		if (adminUser == null){
 			
+			//TODO: Add Logging here
 			UserImpl admin = new UserImpl("admin");
 			admin.setPassword(getEncodedPassword("admin"));
 			admin.addClaim("ROLE_ADMIN");
