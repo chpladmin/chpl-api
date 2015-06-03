@@ -111,6 +111,7 @@ public class UserImpl implements User {
 		this.accountEnabled = true;
 	}
 	
+	
 	public UserImpl(User other){
 		this.password = other.getPassword();
 		

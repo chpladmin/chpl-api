@@ -47,7 +47,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	@Override
 	public List<UserImpl> findAll() {
-		
+		//TODO: Where not deleted
 		List<UserImpl> result = entityManager.createQuery( "from UserImpl ", UserImpl.class ).getResultList();
 		
 		return result;
@@ -55,7 +55,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
 	@Override
 	public UserImpl getById(Long userId) throws UserRetrievalException {
-		
+		//TODO: Where not deleted
 		UserImpl user = null;
 		
 		Query query = entityManager.createQuery( "from user where user_id = :userid", UserImpl.class );
