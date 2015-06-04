@@ -100,7 +100,6 @@ public class UserManagementController {
 		
 	}
 	
-	
 	@RequestMapping(value="/grant_user_admin", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")

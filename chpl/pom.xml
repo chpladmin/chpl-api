@@ -10,6 +10,7 @@
   <modules>
   	<module>chpl-api</module>
     <module>chpl-service</module>
+    <module>chpl-etl</module>
   </modules>
   
   <dependencies>
