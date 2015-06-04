@@ -214,3 +214,30 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+/chpl/chpl-etl/src/main/resources/log.txt
+/chpl/chpl-etl/src/main/resources/chpl.csv
+/chpl/chpl-etl/src/main/resources/chpl-hash.csv
+/chpl/chpl-etl/src/main/resources/chpl-raw.csv
+/chpl/chpl-etl/src/main/resources/chpl-small.xlsx
+/chpl/chpl-etl/src/main/resources/chpl-wChecksum.csv
+/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv
+/chpl/chpl-etl/src/main/resources/chpl_to-update.csv
+/chpl/chpl-etl/src/main/resources/log-create_certified-product.txt
+/chpl/chpl-etl/src/main/resources/log_checksum-analysis.txt
+/chpl/chpl-etl/src/main/resources/log_create_vendor-product.txt
+/chpl/chpl-etl/src/main/resources/log_unchanged-rows.csv
+/chpl/chpl-etl/parameters.prm
+/chpl/chpl-etl/src/main/resources/log-uncreated_certified.txt
+/chpl/chpl-etl/src/main/resources/log-unmerged_certified.txt
+/chpl/chpl-etl/src/main/resources/log-uncreated_products.txt
+/chpl/chpl-etl/chpl_to-update.csv
+/chpl/chpl-etl/log-uncreated_certified.txt
+/chpl/chpl-etl/log-unmerged_certified.txt
+/chpl/chpl-etl/log_checksum-analysis.txt
+/chpl/chpl-etl/log_unchanged-rows.csv
+/chpl/chpl-etl/log_create-vendor-product.txt
+/chpl/chpl-etl/log_create_certified-product.txt
+/chpl/chpl-etl/log_uncreated-certified.txt
+/chpl/chpl-etl/log_unmerged-certified.txt
+/chpl/chpl-etl/to-update.csv
+/chpl/chpl-etl/cert_products_x_ids_null.txt

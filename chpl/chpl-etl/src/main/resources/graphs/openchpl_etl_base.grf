@@ -1,0 +1,1840 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Fri May 22 14:32:10 EDT 2015" modifiedBy="alarned" name="ChecksumAnalysis" revision="1.232" showComponentDetails="true">
+<Global>
+<Metadata id="All_data">
+<Record fieldDelimiter="^" name="All_data" recordDelimiter="\r\n" type="delimited">
+<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field label="Published" name="Published" type="string"/>
+<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
+<Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field label="Additional Software" name="Additional_Software" type="string"/>
+<Field label="Version" name="Version" type="string"/>
+<Field label="Certification Date" name="Certification_Date" type="string"/>
+<Field label="170.302(a)" name="Criteria170_302_a_" type="string"/>
+<Field label="170.302(b)" name="Criteria170_302_b_" type="string"/>
+<Field label="170.302(c)" name="Criteria170_302_c_" type="string"/>
+<Field label="170.302(d)" name="Criteria170_302_d_" type="string"/>
+<Field label="170.302(e)" name="Criteria170_302_e_" type="string"/>
+<Field label="170.302(f)" name="Criteria170_302_f_" type="string"/>
+<Field label="170.302(f)(1)" name="Criteria170_302_f__1_" type="string"/>
+<Field label="170.302(f)(2)" name="Criteria170_302_f__2_" type="string"/>
+<Field label="170.302(f)(3)" name="Criteria170_302_f__3_" type="string"/>
+<Field label="170.302(g)" name="Criteria170_302_g_" type="string"/>
+<Field label="170.302(h)" name="Criteria170_302_h_" type="string"/>
+<Field label="170.302(i)" name="Criteria170_302_i_" type="string"/>
+<Field label="170.302(j)" name="Criteria170_302_j_" type="string"/>
+<Field label="170.302(k)" name="Criteria170_302_k_" type="string"/>
+<Field label="170.302(l)" name="Criteria170_302_l_" type="string"/>
+<Field label="170.302(m)" name="Criteria170_302_m_" type="string"/>
+<Field label="170.302(n)" name="Criteria170_302_n_" type="string"/>
+<Field label="170.302(o)" name="Criteria170_302_o_" type="string"/>
+<Field label="170.302(p)" name="Criteria170_302_p_" type="string"/>
+<Field label="170.302(q)" name="Criteria170_302_q_" type="string"/>
+<Field label="170.302(r)" name="Criteria170_302_r_" type="string"/>
+<Field label="170.302(s)" name="Criteria170_302_s_" type="string"/>
+<Field label="170.302(t)" name="Criteria170_302_t_" type="string"/>
+<Field label="170.302(u)" name="Criteria170_302_u_" type="string"/>
+<Field label="170.302(v)" name="Criteria170_302_v_" type="string"/>
+<Field label="170.302(w)" name="Criteria170_302_w_" type="string"/>
+<Field label="170.304(a)" name="Criteria170_304_a_" type="string"/>
+<Field label="170.304(b)" name="Criteria170_304_b_" type="string"/>
+<Field label="170.304(c)" name="Criteria170_304_c_" type="string"/>
+<Field label="170.304(d)" name="Criteria170_304_d_" type="string"/>
+<Field label="170.304(e)" name="Criteria170_304_e_" type="string"/>
+<Field label="170.304(f)" name="Criteria170_304_f_" type="string"/>
+<Field label="170.304(g)" name="Criteria170_304_g_" type="string"/>
+<Field label="170.304(h)" name="Criteria170_304_h_" type="string"/>
+<Field label="170.304(i)" name="Criteria170_304_i_" type="string"/>
+<Field label="170.304(j)" name="Criteria170_304_j_" type="string"/>
+<Field label="170.306(a)" name="Criteria170_306_a_" type="string"/>
+<Field label="170.306(b)" name="Criteria170_306_b_" type="string"/>
+<Field label="170.306(c)" name="Criteria170_306_c_" type="string"/>
+<Field label="170.306(d)" name="Criteria170_306_d_" type="string"/>
+<Field label="170.306(d)(1)" name="Criteria170_306_d__1_" type="string"/>
+<Field label="170.306(d)(2)" name="Criteria170_306_d__2_" type="string"/>
+<Field label="170.306(e)" name="Criteria170_306_e_" type="string"/>
+<Field label="170.306(f)" name="Criteria170_306_f_" type="string"/>
+<Field label="170.306(g)" name="Criteria170_306_g_" type="string"/>
+<Field label="170.306(h)" name="Criteria170_306_h_" type="string"/>
+<Field label="170.306(i)" name="Criteria170_306_i_" type="string"/>
+<Field label="NQF 0001(A)" name="NQF_0001_A_" type="string"/>
+<Field label="NQF 0002(A)" name="NQF_0002_A_" type="string"/>
+<Field label="NQF 0004(A)" name="NQF_0004_A_" type="string"/>
+<Field label="NQF 0012(A)" name="NQF_0012_A_" type="string"/>
+<Field label="NQF 0013(A)" name="NQF_0013_A_" type="string"/>
+<Field label="NQF 0014(A)" name="NQF_0014_A_" type="string"/>
+<Field label="NQF 0018(A)" name="NQF_0018_A_" type="string"/>
+<Field label="NQF 0024(A)" name="NQF_0024_A_" type="string"/>
+<Field label="NQF 0027(A)" name="NQF_0027_A_" type="string"/>
+<Field label="NQF 0028(A)" name="NQF_0028_A_" type="string"/>
+<Field label="NQF 0031(A)" name="NQF_0031_A_" type="string"/>
+<Field label="NQF 0032(A)" name="NQF_0032_A_" type="string"/>
+<Field label="NQF 0033(A)" name="NQF_0033_A_" type="string"/>
+<Field label="NQF 0034(A)" name="NQF_0034_A_" type="string"/>
+<Field label="NQF 0036(A)" name="NQF_0036_A_" type="string"/>
+<Field label="NQF 0038(A)" name="NQF_0038_A_" type="string"/>
+<Field label="NQF 0041(A)" name="NQF_0041_A_" type="string"/>
+<Field label="NQF 0043(A)" name="NQF_0043_A_" type="string"/>
+<Field label="NQF 0047(A)" name="NQF_0047_A_" type="string"/>
+<Field label="NQF 0052(A)" name="NQF_0052_A_" type="string"/>
+<Field label="NQF 0055(A)" name="NQF_0055_A_" type="string"/>
+<Field label="NQF 0056(A)" name="NQF_0056_A_" type="string"/>
+<Field label="NQF 0059(A)" name="NQF_0059_A_" type="string"/>
+<Field label="NQF 0061(A)" name="NQF_0061_A_" type="string"/>
+<Field label="NQF 0062(A)" name="NQF_0062_A_" type="string"/>
+<Field label="NQF 0064(A)" name="NQF_0064_A_" type="string"/>
+<Field label="NQF 0067(A)" name="NQF_0067_A_" type="string"/>
+<Field label="NQF 0068(A)" name="NQF_0068_A_" type="string"/>
+<Field label="NQF 0070(A)" name="NQF_0070_A_" type="string"/>
+<Field label="NQF 0073(A)" name="NQF_0073_A_" type="string"/>
+<Field label="NQF 0074(A)" name="NQF_0074_A_" type="string"/>
+<Field label="NQF 0075(A)" name="NQF_0075_A_" type="string"/>
+<Field label="NQF 0081(A)" name="NQF_0081_A_" type="string"/>
+<Field label="NQF 0083(A)" name="NQF_0083_A_" type="string"/>
+<Field label="NQF 0084(A)" name="NQF_0084_A_" type="string"/>
+<Field label="NQF 0086(A)" name="NQF_0086_A_" type="string"/>
+<Field label="NQF 0088(A)" name="NQF_0088_A_" type="string"/>
+<Field label="NQF 0089(A)" name="NQF_0089_A_" type="string"/>
+<Field label="NQF 0105(A)" name="NQF_0105_A_" type="string"/>
+<Field label="NQF 0371(I)" name="NQF_0371_I_" type="string"/>
+<Field label="NQF 0372(I)" name="NQF_0372_I_" type="string"/>
+<Field label="NQF 0373(I)" name="NQF_0373_I_" type="string"/>
+<Field label="NQF 0374(I)" name="NQF_0374_I_" type="string"/>
+<Field label="NQF 0375(I)" name="NQF_0375_I_" type="string"/>
+<Field label="NQF 0376(I)" name="NQF_0376_I_" type="string"/>
+<Field label="NQF 0385(A)" name="NQF_0385_A_" type="string"/>
+<Field label="NQF 0387(A)" name="NQF_0387_A_" type="string"/>
+<Field label="NQF 0389(A)" name="NQF_0389_A_" type="string"/>
+<Field label="NQF 0421(A)" name="NQF_0421_A_" type="string"/>
+<Field label="NQF 0435(I)" name="NQF_0435_I_" type="string"/>
+<Field label="NQF 0436(I)" name="NQF_0436_I_" type="string"/>
+<Field label="NQF 0437(I)" name="NQF_0437_I_" type="string"/>
+<Field label="NQF 0438(I)" name="NQF_0438_I_" type="string"/>
+<Field label="NQF 0439(I)" name="NQF_0439_I_" type="string"/>
+<Field label="NQF 0440(I)" name="NQF_0440_I_" type="string"/>
+<Field label="NQF 0441(I)" name="NQF_0441_I_" type="string"/>
+<Field label="NQF 0495(I)" name="NQF_0495_I_" type="string"/>
+<Field label="NQF 0497(I)" name="NQF_0497_I_" type="string"/>
+<Field label="NQF 0575(A)" name="NQF_0575_A_" type="string"/>
+<Field label="170.314(a)(1)" name="Criteria170_314_a__1_" type="string"/>
+<Field label="170.314(a)(2)" name="Criteria170_314_a__2_" type="string"/>
+<Field label="170.314(a)(3)" name="Criteria170_314_a__3_" type="string"/>
+<Field label="170.314(a)(4)" name="Criteria170_314_a__4_" type="string"/>
+<Field label="170.314(a)(5)" name="Criteria170_314_a__5_" type="string"/>
+<Field label="170.314(a)(6)" name="Criteria170_314_a__6_" type="string"/>
+<Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="string"/>
+<Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="string"/>
+<Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="string"/>
+<Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="string"/>
+<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="string"/>
+<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="string"/>
+<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="string"/>
+<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="string"/>
+<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="string"/>
+<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="string"/>
+<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="string"/>
+<Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="string"/>
+<Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="string"/>
+<Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="string"/>
+<Field label="170.314(b)(4)" name="Criteria170_314_b__4_" type="string"/>
+<Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="string"/>
+<Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="string"/>
+<Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="string"/>
+<Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="string"/>
+<Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="string"/>
+<Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="string"/>
+<Field label="170.314(d)(1)" name="Criteria170_314_d__1_" type="string"/>
+<Field label="170.314(d)(2)" name="Criteria170_314_d__2_" type="string"/>
+<Field label="170.314(d)(3)" name="Criteria170_314_d__3_" type="string"/>
+<Field label="170.314(d)(4)" name="Criteria170_314_d__4_" type="string"/>
+<Field label="170.314(d)(5)" name="Criteria170_314_d__5_" type="string"/>
+<Field label="170.314(d)(6)" name="Criteria170_314_d__6_" type="string"/>
+<Field label="170.314(d)(7)" name="Criteria170_314_d__7_" type="string"/>
+<Field label="170.314(d)(8)" name="Criteria170_314_d__8_" type="string"/>
+<Field label="170.314(d)(9)" name="Criteria170_314_d__9_" type="string"/>
+<Field label="170.314(e)(1)" name="Criteria170_314_e__1_" type="string"/>
+<Field label="170.314(e)(2)" name="Criteria170_314_e__2_" type="string"/>
+<Field label="170.314(e)(3)" name="Criteria170_314_e__3_" type="string"/>
+<Field label="170.314(f)(1)" name="Criteria170_314_f__1_" type="string"/>
+<Field label="170.314(f)(2)" name="Criteria170_314_f__2_" type="string"/>
+<Field label="170.314(f)(3)" name="Criteria170_314_f__3_" type="string"/>
+<Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="string"/>
+<Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="string"/>
+<Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="string"/>
+<Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="string"/>
+<Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="string"/>
+<Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="string"/>
+<Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="string"/>
+<Field label="CMS100" name="CMS100" type="string"/>
+<Field label="CMS102" name="CMS102" type="string"/>
+<Field label="CMS104" name="CMS104" type="string"/>
+<Field label="CMS105" name="CMS105" type="string"/>
+<Field label="CMS107" name="CMS107" type="string"/>
+<Field label="CMS108" name="CMS108" type="string"/>
+<Field label="CMS109" name="CMS109" type="string"/>
+<Field label="CMS110" name="CMS110" type="string"/>
+<Field label="CMS111" name="CMS111" type="string"/>
+<Field label="CMS113" name="CMS113" type="string"/>
+<Field label="CMS114" name="CMS114" type="string"/>
+<Field label="CMS117" name="CMS117" type="string"/>
+<Field label="CMS122" name="CMS122" type="string"/>
+<Field label="CMS123" name="CMS123" type="string"/>
+<Field label="CMS124" name="CMS124" type="string"/>
+<Field label="CMS125" name="CMS125" type="string"/>
+<Field label="CMS126" name="CMS126" type="string"/>
+<Field label="CMS127" name="CMS127" type="string"/>
+<Field label="CMS128" name="CMS128" type="string"/>
+<Field label="CMS129" name="CMS129" type="string"/>
+<Field label="CMS130" name="CMS130" type="string"/>
+<Field label="CMS131" name="CMS131" type="string"/>
+<Field label="CMS132" name="CMS132" type="string"/>
+<Field label="CMS133" name="CMS133" type="string"/>
+<Field label="CMS134" name="CMS134" type="string"/>
+<Field label="CMS135" name="CMS135" type="string"/>
+<Field label="CMS136" name="CMS136" type="string"/>
+<Field label="CMS137" name="CMS137" type="string"/>
+<Field label="CMS138" name="CMS138" type="string"/>
+<Field label="CMS139" name="CMS139" type="string"/>
+<Field label="CMS140" name="CMS140" type="string"/>
+<Field label="CMS141" name="CMS141" type="string"/>
+<Field label="CMS142" name="CMS142" type="string"/>
+<Field label="CMS143" name="CMS143" type="string"/>
+<Field label="CMS144" name="CMS144" type="string"/>
+<Field label="CMS145" name="CMS145" type="string"/>
+<Field label="CMS146" name="CMS146" type="string"/>
+<Field label="CMS147" name="CMS147" type="string"/>
+<Field label="CMS148" name="CMS148" type="string"/>
+<Field label="CMS149" name="CMS149" type="string"/>
+<Field label="CMS153" name="CMS153" type="string"/>
+<Field label="CMS154" name="CMS154" type="string"/>
+<Field label="CMS155" name="CMS155" type="string"/>
+<Field label="CMS156" name="CMS156" type="string"/>
+<Field label="CMS157" name="CMS157" type="string"/>
+<Field label="CMS158" name="CMS158" type="string"/>
+<Field label="CMS159" name="CMS159" type="string"/>
+<Field label="CMS160" name="CMS160" type="string"/>
+<Field label="CMS161" name="CMS161" type="string"/>
+<Field label="CMS163" name="CMS163" type="string"/>
+<Field label="CMS164" name="CMS164" type="string"/>
+<Field label="CMS165" name="CMS165" type="string"/>
+<Field label="CMS166" name="CMS166" type="string"/>
+<Field label="CMS167" name="CMS167" type="string"/>
+<Field label="CMS169" name="CMS169" type="string"/>
+<Field label="CMS171" name="CMS171" type="string"/>
+<Field label="CMS172" name="CMS172" type="string"/>
+<Field label="CMS177" name="CMS177" type="string"/>
+<Field label="CMS178" name="CMS178" type="string"/>
+<Field label="CMS179" name="CMS179" type="string"/>
+<Field label="CMS182" name="CMS182" type="string"/>
+<Field label="CMS185" name="CMS185" type="string"/>
+<Field label="CMS188" name="CMS188" type="string"/>
+<Field label="CMS190" name="CMS190" type="string"/>
+<Field label="CMS22" name="CMS22" type="string"/>
+<Field label="CMS26V1" name="CMS26V1" type="string"/>
+<Field label="CMS2" name="CMS2" type="string"/>
+<Field label="CMS30" name="CMS30" type="string"/>
+<Field label="CMS31" name="CMS31" type="string"/>
+<Field label="CMS32" name="CMS32" type="string"/>
+<Field label="CMS50" name="CMS50" type="string"/>
+<Field label="CMS52" name="CMS52" type="string"/>
+<Field label="CMS53" name="CMS53" type="string"/>
+<Field label="CMS55" name="CMS55" type="string"/>
+<Field label="CMS56" name="CMS56" type="string"/>
+<Field label="CMS60" name="CMS60" type="string"/>
+<Field label="CMS61" name="CMS61" type="string"/>
+<Field label="CMS62" name="CMS62" type="string"/>
+<Field label="CMS64" name="CMS64" type="string"/>
+<Field label="CMS65" name="CMS65" type="string"/>
+<Field label="CMS66" name="CMS66" type="string"/>
+<Field label="CMS68" name="CMS68" type="string"/>
+<Field label="CMS69" name="CMS69" type="string"/>
+<Field label="CMS71" name="CMS71" type="string"/>
+<Field label="CMS72" name="CMS72" type="string"/>
+<Field label="CMS73" name="CMS73" type="string"/>
+<Field label="CMS74" name="CMS74" type="string"/>
+<Field label="CMS75" name="CMS75" type="string"/>
+<Field label="CMS77" name="CMS77" type="string"/>
+<Field label="CMS82" name="CMS82" type="string"/>
+<Field label="CMS90" name="CMS90" type="string"/>
+<Field label="CMS91" name="CMS91" type="string"/>
+<Field label="CMS9V1" name="CMS9V1" type="string"/>
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field name="Checksum" type="string"/>
+<Field name="Stored_Checksum" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="CertificationBody_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CertificationBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field name="Certbody_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="CertifiedProduct" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="^" name="CertifiedProduct" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="CertifiedProduct_id" type="long"/>
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field name="Edition_id" type="long"/>
+<Field name="CqmEdition_id" type="long"/>
+<Field name="CP_CqmEdition_map_id" type="long"/>
+<Field label="Version" name="Version" type="string"/>
+<Field name="Version_id" type="long"/>
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field name="Certbody_id" type="long"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
+<Field label="Published" name="Published" type="boolean"/>
+<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
+<Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field name="Practice_Setting_id" type="long"/>
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field name="Product_Classification_id" type="long"/>
+<Field label="Additional Software" name="Additional_Software" type="string"/>
+<Field label="Certification Date" name="Certification_Date" type="date"/>
+<Field label="170.302(a)" name="Criteria170_302_a_" type="boolean"/>
+<Field label="170.302(b)" name="Criteria170_302_b_" type="boolean"/>
+<Field label="170.302(c)" name="Criteria170_302_c_" type="boolean"/>
+<Field label="170.302(d)" name="Criteria170_302_d_" type="boolean"/>
+<Field label="170.302(e)" name="Criteria170_302_e_" type="boolean"/>
+<Field label="170.302(f)" name="Criteria170_302_f_" type="boolean"/>
+<Field label="170.302(f)(1)" name="Criteria170_302_f__1_" type="boolean"/>
+<Field label="170.302(f)(2)" name="Criteria170_302_f__2_" type="boolean"/>
+<Field label="170.302(f)(3)" name="Criteria170_302_f__3_" type="boolean"/>
+<Field label="170.302(g)" name="Criteria170_302_g_" type="boolean"/>
+<Field label="170.302(h)" name="Criteria170_302_h_" type="boolean"/>
+<Field label="170.302(i)" name="Criteria170_302_i_" type="boolean"/>
+<Field label="170.302(j)" name="Criteria170_302_j_" type="boolean"/>
+<Field label="170.302(k)" name="Criteria170_302_k_" type="boolean"/>
+<Field label="170.302(l)" name="Criteria170_302_l_" type="boolean"/>
+<Field label="170.302(m)" name="Criteria170_302_m_" type="boolean"/>
+<Field label="170.302(n)" name="Criteria170_302_n_" type="boolean"/>
+<Field label="170.302(o)" name="Criteria170_302_o_" type="boolean"/>
+<Field label="170.302(p)" name="Criteria170_302_p_" type="boolean"/>
+<Field label="170.302(q)" name="Criteria170_302_q_" type="boolean"/>
+<Field label="170.302(r)" name="Criteria170_302_r_" type="boolean"/>
+<Field label="170.302(s)" name="Criteria170_302_s_" type="boolean"/>
+<Field label="170.302(t)" name="Criteria170_302_t_" type="boolean"/>
+<Field label="170.302(u)" name="Criteria170_302_u_" type="boolean"/>
+<Field label="170.302(v)" name="Criteria170_302_v_" type="boolean"/>
+<Field label="170.302(w)" name="Criteria170_302_w_" type="boolean"/>
+<Field label="170.304(a)" name="Criteria170_304_a_" type="boolean"/>
+<Field label="170.304(b)" name="Criteria170_304_b_" type="boolean"/>
+<Field label="170.304(c)" name="Criteria170_304_c_" type="boolean"/>
+<Field label="170.304(d)" name="Criteria170_304_d_" type="boolean"/>
+<Field label="170.304(e)" name="Criteria170_304_e_" type="boolean"/>
+<Field label="170.304(f)" name="Criteria170_304_f_" type="boolean"/>
+<Field label="170.304(g)" name="Criteria170_304_g_" type="boolean"/>
+<Field label="170.304(h)" name="Criteria170_304_h_" type="boolean"/>
+<Field label="170.304(i)" name="Criteria170_304_i_" type="boolean"/>
+<Field label="170.304(j)" name="Criteria170_304_j_" type="boolean"/>
+<Field label="170.306(a)" name="Criteria170_306_a_" type="boolean"/>
+<Field label="170.306(b)" name="Criteria170_306_b_" type="boolean"/>
+<Field label="170.306(c)" name="Criteria170_306_c_" type="boolean"/>
+<Field label="170.306(d)" name="Criteria170_306_d_" type="boolean"/>
+<Field label="170.306(d)(1)" name="Criteria170_306_d__1_" type="boolean"/>
+<Field label="170.306(d)(2)" name="Criteria170_306_d__2_" type="boolean"/>
+<Field label="170.306(e)" name="Criteria170_306_e_" type="boolean"/>
+<Field label="170.306(f)" name="Criteria170_306_f_" type="boolean"/>
+<Field label="170.306(g)" name="Criteria170_306_g_" type="boolean"/>
+<Field label="170.306(h)" name="Criteria170_306_h_" type="boolean"/>
+<Field label="170.306(i)" name="Criteria170_306_i_" type="boolean"/>
+<Field label="170.314(a)(2)" name="Criteria170_314_a__1_" type="boolean"/>
+<Field label="170.314(a)(2)" name="Criteria170_314_a__2_" type="boolean"/>
+<Field label="170.314(a)(3)" name="Criteria170_314_a__3_" type="boolean"/>
+<Field label="170.314(a)(4)" name="Criteria170_314_a__4_" type="boolean"/>
+<Field label="170.314(a)(5)" name="Criteria170_314_a__5_" type="boolean"/>
+<Field label="170.314(a)(6)" name="Criteria170_314_a__6_" type="boolean"/>
+<Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="boolean"/>
+<Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="boolean"/>
+<Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="boolean"/>
+<Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="boolean"/>
+<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="boolean"/>
+<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="boolean"/>
+<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="boolean"/>
+<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="boolean"/>
+<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="boolean"/>
+<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="boolean"/>
+<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="boolean"/>
+<Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="boolean"/>
+<Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="boolean"/>
+<Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="boolean"/>
+<Field label="170.314(b)(4)" name="Criteria170_314_b__4_" type="boolean"/>
+<Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="boolean"/>
+<Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="boolean"/>
+<Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="boolean"/>
+<Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="boolean"/>
+<Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="boolean"/>
+<Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="boolean"/>
+<Field label="170.314(d)(1)" name="Criteria170_314_d__1_" type="boolean"/>
+<Field label="170.314(d)(2)" name="Criteria170_314_d__2_" type="boolean"/>
+<Field label="170.314(d)(3)" name="Criteria170_314_d__3_" type="boolean"/>
+<Field label="170.314(d)(4)" name="Criteria170_314_d__4_" type="boolean"/>
+<Field label="170.314(d)(5)" name="Criteria170_314_d__5_" type="boolean"/>
+<Field label="170.314(d)(6)" name="Criteria170_314_d__6_" type="boolean"/>
+<Field label="170.314(d)(7)" name="Criteria170_314_d__7_" type="boolean"/>
+<Field label="170.314(d)(8)" name="Criteria170_314_d__8_" type="boolean"/>
+<Field label="170.314(d)(9)" name="Criteria170_314_d__9_" type="boolean"/>
+<Field label="170.314(e)(1)" name="Criteria170_314_e__1_" type="boolean"/>
+<Field label="170.314(e)(2)" name="Criteria170_314_e__2_" type="boolean"/>
+<Field label="170.314(e)(3)" name="Criteria170_314_e__3_" type="boolean"/>
+<Field label="170.314(f)(1)" name="Criteria170_314_f__1_" type="boolean"/>
+<Field label="170.314(f)(2)" name="Criteria170_314_f__2_" type="boolean"/>
+<Field label="170.314(f)(3)" name="Criteria170_314_f__3_" type="boolean"/>
+<Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="boolean"/>
+<Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="boolean"/>
+<Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="boolean"/>
+<Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="boolean"/>
+<Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="boolean"/>
+<Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="boolean"/>
+<Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="boolean"/>
+<Field label="NQF 0001(A)" name="NQF_0001_A_" type="boolean"/>
+<Field label="NQF 0002(A)" name="NQF_0002_A_" type="boolean"/>
+<Field label="NQF 0004(A)" name="NQF_0004_A_" type="boolean"/>
+<Field label="NQF 0012(A)" name="NQF_0012_A_" type="boolean"/>
+<Field label="NQF 0013(A)" name="NQF_0013_A_" type="boolean"/>
+<Field label="NQF 0014(A)" name="NQF_0014_A_" type="boolean"/>
+<Field label="NQF 0018(A)" name="NQF_0018_A_" type="boolean"/>
+<Field label="NQF 0024(A)" name="NQF_0024_A_" type="boolean"/>
+<Field label="NQF 0027(A)" name="NQF_0027_A_" type="boolean"/>
+<Field label="NQF 0028(A)" name="NQF_0028_A_" type="boolean"/>
+<Field label="NQF 0031(A)" name="NQF_0031_A_" type="boolean"/>
+<Field label="NQF 0032(A)" name="NQF_0032_A_" type="boolean"/>
+<Field label="NQF 0033(A)" name="NQF_0033_A_" type="boolean"/>
+<Field label="NQF 0034(A)" name="NQF_0034_A_" type="boolean"/>
+<Field label="NQF 0036(A)" name="NQF_0036_A_" type="boolean"/>
+<Field label="NQF 0038(A)" name="NQF_0038_A_" type="boolean"/>
+<Field label="NQF 0041(A)" name="NQF_0041_A_" type="boolean"/>
+<Field label="NQF 0043(A)" name="NQF_0043_A_" type="boolean"/>
+<Field label="NQF 0047(A)" name="NQF_0047_A_" type="boolean"/>
+<Field label="NQF 0052(A)" name="NQF_0052_A_" type="boolean"/>
+<Field label="NQF 0055(A)" name="NQF_0055_A_" type="boolean"/>
+<Field label="NQF 0056(A)" name="NQF_0056_A_" type="boolean"/>
+<Field label="NQF 0059(A)" name="NQF_0059_A_" type="boolean"/>
+<Field label="NQF 0061(A)" name="NQF_0061_A_" type="boolean"/>
+<Field label="NQF 0062(A)" name="NQF_0062_A_" type="boolean"/>
+<Field label="NQF 0064(A)" name="NQF_0064_A_" type="boolean"/>
+<Field label="NQF 0067(A)" name="NQF_0067_A_" type="boolean"/>
+<Field label="NQF 0068(A)" name="NQF_0068_A_" type="boolean"/>
+<Field label="NQF 0070(A)" name="NQF_0070_A_" type="boolean"/>
+<Field label="NQF 0073(A)" name="NQF_0073_A_" type="boolean"/>
+<Field label="NQF 0074(A)" name="NQF_0074_A_" type="boolean"/>
+<Field label="NQF 0075(A)" name="NQF_0075_A_" type="boolean"/>
+<Field label="NQF 0081(A)" name="NQF_0081_A_" type="boolean"/>
+<Field label="NQF 0083(A)" name="NQF_0083_A_" type="boolean"/>
+<Field label="NQF 0084(A)" name="NQF_0084_A_" type="boolean"/>
+<Field label="NQF 0086(A)" name="NQF_0086_A_" type="boolean"/>
+<Field label="NQF 0088(A)" name="NQF_0088_A_" type="boolean"/>
+<Field label="NQF 0089(A)" name="NQF_0089_A_" type="boolean"/>
+<Field label="NQF 0105(A)" name="NQF_0105_A_" type="boolean"/>
+<Field label="NQF 0371(I)" name="NQF_0371_I_" type="boolean"/>
+<Field label="NQF 0372(I)" name="NQF_0372_I_" type="boolean"/>
+<Field label="NQF 0373(I)" name="NQF_0373_I_" type="boolean"/>
+<Field label="NQF 0374(I)" name="NQF_0374_I_" type="boolean"/>
+<Field label="NQF 0375(I)" name="NQF_0375_I_" type="boolean"/>
+<Field label="NQF 0376(I)" name="NQF_0376_I_" type="boolean"/>
+<Field label="NQF 0385(A)" name="NQF_0385_A_" type="boolean"/>
+<Field label="NQF 0387(A)" name="NQF_0387_A_" type="boolean"/>
+<Field label="NQF 0389(A)" name="NQF_0389_A_" type="boolean"/>
+<Field label="NQF 0421(A)" name="NQF_0421_A_" type="boolean"/>
+<Field label="NQF 0435(I)" name="NQF_0435_I_" type="boolean"/>
+<Field label="NQF 0436(I)" name="NQF_0436_I_" type="boolean"/>
+<Field label="NQF 0437(I)" name="NQF_0437_I_" type="boolean"/>
+<Field label="NQF 0438(I)" name="NQF_0438_I_" type="boolean"/>
+<Field label="NQF 0439(I)" name="NQF_0439_I_" type="boolean"/>
+<Field label="NQF 0440(I)" name="NQF_0440_I_" type="boolean"/>
+<Field label="NQF 0441(I)" name="NQF_0441_I_" type="boolean"/>
+<Field label="NQF 0495(I)" name="NQF_0495_I_" type="boolean"/>
+<Field label="NQF 0497(I)" name="NQF_0497_I_" type="boolean"/>
+<Field label="NQF 0575(A)" name="NQF_0575_A_" type="boolean"/>
+<Field label="CMS100" name="CMS100" type="string"/>
+<Field label="CMS100_2" name="CMS100_2" type="string"/>
+<Field label="CMS102" name="CMS102" type="string"/>
+<Field label="CMS102_2" name="CMS102_2" type="string"/>
+<Field label="CMS104" name="CMS104" type="string"/>
+<Field label="CMS104_2" name="CMS104_2" type="string"/>
+<Field label="CMS105" name="CMS105" type="string"/>
+<Field label="CMS105_2" name="CMS105_2" type="string"/>
+<Field label="CMS107" name="CMS107" type="string"/>
+<Field label="CMS107_2" name="CMS107_2" type="string"/>
+<Field label="CMS108" name="CMS108" type="string"/>
+<Field label="CMS108_2" name="CMS108_2" type="string"/>
+<Field label="CMS109" name="CMS109" type="string"/>
+<Field label="CMS109_2" name="CMS109_2" type="string"/>
+<Field label="CMS110" name="CMS110" type="string"/>
+<Field label="CMS110_2" name="CMS110_2" type="string"/>
+<Field label="CMS111" name="CMS111" type="string"/>
+<Field label="CMS111_2" name="CMS111_2" type="string"/>
+<Field label="CMS113" name="CMS113" type="string"/>
+<Field label="CMS113_2" name="CMS113_2" type="string"/>
+<Field label="CMS114" name="CMS114" type="string"/>
+<Field label="CMS114_2" name="CMS114_2" type="string"/>
+<Field label="CMS117" name="CMS117" type="string"/>
+<Field label="CMS117_2" name="CMS117_2" type="string"/>
+<Field label="CMS122" name="CMS122" type="string"/>
+<Field label="CMS122_2" name="CMS122_2" type="string"/>
+<Field label="CMS123" name="CMS123" type="string"/>
+<Field label="CMS123_2" name="CMS123_2" type="string"/>
+<Field label="CMS124" name="CMS124" type="string"/>
+<Field label="CMS124_2" name="CMS124_2" type="string"/>
+<Field label="CMS125" name="CMS125" type="string"/>
+<Field label="CMS125_2" name="CMS125_2" type="string"/>
+<Field label="CMS126" name="CMS126" type="string"/>
+<Field label="CMS126_2" name="CMS126_2" type="string"/>
+<Field label="CMS127" name="CMS127" type="string"/>
+<Field label="CMS127_2" name="CMS127_2" type="string"/>
+<Field label="CMS128" name="CMS128" type="string"/>
+<Field label="CMS128_2" name="CMS128_2" type="string"/>
+<Field label="CMS129" name="CMS129" type="string"/>
+<Field label="CMS129_2" name="CMS129_2" type="string"/>
+<Field label="CMS130" name="CMS130" type="string"/>
+<Field label="CMS130_2" name="CMS130_2" type="string"/>
+<Field label="CMS131" name="CMS131" type="string"/>
+<Field label="CMS131_2" name="CMS131_2" type="string"/>
+<Field label="CMS132" name="CMS132" type="string"/>
+<Field label="CMS132_2" name="CMS132_2" type="string"/>
+<Field label="CMS133" name="CMS133" type="string"/>
+<Field label="CMS133_2" name="CMS133_2" type="string"/>
+<Field label="CMS134" name="CMS134" type="string"/>
+<Field label="CMS134_2" name="CMS134_2" type="string"/>
+<Field label="CMS135" name="CMS135" type="string"/>
+<Field label="CMS135_2" name="CMS135_2" type="string"/>
+<Field label="CMS136" name="CMS136" type="string"/>
+<Field label="CMS136_2" name="CMS136_2" type="string"/>
+<Field label="CMS137" name="CMS137" type="string"/>
+<Field label="CMS137_2" name="CMS137_2" type="string"/>
+<Field label="CMS138" name="CMS138" type="string"/>
+<Field label="CMS138_2" name="CMS138_2" type="string"/>
+<Field label="CMS139" name="CMS139" type="string"/>
+<Field label="CMS139_2" name="CMS139_2" type="string"/>
+<Field label="CMS140" name="CMS140" type="string"/>
+<Field label="CMS140_2" name="CMS140_2" type="string"/>
+<Field label="CMS141" name="CMS141" type="string"/>
+<Field label="CMS141_2" name="CMS141_2" type="string"/>
+<Field label="CMS142" name="CMS142" type="string"/>
+<Field label="CMS142_2" name="CMS142_2" type="string"/>
+<Field label="CMS143" name="CMS143" type="string"/>
+<Field label="CMS143_2" name="CMS143_2" type="string"/>
+<Field label="CMS144" name="CMS144" type="string"/>
+<Field label="CMS144_2" name="CMS144_2" type="string"/>
+<Field label="CMS145" name="CMS145" type="string"/>
+<Field label="CMS145_2" name="CMS145_2" type="string"/>
+<Field label="CMS146" name="CMS146" type="string"/>
+<Field label="CMS146_2" name="CMS146_2" type="string"/>
+<Field label="CMS147" name="CMS147" type="string"/>
+<Field label="CMS147_2" name="CMS147_2" type="string"/>
+<Field label="CMS148" name="CMS148" type="string"/>
+<Field label="CMS148_2" name="CMS148_2" type="string"/>
+<Field label="CMS149" name="CMS149" type="string"/>
+<Field label="CMS149_2" name="CMS149_2" type="string"/>
+<Field label="CMS153" name="CMS153" type="string"/>
+<Field label="CMS153_2" name="CMS153_2" type="string"/>
+<Field label="CMS154" name="CMS154" type="string"/>
+<Field label="CMS154_2" name="CMS154_2" type="string"/>
+<Field label="CMS155" name="CMS155" type="string"/>
+<Field label="CMS155_2" name="CMS155_2" type="string"/>
+<Field label="CMS156" name="CMS156" type="string"/>
+<Field label="CMS156_2" name="CMS156_2" type="string"/>
+<Field label="CMS157" name="CMS157" type="string"/>
+<Field label="CMS157_2" name="CMS157_2" type="string"/>
+<Field label="CMS158" name="CMS158" type="string"/>
+<Field label="CMS158_2" name="CMS158_2" type="string"/>
+<Field label="CMS159" name="CMS159" type="string"/>
+<Field label="CMS159_2" name="CMS159_2" type="string"/>
+<Field label="CMS160" name="CMS160" type="string"/>
+<Field label="CMS160_2" name="CMS160_2" type="string"/>
+<Field label="CMS161" name="CMS161" type="string"/>
+<Field label="CMS161_2" name="CMS161_2" type="string"/>
+<Field label="CMS163" name="CMS163" type="string"/>
+<Field label="CMS163_2" name="CMS163_2" type="string"/>
+<Field label="CMS164" name="CMS164" type="string"/>
+<Field label="CMS164_2" name="CMS164_2" type="string"/>
+<Field label="CMS165" name="CMS165" type="string"/>
+<Field label="CMS165_2" name="CMS165_2" type="string"/>
+<Field label="CMS166" name="CMS166" type="string"/>
+<Field label="CMS166_2" name="CMS166_2" type="string"/>
+<Field label="CMS167" name="CMS167" type="string"/>
+<Field label="CMS167_2" name="CMS167_2" type="string"/>
+<Field label="CMS169" name="CMS169" type="string"/>
+<Field label="CMS169_2" name="CMS169_2" type="string"/>
+<Field label="CMS171" name="CMS171" type="string"/>
+<Field label="CMS171_2" name="CMS171_2" type="string"/>
+<Field label="CMS172" name="CMS172" type="string"/>
+<Field label="CMS172_2" name="CMS172_2" type="string"/>
+<Field label="CMS177" name="CMS177" type="string"/>
+<Field label="CMS177_2" name="CMS177_2" type="string"/>
+<Field label="CMS178" name="CMS178" type="string"/>
+<Field label="CMS178_2" name="CMS178_2" type="string"/>
+<Field label="CMS179" name="CMS179" type="string"/>
+<Field label="CMS179_2" name="CMS179_2" type="string"/>
+<Field label="CMS182" name="CMS182" type="string"/>
+<Field label="CMS182_2" name="CMS182_2" type="string"/>
+<Field label="CMS185" name="CMS185" type="string"/>
+<Field label="CMS185_2" name="CMS185_2" type="string"/>
+<Field label="CMS188" name="CMS188" type="string"/>
+<Field label="CMS188_2" name="CMS188_2" type="string"/>
+<Field label="CMS190" name="CMS190" type="string"/>
+<Field label="CMS190_2" name="CMS190_2" type="string"/>
+<Field label="CMS22" name="CMS22" type="string"/>
+<Field label="CMS22_2" name="CMS22_2" type="string"/>
+<Field label="CMS26V1" name="CMS26V1" type="string"/>
+<Field label="CMS26V1_2" name="CMS26V1_2" type="string"/>
+<Field label="CMS2" name="CMS2" type="string"/>
+<Field label="CMS2_2" name="CMS2_2" type="string"/>
+<Field label="CMS30" name="CMS30" type="string"/>
+<Field label="CMS30_2" name="CMS30_2" type="string"/>
+<Field label="CMS31" name="CMS31" type="string"/>
+<Field label="CMS31_2" name="CMS31_2" type="string"/>
+<Field label="CMS32" name="CMS32" type="string"/>
+<Field label="CMS32_2" name="CMS32_2" type="string"/>
+<Field label="CMS50" name="CMS50" type="string"/>
+<Field label="CMS50_2" name="CMS50_2" type="string"/>
+<Field label="CMS52" name="CMS52" type="string"/>
+<Field label="CMS52_2" name="CMS52_2" type="string"/>
+<Field label="CMS53" name="CMS53" type="string"/>
+<Field label="CMS53_2" name="CMS53_2" type="string"/>
+<Field label="CMS55" name="CMS55" type="string"/>
+<Field label="CMS55_2" name="CMS55_2" type="string"/>
+<Field label="CMS56" name="CMS56" type="string"/>
+<Field label="CMS56_2" name="CMS56_2" type="string"/>
+<Field label="CMS60" name="CMS60" type="string"/>
+<Field label="CMS60_2" name="CMS60_2" type="string"/>
+<Field label="CMS61" name="CMS61" type="string"/>
+<Field label="CMS61_2" name="CMS61_2" type="string"/>
+<Field label="CMS62" name="CMS62" type="string"/>
+<Field label="CMS62_2" name="CMS62_2" type="string"/>
+<Field label="CMS64" name="CMS64" type="string"/>
+<Field label="CMS64_2" name="CMS64_2" type="string"/>
+<Field label="CMS65" name="CMS65" type="string"/>
+<Field label="CMS65_2" name="CMS65_2" type="string"/>
+<Field label="CMS66" name="CMS66" type="string"/>
+<Field label="CMS66_2" name="CMS66_2" type="string"/>
+<Field label="CMS68" name="CMS68" type="string"/>
+<Field label="CMS68_2" name="CMS68_2" type="string"/>
+<Field label="CMS69" name="CMS69" type="string"/>
+<Field label="CMS69_2" name="CMS69_2" type="string"/>
+<Field label="CMS71" name="CMS71" type="string"/>
+<Field label="CMS71_2" name="CMS71_2" type="string"/>
+<Field label="CMS72" name="CMS72" type="string"/>
+<Field label="CMS72_2" name="CMS72_2" type="string"/>
+<Field label="CMS73" name="CMS73" type="string"/>
+<Field label="CMS73_2" name="CMS73_2" type="string"/>
+<Field label="CMS74" name="CMS74" type="string"/>
+<Field label="CMS74_2" name="CMS74_2" type="string"/>
+<Field label="CMS75" name="CMS75" type="string"/>
+<Field label="CMS75_2" name="CMS75_2" type="string"/>
+<Field label="CMS77" name="CMS77" type="string"/>
+<Field label="CMS77_2" name="CMS77_2" type="string"/>
+<Field label="CMS82" name="CMS82" type="string"/>
+<Field label="CMS82_2" name="CMS82_2" type="string"/>
+<Field label="CMS90" name="CMS90" type="string"/>
+<Field label="CMS90_2" name="CMS90_2" type="string"/>
+<Field label="CMS91" name="CMS91" type="string"/>
+<Field label="CMS91_2" name="CMS91_2" type="string"/>
+<Field label="CMS9V1" name="CMS9V1" type="string"/>
+<Field label="CMS9V1_2" name="CMS9V1_2" type="string"/>
+<Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="CertifiedProduct_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CertifiedProduct_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="CertifiedProduct_id" type="long"/>
+<Field name="Edition_id" type="long"/>
+<Field name="Version_id" type="long"/>
+<Field name="Certbody_id" type="long"/>
+<Field name="Setting_id" type="long"/>
+<Field name="Classification_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="CHPL_To_Insert" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="^" label="chpl_to-insert.csv" name="CHPL_To_Insert" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\r\n" skipSourceRows="1" type="delimited">
+<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field label="Published" name="Published" type="string"/>
+<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
+<Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field label="Additional Software" name="Additional_Software" type="string"/>
+<Field label="Version" name="Version" type="string"/>
+<Field label="Certification Date" name="Certification_Date" type="string"/>
+<Field label="170.302(a) Drug-drug, drug-allergy" name="_170_302_a_Drug_drug_drug_allergy" type="string"/>
+<Field label="170.302(b) Drug formulary checks" name="_170_302_b_Drug_formulary_checks" type="string"/>
+<Field label="170.302(c) Maintain up-to-date prob" name="_170_302_c_Maintain_up_to_date_prob" type="string"/>
+<Field label="170.302(d) Maintain active med list" name="_170_302_d_Maintain_active_med_list" type="string"/>
+<Field label="170.302(e) Maintain active allergy list" name="_170_302_e_Maintain_active_allergy_list" type="string"/>
+<Field label="170.302(f) Record and Chart Vital Signs" name="_170_302_f_Record_and_Chart_Vital_Signs" type="string"/>
+<Field label="170.302(f)(1) Record and Chart Vital" name="_170_302_f_1_Record_and_Chart_Vital" type="string"/>
+<Field label="170.302(f)(2) Calculate BMI" name="_170_302_f_2_Calculate_BMI" type="string"/>
+<Field label="170.302(f)(3) Plot and display growth" name="_170_302_f_3_Plot_and_display_growth" type="string"/>
+<Field label="170.302(g) Smoking status" name="_170_302_g_Smoking_status" type="string"/>
+<Field label="170.302(h) Incorporate lab test results" name="_170_302_h_Incorporate_lab_test_results" type="string"/>
+<Field label="170.302(i) Generate patient lists" name="_170_302_i_Generate_patient_lists" type="string"/>
+<Field label="170.302(j) Medication Reconciliation" name="_170_302_j_Medication_Reconciliation" type="string"/>
+<Field label="170.302(k) Submission to immun" name="_170_302_k_Submission_to_immun" type="string"/>
+<Field label="170.302(l) Public Health Surveillance" name="_170_302_l_Public_Health_Surveillance" type="string"/>
+<Field label="170.302(m) Patient Specific Education" name="_170_302_m_Patient_Specific_Education" type="string"/>
+<Field label="170.302(n) Automated measure calc" name="_170_302_n_Automated_measure_calc" type="string"/>
+<Field label="170.302(o) Access Control" name="_170_302_o_Access_Control" type="string"/>
+<Field label="170.302(p) Emergency Access" name="_170_302_p_Emergency_Access" type="string"/>
+<Field label="170.302(q) Automatic log-off" name="_170_302_q_Automatic_log_off" type="string"/>
+<Field label="170.302(r) Audit Log" name="_170_302_r_Audit_Log" type="string"/>
+<Field label="170.302(s) Integrity" name="_170_302_s_Integrity" type="string"/>
+<Field label="170.302(t) Authentication" name="_170_302_t_Authentication" type="string"/>
+<Field label="170.302(u) General Encryption" name="_170_302_u_General_Encryption" type="string"/>
+<Field label="170.302(v) Encryption when exchanging" name="_170_302_v_Encryption_when_exchanging" type="string"/>
+<Field label="170.302(w) Accounting of disclosures" name="_170_302_w_Accounting_of_disclosures" type="string"/>
+<Field label="170.304(a) Computerized provider OE" name="_170_304_a_Computerized_provider_OE" type="string"/>
+<Field label="170.304(b) Electronic Prescribing" name="_170_304_b_Electronic_Prescribing" type="string"/>
+<Field label="170.304(c) Record Demographics" name="_170_304_c_Record_Demographics" type="string"/>
+<Field label="170.304(d) Patient Reminders" name="_170_304_d_Patient_Reminders" type="string"/>
+<Field label="170.304(e) Clinical Decision Support" name="_170_304_e_Clinical_Decision_Support" type="string"/>
+<Field label="170.304(f) Electronic Copy of Health" name="_170_304_f_Electronic_Copy_of_Health" type="string"/>
+<Field label="170.304(g) Timely Access" name="_170_304_g_Timely_Access" type="string"/>
+<Field label="170.304(h) Clinical Summaries" name="_170_304_h_Clinical_Summaries" type="string"/>
+<Field label="170.304(i) Exchange Clinical Info" name="_170_304_i_Exchange_Clinical_Info" type="string"/>
+<Field label="170.304(j) Calculate and Submit Clinical" name="_170_304_j_Calculate_and_Submit_Clinical" type="string"/>
+<Field label="170.306(a) Computerized Provider OE" name="_170_306_a_Computerized_Provider_OE" type="string"/>
+<Field label="170.306(b) Record Demographics" name="_170_306_b_Record_Demographics" type="string"/>
+<Field label="170.306(c) Clinical Decision Support" name="_170_306_c_Clinical_Decision_Support" type="string"/>
+<Field label="170.306(d) Electronic copy of Health Inf" name="_170_306_d_Electronic_copy_of_Health_Inf" type="string"/>
+<Field label="170.306(d)(1) Electronic copy of health" name="_170_306_d_1_Electronic_copy_of_health" type="string"/>
+<Field label="170.306(d)(2) E-copy of health info" name="_170_306_d_2_E_copy_of_health_info" type="string"/>
+<Field label="170.306(e) Electronic copy of discharge" name="_170_306_e_Electronic_copy_of_discharge" type="string"/>
+<Field label="170.306(f) Exchange Clinical Info" name="_170_306_f_Exchange_Clinical_Info" type="string"/>
+<Field label="170.306(g) Reportable Lab Results" name="_170_306_g_Reportable_Lab_Results" type="string"/>
+<Field label="170.306(h) Advance Directives" name="_170_306_h_Advance_Directives" type="string"/>
+<Field label="170.306(i) Calculate and Submit Clinical" name="_170_306_i_Calculate_and_Submit_Clinical" type="string"/>
+<Field label="NQF 0001(A) Asthma Assessment" name="NQF_0001_A_Asthma_Assessment" type="string"/>
+<Field label="NQF 0002(A) Pharyngitis Testing" name="NQF_0002_A_Pharyngitis_Testing" type="string"/>
+<Field label="NQF 0004(A) Alcohol and Other Drug Depe" name="NQF_0004_A_Alcohol_and_Other_Drug_Depe" type="string"/>
+<Field label="NQF 0012(A) Prenatal Care: HIV" name="NQF_0012_A_Prenatal_Care_HIV" type="string"/>
+<Field label="NQF 0013(A) Hypertension: Blood Pressure" name="NQF_0013_A_Hypertension_Blood_Pressure" type="string"/>
+<Field label="NQF 0014(A) Prenatal Care: Immune Globul" name="NQF_0014_A_Prenatal_Care_Immune_Globul" type="string"/>
+<Field label="NQF 0018(A) Controlling High Blood Pres" name="NQF_0018_A_Controlling_High_Blood_Pres" type="string"/>
+<Field label="NQF 0024(A) Weight Assessment for Child" name="NQF_0024_A_Weight_Assessment_for_Child" type="string"/>
+<Field label="NQF 0027(A) Smoking and Tobacco Use" name="NQF_0027_A_Smoking_and_Tobacco_Use" type="string"/>
+<Field label="NQF 0028(A) Preventive Care &amp; Screening" name="NQF_0028_A_Preventive_Care_Screening" type="string"/>
+<Field label="NQF 0031(A) Breast Cancer Screening" name="NQF_0031_A_Breast_Cancer_Screening" type="string"/>
+<Field label="NQF 0032(A) Cervical Cancer Screening" name="NQF_0032_A_Cervical_Cancer_Screening" type="string"/>
+<Field label="NQF 0033(A) Chlamydia Screening for Wome" name="NQF_0033_A_Chlamydia_Screening_for_Wome" type="string"/>
+<Field label="NQF 0034(A) Colorectal Cancer Screening" name="NQF_0034_A_Colorectal_Cancer_Screening" type="string"/>
+<Field label="NQF 0036(A) Use of Medication for Asthma" name="NQF_0036_A_Use_of_Medication_for_Asthma" type="string"/>
+<Field label="NQF 0038(A) Child Immunization Status" name="NQF_0038_A_Child_Immunization_Status" type="string"/>
+<Field label="NQF 0041(A) Preventive Care &amp; Screening" name="NQF_0041_A_Preventive_Care_Screening" type="string"/>
+<Field label="NQF 0043(A) Pneomonia Vaccination Status" name="NQF_0043_A_Pneomonia_Vaccination_Status" type="string"/>
+<Field label="NQF 0047(A) Asthma Pharmacologic Therapy" name="NQF_0047_A_Asthma_Pharmacologic_Therapy" type="string"/>
+<Field label="NQF 0052(A) Low Back Pain: Imaging" name="NQF_0052_A_Low_Back_Pain_Imaging" type="string"/>
+<Field label="NQF 0055(A) Diabetes: Eye Exam" name="NQF_0055_A_Diabetes_Eye_Exam" type="string"/>
+<Field label="NQF 0056(A) Diabetes: Foot Exam" name="NQF_0056_A_Diabetes_Foot_Exam" type="string"/>
+<Field label="NQF 0059(A) Diabetes: Hemoglobin A1c" name="NQF_0059_A_Diabetes_Hemoglobin_A1c" type="string"/>
+<Field label="NQF 0061(A) Diabetes: BP Management" name="NQF_0061_A_Diabetes_BP_Management" type="string"/>
+<Field label="NQF 0062(A) Diabates: Urine Screening" name="NQF_0062_A_Diabates_Urine_Screening" type="string"/>
+<Field label="NQF 0064(A) Diabetes: LDL" name="NQF_0064_A_Diabetes_LDL" type="string"/>
+<Field label="NQF 0067(A) Coronary Artery Disease" name="NQF_0067_A_Coronary_Artery_Disease" type="string"/>
+<Field label="NQF 0068(A) Vascular Disease: Aspirin" name="NQF_0068_A_Vascular_Disease_Aspirin" type="string"/>
+<Field label="NQF 0070(A) CAD: Beta-Blocker Therapy" name="NQF_0070_A_CAD_Beta_Blocker_Therapy" type="string"/>
+<Field label="NQF 0073(A) Vascular Disease: BP Mgmt" name="NQF_0073_A_Vascular_Disease_BP_Mgmt" type="string"/>
+<Field label="NQF 0074(A) Coronary Artery Disease" name="NQF_0074_A_Coronary_Artery_Disease" type="string"/>
+<Field label="NQF 0075(A) Vascular Disease: LDL" name="NQF_0075_A_Vascular_Disease_LDL" type="string"/>
+<Field label="NQF 0081(A) Heart Failure: ACE Inhibitor" name="NQF_0081_A_Heart_Failure_ACE_Inhibitor" type="string"/>
+<Field label="NQF 0083(A) Heart Failure: LVSD Therapy" name="NQF_0083_A_Heart_Failure_LVSD_Therapy" type="string"/>
+<Field label="NQF 0084(A) Heart Failure: Warfarin" name="NQF_0084_A_Heart_Failure_Warfarin" type="string"/>
+<Field label="NQF 0086(A) Primary Open Angle Glaucoma" name="NQF_0086_A_Primary_Open_Angle_Glaucoma" type="string"/>
+<Field label="NQF 0088(A) Diabetic Retinopathy: Docs" name="NQF_0088_A_Diabetic_Retinopathy_Docs" type="string"/>
+<Field label="NQF 0089(A) Diabetic Retinopathy: Com" name="NQF_0089_A_Diabetic_Retinopathy_Com" type="string"/>
+<Field label="NQF 0105(A) Anti-depressant Med Mgmt" name="NQF_0105_A_Anti_depressant_Med_Mgmt" type="string"/>
+<Field label="NQF 0371(I) VTE: Prophylaxis" name="NQF_0371_I_VTE_Prophylaxis" type="string"/>
+<Field label="NQF 0372(I) VTE: Intensive Care Unit" name="NQF_0372_I_VTE_Intensive_Care_Unit" type="string"/>
+<Field label="NQF 0373(I) VTE: Anticoagulation Overlap" name="NQF_0373_I_VTE_Anticoagulation_Overlap" type="string"/>
+<Field label="NQF 0374(I) VTE: Platelet Monitoring" name="NQF_0374_I_VTE_Platelet_Monitoring" type="string"/>
+<Field label="NQF 0375(I) VTE: Discharge Instructions" name="NQF_0375_I_VTE_Discharge_Instructions" type="string"/>
+<Field label="NQF 0376(I) VTE: Incidence of Preventabl" name="NQF_0376_I_VTE_Incidence_of_Preventabl" type="string"/>
+<Field label="NQF 0385(A) Oncology Colon Cancer" name="NQF_0385_A_Oncology_Colon_Cancer" type="string"/>
+<Field label="NQF 0387(A) Oncology Brest Cancer" name="NQF_0387_A_Oncology_Brest_Cancer" type="string"/>
+<Field label="NQF 0389(A) Prostate Cancer: Bone Scan" name="NQF_0389_A_Prostate_Cancer_Bone_Scan" type="string"/>
+<Field label="NQF 0421(A) Adult Weight Screening" name="NQF_0421_A_Adult_Weight_Screening" type="string"/>
+<Field label="NQF 0435(I) Stroke: Discharge" name="NQF_0435_I_Stroke_Discharge" type="string"/>
+<Field label="NQF 0436(I) Stroke: Anticoagulation" name="NQF_0436_I_Stroke_Anticoagulation" type="string"/>
+<Field label="NQF 0437(I) Stroke: Thrombolytic" name="NQF_0437_I_Stroke_Thrombolytic" type="string"/>
+<Field label="NQF 0438(I) Stroke: Ischemic/Hemorrhagic" name="NQF_0438_I_Stroke_Ischemic_Hemorrhagic" type="string"/>
+<Field label="NQF 0439(I) Stroke: Discharge on Statins" name="NQF_0439_I_Stroke_Discharge_on_Statins" type="string"/>
+<Field label="NQF 0440(I) Stroke: Stroke Education" name="NQF_0440_I_Stroke_Stroke_Education" type="string"/>
+<Field label="NQF 0441(I) Stroke: Rehabilitation" name="NQF_0441_I_Stroke_Rehabilitation" type="string"/>
+<Field label="NQF 0495(I) ED: Median Time" name="NQF_0495_I_ED_Median_Time" type="string"/>
+<Field label="NQF 0497(I) ED: Admission Decision" name="NQF_0497_I_ED_Admission_Decision" type="string"/>
+<Field label="NQF 0575(A) Diabetes: Hemoglobin A1c" name="NQF_0575_A_Diabetes_Hemoglobin_A1c" type="string"/>
+<Field label="170.314(a)(1) Computerized provider OE" name="_170_314_a_1_Computerized_provider_OE" type="string"/>
+<Field label="170.314(a)(2) Drug-drug, drug-allergy" name="_170_314_a_2_Drug_drug_drug_allergy" type="string"/>
+<Field label="170.314(a)(3) Demographics" name="_170_314_a_3_Demographics" type="string"/>
+<Field label="170.314(a)(4) Vital signs, body mass ind" name="_170_314_a_4_Vital_signs_body_mass_ind" type="string"/>
+<Field label="170.314(a)(5) Problem List" name="_170_314_a_5_Problem_List" type="string"/>
+<Field label="170.314(a)(6) Medication List" name="_170_314_a_6_Medication_List" type="string"/>
+<Field label="170.314(a)(7) Medication Allergy List" name="_170_314_a_7_Medication_Allergy_List" type="string"/>
+<Field label="170.314(a)(8) Clinical Decision Support" name="_170_314_a_8_Clinical_Decision_Support" type="string"/>
+<Field label="170.314(a)(9) Electronic Notes" name="_170_314_a_9_Electronic_Notes" type="string"/>
+<Field label="170.314(a)(10) Drug-Formulary Checks" name="_170_314_a_10_Drug_Formulary_Checks" type="string"/>
+<Field label="170.314(a)(11) Smoking Status" name="_170_314_a_11_Smoking_Status" type="string"/>
+<Field label="170.314(a)(12) Image Results" name="_170_314_a_12_Image_Results" type="string"/>
+<Field label="170.314(a)(13) Family Health History" name="_170_314_a_13_Family_Health_History" type="string"/>
+<Field label="170.314(a)(14) Patient List Creation" name="_170_314_a_14_Patient_List_Creation" type="string"/>
+<Field label="170.314(a)(15) Patient-Specific Educatio" name="_170_314_a_15_Patient_Specific_Educatio" type="string"/>
+<Field label="170.314(a)(16) Electronic Medication Adm" name="_170_314_a_16_Electronic_Medication_Adm" type="string"/>
+<Field label="170.314(a)(17) Advance Directives" name="_170_314_a_17_Advance_Directives" type="string"/>
+<Field label="170.314(b)(1) Transitions of Care - rece" name="_170_314_b_1_Transitions_of_Care_rece" type="string"/>
+<Field label="170.314(b)(2) Transitions of Care - crea" name="_170_314_b_2_Transitions_of_Care_crea" type="string"/>
+<Field label="170.314(b)(3) Electronic Prescribing" name="_170_314_b_3_Electronic_Prescribing" type="string"/>
+<Field label="170.314(b)(4) Clinical Information Recon" name="_170_314_b_4_Clinical_Information_Recon" type="string"/>
+<Field label="170.314(b)(5) Incorporate Laboratory Tes" name="_170_314_b_5_Incorporate_Laboratory_Tes" type="string"/>
+<Field label="170.314(b)(6) Transmission of Electronic" name="_170_314_b_6_Transmission_of_Electronic" type="string"/>
+<Field label="170.314(b)(7) Data Portability" name="_170_314_b_7_Data_Portability" type="string"/>
+<Field label="170.314(c)(1) Clinical Quality Measures" name="_170_314_c_1_Clinical_Quality_Measures" type="string"/>
+<Field label="170.314(c)(2) Clinical Quality Measures" name="_170_314_c_2_Clinical_Quality_Measures" type="string"/>
+<Field label="170.314(c)(3) Clinical Quality Measures" name="_170_314_c_3_Clinical_Quality_Measures" type="string"/>
+<Field label="170.314(d)(1) Authentication, access con" name="_170_314_d_1_Authentication_access_con" type="string"/>
+<Field label="170.314(d)(2) Auditable Events and Tampe" name="_170_314_d_2_Auditable_Events_and_Tampe" type="string"/>
+<Field label="170.314(d)(3) Audit Report(s)" name="_170_314_d_3_Audit_Report_s" type="string"/>
+<Field label="170.314(d)(4) Amendments" name="_170_314_d_4_Amendments" type="string"/>
+<Field label="170.314(d)(5) Automatic log-off" name="_170_314_d_5_Automatic_log_off" type="string"/>
+<Field label="170.314(d)(6) Emergency access" name="_170_314_d_6_Emergency_access" type="string"/>
+<Field label="170.314(d)(7) End-User Device Encryption" name="_170_314_d_7_End_User_Device_Encryption" type="string"/>
+<Field label="170.314(d)(8) Integrity" name="_170_314_d_8_Integrity" type="string"/>
+<Field label="170.314(d)(9) Accounting of Disclosures" name="_170_314_d_9_Accounting_of_Disclosures" type="string"/>
+<Field label="170.314(e)(1) View, Download, and Transm" name="_170_314_e_1_View_Download_and_Transm" type="string"/>
+<Field label="170.314(e)(2) Clinical Summary" name="_170_314_e_2_Clinical_Summary" type="string"/>
+<Field label="170.314(e)(3) Secure Messaging" name="_170_314_e_3_Secure_Messaging" type="string"/>
+<Field label="170.314(f)(1) Immunization Information" name="_170_314_f_1_Immunization_Information" type="string"/>
+<Field label="170.314(f)(2) Transmission to Immunizati" name="_170_314_f_2_Transmission_to_Immunizati" type="string"/>
+<Field label="170.314(f)(3) Transmission to Public Hea" name="_170_314_f_3_Transmission_to_Public_Hea" type="string"/>
+<Field label="170.314(f)(4) Transmission of Reportable" name="_170_314_f_4_Transmission_of_Reportable" type="string"/>
+<Field label="170.314(f)(5) Cancer Case Information" name="_170_314_f_5_Cancer_Case_Information" type="string"/>
+<Field label="170.314(f)(6) Transmission to Cancer Reg" name="_170_314_f_6_Transmission_to_Cancer_Reg" type="string"/>
+<Field label="170.314(g)(1) Automated Numerator Record" name="_170_314_g_1_Automated_Numerator_Record" type="string"/>
+<Field label="170.314(g)(2) Automated Measure Calculat" name="_170_314_g_2_Automated_Measure_Calculat" type="string"/>
+<Field label="170.314(g)(3) Safety-Enhanced Design" name="_170_314_g_3_Safety_Enhanced_Design" type="string"/>
+<Field label="170.314(g)(4) Quality Management System" name="_170_314_g_4_Quality_Management_System" type="string"/>
+<Field label="CMS100 AMI?2?Aspirin Prescribed at Dis" name="CMS100_AMI_2_Aspirin_Prescribed_at_Dis" type="string"/>
+<Field label="CMS102 Stroke?10 Ischemic or hemorrhag" name="CMS102_Stroke_10_Ischemic_or_hemorrhag" type="string"/>
+<Field label="CMS104 Stroke?2 Ischemic stroke \u0096 Dis" name="CMS104_Stroke_2_Ischemic_stroke_Dis" type="string"/>
+<Field label="CMS105 Stroke?6 Ischemic stroke \u0096 Disc" name="CMS105_Stroke_6_Ischemic_stroke_Disc" type="string"/>
+<Field label="CMS107 Stroke?8 Ischemic or hemorrhagi" name="CMS107_Stroke_8_Ischemic_or_hemorrhagi" type="string"/>
+<Field label="CMS108 Venous Thromboembolism (VTE)?1" name="CMS108_Venous_Thromboembolism_VTE_1" type="string"/>
+<Field label="CMS109 VTE?4 VTE Patients Receiving Un" name="CMS109_VTE_4_VTE_Patients_Receiving_Un" type="string"/>
+<Field label="CMS110 VTE?5 VTE discharge instruction" name="CMS110_VTE_5_VTE_discharge_instruction" type="string"/>
+<Field label="CMS111 ED?2 Emergency Department Throu" name="CMS111_ED_2_Emergency_Department_Throu" type="string"/>
+<Field label="CMS113 PC?01 Elective Delivery Prior t" name="CMS113_PC_01_Elective_Delivery_Prior_t" type="string"/>
+<Field label="CMS114 VTE?6 Incidence of potentially" name="CMS114_VTE_6_Incidence_of_potentially" type="string"/>
+<Field label="CMS117 Childhood Immunization Status" name="CMS117_Childhood_Immunization_Status" type="string"/>
+<Field label="CMS122 Diabetes: Hemoglobin A1c Poor" name="CMS122_Diabetes_Hemoglobin_A1c_Poor" type="string"/>
+<Field label="CMS123 Diabetes: Foot Exam" name="CMS123_Diabetes_Foot_Exam" type="string"/>
+<Field label="CMS124 Cervical Cancer Screening" name="CMS124_Cervical_Cancer_Screening" type="string"/>
+<Field label="CMS125 Breast Cancer Screening" name="CMS125_Breast_Cancer_Screening" type="string"/>
+<Field label="CMS126 Use of Appropriate Medications" name="CMS126_Use_of_Appropriate_Medications" type="string"/>
+<Field label="CMS127 Pneumonia Vaccination Status fo" name="CMS127_Pneumonia_Vaccination_Status_fo" type="string"/>
+<Field label="CMS128 Anti?depressant Medication Mana" name="CMS128_Anti_depressant_Medication_Mana" type="string"/>
+<Field label="CMS129 Prostate Cancer: Avoidance of" name="CMS129_Prostate_Cancer_Avoidance_of" type="string"/>
+<Field label="CMS130 Colorectal Cancer Screening" name="CMS130_Colorectal_Cancer_Screening" type="string"/>
+<Field label="CMS131 Diabetes: Eye Exam" name="CMS131_Diabetes_Eye_Exam" type="string"/>
+<Field label="CMS132 Cataracts: Complications withi" name="CMS132_Cataracts_Complications_withi" type="string"/>
+<Field label="CMS133 Cataracts: 20/40 or Better Vis" name="CMS133_Cataracts_20_40_or_Better_Vis" type="string"/>
+<Field label="CMS134 Diabetes: Urine Protein Screen" name="CMS134_Diabetes_Urine_Protein_Screen" type="string"/>
+<Field label="CMS135 Heart Failure (HF): Angiotensi" name="CMS135_Heart_Failure_HF_Angiotensi" type="string"/>
+<Field label="CMS136 ADHD: Follow?Up Care for Child" name="CMS136_ADHD_Follow_Up_Care_for_Child" type="string"/>
+<Field label="CMS137 Initiation and Engagement of Al" name="CMS137_Initiation_and_Engagement_of_Al" type="string"/>
+<Field label="CMS138 Preventive Care and Screening:" name="CMS138_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS139 Screening for Future Fall Risk" name="CMS139_Screening_for_Future_Fall_Risk" type="string"/>
+<Field label="CMS140 Breast Cancer: Hormonal Therapy" name="CMS140_Breast_Cancer_Hormonal_Therapy" type="string"/>
+<Field label="CMS141 Colon Cancer: Chemotherapy for" name="CMS141_Colon_Cancer_Chemotherapy_for" type="string"/>
+<Field label="CMS142 Diabetic Retinopathy: Communic" name="CMS142_Diabetic_Retinopathy_Communic" type="string"/>
+<Field label="CMS143 Primary Open Angle Glaucoma (PO" name="CMS143_Primary_Open_Angle_Glaucoma_PO" type="string"/>
+<Field label="CMS144 Heart Failure (HF): Beta?Block" name="CMS144_Heart_Failure_HF_Beta_Block" type="string"/>
+<Field label="CMS145 Coronary Artery Disease (CAD):" name="CMS145_Coronary_Artery_Disease_CAD" type="string"/>
+<Field label="CMS146 Appropriate Testing for Childre" name="CMS146_Appropriate_Testing_for_Childre" type="string"/>
+<Field label="CMS147 Preventative Care and Screening" name="CMS147_Preventative_Care_and_Screening" type="string"/>
+<Field label="CMS148 Hemoglobin A1c Test for Pediatr" name="CMS148_Hemoglobin_A1c_Test_for_Pediatr" type="string"/>
+<Field label="CMS149 Dementia: Cognitive Assessment" name="CMS149_Dementia_Cognitive_Assessment" type="string"/>
+<Field label="CMS153 Chlamydia Screening for Women" name="CMS153_Chlamydia_Screening_for_Women" type="string"/>
+<Field label="CMS154 Appropriate Treatment for Child" name="CMS154_Appropriate_Treatment_for_Child" type="string"/>
+<Field label="CMS155 Weight Assessment and Counselin" name="CMS155_Weight_Assessment_and_Counselin" type="string"/>
+<Field label="CMS156 Use of High?Risk Medications in" name="CMS156_Use_of_High_Risk_Medications_in" type="string"/>
+<Field label="CMS157 Oncology: Medical and Radiatio" name="CMS157_Oncology_Medical_and_Radiatio" type="string"/>
+<Field label="CMS158 Pregnant women that had HBsAg t" name="CMS158_Pregnant_women_that_had_HBsAg_t" type="string"/>
+<Field label="CMS159 Depression Remission at Twelve" name="CMS159_Depression_Remission_at_Twelve" type="string"/>
+<Field label="CMS160 Depression Utilization of the P" name="CMS160_Depression_Utilization_of_the_P" type="string"/>
+<Field label="CMS161 Major Depressive Disorder (MDD)" name="CMS161_Major_Depressive_Disorder_MDD" type="string"/>
+<Field label="CMS163 Diabetes: Low Density Lipoprot" name="CMS163_Diabetes_Low_Density_Lipoprot" type="string"/>
+<Field label="CMS164 Ischemic Vascular Disease (IVD)" name="CMS164_Ischemic_Vascular_Disease_IVD" type="string"/>
+<Field label="CMS165 Controlling High Blood Pressure" name="CMS165_Controlling_High_Blood_Pressure" type="string"/>
+<Field label="CMS166 Use of Imaging Studies for Low" name="CMS166_Use_of_Imaging_Studies_for_Low" type="string"/>
+<Field label="CMS167 Diabetic Retinopathy: Document" name="CMS167_Diabetic_Retinopathy_Document" type="string"/>
+<Field label="CMS169 Bipolar Disorder and Major Depr" name="CMS169_Bipolar_Disorder_and_Major_Depr" type="string"/>
+<Field label="CMS171 SCIP?INF?1 Prophylactic Antibio" name="CMS171_SCIP_INF_1_Prophylactic_Antibio" type="string"/>
+<Field label="CMS172 SCIP?INF?2?Prophylactic Antibio" name="CMS172_SCIP_INF_2_Prophylactic_Antibio" type="string"/>
+<Field label="CMS177 Child and Adolescent Major Depr" name="CMS177_Child_and_Adolescent_Major_Depr" type="string"/>
+<Field label="CMS178 SCIP?INF?9? Urinary catheter re" name="CMS178_SCIP_INF_9_Urinary_catheter_re" type="string"/>
+<Field label="CMS179 ADE Prevention and Monitoring:" name="CMS179_ADE_Prevention_and_Monitoring" type="string"/>
+<Field label="CMS182 Ischemic Vascular Disease (IVD)" name="CMS182_Ischemic_Vascular_Disease_IVD" type="string"/>
+<Field label="CMS185 Healthy Term Newborn" name="CMS185_Healthy_Term_Newborn" type="string"/>
+<Field label="CMS188 PN?6? Initial Antibiotic Select" name="CMS188_PN_6_Initial_Antibiotic_Select" type="string"/>
+<Field label="CMS190 VTE?2 Intensive Care Unit (ICU)" name="CMS190_VTE_2_Intensive_Care_Unit_ICU" type="string"/>
+<Field label="CMS22 Preventive Care and Screening:" name="CMS22_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS26V1 Home Management Plan of Care (H" name="CMS26V1_Home_Management_Plan_of_Care_H" type="string"/>
+<Field label="CMS2 Preventive Care and Screening: S" name="CMS2_Preventive_Care_and_Screening_S" type="string"/>
+<Field label="CMS30 AMI?10 Statin Prescribed at Disc" name="CMS30_AMI_10_Statin_Prescribed_at_Disc" type="string"/>
+<Field label="CMS31 EHDI?1a ? Hearing screening prio" name="CMS31_EHDI_1a_Hearing_screening_prio" type="string"/>
+<Field label="CMS32 ED?3?Median time from ED arrival" name="CMS32_ED_3_Median_time_from_ED_arrival" type="string"/>
+<Field label="CMS50 Closing the referral loop: rece" name="CMS50_Closing_the_referral_loop_rece" type="string"/>
+<Field label="CMS52 HIV/AIDS: Pneumocystis jiroveci" name="CMS52_HIV_AIDS_Pneumocystis_jiroveci" type="string"/>
+<Field label="CMS53 AMI?8a? Primary PCI Received Wit" name="CMS53_AMI_8a_Primary_PCI_Received_Wit" type="string"/>
+<Field label="CMS55 Emergency Department (ED)?1 Emer" name="CMS55_Emergency_Department_ED_1_Emer" type="string"/>
+<Field label="CMS56 Functional status assessment for" name="CMS56_Functional_status_assessment_for" type="string"/>
+<Field label="CMS60 AMI?7a? Fibrinolytic Therapy Rec" name="CMS60_AMI_7a_Fibrinolytic_Therapy_Rec" type="string"/>
+<Field label="CMS61 Preventive Care and Screening:" name="CMS61_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS62 HIV/AIDS: Medical Visit" name="CMS62_HIV_AIDS_Medical_Visit" type="string"/>
+<Field label="CMS64 Preventive Care and Screening:" name="CMS64_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS65 Hypertension: Improvement in bl" name="CMS65_Hypertension_Improvement_in_bl" type="string"/>
+<Field label="CMS66 Functional status assessment for" name="CMS66_Functional_status_assessment_for" type="string"/>
+<Field label="CMS68 Documentation of Current Medicat" name="CMS68_Documentation_of_Current_Medicat" type="string"/>
+<Field label="CMS69 Preventive Care and Screening: B" name="CMS69_Preventive_Care_and_Screening_B" type="string"/>
+<Field label="CMS71 Stroke?3 Ischemic stroke \u0096 Antic" name="CMS71_Stroke_3_Ischemic_stroke_Antic" type="string"/>
+<Field label="CMS72 Stroke?5 Ischemic stroke \u0096 Antit" name="CMS72_Stroke_5_Ischemic_stroke_Antit" type="string"/>
+<Field label="CMS73 VTE?3 VTE Patients with Anticoag" name="CMS73_VTE_3_VTE_Patients_with_Anticoag" type="string"/>
+<Field label="CMS74 Primary Caries Prevention Interv" name="CMS74_Primary_Caries_Prevention_Interv" type="string"/>
+<Field label="CMS75 Children who have dental decay o" name="CMS75_Children_who_have_dental_decay_o" type="string"/>
+<Field label="CMS77 HIV/AIDS: RNA control for Patie" name="CMS77_HIV_AIDS_RNA_control_for_Patie" type="string"/>
+<Field label="CMS82 Maternal depression screening" name="CMS82_Maternal_depression_screening" type="string"/>
+<Field label="CMS90 Functional status assessment for" name="CMS90_Functional_status_assessment_for" type="string"/>
+<Field label="CMS91 Stroke?4 Ischemic stroke \u0096 Throm" name="CMS91_Stroke_4_Ischemic_stroke_Throm" type="string"/>
+<Field label="CMS9V1 Exclusive Breast Milk Feeding" name="CMS9V1_Exclusive_Breast_Milk_Feeding" type="string"/>
+<Field label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="CHPL_To_Insert1" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="^" label="chpl_to-insert.csv" name="CHPL_To_Insert" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\r\n" skipSourceRows="1" type="delimited">
+<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field label="Published" name="Published" type="string"/>
+<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
+<Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field label="Additional Software" name="Additional_Software" type="string"/>
+<Field label="Version" name="Version" type="string"/>
+<Field label="Certification Date" name="Certification_Date" type="string"/>
+<Field label="170.302(a)" name="Criteria170_302_a_" type="string"/>
+<Field label="170.302(b)" name="Criteria170_302_b_" type="string"/>
+<Field label="170.302(c)" name="Criteria170_302_c_" type="string"/>
+<Field label="170.302(d)" name="Criteria170_302_d_" type="string"/>
+<Field label="170.302(e)" name="Criteria170_302_e_" type="string"/>
+<Field label="170.302(f)" name="Criteria170_302_f_" type="string"/>
+<Field label="170.302(f)(1)" name="Criteria170_302_f__1_" type="string"/>
+<Field label="170.302(f)(2)" name="Criteria170_302_f__2_" type="string"/>
+<Field label="170.302(f)(3)" name="Criteria170_302_f__3_" type="string"/>
+<Field label="170.302(g)" name="Criteria170_302_g_" type="string"/>
+<Field label="170.302(h)" name="Criteria170_302_h_" type="string"/>
+<Field label="170.302(i)" name="Criteria170_302_i_" type="string"/>
+<Field label="170.302(j)" name="Criteria170_302_j_" type="string"/>
+<Field label="170.302(k)" name="Criteria170_302_k_" type="string"/>
+<Field label="170.302(l)" name="Criteria170_302_l_" type="string"/>
+<Field label="170.302(m)" name="Criteria170_302_m_" type="string"/>
+<Field label="170.302(n)" name="Criteria170_302_n_" type="string"/>
+<Field label="170.302(o)" name="Criteria170_302_o_" type="string"/>
+<Field label="170.302(p)" name="Criteria170_302_p_" type="string"/>
+<Field label="170.302(q)" name="Criteria170_302_q_" type="string"/>
+<Field label="170.302(r)" name="Criteria170_302_r_" type="string"/>
+<Field label="170.302(s)" name="Criteria170_302_s_" type="string"/>
+<Field label="170.302(t)" name="Criteria170_302_t_" type="string"/>
+<Field label="170.302(u)" name="Criteria170_302_u_" type="string"/>
+<Field label="170.302(v)" name="Criteria170_302_v_" type="string"/>
+<Field label="170.302(w)" name="Criteria170_302_w_" type="string"/>
+<Field label="170.304(a)" name="Criteria170_304_a_" type="string"/>
+<Field label="170.304(b)" name="Criteria170_304_b_" type="string"/>
+<Field label="170.304(c)" name="Criteria170_304_c_" type="string"/>
+<Field label="170.304(d)" name="Criteria170_304_d_" type="string"/>
+<Field label="170.304(e)" name="Criteria170_304_e_" type="string"/>
+<Field label="170.304(f)" name="Criteria170_304_f_" type="string"/>
+<Field label="170.304(g)" name="Criteria170_304_g_" type="string"/>
+<Field label="170.304(h)" name="Criteria170_304_h_" type="string"/>
+<Field label="170.304(i)" name="Criteria170_304_i_" type="string"/>
+<Field label="170.304(j)" name="Criteria170_304_j_" type="string"/>
+<Field label="170.306(a)" name="Criteria170_306_a_" type="string"/>
+<Field label="170.306(b)" name="Criteria170_306_b_" type="string"/>
+<Field label="170.306(c)" name="Criteria170_306_c_" type="string"/>
+<Field label="170.306(d)" name="Criteria170_306_d_" type="string"/>
+<Field label="170.306(d)(1)" name="Criteria170_306_d__1_" type="string"/>
+<Field label="170.306(d)(2)" name="Criteria170_306_d__2_" type="string"/>
+<Field label="170.306(e)" name="Criteria170_306_e_" type="string"/>
+<Field label="170.306(f)" name="Criteria170_306_f_" type="string"/>
+<Field label="170.306(g)" name="Criteria170_306_g_" type="string"/>
+<Field label="170.306(h)" name="Criteria170_306_h_" type="string"/>
+<Field label="170.306(i)" name="Criteria170_306_i_" type="string"/>
+<Field label="NQF 0001(A)" name="NQF_0001_A_" type="string"/>
+<Field label="NQF 0002(A)" name="NQF_0002_A_" type="string"/>
+<Field label="NQF 0004(A)" name="NQF_0004_A_" type="string"/>
+<Field label="NQF 0012(A)" name="NQF_0012_A_" type="string"/>
+<Field label="NQF 0013(A)" name="NQF_0013_A_" type="string"/>
+<Field label="NQF 0014(A)" name="NQF_0014_A_" type="string"/>
+<Field label="NQF 0018(A)" name="NQF_0018_A_" type="string"/>
+<Field label="NQF 0024(A)" name="NQF_0024_A_" type="string"/>
+<Field label="NQF 0027(A)" name="NQF_0027_A_" type="string"/>
+<Field label="NQF 0028(A)" name="NQF_0028_A_" type="string"/>
+<Field label="NQF 0031(A)" name="NQF_0031_A_" type="string"/>
+<Field label="NQF 0032(A)" name="NQF_0032_A_" type="string"/>
+<Field label="NQF 0033(A)" name="NQF_0033_A_" type="string"/>
+<Field label="NQF 0034(A)" name="NQF_0034_A_" type="string"/>
+<Field label="NQF 0036(A)" name="NQF_0036_A_" type="string"/>
+<Field label="NQF 0038(A)" name="NQF_0038_A_" type="string"/>
+<Field label="NQF 0041(A)" name="NQF_0041_A_" type="string"/>
+<Field label="NQF 0043(A)" name="NQF_0043_A_" type="string"/>
+<Field label="NQF 0047(A)" name="NQF_0047_A_" type="string"/>
+<Field label="NQF 0052(A)" name="NQF_0052_A_" type="string"/>
+<Field label="NQF 0055(A)" name="NQF_0055_A_" type="string"/>
+<Field label="NQF 0056(A)" name="NQF_0056_A_" type="string"/>
+<Field label="NQF 0059(A)" name="NQF_0059_A_" type="string"/>
+<Field label="NQF 0061(A)" name="NQF_0061_A_" type="string"/>
+<Field label="NQF 0062(A)" name="NQF_0062_A_" type="string"/>
+<Field label="NQF 0064(A)" name="NQF_0064_A_" type="string"/>
+<Field label="NQF 0067(A)" name="NQF_0067_A_" type="string"/>
+<Field label="NQF 0068(A)" name="NQF_0068_A_" type="string"/>
+<Field label="NQF 0070(A)" name="NQF_0070_A_" type="string"/>
+<Field label="NQF 0073(A)" name="NQF_0073_A_" type="string"/>
+<Field label="NQF 0074(A)" name="NQF_0074_A_" type="string"/>
+<Field label="NQF 0075(A)" name="NQF_0075_A_" type="string"/>
+<Field label="NQF 0081(A)" name="NQF_0081_A_" type="string"/>
+<Field label="NQF 0083(A)" name="NQF_0083_A_" type="string"/>
+<Field label="NQF 0084(A)" name="NQF_0084_A_" type="string"/>
+<Field label="NQF 0086(A)" name="NQF_0086_A_" type="string"/>
+<Field label="NQF 0088(A)" name="NQF_0088_A_" type="string"/>
+<Field label="NQF 0089(A)" name="NQF_0089_A_" type="string"/>
+<Field label="NQF 0105(A)" name="NQF_0105_A_" type="string"/>
+<Field label="NQF 0371(I)" name="NQF_0371_I_" type="string"/>
+<Field label="NQF 0372(I)" name="NQF_0372_I_" type="string"/>
+<Field label="NQF 0373(I)" name="NQF_0373_I_" type="string"/>
+<Field label="NQF 0374(I)" name="NQF_0374_I_" type="string"/>
+<Field label="NQF 0375(I)" name="NQF_0375_I_" type="string"/>
+<Field label="NQF 0376(I)" name="NQF_0376_I_" type="string"/>
+<Field label="NQF 0385(A)" name="NQF_0385_A_" type="string"/>
+<Field label="NQF 0387(A)" name="NQF_0387_A_" type="string"/>
+<Field label="NQF 0389(A)" name="NQF_0389_A_" type="string"/>
+<Field label="NQF 0421(A)" name="NQF_0421_A_" type="string"/>
+<Field label="NQF 0435(I)" name="NQF_0435_I_" type="string"/>
+<Field label="NQF 0436(I)" name="NQF_0436_I_" type="string"/>
+<Field label="NQF 0437(I)" name="NQF_0437_I_" type="string"/>
+<Field label="NQF 0438(I)" name="NQF_0438_I_" type="string"/>
+<Field label="NQF 0439(I)" name="NQF_0439_I_" type="string"/>
+<Field label="NQF 0440(I)" name="NQF_0440_I_" type="string"/>
+<Field label="NQF 0441(I)" name="NQF_0441_I_" type="string"/>
+<Field label="NQF 0495(I)" name="NQF_0495_I_" type="string"/>
+<Field label="NQF 0497(I)" name="NQF_0497_I_" type="string"/>
+<Field label="NQF 0575(A)" name="NQF_0575_A_" type="string"/>
+<Field label="170.314(a)(1)" name="Criteria170_314_a__1_" type="string"/>
+<Field label="170.314(a)(2)" name="Criteria170_314_a__2_" type="string"/>
+<Field label="170.314(a)(3)" name="Criteria170_314_a__3_" type="string"/>
+<Field label="170.314(a)(4)" name="Criteria170_314_a__4_" type="string"/>
+<Field label="170.314(a)(5)" name="Criteria170_314_a__5_" type="string"/>
+<Field label="170.314(a)(6)" name="Criteria170_314_a__6_" type="string"/>
+<Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="string"/>
+<Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="string"/>
+<Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="string"/>
+<Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="string"/>
+<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="string"/>
+<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="string"/>
+<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="string"/>
+<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="string"/>
+<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="string"/>
+<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="string"/>
+<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="string"/>
+<Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="string"/>
+<Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="string"/>
+<Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="string"/>
+<Field label="170.314(b)(4)" name="Criteria170_314_b__4_" type="string"/>
+<Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="string"/>
+<Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="string"/>
+<Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="string"/>
+<Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="string"/>
+<Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="string"/>
+<Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="string"/>
+<Field label="170.314(d)(1)" name="Criteria170_314_d__1_" type="string"/>
+<Field label="170.314(d)(2)" name="Criteria170_314_d__2_" type="string"/>
+<Field label="170.314(d)(3)" name="Criteria170_314_d__3_" type="string"/>
+<Field label="170.314(d)(4)" name="Criteria170_314_d__4_" type="string"/>
+<Field label="170.314(d)(5)" name="Criteria170_314_d__5_" type="string"/>
+<Field label="170.314(d)(6)" name="Criteria170_314_d__6_" type="string"/>
+<Field label="170.314(d)(7)" name="Criteria170_314_d__7_" type="string"/>
+<Field label="170.314(d)(8)" name="Criteria170_314_d__8_" type="string"/>
+<Field label="170.314(d)(9)" name="Criteria170_314_d__9_" type="string"/>
+<Field label="170.314(e)(1)" name="Criteria170_314_e__1_" type="string"/>
+<Field label="170.314(e)(2)" name="Criteria170_314_e__2_" type="string"/>
+<Field label="170.314(e)(3)" name="Criteria170_314_e__3_" type="string"/>
+<Field label="170.314(f)(1)" name="Criteria170_314_f__1_" type="string"/>
+<Field label="170.314(f)(2)" name="Criteria170_314_f__2_" type="string"/>
+<Field label="170.314(f)(3)" name="Criteria170_314_f__3_" type="string"/>
+<Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="string"/>
+<Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="string"/>
+<Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="string"/>
+<Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="string"/>
+<Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="string"/>
+<Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="string"/>
+<Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="string"/>
+<Field label="CMS100" name="CMS100" type="string"/>
+<Field label="CMS102" name="CMS102" type="string"/>
+<Field label="CMS104" name="CMS104" type="string"/>
+<Field label="CMS105" name="CMS105" type="string"/>
+<Field label="CMS107" name="CMS107" type="string"/>
+<Field label="CMS108" name="CMS108" type="string"/>
+<Field label="CMS109" name="CMS109" type="string"/>
+<Field label="CMS110" name="CMS110" type="string"/>
+<Field label="CMS111" name="CMS111" type="string"/>
+<Field label="CMS113" name="CMS113" type="string"/>
+<Field label="CMS114" name="CMS114" type="string"/>
+<Field label="CMS117" name="CMS117" type="string"/>
+<Field label="CMS122" name="CMS122" type="string"/>
+<Field label="CMS123" name="CMS123" type="string"/>
+<Field label="CMS124" name="CMS124" type="string"/>
+<Field label="CMS125" name="CMS125" type="string"/>
+<Field label="CMS126" name="CMS126" type="string"/>
+<Field label="CMS127" name="CMS127" type="string"/>
+<Field label="CMS128" name="CMS128" type="string"/>
+<Field label="CMS129" name="CMS129" type="string"/>
+<Field label="CMS130" name="CMS130" type="string"/>
+<Field label="CMS131" name="CMS131" type="string"/>
+<Field label="CMS132" name="CMS132" type="string"/>
+<Field label="CMS133" name="CMS133" type="string"/>
+<Field label="CMS134" name="CMS134" type="string"/>
+<Field label="CMS135" name="CMS135" type="string"/>
+<Field label="CMS136" name="CMS136" type="string"/>
+<Field label="CMS137" name="CMS137" type="string"/>
+<Field label="CMS138" name="CMS138" type="string"/>
+<Field label="CMS139" name="CMS139" type="string"/>
+<Field label="CMS140" name="CMS140" type="string"/>
+<Field label="CMS141" name="CMS141" type="string"/>
+<Field label="CMS142" name="CMS142" type="string"/>
+<Field label="CMS143" name="CMS143" type="string"/>
+<Field label="CMS144" name="CMS144" type="string"/>
+<Field label="CMS145" name="CMS145" type="string"/>
+<Field label="CMS146" name="CMS146" type="string"/>
+<Field label="CMS147" name="CMS147" type="string"/>
+<Field label="CMS148" name="CMS148" type="string"/>
+<Field label="CMS149" name="CMS149" type="string"/>
+<Field label="CMS153" name="CMS153" type="string"/>
+<Field label="CMS154" name="CMS154" type="string"/>
+<Field label="CMS155" name="CMS155" type="string"/>
+<Field label="CMS156" name="CMS156" type="string"/>
+<Field label="CMS157" name="CMS157" type="string"/>
+<Field label="CMS158" name="CMS158" type="string"/>
+<Field label="CMS159" name="CMS159" type="string"/>
+<Field label="CMS160" name="CMS160" type="string"/>
+<Field label="CMS161" name="CMS161" type="string"/>
+<Field label="CMS163" name="CMS163" type="string"/>
+<Field label="CMS164" name="CMS164" type="string"/>
+<Field label="CMS165" name="CMS165" type="string"/>
+<Field label="CMS166" name="CMS166" type="string"/>
+<Field label="CMS167" name="CMS167" type="string"/>
+<Field label="CMS169" name="CMS169" type="string"/>
+<Field label="CMS171" name="CMS171" type="string"/>
+<Field label="CMS172" name="CMS172" type="string"/>
+<Field label="CMS177" name="CMS177" type="string"/>
+<Field label="CMS178" name="CMS178" type="string"/>
+<Field label="CMS179" name="CMS179" type="string"/>
+<Field label="CMS182" name="CMS182" type="string"/>
+<Field label="CMS185" name="CMS185" type="string"/>
+<Field label="CMS188" name="CMS188" type="string"/>
+<Field label="CMS190" name="CMS190" type="string"/>
+<Field label="CMS22" name="CMS22" type="string"/>
+<Field label="CMS26V1" name="CMS26V1" type="string"/>
+<Field label="CMS2" name="CMS2" type="string"/>
+<Field label="CMS30" name="CMS30" type="string"/>
+<Field label="CMS31" name="CMS31" type="string"/>
+<Field label="CMS32" name="CMS32" type="string"/>
+<Field label="CMS50" name="CMS50" type="string"/>
+<Field label="CMS52" name="CMS52" type="string"/>
+<Field label="CMS53" name="CMS53" type="string"/>
+<Field label="CMS55" name="CMS55" type="string"/>
+<Field label="CMS56" name="CMS56" type="string"/>
+<Field label="CMS60" name="CMS60" type="string"/>
+<Field label="CMS61" name="CMS61" type="string"/>
+<Field label="CMS62" name="CMS62" type="string"/>
+<Field label="CMS64" name="CMS64" type="string"/>
+<Field label="CMS65" name="CMS65" type="string"/>
+<Field label="CMS66" name="CMS66" type="string"/>
+<Field label="CMS68" name="CMS68" type="string"/>
+<Field label="CMS69" name="CMS69" type="string"/>
+<Field label="CMS71" name="CMS71" type="string"/>
+<Field label="CMS72" name="CMS72" type="string"/>
+<Field label="CMS73" name="CMS73" type="string"/>
+<Field label="CMS74" name="CMS74" type="string"/>
+<Field label="CMS75" name="CMS75" type="string"/>
+<Field label="CMS77" name="CMS77" type="string"/>
+<Field label="CMS82" name="CMS82" type="string"/>
+<Field label="CMS90" name="CMS90" type="string"/>
+<Field label="CMS91" name="CMS91" type="string"/>
+<Field label="CMS9V1" name="CMS9V1" type="string"/>
+<Field label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Classification_id">
+<Record fieldDelimiter="|" name="Classification_id" recordDelimiter="\r\n" type="delimited">
+<Field name="Classification_Name" type="string"/>
+<Field name="classification_type_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="cqm_edition_id" type="long"/>
+<Field name="certified_product_id" type="long"/>
+<Field name="certified_product_cqm_edition_map_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="CqmEdition_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CqmEdition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="CqmEdition" type="string"/>
+<Field name="CqmEdition_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Edition_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="Edition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field name="Edition_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="From_csv" previewAttachment="${DATAIN_DIR}/CHPL_pipe.csv" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="^" label="CHPL_pipe.csv" name="From_csv" previewAttachment="${DATAIN_DIR}/CHPL_pipe.csv" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="true" recordDelimiter="\r\n" skipSourceRows="1" type="delimited">
+<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
+<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
+<Field label="Published" name="Published" type="string"/>
+<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
+<Field label="Practice Setting" name="Practice_Setting" type="string"/>
+<Field label="Product Classification" name="Product_Classification" type="string"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field label="Additional Software" name="Additional_Software" type="string"/>
+<Field label="Version" name="Version" type="string"/>
+<Field label="Certification Date" name="Certification_Date" type="string"/>
+<Field label="170.302(a) Drug-drug, drug-allergy" name="_170_302_a_Drug_drug_drug_allergy" type="string"/>
+<Field label="170.302(b) Drug formulary checks" name="_170_302_b_Drug_formulary_checks" type="string"/>
+<Field label="170.302(c) Maintain up-to-date prob" name="_170_302_c_Maintain_up_to_date_prob" type="string"/>
+<Field label="170.302(d) Maintain active med list" name="_170_302_d_Maintain_active_med_list" type="string"/>
+<Field label="170.302(e) Maintain active allergy list" name="_170_302_e_Maintain_active_allergy_list" type="string"/>
+<Field label="170.302(f) Record and Chart Vital Signs" name="_170_302_f_Record_and_Chart_Vital_Signs" type="string"/>
+<Field label="170.302(f)(1) Record and Chart Vital" name="_170_302_f_1_Record_and_Chart_Vital" type="string"/>
+<Field label="170.302(f)(2) Calculate BMI" name="_170_302_f_2_Calculate_BMI" type="string"/>
+<Field label="170.302(f)(3) Plot and display growth" name="_170_302_f_3_Plot_and_display_growth" type="string"/>
+<Field label="170.302(g) Smoking status" name="_170_302_g_Smoking_status" type="string"/>
+<Field label="170.302(h) Incorporate lab test results" name="_170_302_h_Incorporate_lab_test_results" type="string"/>
+<Field label="170.302(i) Generate patient lists" name="_170_302_i_Generate_patient_lists" type="string"/>
+<Field label="170.302(j) Medication Reconciliation" name="_170_302_j_Medication_Reconciliation" type="string"/>
+<Field label="170.302(k) Submission to immun" name="_170_302_k_Submission_to_immun" type="string"/>
+<Field label="170.302(l) Public Health Surveillance" name="_170_302_l_Public_Health_Surveillance" type="string"/>
+<Field label="170.302(m) Patient Specific Education" name="_170_302_m_Patient_Specific_Education" type="string"/>
+<Field label="170.302(n) Automated measure calc" name="_170_302_n_Automated_measure_calc" type="string"/>
+<Field label="170.302(o) Access Control" name="_170_302_o_Access_Control" type="string"/>
+<Field label="170.302(p) Emergency Access" name="_170_302_p_Emergency_Access" type="string"/>
+<Field label="170.302(q) Automatic log-off" name="_170_302_q_Automatic_log_off" type="string"/>
+<Field label="170.302(r) Audit Log" name="_170_302_r_Audit_Log" type="string"/>
+<Field label="170.302(s) Integrity" name="_170_302_s_Integrity" type="string"/>
+<Field label="170.302(t) Authentication" name="_170_302_t_Authentication" type="string"/>
+<Field label="170.302(u) General Encryption" name="_170_302_u_General_Encryption" type="string"/>
+<Field label="170.302(v) Encryption when exchanging" name="_170_302_v_Encryption_when_exchanging" type="string"/>
+<Field label="170.302(w) Accounting of disclosures" name="_170_302_w_Accounting_of_disclosures" type="string"/>
+<Field label="170.304(a) Computerized provider OE" name="_170_304_a_Computerized_provider_OE" type="string"/>
+<Field label="170.304(b) Electronic Prescribing" name="_170_304_b_Electronic_Prescribing" type="string"/>
+<Field label="170.304(c) Record Demographics" name="_170_304_c_Record_Demographics" type="string"/>
+<Field label="170.304(d) Patient Reminders" name="_170_304_d_Patient_Reminders" type="string"/>
+<Field label="170.304(e) Clinical Decision Support" name="_170_304_e_Clinical_Decision_Support" type="string"/>
+<Field label="170.304(f) Electronic Copy of Health" name="_170_304_f_Electronic_Copy_of_Health" type="string"/>
+<Field label="170.304(g) Timely Access" name="_170_304_g_Timely_Access" type="string"/>
+<Field label="170.304(h) Clinical Summaries" name="_170_304_h_Clinical_Summaries" type="string"/>
+<Field label="170.304(i) Exchange Clinical Info" name="_170_304_i_Exchange_Clinical_Info" type="string"/>
+<Field label="170.304(j) Calculate and Submit Clinical" name="_170_304_j_Calculate_and_Submit_Clinical" type="string"/>
+<Field label="170.306(a) Computerized Provider OE" name="_170_306_a_Computerized_Provider_OE" type="string"/>
+<Field label="170.306(b) Record Demographics" name="_170_306_b_Record_Demographics" type="string"/>
+<Field label="170.306(c) Clinical Decision Support" name="_170_306_c_Clinical_Decision_Support" type="string"/>
+<Field label="170.306(d) Electronic copy of Health Inf" name="_170_306_d_Electronic_copy_of_Health_Inf" type="string"/>
+<Field label="170.306(d)(1) Electronic copy of health" name="_170_306_d_1_Electronic_copy_of_health" type="string"/>
+<Field label="170.306(d)(2) E-copy of health info" name="_170_306_d_2_E_copy_of_health_info" type="string"/>
+<Field label="170.306(e) Electronic copy of discharge" name="_170_306_e_Electronic_copy_of_discharge" type="string"/>
+<Field label="170.306(f) Exchange Clinical Info" name="_170_306_f_Exchange_Clinical_Info" type="string"/>
+<Field label="170.306(g) Reportable Lab Results" name="_170_306_g_Reportable_Lab_Results" type="string"/>
+<Field label="170.306(h) Advance Directives" name="_170_306_h_Advance_Directives" type="string"/>
+<Field label="170.306(i) Calculate and Submit Clinical" name="_170_306_i_Calculate_and_Submit_Clinical" type="string"/>
+<Field label="NQF 0001(A) Asthma Assessment" name="NQF_0001_A_Asthma_Assessment" type="string"/>
+<Field label="NQF 0002(A) Pharyngitis Testing" name="NQF_0002_A_Pharyngitis_Testing" type="string"/>
+<Field label="NQF 0004(A) Alcohol and Other Drug Depe" name="NQF_0004_A_Alcohol_and_Other_Drug_Depe" type="string"/>
+<Field label="NQF 0012(A) Prenatal Care: HIV" name="NQF_0012_A_Prenatal_Care_HIV" type="string"/>
+<Field label="NQF 0013(A) Hypertension: Blood Pressure" name="NQF_0013_A_Hypertension_Blood_Pressure" type="string"/>
+<Field label="NQF 0014(A) Prenatal Care: Immune Globul" name="NQF_0014_A_Prenatal_Care_Immune_Globul" type="string"/>
+<Field label="NQF 0018(A) Controlling High Blood Pres" name="NQF_0018_A_Controlling_High_Blood_Pres" type="string"/>
+<Field label="NQF 0024(A) Weight Assessment for Child" name="NQF_0024_A_Weight_Assessment_for_Child" type="string"/>
+<Field label="NQF 0027(A) Smoking and Tobacco Use" name="NQF_0027_A_Smoking_and_Tobacco_Use" type="string"/>
+<Field label="NQF 0028(A) Preventive Care &amp; Screening" name="NQF_0028_A_Preventive_Care_Screening" type="string"/>
+<Field label="NQF 0031(A) Breast Cancer Screening" name="NQF_0031_A_Breast_Cancer_Screening" type="string"/>
+<Field label="NQF 0032(A) Cervical Cancer Screening" name="NQF_0032_A_Cervical_Cancer_Screening" type="string"/>
+<Field label="NQF 0033(A) Chlamydia Screening for Wome" name="NQF_0033_A_Chlamydia_Screening_for_Wome" type="string"/>
+<Field label="NQF 0034(A) Colorectal Cancer Screening" name="NQF_0034_A_Colorectal_Cancer_Screening" type="string"/>
+<Field label="NQF 0036(A) Use of Medication for Asthma" name="NQF_0036_A_Use_of_Medication_for_Asthma" type="string"/>
+<Field label="NQF 0038(A) Child Immunization Status" name="NQF_0038_A_Child_Immunization_Status" type="string"/>
+<Field label="NQF 0041(A) Preventive Care &amp; Screening" name="NQF_0041_A_Preventive_Care_Screening" type="string"/>
+<Field label="NQF 0043(A) Pneomonia Vaccination Status" name="NQF_0043_A_Pneomonia_Vaccination_Status" type="string"/>
+<Field label="NQF 0047(A) Asthma Pharmacologic Therapy" name="NQF_0047_A_Asthma_Pharmacologic_Therapy" type="string"/>
+<Field label="NQF 0052(A) Low Back Pain: Imaging" name="NQF_0052_A_Low_Back_Pain_Imaging" type="string"/>
+<Field label="NQF 0055(A) Diabetes: Eye Exam" name="NQF_0055_A_Diabetes_Eye_Exam" type="string"/>
+<Field label="NQF 0056(A) Diabetes: Foot Exam" name="NQF_0056_A_Diabetes_Foot_Exam" type="string"/>
+<Field label="NQF 0059(A) Diabetes: Hemoglobin A1c" name="NQF_0059_A_Diabetes_Hemoglobin_A1c" type="string"/>
+<Field label="NQF 0061(A) Diabetes: BP Management" name="NQF_0061_A_Diabetes_BP_Management" type="string"/>
+<Field label="NQF 0062(A) Diabates: Urine Screening" name="NQF_0062_A_Diabates_Urine_Screening" type="string"/>
+<Field label="NQF 0064(A) Diabetes: LDL" name="NQF_0064_A_Diabetes_LDL" type="string"/>
+<Field label="NQF 0067(A) Coronary Artery Disease" name="NQF_0067_A_Coronary_Artery_Disease" type="string"/>
+<Field label="NQF 0068(A) Vascular Disease: Aspirin" name="NQF_0068_A_Vascular_Disease_Aspirin" type="string"/>
+<Field label="NQF 0070(A) CAD: Beta-Blocker Therapy" name="NQF_0070_A_CAD_Beta_Blocker_Therapy" type="string"/>
+<Field label="NQF 0073(A) Vascular Disease: BP Mgmt" name="NQF_0073_A_Vascular_Disease_BP_Mgmt" type="string"/>
+<Field label="NQF 0074(A) Coronary Artery Disease" name="NQF_0074_A_Coronary_Artery_Disease" type="string"/>
+<Field label="NQF 0075(A) Vascular Disease: LDL" name="NQF_0075_A_Vascular_Disease_LDL" type="string"/>
+<Field label="NQF 0081(A) Heart Failure: ACE Inhibitor" name="NQF_0081_A_Heart_Failure_ACE_Inhibitor" type="string"/>
+<Field label="NQF 0083(A) Heart Failure: LVSD Therapy" name="NQF_0083_A_Heart_Failure_LVSD_Therapy" type="string"/>
+<Field label="NQF 0084(A) Heart Failure: Warfarin" name="NQF_0084_A_Heart_Failure_Warfarin" type="string"/>
+<Field label="NQF 0086(A) Primary Open Angle Glaucoma" name="NQF_0086_A_Primary_Open_Angle_Glaucoma" type="string"/>
+<Field label="NQF 0088(A) Diabetic Retinopathy: Docs" name="NQF_0088_A_Diabetic_Retinopathy_Docs" type="string"/>
+<Field label="NQF 0089(A) Diabetic Retinopathy: Com" name="NQF_0089_A_Diabetic_Retinopathy_Com" type="string"/>
+<Field label="NQF 0105(A) Anti-depressant Med Mgmt" name="NQF_0105_A_Anti_depressant_Med_Mgmt" type="string"/>
+<Field label="NQF 0371(I) VTE: Prophylaxis" name="NQF_0371_I_VTE_Prophylaxis" type="string"/>
+<Field label="NQF 0372(I) VTE: Intensive Care Unit" name="NQF_0372_I_VTE_Intensive_Care_Unit" type="string"/>
+<Field label="NQF 0373(I) VTE: Anticoagulation Overlap" name="NQF_0373_I_VTE_Anticoagulation_Overlap" type="string"/>
+<Field label="NQF 0374(I) VTE: Platelet Monitoring" name="NQF_0374_I_VTE_Platelet_Monitoring" type="string"/>
+<Field label="NQF 0375(I) VTE: Discharge Instructions" name="NQF_0375_I_VTE_Discharge_Instructions" type="string"/>
+<Field label="NQF 0376(I) VTE: Incidence of Preventabl" name="NQF_0376_I_VTE_Incidence_of_Preventabl" type="string"/>
+<Field label="NQF 0385(A) Oncology Colon Cancer" name="NQF_0385_A_Oncology_Colon_Cancer" type="string"/>
+<Field label="NQF 0387(A) Oncology Brest Cancer" name="NQF_0387_A_Oncology_Brest_Cancer" type="string"/>
+<Field label="NQF 0389(A) Prostate Cancer: Bone Scan" name="NQF_0389_A_Prostate_Cancer_Bone_Scan" type="string"/>
+<Field label="NQF 0421(A) Adult Weight Screening" name="NQF_0421_A_Adult_Weight_Screening" type="string"/>
+<Field label="NQF 0435(I) Stroke: Discharge" name="NQF_0435_I_Stroke_Discharge" type="string"/>
+<Field label="NQF 0436(I) Stroke: Anticoagulation" name="NQF_0436_I_Stroke_Anticoagulation" type="string"/>
+<Field label="NQF 0437(I) Stroke: Thrombolytic" name="NQF_0437_I_Stroke_Thrombolytic" type="string"/>
+<Field label="NQF 0438(I) Stroke: Ischemic/Hemorrhagic" name="NQF_0438_I_Stroke_Ischemic_Hemorrhagic" type="string"/>
+<Field label="NQF 0439(I) Stroke: Discharge on Statins" name="NQF_0439_I_Stroke_Discharge_on_Statins" type="string"/>
+<Field label="NQF 0440(I) Stroke: Stroke Education" name="NQF_0440_I_Stroke_Stroke_Education" type="string"/>
+<Field label="NQF 0441(I) Stroke: Rehabilitation" name="NQF_0441_I_Stroke_Rehabilitation" type="string"/>
+<Field label="NQF 0495(I) ED: Median Time" name="NQF_0495_I_ED_Median_Time" type="string"/>
+<Field label="NQF 0497(I) ED: Admission Decision" name="NQF_0497_I_ED_Admission_Decision" type="string"/>
+<Field label="NQF 0575(A) Diabetes: Hemoglobin A1c" name="NQF_0575_A_Diabetes_Hemoglobin_A1c" type="string"/>
+<Field label="170.314(a)(1) Computerized provider OE" name="_170_314_a_1_Computerized_provider_OE" type="string"/>
+<Field label="170.314(a)(2) Drug-drug, drug-allergy" name="_170_314_a_2_Drug_drug_drug_allergy" type="string"/>
+<Field label="170.314(a)(3) Demographics" name="_170_314_a_3_Demographics" type="string"/>
+<Field label="170.314(a)(4) Vital signs, body mass ind" name="_170_314_a_4_Vital_signs_body_mass_ind" type="string"/>
+<Field label="170.314(a)(5) Problem List" name="_170_314_a_5_Problem_List" type="string"/>
+<Field label="170.314(a)(6) Medication List" name="_170_314_a_6_Medication_List" type="string"/>
+<Field label="170.314(a)(7) Medication Allergy List" name="_170_314_a_7_Medication_Allergy_List" type="string"/>
+<Field label="170.314(a)(8) Clinical Decision Support" name="_170_314_a_8_Clinical_Decision_Support" type="string"/>
+<Field label="170.314(a)(9) Electronic Notes" name="_170_314_a_9_Electronic_Notes" type="string"/>
+<Field label="170.314(a)(10) Drug-Formulary Checks" name="_170_314_a_10_Drug_Formulary_Checks" type="string"/>
+<Field label="170.314(a)(11) Smoking Status" name="_170_314_a_11_Smoking_Status" type="string"/>
+<Field label="170.314(a)(12) Image Results" name="_170_314_a_12_Image_Results" type="string"/>
+<Field label="170.314(a)(13) Family Health History" name="_170_314_a_13_Family_Health_History" type="string"/>
+<Field label="170.314(a)(14) Patient List Creation" name="_170_314_a_14_Patient_List_Creation" type="string"/>
+<Field label="170.314(a)(15) Patient-Specific Educatio" name="_170_314_a_15_Patient_Specific_Educatio" type="string"/>
+<Field label="170.314(a)(16) Electronic Medication Adm" name="_170_314_a_16_Electronic_Medication_Adm" type="string"/>
+<Field label="170.314(a)(17) Advance Directives" name="_170_314_a_17_Advance_Directives" type="string"/>
+<Field label="170.314(b)(1) Transitions of Care - rece" name="_170_314_b_1_Transitions_of_Care_rece" type="string"/>
+<Field label="170.314(b)(2) Transitions of Care - crea" name="_170_314_b_2_Transitions_of_Care_crea" type="string"/>
+<Field label="170.314(b)(3) Electronic Prescribing" name="_170_314_b_3_Electronic_Prescribing" type="string"/>
+<Field label="170.314(b)(4) Clinical Information Recon" name="_170_314_b_4_Clinical_Information_Recon" type="string"/>
+<Field label="170.314(b)(5) Incorporate Laboratory Tes" name="_170_314_b_5_Incorporate_Laboratory_Tes" type="string"/>
+<Field label="170.314(b)(6) Transmission of Electronic" name="_170_314_b_6_Transmission_of_Electronic" type="string"/>
+<Field label="170.314(b)(7) Data Portability" name="_170_314_b_7_Data_Portability" type="string"/>
+<Field label="170.314(c)(1) Clinical Quality Measures" name="_170_314_c_1_Clinical_Quality_Measures" type="string"/>
+<Field label="170.314(c)(2) Clinical Quality Measures" name="_170_314_c_2_Clinical_Quality_Measures" type="string"/>
+<Field label="170.314(c)(3) Clinical Quality Measures" name="_170_314_c_3_Clinical_Quality_Measures" type="string"/>
+<Field label="170.314(d)(1) Authentication, access con" name="_170_314_d_1_Authentication_access_con" type="string"/>
+<Field label="170.314(d)(2) Auditable Events and Tampe" name="_170_314_d_2_Auditable_Events_and_Tampe" type="string"/>
+<Field label="170.314(d)(3) Audit Report(s)" name="_170_314_d_3_Audit_Report_s" type="string"/>
+<Field label="170.314(d)(4) Amendments" name="_170_314_d_4_Amendments" type="string"/>
+<Field label="170.314(d)(5) Automatic log-off" name="_170_314_d_5_Automatic_log_off" type="string"/>
+<Field label="170.314(d)(6) Emergency access" name="_170_314_d_6_Emergency_access" type="string"/>
+<Field label="170.314(d)(7) End-User Device Encryption" name="_170_314_d_7_End_User_Device_Encryption" type="string"/>
+<Field label="170.314(d)(8) Integrity" name="_170_314_d_8_Integrity" type="string"/>
+<Field label="170.314(d)(9) Accounting of Disclosures" name="_170_314_d_9_Accounting_of_Disclosures" type="string"/>
+<Field label="170.314(e)(1) View, Download, and Transm" name="_170_314_e_1_View_Download_and_Transm" type="string"/>
+<Field label="170.314(e)(2) Clinical Summary" name="_170_314_e_2_Clinical_Summary" type="string"/>
+<Field label="170.314(e)(3) Secure Messaging" name="_170_314_e_3_Secure_Messaging" type="string"/>
+<Field label="170.314(f)(1) Immunization Information" name="_170_314_f_1_Immunization_Information" type="string"/>
+<Field label="170.314(f)(2) Transmission to Immunizati" name="_170_314_f_2_Transmission_to_Immunizati" type="string"/>
+<Field label="170.314(f)(3) Transmission to Public Hea" name="_170_314_f_3_Transmission_to_Public_Hea" type="string"/>
+<Field label="170.314(f)(4) Transmission of Reportable" name="_170_314_f_4_Transmission_of_Reportable" type="string"/>
+<Field label="170.314(f)(5) Cancer Case Information" name="_170_314_f_5_Cancer_Case_Information" type="string"/>
+<Field label="170.314(f)(6) Transmission to Cancer Reg" name="_170_314_f_6_Transmission_to_Cancer_Reg" type="string"/>
+<Field label="170.314(g)(1) Automated Numerator Record" name="_170_314_g_1_Automated_Numerator_Record" type="string"/>
+<Field label="170.314(g)(2) Automated Measure Calculat" name="_170_314_g_2_Automated_Measure_Calculat" type="string"/>
+<Field label="170.314(g)(3) Safety-Enhanced Design" name="_170_314_g_3_Safety_Enhanced_Design" type="string"/>
+<Field label="170.314(g)(4) Quality Management System" name="_170_314_g_4_Quality_Management_System" type="string"/>
+<Field label="CMS100 AMI?2?Aspirin Prescribed at Dis" name="CMS100_AMI_2_Aspirin_Prescribed_at_Dis" type="string"/>
+<Field label="CMS102 Stroke?10 Ischemic or hemorrhag" name="CMS102_Stroke_10_Ischemic_or_hemorrhag" type="string"/>
+<Field label="CMS104 Stroke?2 Ischemic stroke \u0096 Dis" name="CMS104_Stroke_2_Ischemic_stroke_Dis" type="string"/>
+<Field label="CMS105 Stroke?6 Ischemic stroke \u0096 Disc" name="CMS105_Stroke_6_Ischemic_stroke_Disc" type="string"/>
+<Field label="CMS107 Stroke?8 Ischemic or hemorrhagi" name="CMS107_Stroke_8_Ischemic_or_hemorrhagi" type="string"/>
+<Field label="CMS108 Venous Thromboembolism (VTE)?1" name="CMS108_Venous_Thromboembolism_VTE_1" type="string"/>
+<Field label="CMS109 VTE?4 VTE Patients Receiving Un" name="CMS109_VTE_4_VTE_Patients_Receiving_Un" type="string"/>
+<Field label="CMS110 VTE?5 VTE discharge instruction" name="CMS110_VTE_5_VTE_discharge_instruction" type="string"/>
+<Field label="CMS111 ED?2 Emergency Department Throu" name="CMS111_ED_2_Emergency_Department_Throu" type="string"/>
+<Field label="CMS113 PC?01 Elective Delivery Prior t" name="CMS113_PC_01_Elective_Delivery_Prior_t" type="string"/>
+<Field label="CMS114 VTE?6 Incidence of potentially" name="CMS114_VTE_6_Incidence_of_potentially" type="string"/>
+<Field label="CMS117 Childhood Immunization Status" name="CMS117_Childhood_Immunization_Status" type="string"/>
+<Field label="CMS122 Diabetes: Hemoglobin A1c Poor" name="CMS122_Diabetes_Hemoglobin_A1c_Poor" type="string"/>
+<Field label="CMS123 Diabetes: Foot Exam" name="CMS123_Diabetes_Foot_Exam" type="string"/>
+<Field label="CMS124 Cervical Cancer Screening" name="CMS124_Cervical_Cancer_Screening" type="string"/>
+<Field label="CMS125 Breast Cancer Screening" name="CMS125_Breast_Cancer_Screening" type="string"/>
+<Field label="CMS126 Use of Appropriate Medications" name="CMS126_Use_of_Appropriate_Medications" type="string"/>
+<Field label="CMS127 Pneumonia Vaccination Status fo" name="CMS127_Pneumonia_Vaccination_Status_fo" type="string"/>
+<Field label="CMS128 Anti?depressant Medication Mana" name="CMS128_Anti_depressant_Medication_Mana" type="string"/>
+<Field label="CMS129 Prostate Cancer: Avoidance of" name="CMS129_Prostate_Cancer_Avoidance_of" type="string"/>
+<Field label="CMS130 Colorectal Cancer Screening" name="CMS130_Colorectal_Cancer_Screening" type="string"/>
+<Field label="CMS131 Diabetes: Eye Exam" name="CMS131_Diabetes_Eye_Exam" type="string"/>
+<Field label="CMS132 Cataracts: Complications withi" name="CMS132_Cataracts_Complications_withi" type="string"/>
+<Field label="CMS133 Cataracts: 20/40 or Better Vis" name="CMS133_Cataracts_20_40_or_Better_Vis" type="string"/>
+<Field label="CMS134 Diabetes: Urine Protein Screen" name="CMS134_Diabetes_Urine_Protein_Screen" type="string"/>
+<Field label="CMS135 Heart Failure (HF): Angiotensi" name="CMS135_Heart_Failure_HF_Angiotensi" type="string"/>
+<Field label="CMS136 ADHD: Follow?Up Care for Child" name="CMS136_ADHD_Follow_Up_Care_for_Child" type="string"/>
+<Field label="CMS137 Initiation and Engagement of Al" name="CMS137_Initiation_and_Engagement_of_Al" type="string"/>
+<Field label="CMS138 Preventive Care and Screening:" name="CMS138_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS139 Screening for Future Fall Risk" name="CMS139_Screening_for_Future_Fall_Risk" type="string"/>
+<Field label="CMS140 Breast Cancer: Hormonal Therapy" name="CMS140_Breast_Cancer_Hormonal_Therapy" type="string"/>
+<Field label="CMS141 Colon Cancer: Chemotherapy for" name="CMS141_Colon_Cancer_Chemotherapy_for" type="string"/>
+<Field label="CMS142 Diabetic Retinopathy: Communic" name="CMS142_Diabetic_Retinopathy_Communic" type="string"/>
+<Field label="CMS143 Primary Open Angle Glaucoma (PO" name="CMS143_Primary_Open_Angle_Glaucoma_PO" type="string"/>
+<Field label="CMS144 Heart Failure (HF): Beta?Block" name="CMS144_Heart_Failure_HF_Beta_Block" type="string"/>
+<Field label="CMS145 Coronary Artery Disease (CAD):" name="CMS145_Coronary_Artery_Disease_CAD" type="string"/>
+<Field label="CMS146 Appropriate Testing for Childre" name="CMS146_Appropriate_Testing_for_Childre" type="string"/>
+<Field label="CMS147 Preventative Care and Screening" name="CMS147_Preventative_Care_and_Screening" type="string"/>
+<Field label="CMS148 Hemoglobin A1c Test for Pediatr" name="CMS148_Hemoglobin_A1c_Test_for_Pediatr" type="string"/>
+<Field label="CMS149 Dementia: Cognitive Assessment" name="CMS149_Dementia_Cognitive_Assessment" type="string"/>
+<Field label="CMS153 Chlamydia Screening for Women" name="CMS153_Chlamydia_Screening_for_Women" type="string"/>
+<Field label="CMS154 Appropriate Treatment for Child" name="CMS154_Appropriate_Treatment_for_Child" type="string"/>
+<Field label="CMS155 Weight Assessment and Counselin" name="CMS155_Weight_Assessment_and_Counselin" type="string"/>
+<Field label="CMS156 Use of High?Risk Medications in" name="CMS156_Use_of_High_Risk_Medications_in" type="string"/>
+<Field label="CMS157 Oncology: Medical and Radiatio" name="CMS157_Oncology_Medical_and_Radiatio" type="string"/>
+<Field label="CMS158 Pregnant women that had HBsAg t" name="CMS158_Pregnant_women_that_had_HBsAg_t" type="string"/>
+<Field label="CMS159 Depression Remission at Twelve" name="CMS159_Depression_Remission_at_Twelve" type="string"/>
+<Field label="CMS160 Depression Utilization of the P" name="CMS160_Depression_Utilization_of_the_P" type="string"/>
+<Field label="CMS161 Major Depressive Disorder (MDD)" name="CMS161_Major_Depressive_Disorder_MDD" type="string"/>
+<Field label="CMS163 Diabetes: Low Density Lipoprot" name="CMS163_Diabetes_Low_Density_Lipoprot" type="string"/>
+<Field label="CMS164 Ischemic Vascular Disease (IVD)" name="CMS164_Ischemic_Vascular_Disease_IVD" type="string"/>
+<Field label="CMS165 Controlling High Blood Pressure" name="CMS165_Controlling_High_Blood_Pressure" type="string"/>
+<Field label="CMS166 Use of Imaging Studies for Low" name="CMS166_Use_of_Imaging_Studies_for_Low" type="string"/>
+<Field label="CMS167 Diabetic Retinopathy: Document" name="CMS167_Diabetic_Retinopathy_Document" type="string"/>
+<Field label="CMS169 Bipolar Disorder and Major Depr" name="CMS169_Bipolar_Disorder_and_Major_Depr" type="string"/>
+<Field label="CMS171 SCIP?INF?1 Prophylactic Antibio" name="CMS171_SCIP_INF_1_Prophylactic_Antibio" type="string"/>
+<Field label="CMS172 SCIP?INF?2?Prophylactic Antibio" name="CMS172_SCIP_INF_2_Prophylactic_Antibio" type="string"/>
+<Field label="CMS177 Child and Adolescent Major Depr" name="CMS177_Child_and_Adolescent_Major_Depr" type="string"/>
+<Field label="CMS178 SCIP?INF?9? Urinary catheter re" name="CMS178_SCIP_INF_9_Urinary_catheter_re" type="string"/>
+<Field label="CMS179 ADE Prevention and Monitoring:" name="CMS179_ADE_Prevention_and_Monitoring" type="string"/>
+<Field label="CMS182 Ischemic Vascular Disease (IVD)" name="CMS182_Ischemic_Vascular_Disease_IVD" type="string"/>
+<Field label="CMS185 Healthy Term Newborn" name="CMS185_Healthy_Term_Newborn" type="string"/>
+<Field label="CMS188 PN?6? Initial Antibiotic Select" name="CMS188_PN_6_Initial_Antibiotic_Select" type="string"/>
+<Field label="CMS190 VTE?2 Intensive Care Unit (ICU)" name="CMS190_VTE_2_Intensive_Care_Unit_ICU" type="string"/>
+<Field label="CMS22 Preventive Care and Screening:" name="CMS22_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS26V1 Home Management Plan of Care (H" name="CMS26V1_Home_Management_Plan_of_Care_H" type="string"/>
+<Field label="CMS2 Preventive Care and Screening: S" name="CMS2_Preventive_Care_and_Screening_S" type="string"/>
+<Field label="CMS30 AMI?10 Statin Prescribed at Disc" name="CMS30_AMI_10_Statin_Prescribed_at_Disc" type="string"/>
+<Field label="CMS31 EHDI?1a ? Hearing screening prio" name="CMS31_EHDI_1a_Hearing_screening_prio" type="string"/>
+<Field label="CMS32 ED?3?Median time from ED arrival" name="CMS32_ED_3_Median_time_from_ED_arrival" type="string"/>
+<Field label="CMS50 Closing the referral loop: rece" name="CMS50_Closing_the_referral_loop_rece" type="string"/>
+<Field label="CMS52 HIV/AIDS: Pneumocystis jiroveci" name="CMS52_HIV_AIDS_Pneumocystis_jiroveci" type="string"/>
+<Field label="CMS53 AMI?8a? Primary PCI Received Wit" name="CMS53_AMI_8a_Primary_PCI_Received_Wit" type="string"/>
+<Field label="CMS55 Emergency Department (ED)?1 Emer" name="CMS55_Emergency_Department_ED_1_Emer" type="string"/>
+<Field label="CMS56 Functional status assessment for" name="CMS56_Functional_status_assessment_for" type="string"/>
+<Field label="CMS60 AMI?7a? Fibrinolytic Therapy Rec" name="CMS60_AMI_7a_Fibrinolytic_Therapy_Rec" type="string"/>
+<Field label="CMS61 Preventive Care and Screening:" name="CMS61_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS62 HIV/AIDS: Medical Visit" name="CMS62_HIV_AIDS_Medical_Visit" type="string"/>
+<Field label="CMS64 Preventive Care and Screening:" name="CMS64_Preventive_Care_and_Screening" type="string"/>
+<Field label="CMS65 Hypertension: Improvement in bl" name="CMS65_Hypertension_Improvement_in_bl" type="string"/>
+<Field label="CMS66 Functional status assessment for" name="CMS66_Functional_status_assessment_for" type="string"/>
+<Field label="CMS68 Documentation of Current Medicat" name="CMS68_Documentation_of_Current_Medicat" type="string"/>
+<Field label="CMS69 Preventive Care and Screening: B" name="CMS69_Preventive_Care_and_Screening_B" type="string"/>
+<Field label="CMS71 Stroke?3 Ischemic stroke \u0096 Antic" name="CMS71_Stroke_3_Ischemic_stroke_Antic" type="string"/>
+<Field label="CMS72 Stroke?5 Ischemic stroke \u0096 Antit" name="CMS72_Stroke_5_Ischemic_stroke_Antit" type="string"/>
+<Field label="CMS73 VTE?3 VTE Patients with Anticoag" name="CMS73_VTE_3_VTE_Patients_with_Anticoag" type="string"/>
+<Field label="CMS74 Primary Caries Prevention Interv" name="CMS74_Primary_Caries_Prevention_Interv" type="string"/>
+<Field label="CMS75 Children who have dental decay o" name="CMS75_Children_who_have_dental_decay_o" type="string"/>
+<Field label="CMS77 HIV/AIDS: RNA control for Patie" name="CMS77_HIV_AIDS_RNA_control_for_Patie" type="string"/>
+<Field label="CMS82 Maternal depression screening" name="CMS82_Maternal_depression_screening" type="string"/>
+<Field label="CMS90 Functional status assessment for" name="CMS90_Functional_status_assessment_for" type="string"/>
+<Field label="CMS91 Stroke?4 Ischemic stroke \u0096 Throm" name="CMS91_Stroke_4_Ischemic_stroke_Throm" type="string"/>
+<Field label="CMS9V1 Exclusive Breast Milk Feeding" name="CMS9V1_Exclusive_Breast_Milk_Feeding" type="string"/>
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
+<Field name="Checksum" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="PracticeType_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="PracticeType_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field eofAsDelimiter="true" label="Certifying ATCB" name="Practice_Setting" type="string"/>
+<Field name="practice_type_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Product" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="Product" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Product" name="Product" type="string"/>
+<Field name="Product_id" type="long"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field name="Vendor_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Product_checksum">
+<Record fieldDelimiter="|" name="Product_checksum" recordDelimiter="\r\n" type="delimited">
+<Field name="STG_Certification_ID" type="string"/>
+<Field name="Stored_Checksum" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Product_Version" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="Product_Version" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Product" name="Version" type="string"/>
+<Field label="Vendor" name="Product" type="string"/>
+<Field name="Product_id" type="long"/>
+<Field name="Vendor" type="string"/>
+<Field name="Vendor_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="ProductVersion_id" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="ProductVersion_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Version" name="Version" type="string"/>
+<Field name="Version_id" type="long"/>
+<Field label="Product" name="Product" type="string"/>
+<Field label="Vendor" name="Vendor" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Vendor" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="Vendor" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field label="Vendor" name="Vendor" type="string"/>
+<Field name="Vendor_id" type="long"/>
+</Record>
+</Metadata>
+<MetadataGroup name="Implicit metadata" type="implicit">
+<Metadata id="__static_metadata_DATA_READER_UniversalDataReader_Error">
+<Record fieldDelimiter="|" name="UniversalDataReader_Error" recordDelimiter="\n" type="delimited">
+<Field name="recordNo" type="long"/>
+<Field name="fieldNo" type="integer"/>
+<Field name="originalData" type="string"/>
+<Field name="errorMessage" type="string"/>
+<Field name="fileURL" type="string"/>
+</Record>
+</Metadata>
+</MetadataGroup>
+<Connection database="POSTGRE" dbURL="${openchpl_db_url}" id="JDBC0" jdbcSpecific="POSTGRE" name="PostgreSQL" password="${openchpl_password}" type="JDBC" user="openchpl"/>
+<GraphParameters>
+<GraphParameterFile fileURL="parameters.prm"/>
+</GraphParameters>
+<Dictionary/>
+</Global>
+<Phase number="0">
+<Node enabled="enabled" guiName="Add DB Checksum" guiX="245" guiY="20" id="ADD_DB_CHECKSUM" joinKey="$STG_Certification_Certification_ID=$STG_Certification_ID" joinType="leftOuter" type="EXT_HASH_JOIN">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.STG_Certification_Certification_ID = $in.0.STG_Certification_Certification_ID;
+	$out.0.Certification_Edition_Year = $in.0.Certification_Edition_Year;
+	$out.0.Published = $in.0.Published;
+	$out.0.ATCB_Certification_ID = $in.0.ATCB_Certification_ID;
+	$out.0.Practice_Setting = $in.0.Practice_Setting;
+	$out.0.Product_Classification = $in.0.Product_Classification;
+	$out.0.Product = $in.0.Product;
+	$out.0.Vendor = $in.0.Vendor;
+	$out.0.Additional_Software = $in.0.Additional_Software;
+	$out.0.Version = $in.0.Version;
+	$out.0.Certification_Date = $in.0.Certification_Date;
+	$out.0.Criteria170_302_a_ = $in.0._170_302_a_Drug_drug_drug_allergy;
+	$out.0.Criteria170_302_b_ = $in.0._170_302_b_Drug_formulary_checks;
+	$out.0.Criteria170_302_c_ = $in.0._170_302_c_Maintain_up_to_date_prob;
+	$out.0.Criteria170_302_d_ = $in.0._170_302_d_Maintain_active_med_list;
+	$out.0.Criteria170_302_e_ = $in.0._170_302_e_Maintain_active_allergy_list;
+	$out.0.Criteria170_302_f_ = $in.0._170_302_f_Record_and_Chart_Vital_Signs;
+	$out.0.Criteria170_302_f__1_ = $in.0._170_302_f_1_Record_and_Chart_Vital;
+	$out.0.Criteria170_302_f__2_ = $in.0._170_302_f_2_Calculate_BMI;
+	$out.0.Criteria170_302_f__3_ = $in.0._170_302_f_3_Plot_and_display_growth;
+	$out.0.Criteria170_302_g_ = $in.0._170_302_g_Smoking_status;
+	$out.0.Criteria170_302_h_ = $in.0._170_302_h_Incorporate_lab_test_results;
+	$out.0.Criteria170_302_i_ = $in.0._170_302_i_Generate_patient_lists;
+	$out.0.Criteria170_302_j_ = $in.0._170_302_j_Medication_Reconciliation;
+	$out.0.Criteria170_302_k_ = $in.0._170_302_k_Submission_to_immun;
+	$out.0.Criteria170_302_l_ = $in.0._170_302_l_Public_Health_Surveillance;
+	$out.0.Criteria170_302_m_ = $in.0._170_302_m_Patient_Specific_Education;
+	$out.0.Criteria170_302_n_ = $in.0._170_302_n_Automated_measure_calc;
+	$out.0.Criteria170_302_o_ = $in.0._170_302_o_Access_Control;
+	$out.0.Criteria170_302_p_ = $in.0._170_302_p_Emergency_Access;
+	$out.0.Criteria170_302_q_ = $in.0._170_302_q_Automatic_log_off;
+	$out.0.Criteria170_302_r_ = $in.0._170_302_r_Audit_Log;
+	$out.0.Criteria170_302_s_ = $in.0._170_302_s_Integrity;
+	$out.0.Criteria170_302_t_ = $in.0._170_302_t_Authentication;
+	$out.0.Criteria170_302_u_ = $in.0._170_302_u_General_Encryption;
+	$out.0.Criteria170_302_v_ = $in.0._170_302_v_Encryption_when_exchanging;
+	$out.0.Criteria170_302_w_ = $in.0._170_302_w_Accounting_of_disclosures;
+	$out.0.Criteria170_304_a_ = $in.0._170_304_a_Computerized_provider_OE;
+	$out.0.Criteria170_304_b_ = $in.0._170_304_b_Electronic_Prescribing;
+	$out.0.Criteria170_304_c_ = $in.0._170_304_c_Record_Demographics;
+	$out.0.Criteria170_304_d_ = $in.0._170_304_d_Patient_Reminders;
+	$out.0.Criteria170_304_e_ = $in.0._170_304_e_Clinical_Decision_Support;
+	$out.0.Criteria170_304_f_ = $in.0._170_304_f_Electronic_Copy_of_Health;
+	$out.0.Criteria170_304_g_ = $in.0._170_304_g_Timely_Access;
+	$out.0.Criteria170_304_h_ = $in.0._170_304_h_Clinical_Summaries;
+	$out.0.Criteria170_304_i_ = $in.0._170_304_i_Exchange_Clinical_Info;
+	$out.0.Criteria170_304_j_ = $in.0._170_304_j_Calculate_and_Submit_Clinical;
+	$out.0.Criteria170_306_a_ = $in.0._170_306_a_Computerized_Provider_OE;
+	$out.0.Criteria170_306_b_ = $in.0._170_306_b_Record_Demographics;
+	$out.0.Criteria170_306_c_ = $in.0._170_306_c_Clinical_Decision_Support;
+	$out.0.Criteria170_306_d_ = $in.0._170_306_d_Electronic_copy_of_Health_Inf;
+	$out.0.Criteria170_306_d__1_ = $in.0._170_306_d_1_Electronic_copy_of_health;
+	$out.0.Criteria170_306_d__2_ = $in.0._170_306_d_2_E_copy_of_health_info;
+	$out.0.Criteria170_306_e_ = $in.0._170_306_e_Electronic_copy_of_discharge;
+	$out.0.Criteria170_306_f_ = $in.0._170_306_f_Exchange_Clinical_Info;
+	$out.0.Criteria170_306_g_ = $in.0._170_306_g_Reportable_Lab_Results;
+	$out.0.Criteria170_306_h_ = $in.0._170_306_h_Advance_Directives;
+	$out.0.Criteria170_306_i_ = $in.0._170_306_i_Calculate_and_Submit_Clinical;
+	$out.0.NQF_0001_A_ = $in.0.NQF_0001_A_Asthma_Assessment;
+	$out.0.NQF_0002_A_ = $in.0.NQF_0002_A_Pharyngitis_Testing;
+	$out.0.NQF_0004_A_ = $in.0.NQF_0004_A_Alcohol_and_Other_Drug_Depe;
+	$out.0.NQF_0012_A_ = $in.0.NQF_0012_A_Prenatal_Care_HIV;
+	$out.0.NQF_0013_A_ = $in.0.NQF_0013_A_Hypertension_Blood_Pressure;
+	$out.0.NQF_0014_A_ = $in.0.NQF_0014_A_Prenatal_Care_Immune_Globul;
+	$out.0.NQF_0018_A_ = $in.0.NQF_0018_A_Controlling_High_Blood_Pres;
+	$out.0.NQF_0024_A_ = $in.0.NQF_0024_A_Weight_Assessment_for_Child;
+	$out.0.NQF_0027_A_ = $in.0.NQF_0027_A_Smoking_and_Tobacco_Use;
+	$out.0.NQF_0028_A_ = $in.0.NQF_0028_A_Preventive_Care_Screening;
+	$out.0.NQF_0031_A_ = $in.0.NQF_0031_A_Breast_Cancer_Screening;
+	$out.0.NQF_0032_A_ = $in.0.NQF_0032_A_Cervical_Cancer_Screening;
+	$out.0.NQF_0033_A_ = $in.0.NQF_0033_A_Chlamydia_Screening_for_Wome;
+	$out.0.NQF_0034_A_ = $in.0.NQF_0034_A_Colorectal_Cancer_Screening;
+	$out.0.NQF_0036_A_ = $in.0.NQF_0036_A_Use_of_Medication_for_Asthma;
+	$out.0.NQF_0038_A_ = $in.0.NQF_0038_A_Child_Immunization_Status;
+	$out.0.NQF_0041_A_ = $in.0.NQF_0041_A_Preventive_Care_Screening;
+	$out.0.NQF_0043_A_ = $in.0.NQF_0043_A_Pneomonia_Vaccination_Status;
+	$out.0.NQF_0047_A_ = $in.0.NQF_0047_A_Asthma_Pharmacologic_Therapy;
+	$out.0.NQF_0052_A_ = $in.0.NQF_0052_A_Low_Back_Pain_Imaging;
+	$out.0.NQF_0055_A_ = $in.0.NQF_0055_A_Diabetes_Eye_Exam;
+	$out.0.NQF_0056_A_ = $in.0.NQF_0056_A_Diabetes_Foot_Exam;
+	$out.0.NQF_0059_A_ = $in.0.NQF_0059_A_Diabetes_Hemoglobin_A1c;
+	$out.0.NQF_0061_A_ = $in.0.NQF_0061_A_Diabetes_BP_Management;
+	$out.0.NQF_0062_A_ = $in.0.NQF_0062_A_Diabates_Urine_Screening;
+	$out.0.NQF_0064_A_ = $in.0.NQF_0064_A_Diabetes_LDL;
+	$out.0.NQF_0067_A_ = $in.0.NQF_0067_A_Coronary_Artery_Disease;
+	$out.0.NQF_0068_A_ = $in.0.NQF_0068_A_Vascular_Disease_Aspirin;
+	$out.0.NQF_0070_A_ = $in.0.NQF_0070_A_CAD_Beta_Blocker_Therapy;
+	$out.0.NQF_0073_A_ = $in.0.NQF_0073_A_Vascular_Disease_BP_Mgmt;
+	$out.0.NQF_0074_A_ = $in.0.NQF_0074_A_Coronary_Artery_Disease;
+	$out.0.NQF_0075_A_ = $in.0.NQF_0075_A_Vascular_Disease_LDL;
+	$out.0.NQF_0081_A_ = $in.0.NQF_0081_A_Heart_Failure_ACE_Inhibitor;
+	$out.0.NQF_0083_A_ = $in.0.NQF_0083_A_Heart_Failure_LVSD_Therapy;
+	$out.0.NQF_0084_A_ = $in.0.NQF_0084_A_Heart_Failure_Warfarin;
+	$out.0.NQF_0086_A_ = $in.0.NQF_0086_A_Primary_Open_Angle_Glaucoma;
+	$out.0.NQF_0088_A_ = $in.0.NQF_0088_A_Diabetic_Retinopathy_Docs;
+	$out.0.NQF_0089_A_ = $in.0.NQF_0089_A_Diabetic_Retinopathy_Com;
+	$out.0.NQF_0105_A_ = $in.0.NQF_0105_A_Anti_depressant_Med_Mgmt;
+	$out.0.NQF_0371_I_ = $in.0.NQF_0371_I_VTE_Prophylaxis;
+	$out.0.NQF_0372_I_ = $in.0.NQF_0372_I_VTE_Intensive_Care_Unit;
+	$out.0.NQF_0373_I_ = $in.0.NQF_0373_I_VTE_Anticoagulation_Overlap;
+	$out.0.NQF_0374_I_ = $in.0.NQF_0374_I_VTE_Platelet_Monitoring;
+	$out.0.NQF_0375_I_ = $in.0.NQF_0375_I_VTE_Discharge_Instructions;
+	$out.0.NQF_0376_I_ = $in.0.NQF_0376_I_VTE_Incidence_of_Preventabl;
+	$out.0.NQF_0385_A_ = $in.0.NQF_0385_A_Oncology_Colon_Cancer;
+	$out.0.NQF_0387_A_ = $in.0.NQF_0387_A_Oncology_Brest_Cancer;
+	$out.0.NQF_0389_A_ = $in.0.NQF_0389_A_Prostate_Cancer_Bone_Scan;
+	$out.0.NQF_0421_A_ = $in.0.NQF_0421_A_Adult_Weight_Screening;
+	$out.0.NQF_0435_I_ = $in.0.NQF_0435_I_Stroke_Discharge;
+	$out.0.NQF_0436_I_ = $in.0.NQF_0436_I_Stroke_Anticoagulation;
+	$out.0.NQF_0437_I_ = $in.0.NQF_0437_I_Stroke_Thrombolytic;
+	$out.0.NQF_0438_I_ = $in.0.NQF_0438_I_Stroke_Ischemic_Hemorrhagic;
+	$out.0.NQF_0439_I_ = $in.0.NQF_0439_I_Stroke_Discharge_on_Statins;
+	$out.0.NQF_0440_I_ = $in.0.NQF_0440_I_Stroke_Stroke_Education;
+	$out.0.NQF_0441_I_ = $in.0.NQF_0441_I_Stroke_Rehabilitation;
+	$out.0.NQF_0495_I_ = $in.0.NQF_0495_I_ED_Median_Time;
+	$out.0.NQF_0497_I_ = $in.0.NQF_0497_I_ED_Admission_Decision;
+	$out.0.NQF_0575_A_ = $in.0.NQF_0575_A_Diabetes_Hemoglobin_A1c;
+	$out.0.Criteria170_314_a__1_ = $in.0._170_314_a_1_Computerized_provider_OE;
+	$out.0.Criteria170_314_a__2_ = $in.0._170_314_a_2_Drug_drug_drug_allergy;
+	$out.0.Criteria170_314_a__3_ = $in.0._170_314_a_3_Demographics;
+	$out.0.Criteria170_314_a__4_ = $in.0._170_314_a_4_Vital_signs_body_mass_ind;
+	$out.0.Criteria170_314_a__5_ = $in.0._170_314_a_5_Problem_List;
+	$out.0.Criteria170_314_a__6_ = $in.0._170_314_a_6_Medication_List;
+	$out.0.Criteria170_314_a__7_ = $in.0._170_314_a_7_Medication_Allergy_List;
+	$out.0.Criteria170_314_a__8_ = $in.0._170_314_a_8_Clinical_Decision_Support;
+	$out.0.Criteria170_314_a__9_ = $in.0._170_314_a_9_Electronic_Notes;
+	$out.0.Criteria170_314_a__20_ = $in.0._170_314_a_10_Drug_Formulary_Checks;
+	$out.0.Criteria170_314_a__21_ = $in.0._170_314_a_11_Smoking_Status;
+	$out.0.Criteria170_314_a__22_ = $in.0._170_314_a_12_Image_Results;
+	$out.0.Criteria170_314_a__23_ = $in.0._170_314_a_13_Family_Health_History;
+	$out.0.Criteria170_314_a__24_ = $in.0._170_314_a_14_Patient_List_Creation;
+	$out.0.Criteria170_314_a__25_ = $in.0._170_314_a_15_Patient_Specific_Educatio;
+	$out.0.Criteria170_314_a__26_ = $in.0._170_314_a_16_Electronic_Medication_Adm;
+	$out.0.Criteria170_314_a__27_ = $in.0._170_314_a_17_Advance_Directives;
+	$out.0.Criteria170_314_b__1_ = $in.0._170_314_b_1_Transitions_of_Care_rece;
+	$out.0.Criteria170_314_b__2_ = $in.0._170_314_b_2_Transitions_of_Care_crea;
+	$out.0.Criteria170_314_b__3_ = $in.0._170_314_b_3_Electronic_Prescribing;
+	$out.0.Criteria170_314_b__4_ = $in.0._170_314_b_4_Clinical_Information_Recon;
+	$out.0.Criteria170_314_b__5_ = $in.0._170_314_b_5_Incorporate_Laboratory_Tes;
+	$out.0.Criteria170_314_b__6_ = $in.0._170_314_b_6_Transmission_of_Electronic;
+	$out.0.Criteria170_314_b__7_ = $in.0._170_314_b_7_Data_Portability;
+	$out.0.Criteria170_314_c__1_ = $in.0._170_314_c_1_Clinical_Quality_Measures;
+	$out.0.Criteria170_314_c__2_ = $in.0._170_314_c_2_Clinical_Quality_Measures;
+	$out.0.Criteria170_314_c__3_ = $in.0._170_314_c_3_Clinical_Quality_Measures;
+	$out.0.Criteria170_314_d__1_ = $in.0._170_314_d_1_Authentication_access_con;
+	$out.0.Criteria170_314_d__2_ = $in.0._170_314_d_2_Auditable_Events_and_Tampe;
+	$out.0.Criteria170_314_d__3_ = $in.0._170_314_d_3_Audit_Report_s;
+	$out.0.Criteria170_314_d__4_ = $in.0._170_314_d_4_Amendments;
+	$out.0.Criteria170_314_d__5_ = $in.0._170_314_d_5_Automatic_log_off;
+	$out.0.Criteria170_314_d__6_ = $in.0._170_314_d_6_Emergency_access;
+	$out.0.Criteria170_314_d__7_ = $in.0._170_314_d_7_End_User_Device_Encryption;
+	$out.0.Criteria170_314_d__8_ = $in.0._170_314_d_8_Integrity;
+	$out.0.Criteria170_314_d__9_ = $in.0._170_314_d_9_Accounting_of_Disclosures;
+	$out.0.Criteria170_314_e__1_ = $in.0._170_314_e_1_View_Download_and_Transm;
+	$out.0.Criteria170_314_e__2_ = $in.0._170_314_e_2_Clinical_Summary;
+	$out.0.Criteria170_314_e__3_ = $in.0._170_314_e_3_Secure_Messaging;
+	$out.0.Criteria170_314_f__1_ = $in.0._170_314_f_1_Immunization_Information;
+	$out.0.Criteria170_314_f__2_ = $in.0._170_314_f_2_Transmission_to_Immunizati;
+	$out.0.Criteria170_314_f__3_ = $in.0._170_314_f_3_Transmission_to_Public_Hea;
+	$out.0.Criteria170_314_f__4_ = $in.0._170_314_f_4_Transmission_of_Reportable;
+	$out.0.Criteria170_314_f__5_ = $in.0._170_314_f_5_Cancer_Case_Information;
+	$out.0.Criteria170_314_f__6_ = $in.0._170_314_f_6_Transmission_to_Cancer_Reg;
+	$out.0.Criteria170_314_g__1_ = $in.0._170_314_g_1_Automated_Numerator_Record;
+	$out.0.Criteria170_314_g__2_ = $in.0._170_314_g_2_Automated_Measure_Calculat;
+	$out.0.Criteria170_314_g__3_ = $in.0._170_314_g_3_Safety_Enhanced_Design;
+	$out.0.Criteria170_314_g__4_ = $in.0._170_314_g_4_Quality_Management_System;
+	$out.0.CMS100 = $in.0.CMS100_AMI_2_Aspirin_Prescribed_at_Dis;
+	$out.0.CMS102 = $in.0.CMS102_Stroke_10_Ischemic_or_hemorrhag;
+	$out.0.CMS104 = $in.0.CMS104_Stroke_2_Ischemic_stroke_Dis;
+	$out.0.CMS105 = $in.0.CMS105_Stroke_6_Ischemic_stroke_Disc;
+	$out.0.CMS107 = $in.0.CMS107_Stroke_8_Ischemic_or_hemorrhagi;
+	$out.0.CMS108 = $in.0.CMS108_Venous_Thromboembolism_VTE_1;
+	$out.0.CMS109 = $in.0.CMS109_VTE_4_VTE_Patients_Receiving_Un;
+	$out.0.CMS110 = $in.0.CMS110_VTE_5_VTE_discharge_instruction;
+	$out.0.CMS111 = $in.0.CMS111_ED_2_Emergency_Department_Throu;
+	$out.0.CMS113 = $in.0.CMS113_PC_01_Elective_Delivery_Prior_t;
+	$out.0.CMS114 = $in.0.CMS114_VTE_6_Incidence_of_potentially;
+	$out.0.CMS117 = $in.0.CMS117_Childhood_Immunization_Status;
+	$out.0.CMS122 = $in.0.CMS122_Diabetes_Hemoglobin_A1c_Poor;
+	$out.0.CMS123 = $in.0.CMS123_Diabetes_Foot_Exam;
+	$out.0.CMS124 = $in.0.CMS124_Cervical_Cancer_Screening;
+	$out.0.CMS125 = $in.0.CMS125_Breast_Cancer_Screening;
+	$out.0.CMS126 = $in.0.CMS126_Use_of_Appropriate_Medications;
+	$out.0.CMS127 = $in.0.CMS127_Pneumonia_Vaccination_Status_fo;
+	$out.0.CMS128 = $in.0.CMS128_Anti_depressant_Medication_Mana;
+	$out.0.CMS129 = $in.0.CMS129_Prostate_Cancer_Avoidance_of;
+	$out.0.CMS130 = $in.0.CMS130_Colorectal_Cancer_Screening;
+	$out.0.CMS131 = $in.0.CMS131_Diabetes_Eye_Exam;
+	$out.0.CMS132 = $in.0.CMS132_Cataracts_Complications_withi;
+	$out.0.CMS133 = $in.0.CMS133_Cataracts_20_40_or_Better_Vis;
+	$out.0.CMS134 = $in.0.CMS134_Diabetes_Urine_Protein_Screen;
+	$out.0.CMS135 = $in.0.CMS135_Heart_Failure_HF_Angiotensi;
+	$out.0.CMS136 = $in.0.CMS136_ADHD_Follow_Up_Care_for_Child;
+	$out.0.CMS137 = $in.0.CMS137_Initiation_and_Engagement_of_Al;
+	$out.0.CMS138 = $in.0.CMS138_Preventive_Care_and_Screening;
+	$out.0.CMS139 = $in.0.CMS139_Screening_for_Future_Fall_Risk;
+	$out.0.CMS140 = $in.0.CMS140_Breast_Cancer_Hormonal_Therapy;
+	$out.0.CMS141 = $in.0.CMS141_Colon_Cancer_Chemotherapy_for;
+	$out.0.CMS142 = $in.0.CMS142_Diabetic_Retinopathy_Communic;
+	$out.0.CMS143 = $in.0.CMS143_Primary_Open_Angle_Glaucoma_PO;
+	$out.0.CMS144 = $in.0.CMS144_Heart_Failure_HF_Beta_Block;
+	$out.0.CMS145 = $in.0.CMS145_Coronary_Artery_Disease_CAD;
+	$out.0.CMS146 = $in.0.CMS146_Appropriate_Testing_for_Childre;
+	$out.0.CMS147 = $in.0.CMS147_Preventative_Care_and_Screening;
+	$out.0.CMS148 = $in.0.CMS148_Hemoglobin_A1c_Test_for_Pediatr;
+	$out.0.CMS149 = $in.0.CMS149_Dementia_Cognitive_Assessment;
+	$out.0.CMS153 = $in.0.CMS153_Chlamydia_Screening_for_Women;
+	$out.0.CMS154 = $in.0.CMS154_Appropriate_Treatment_for_Child;
+	$out.0.CMS155 = $in.0.CMS155_Weight_Assessment_and_Counselin;
+	$out.0.CMS156 = $in.0.CMS156_Use_of_High_Risk_Medications_in;
+	$out.0.CMS157 = $in.0.CMS157_Oncology_Medical_and_Radiatio;
+	$out.0.CMS158 = $in.0.CMS158_Pregnant_women_that_had_HBsAg_t;
+	$out.0.CMS159 = $in.0.CMS159_Depression_Remission_at_Twelve;
+	$out.0.CMS160 = $in.0.CMS160_Depression_Utilization_of_the_P;
+	$out.0.CMS161 = $in.0.CMS161_Major_Depressive_Disorder_MDD;
+	$out.0.CMS163 = $in.0.CMS163_Diabetes_Low_Density_Lipoprot;
+	$out.0.CMS164 = $in.0.CMS164_Ischemic_Vascular_Disease_IVD;
+	$out.0.CMS165 = $in.0.CMS165_Controlling_High_Blood_Pressure;
+	$out.0.CMS166 = $in.0.CMS166_Use_of_Imaging_Studies_for_Low;
+	$out.0.CMS167 = $in.0.CMS167_Diabetic_Retinopathy_Document;
+	$out.0.CMS169 = $in.0.CMS169_Bipolar_Disorder_and_Major_Depr;
+	$out.0.CMS171 = $in.0.CMS171_SCIP_INF_1_Prophylactic_Antibio;
+	$out.0.CMS172 = $in.0.CMS172_SCIP_INF_2_Prophylactic_Antibio;
+	$out.0.CMS177 = $in.0.CMS177_Child_and_Adolescent_Major_Depr;
+	$out.0.CMS178 = $in.0.CMS178_SCIP_INF_9_Urinary_catheter_re;
+	$out.0.CMS179 = $in.0.CMS179_ADE_Prevention_and_Monitoring;
+	$out.0.CMS182 = $in.0.CMS182_Ischemic_Vascular_Disease_IVD;
+	$out.0.CMS185 = $in.0.CMS185_Healthy_Term_Newborn;
+	$out.0.CMS188 = $in.0.CMS188_PN_6_Initial_Antibiotic_Select;
+	$out.0.CMS190 = $in.0.CMS190_VTE_2_Intensive_Care_Unit_ICU;
+	$out.0.CMS22 = $in.0.CMS22_Preventive_Care_and_Screening;
+	$out.0.CMS26V1 = $in.0.CMS26V1_Home_Management_Plan_of_Care_H;
+	$out.0.CMS2 = $in.0.CMS2_Preventive_Care_and_Screening_S;
+	$out.0.CMS30 = $in.0.CMS30_AMI_10_Statin_Prescribed_at_Disc;
+	$out.0.CMS31 = $in.0.CMS31_EHDI_1a_Hearing_screening_prio;
+	$out.0.CMS32 = $in.0.CMS32_ED_3_Median_time_from_ED_arrival;
+	$out.0.CMS50 = $in.0.CMS50_Closing_the_referral_loop_rece;
+	$out.0.CMS52 = $in.0.CMS52_HIV_AIDS_Pneumocystis_jiroveci;
+	$out.0.CMS53 = $in.0.CMS53_AMI_8a_Primary_PCI_Received_Wit;
+	$out.0.CMS55 = $in.0.CMS55_Emergency_Department_ED_1_Emer;
+	$out.0.CMS56 = $in.0.CMS56_Functional_status_assessment_for;
+	$out.0.CMS60 = $in.0.CMS60_AMI_7a_Fibrinolytic_Therapy_Rec;
+	$out.0.CMS61 = $in.0.CMS61_Preventive_Care_and_Screening;
+	$out.0.CMS62 = $in.0.CMS62_HIV_AIDS_Medical_Visit;
+	$out.0.CMS64 = $in.0.CMS64_Preventive_Care_and_Screening;
+	$out.0.CMS65 = $in.0.CMS65_Hypertension_Improvement_in_bl;
+	$out.0.CMS66 = $in.0.CMS66_Functional_status_assessment_for;
+	$out.0.CMS68 = $in.0.CMS68_Documentation_of_Current_Medicat;
+	$out.0.CMS69 = $in.0.CMS69_Preventive_Care_and_Screening_B;
+	$out.0.CMS71 = $in.0.CMS71_Stroke_3_Ischemic_stroke_Antic;
+	$out.0.CMS72 = $in.0.CMS72_Stroke_5_Ischemic_stroke_Antit;
+	$out.0.CMS73 = $in.0.CMS73_VTE_3_VTE_Patients_with_Anticoag;
+	$out.0.CMS74 = $in.0.CMS74_Primary_Caries_Prevention_Interv;
+	$out.0.CMS75 = $in.0.CMS75_Children_who_have_dental_decay_o;
+	$out.0.CMS77 = $in.0.CMS77_HIV_AIDS_RNA_control_for_Patie;
+	$out.0.CMS82 = $in.0.CMS82_Maternal_depression_screening;
+	$out.0.CMS90 = $in.0.CMS90_Functional_status_assessment_for;
+	$out.0.CMS91 = $in.0.CMS91_Stroke_4_Ischemic_stroke_Throm;
+	$out.0.CMS9V1 = $in.0.CMS9V1_Exclusive_Breast_Milk_Feeding;
+	$out.0.Certifying_ATCB = $in.0.Certifying_ATCB;
+	$out.0.Checksum = $in.0.Checksum;
+	$out.0.Stored_Checksum = $in.1.Stored_Checksum;
+
+	return ALL;
+}
+]]></attr>
+</Node>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get Product Checksum" guiX="20" guiY="169" id="GET_PRODUCT_CHECKSUM" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT 
+	$Stored_Checksum:=certified_product_checksum.certified_product_checksum,
+	$STG_Certification_ID:=certified_product_checksum.stg_certification_certification_id
+FROM certified_product_checksum]]></attr>
+</Node>
+<Node enabled="enabled" fileURL="./log_checksum-analysis.txt" guiName="Log failed rows" guiX="247" guiY="152" id="LOG_FAILED_ROWS" type="DATA_WRITER"/>
+<Node enabled="enabled" fileURL="./log_unchanged-rows.csv" guiName="Log unchanged products" guiX="920" guiY="132" id="LOG_UNCHANGED_PRODUCTS" outputFieldNames="true" type="DATA_WRITER"/>
+<Node enabled="enabled" guiName="Modified" guiX="695" guiY="244" id="MODIFIED" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.Checksum != $in.0.Stored_Checksum AND $in.0.Stored_Checksum != null]]></attr>
+</Node>
+<Node enabled="enabled" guiName="New Product" guiX="695" guiY="20" id="NEW_PRODUCT" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.Stored_Checksum == null]]></attr>
+</Node>
+<Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl-wChecksum.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" quotedStrings="false" skipRows="3" type="DATA_READER"/>
+<Node enabled="enabled" fileURL="./to-update.csv" guiName="Save to-update products" guiX="919" guiY="244" id="SAVE_TO_UPDATE_PRODUCTS" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
+<Node enabled="enabled" guiName="SimpleCopy" guiX="470" guiY="20" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
+<Node enabled="enabled" guiName="Trash" guiX="920" guiY="20" id="TRASH" type="TRASH"/>
+<Node enabled="enabled" guiName="Unchanged" guiX="695" guiY="132" id="UNCHANGED" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.Checksum == $in.0.Stored_Checksum]]></attr>
+</Node>
+<Edge debugMode="false" fromNode="ADD_DB_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" metadata="All_data" outPort="Port 0 (out)" toNode="SIMPLE_COPY:0"/>
+<Edge debugMode="false" fromNode="GET_PRODUCT_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Product_checksum" outPort="Port 0 (out)" toNode="ADD_DB_CHECKSUM:1"/>
+<Edge fromNode="MODIFIED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="SAVE_TO_UPDATE_PRODUCTS:0"/>
+<Edge fromNode="NEW_PRODUCT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="TRASH:0"/>
+<Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="From_csv" outPort="Port 0 (output)" toNode="ADD_DB_CHECKSUM:0"/>
+<Edge debugMode="false" fromNode="READ_IN_CSV:1" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="LOG_FAILED_ROWS:0"/>
+<Edge debugMode="false" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="All_data" toNode="NEW_PRODUCT:0"/>
+<Edge fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (in)" outPort="Port 1 (out)" persistedImplicitMetadata="All_data" toNode="UNCHANGED:0"/>
+<Edge fromNode="SIMPLE_COPY:2" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 0 (in)" outPort="Port 2 (out)" persistedImplicitMetadata="All_data" toNode="MODIFIED:0"/>
+<Edge debugMode="false" fromNode="UNCHANGED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="LOG_UNCHANGED_PRODUCTS:0"/>
+</Phase>
+</Graph>
