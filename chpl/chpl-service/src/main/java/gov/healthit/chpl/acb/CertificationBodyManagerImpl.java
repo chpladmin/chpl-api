@@ -50,14 +50,14 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 	
 	@Transactional
-	@PreAuthorize("hasPermission(#acb, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
 	public void update(CertificationBody acb) {
 		certificationBodyDAO.update(acb);
 		logger.debug("Updated acb " + acb);
 	}
 	
 	@Transactional
-	@PreAuthorize("hasPermission(#acb, 'delete') or hasPermission(#acb, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, 'delete') or hasPermission(#acb, admin)")
 	public void delete(CertificationBody acb) {
 		
 		certificationBodyDAO.delete(acb.getId());
@@ -92,7 +92,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 
 	@Transactional
-	@PreAuthorize("hasPermission(#acb, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
 	public void deletePermission(CertificationBody acb, Sid recipient, Permission permission) {
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -115,7 +115,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 
 	@Transactional(readOnly = true)
-	@PostFilter("hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
+	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<CertificationBody> getAll() {
 		
 		return certificationBodyDAO.findAll();
@@ -123,7 +123,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasPermission(#id, 'gov.healthit.chpl.acb.CertificationBody', read) or "
+	@PreAuthorize("hhasRole('ROLE_ADMIN') or asPermission(#id, 'gov.healthit.chpl.acb.CertificationBody', read) or "
 			+ "hasPermission(#id, 'gov.healthit.chpl.acb.CertificationBody', admin)")
 	public CertificationBody getById(Long id) {
 		if (logger.isDebugEnabled()) {
