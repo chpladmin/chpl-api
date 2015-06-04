@@ -1,6 +1,5 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.acb.CertificationBody;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
 
 import java.util.List;
@@ -78,7 +77,7 @@ public class UserManagerImpl implements UserManager {
 		
 		userDAO.deactivate(user.getId());
 		// Delete the ACL information as well
-		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, user.getId());
+		ObjectIdentity oid = new ObjectIdentityImpl(UserImpl.class, user.getId());
 		mutableAclService.deleteAcl(oid, false);
 	}
 	
