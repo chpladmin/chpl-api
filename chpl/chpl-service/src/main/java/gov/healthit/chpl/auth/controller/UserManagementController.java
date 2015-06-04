@@ -39,6 +39,19 @@ public class UserManagementController {
 		
 	}
 	
+	
+	@RequestMapping(value="/deactivate_user", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			produces="application/json; charset=utf-8")
+	public String deactivateUser(@RequestParam("userName") String userName) 
+			throws UserRetrievalException {
+		
+		String isSuccess = String.valueOf(registrar.deactivateUser(userName));
+		return "{\"deactivatedUser\" : "+isSuccess+" }";
+		
+	}
+	
+	
 	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")
@@ -51,12 +64,19 @@ public class UserManagementController {
 		
 	}
 	
+	
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public String updateUserDetails(@RequestBody UserDTO userInfo) throws UserRetrievalException {
-		return "";
+		//TODO: Build out UserDTO to contain eg: Contacts
+		
+		UserImpl user = new UserImpl(userInfo.getUserName(), registrar.getEncodedPassword(userInfo.getPassword()));
+		userManager.create(user);
+		return "{\"userUpdated\" : true }";
+		
 	}
+	
 	
 	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
@@ -100,6 +120,7 @@ public class UserManagementController {
 		return "{\"grantedAdmin\" : "+isSuccess+" }";
 		
 	}
+	
 	
 	@RequestMapping(value="/init_admin", method= RequestMethod.GET)
 	public void initAdminUser() {

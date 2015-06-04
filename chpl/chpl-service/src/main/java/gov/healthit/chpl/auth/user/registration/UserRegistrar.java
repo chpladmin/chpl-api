@@ -57,6 +57,19 @@ public class UserRegistrar {
 		return true;
 	}
 	
+	public boolean deactivateUser(String userName) throws UserRetrievalException{
+		
+		User fetchedUser = userManager.getByUserName(userName);
+		
+		if (fetchedUser == null){
+			throw new UserRetrievalException("User not found");
+		} else {
+			UserImpl user = (UserImpl) fetchedUser;
+			userManager.delete(user);
+		}
+		return true;
+	}
+	
 	
 	public String getEncodedPassword(String password){
 		String encodedPassword = bCryptPasswordEncoder.encode(password);
