@@ -86,6 +86,7 @@ public class CHPLServiceController {
 		for (CertificationBody cb : acbs){
 			
 			System.out.println(cb.toString());
+			System.out.println(cb.getName());
 			
 		}
 		
