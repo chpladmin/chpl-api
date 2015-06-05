@@ -45,3 +45,7 @@ $ java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar 'path-to-ex
 The default parameters are:
  - Excel file: `./src/main/resources/chpl-large.xlsx`
  - Plugins directory: `./src/main/resources/plugins`
+
+## Resetting
+
+After running the ETL, if you want to clean the database to run it again, as if from scratch, go into the database, and `Drop cascaded...` the `vendor` and `certified_product_checksum` tables.
