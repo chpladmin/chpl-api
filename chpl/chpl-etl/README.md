@@ -17,17 +17,17 @@ $ cd chpl-api/chpl/chpl-etl
 
 ## Data model load
 
-Edit `openchpl-role.sql` to set the password for the `openchpl` role. The role can be changed as well, but then make sure the other `.sql` files are adjusted appropriately.
+Edit `openchpl-role.sql` to set the password for the `openchpl` role. These instructions assume the role/username used for the openchpl database is `openchpl`, and that the password in `openchpl-role.sql`, currently recorded as "change this password" will be update to match your installation. If the installer chooses to change the username/role, make sure it's also changed in the `openchpl.sql` file wherever the role is used.
 
 ```sh
-$ psql -Upostgres -f openchpl-sql/openchpl-role.sql
-$ psql -Upostgres -f openchpl-sql/openchpl.sql
-$ psql -Upostgres -f openchpl-sql/preload-openchpl.sql
+$ psql -Upostgres -f chpl-api/openchpl-sql/openchpl-role.sql
+$ psql -Upostgres -f chpl-api/openchpl-sql/openchpl.sql
+$ psql -Upostgres -f chpl-api/openchpl-sql/preload-openchpl.sql
 ```
 
 ## ETL
 
-Edit the parameters-template.prm file to fill in the JDBC database connection URL, username, and password for your database, and rename it to `parameters.prm`.
+Edit the parameters-template.prm file to fill in the JDBC database connection URL, username, and password for your database, and rename it to `parameters.prm`. The username and password in the newly created `parameters.prm` file much match the username/role and password from the `openchpl-role.sql` file referenced in the previous section.
 
 ```sh
 $ vi parameters-template.prm

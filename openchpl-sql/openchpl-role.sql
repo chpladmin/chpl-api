@@ -8,5 +8,5 @@
 -- DROP ROLE IF EXISTS openchpl;
 CREATE ROLE openchpl WITH 
 	LOGIN
-	UNENCRYPTED PASSWORD '1passwordhere!';
+	UNENCRYPTED PASSWORD 'change this password';
 -- ddl-end --
