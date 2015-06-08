@@ -48,4 +48,4 @@ The default parameters are:
 
 ## Resetting
 
-After running the ETL, if you want to clean the database to run it again, as if from scratch, go into the database, and `Drop cascaded...` the `vendor` and `certified_product_checksum` tables.
+After running the ETL, if you want to clean the database to run it again, as if from scratch, go into the database, and `Truncate cascaded...` the `vendor` and `certified_product_checksum` tables. Don't Drop the tables, as that will remove them entirely from the database. Instead, we want to Truncate them, to empty them of data without destroying the structure. If a Drop command is accidentally used, just drop the entire database, and reload using the previously mentioned *.sql files.
