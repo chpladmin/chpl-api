@@ -39,7 +39,7 @@ $ mvn package
 
 ```sh
 $ cd chpl-api/chpl/chpl-etl
-$ java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar 'path-to-excel-file' 'path-to-plugins-directory'
+$ java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar 'excel-file' 'plugins-directory'
 ```
 
 The default parameters are:
@@ -48,4 +48,22 @@ The default parameters are:
 
 ## Resetting
 
-After running the ETL, if you want to clean the database to run it again, as if from scratch, go into the database, and `Truncate cascaded...` the `vendor` and `certified_product_checksum` tables. Don't Drop the tables, as that will remove them entirely from the database. Instead, we want to Truncate them, to empty them of data without destroying the structure. If a Drop command is accidentally used, just drop the entire database, and reload using the previously mentioned *.sql files.
+After running the ETL, if you want to clean the database to run it again, as if from scratch, go into the database, there are two tables that need to be emptied: the `vendor` and `certified_product_checksum` tables.
+
+### To truncate the tables
+
+```sh
+$ psql
+postgres=# truncate table openchpl.certified_product_checksum;
+postgres=# truncate table openchpl.vendor cascade;
+postgres=# \q
+```
+
+### To completely remove the database
+
+```sh
+$ psql
+postgres=# drop schema openchpl cascade;
+postgres=# drop role openchpl;
+postgres=# \q
+```
