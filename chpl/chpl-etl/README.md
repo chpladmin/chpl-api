@@ -25,6 +25,15 @@ $ psql -Upostgres -f chpl-api/openchpl-sql/openchpl.sql
 $ psql -Upostgres -f chpl-api/openchpl-sql/preload-openchpl.sql
 ```
 
+## Installing on Linux
+
+If installing on a Linux machine, some modifications are needed. In the files:
+ - `parse.sh`
+ - `linux_deploy.sh`
+ Remove the line: `(set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters'
+
+Next, run the script `linux_deploy.sh`. This script will modify the strings used as recordDelimiters in the CloverETL graphs from the Windows specific `\r\n` to the Linux `\n`.
+
 ## ETL
 
 Edit the parameters-template.prm file to fill in the JDBC database connection URL, username, and password for your database, and rename it to `parameters.prm`. The username and password in the newly created `parameters.prm` file much match the username/role and password from the `openchpl-role.sql` file referenced in the previous section.
@@ -45,6 +54,10 @@ $ java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar 'excel-file
 The default parameters are:
  - Excel file: `./src/main/resources/chpl-large.xlsx`
  - Plugins directory: `./src/main/resources/plugins`
+
+## Search a directory
+
+A batch parsing script is available in `parse.sh`. This script will look in a directory: `chpl-api/chpl/chpl-etl/input` for any files ending in `.xlsx`, and run those files through the ETL, then move the files that were processed into `input/parsed`, along with a timestamped log file that captures the output of the parsing activity.
 
 ## Resetting
 
