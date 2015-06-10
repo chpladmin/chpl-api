@@ -30,7 +30,8 @@ $ psql -Upostgres -f chpl-api/openchpl-sql/preload-openchpl.sql
 If installing on a Linux machine, some modifications are needed. In the files:
  - `parse.sh`
  - `linux_deploy.sh`
- Remove the line: `(set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters'
+
+Remove the line: `(set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters`
 
 Next, run the script `linux_deploy.sh`. This script will modify the strings used as recordDelimiters in the CloverETL graphs from the Windows specific `\r\n` to the Linux `\n`.
 
