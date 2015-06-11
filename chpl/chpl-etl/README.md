@@ -81,3 +81,9 @@ postgres=# drop schema openchpl cascade;
 postgres=# drop role openchpl;
 postgres=# \q
 ```
+
+# CloverETL
+
+This ETL makes use of the CloverETL engine. The first few steps of this process are outside of the CloverETL engine. This includes a conversion from the provided .xlsx files to a version of a .csv, where the actual separating character is a `^`, in order to avoid running into issues with commas in the data. That conversion also includes a step where a hash of each row of the data file is appended to that row, in order to track if the data in the row changes at some point in the future.
+
+After the conversion and appending of the hash, the CloverETL engine picks up the outputted .csv and processes it. A graphical view of that process is here: ![CloverETL process](openchpl_etl.png)
