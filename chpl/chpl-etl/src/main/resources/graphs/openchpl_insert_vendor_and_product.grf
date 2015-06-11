@@ -137,6 +137,9 @@
 <Field label="170.314(a)(15) Patient-Specific Educatio" name="_170_314_a_15_Patient_Specific_Educatio" type="string"/>
 <Field label="170.314(a)(16) Electronic Medication Adm" name="_170_314_a_16_Electronic_Medication_Adm" type="string"/>
 <Field label="170.314(a)(17) Advance Directives" name="_170_314_a_17_Advance_Directives" type="string"/>
+<Field label="170.314(a)(18) Cmp pvdr order entry-med" name="_170_314_a__18__Cmp_pvdr_order_entry_med" type="string"/>
+<Field label="170.314(a)(19) Cmp pvdr order entry-lab" name="_170_314_a__19__Cmp_pvdr_order_entry_lab" type="string"/>
+<Field label="170.314(a)(20) Cmp pvdr order entry-DI" name="_170_314_a__20__Cmp_pvdr_order_entry_DI" type="string"/>
 <Field label="170.314(b)(1) Transitions of Care - rece" name="_170_314_b_1_Transitions_of_Care_rece" type="string"/>
 <Field label="170.314(b)(2) Transitions of Care - crea" name="_170_314_b_2_Transitions_of_Care_crea" type="string"/>
 <Field label="170.314(b)(3) Electronic Prescribing" name="_170_314_b_3_Electronic_Prescribing" type="string"/>
@@ -144,6 +147,8 @@
 <Field label="170.314(b)(5) Incorporate Laboratory Tes" name="_170_314_b_5_Incorporate_Laboratory_Tes" type="string"/>
 <Field label="170.314(b)(6) Transmission of Electronic" name="_170_314_b_6_Transmission_of_Electronic" type="string"/>
 <Field label="170.314(b)(7) Data Portability" name="_170_314_b_7_Data_Portability" type="string"/>
+<Field label="170.314(b)(8) Transitions of care" name="_170_314_b__8__Transitions_of_care" type="string"/>
+<Field label="170.314(b)(9) Clinic info recon and inc" name="_170_314_b__9__Clinic_info_recon_and_inc" type="string"/>
 <Field label="170.314(c)(1) Clinical Quality Measures" name="_170_314_c_1_Clinical_Quality_Measures" type="string"/>
 <Field label="170.314(c)(2) Clinical Quality Measures" name="_170_314_c_2_Clinical_Quality_Measures" type="string"/>
 <Field label="170.314(c)(3) Clinical Quality Measures" name="_170_314_c_3_Clinical_Quality_Measures" type="string"/>
@@ -165,10 +170,14 @@
 <Field label="170.314(f)(4) Transmission of Reportable" name="_170_314_f_4_Transmission_of_Reportable" type="string"/>
 <Field label="170.314(f)(5) Cancer Case Information" name="_170_314_f_5_Cancer_Case_Information" type="string"/>
 <Field label="170.314(f)(6) Transmission to Cancer Reg" name="_170_314_f_6_Transmission_to_Cancer_Reg" type="string"/>
+<Field label="170.314(f)(7) Transm to agencies-syndrom" name="_170_314_f__7__Transm_to_agencies_syndrom" type="string"/>
 <Field label="170.314(g)(1) Automated Numerator Record" name="_170_314_g_1_Automated_Numerator_Record" type="string"/>
 <Field label="170.314(g)(2) Automated Measure Calculat" name="_170_314_g_2_Automated_Measure_Calculat" type="string"/>
 <Field label="170.314(g)(3) Safety-Enhanced Design" name="_170_314_g_3_Safety_Enhanced_Design" type="string"/>
 <Field label="170.314(g)(4) Quality Management System" name="_170_314_g_4_Quality_Management_System" type="string"/>
+<Field label="170.314(h)(1) App Stmt Sec Hlth Trans" name="_170_314_h__1__App_Stmt_Sec_Hlth_Trans" type="string"/>
+<Field label="170.314(h)(2) Trnsprt Direct Msg" name="_170_314_h__2__Trnsprt_Direct_Msg" type="string"/>
+<Field label="170.314(h)(3) SOAP Trnsprt Direct" name="_170_314_h__3__SOAP_Trnsprt_Direct" type="string"/>
 <Field label="CMS100 AMI?2?Aspirin Prescribed at Dis" name="CMS100_AMI_2_Aspirin_Prescribed_at_Dis" type="string"/>
 <Field label="CMS102 Stroke?10 Ischemic or hemorrhag" name="CMS102_Stroke_10_Ischemic_or_hemorrhag" type="string"/>
 <Field label="CMS104 Stroke?2 Ischemic stroke \u0096 Dis" name="CMS104_Stroke_2_Ischemic_stroke_Dis" type="string"/>
@@ -339,24 +348,6 @@ function integer transform() {
 
 	return ALL;
 }
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
 ]]></attr>
 </Node>
 <Edge debugMode="false" fromNode="DEDUP_PRODUCT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (driver)" outPort="Port 0 (unique)" persistedImplicitMetadata="Product" toNode="JOIN_PRODUCT_X_VENDOR:0"/>
@@ -388,24 +379,6 @@ function integer transform() {
 
 	return ALL;
 }
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
 ]]></attr>
 </Node>
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Products" guiX="1145" guiY="180" id="SAVE_NEW_PRODUCTS" type="DB_OUTPUT_TABLE">
@@ -445,24 +418,6 @@ function integer transform() {
 
 	return ALL;
 }
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
 ]]></attr>
 </Node>
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Product_Versions" guiX="1204" guiY="303" id="SAVE_NEW_PRODUCT_VERSIONS" type="DB_OUTPUT_TABLE">
@@ -475,7 +430,7 @@ INSERT INTO openchpl.product_version (version, product_id, last_modified_user)
                     version = $Version AND
                     product_version.product_id = $Product_id AND
 					product.product_id = product_version.product_id AND
-					product.vendor_id = $Vendor_id				
+					product.vendor_id = $Vendor_id
        );
 COMMIT;]]></attr>
 </Node>

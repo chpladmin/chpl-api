@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed May 27 07:53:23 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.319" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Thu Jun 11 09:42:58 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.321" showComponentDetails="true">
 <Global>
 <Metadata id="CertificationBody_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CertificationBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
@@ -85,14 +85,17 @@
 <Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="boolean"/>
 <Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="boolean"/>
 <Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="boolean"/>
+<Field label="170.314(a)(10)" name="Criteria170_314_a__10_" type="boolean"/>
+<Field label="170.314(a)(11)" name="Criteria170_314_a__11_" type="boolean"/>
+<Field label="170.314(a)(12)" name="Criteria170_314_a__12_" type="boolean"/>
+<Field label="170.314(a)(13)" name="Criteria170_314_a__13_" type="boolean"/>
+<Field label="170.314(a)(14)" name="Criteria170_314_a__14_" type="boolean"/>
+<Field label="170.314(a)(15)" name="Criteria170_314_a__15_" type="boolean"/>
+<Field label="170.314(a)(16)" name="Criteria170_314_a__16_" type="boolean"/>
+<Field label="170.314(a)(17)" name="Criteria170_314_a__17_" type="boolean"/>
+<Field label="170.314(a)(18)" name="Criteria170_314_a__18_" type="boolean"/>
+<Field label="170.314(a)(19)" name="Criteria170_314_a__19_" type="boolean"/>
 <Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="boolean"/>
-<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="boolean"/>
-<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="boolean"/>
-<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="boolean"/>
-<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="boolean"/>
-<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="boolean"/>
-<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="boolean"/>
-<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="boolean"/>
 <Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="boolean"/>
 <Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="boolean"/>
 <Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="boolean"/>
@@ -100,6 +103,8 @@
 <Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="boolean"/>
 <Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="boolean"/>
 <Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="boolean"/>
+<Field label="170.314(b)(8)" name="Criteria170_314_b__8_" type="boolean"/>
+<Field label="170.314(b)(9)" name="Criteria170_314_b__9_" type="boolean"/>
 <Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="boolean"/>
 <Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="boolean"/>
 <Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="boolean"/>
@@ -121,10 +126,14 @@
 <Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="boolean"/>
 <Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="boolean"/>
 <Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="boolean"/>
+<Field label="170.314(f)(7)" name="Criteria170_314_f__7_" type="boolean"/>
 <Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="boolean"/>
 <Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="boolean"/>
 <Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="boolean"/>
 <Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="boolean"/>
+<Field label="170.314(h)(1)" name="Criteria170_314_h__1_" type="boolean"/>
+<Field label="170.314(h)(2)" name="Criteria170_314_h__2_" type="boolean"/>
+<Field label="170.314(h)(3)" name="Criteria170_314_h__3_" type="boolean"/>
 <Field label="NQF 0001(A)" name="NQF_0001_A_" type="boolean"/>
 <Field label="NQF 0002(A)" name="NQF_0002_A_" type="boolean"/>
 <Field label="NQF 0004(A)" name="NQF_0004_A_" type="boolean"/>
@@ -511,14 +520,17 @@
 <Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="string"/>
 <Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="string"/>
 <Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="string"/>
+<Field label="170.314(a)(10)" name="Criteria170_314_a__10_" type="string"/>
+<Field label="170.314(a)(11)" name="Criteria170_314_a__11_" type="string"/>
+<Field label="170.314(a)(12)" name="Criteria170_314_a__12_" type="string"/>
+<Field label="170.314(a)(13)" name="Criteria170_314_a__13_" type="string"/>
+<Field label="170.314(a)(14)" name="Criteria170_314_a__14_" type="string"/>
+<Field label="170.314(a)(15)" name="Criteria170_314_a__15_" type="string"/>
+<Field label="170.314(a)(16)" name="Criteria170_314_a__16_" type="string"/>
+<Field label="170.314(a)(17)" name="Criteria170_314_a__17_" type="string"/>
+<Field label="170.314(a)(18)" name="Criteria170_314_a__18_" type="string"/>
+<Field label="170.314(a)(19)" name="Criteria170_314_a__19_" type="string"/>
 <Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="string"/>
-<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="string"/>
-<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="string"/>
-<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="string"/>
-<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="string"/>
-<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="string"/>
-<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="string"/>
-<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="string"/>
 <Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="string"/>
 <Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="string"/>
 <Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="string"/>
@@ -526,6 +538,8 @@
 <Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="string"/>
 <Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="string"/>
 <Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="string"/>
+<Field label="170.314(b)(8)" name="Criteria170_314_b__8_" type="string"/>
+<Field label="170.314(b)(9)" name="Criteria170_314_b__9_" type="string"/>
 <Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="string"/>
 <Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="string"/>
 <Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="string"/>
@@ -547,10 +561,14 @@
 <Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="string"/>
 <Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="string"/>
 <Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="string"/>
+<Field label="170.314(f)(7)" name="Criteria170_314_f__7_" type="string"/>
 <Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="string"/>
 <Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="string"/>
 <Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="string"/>
 <Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="string"/>
+<Field label="170.314(h)(1)" name="Criteria170_314_h__1_" type="string"/>
+<Field label="170.314(h)(2)" name="Criteria170_314_h__2_" type="string"/>
+<Field label="170.314(h)(3)" name="Criteria170_314_h__3_" type="string"/>
 <Field label="CMS100" name="CMS100" type="string"/>
 <Field label="CMS102" name="CMS102" type="string"/>
 <Field label="CMS104" name="CMS104" type="string"/>
@@ -900,14 +918,17 @@ function integer transform() {
 	$out.0.Criteria170_314_a__7_ = strToBool($in.0.Criteria170_314_a__7_);
 	$out.0.Criteria170_314_a__8_ = strToBool($in.0.Criteria170_314_a__8_);
 	$out.0.Criteria170_314_a__9_ = strToBool($in.0.Criteria170_314_a__9_);
+	$out.0.Criteria170_314_a__10_ = strToBool($in.0.Criteria170_314_a__10_);
+	$out.0.Criteria170_314_a__11_ = strToBool($in.0.Criteria170_314_a__11_);
+	$out.0.Criteria170_314_a__12_ = strToBool($in.0.Criteria170_314_a__12_);
+	$out.0.Criteria170_314_a__13_ = strToBool($in.0.Criteria170_314_a__13_);
+	$out.0.Criteria170_314_a__14_ = strToBool($in.0.Criteria170_314_a__14_);
+	$out.0.Criteria170_314_a__15_ = strToBool($in.0.Criteria170_314_a__15_);
+	$out.0.Criteria170_314_a__16_ = strToBool($in.0.Criteria170_314_a__16_);
+	$out.0.Criteria170_314_a__17_ = strToBool($in.0.Criteria170_314_a__17_);
+	$out.0.Criteria170_314_a__18_ = strToBool($in.0.Criteria170_314_a__18_);
+	$out.0.Criteria170_314_a__19_ = strToBool($in.0.Criteria170_314_a__19_);
 	$out.0.Criteria170_314_a__20_ = strToBool($in.0.Criteria170_314_a__20_);
-	$out.0.Criteria170_314_a__21_ = strToBool($in.0.Criteria170_314_a__21_);
-	$out.0.Criteria170_314_a__22_ = strToBool($in.0.Criteria170_314_a__22_);
-	$out.0.Criteria170_314_a__23_ = strToBool($in.0.Criteria170_314_a__23_);
-	$out.0.Criteria170_314_a__24_ = strToBool($in.0.Criteria170_314_a__24_);
-	$out.0.Criteria170_314_a__25_ = strToBool($in.0.Criteria170_314_a__25_);
-	$out.0.Criteria170_314_a__26_ = strToBool($in.0.Criteria170_314_a__26_);
-	$out.0.Criteria170_314_a__27_ = strToBool($in.0.Criteria170_314_a__27_);
 	$out.0.Criteria170_314_b__1_ = strToBool($in.0.Criteria170_314_b__1_);
 	$out.0.Criteria170_314_b__2_ = strToBool($in.0.Criteria170_314_b__2_);
 	$out.0.Criteria170_314_b__3_ = strToBool($in.0.Criteria170_314_b__3_);
@@ -915,6 +936,8 @@ function integer transform() {
 	$out.0.Criteria170_314_b__5_ = strToBool($in.0.Criteria170_314_b__5_);
 	$out.0.Criteria170_314_b__6_ = strToBool($in.0.Criteria170_314_b__6_);
 	$out.0.Criteria170_314_b__7_ = strToBool($in.0.Criteria170_314_b__7_);
+	$out.0.Criteria170_314_b__8_ = strToBool($in.0.Criteria170_314_b__8_);
+	$out.0.Criteria170_314_b__9_ = strToBool($in.0.Criteria170_314_b__9_);
 	$out.0.Criteria170_314_c__1_ = strToBool($in.0.Criteria170_314_c__1_);
 	$out.0.Criteria170_314_c__2_ = strToBool($in.0.Criteria170_314_c__2_);
 	$out.0.Criteria170_314_c__3_ = strToBool($in.0.Criteria170_314_c__3_);
@@ -936,10 +959,14 @@ function integer transform() {
 	$out.0.Criteria170_314_f__4_ = strToBool($in.0.Criteria170_314_f__4_);
 	$out.0.Criteria170_314_f__5_ = strToBool($in.0.Criteria170_314_f__5_);
 	$out.0.Criteria170_314_f__6_ = strToBool($in.0.Criteria170_314_f__6_);
+	$out.0.Criteria170_314_f__7_ = strToBool($in.0.Criteria170_314_f__7_);
 	$out.0.Criteria170_314_g__1_ = strToBool($in.0.Criteria170_314_g__1_);
 	$out.0.Criteria170_314_g__2_ = strToBool($in.0.Criteria170_314_g__2_);
 	$out.0.Criteria170_314_g__3_ = strToBool($in.0.Criteria170_314_g__3_);
 	$out.0.Criteria170_314_g__4_ = strToBool($in.0.Criteria170_314_g__4_);
+	$out.0.Criteria170_314_h__1_ = strToBool($in.0.Criteria170_314_h__1_);
+	$out.0.Criteria170_314_h__2_ = strToBool($in.0.Criteria170_314_h__2_);
+	$out.0.Criteria170_314_h__3_ = strToBool($in.0.Criteria170_314_h__3_);
 	$out.0.CMS100 = splitCMS($in.0.CMS100,0);
 	$out.0.CMS100_2 = splitCMS($in.0.CMS100,1);
 	$out.0.CMS102 = splitCMS($in.0.CMS102,0);
@@ -1260,14 +1287,17 @@ function integer transform() {
 	$out.0.Criteria170_314_a__7_ = $in.0.Criteria170_314_a__7_;
 	$out.0.Criteria170_314_a__8_ = $in.0.Criteria170_314_a__8_;
 	$out.0.Criteria170_314_a__9_ = $in.0.Criteria170_314_a__9_;
+	$out.0.Criteria170_314_a__10_ = $in.0.Criteria170_314_a__10_;
+	$out.0.Criteria170_314_a__11_ = $in.0.Criteria170_314_a__11_;
+	$out.0.Criteria170_314_a__12_ = $in.0.Criteria170_314_a__12_;
+	$out.0.Criteria170_314_a__13_ = $in.0.Criteria170_314_a__13_;
+	$out.0.Criteria170_314_a__14_ = $in.0.Criteria170_314_a__14_;
+	$out.0.Criteria170_314_a__15_ = $in.0.Criteria170_314_a__15_;
+	$out.0.Criteria170_314_a__16_ = $in.0.Criteria170_314_a__16_;
+	$out.0.Criteria170_314_a__17_ = $in.0.Criteria170_314_a__17_;
+	$out.0.Criteria170_314_a__18_ = $in.0.Criteria170_314_a__18_;
+	$out.0.Criteria170_314_a__19_ = $in.0.Criteria170_314_a__19_;
 	$out.0.Criteria170_314_a__20_ = $in.0.Criteria170_314_a__20_;
-	$out.0.Criteria170_314_a__21_ = $in.0.Criteria170_314_a__21_;
-	$out.0.Criteria170_314_a__22_ = $in.0.Criteria170_314_a__22_;
-	$out.0.Criteria170_314_a__23_ = $in.0.Criteria170_314_a__23_;
-	$out.0.Criteria170_314_a__24_ = $in.0.Criteria170_314_a__24_;
-	$out.0.Criteria170_314_a__25_ = $in.0.Criteria170_314_a__25_;
-	$out.0.Criteria170_314_a__26_ = $in.0.Criteria170_314_a__26_;
-	$out.0.Criteria170_314_a__27_ = $in.0.Criteria170_314_a__27_;
 	$out.0.Criteria170_314_b__1_ = $in.0.Criteria170_314_b__1_;
 	$out.0.Criteria170_314_b__2_ = $in.0.Criteria170_314_b__2_;
 	$out.0.Criteria170_314_b__3_ = $in.0.Criteria170_314_b__3_;
@@ -1275,6 +1305,8 @@ function integer transform() {
 	$out.0.Criteria170_314_b__5_ = $in.0.Criteria170_314_b__5_;
 	$out.0.Criteria170_314_b__6_ = $in.0.Criteria170_314_b__6_;
 	$out.0.Criteria170_314_b__7_ = $in.0.Criteria170_314_b__7_;
+	$out.0.Criteria170_314_b__8_ = $in.0.Criteria170_314_b__8_;
+	$out.0.Criteria170_314_b__9_ = $in.0.Criteria170_314_b__9_;
 	$out.0.Criteria170_314_c__1_ = $in.0.Criteria170_314_c__1_;
 	$out.0.Criteria170_314_c__2_ = $in.0.Criteria170_314_c__2_;
 	$out.0.Criteria170_314_c__3_ = $in.0.Criteria170_314_c__3_;
@@ -1296,10 +1328,14 @@ function integer transform() {
 	$out.0.Criteria170_314_f__4_ = $in.0.Criteria170_314_f__4_;
 	$out.0.Criteria170_314_f__5_ = $in.0.Criteria170_314_f__5_;
 	$out.0.Criteria170_314_f__6_ = $in.0.Criteria170_314_f__6_;
+	$out.0.Criteria170_314_f__7_ = $in.0.Criteria170_314_f__7_;
 	$out.0.Criteria170_314_g__1_ = $in.0.Criteria170_314_g__1_;
 	$out.0.Criteria170_314_g__2_ = $in.0.Criteria170_314_g__2_;
 	$out.0.Criteria170_314_g__3_ = $in.0.Criteria170_314_g__3_;
 	$out.0.Criteria170_314_g__4_ = $in.0.Criteria170_314_g__4_;
+	$out.0.Criteria170_314_h__1_ = $in.0.Criteria170_314_h__1_;
+	$out.0.Criteria170_314_h__2_ = $in.0.Criteria170_314_h__2_;
+	$out.0.Criteria170_314_h__3_ = $in.0.Criteria170_314_h__3_;
 	$out.0.NQF_0001_A_ = $in.0.NQF_0001_A_;
 	$out.0.NQF_0002_A_ = $in.0.NQF_0002_A_;
 	$out.0.NQF_0004_A_ = $in.0.NQF_0004_A_;
@@ -1658,14 +1694,17 @@ function integer transform() {
 	$out.0.Criteria170_314_a__7_ = $in.0.Criteria170_314_a__7_;
 	$out.0.Criteria170_314_a__8_ = $in.0.Criteria170_314_a__8_;
 	$out.0.Criteria170_314_a__9_ = $in.0.Criteria170_314_a__9_;
+	$out.0.Criteria170_314_a__10_ = $in.0.Criteria170_314_a__10_;
+	$out.0.Criteria170_314_a__11_ = $in.0.Criteria170_314_a__11_;
+	$out.0.Criteria170_314_a__12_ = $in.0.Criteria170_314_a__12_;
+	$out.0.Criteria170_314_a__13_ = $in.0.Criteria170_314_a__13_;
+	$out.0.Criteria170_314_a__14_ = $in.0.Criteria170_314_a__14_;
+	$out.0.Criteria170_314_a__15_ = $in.0.Criteria170_314_a__15_;
+	$out.0.Criteria170_314_a__16_ = $in.0.Criteria170_314_a__16_;
+	$out.0.Criteria170_314_a__17_ = $in.0.Criteria170_314_a__17_;
+	$out.0.Criteria170_314_a__18_ = $in.0.Criteria170_314_a__18_;
+	$out.0.Criteria170_314_a__19_ = $in.0.Criteria170_314_a__19_;
 	$out.0.Criteria170_314_a__20_ = $in.0.Criteria170_314_a__20_;
-	$out.0.Criteria170_314_a__21_ = $in.0.Criteria170_314_a__21_;
-	$out.0.Criteria170_314_a__22_ = $in.0.Criteria170_314_a__22_;
-	$out.0.Criteria170_314_a__23_ = $in.0.Criteria170_314_a__23_;
-	$out.0.Criteria170_314_a__24_ = $in.0.Criteria170_314_a__24_;
-	$out.0.Criteria170_314_a__25_ = $in.0.Criteria170_314_a__25_;
-	$out.0.Criteria170_314_a__26_ = $in.0.Criteria170_314_a__26_;
-	$out.0.Criteria170_314_a__27_ = $in.0.Criteria170_314_a__27_;
 	$out.0.Criteria170_314_b__1_ = $in.0.Criteria170_314_b__1_;
 	$out.0.Criteria170_314_b__2_ = $in.0.Criteria170_314_b__2_;
 	$out.0.Criteria170_314_b__3_ = $in.0.Criteria170_314_b__3_;
@@ -1673,6 +1712,8 @@ function integer transform() {
 	$out.0.Criteria170_314_b__5_ = $in.0.Criteria170_314_b__5_;
 	$out.0.Criteria170_314_b__6_ = $in.0.Criteria170_314_b__6_;
 	$out.0.Criteria170_314_b__7_ = $in.0.Criteria170_314_b__7_;
+	$out.0.Criteria170_314_b__8_ = $in.0.Criteria170_314_b__8_;
+	$out.0.Criteria170_314_b__9_ = $in.0.Criteria170_314_b__9_;
 	$out.0.Criteria170_314_c__1_ = $in.0.Criteria170_314_c__1_;
 	$out.0.Criteria170_314_c__2_ = $in.0.Criteria170_314_c__2_;
 	$out.0.Criteria170_314_c__3_ = $in.0.Criteria170_314_c__3_;
@@ -1694,10 +1735,14 @@ function integer transform() {
 	$out.0.Criteria170_314_f__4_ = $in.0.Criteria170_314_f__4_;
 	$out.0.Criteria170_314_f__5_ = $in.0.Criteria170_314_f__5_;
 	$out.0.Criteria170_314_f__6_ = $in.0.Criteria170_314_f__6_;
+	$out.0.Criteria170_314_f__7_ = $in.0.Criteria170_314_f__7_;
 	$out.0.Criteria170_314_g__1_ = $in.0.Criteria170_314_g__1_;
 	$out.0.Criteria170_314_g__2_ = $in.0.Criteria170_314_g__2_;
 	$out.0.Criteria170_314_g__3_ = $in.0.Criteria170_314_g__3_;
 	$out.0.Criteria170_314_g__4_ = $in.0.Criteria170_314_g__4_;
+	$out.0.Criteria170_314_h__1_ = $in.0.Criteria170_314_h__1_;
+	$out.0.Criteria170_314_h__2_ = $in.0.Criteria170_314_h__2_;
+	$out.0.Criteria170_314_h__3_ = $in.0.Criteria170_314_h__3_;
 	$out.0.NQF_0001_A_ = $in.0.NQF_0001_A_;
 	$out.0.NQF_0002_A_ = $in.0.NQF_0002_A_;
 	$out.0.NQF_0004_A_ = $in.0.NQF_0004_A_;
@@ -2359,59 +2404,80 @@ INSERT INTO openchpl.certification_result
 
 INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__10_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(10)'
+       AND cast ($Criteria170_314_a__10_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__11_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(11)'
+       AND cast ($Criteria170_314_a__11_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__12_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(12)'
+       AND cast ($Criteria170_314_a__12_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__13_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(13)'
+       AND cast ($Criteria170_314_a__13_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__14_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(14)'
+       AND cast ($Criteria170_314_a__14_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__15_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(15)'
+       AND cast ($Criteria170_314_a__15_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__16_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(16)'
+       AND cast ($Criteria170_314_a__16_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__17_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(17)'
+       AND cast ($Criteria170_314_a__17_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__18_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(18)'
+       AND cast ($Criteria170_314_a__18_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__19_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(a)(19)'
+       AND cast ($Criteria170_314_a__19_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__20_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(20)'
        AND cast ($Criteria170_314_a__20_ as boolean) IS NOT NULL;
-
-INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
-       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__21_, -1
-       FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(21)'
-       AND cast ($Criteria170_314_a__21_ as boolean) IS NOT NULL;
-
-INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
-       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__22_, -1
-       FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(22)'
-       AND cast ($Criteria170_314_a__22_ as boolean) IS NOT NULL;
-
-INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
-       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__23_, -1
-       FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(23)'
-       AND cast ($Criteria170_314_a__23_ as boolean) IS NOT NULL;
-
-INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
-       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__24_, -1
-       FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(24)'
-       AND cast ($Criteria170_314_a__24_ as boolean) IS NOT NULL;
-
-INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
-       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__25_, -1
-       FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(25)'
-       AND cast ($Criteria170_314_a__25_ as boolean) IS NOT NULL;
-
-INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
-       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__26_, -1
-       FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(26)'
-       AND cast ($Criteria170_314_a__26_ as boolean) IS NOT NULL;
-
-INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
-       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__27_, -1
-       FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(27)'
-       AND cast ($Criteria170_314_a__27_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, successful, last_modified_user)
@@ -2461,6 +2527,20 @@ INSERT INTO openchpl.certification_result
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(7)'
        AND cast ($Criteria170_314_b__7_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__8_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(b)(8)'
+       AND cast ($Criteria170_314_b__8_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__9_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(b)(9)'
+       AND cast ($Criteria170_314_b__9_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, successful, last_modified_user)
@@ -2611,6 +2691,13 @@ INSERT INTO openchpl.certification_result
 
 INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__7_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(f)(7)'
+       AND cast ($Criteria170_314_f__7_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(g)(1)'
@@ -2636,6 +2723,27 @@ INSERT INTO openchpl.certification_result
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(g)(4)'
        AND cast ($Criteria170_314_g__4_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__1_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(h)(1)'
+       AND cast ($Criteria170_314_h__1_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__2_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(h)(2)'
+       AND cast ($Criteria170_314_h__2_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__3_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314(h)(3)'
+       AND cast ($Criteria170_314_h__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_cqm_edition_map_id, last_modified_user)

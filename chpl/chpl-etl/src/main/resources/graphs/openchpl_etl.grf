@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Fri May 22 14:32:10 EDT 2015" modifiedBy="alarned" name="CHPL_ETL" revision="1.232" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Thu Jun 11 08:05:10 EDT 2015" modifiedBy="alarned" name="ChecksumAnalysis" revision="1.233" showComponentDetails="true">
 <Global>
 <Metadata id="All_data">
 <Record fieldDelimiter="^" name="All_data" recordDelimiter="\r\n" type="delimited">
@@ -129,14 +129,17 @@
 <Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="string"/>
 <Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="string"/>
 <Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="string"/>
+<Field label="170.314(a)(10)" name="Criteria170_314_a__10_" type="string"/>
+<Field label="170.314(a)(11)" name="Criteria170_314_a__11_" type="string"/>
+<Field label="170.314(a)(12)" name="Criteria170_314_a__12_" type="string"/>
+<Field label="170.314(a)(13)" name="Criteria170_314_a__13_" type="string"/>
+<Field label="170.314(a)(14)" name="Criteria170_314_a__14_" type="string"/>
+<Field label="170.314(a)(15)" name="Criteria170_314_a__15_" type="string"/>
+<Field label="170.314(a)(16)" name="Criteria170_314_a__16_" type="string"/>
+<Field label="170.314(a)(17)" name="Criteria170_314_a__17_" type="string"/>
+<Field label="170.314(a)(18)" name="Criteria170_314_a__18_" type="string"/>
+<Field label="170.314(a)(19)" name="Criteria170_314_a__19_" type="string"/>
 <Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="string"/>
-<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="string"/>
-<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="string"/>
-<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="string"/>
-<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="string"/>
-<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="string"/>
-<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="string"/>
-<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="string"/>
 <Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="string"/>
 <Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="string"/>
 <Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="string"/>
@@ -144,6 +147,8 @@
 <Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="string"/>
 <Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="string"/>
 <Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="string"/>
+<Field label="170.314(b)(8)" name="Criteria170_314_b__8_" type="string"/>
+<Field label="170.314(b)(9)" name="Criteria170_314_b__9_" type="string"/>
 <Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="string"/>
 <Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="string"/>
 <Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="string"/>
@@ -165,10 +170,14 @@
 <Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="string"/>
 <Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="string"/>
 <Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="string"/>
+<Field label="170.314(f)(7)" name="Criteria170_314_f__7_" type="string"/>
 <Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="string"/>
 <Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="string"/>
 <Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="string"/>
 <Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="string"/>
+<Field label="170.314(h)(1)" name="Criteria170_314_h__1_" type="string"/>
+<Field label="170.314(h)(2)" name="Criteria170_314_h__2_" type="string"/>
+<Field label="170.314(h)(3)" name="Criteria170_314_h__3_" type="string"/>
 <Field label="CMS100" name="CMS100" type="string"/>
 <Field label="CMS102" name="CMS102" type="string"/>
 <Field label="CMS104" name="CMS104" type="string"/>
@@ -351,14 +360,17 @@
 <Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="boolean"/>
 <Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="boolean"/>
 <Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="boolean"/>
+<Field label="170.314(a)(10)" name="Criteria170_314_a__10_" type="boolean"/>
+<Field label="170.314(a)(11)" name="Criteria170_314_a__11_" type="boolean"/>
+<Field label="170.314(a)(12)" name="Criteria170_314_a__12_" type="boolean"/>
+<Field label="170.314(a)(13)" name="Criteria170_314_a__13_" type="boolean"/>
+<Field label="170.314(a)(14)" name="Criteria170_314_a__14_" type="boolean"/>
+<Field label="170.314(a)(15)" name="Criteria170_314_a__15_" type="boolean"/>
+<Field label="170.314(a)(16)" name="Criteria170_314_a__16_" type="boolean"/>
+<Field label="170.314(a)(17)" name="Criteria170_314_a__17_" type="boolean"/>
+<Field label="170.314(a)(18)" name="Criteria170_314_a__18_" type="boolean"/>
+<Field label="170.314(a)(19)" name="Criteria170_314_a__19_" type="boolean"/>
 <Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="boolean"/>
-<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="boolean"/>
-<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="boolean"/>
-<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="boolean"/>
-<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="boolean"/>
-<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="boolean"/>
-<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="boolean"/>
-<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="boolean"/>
 <Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="boolean"/>
 <Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="boolean"/>
 <Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="boolean"/>
@@ -366,6 +378,8 @@
 <Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="boolean"/>
 <Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="boolean"/>
 <Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="boolean"/>
+<Field label="170.314(b)(8)" name="Criteria170_314_b__8_" type="boolean"/>
+<Field label="170.314(b)(9)" name="Criteria170_314_b__9_" type="boolean"/>
 <Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="boolean"/>
 <Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="boolean"/>
 <Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="boolean"/>
@@ -387,10 +401,14 @@
 <Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="boolean"/>
 <Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="boolean"/>
 <Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="boolean"/>
+<Field label="170.314(f)(7)" name="Criteria170_314_f__7_" type="boolean"/>
 <Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="boolean"/>
 <Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="boolean"/>
 <Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="boolean"/>
 <Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="boolean"/>
+<Field label="170.314(h)(1)" name="Criteria170_314_h__1_" type="boolean"/>
+<Field label="170.314(h)(2)" name="Criteria170_314_h__2_" type="boolean"/>
+<Field label="170.314(h)(3)" name="Criteria170_314_h__3_" type="boolean"/>
 <Field label="NQF 0001(A)" name="NQF_0001_A_" type="boolean"/>
 <Field label="NQF 0002(A)" name="NQF_0002_A_" type="boolean"/>
 <Field label="NQF 0004(A)" name="NQF_0004_A_" type="boolean"/>
@@ -784,6 +802,9 @@
 <Field label="170.314(a)(14) Patient List Creation" name="_170_314_a_14_Patient_List_Creation" type="string"/>
 <Field label="170.314(a)(15) Patient-Specific Educatio" name="_170_314_a_15_Patient_Specific_Educatio" type="string"/>
 <Field label="170.314(a)(16) Electronic Medication Adm" name="_170_314_a_16_Electronic_Medication_Adm" type="string"/>
+<Field label="170.314(a)(18) Cmp pvdr order entry-med" name="_170_314_a__18__Cmp_pvdr_order_entry_med" type="string"/>
+<Field label="170.314(a)(19) Cmp pvdr order entry-lab" name="_170_314_a__19__Cmp_pvdr_order_entry_lab" type="string"/>
+<Field label="170.314(a)(20) Cmp pvdr order entry-DI" name="_170_314_a__20__Cmp_pvdr_order_entry_DI" type="string"/>
 <Field label="170.314(a)(17) Advance Directives" name="_170_314_a_17_Advance_Directives" type="string"/>
 <Field label="170.314(b)(1) Transitions of Care - rece" name="_170_314_b_1_Transitions_of_Care_rece" type="string"/>
 <Field label="170.314(b)(2) Transitions of Care - crea" name="_170_314_b_2_Transitions_of_Care_crea" type="string"/>
@@ -792,6 +813,8 @@
 <Field label="170.314(b)(5) Incorporate Laboratory Tes" name="_170_314_b_5_Incorporate_Laboratory_Tes" type="string"/>
 <Field label="170.314(b)(6) Transmission of Electronic" name="_170_314_b_6_Transmission_of_Electronic" type="string"/>
 <Field label="170.314(b)(7) Data Portability" name="_170_314_b_7_Data_Portability" type="string"/>
+<Field label="170.314(b)(8) Transitions of care" name="_170_314_b__8__Transitions_of_care" type="string"/>
+<Field label="170.314(b)(9) Clinic info recon and inc" name="_170_314_b__9__Clinic_info_recon_and_inc" type="string"/>
 <Field label="170.314(c)(1) Clinical Quality Measures" name="_170_314_c_1_Clinical_Quality_Measures" type="string"/>
 <Field label="170.314(c)(2) Clinical Quality Measures" name="_170_314_c_2_Clinical_Quality_Measures" type="string"/>
 <Field label="170.314(c)(3) Clinical Quality Measures" name="_170_314_c_3_Clinical_Quality_Measures" type="string"/>
@@ -813,10 +836,14 @@
 <Field label="170.314(f)(4) Transmission of Reportable" name="_170_314_f_4_Transmission_of_Reportable" type="string"/>
 <Field label="170.314(f)(5) Cancer Case Information" name="_170_314_f_5_Cancer_Case_Information" type="string"/>
 <Field label="170.314(f)(6) Transmission to Cancer Reg" name="_170_314_f_6_Transmission_to_Cancer_Reg" type="string"/>
+<Field label="170.314(f)(7) Transm to agencies-syndrom" name="_170_314_f__7__Transm_to_agencies_syndrom" type="string"/>
 <Field label="170.314(g)(1) Automated Numerator Record" name="_170_314_g_1_Automated_Numerator_Record" type="string"/>
 <Field label="170.314(g)(2) Automated Measure Calculat" name="_170_314_g_2_Automated_Measure_Calculat" type="string"/>
 <Field label="170.314(g)(3) Safety-Enhanced Design" name="_170_314_g_3_Safety_Enhanced_Design" type="string"/>
 <Field label="170.314(g)(4) Quality Management System" name="_170_314_g_4_Quality_Management_System" type="string"/>
+<Field label="170.314(h)(1) App Stmt Sec Hlth Trans" name="_170_314_h__1__App_Stmt_Sec_Hlth_Trans" type="string"/>
+<Field label="170.314(h)(2) Trnsprt Direct Msg" name="_170_314_h__2__Trnsprt_Direct_Msg" type="string"/>
+<Field label="170.314(h)(3) SOAP Trnsprt Direct" name="_170_314_h__3__SOAP_Trnsprt_Direct" type="string"/>
 <Field label="CMS100 AMI?2?Aspirin Prescribed at Dis" name="CMS100_AMI_2_Aspirin_Prescribed_at_Dis" type="string"/>
 <Field label="CMS102 Stroke?10 Ischemic or hemorrhag" name="CMS102_Stroke_10_Ischemic_or_hemorrhag" type="string"/>
 <Field label="CMS104 Stroke?2 Ischemic stroke \u0096 Dis" name="CMS104_Stroke_2_Ischemic_stroke_Dis" type="string"/>
@@ -910,271 +937,6 @@
 <Field label="CMS90 Functional status assessment for" name="CMS90_Functional_status_assessment_for" type="string"/>
 <Field label="CMS91 Stroke?4 Ischemic stroke \u0096 Throm" name="CMS91_Stroke_4_Ischemic_stroke_Throm" type="string"/>
 <Field label="CMS9V1 Exclusive Breast Milk Feeding" name="CMS9V1_Exclusive_Breast_Milk_Feeding" type="string"/>
-<Field label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
-<Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
-</Record>
-</Metadata>
-<Metadata id="CHPL_To_Insert1" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="^" label="chpl_to-insert.csv" name="CHPL_To_Insert" previewAttachment="C:/Users/alarned/git/chpl-api/chpl/chpl-etl/src/main/resources/chpl_to-insert.csv" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\r\n" skipSourceRows="1" type="delimited">
-<Field label="STG_Certification: Certification ID" name="STG_Certification_Certification_ID" type="string"/>
-<Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
-<Field label="Published" name="Published" type="string"/>
-<Field label="ATCB Certification ID" name="ATCB_Certification_ID" type="string"/>
-<Field label="Practice Setting" name="Practice_Setting" type="string"/>
-<Field label="Product Classification" name="Product_Classification" type="string"/>
-<Field label="Product" name="Product" type="string"/>
-<Field label="Vendor" name="Vendor" type="string"/>
-<Field label="Additional Software" name="Additional_Software" type="string"/>
-<Field label="Version" name="Version" type="string"/>
-<Field label="Certification Date" name="Certification_Date" type="string"/>
-<Field label="170.302(a)" name="Criteria170_302_a_" type="string"/>
-<Field label="170.302(b)" name="Criteria170_302_b_" type="string"/>
-<Field label="170.302(c)" name="Criteria170_302_c_" type="string"/>
-<Field label="170.302(d)" name="Criteria170_302_d_" type="string"/>
-<Field label="170.302(e)" name="Criteria170_302_e_" type="string"/>
-<Field label="170.302(f)" name="Criteria170_302_f_" type="string"/>
-<Field label="170.302(f)(1)" name="Criteria170_302_f__1_" type="string"/>
-<Field label="170.302(f)(2)" name="Criteria170_302_f__2_" type="string"/>
-<Field label="170.302(f)(3)" name="Criteria170_302_f__3_" type="string"/>
-<Field label="170.302(g)" name="Criteria170_302_g_" type="string"/>
-<Field label="170.302(h)" name="Criteria170_302_h_" type="string"/>
-<Field label="170.302(i)" name="Criteria170_302_i_" type="string"/>
-<Field label="170.302(j)" name="Criteria170_302_j_" type="string"/>
-<Field label="170.302(k)" name="Criteria170_302_k_" type="string"/>
-<Field label="170.302(l)" name="Criteria170_302_l_" type="string"/>
-<Field label="170.302(m)" name="Criteria170_302_m_" type="string"/>
-<Field label="170.302(n)" name="Criteria170_302_n_" type="string"/>
-<Field label="170.302(o)" name="Criteria170_302_o_" type="string"/>
-<Field label="170.302(p)" name="Criteria170_302_p_" type="string"/>
-<Field label="170.302(q)" name="Criteria170_302_q_" type="string"/>
-<Field label="170.302(r)" name="Criteria170_302_r_" type="string"/>
-<Field label="170.302(s)" name="Criteria170_302_s_" type="string"/>
-<Field label="170.302(t)" name="Criteria170_302_t_" type="string"/>
-<Field label="170.302(u)" name="Criteria170_302_u_" type="string"/>
-<Field label="170.302(v)" name="Criteria170_302_v_" type="string"/>
-<Field label="170.302(w)" name="Criteria170_302_w_" type="string"/>
-<Field label="170.304(a)" name="Criteria170_304_a_" type="string"/>
-<Field label="170.304(b)" name="Criteria170_304_b_" type="string"/>
-<Field label="170.304(c)" name="Criteria170_304_c_" type="string"/>
-<Field label="170.304(d)" name="Criteria170_304_d_" type="string"/>
-<Field label="170.304(e)" name="Criteria170_304_e_" type="string"/>
-<Field label="170.304(f)" name="Criteria170_304_f_" type="string"/>
-<Field label="170.304(g)" name="Criteria170_304_g_" type="string"/>
-<Field label="170.304(h)" name="Criteria170_304_h_" type="string"/>
-<Field label="170.304(i)" name="Criteria170_304_i_" type="string"/>
-<Field label="170.304(j)" name="Criteria170_304_j_" type="string"/>
-<Field label="170.306(a)" name="Criteria170_306_a_" type="string"/>
-<Field label="170.306(b)" name="Criteria170_306_b_" type="string"/>
-<Field label="170.306(c)" name="Criteria170_306_c_" type="string"/>
-<Field label="170.306(d)" name="Criteria170_306_d_" type="string"/>
-<Field label="170.306(d)(1)" name="Criteria170_306_d__1_" type="string"/>
-<Field label="170.306(d)(2)" name="Criteria170_306_d__2_" type="string"/>
-<Field label="170.306(e)" name="Criteria170_306_e_" type="string"/>
-<Field label="170.306(f)" name="Criteria170_306_f_" type="string"/>
-<Field label="170.306(g)" name="Criteria170_306_g_" type="string"/>
-<Field label="170.306(h)" name="Criteria170_306_h_" type="string"/>
-<Field label="170.306(i)" name="Criteria170_306_i_" type="string"/>
-<Field label="NQF 0001(A)" name="NQF_0001_A_" type="string"/>
-<Field label="NQF 0002(A)" name="NQF_0002_A_" type="string"/>
-<Field label="NQF 0004(A)" name="NQF_0004_A_" type="string"/>
-<Field label="NQF 0012(A)" name="NQF_0012_A_" type="string"/>
-<Field label="NQF 0013(A)" name="NQF_0013_A_" type="string"/>
-<Field label="NQF 0014(A)" name="NQF_0014_A_" type="string"/>
-<Field label="NQF 0018(A)" name="NQF_0018_A_" type="string"/>
-<Field label="NQF 0024(A)" name="NQF_0024_A_" type="string"/>
-<Field label="NQF 0027(A)" name="NQF_0027_A_" type="string"/>
-<Field label="NQF 0028(A)" name="NQF_0028_A_" type="string"/>
-<Field label="NQF 0031(A)" name="NQF_0031_A_" type="string"/>
-<Field label="NQF 0032(A)" name="NQF_0032_A_" type="string"/>
-<Field label="NQF 0033(A)" name="NQF_0033_A_" type="string"/>
-<Field label="NQF 0034(A)" name="NQF_0034_A_" type="string"/>
-<Field label="NQF 0036(A)" name="NQF_0036_A_" type="string"/>
-<Field label="NQF 0038(A)" name="NQF_0038_A_" type="string"/>
-<Field label="NQF 0041(A)" name="NQF_0041_A_" type="string"/>
-<Field label="NQF 0043(A)" name="NQF_0043_A_" type="string"/>
-<Field label="NQF 0047(A)" name="NQF_0047_A_" type="string"/>
-<Field label="NQF 0052(A)" name="NQF_0052_A_" type="string"/>
-<Field label="NQF 0055(A)" name="NQF_0055_A_" type="string"/>
-<Field label="NQF 0056(A)" name="NQF_0056_A_" type="string"/>
-<Field label="NQF 0059(A)" name="NQF_0059_A_" type="string"/>
-<Field label="NQF 0061(A)" name="NQF_0061_A_" type="string"/>
-<Field label="NQF 0062(A)" name="NQF_0062_A_" type="string"/>
-<Field label="NQF 0064(A)" name="NQF_0064_A_" type="string"/>
-<Field label="NQF 0067(A)" name="NQF_0067_A_" type="string"/>
-<Field label="NQF 0068(A)" name="NQF_0068_A_" type="string"/>
-<Field label="NQF 0070(A)" name="NQF_0070_A_" type="string"/>
-<Field label="NQF 0073(A)" name="NQF_0073_A_" type="string"/>
-<Field label="NQF 0074(A)" name="NQF_0074_A_" type="string"/>
-<Field label="NQF 0075(A)" name="NQF_0075_A_" type="string"/>
-<Field label="NQF 0081(A)" name="NQF_0081_A_" type="string"/>
-<Field label="NQF 0083(A)" name="NQF_0083_A_" type="string"/>
-<Field label="NQF 0084(A)" name="NQF_0084_A_" type="string"/>
-<Field label="NQF 0086(A)" name="NQF_0086_A_" type="string"/>
-<Field label="NQF 0088(A)" name="NQF_0088_A_" type="string"/>
-<Field label="NQF 0089(A)" name="NQF_0089_A_" type="string"/>
-<Field label="NQF 0105(A)" name="NQF_0105_A_" type="string"/>
-<Field label="NQF 0371(I)" name="NQF_0371_I_" type="string"/>
-<Field label="NQF 0372(I)" name="NQF_0372_I_" type="string"/>
-<Field label="NQF 0373(I)" name="NQF_0373_I_" type="string"/>
-<Field label="NQF 0374(I)" name="NQF_0374_I_" type="string"/>
-<Field label="NQF 0375(I)" name="NQF_0375_I_" type="string"/>
-<Field label="NQF 0376(I)" name="NQF_0376_I_" type="string"/>
-<Field label="NQF 0385(A)" name="NQF_0385_A_" type="string"/>
-<Field label="NQF 0387(A)" name="NQF_0387_A_" type="string"/>
-<Field label="NQF 0389(A)" name="NQF_0389_A_" type="string"/>
-<Field label="NQF 0421(A)" name="NQF_0421_A_" type="string"/>
-<Field label="NQF 0435(I)" name="NQF_0435_I_" type="string"/>
-<Field label="NQF 0436(I)" name="NQF_0436_I_" type="string"/>
-<Field label="NQF 0437(I)" name="NQF_0437_I_" type="string"/>
-<Field label="NQF 0438(I)" name="NQF_0438_I_" type="string"/>
-<Field label="NQF 0439(I)" name="NQF_0439_I_" type="string"/>
-<Field label="NQF 0440(I)" name="NQF_0440_I_" type="string"/>
-<Field label="NQF 0441(I)" name="NQF_0441_I_" type="string"/>
-<Field label="NQF 0495(I)" name="NQF_0495_I_" type="string"/>
-<Field label="NQF 0497(I)" name="NQF_0497_I_" type="string"/>
-<Field label="NQF 0575(A)" name="NQF_0575_A_" type="string"/>
-<Field label="170.314(a)(1)" name="Criteria170_314_a__1_" type="string"/>
-<Field label="170.314(a)(2)" name="Criteria170_314_a__2_" type="string"/>
-<Field label="170.314(a)(3)" name="Criteria170_314_a__3_" type="string"/>
-<Field label="170.314(a)(4)" name="Criteria170_314_a__4_" type="string"/>
-<Field label="170.314(a)(5)" name="Criteria170_314_a__5_" type="string"/>
-<Field label="170.314(a)(6)" name="Criteria170_314_a__6_" type="string"/>
-<Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="string"/>
-<Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="string"/>
-<Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="string"/>
-<Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="string"/>
-<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="string"/>
-<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="string"/>
-<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="string"/>
-<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="string"/>
-<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="string"/>
-<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="string"/>
-<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="string"/>
-<Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="string"/>
-<Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="string"/>
-<Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="string"/>
-<Field label="170.314(b)(4)" name="Criteria170_314_b__4_" type="string"/>
-<Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="string"/>
-<Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="string"/>
-<Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="string"/>
-<Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="string"/>
-<Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="string"/>
-<Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="string"/>
-<Field label="170.314(d)(1)" name="Criteria170_314_d__1_" type="string"/>
-<Field label="170.314(d)(2)" name="Criteria170_314_d__2_" type="string"/>
-<Field label="170.314(d)(3)" name="Criteria170_314_d__3_" type="string"/>
-<Field label="170.314(d)(4)" name="Criteria170_314_d__4_" type="string"/>
-<Field label="170.314(d)(5)" name="Criteria170_314_d__5_" type="string"/>
-<Field label="170.314(d)(6)" name="Criteria170_314_d__6_" type="string"/>
-<Field label="170.314(d)(7)" name="Criteria170_314_d__7_" type="string"/>
-<Field label="170.314(d)(8)" name="Criteria170_314_d__8_" type="string"/>
-<Field label="170.314(d)(9)" name="Criteria170_314_d__9_" type="string"/>
-<Field label="170.314(e)(1)" name="Criteria170_314_e__1_" type="string"/>
-<Field label="170.314(e)(2)" name="Criteria170_314_e__2_" type="string"/>
-<Field label="170.314(e)(3)" name="Criteria170_314_e__3_" type="string"/>
-<Field label="170.314(f)(1)" name="Criteria170_314_f__1_" type="string"/>
-<Field label="170.314(f)(2)" name="Criteria170_314_f__2_" type="string"/>
-<Field label="170.314(f)(3)" name="Criteria170_314_f__3_" type="string"/>
-<Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="string"/>
-<Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="string"/>
-<Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="string"/>
-<Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="string"/>
-<Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="string"/>
-<Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="string"/>
-<Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="string"/>
-<Field label="CMS100" name="CMS100" type="string"/>
-<Field label="CMS102" name="CMS102" type="string"/>
-<Field label="CMS104" name="CMS104" type="string"/>
-<Field label="CMS105" name="CMS105" type="string"/>
-<Field label="CMS107" name="CMS107" type="string"/>
-<Field label="CMS108" name="CMS108" type="string"/>
-<Field label="CMS109" name="CMS109" type="string"/>
-<Field label="CMS110" name="CMS110" type="string"/>
-<Field label="CMS111" name="CMS111" type="string"/>
-<Field label="CMS113" name="CMS113" type="string"/>
-<Field label="CMS114" name="CMS114" type="string"/>
-<Field label="CMS117" name="CMS117" type="string"/>
-<Field label="CMS122" name="CMS122" type="string"/>
-<Field label="CMS123" name="CMS123" type="string"/>
-<Field label="CMS124" name="CMS124" type="string"/>
-<Field label="CMS125" name="CMS125" type="string"/>
-<Field label="CMS126" name="CMS126" type="string"/>
-<Field label="CMS127" name="CMS127" type="string"/>
-<Field label="CMS128" name="CMS128" type="string"/>
-<Field label="CMS129" name="CMS129" type="string"/>
-<Field label="CMS130" name="CMS130" type="string"/>
-<Field label="CMS131" name="CMS131" type="string"/>
-<Field label="CMS132" name="CMS132" type="string"/>
-<Field label="CMS133" name="CMS133" type="string"/>
-<Field label="CMS134" name="CMS134" type="string"/>
-<Field label="CMS135" name="CMS135" type="string"/>
-<Field label="CMS136" name="CMS136" type="string"/>
-<Field label="CMS137" name="CMS137" type="string"/>
-<Field label="CMS138" name="CMS138" type="string"/>
-<Field label="CMS139" name="CMS139" type="string"/>
-<Field label="CMS140" name="CMS140" type="string"/>
-<Field label="CMS141" name="CMS141" type="string"/>
-<Field label="CMS142" name="CMS142" type="string"/>
-<Field label="CMS143" name="CMS143" type="string"/>
-<Field label="CMS144" name="CMS144" type="string"/>
-<Field label="CMS145" name="CMS145" type="string"/>
-<Field label="CMS146" name="CMS146" type="string"/>
-<Field label="CMS147" name="CMS147" type="string"/>
-<Field label="CMS148" name="CMS148" type="string"/>
-<Field label="CMS149" name="CMS149" type="string"/>
-<Field label="CMS153" name="CMS153" type="string"/>
-<Field label="CMS154" name="CMS154" type="string"/>
-<Field label="CMS155" name="CMS155" type="string"/>
-<Field label="CMS156" name="CMS156" type="string"/>
-<Field label="CMS157" name="CMS157" type="string"/>
-<Field label="CMS158" name="CMS158" type="string"/>
-<Field label="CMS159" name="CMS159" type="string"/>
-<Field label="CMS160" name="CMS160" type="string"/>
-<Field label="CMS161" name="CMS161" type="string"/>
-<Field label="CMS163" name="CMS163" type="string"/>
-<Field label="CMS164" name="CMS164" type="string"/>
-<Field label="CMS165" name="CMS165" type="string"/>
-<Field label="CMS166" name="CMS166" type="string"/>
-<Field label="CMS167" name="CMS167" type="string"/>
-<Field label="CMS169" name="CMS169" type="string"/>
-<Field label="CMS171" name="CMS171" type="string"/>
-<Field label="CMS172" name="CMS172" type="string"/>
-<Field label="CMS177" name="CMS177" type="string"/>
-<Field label="CMS178" name="CMS178" type="string"/>
-<Field label="CMS179" name="CMS179" type="string"/>
-<Field label="CMS182" name="CMS182" type="string"/>
-<Field label="CMS185" name="CMS185" type="string"/>
-<Field label="CMS188" name="CMS188" type="string"/>
-<Field label="CMS190" name="CMS190" type="string"/>
-<Field label="CMS22" name="CMS22" type="string"/>
-<Field label="CMS26V1" name="CMS26V1" type="string"/>
-<Field label="CMS2" name="CMS2" type="string"/>
-<Field label="CMS30" name="CMS30" type="string"/>
-<Field label="CMS31" name="CMS31" type="string"/>
-<Field label="CMS32" name="CMS32" type="string"/>
-<Field label="CMS50" name="CMS50" type="string"/>
-<Field label="CMS52" name="CMS52" type="string"/>
-<Field label="CMS53" name="CMS53" type="string"/>
-<Field label="CMS55" name="CMS55" type="string"/>
-<Field label="CMS56" name="CMS56" type="string"/>
-<Field label="CMS60" name="CMS60" type="string"/>
-<Field label="CMS61" name="CMS61" type="string"/>
-<Field label="CMS62" name="CMS62" type="string"/>
-<Field label="CMS64" name="CMS64" type="string"/>
-<Field label="CMS65" name="CMS65" type="string"/>
-<Field label="CMS66" name="CMS66" type="string"/>
-<Field label="CMS68" name="CMS68" type="string"/>
-<Field label="CMS69" name="CMS69" type="string"/>
-<Field label="CMS71" name="CMS71" type="string"/>
-<Field label="CMS72" name="CMS72" type="string"/>
-<Field label="CMS73" name="CMS73" type="string"/>
-<Field label="CMS74" name="CMS74" type="string"/>
-<Field label="CMS75" name="CMS75" type="string"/>
-<Field label="CMS77" name="CMS77" type="string"/>
-<Field label="CMS82" name="CMS82" type="string"/>
-<Field label="CMS90" name="CMS90" type="string"/>
-<Field label="CMS91" name="CMS91" type="string"/>
-<Field label="CMS9V1" name="CMS9V1" type="string"/>
 <Field label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
 <Field eofAsDelimiter="true" label="Checksum" name="Checksum" type="string"/>
 </Record>
@@ -1340,6 +1102,9 @@
 <Field label="170.314(a)(15) Patient-Specific Educatio" name="_170_314_a_15_Patient_Specific_Educatio" type="string"/>
 <Field label="170.314(a)(16) Electronic Medication Adm" name="_170_314_a_16_Electronic_Medication_Adm" type="string"/>
 <Field label="170.314(a)(17) Advance Directives" name="_170_314_a_17_Advance_Directives" type="string"/>
+<Field label="170.314(a)(18) Cmp pvdr order entry-med" name="_170_314_a__18__Cmp_pvdr_order_entry_med" type="string"/>
+<Field label="170.314(a)(19) Cmp pvdr order entry-lab" name="_170_314_a__19__Cmp_pvdr_order_entry_lab" type="string"/>
+<Field label="170.314(a)(20) Cmp pvdr order entry-DI" name="_170_314_a__20__Cmp_pvdr_order_entry_DI" type="string"/>
 <Field label="170.314(b)(1) Transitions of Care - rece" name="_170_314_b_1_Transitions_of_Care_rece" type="string"/>
 <Field label="170.314(b)(2) Transitions of Care - crea" name="_170_314_b_2_Transitions_of_Care_crea" type="string"/>
 <Field label="170.314(b)(3) Electronic Prescribing" name="_170_314_b_3_Electronic_Prescribing" type="string"/>
@@ -1347,6 +1112,8 @@
 <Field label="170.314(b)(5) Incorporate Laboratory Tes" name="_170_314_b_5_Incorporate_Laboratory_Tes" type="string"/>
 <Field label="170.314(b)(6) Transmission of Electronic" name="_170_314_b_6_Transmission_of_Electronic" type="string"/>
 <Field label="170.314(b)(7) Data Portability" name="_170_314_b_7_Data_Portability" type="string"/>
+<Field label="170.314(b)(8) Transitions of care" name="_170_314_b__8__Transitions_of_care" type="string"/>
+<Field label="170.314(b)(9) Clinic info recon and inc" name="_170_314_b__9__Clinic_info_recon_and_inc" type="string"/>
 <Field label="170.314(c)(1) Clinical Quality Measures" name="_170_314_c_1_Clinical_Quality_Measures" type="string"/>
 <Field label="170.314(c)(2) Clinical Quality Measures" name="_170_314_c_2_Clinical_Quality_Measures" type="string"/>
 <Field label="170.314(c)(3) Clinical Quality Measures" name="_170_314_c_3_Clinical_Quality_Measures" type="string"/>
@@ -1368,10 +1135,14 @@
 <Field label="170.314(f)(4) Transmission of Reportable" name="_170_314_f_4_Transmission_of_Reportable" type="string"/>
 <Field label="170.314(f)(5) Cancer Case Information" name="_170_314_f_5_Cancer_Case_Information" type="string"/>
 <Field label="170.314(f)(6) Transmission to Cancer Reg" name="_170_314_f_6_Transmission_to_Cancer_Reg" type="string"/>
+<Field label="170.314(f)(7) Transm to agencies-syndrom" name="_170_314_f__7__Transm_to_agencies_syndrom" type="string"/>
 <Field label="170.314(g)(1) Automated Numerator Record" name="_170_314_g_1_Automated_Numerator_Record" type="string"/>
 <Field label="170.314(g)(2) Automated Measure Calculat" name="_170_314_g_2_Automated_Measure_Calculat" type="string"/>
 <Field label="170.314(g)(3) Safety-Enhanced Design" name="_170_314_g_3_Safety_Enhanced_Design" type="string"/>
 <Field label="170.314(g)(4) Quality Management System" name="_170_314_g_4_Quality_Management_System" type="string"/>
+<Field label="170.314(h)(1) App Stmt Sec Hlth Trans" name="_170_314_h__1__App_Stmt_Sec_Hlth_Trans" type="string"/>
+<Field label="170.314(h)(2) Trnsprt Direct Msg" name="_170_314_h__2__Trnsprt_Direct_Msg" type="string"/>
+<Field label="170.314(h)(3) SOAP Trnsprt Direct" name="_170_314_h__3__SOAP_Trnsprt_Direct" type="string"/>
 <Field label="CMS100 AMI?2?Aspirin Prescribed at Dis" name="CMS100_AMI_2_Aspirin_Prescribed_at_Dis" type="string"/>
 <Field label="CMS102 Stroke?10 Ischemic or hemorrhag" name="CMS102_Stroke_10_Ischemic_or_hemorrhag" type="string"/>
 <Field label="CMS104 Stroke?2 Ischemic stroke \u0096 Dis" name="CMS104_Stroke_2_Ischemic_stroke_Dis" type="string"/>
@@ -1661,14 +1432,17 @@ function integer transform() {
 	$out.0.Criteria170_314_a__7_ = $in.0._170_314_a_7_Medication_Allergy_List;
 	$out.0.Criteria170_314_a__8_ = $in.0._170_314_a_8_Clinical_Decision_Support;
 	$out.0.Criteria170_314_a__9_ = $in.0._170_314_a_9_Electronic_Notes;
-	$out.0.Criteria170_314_a__20_ = $in.0._170_314_a_10_Drug_Formulary_Checks;
-	$out.0.Criteria170_314_a__21_ = $in.0._170_314_a_11_Smoking_Status;
-	$out.0.Criteria170_314_a__22_ = $in.0._170_314_a_12_Image_Results;
-	$out.0.Criteria170_314_a__23_ = $in.0._170_314_a_13_Family_Health_History;
-	$out.0.Criteria170_314_a__24_ = $in.0._170_314_a_14_Patient_List_Creation;
-	$out.0.Criteria170_314_a__25_ = $in.0._170_314_a_15_Patient_Specific_Educatio;
-	$out.0.Criteria170_314_a__26_ = $in.0._170_314_a_16_Electronic_Medication_Adm;
-	$out.0.Criteria170_314_a__27_ = $in.0._170_314_a_17_Advance_Directives;
+	$out.0.Criteria170_314_a__10_ = $in.0._170_314_a_10_Drug_Formulary_Checks;
+	$out.0.Criteria170_314_a__11_ = $in.0._170_314_a_11_Smoking_Status;
+	$out.0.Criteria170_314_a__12_ = $in.0._170_314_a_12_Image_Results;
+	$out.0.Criteria170_314_a__13_ = $in.0._170_314_a_13_Family_Health_History;
+	$out.0.Criteria170_314_a__14_ = $in.0._170_314_a_14_Patient_List_Creation;
+	$out.0.Criteria170_314_a__15_ = $in.0._170_314_a_15_Patient_Specific_Educatio;
+	$out.0.Criteria170_314_a__16_ = $in.0._170_314_a_16_Electronic_Medication_Adm;
+	$out.0.Criteria170_314_a__17_ = $in.0._170_314_a_17_Advance_Directives;
+	$out.0.Criteria170_314_a__18_ = $in.0._170_314_a__18__Cmp_pvdr_order_entry_med;
+	$out.0.Criteria170_314_a__19_ = $in.0._170_314_a__19__Cmp_pvdr_order_entry_lab;
+	$out.0.Criteria170_314_a__20_ = $in.0._170_314_a__20__Cmp_pvdr_order_entry_DI;
 	$out.0.Criteria170_314_b__1_ = $in.0._170_314_b_1_Transitions_of_Care_rece;
 	$out.0.Criteria170_314_b__2_ = $in.0._170_314_b_2_Transitions_of_Care_crea;
 	$out.0.Criteria170_314_b__3_ = $in.0._170_314_b_3_Electronic_Prescribing;
@@ -1676,6 +1450,8 @@ function integer transform() {
 	$out.0.Criteria170_314_b__5_ = $in.0._170_314_b_5_Incorporate_Laboratory_Tes;
 	$out.0.Criteria170_314_b__6_ = $in.0._170_314_b_6_Transmission_of_Electronic;
 	$out.0.Criteria170_314_b__7_ = $in.0._170_314_b_7_Data_Portability;
+	$out.0.Criteria170_314_b__8_ = $in.0._170_314_b__8__Transitions_of_care;
+	$out.0.Criteria170_314_b__9_ = $in.0._170_314_b__9__Clinic_info_recon_and_inc;
 	$out.0.Criteria170_314_c__1_ = $in.0._170_314_c_1_Clinical_Quality_Measures;
 	$out.0.Criteria170_314_c__2_ = $in.0._170_314_c_2_Clinical_Quality_Measures;
 	$out.0.Criteria170_314_c__3_ = $in.0._170_314_c_3_Clinical_Quality_Measures;
@@ -1697,10 +1473,14 @@ function integer transform() {
 	$out.0.Criteria170_314_f__4_ = $in.0._170_314_f_4_Transmission_of_Reportable;
 	$out.0.Criteria170_314_f__5_ = $in.0._170_314_f_5_Cancer_Case_Information;
 	$out.0.Criteria170_314_f__6_ = $in.0._170_314_f_6_Transmission_to_Cancer_Reg;
+	$out.0.Criteria170_314_f__7_ = $in.0._170_314_f__7__Transm_to_agencies_syndrom;
 	$out.0.Criteria170_314_g__1_ = $in.0._170_314_g_1_Automated_Numerator_Record;
 	$out.0.Criteria170_314_g__2_ = $in.0._170_314_g_2_Automated_Measure_Calculat;
 	$out.0.Criteria170_314_g__3_ = $in.0._170_314_g_3_Safety_Enhanced_Design;
 	$out.0.Criteria170_314_g__4_ = $in.0._170_314_g_4_Quality_Management_System;
+	$out.0.Criteria170_314_h__1_ = $in.0._170_314_h__1__App_Stmt_Sec_Hlth_Trans;
+	$out.0.Criteria170_314_h__2_ = $in.0._170_314_h__2__Trnsprt_Direct_Msg;
+	$out.0.Criteria170_314_h__3_ = $in.0._170_314_h__3__SOAP_Trnsprt_Direct;
 	$out.0.CMS100 = $in.0.CMS100_AMI_2_Aspirin_Prescribed_at_Dis;
 	$out.0.CMS102 = $in.0.CMS102_Stroke_10_Ischemic_or_hemorrhag;
 	$out.0.CMS104 = $in.0.CMS104_Stroke_2_Ischemic_stroke_Dis;
@@ -1802,9 +1582,9 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dedupKey="Vendor(a);Product(a)" enabled="enabled" guiName="Dedup product" guiX="1519" guiY="126" id="DEDUP_PRODUCT" type="DEDUP"/>
-<Node dedupKey="Version(a);Product(a);Vendor(a)" enabled="enabled" guiName="Dedup product_version" guiX="1519" guiY="238" id="DEDUP_PRODUCT_VERSION" type="DEDUP"/>
-<Node dedupKey="Vendor(a)" enabled="enabled" guiName="Dedup vendor" guiX="1519" guiY="14" id="DEDUP_VENDOR" type="DEDUP"/>
+<Node dedupKey="Vendor(a);Product(a)" enabled="enabled" guiName="Dedup product" guiX="1388" guiY="139" id="DEDUP_PRODUCT" type="DEDUP"/>
+<Node dedupKey="Version(a);Product(a);Vendor(a)" enabled="enabled" guiName="Dedup product_version" guiX="1388" guiY="251" id="DEDUP_PRODUCT_VERSION" type="DEDUP"/>
+<Node dedupKey="Vendor(a)" enabled="enabled" guiName="Dedup vendor" guiX="1388" guiY="27" id="DEDUP_VENDOR" type="DEDUP"/>
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Get Product Checksum" guiX="20" guiY="169" id="GET_PRODUCT_CHECKSUM" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $Stored_Checksum:=certified_product_checksum.certified_product_checksum, $STG_Certification_ID:=certified_product_checksum.stg_certification_certification_id FROM certified_product_checksum]]></attr>
 </Node>
@@ -1819,7 +1599,7 @@ $in.0.Checksum != $in.0.Stored_Checksum AND $in.0.Stored_Checksum != null]]></at
 $in.0.Stored_Checksum == null]]></attr>
 </Node>
 <Node dataPolicy="controlled" enabled="enabled" fileURL="./src/main/resources/chpl-wChecksum.csv" guiName="Read in CSV" guiX="20" guiY="20" id="READ_IN_CSV" quotedStrings="false" skipRows="3" type="DATA_READER"/>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Vendors" guiX="1744" guiY="14" id="SAVE_NEW_VENDORS" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Vendors" guiX="1613" guiY="27" id="SAVE_NEW_VENDORS" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.vendor IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.vendor (name, last_modified_user) SELECT $Vendor, -1 WHERE NOT EXISTS (SELECT 1 FROM openchpl.vendor WHERE name = $Vendor);
@@ -1827,10 +1607,10 @@ COMMIT;]]></attr>
 </Node>
 <Node enabled="enabled" fileURL="./to-update.csv" guiName="Save to-update products" guiX="919" guiY="244" id="SAVE_TO_UPDATE_PRODUCTS" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
 <Node enabled="enabled" guiName="SimpleCopy" guiX="470" guiY="20" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
-<Node enabled="enabled" guiName="Sort product" guiX="1294" guiY="126" id="SORT_PRODUCT1" sortKey="Vendor(a);Product(a)" type="EXT_SORT"/>
-<Node enabled="enabled" guiName="Sort product_version" guiX="1294" guiY="238" id="SORT_PRODUCT_VERSION" sortKey="Version(a);Product(a);Vendor(a)" type="EXT_SORT"/>
-<Node enabled="enabled" guiName="Sort vendor" guiX="1294" guiY="14" id="SORT_VENDOR1" sortKey="Vendor(a)" type="EXT_SORT"/>
-<Node enabled="enabled" guiName="Split data" guiX="1069" guiY="14" id="SPLIT_DATA" type="REFORMAT">
+<Node enabled="enabled" guiName="Sort product" guiX="1163" guiY="139" id="SORT_PRODUCT1" sortKey="Vendor(a);Product(a)" type="EXT_SORT"/>
+<Node enabled="enabled" guiName="Sort product_version" guiX="1163" guiY="251" id="SORT_PRODUCT_VERSION" sortKey="Version(a);Product(a);Vendor(a)" type="EXT_SORT"/>
+<Node enabled="enabled" guiName="Sort vendor" guiX="1163" guiY="27" id="SORT_VENDOR1" sortKey="Vendor(a)" type="EXT_SORT"/>
+<Node enabled="enabled" guiName="Split data" guiX="938" guiY="27" id="SPLIT_DATA" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -1840,7 +1620,7 @@ function integer transform() {
 	$out.1.Vendor = $in.0.Vendor;
 	$out.2.Version = $in.0.Version;
 	$out.2.Product = $in.0.Product;
-	$out.2.Vendor = $in.0.Vendor;
+	$out.2.Vendor = $in.0.Vendor+$in.0.Product;
 	$out.3.Product = $in.0.Product;
 	$out.3.Vendor = $in.0.Vendor;
 	$out.3.Version = $in.0.Version;
@@ -1967,14 +1747,17 @@ function integer transform() {
 	$out.3.Criteria170_314_a__7_ = $in.0.Criteria170_314_a__7_;
 	$out.3.Criteria170_314_a__8_ = $in.0.Criteria170_314_a__8_;
 	$out.3.Criteria170_314_a__9_ = $in.0.Criteria170_314_a__9_;
+	$out.3.Criteria170_314_a__10_ = $in.0.Criteria170_314_a__10_;
+	$out.3.Criteria170_314_a__11_ = $in.0.Criteria170_314_a__11_;
+	$out.3.Criteria170_314_a__12_ = $in.0.Criteria170_314_a__12_;
+	$out.3.Criteria170_314_a__13_ = $in.0.Criteria170_314_a__13_;
+	$out.3.Criteria170_314_a__14_ = $in.0.Criteria170_314_a__14_;
+	$out.3.Criteria170_314_a__15_ = $in.0.Criteria170_314_a__15_;
+	$out.3.Criteria170_314_a__16_ = $in.0.Criteria170_314_a__16_;
+	$out.3.Criteria170_314_a__17_ = $in.0.Criteria170_314_a__17_;
+	$out.3.Criteria170_314_a__18_ = $in.0.Criteria170_314_a__18_;
+	$out.3.Criteria170_314_a__19_ = $in.0.Criteria170_314_a__19_;
 	$out.3.Criteria170_314_a__20_ = $in.0.Criteria170_314_a__20_;
-	$out.3.Criteria170_314_a__21_ = $in.0.Criteria170_314_a__21_;
-	$out.3.Criteria170_314_a__22_ = $in.0.Criteria170_314_a__22_;
-	$out.3.Criteria170_314_a__23_ = $in.0.Criteria170_314_a__23_;
-	$out.3.Criteria170_314_a__24_ = $in.0.Criteria170_314_a__24_;
-	$out.3.Criteria170_314_a__25_ = $in.0.Criteria170_314_a__25_;
-	$out.3.Criteria170_314_a__26_ = $in.0.Criteria170_314_a__26_;
-	$out.3.Criteria170_314_a__27_ = $in.0.Criteria170_314_a__27_;
 	$out.3.Criteria170_314_b__1_ = $in.0.Criteria170_314_b__1_;
 	$out.3.Criteria170_314_b__2_ = $in.0.Criteria170_314_b__2_;
 	$out.3.Criteria170_314_b__3_ = $in.0.Criteria170_314_b__3_;
@@ -1982,6 +1765,8 @@ function integer transform() {
 	$out.3.Criteria170_314_b__5_ = $in.0.Criteria170_314_b__5_;
 	$out.3.Criteria170_314_b__6_ = $in.0.Criteria170_314_b__6_;
 	$out.3.Criteria170_314_b__7_ = $in.0.Criteria170_314_b__7_;
+	$out.3.Criteria170_314_b__8_ = $in.0.Criteria170_314_b__8_;
+	$out.3.Criteria170_314_b__9_ = $in.0.Criteria170_314_b__9_;
 	$out.3.Criteria170_314_c__1_ = $in.0.Criteria170_314_c__1_;
 	$out.3.Criteria170_314_c__2_ = $in.0.Criteria170_314_c__2_;
 	$out.3.Criteria170_314_c__3_ = $in.0.Criteria170_314_c__3_;
@@ -2003,10 +1788,14 @@ function integer transform() {
 	$out.3.Criteria170_314_f__4_ = $in.0.Criteria170_314_f__4_;
 	$out.3.Criteria170_314_f__5_ = $in.0.Criteria170_314_f__5_;
 	$out.3.Criteria170_314_f__6_ = $in.0.Criteria170_314_f__6_;
+	$out.3.Criteria170_314_f__7_ = $in.0.Criteria170_314_f__7_;
 	$out.3.Criteria170_314_g__1_ = $in.0.Criteria170_314_g__1_;
 	$out.3.Criteria170_314_g__2_ = $in.0.Criteria170_314_g__2_;
 	$out.3.Criteria170_314_g__3_ = $in.0.Criteria170_314_g__3_;
 	$out.3.Criteria170_314_g__4_ = $in.0.Criteria170_314_g__4_;
+	$out.3.Criteria170_314_h__1_ = $in.0.Criteria170_314_h__1_;
+	$out.3.Criteria170_314_h__2_ = $in.0.Criteria170_314_h__2_;
+	$out.3.Criteria170_314_h__3_ = $in.0.Criteria170_314_h__3_;
 	$out.3.CMS100 = $in.0.CMS100;
 	$out.3.CMS102 = $in.0.CMS102;
 	$out.3.CMS104 = $in.0.CMS104;
@@ -2118,7 +1907,7 @@ $in.0.Checksum == $in.0.Stored_Checksum]]></attr>
 <Edge debugMode="false" fromNode="DEDUP_VENDOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Vendor" toNode="SAVE_NEW_VENDORS:0"/>
 <Edge debugMode="false" fromNode="GET_PRODUCT_CHECKSUM:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Product_checksum" outPort="Port 0 (out)" toNode="ADD_DB_CHECKSUM:1"/>
 <Edge fromNode="MODIFIED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="SAVE_TO_UPDATE_PRODUCTS:0"/>
-<Edge fromNode="NEW_PRODUCT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="SPLIT_DATA:0"/>
+<Edge fromNode="NEW_PRODUCT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge23" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="SPLIT_DATA:0"/>
 <Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="From_csv" outPort="Port 0 (output)" toNode="ADD_DB_CHECKSUM:0"/>
 <Edge debugMode="false" fromNode="READ_IN_CSV:1" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="LOG_FAILED_ROWS:0"/>
 <Edge debugMode="false" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="All_data" toNode="NEW_PRODUCT:0"/>
@@ -2130,16 +1919,14 @@ $in.0.Checksum == $in.0.Stored_Checksum]]></attr>
 <Edge debugMode="false" fromNode="SPLIT_DATA:0" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Vendor" outPort="Port 0 (out)" toNode="SORT_VENDOR1:0"/>
 <Edge fromNode="SPLIT_DATA:1" guiBendpoints="" guiRouter="Manhattan" id="Edge22" inPort="Port 0 (in)" metadata="Product" outPort="Port 1 (out)" toNode="SORT_PRODUCT1:0"/>
 <Edge fromNode="SPLIT_DATA:2" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 0 (in)" metadata="Product_Version" outPort="Port 2 (out)" toNode="SORT_PRODUCT_VERSION:0"/>
-<Edge debugMode="false" fromNode="SPLIT_DATA:3" guiBendpoints="" guiRouter="Manhattan" id="Edge48" inPort="Port 0 (driver)" metadata="All_data" outPort="Port 3 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:0"/>
+<Edge fromNode="SPLIT_DATA:3" guiBendpoints="" guiRouter="Manhattan" id="Edge42" inPort="Port 0 (driver)" metadata="All_data" outPort="Port 3 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:0"/>
 <Edge debugMode="false" fromNode="UNCHANGED:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="All_data" toNode="LOG_UNCHANGED_PRODUCTS:0"/>
 </Phase>
 <Phase number="1">
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing Vendors" guiX="1501" guiY="350" id="GET_EXISTING_VENDORS" type="DB_INPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[SELECT $Vendor_id:=openchpl.vendor.vendor_id,
-	   $Vendor:=openchpl.vendor.name 
-FROM openchpl.vendor;]]></attr>
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing Vendors" guiX="1370" guiY="363" id="GET_EXISTING_VENDORS" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT $Vendor_id:=openchpl.vendor.vendor_id, $Vendor:=openchpl.vendor.name FROM openchpl.vendor;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join Product x Vendor" guiX="1744" guiY="168" id="JOIN_PRODUCT_X_VENDOR" joinKey="$Vendor=$Vendor" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join Product x Vendor" guiX="1613" guiY="181" id="JOIN_PRODUCT_X_VENDOR" joinKey="$Vendor=$Vendor" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -2152,7 +1939,7 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Products" guiX="1969" guiY="174" id="SAVE_NEW_PRODUCTS" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Products" guiX="1838" guiY="187" id="SAVE_NEW_PRODUCTS" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.product IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.product (vendor_id, name, last_modified_user) SELECT $Vendor_id, $Product, -1 WHERE NOT EXISTS (SELECT 1 FROM openchpl.product WHERE name = $Product AND vendor_id = $Vendor_id);
@@ -2162,10 +1949,10 @@ COMMIT;]]></attr>
 <Edge debugMode="false" fromNode="JOIN_PRODUCT_X_VENDOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge19" inPort="Port 0 (in)" metadata="Product" outPort="Port 0 (out)" toNode="SAVE_NEW_PRODUCTS:0"/>
 </Phase>
 <Phase number="2">
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing products" guiX="1508" guiY="473" id="GET_EXISTING_PRODUCTS" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get existing products" guiX="1377" guiY="486" id="GET_EXISTING_PRODUCTS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $Product_id:=openchpl.product.product_id, $Product:=openchpl.product.name, $Vendor_id:=openchpl.vendor.vendor_id, $Vendor:=openchpl.vendor.name FROM openchpl.product, openchpl.vendor WHERE vendor.vendor_id = product.vendor_id;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join Product x Product_Version" guiX="1744" guiY="291" id="JOIN_PRODUCT_X_PRODUCT_VERSION" joinKey="$Product=$Product;$Vendor=$Vendor" joinType="inner" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join Product x Product_Version" guiX="1613" guiY="304" id="JOIN_PRODUCT_X_PRODUCT_VERSION" joinKey="$Product=$Product;$Vendor=$Vendor" joinType="inner" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -2178,7 +1965,7 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Product_Versions" guiX="2028" guiY="297" id="SAVE_NEW_PRODUCT_VERSIONS" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save new Product_Versions" guiX="1897" guiY="310" id="SAVE_NEW_PRODUCT_VERSIONS" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.product_version IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.product_version (version, product_id, last_modified_user) SELECT $Version, $Product_id, -1 WHERE NOT EXISTS (SELECT 1 FROM openchpl.product_version, openchpl.product WHERE version = $Version AND product_version.product_id = $Product_id AND product.product_id = product_version.product_id AND product.vendor_id = $Vendor_id);
@@ -2188,25 +1975,25 @@ COMMIT;]]></attr>
 <Edge debugMode="false" fromNode="JOIN_PRODUCT_X_PRODUCT_VERSION:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" metadata="Product_Version" outPort="Port 0 (out)" toNode="SAVE_NEW_PRODUCT_VERSIONS:0"/>
 </Phase>
 <Phase number="3">
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get cert_body_ids" guiX="1248" guiY="795" id="GET_CERT_BODY_IDS" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get cert_body_ids" guiX="924" guiY="788" id="GET_CERT_BODY_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $Certbody_id:=certification_body.certification_body_id, $Certifying_ATCB:=certification_body.name FROM openchpl.certification_body;]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get classification_type_ids" guiX="1248" guiY="1138" id="GET_CLASSIFICATION_TYPE_IDS" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get classification_type_ids" guiX="924" guiY="1131" id="GET_CLASSIFICATION_TYPE_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $classification_type_id:=product_classification_type.product_classification_type_id, $Classification_Name:=product_classification_type.name FROM openchpl.product_classification_type;]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get cqm_edition_ids" guiX="1248" guiY="963" id="GET_CQM_EDITION_IDS1" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get cqm_edition_ids" guiX="924" guiY="956" id="GET_CQM_EDITION_IDS1" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $CqmEdition_id:=cqm_edition.cqm_edition_id, $CqmEdition:=cqm_edition.edition FROM openchpl.cqm_edition;]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get edition_ids" guiX="1248" guiY="703" id="GET_EDITION_IDS" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get edition_ids" guiX="924" guiY="696" id="GET_EDITION_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $Edition_id:=certification_edition.certification_edition_id, $Certification_Edition_Year:=certification_edition.year FROM openchpl.certification_edition;]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get practice_type_ids" guiX="1248" guiY="1053" id="GET_PRACTICE_TYPE_IDS" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get practice_type_ids" guiX="924" guiY="1046" id="GET_PRACTICE_TYPE_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $practice_type_id:=practice_type.practice_type_id, $Practice_Setting:=practice_type.name FROM openchpl.practice_type;]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_ids" guiX="1248" guiY="884" id="GET_PRODUCT_VERSION_IDS" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get product_version_ids" guiX="924" guiY="877" id="GET_PRODUCT_VERSION_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $Version_id:=product_version.product_version_id, $Product:=product.name, $Vendor:=vendor.name, $Version:=product_version.version FROM openchpl.vendor, openchpl.product, openchpl.product_version WHERE product.vendor_id = vendor.vendor_id AND product_version.product_id = product.product_id;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join cert_product x ids" guiX="1483" guiY="591" id="JOIN_CERT_PRODUCT_X_IDS" joinKey="$Certification_Edition_Year=$Certification_Edition_Year#$Certifying_ATCB=$Certifying_ATCB#$Product=$Product;$Vendor=$Vendor;$Version=$Version#$Certification_Edition_Year=$CqmEdition#$Practice_Setting=$Practice_Setting#$Product_Classification=$Classification_Name" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join cert_product x ids" guiX="1159" guiY="584" id="JOIN_CERT_PRODUCT_X_IDS" joinKey="$Certification_Edition_Year=$Certification_Edition_Year#$Certifying_ATCB=$Certifying_ATCB#$Product=$Product;$Vendor=$Vendor;$Version=$Version#$Certification_Edition_Year=$CqmEdition#$Practice_Setting=$Practice_Setting#$Product_Classification=$Classification_Name" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 function boolean strToBool(string input) {
 	if (input == "1") { return true; }
@@ -2359,14 +2146,17 @@ function integer transform() {
 	$out.0.Criteria170_314_a__7_ = strToBool($in.0.Criteria170_314_a__7_);
 	$out.0.Criteria170_314_a__8_ = strToBool($in.0.Criteria170_314_a__8_);
 	$out.0.Criteria170_314_a__9_ = strToBool($in.0.Criteria170_314_a__9_);
+	$out.0.Criteria170_314_a__10_ = strToBool($in.0.Criteria170_314_a__10_);
+	$out.0.Criteria170_314_a__11_ = strToBool($in.0.Criteria170_314_a__11_);
+	$out.0.Criteria170_314_a__12_ = strToBool($in.0.Criteria170_314_a__12_);
+	$out.0.Criteria170_314_a__13_ = strToBool($in.0.Criteria170_314_a__13_);
+	$out.0.Criteria170_314_a__14_ = strToBool($in.0.Criteria170_314_a__14_);
+	$out.0.Criteria170_314_a__15_ = strToBool($in.0.Criteria170_314_a__15_);
+	$out.0.Criteria170_314_a__16_ = strToBool($in.0.Criteria170_314_a__16_);
+	$out.0.Criteria170_314_a__17_ = strToBool($in.0.Criteria170_314_a__17_);
+	$out.0.Criteria170_314_a__18_ = strToBool($in.0.Criteria170_314_a__18_);
+	$out.0.Criteria170_314_a__19_ = strToBool($in.0.Criteria170_314_a__19_);
 	$out.0.Criteria170_314_a__20_ = strToBool($in.0.Criteria170_314_a__20_);
-	$out.0.Criteria170_314_a__21_ = strToBool($in.0.Criteria170_314_a__21_);
-	$out.0.Criteria170_314_a__22_ = strToBool($in.0.Criteria170_314_a__22_);
-	$out.0.Criteria170_314_a__23_ = strToBool($in.0.Criteria170_314_a__23_);
-	$out.0.Criteria170_314_a__24_ = strToBool($in.0.Criteria170_314_a__24_);
-	$out.0.Criteria170_314_a__25_ = strToBool($in.0.Criteria170_314_a__25_);
-	$out.0.Criteria170_314_a__26_ = strToBool($in.0.Criteria170_314_a__26_);
-	$out.0.Criteria170_314_a__27_ = strToBool($in.0.Criteria170_314_a__27_);
 	$out.0.Criteria170_314_b__1_ = strToBool($in.0.Criteria170_314_b__1_);
 	$out.0.Criteria170_314_b__2_ = strToBool($in.0.Criteria170_314_b__2_);
 	$out.0.Criteria170_314_b__3_ = strToBool($in.0.Criteria170_314_b__3_);
@@ -2374,6 +2164,8 @@ function integer transform() {
 	$out.0.Criteria170_314_b__5_ = strToBool($in.0.Criteria170_314_b__5_);
 	$out.0.Criteria170_314_b__6_ = strToBool($in.0.Criteria170_314_b__6_);
 	$out.0.Criteria170_314_b__7_ = strToBool($in.0.Criteria170_314_b__7_);
+	$out.0.Criteria170_314_b__8_ = strToBool($in.0.Criteria170_314_b__8_);
+	$out.0.Criteria170_314_b__9_ = strToBool($in.0.Criteria170_314_b__9_);
 	$out.0.Criteria170_314_c__1_ = strToBool($in.0.Criteria170_314_c__1_);
 	$out.0.Criteria170_314_c__2_ = strToBool($in.0.Criteria170_314_c__2_);
 	$out.0.Criteria170_314_c__3_ = strToBool($in.0.Criteria170_314_c__3_);
@@ -2395,10 +2187,14 @@ function integer transform() {
 	$out.0.Criteria170_314_f__4_ = strToBool($in.0.Criteria170_314_f__4_);
 	$out.0.Criteria170_314_f__5_ = strToBool($in.0.Criteria170_314_f__5_);
 	$out.0.Criteria170_314_f__6_ = strToBool($in.0.Criteria170_314_f__6_);
+	$out.0.Criteria170_314_f__7_ = strToBool($in.0.Criteria170_314_f__7_);
 	$out.0.Criteria170_314_g__1_ = strToBool($in.0.Criteria170_314_g__1_);
 	$out.0.Criteria170_314_g__2_ = strToBool($in.0.Criteria170_314_g__2_);
 	$out.0.Criteria170_314_g__3_ = strToBool($in.0.Criteria170_314_g__3_);
 	$out.0.Criteria170_314_g__4_ = strToBool($in.0.Criteria170_314_g__4_);
+	$out.0.Criteria170_314_h__1_ = strToBool($in.0.Criteria170_314_h__1_);
+	$out.0.Criteria170_314_h__2_ = strToBool($in.0.Criteria170_314_h__2_);
+	$out.0.Criteria170_314_h__3_ = strToBool($in.0.Criteria170_314_h__3_);
 	$out.0.CMS100 = splitCMS($in.0.CMS100,0);
 	$out.0.CMS100_2 = splitCMS($in.0.CMS100,1);
 	$out.0.CMS102 = splitCMS($in.0.CMS102,0);
@@ -2589,39 +2385,39 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Remove null ids" guiX="1650" guiY="591" id="REMOVE_NULL_IDS" type="EXT_FILTER">
+<Node enabled="enabled" guiName="Remove null ids" guiX="1326" guiY="584" id="REMOVE_NULL_IDS" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $Edition_id != null AND $Version_id != null AND $Certbody_id != null AND $CqmEdition_id != null]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save Certifed Product" guiX="1987" guiY="591" id="SAVE_CERTIFED_PRODUCT" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save Certifed Product" guiX="1663" guiY="584" id="SAVE_CERTIFED_PRODUCT" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.certified_product IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.certified_product (certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, atcb_certification_id, deleted, last_modified_user) SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ATCB_Certification_ID, not($Published), -1 WHERE NOT EXISTS (SELECT 1 FROM openchpl.certified_product WHERE certification_edition_id = $Edition_id AND product_version_id= $Version_id AND certification_body_id = $Certbody_id AND practice_type_id = $Practice_Setting_id AND product_classification_type_id = $Product_Classification_id AND chpl_product_number = $STG_Certification_Certification_ID);
 COMMIT;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="SimpleCopy" guiX="1809" guiY="589" id="SIMPLE_COPY1" type="SIMPLE_COPY"/>
-<Node enabled="enabled" fileURL="./cert_products_x_ids_null.txt" guiName="UniversalDataWriter" guiX="1715" guiY="860" id="UNIVERSAL_DATA_WRITER" type="DATA_WRITER"/>
-<Edge fromNode="GET_CERT_BODY_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge50" inPort="Port 2 (slave)" metadata="CertificationBody_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:2"/>
-<Edge fromNode="GET_CLASSIFICATION_TYPE_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge55" inPort="Port 6 (slave)" metadata="Classification_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:6"/>
-<Edge fromNode="GET_CQM_EDITION_IDS1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge42" inPort="Port 4 (slave)" metadata="CqmEdition_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:4"/>
-<Edge fromNode="GET_EDITION_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge47" inPort="Port 1 (slave)" metadata="Edition_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:1"/>
-<Edge fromNode="GET_PRACTICE_TYPE_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge52" inPort="Port 5 (slave)" metadata="PracticeType_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:5"/>
-<Edge debugMode="false" fromNode="GET_PRODUCT_VERSION_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge49" inPort="Port 3 (slave)" metadata="ProductVersion_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:3"/>
-<Edge debugMode="false" fromNode="JOIN_CERT_PRODUCT_X_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge51" inPort="Port 0 (in)" metadata="CertifiedProduct" outPort="Port 0 (out)" toNode="REMOVE_NULL_IDS:0"/>
-<Edge debugMode="false" fromNode="REMOVE_NULL_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge53" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="CertifiedProduct" toNode="SIMPLE_COPY1:0"/>
-<Edge fromNode="REMOVE_NULL_IDS:1" guiBendpoints="" guiRouter="Manhattan" id="Edge54" inPort="Port 0 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="CertifiedProduct" toNode="UNIVERSAL_DATA_WRITER:0"/>
-<Edge fromNode="SIMPLE_COPY1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge45" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="SAVE_CERTIFED_PRODUCT:0"/>
-<Edge fromNode="SIMPLE_COPY1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge44" inPort="Port 0 (driver)" outPort="Port 1 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS:0"/>
+<Node enabled="enabled" guiName="SimpleCopy" guiX="1485" guiY="582" id="SIMPLE_COPY1" type="SIMPLE_COPY"/>
+<Node enabled="enabled" fileURL="./cert_products_x_ids_null.txt" guiName="UniversalDataWriter" guiX="1391" guiY="853" id="UNIVERSAL_DATA_WRITER" type="DATA_WRITER"/>
+<Edge fromNode="GET_CERT_BODY_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge31" inPort="Port 2 (slave)" metadata="CertificationBody_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:2"/>
+<Edge fromNode="GET_CLASSIFICATION_TYPE_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge36" inPort="Port 6 (slave)" metadata="Classification_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:6"/>
+<Edge fromNode="GET_CQM_EDITION_IDS1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge24" inPort="Port 4 (slave)" metadata="CqmEdition_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:4"/>
+<Edge fromNode="GET_EDITION_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge29" inPort="Port 1 (slave)" metadata="Edition_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:1"/>
+<Edge fromNode="GET_PRACTICE_TYPE_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge33" inPort="Port 5 (slave)" metadata="PracticeType_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:5"/>
+<Edge debugMode="false" fromNode="GET_PRODUCT_VERSION_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge30" inPort="Port 3 (slave)" metadata="ProductVersion_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:3"/>
+<Edge debugMode="false" fromNode="JOIN_CERT_PRODUCT_X_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge32" inPort="Port 0 (in)" metadata="CertifiedProduct" outPort="Port 0 (out)" toNode="REMOVE_NULL_IDS:0"/>
+<Edge debugMode="false" fromNode="REMOVE_NULL_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge34" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="CertifiedProduct" toNode="SIMPLE_COPY1:0"/>
+<Edge fromNode="REMOVE_NULL_IDS:1" guiBendpoints="" guiRouter="Manhattan" id="Edge35" inPort="Port 0 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="CertifiedProduct" toNode="UNIVERSAL_DATA_WRITER:0"/>
+<Edge fromNode="SIMPLE_COPY1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge27" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="SAVE_CERTIFED_PRODUCT:0"/>
+<Edge fromNode="SIMPLE_COPY1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge26" inPort="Port 0 (driver)" outPort="Port 1 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS:0"/>
 </Phase>
 <Phase number="4">
-<Node enabled="enabled" guiName="Filter null cert_prod_ids" guiX="2247" guiY="703" id="FILTER_NULL_CERT_PROD_IDS" type="EXT_FILTER">
+<Node enabled="enabled" guiName="Filter null cert_prod_ids" guiX="1923" guiY="696" id="FILTER_NULL_CERT_PROD_IDS" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $Edition_id != null AND $Version_id != null AND $Certbody_id != null AND $Practice_Setting_id != null AND $Product_Classification_id != null]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get certified_product_ids" guiX="1819" guiY="742" id="GET_CERTIFIED_PRODUCT_IDS" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get certified_product_ids" guiX="1495" guiY="735" id="GET_CERTIFIED_PRODUCT_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $CertifiedProduct_id:=certified_product.certified_product_id, $Edition_id:=certified_product.certification_edition_id, $Version_id:=certified_product.product_version_id, $Certbody_id:=certified_product.certification_body_id, $Setting_id:=certified_product.practice_type_id, $Classification_id:=certified_product.product_classification_type_id FROM openchpl.certified_product]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join cert_product x cert_prod_ids" guiX="2006" guiY="690" id="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS" joinKey="$Edition_id=$Edition_id;$Version_id=$Version_id;$Certbody_id=$Certbody_id;$Practice_Setting_id=$Setting_id;$Product_Classification_id=$Classification_id" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join cert_product x cert_prod_ids" guiX="1682" guiY="683" id="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS" joinKey="$Edition_id=$Edition_id;$Version_id=$Version_id;$Certbody_id=$Certbody_id;$Practice_Setting_id=$Setting_id;$Product_Classification_id=$Classification_id" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -2702,14 +2498,17 @@ function integer transform() {
 	$out.0.Criteria170_314_a__7_ = $in.0.Criteria170_314_a__7_;
 	$out.0.Criteria170_314_a__8_ = $in.0.Criteria170_314_a__8_;
 	$out.0.Criteria170_314_a__9_ = $in.0.Criteria170_314_a__9_;
+	$out.0.Criteria170_314_a__10_ = $in.0.Criteria170_314_a__10_;
+	$out.0.Criteria170_314_a__11_ = $in.0.Criteria170_314_a__11_;
+	$out.0.Criteria170_314_a__12_ = $in.0.Criteria170_314_a__12_;
+	$out.0.Criteria170_314_a__13_ = $in.0.Criteria170_314_a__13_;
+	$out.0.Criteria170_314_a__14_ = $in.0.Criteria170_314_a__14_;
+	$out.0.Criteria170_314_a__15_ = $in.0.Criteria170_314_a__15_;
+	$out.0.Criteria170_314_a__16_ = $in.0.Criteria170_314_a__16_;
+	$out.0.Criteria170_314_a__17_ = $in.0.Criteria170_314_a__17_;
+	$out.0.Criteria170_314_a__18_ = $in.0.Criteria170_314_a__18_;
+	$out.0.Criteria170_314_a__19_ = $in.0.Criteria170_314_a__19_;
 	$out.0.Criteria170_314_a__20_ = $in.0.Criteria170_314_a__20_;
-	$out.0.Criteria170_314_a__21_ = $in.0.Criteria170_314_a__21_;
-	$out.0.Criteria170_314_a__22_ = $in.0.Criteria170_314_a__22_;
-	$out.0.Criteria170_314_a__23_ = $in.0.Criteria170_314_a__23_;
-	$out.0.Criteria170_314_a__24_ = $in.0.Criteria170_314_a__24_;
-	$out.0.Criteria170_314_a__25_ = $in.0.Criteria170_314_a__25_;
-	$out.0.Criteria170_314_a__26_ = $in.0.Criteria170_314_a__26_;
-	$out.0.Criteria170_314_a__27_ = $in.0.Criteria170_314_a__27_;
 	$out.0.Criteria170_314_b__1_ = $in.0.Criteria170_314_b__1_;
 	$out.0.Criteria170_314_b__2_ = $in.0.Criteria170_314_b__2_;
 	$out.0.Criteria170_314_b__3_ = $in.0.Criteria170_314_b__3_;
@@ -2717,6 +2516,8 @@ function integer transform() {
 	$out.0.Criteria170_314_b__5_ = $in.0.Criteria170_314_b__5_;
 	$out.0.Criteria170_314_b__6_ = $in.0.Criteria170_314_b__6_;
 	$out.0.Criteria170_314_b__7_ = $in.0.Criteria170_314_b__7_;
+	$out.0.Criteria170_314_b__8_ = $in.0.Criteria170_314_b__8_;
+	$out.0.Criteria170_314_b__9_ = $in.0.Criteria170_314_b__9_;
 	$out.0.Criteria170_314_c__1_ = $in.0.Criteria170_314_c__1_;
 	$out.0.Criteria170_314_c__2_ = $in.0.Criteria170_314_c__2_;
 	$out.0.Criteria170_314_c__3_ = $in.0.Criteria170_314_c__3_;
@@ -2738,10 +2539,14 @@ function integer transform() {
 	$out.0.Criteria170_314_f__4_ = $in.0.Criteria170_314_f__4_;
 	$out.0.Criteria170_314_f__5_ = $in.0.Criteria170_314_f__5_;
 	$out.0.Criteria170_314_f__6_ = $in.0.Criteria170_314_f__6_;
+	$out.0.Criteria170_314_f__7_ = $in.0.Criteria170_314_f__7_;
 	$out.0.Criteria170_314_g__1_ = $in.0.Criteria170_314_g__1_;
 	$out.0.Criteria170_314_g__2_ = $in.0.Criteria170_314_g__2_;
 	$out.0.Criteria170_314_g__3_ = $in.0.Criteria170_314_g__3_;
 	$out.0.Criteria170_314_g__4_ = $in.0.Criteria170_314_g__4_;
+	$out.0.Criteria170_314_h__1_ = $in.0.Criteria170_314_h__1_;
+	$out.0.Criteria170_314_h__2_ = $in.0.Criteria170_314_h__2_;
+	$out.0.Criteria170_314_h__3_ = $in.0.Criteria170_314_h__3_;
 	$out.0.NQF_0001_A_ = $in.0.NQF_0001_A_;
 	$out.0.NQF_0002_A_ = $in.0.NQF_0002_A_;
 	$out.0.NQF_0004_A_ = $in.0.NQF_0004_A_;
@@ -2992,24 +2797,24 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save CP-CQMEdition map" guiX="2638" guiY="689" id="SAVE_CP_CQMEDITION_MAP" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save CP-CQMEdition map" guiX="2314" guiY="682" id="SAVE_CP_CQMEDITION_MAP" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.certified_product_cqm_edition_map IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.certified_product_cqm_edition_map (cqm_edition_id, certified_product_id, last_modified_user) SELECT $CqmEdition_id, $CertifiedProduct_id, -1 WHERE NOT EXISTS (SELECT 1 FROM openchpl.certified_product_cqm_edition_map WHERE cqm_edition_id = $CqmEdition_id AND certified_product_id = $CertifiedProduct_id);
 COMMIT;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="SimpleCopy" guiX="2439" guiY="689" id="SIMPLE_COPY2" type="SIMPLE_COPY"/>
-<Edge debugMode="false" fromNode="FILTER_NULL_CERT_PROD_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge46" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="CertifiedProduct" toNode="SIMPLE_COPY2:0"/>
-<Edge debugMode="false" fromNode="GET_CERTIFIED_PRODUCT_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge43" inPort="Port 1 (slave)" metadata="CertifiedProduct_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS:1"/>
-<Edge debugMode="false" fromNode="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge56" inPort="Port 0 (in)" metadata="CertifiedProduct" outPort="Port 0 (out)" toNode="FILTER_NULL_CERT_PROD_IDS:0"/>
-<Edge fromNode="SIMPLE_COPY2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge60" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="SAVE_CP_CQMEDITION_MAP:0"/>
-<Edge fromNode="SIMPLE_COPY2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge59" inPort="Port 0 (driver)" outPort="Port 1 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="JOIN_CERT_PROD_X_CP_CQM_ED_IDS:0"/>
+<Node enabled="enabled" guiName="SimpleCopy" guiX="2115" guiY="682" id="SIMPLE_COPY2" type="SIMPLE_COPY"/>
+<Edge debugMode="false" fromNode="FILTER_NULL_CERT_PROD_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge28" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="CertifiedProduct" toNode="SIMPLE_COPY2:0"/>
+<Edge debugMode="false" fromNode="GET_CERTIFIED_PRODUCT_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge25" inPort="Port 1 (slave)" metadata="CertifiedProduct_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS:1"/>
+<Edge debugMode="false" fromNode="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge37" inPort="Port 0 (in)" metadata="CertifiedProduct" outPort="Port 0 (out)" toNode="FILTER_NULL_CERT_PROD_IDS:0"/>
+<Edge fromNode="SIMPLE_COPY2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge41" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="SAVE_CP_CQMEDITION_MAP:0"/>
+<Edge fromNode="SIMPLE_COPY2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge40" inPort="Port 0 (driver)" outPort="Port 1 (out)" persistedImplicitMetadata="CertifiedProduct" toNode="JOIN_CERT_PROD_X_CP_CQM_ED_IDS:0"/>
 </Phase>
 <Phase number="5">
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Get cp-cqmedition-map ids" guiX="2377" guiY="884" id="GET_CP_CQMEDITION_MAP_IDS" type="DB_INPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get cp-cqmedition-map ids" guiX="2053" guiY="877" id="GET_CP_CQMEDITION_MAP_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT $cqm_edition_id:=certified_product_cqm_edition_map.cqm_edition_id, $certified_product_id:=certified_product_cqm_edition_map.certified_product_id, $certified_product_cqm_edition_map_id:=certified_product_cqm_edition_map.certified_product_cqm_edition_map_id FROM openchpl.certified_product_cqm_edition_map;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join cert_prod x cp-cqmEd_ids" guiX="2624" guiY="837" id="JOIN_CERT_PROD_X_CP_CQM_ED_IDS" joinKey="$CertifiedProduct_id=$certified_product_id;$CqmEdition_id=$cqm_edition_id" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join cert_prod x cp-cqmEd_ids" guiX="2300" guiY="830" id="JOIN_CERT_PROD_X_CP_CQM_ED_IDS" joinKey="$CertifiedProduct_id=$certified_product_id;$CqmEdition_id=$cqm_edition_id" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -3090,14 +2895,17 @@ function integer transform() {
 	$out.0.Criteria170_314_a__7_ = $in.0.Criteria170_314_a__7_;
 	$out.0.Criteria170_314_a__8_ = $in.0.Criteria170_314_a__8_;
 	$out.0.Criteria170_314_a__9_ = $in.0.Criteria170_314_a__9_;
+	$out.0.Criteria170_314_a__10_ = $in.0.Criteria170_314_a__10_;
+	$out.0.Criteria170_314_a__11_ = $in.0.Criteria170_314_a__11_;
+	$out.0.Criteria170_314_a__12_ = $in.0.Criteria170_314_a__12_;
+	$out.0.Criteria170_314_a__13_ = $in.0.Criteria170_314_a__13_;
+	$out.0.Criteria170_314_a__14_ = $in.0.Criteria170_314_a__14_;
+	$out.0.Criteria170_314_a__15_ = $in.0.Criteria170_314_a__15_;
+	$out.0.Criteria170_314_a__16_ = $in.0.Criteria170_314_a__16_;
+	$out.0.Criteria170_314_a__17_ = $in.0.Criteria170_314_a__17_;
+	$out.0.Criteria170_314_a__18_ = $in.0.Criteria170_314_a__18_;
+	$out.0.Criteria170_314_a__19_ = $in.0.Criteria170_314_a__19_;
 	$out.0.Criteria170_314_a__20_ = $in.0.Criteria170_314_a__20_;
-	$out.0.Criteria170_314_a__21_ = $in.0.Criteria170_314_a__21_;
-	$out.0.Criteria170_314_a__22_ = $in.0.Criteria170_314_a__22_;
-	$out.0.Criteria170_314_a__23_ = $in.0.Criteria170_314_a__23_;
-	$out.0.Criteria170_314_a__24_ = $in.0.Criteria170_314_a__24_;
-	$out.0.Criteria170_314_a__25_ = $in.0.Criteria170_314_a__25_;
-	$out.0.Criteria170_314_a__26_ = $in.0.Criteria170_314_a__26_;
-	$out.0.Criteria170_314_a__27_ = $in.0.Criteria170_314_a__27_;
 	$out.0.Criteria170_314_b__1_ = $in.0.Criteria170_314_b__1_;
 	$out.0.Criteria170_314_b__2_ = $in.0.Criteria170_314_b__2_;
 	$out.0.Criteria170_314_b__3_ = $in.0.Criteria170_314_b__3_;
@@ -3105,6 +2913,8 @@ function integer transform() {
 	$out.0.Criteria170_314_b__5_ = $in.0.Criteria170_314_b__5_;
 	$out.0.Criteria170_314_b__6_ = $in.0.Criteria170_314_b__6_;
 	$out.0.Criteria170_314_b__7_ = $in.0.Criteria170_314_b__7_;
+	$out.0.Criteria170_314_b__8_ = $in.0.Criteria170_314_b__8_;
+	$out.0.Criteria170_314_b__9_ = $in.0.Criteria170_314_b__9_;
 	$out.0.Criteria170_314_c__1_ = $in.0.Criteria170_314_c__1_;
 	$out.0.Criteria170_314_c__2_ = $in.0.Criteria170_314_c__2_;
 	$out.0.Criteria170_314_c__3_ = $in.0.Criteria170_314_c__3_;
@@ -3126,10 +2936,14 @@ function integer transform() {
 	$out.0.Criteria170_314_f__4_ = $in.0.Criteria170_314_f__4_;
 	$out.0.Criteria170_314_f__5_ = $in.0.Criteria170_314_f__5_;
 	$out.0.Criteria170_314_f__6_ = $in.0.Criteria170_314_f__6_;
+	$out.0.Criteria170_314_f__7_ = $in.0.Criteria170_314_f__7_;
 	$out.0.Criteria170_314_g__1_ = $in.0.Criteria170_314_g__1_;
 	$out.0.Criteria170_314_g__2_ = $in.0.Criteria170_314_g__2_;
 	$out.0.Criteria170_314_g__3_ = $in.0.Criteria170_314_g__3_;
 	$out.0.Criteria170_314_g__4_ = $in.0.Criteria170_314_g__4_;
+	$out.0.Criteria170_314_h__1_ = $in.0.Criteria170_314_h__1_;
+	$out.0.Criteria170_314_h__2_ = $in.0.Criteria170_314_h__2_;
+	$out.0.Criteria170_314_h__3_ = $in.0.Criteria170_314_h__3_;
 	$out.0.NQF_0001_A_ = $in.0.NQF_0001_A_;
 	$out.0.NQF_0002_A_ = $in.0.NQF_0002_A_;
 	$out.0.NQF_0004_A_ = $in.0.NQF_0004_A_;
@@ -3381,7 +3195,7 @@ function integer transform() {
 }
 ]]></attr>
 </Node>
-<Node dbConnection="JDBC0" enabled="enabled" guiName="Save CertifiedProduct Details" guiX="2907" guiY="834" id="SAVE_CERTIFIED_PRODUCT_DETAILS" type="DB_OUTPUT_TABLE">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Save CertifiedProduct Details" guiX="2583" guiY="827" id="SAVE_CERTIFIED_PRODUCT_DETAILS" type="DB_OUTPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE certification_result IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO certified_product_checksum (certified_product_checksum, stg_certification_certification_id) VALUES ($Checksum, $STG_Certification_Certification_ID);
@@ -3443,14 +3257,17 @@ INSERT INTO openchpl.certification_result (certification_criterion_id, certified
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__7_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(7)' AND cast ($Criteria170_314_a__7_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__8_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(8)' AND cast ($Criteria170_314_a__8_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__9_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(9)' AND cast ($Criteria170_314_a__9_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__10_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(10)' AND cast ($Criteria170_314_a__10_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__11_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(11)' AND cast ($Criteria170_314_a__11_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__12_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(12)' AND cast ($Criteria170_314_a__12_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__13_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(13)' AND cast ($Criteria170_314_a__13_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__14_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(14)' AND cast ($Criteria170_314_a__14_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__15_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(15)' AND cast ($Criteria170_314_a__15_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__16_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(16)' AND cast ($Criteria170_314_a__16_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__17_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(17)' AND cast ($Criteria170_314_a__17_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__18_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(18)' AND cast ($Criteria170_314_a__18_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__19_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(19)' AND cast ($Criteria170_314_a__19_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__20_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(20)' AND cast ($Criteria170_314_a__20_ as boolean) IS NOT NULL;
-INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__21_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(21)' AND cast ($Criteria170_314_a__21_ as boolean) IS NOT NULL;
-INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__22_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(22)' AND cast ($Criteria170_314_a__22_ as boolean) IS NOT NULL;
-INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__23_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(23)' AND cast ($Criteria170_314_a__23_ as boolean) IS NOT NULL;
-INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__24_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(24)' AND cast ($Criteria170_314_a__24_ as boolean) IS NOT NULL;
-INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__25_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(25)' AND cast ($Criteria170_314_a__25_ as boolean) IS NOT NULL;
-INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__26_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(26)' AND cast ($Criteria170_314_a__26_ as boolean) IS NOT NULL;
-INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__27_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(a)(27)' AND cast ($Criteria170_314_a__27_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__1_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(b)(1)' AND cast ($Criteria170_314_b__1_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__2_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(b)(2)' AND cast ($Criteria170_314_b__2_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__3_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(b)(3)' AND cast ($Criteria170_314_b__3_ as boolean) IS NOT NULL;
@@ -3458,6 +3275,8 @@ INSERT INTO openchpl.certification_result (certification_criterion_id, certified
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__5_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(b)(5)' AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__6_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(b)(6)' AND cast ($Criteria170_314_b__6_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__7_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(b)(7)' AND cast ($Criteria170_314_b__7_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__8_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(b)(8)' AND cast ($Criteria170_314_b__8_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__9_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(b)(9)' AND cast ($Criteria170_314_b__9_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_c__1_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(c)(1)' AND cast ($Criteria170_314_c__1_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_c__2_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(c)(2)' AND cast ($Criteria170_314_c__2_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_c__3_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(c)(3)' AND cast ($Criteria170_314_c__3_ as boolean) IS NOT NULL;
@@ -3479,10 +3298,14 @@ INSERT INTO openchpl.certification_result (certification_criterion_id, certified
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__4_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(f)(4)' AND cast ($Criteria170_314_f__4_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__5_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(f)(5)' AND cast ($Criteria170_314_f__5_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__6_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(f)(6)' AND cast ($Criteria170_314_f__6_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__7_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(f)(7)' AND cast ($Criteria170_314_f__7_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__1_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(g)(1)' AND cast ($Criteria170_314_g__1_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__2_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(g)(2)' AND cast ($Criteria170_314_g__2_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__3_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(g)(3)' AND cast ($Criteria170_314_g__3_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__4_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(g)(4)' AND cast ($Criteria170_314_g__4_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__1_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(h)(1)' AND cast ($Criteria170_314_h__1_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__2_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(h)(2)' AND cast ($Criteria170_314_h__2_ as boolean) IS NOT NULL;
+INSERT INTO openchpl.certification_result (certification_criterion_id, certified_product_id, successful, last_modified_user) SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__3_, -1 FROM openchpl.certification_criterion WHERE openchpl.certification_criterion.number = '170.314(h)(3)' AND cast ($Criteria170_314_h__3_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.cqm_result (cqm_criterion_id, success, certified_product_cqm_edition_map_id, last_modified_user) SELECT cqm_criterion_id, $NQF_0001_A_, $CP_CqmEdition_map_id, -1 FROM openchpl.cqm_criterion WHERE openchpl.cqm_criterion.number = 'NQF 0001(A)' AND cast ($NQF_0001_A_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.cqm_result (cqm_criterion_id, success, certified_product_cqm_edition_map_id, last_modified_user) SELECT cqm_criterion_id, $NQF_0002_A_, $CP_CqmEdition_map_id, -1 FROM openchpl.cqm_criterion WHERE openchpl.cqm_criterion.number = 'NQF 0002(A)' AND cast ($NQF_0002_A_ as boolean) IS NOT NULL;
 INSERT INTO openchpl.cqm_result (cqm_criterion_id, success, certified_product_cqm_edition_map_id, last_modified_user) SELECT cqm_criterion_id, $NQF_0004_A_, $CP_CqmEdition_map_id, -1 FROM openchpl.cqm_criterion WHERE openchpl.cqm_criterion.number = 'NQF 0004(A)' AND cast ($NQF_0004_A_ as boolean) IS NOT NULL;
@@ -3731,7 +3554,7 @@ INSERT INTO openchpl.cqm_result (cqm_criterion_id, cqm_version_id, success, cert
 COMMIT;
 ]]></attr>
 </Node>
-<Edge fromNode="GET_CP_CQMEDITION_MAP_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge58" inPort="Port 1 (slave)" metadata="CP_CqmEdition_ids" outPort="Port 0 (out)" toNode="JOIN_CERT_PROD_X_CP_CQM_ED_IDS:1"/>
-<Edge fromNode="JOIN_CERT_PROD_X_CP_CQM_ED_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge57" inPort="Port 0 (in)" metadata="CertifiedProduct" outPort="Port 0 (out)" toNode="SAVE_CERTIFIED_PRODUCT_DETAILS:0"/>
+<Edge fromNode="GET_CP_CQMEDITION_MAP_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge39" inPort="Port 1 (slave)" metadata="CP_CqmEdition_ids" outPort="Port 0 (out)" toNode="JOIN_CERT_PROD_X_CP_CQM_ED_IDS:1"/>
+<Edge fromNode="JOIN_CERT_PROD_X_CP_CQM_ED_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge38" inPort="Port 0 (in)" metadata="CertifiedProduct" outPort="Port 0 (out)" toNode="SAVE_CERTIFIED_PRODUCT_DETAILS:0"/>
 </Phase>
 </Graph>

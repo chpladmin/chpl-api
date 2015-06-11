@@ -113,10 +113,10 @@ INSERT INTO openchpl.certification_criterion (certification_edition_id, number, 
 (2, '170.314(g)(1)', 'Automated Numerator Record', -1),
 (2, '170.314(g)(2)', 'Automated Measure Calculat', -1),
 (2, '170.314(g)(3)', 'Safety-Enhanced Design', -1),
-(2, '170.314(g)(4)', 'Quality Management System', -1);
+(2, '170.314(g)(4)', 'Quality Management System', -1),
 (2, '170.314(h)(1)', 'App Stmt Sec Hlth Trans', -1),
 (2, '170.314(h)(2)', 'Trnsprt Direct Msg', -1),
-(2, '170.314(h)(3)', 'SOAP Trnsprt Direct', -1),
+(2, '170.314(h)(3)', 'SOAP Trnsprt Direct', -1);
 
 INSERT INTO openchpl.cqm_criterion (cqm_edition_id, cqm_criterion_type_id, number, title, last_modified_user) VALUES
 (1, 1, 'NQF 0001(A)', 'Asthma Assessment', -1),
