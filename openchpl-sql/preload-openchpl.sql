@@ -4,12 +4,7 @@ insert into openchpl.cqm_edition (edition, last_modified_user) values (2011, -1)
 insert into openchpl.certification_edition (year, last_modified_user) values (2011, -1),(2014,-1);
 insert into openchpl.cqm_criterion_type (name, description, last_modified_user) values ('Ambulatory', 'Ambulatory', -1),('Inpatient','Inpatient',-1);
 insert into openchpl.certification_body (name, last_modified_user) values ('InfoGard', -1), ('CCHIT', -1), ('Drummond Group Inc.', -1), ('SLI Global', -1), ('Surescripts LLC', -1), ('ICSA Labs', -1);
-
---alter table openchpl.event_type alter column event_type_id type bigserial;
-insert into openchpl.event_type (event_type_id, name, description, last_modified_user) values (1,'Certification','Product is certified', -1);
-
-alter table openchpl.additional_software alter column name type varchar(500);
-alter table openchpl.certified_product add column atcb_certification_id varchar(250);
+insert into openchpl.event_type (name, description, last_modified_user) values ('Certification','Product is certified', -1);
 
 INSERT INTO openchpl.certification_criterion (certification_edition_id, number, title, last_modified_user) VALUES
 (1, '170.302(a)', 'Drug-drug, drug-allergy', -1),
