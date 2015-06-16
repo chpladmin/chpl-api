@@ -60,6 +60,12 @@ public class UserImpl implements User {
 	@Column(name="account_enabled")
 	private boolean accountEnabled;
 	
+	@Column(name="last_modified_user")
+	private Long lastModifiedUser;
+	
+	//TODO: last modified date
+	//last_modified_date timestamp without time zone NOT NULL,
+	
 	@Transient
 	private boolean authenticated = false;
 	
@@ -90,7 +96,6 @@ public class UserImpl implements User {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
-		
 	}
 	
 	public UserImpl(String subjectName) {
@@ -111,11 +116,11 @@ public class UserImpl implements User {
 		this.accountEnabled = true;
 	}
 	
-	
-	public UserImpl(User other){
-		this.password = other.getPassword();
-		
-	}
+	//public UserImpl(User other){
+	//	this.subjectName = other.getSubjectName();
+	//	this.password = other.getPassword();
+	//	this.accountExpired = !other.isAccountNonExpired();
+	//}
 	
 	public String getSubjectName() {
 		return subjectName;

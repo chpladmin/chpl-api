@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
-@Table(name="claim")
+@Table(name="user_permission")
 public class UserPermission implements GrantedAuthority {
 	
 	private static final long serialVersionUID = 1L;
@@ -45,7 +45,6 @@ public class UserPermission implements GrantedAuthority {
 		this.authority = authority;
 		this.lastModifiedUser = Util.getCurrentUser().getId();
 	}
-	
 	
 	public String getDescription() {
 		return description;
