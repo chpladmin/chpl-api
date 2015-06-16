@@ -129,14 +129,17 @@
 <Field label="170.314(a)(7)" name="Criteria170_314_a__7_" type="string"/>
 <Field label="170.314(a)(8)" name="Criteria170_314_a__8_" type="string"/>
 <Field label="170.314(a)(9)" name="Criteria170_314_a__9_" type="string"/>
+<Field label="170.314(a)(10)" name="Criteria170_314_a__10_" type="string"/>
+<Field label="170.314(a)(11)" name="Criteria170_314_a__11_" type="string"/>
+<Field label="170.314(a)(12)" name="Criteria170_314_a__12_" type="string"/>
+<Field label="170.314(a)(13)" name="Criteria170_314_a__13_" type="string"/>
+<Field label="170.314(a)(14)" name="Criteria170_314_a__14_" type="string"/>
+<Field label="170.314(a)(15)" name="Criteria170_314_a__15_" type="string"/>
+<Field label="170.314(a)(16)" name="Criteria170_314_a__16_" type="string"/>
+<Field label="170.314(a)(17)" name="Criteria170_314_a__17_" type="string"/>
+<Field label="170.314(a)(18)" name="Criteria170_314_a__18_" type="string"/>
+<Field label="170.314(a)(19)" name="Criteria170_314_a__19_" type="string"/>
 <Field label="170.314(a)(20)" name="Criteria170_314_a__20_" type="string"/>
-<Field label="170.314(a)(21)" name="Criteria170_314_a__21_" type="string"/>
-<Field label="170.314(a)(22)" name="Criteria170_314_a__22_" type="string"/>
-<Field label="170.314(a)(23)" name="Criteria170_314_a__23_" type="string"/>
-<Field label="170.314(a)(24)" name="Criteria170_314_a__24_" type="string"/>
-<Field label="170.314(a)(25)" name="Criteria170_314_a__25_" type="string"/>
-<Field label="170.314(a)(26)" name="Criteria170_314_a__26_" type="string"/>
-<Field label="170.314(a)(27)" name="Criteria170_314_a__27_" type="string"/>
 <Field label="170.314(b)(1)" name="Criteria170_314_b__1_" type="string"/>
 <Field label="170.314(b)(2)" name="Criteria170_314_b__2_" type="string"/>
 <Field label="170.314(b)(3)" name="Criteria170_314_b__3_" type="string"/>
@@ -144,6 +147,8 @@
 <Field label="170.314(b)(5)" name="Criteria170_314_b__5_" type="string"/>
 <Field label="170.314(b)(6)" name="Criteria170_314_b__6_" type="string"/>
 <Field label="170.314(b)(7)" name="Criteria170_314_b__7_" type="string"/>
+<Field label="170.314(b)(8)" name="Criteria170_314_b__8_" type="string"/>
+<Field label="170.314(b)(9)" name="Criteria170_314_b__9_" type="string"/>
 <Field label="170.314(c)(1)" name="Criteria170_314_c__1_" type="string"/>
 <Field label="170.314(c)(2)" name="Criteria170_314_c__2_" type="string"/>
 <Field label="170.314(c)(3)" name="Criteria170_314_c__3_" type="string"/>
@@ -165,10 +170,14 @@
 <Field label="170.314(f)(4)" name="Criteria170_314_f__4_" type="string"/>
 <Field label="170.314(f)(5)" name="Criteria170_314_f__5_" type="string"/>
 <Field label="170.314(f)(6)" name="Criteria170_314_f__6_" type="string"/>
+<Field label="170.314(f)(7)" name="Criteria170_314_f__7_" type="string"/>
 <Field label="170.314(g)(1)" name="Criteria170_314_g__1_" type="string"/>
 <Field label="170.314(g)(2)" name="Criteria170_314_g__2_" type="string"/>
 <Field label="170.314(g)(3)" name="Criteria170_314_g__3_" type="string"/>
 <Field label="170.314(g)(4)" name="Criteria170_314_g__4_" type="string"/>
+<Field label="170.314(h)(1)" name="Criteria170_314_h__1_" type="string"/>
+<Field label="170.314(h)(2)" name="Criteria170_314_h__2_" type="string"/>
+<Field label="170.314(h)(3)" name="Criteria170_314_h__3_" type="string"/>
 <Field label="CMS100" name="CMS100" type="string"/>
 <Field label="CMS102" name="CMS102" type="string"/>
 <Field label="CMS104" name="CMS104" type="string"/>
@@ -403,6 +412,9 @@
 <Field label="170.314(a)(15) Patient-Specific Educatio" name="_170_314_a_15_Patient_Specific_Educatio" type="string"/>
 <Field label="170.314(a)(16) Electronic Medication Adm" name="_170_314_a_16_Electronic_Medication_Adm" type="string"/>
 <Field label="170.314(a)(17) Advance Directives" name="_170_314_a_17_Advance_Directives" type="string"/>
+<Field label="170.314(a)(18) Cmp pvdr order entry-med" name="_170_314_a__18__Cmp_pvdr_order_entry_med" type="string"/>
+<Field label="170.314(a)(19) Cmp pvdr order entry-lab" name="_170_314_a__19__Cmp_pvdr_order_entry_lab" type="string"/>
+<Field label="170.314(a)(20) Cmp pvdr order entry-DI" name="_170_314_a__20__Cmp_pvdr_order_entry_DI" type="string"/>
 <Field label="170.314(b)(1) Transitions of Care - rece" name="_170_314_b_1_Transitions_of_Care_rece" type="string"/>
 <Field label="170.314(b)(2) Transitions of Care - crea" name="_170_314_b_2_Transitions_of_Care_crea" type="string"/>
 <Field label="170.314(b)(3) Electronic Prescribing" name="_170_314_b_3_Electronic_Prescribing" type="string"/>
@@ -410,6 +422,8 @@
 <Field label="170.314(b)(5) Incorporate Laboratory Tes" name="_170_314_b_5_Incorporate_Laboratory_Tes" type="string"/>
 <Field label="170.314(b)(6) Transmission of Electronic" name="_170_314_b_6_Transmission_of_Electronic" type="string"/>
 <Field label="170.314(b)(7) Data Portability" name="_170_314_b_7_Data_Portability" type="string"/>
+<Field label="170.314(b)(8) Transitions of care" name="_170_314_b__8__Transitions_of_care" type="string"/>
+<Field label="170.314(b)(9) Clinic info recon and inc" name="_170_314_b__9__Clinic_info_recon_and_inc" type="string"/>
 <Field label="170.314(c)(1) Clinical Quality Measures" name="_170_314_c_1_Clinical_Quality_Measures" type="string"/>
 <Field label="170.314(c)(2) Clinical Quality Measures" name="_170_314_c_2_Clinical_Quality_Measures" type="string"/>
 <Field label="170.314(c)(3) Clinical Quality Measures" name="_170_314_c_3_Clinical_Quality_Measures" type="string"/>
@@ -431,10 +445,14 @@
 <Field label="170.314(f)(4) Transmission of Reportable" name="_170_314_f_4_Transmission_of_Reportable" type="string"/>
 <Field label="170.314(f)(5) Cancer Case Information" name="_170_314_f_5_Cancer_Case_Information" type="string"/>
 <Field label="170.314(f)(6) Transmission to Cancer Reg" name="_170_314_f_6_Transmission_to_Cancer_Reg" type="string"/>
+<Field label="170.314(f)(7) Transm to agencies-syndrom" name="_170_314_f__7__Transm_to_agencies_syndrom" type="string"/>
 <Field label="170.314(g)(1) Automated Numerator Record" name="_170_314_g_1_Automated_Numerator_Record" type="string"/>
 <Field label="170.314(g)(2) Automated Measure Calculat" name="_170_314_g_2_Automated_Measure_Calculat" type="string"/>
 <Field label="170.314(g)(3) Safety-Enhanced Design" name="_170_314_g_3_Safety_Enhanced_Design" type="string"/>
 <Field label="170.314(g)(4) Quality Management System" name="_170_314_g_4_Quality_Management_System" type="string"/>
+<Field label="170.314(h)(1) App Stmt Sec Hlth Trans" name="_170_314_h__1__App_Stmt_Sec_Hlth_Trans" type="string"/>
+<Field label="170.314(h)(2) Trnsprt Direct Msg" name="_170_314_h__2__Trnsprt_Direct_Msg" type="string"/>
+<Field label="170.314(h)(3) SOAP Trnsprt Direct" name="_170_314_h__3__SOAP_Trnsprt_Direct" type="string"/>
 <Field label="CMS100 AMI?2?Aspirin Prescribed at Dis" name="CMS100_AMI_2_Aspirin_Prescribed_at_Dis" type="string"/>
 <Field label="CMS102 Stroke?10 Ischemic or hemorrhag" name="CMS102_Stroke_10_Ischemic_or_hemorrhag" type="string"/>
 <Field label="CMS104 Stroke?2 Ischemic stroke \u0096 Dis" name="CMS104_Stroke_2_Ischemic_stroke_Dis" type="string"/>
@@ -687,14 +705,17 @@ function integer transform() {
 	$out.0.Criteria170_314_a__7_ = $in.0._170_314_a_7_Medication_Allergy_List;
 	$out.0.Criteria170_314_a__8_ = $in.0._170_314_a_8_Clinical_Decision_Support;
 	$out.0.Criteria170_314_a__9_ = $in.0._170_314_a_9_Electronic_Notes;
-	$out.0.Criteria170_314_a__20_ = $in.0._170_314_a_10_Drug_Formulary_Checks;
-	$out.0.Criteria170_314_a__21_ = $in.0._170_314_a_11_Smoking_Status;
-	$out.0.Criteria170_314_a__22_ = $in.0._170_314_a_12_Image_Results;
-	$out.0.Criteria170_314_a__23_ = $in.0._170_314_a_13_Family_Health_History;
-	$out.0.Criteria170_314_a__24_ = $in.0._170_314_a_14_Patient_List_Creation;
-	$out.0.Criteria170_314_a__25_ = $in.0._170_314_a_15_Patient_Specific_Educatio;
-	$out.0.Criteria170_314_a__26_ = $in.0._170_314_a_16_Electronic_Medication_Adm;
-	$out.0.Criteria170_314_a__27_ = $in.0._170_314_a_17_Advance_Directives;
+	$out.0.Criteria170_314_a__10_ = $in.0._170_314_a_10_Drug_Formulary_Checks;
+	$out.0.Criteria170_314_a__11_ = $in.0._170_314_a_11_Smoking_Status;
+	$out.0.Criteria170_314_a__12_ = $in.0._170_314_a_12_Image_Results;
+	$out.0.Criteria170_314_a__13_ = $in.0._170_314_a_13_Family_Health_History;
+	$out.0.Criteria170_314_a__14_ = $in.0._170_314_a_14_Patient_List_Creation;
+	$out.0.Criteria170_314_a__15_ = $in.0._170_314_a_15_Patient_Specific_Educatio;
+	$out.0.Criteria170_314_a__16_ = $in.0._170_314_a_16_Electronic_Medication_Adm;
+	$out.0.Criteria170_314_a__17_ = $in.0._170_314_a_17_Advance_Directives;
+	$out.0.Criteria170_314_a__18_ = $in.0._170_314_a__18__Cmp_pvdr_order_entry_med;
+	$out.0.Criteria170_314_a__19_ = $in.0._170_314_a__19__Cmp_pvdr_order_entry_lab;
+	$out.0.Criteria170_314_a__20_ = $in.0._170_314_a__20__Cmp_pvdr_order_entry_DI;
 	$out.0.Criteria170_314_b__1_ = $in.0._170_314_b_1_Transitions_of_Care_rece;
 	$out.0.Criteria170_314_b__2_ = $in.0._170_314_b_2_Transitions_of_Care_crea;
 	$out.0.Criteria170_314_b__3_ = $in.0._170_314_b_3_Electronic_Prescribing;
@@ -702,6 +723,7 @@ function integer transform() {
 	$out.0.Criteria170_314_b__5_ = $in.0._170_314_b_5_Incorporate_Laboratory_Tes;
 	$out.0.Criteria170_314_b__6_ = $in.0._170_314_b_6_Transmission_of_Electronic;
 	$out.0.Criteria170_314_b__7_ = $in.0._170_314_b_7_Data_Portability;
+	$out.0.Criteria170_314_b__8_ = $in.0._170_314_b__8__Transitions_of_care;
 	$out.0.Criteria170_314_c__1_ = $in.0._170_314_c_1_Clinical_Quality_Measures;
 	$out.0.Criteria170_314_c__2_ = $in.0._170_314_c_2_Clinical_Quality_Measures;
 	$out.0.Criteria170_314_c__3_ = $in.0._170_314_c_3_Clinical_Quality_Measures;
@@ -723,10 +745,14 @@ function integer transform() {
 	$out.0.Criteria170_314_f__4_ = $in.0._170_314_f_4_Transmission_of_Reportable;
 	$out.0.Criteria170_314_f__5_ = $in.0._170_314_f_5_Cancer_Case_Information;
 	$out.0.Criteria170_314_f__6_ = $in.0._170_314_f_6_Transmission_to_Cancer_Reg;
+	$out.0.Criteria170_314_f__7_ = $in.0._170_314_f__7__Transm_to_agencies_syndrom;
 	$out.0.Criteria170_314_g__1_ = $in.0._170_314_g_1_Automated_Numerator_Record;
 	$out.0.Criteria170_314_g__2_ = $in.0._170_314_g_2_Automated_Measure_Calculat;
 	$out.0.Criteria170_314_g__3_ = $in.0._170_314_g_3_Safety_Enhanced_Design;
 	$out.0.Criteria170_314_g__4_ = $in.0._170_314_g_4_Quality_Management_System;
+	$out.0.Criteria170_314_h__1_ = $in.0._170_314_h__1__App_Stmt_Sec_Hlth_Trans;
+	$out.0.Criteria170_314_h__2_ = $in.0._170_314_h__2__Trnsprt_Direct_Msg;
+	$out.0.Criteria170_314_h__3_ = $in.0._170_314_h__3__SOAP_Trnsprt_Direct;
 	$out.0.CMS100 = $in.0.CMS100_AMI_2_Aspirin_Prescribed_at_Dis;
 	$out.0.CMS102 = $in.0.CMS102_Stroke_10_Ischemic_or_hemorrhag;
 	$out.0.CMS104 = $in.0.CMS104_Stroke_2_Ischemic_stroke_Dis;
@@ -976,14 +1002,17 @@ function integer transform() {
 	$out.0._170_314_a_7_Medication_Allergy_List = $in.0.Criteria170_314_a__7_;
 	$out.0._170_314_a_8_Clinical_Decision_Support = $in.0.Criteria170_314_a__8_;
 	$out.0._170_314_a_9_Electronic_Notes = $in.0.Criteria170_314_a__9_;
-	$out.0._170_314_a_10_Drug_Formulary_Checks = $in.0.Criteria170_314_a__20_;
-	$out.0._170_314_a_11_Smoking_Status = $in.0.Criteria170_314_a__21_;
-	$out.0._170_314_a_12_Image_Results = $in.0.Criteria170_314_a__22_;
-	$out.0._170_314_a_13_Family_Health_History = $in.0.Criteria170_314_a__23_;
-	$out.0._170_314_a_14_Patient_List_Creation = $in.0.Criteria170_314_a__24_;
-	$out.0._170_314_a_15_Patient_Specific_Educatio = $in.0.Criteria170_314_a__25_;
-	$out.0._170_314_a_16_Electronic_Medication_Adm = $in.0.Criteria170_314_a__26_;
-	$out.0._170_314_a_17_Advance_Directives = $in.0.Criteria170_314_a__27_;
+	$out.0._170_314_a_10_Drug_Formulary_Checks = $in.0.Criteria170_314_a__10_;
+	$out.0._170_314_a_11_Smoking_Status = $in.0.Criteria170_314_a__11_;
+	$out.0._170_314_a_12_Image_Results = $in.0.Criteria170_314_a__12_;
+	$out.0._170_314_a_13_Family_Health_History = $in.0.Criteria170_314_a__13_;
+	$out.0._170_314_a_14_Patient_List_Creation = $in.0.Criteria170_314_a__14_;
+	$out.0._170_314_a_15_Patient_Specific_Educatio = $in.0.Criteria170_314_a__15_;
+	$out.0._170_314_a_16_Electronic_Medication_Adm = $in.0.Criteria170_314_a__16_;
+	$out.0._170_314_a_17_Advance_Directives = $in.0.Criteria170_314_a__17_;
+	$out.0._170_314_a__18__Cmp_pvdr_order_entry_med = $in.0.Criteria170_314_a__18_;
+	$out.0._170_314_a__19__Cmp_pvdr_order_entry_lab = $in.0.Criteria170_314_a__19_;
+	$out.0._170_314_a__20__Cmp_pvdr_order_entry_DI = $in.0.Criteria170_314_a__20_;
 	$out.0._170_314_b_1_Transitions_of_Care_rece = $in.0.Criteria170_314_b__1_;
 	$out.0._170_314_b_2_Transitions_of_Care_crea = $in.0.Criteria170_314_b__2_;
 	$out.0._170_314_b_3_Electronic_Prescribing = $in.0.Criteria170_314_b__3_;
@@ -991,6 +1020,8 @@ function integer transform() {
 	$out.0._170_314_b_5_Incorporate_Laboratory_Tes = $in.0.Criteria170_314_b__5_;
 	$out.0._170_314_b_6_Transmission_of_Electronic = $in.0.Criteria170_314_b__6_;
 	$out.0._170_314_b_7_Data_Portability = $in.0.Criteria170_314_b__7_;
+	$out.0._170_314_b__8__Transitions_of_care = $in.0.Criteria170_314_b__8_;
+	$out.0._170_314_b__9__Clinic_info_recon_and_inc = $in.0.Criteria170_314_b__9_;
 	$out.0._170_314_c_1_Clinical_Quality_Measures = $in.0.Criteria170_314_c__1_;
 	$out.0._170_314_c_2_Clinical_Quality_Measures = $in.0.Criteria170_314_c__2_;
 	$out.0._170_314_c_3_Clinical_Quality_Measures = $in.0.Criteria170_314_c__3_;
@@ -1012,10 +1043,14 @@ function integer transform() {
 	$out.0._170_314_f_4_Transmission_of_Reportable = $in.0.Criteria170_314_f__4_;
 	$out.0._170_314_f_5_Cancer_Case_Information = $in.0.Criteria170_314_f__5_;
 	$out.0._170_314_f_6_Transmission_to_Cancer_Reg = $in.0.Criteria170_314_f__6_;
+	$out.0._170_314_f__7__Transm_to_agencies_syndrom = $in.0.Criteria170_314_f__7_;
 	$out.0._170_314_g_1_Automated_Numerator_Record = $in.0.Criteria170_314_g__1_;
 	$out.0._170_314_g_2_Automated_Measure_Calculat = $in.0.Criteria170_314_g__2_;
 	$out.0._170_314_g_3_Safety_Enhanced_Design = $in.0.Criteria170_314_g__3_;
 	$out.0._170_314_g_4_Quality_Management_System = $in.0.Criteria170_314_g__4_;
+	$out.0._170_314_h__1__App_Stmt_Sec_Hlth_Trans = $in.0.Criteria170_314_h__1_;
+	$out.0._170_314_h__2__Trnsprt_Direct_Msg = $in.0.Criteria170_314_h__2_;
+	$out.0._170_314_h__3__SOAP_Trnsprt_Direct = $in.0.Criteria170_314_h__3_;
 	$out.0.CMS100_AMI_2_Aspirin_Prescribed_at_Dis = $in.0.CMS100;
 	$out.0.CMS102_Stroke_10_Ischemic_or_hemorrhag = $in.0.CMS102;
 	$out.0.CMS104_Stroke_2_Ischemic_stroke_Dis = $in.0.CMS104;
@@ -1114,24 +1149,6 @@ function integer transform() {
 
 	return ALL;
 }
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
 ]]></attr>
 </Node>
 <Node enabled="enabled" fileURL="./src/main/resources/chpl_to-insert.csv" guiName="Save to-insert products" guiX="1145" guiY="20" id="SAVE_TO_INSERT_PRODUCTS" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>

@@ -241,3 +241,4 @@ pip-log.txt
 /chpl/chpl-etl/log_unmerged-certified.txt
 /chpl/chpl-etl/to-update.csv
 /chpl/chpl-etl/cert_products_x_ids_null.txt
+/chpl/chpl-etl/input/

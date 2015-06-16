@@ -17,17 +17,27 @@ $ cd chpl-api/chpl/chpl-etl
 
 ## Data model load
 
-Edit `openchpl-role.sql` to set the password for the `openchpl` role. The role can be changed as well, but then make sure the other `.sql` files are adjusted appropriately.
+Edit `openchpl-role.sql` to set the password for the `openchpl` role. These instructions assume the role/username used for the openchpl database is `openchpl`, and that the password in `openchpl-role.sql`, currently recorded as "change this password" will be update to match your installation. If the installer chooses to change the username/role, make sure it's also changed in the `openchpl.sql` file wherever the role is used.
 
 ```sh
-$ psql -Upostgres -f openchpl-sql/openchpl-role.sql
-$ psql -Upostgres -f openchpl-sql/openchpl.sql
-$ psql -Upostgres -f openchpl-sql/preload-openchpl.sql
+$ psql -Upostgres -f chpl-api/openchpl-sql/openchpl-role.sql
+$ psql -Upostgres -f chpl-api/openchpl-sql/openchpl.sql
+$ psql -Upostgres -f chpl-api/openchpl-sql/preload-openchpl.sql
 ```
+
+## Installing on Linux
+
+If installing on a Linux machine, some modifications are needed. In the files:
+ - `parse.sh`
+ - `linux_deploy.sh`
+
+Remove the line: `(set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters`
+
+Next, run the script `linux_deploy.sh`. This script will modify the strings used as recordDelimiters in the CloverETL graphs from the Windows specific `\r\n` to the Linux `\n`.
 
 ## ETL
 
-Edit the parameters-template.prm file to fill in the JDBC database connection URL, username, and password for your database, and rename it to `parameters.prm`.
+Edit the parameters-template.prm file to fill in the JDBC database connection URL, username, and password for your database, and rename it to `parameters.prm`. The username and password in the newly created `parameters.prm` file much match the username/role and password from the `openchpl-role.sql` file referenced in the previous section.
 
 ```sh
 $ vi parameters-template.prm
@@ -39,9 +49,41 @@ $ mvn package
 
 ```sh
 $ cd chpl-api/chpl/chpl-etl
-$ java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar 'path-to-excel-file' 'path-to-plugins-directory'
+$ java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar 'excel-file' 'plugins-directory'
 ```
 
 The default parameters are:
  - Excel file: `./src/main/resources/chpl-large.xlsx`
  - Plugins directory: `./src/main/resources/plugins`
+
+## Search a directory
+
+A batch parsing script is available in `parse.sh`. This script will look in a directory: `chpl-api/chpl/chpl-etl/input` for any files ending in `.xlsx`, and run those files through the ETL, then move the files that were processed into `input/parsed`, along with a timestamped log file that captures the output of the parsing activity.
+
+## Resetting
+
+After running the ETL, if you want to clean the database to run it again, as if from scratch, go into the database, there are two tables that need to be emptied: the `vendor` and `certified_product_checksum` tables.
+
+### To truncate the tables
+
+```sh
+$ psql
+postgres=# truncate table openchpl.certified_product_checksum;
+postgres=# truncate table openchpl.vendor cascade;
+postgres=# \q
+```
+
+### To completely remove the database
+
+```sh
+$ psql
+postgres=# drop schema openchpl cascade;
+postgres=# drop role openchpl;
+postgres=# \q
+```
+
+# CloverETL
+
+This ETL makes use of the CloverETL engine. The first few steps of this process are outside of the CloverETL engine. This includes a conversion from the provided .xlsx files to a version of a .csv, where the actual separating character is a `^`, in order to avoid running into issues with commas in the data. That conversion also includes a step where a hash of each row of the data file is appended to that row, in order to track if the data in the row changes at some point in the future.
+
+After the conversion and appending of the hash, the CloverETL engine picks up the outputted .csv and processes it. A graphical view of that process is here: ![CloverETL process](openchpl_etl.png)
