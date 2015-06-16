@@ -27,7 +27,7 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 		Map<String, List<String>> claims = new HashMap<String, List<String>>();
 		List<String> claimStrings = new ArrayList<String>();
 		
-		for (Claim claim : user.getClaims()){
+		for (UserPermission claim : user.getClaims()){
 			claimStrings.add(claim.getAuthority());
 		}
 		claims.put("Authorities", claimStrings);

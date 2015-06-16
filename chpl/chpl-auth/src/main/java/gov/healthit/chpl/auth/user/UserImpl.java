@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.auth.authentication.Claim;
+import gov.healthit.chpl.auth.authentication.UserPermission;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,7 +46,7 @@ public class UserImpl implements User {
 			joinColumns={@JoinColumn(name="user_id")},
 			inverseJoinColumns={@JoinColumn(name="claim_id")}
 			)
-	private Set<Claim> claims = new HashSet<Claim>();
+	private Set<UserPermission> claims = new HashSet<UserPermission>();
 	
 	@Column(name="account_expired")
 	private boolean accountExpired;
@@ -72,7 +72,7 @@ public class UserImpl implements User {
 		this.accountEnabled = true;
 	}
 	
-	public UserImpl(String subjectName, Set<Claim> claims) {
+	public UserImpl(String subjectName, Set<UserPermission> claims) {
 		this.subjectName = subjectName;
 		this.claims = claims;
 		this.password = null;
@@ -82,7 +82,7 @@ public class UserImpl implements User {
 		this.accountEnabled = true;
 	}
 	
-	public UserImpl(String subjectName, String encodedPassword, Set<Claim> claims) {
+	public UserImpl(String subjectName, String encodedPassword, Set<UserPermission> claims) {
 		this.subjectName = subjectName;
 		this.claims = claims;
 		this.password = encodedPassword;
@@ -125,31 +125,31 @@ public class UserImpl implements User {
 		this.subjectName = subject;
 	}
 	
-	public Set<Claim> getClaims() {
+	public Set<UserPermission> getClaims() {
 		return this.claims;
 	}
 
-	public void setClaims(Set<Claim> claims) {
+	public void setClaims(Set<UserPermission> claims) {
 		this.claims = claims;
 	}
 
 	public void addClaim(String claimValue){
-		this.claims.add(new  Claim(claimValue));
+		this.claims.add(new  UserPermission(claimValue));
 	}
 	
-	public void addClaim(Claim claim){
+	public void addClaim(UserPermission claim){
 		this.claims.add(claim);
 	}
 
 	public void removeClaim(String claimValue) {
 		
-		Claim remove = new Claim(claimValue);
+		UserPermission remove = new UserPermission(claimValue);
 		claims.remove(remove);
 		
 	}
 	
 	@Override
-	public void removeClaim(Claim claim) {
+	public void removeClaim(UserPermission claim) {
 		claims.remove(claim);
 	}
 	
@@ -225,10 +225,6 @@ public class UserImpl implements User {
 
 	public Long getId() {
 		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 	
 }

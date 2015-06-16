@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.auth.authentication.Claim;
+import gov.healthit.chpl.auth.authentication.UserPermission;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,12 +14,12 @@ public interface User extends UserDetails , Authentication {
 	
 	public String getSubjectName();
 	public void setSubjectName(String subject);
-	public Set<Claim> getClaims();
-	public void setClaims(Set<Claim> claims);
+	public Set<UserPermission> getClaims();
+	public void setClaims(Set<UserPermission> claims);
 	public void addClaim(String claimValue);
-	public void addClaim(Claim claim);
+	public void addClaim(UserPermission claim);
 	public void removeClaim(String claimValue);
-	public void removeClaim(Claim claim);
+	public void removeClaim(UserPermission claim);
 	
 	
 	// UserDetails interface
@@ -62,5 +62,7 @@ public interface User extends UserDetails , Authentication {
 
 	@Override
 	public String getName();
+	
+	public Long getId();
 	
 }

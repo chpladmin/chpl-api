@@ -16,8 +16,8 @@ public class TestUserAuthenticator extends BaseUserAuthenticator {
 	
 	private static String userID = "testuser";
 	private static String password = "pass";
-	private List<Claim> claims =  Arrays.asList(new Claim("GROUP_ACB123"),new Claim("ROLE_ADMIN"),new Claim("ROLE_farmer"));
-	private Set<Claim> claimset = new HashSet<Claim>(claims);
+	private List<UserPermission> claims =  Arrays.asList(new UserPermission("GROUP_ACB123"),new UserPermission("ROLE_ADMIN"),new UserPermission("ROLE_farmer"));
+	private Set<UserPermission> claimset = new HashSet<UserPermission>(claims);
 	User user = new UserImpl(userID, claimset);
 	
 	@Override
