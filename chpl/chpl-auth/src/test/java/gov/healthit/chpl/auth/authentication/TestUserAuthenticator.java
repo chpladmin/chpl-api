@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.stereotype.Service;
 
 
-//@Service
 public class TestUserAuthenticator extends BaseUserAuthenticator {
 
 	
