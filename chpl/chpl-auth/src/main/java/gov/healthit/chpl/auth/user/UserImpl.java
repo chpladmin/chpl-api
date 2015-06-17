@@ -42,9 +42,9 @@ public class UserImpl implements User {
 	@ManyToMany(cascade = {CascadeType.ALL}, 
 			fetch=FetchType.EAGER)
 	@JoinTable(
-			name="user_claim",
+			name="global_user_permission_map",
 			joinColumns={@JoinColumn(name="user_id")},
-			inverseJoinColumns={@JoinColumn(name="claim_id")}
+			inverseJoinColumns={@JoinColumn(name="user_permission_id_user_permission")}
 			)
 	private Set<UserPermission> claims = new HashSet<UserPermission>();
 	

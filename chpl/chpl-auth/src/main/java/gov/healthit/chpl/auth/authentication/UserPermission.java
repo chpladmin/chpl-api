@@ -1,5 +1,6 @@
 package gov.healthit.chpl.auth.authentication;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.user.User;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,12 +39,12 @@ public class UserPermission implements GrantedAuthority {
 	
 	public UserPermission(String authority){
 		this.authority = authority;
-		this.lastModifiedUser = Util.getCurrentUser().getId();
+		populateLastModifiedUser();
 	}
 	
 	public void setAuthority(String authority) {
 		this.authority = authority;
-		this.lastModifiedUser = Util.getCurrentUser().getId();
+		populateLastModifiedUser();
 	}
 	
 	public String getDescription() {
@@ -52,7 +53,7 @@ public class UserPermission implements GrantedAuthority {
 
 	public void setDescription(String description) {
 		this.description = description;
-		this.lastModifiedUser = Util.getCurrentUser().getId();
+		populateLastModifiedUser();
 	}
 
 	public Long getLastModifiedUser() {
@@ -80,6 +81,17 @@ public class UserPermission implements GrantedAuthority {
 	@Override
 	public String toString(){
 		return authority;
+	}
+	
+	private void populateLastModifiedUser(){
+		User currentUser = Util.getCurrentUser();
+		
+		Long userId = new Long(-1);
+		
+		if (currentUser != null){
+			userId = currentUser.getId();
+		}
+		this.lastModifiedUser = userId;
 	}
 	
 }
