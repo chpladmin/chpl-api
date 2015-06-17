@@ -324,7 +324,7 @@ public class CHPLAuthenticationSecurityTestConfig extends
             ds.setUser("openchpl");
             ds.setPassword("openchpl1!");
             
-            ic.bind("java:/comp/env/jdbc/chpl_acl", ds);
+            ic.bind("java:/comp/env/jdbc/openchpl", ds);
         } catch (NamingException ex) {
         	ex.printStackTrace();
         }

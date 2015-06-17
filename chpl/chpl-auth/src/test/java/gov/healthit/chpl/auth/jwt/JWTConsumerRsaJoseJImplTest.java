@@ -61,43 +61,5 @@ public class JWTConsumerRsaJoseJImplTest {
         }
         
     }
-	
-
-	
-	
-	/*
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        // rcarver - setup the jndi context and the datasource
-        try {
-            // Create initial context
-            System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-                "org.apache.naming.java.javaURLContextFactory");
-            System.setProperty(Context.URL_PKG_PREFIXES, 
-                "org.apache.naming");            
-            InitialContext ic = new InitialContext();
-
-            ic.createSubcontext("java:");
-            ic.createSubcontext("java:/comp");
-            ic.createSubcontext("java:/comp/env");
-            ic.createSubcontext("java:/comp/env/jdbc");
-           
-            // Construct DataSource
-        	PGConnectionPoolDataSource ds = new PGConnectionPoolDataSource();
-        	ds.setServerName("jdbc:postgresql://localhost/chpl_acl");
-            
-            //ds.setURL("jdbc:oracle:thin:@localhost:5432:chpl_acl");
-            ds.setUser("chpl_acl");
-            ds.setPassword("Audac1ous");
-            
-            ic.bind("java:/comp/env/jdbc/chpl_acl", ds);
-        } catch (NamingException ex) {
-            //Logger.getLogger(MyDAOTest.class.getName()).log(Level.SEVERE, null, ex);
-        	ex.printStackTrace();
-        }
-        
-    }
-	*/
-
-
+    
 }
