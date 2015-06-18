@@ -1,5 +1,9 @@
 package gov.healthit.chpl.auth.user;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
 
 import java.util.List;
@@ -32,13 +36,16 @@ public class UserManagerImpl implements UserManager {
 	@Autowired
 	private MutableAclService mutableAclService;
 	
+	@Autowired
+	UserPermissionDAO userPermissionDAO;
+	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
 	public void create(UserImpl user){
 		
 		userDAO.create(user);
 		// Grant the current principal administrative permission to the user
-		addPermission(user, new PrincipalSid(getUsername()),
+		addAclPermission(user, new PrincipalSid(Util.getUsername()),
 				BasePermission.ADMINISTRATION);
 		
 	}
@@ -100,7 +107,7 @@ public class UserManagerImpl implements UserManager {
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void addPermission(UserImpl user, Sid recipient, Permission permission){
+	public void addAclPermission(UserImpl user, Sid recipient, Permission permission){
 		
 		MutableAcl acl;
 		ObjectIdentity oid = new ObjectIdentityImpl(UserImpl.class, user.getId());
@@ -119,7 +126,7 @@ public class UserManagerImpl implements UserManager {
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void deletePermission(UserImpl user, Sid recipient, Permission permission){
+	public void deleteAclPermission(UserImpl user, Sid recipient, Permission permission){
 		
 		ObjectIdentity oid = new ObjectIdentityImpl(UserImpl.class, user.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -137,41 +144,36 @@ public class UserManagerImpl implements UserManager {
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void grantRole(UserImpl user, String role) throws UserRetrievalException, UserManagementException {
+	public void grantRole(UserImpl user, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		if ((role == "ROLE_ADMIN") || (role == "ROLE_ACL_ADMIN") || (role =="ROLE_ADMINISTRATOR")){
 			throw new UserManagementException("This role cannot be granted using the grant role functionality");
 		}
 		
-		user.addClaim(role);
+		UserPermission permission = userPermissionDAO.getPermissionFromAuthority(role);
+		user.addPermission(permission);
 		update(user);
 	}
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void grantAdmin(UserImpl user) throws UserRetrievalException {
-		user.addClaim("ROLE_ADMIN");
+	public void grantAdmin(UserImpl user) throws UserPermissionRetrievalException, UserRetrievalException {
+		
+		
+		UserPermission adminPermission = userPermissionDAO.getPermissionFromAuthority("ROLE_ADMIN");
+		user.addPermission(adminPermission);
 		update(user);
+		
 	}
 	
 
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void deleteRole(UserImpl user, String role) throws UserRetrievalException {
-		user.removeClaim(role);
+		user.removePermission(role);
 		update(user);
 	}
 	
-	protected String getUsername() {
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (auth.getPrincipal() instanceof UserDetails) {
-			return ((UserDetails) auth.getPrincipal()).getUsername();
-		}
-		else {
-			return auth.getPrincipal().toString();
-		}
-	}
+
 	
 }

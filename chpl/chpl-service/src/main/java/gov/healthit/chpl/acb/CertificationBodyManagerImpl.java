@@ -18,9 +18,6 @@ import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,12 +37,12 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		certificationBodyDAO.create(acb);
 
 		// Grant the current principal administrative permission to the ACB
-		addPermission(acb, new PrincipalSid(getUsername()),
+		addPermission(acb, new PrincipalSid(gov.healthit.chpl.auth.Util.getUsername()),
 				BasePermission.ADMINISTRATION);
 		
 		if (logger.isDebugEnabled()) {
 			logger.debug("Created acb " + acb
-					+ " and granted admin permission to recipient " + getUsername());
+					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
 		}
 	}
 	
@@ -133,19 +130,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		return certificationBodyDAO.getById(id);
 	}
 	
-	@Transactional
-	protected String getUsername() {
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (auth.getPrincipal() instanceof UserDetails) {
-			return ((UserDetails) auth.getPrincipal()).getUsername();
-		}
-		else {
-			return auth.getPrincipal().toString();
-		}
-	}
 	
+
 	public MutableAclService getMutableAclService() {
 		return mutableAclService;
 	}

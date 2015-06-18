@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.auth.authentication.UserPermission;
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.UserPermission;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,7 +32,7 @@ public class UserImpl implements User {
 	@Id
 	@Column(name="user_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long id = new Long(-1);
 
 	@Column(name="user_name", unique=true)
 	private String subjectName;
@@ -46,7 +47,7 @@ public class UserImpl implements User {
 			joinColumns={@JoinColumn(name="user_id")},
 			inverseJoinColumns={@JoinColumn(name="user_permission_id_user_permission")}
 			)
-	private Set<UserPermission> claims = new HashSet<UserPermission>();
+	private Set<UserPermission> permissions = new HashSet<UserPermission>();
 	
 	@Column(name="account_expired")
 	private boolean accountExpired;
@@ -63,8 +64,6 @@ public class UserImpl implements User {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	//TODO: last modified date
-	//last_modified_date timestamp without time zone NOT NULL,
 	
 	@Transient
 	private boolean authenticated = false;
@@ -76,26 +75,29 @@ public class UserImpl implements User {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
+		populateLastModifiedUser();
 	}
 	
-	public UserImpl(String subjectName, Set<UserPermission> claims) {
+	public UserImpl(String subjectName, Set<UserPermission> permissions) {
 		this.subjectName = subjectName;
-		this.claims = claims;
+		this.permissions = permissions;
 		this.password = null;
 		this.accountExpired = false;
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
+		populateLastModifiedUser();
 	}
 	
-	public UserImpl(String subjectName, String encodedPassword, Set<UserPermission> claims) {
+	public UserImpl(String subjectName, String encodedPassword, Set<UserPermission> permissions) {
 		this.subjectName = subjectName;
-		this.claims = claims;
+		this.permissions = permissions;
 		this.password = encodedPassword;
 		this.accountExpired = false;
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
+		populateLastModifiedUser();
 	}
 	
 	public UserImpl(String subjectName) {
@@ -105,6 +107,7 @@ public class UserImpl implements User {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
+		populateLastModifiedUser();
 	}
 	
 	public UserImpl(String subjectName, String encodedPassword) {
@@ -114,13 +117,8 @@ public class UserImpl implements User {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
+		populateLastModifiedUser();
 	}
-	
-	//public UserImpl(User other){
-	//	this.subjectName = other.getSubjectName();
-	//	this.password = other.getPassword();
-	//	this.accountExpired = !other.isAccountNonExpired();
-	//}
 	
 	public String getSubjectName() {
 		return subjectName;
@@ -128,40 +126,40 @@ public class UserImpl implements User {
 	
 	public void setSubjectName(String subject) {
 		this.subjectName = subject;
+		populateLastModifiedUser();
 	}
 	
-	public Set<UserPermission> getClaims() {
-		return this.claims;
+	public Set<UserPermission> getPermissions() {
+		return this.permissions;
 	}
 
-	public void setClaims(Set<UserPermission> claims) {
-		this.claims = claims;
-	}
-
-	public void addClaim(String claimValue){
-		this.claims.add(new  UserPermission(claimValue));
+	public void setPermissions(Set<UserPermission> permissions) {
+		this.permissions = permissions;
+		populateLastModifiedUser();
 	}
 	
-	public void addClaim(UserPermission claim){
-		this.claims.add(claim);
+	public void addPermission(UserPermission permission){
+		this.permissions.add(permission);
+		populateLastModifiedUser();
 	}
 
-	public void removeClaim(String claimValue) {
+	public void removePermission(String permissionValue) {
 		
-		UserPermission remove = new UserPermission(claimValue);
-		claims.remove(remove);
-		
+		UserPermission remove = new UserPermission(permissionValue);
+		permissions.remove(remove);
+		populateLastModifiedUser();
 	}
 	
 	@Override
-	public void removeClaim(UserPermission claim) {
-		claims.remove(claim);
+	public void removePermission(UserPermission permission) {
+		permissions.remove(permission);
+		populateLastModifiedUser();
 	}
 	
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.claims;
+		return this.permissions;
 	}
 
 	@Override
@@ -201,6 +199,7 @@ public class UserImpl implements User {
 	
 	public void setPassword(String encodedPassword){
 		this.password = encodedPassword;
+		populateLastModifiedUser();
 	}
 
 	@Override
@@ -230,6 +229,17 @@ public class UserImpl implements User {
 
 	public Long getId() {
 		return id;
+	}
+	
+	private void populateLastModifiedUser(){
+		User currentUser = Util.getCurrentUser();
+		
+		Long userId = new Long(-1);
+		
+		if (currentUser != null){
+			userId = currentUser.getId();
+		}
+		this.lastModifiedUser = userId;
 	}
 	
 }

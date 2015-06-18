@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.user.dao.impl;
+package gov.healthit.chpl.auth;
 
 
 import javax.persistence.EntityManager;
