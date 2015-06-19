@@ -11,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.permission.UserPermission;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
@@ -27,7 +28,7 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 		Map<String, List<String>> claims = new HashMap<String, List<String>>();
 		List<String> claimStrings = new ArrayList<String>();
 		
-		for (Claim claim : user.getClaims()){
+		for (UserPermission claim : user.getPermissions()){
 			claimStrings.add(claim.getAuthority());
 		}
 		claims.put("Authorities", claimStrings);

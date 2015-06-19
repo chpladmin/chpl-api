@@ -1,6 +1,8 @@
 package gov.healthit.chpl.auth.user;
 
 
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+
 import java.util.List;
 
 import org.springframework.security.acls.model.Permission;
@@ -9,10 +11,10 @@ import org.springframework.security.acls.model.Sid;
 public interface UserManager {
 	
 	
-	public void addPermission(UserImpl user, Sid recipient, Permission permission);
+	public void addAclPermission(UserImpl user, Sid recipient, Permission permission);
 	
 	
-	public void deletePermission(UserImpl user, Sid recipient, Permission permission);
+	public void deleteAclPermission(UserImpl user, Sid recipient, Permission permission);
 	
 	
 	public void deleteRole(UserImpl user, String role) throws UserRetrievalException;
@@ -36,10 +38,10 @@ public interface UserManager {
 	public User getByUserName(String uname) throws UserRetrievalException;
 
 
-	void grantRole(UserImpl user, String role) throws UserRetrievalException, UserManagementException;
+	void grantRole(UserImpl user, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
 
 
-	void grantAdmin(UserImpl user) throws UserRetrievalException;
+	void grantAdmin(UserImpl user) throws UserRetrievalException, UserPermissionRetrievalException;
 	
 	
 }

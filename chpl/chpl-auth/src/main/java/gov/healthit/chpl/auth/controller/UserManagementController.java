@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.controller;
 
 
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserImpl;
 import gov.healthit.chpl.auth.user.UserManagementException;
@@ -82,7 +83,7 @@ public class UserManagementController {
 			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")
 	public String grantUserRole(@RequestParam("userName") String userName, 
-			@RequestParam("role") String role) throws UserRetrievalException, UserManagementException {
+			@RequestParam("role") String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		
 		User fetchedUser = userManager.getByUserName(userName);
@@ -105,7 +106,7 @@ public class UserManagementController {
 			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")
 	public String grantUserAdmin(@RequestParam("userName") String userName) 
-			throws UserRetrievalException, UserManagementException {
+			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		User fetchedUser = userManager.getByUserName(userName);
 		String isSuccess = String.valueOf(false);
@@ -120,12 +121,6 @@ public class UserManagementController {
 		
 		return "{\"grantedAdmin\" : "+isSuccess+" }";
 		
-	}
-	
-	
-	@RequestMapping(value="/init_admin", method= RequestMethod.GET)
-	public void initAdminUser() {
-		registrar.createAdminUser();
 	}
 	
 }

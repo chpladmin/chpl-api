@@ -76,30 +76,4 @@ public class UserRegistrar {
 		return encodedPassword;
 	}
 	
-	public void createAdminUser(){
-		
-		User adminUser = null;
-		try {
-			adminUser = userManager.getByUserName("admin");
-		} catch (UserRetrievalException e) {
-			//TODO: Add Logging here
-			e.printStackTrace();
-		}
-		if (adminUser == null){
-			
-			//TODO: Add Logging here
-			UserImpl admin = new UserImpl("admin");
-			admin.setPassword(getEncodedPassword("admin"));
-			admin.addClaim("ROLE_ADMIN");
-			admin.addClaim("ROLE_USER_CREATOR");
-			
-			admin.setAuthenticated(true);
-			
-			SecurityContextHolder.getContext().setAuthentication(admin);
-			userManager.create(admin);
-			SecurityContextHolder.getContext().setAuthentication(null);
-			
-		}
-	}
-	
 }

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.user.dao.impl;
 
 
+import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.user.UserImpl;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.dao.UserDAO;

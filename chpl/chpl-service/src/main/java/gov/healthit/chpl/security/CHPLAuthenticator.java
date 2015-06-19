@@ -7,10 +7,10 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.healthit.chpl.auth.authentication.Claim;
 import gov.healthit.chpl.auth.authentication.UserAuthenticator;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.permission.UserPermission;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserManager;
 
@@ -32,7 +32,7 @@ public class CHPLAuthenticator extends UserAuthenticator {
 		Map<String, List<String>> claims = new HashMap<String, List<String>>();
 		List<String> roleStrings = new ArrayList<String>();
 		
-		for (Claim role : user.getClaims()){
+		for (UserPermission role : user.getPermissions()){
 			roleStrings.add(role.getAuthority());
 		}
 		claims.put("Authorities", roleStrings);
@@ -43,9 +43,7 @@ public class CHPLAuthenticator extends UserAuthenticator {
 	}
 	
 	/*
-	private List<String> getPermissions(User user){
-		
-		//userManager
+	private List<UserPermission> getPermissions(User user){
 		
 	}
 	*/

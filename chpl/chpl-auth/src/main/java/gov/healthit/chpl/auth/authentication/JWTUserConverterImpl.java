@@ -6,6 +6,7 @@ import java.util.Map;
 
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
+import gov.healthit.chpl.auth.permission.UserPermission;
 import gov.healthit.chpl.auth.user.UserImpl;
 import gov.healthit.chpl.auth.user.User;
 
@@ -57,7 +58,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			}
 			
 			for (String claimValue : claims){
-				user.addClaim(claimValue);
+				user.addPermission(new UserPermission(claimValue));
 			}
 			
 		}
