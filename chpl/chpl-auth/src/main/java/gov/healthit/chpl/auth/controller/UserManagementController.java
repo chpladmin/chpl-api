@@ -123,10 +123,4 @@ public class UserManagementController {
 		
 	}
 	
-	
-	@RequestMapping(value="/init_admin", method= RequestMethod.GET)
-	public void initAdminUser() {
-		registrar.createAdminUser();
-	}
-	
 }
