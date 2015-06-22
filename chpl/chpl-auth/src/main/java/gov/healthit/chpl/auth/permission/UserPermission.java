@@ -1,19 +1,27 @@
 package gov.healthit.chpl.auth.permission;
+import java.util.List;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserPermissionUserMapping;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name="user_permission")
+@SQLDelete(sql = "UPDATE user_permission SET deleted = true WHERE user_permission_id = ?")
+@Where(clause = "deleted = false")
 public class UserPermission implements GrantedAuthority {
 	
 	private static final long serialVersionUID = 1L;
@@ -32,8 +40,18 @@ public class UserPermission implements GrantedAuthority {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
+	
+	
+	@OneToMany
+	private List<UserPermissionUserMapping> userMappings;
+	
+	
 	@Transient
 	private boolean ghost;
+	
+	
+	
+	public UserPermission(){}
 	
 	/*
 	 * Create an empty "ghost" Permission with only an

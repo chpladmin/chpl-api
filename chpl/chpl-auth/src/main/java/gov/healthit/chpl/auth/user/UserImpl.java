@@ -5,6 +5,7 @@ import gov.healthit.chpl.auth.permission.UserPermission;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -17,14 +18,19 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 
 
 @Entity
 @Table(name="`user`")
+@SQLDelete(sql = "UPDATE openchpl.\"user\" SET deleted = true WHERE user_id = ?")
+@Where(clause = "deleted = false")
 public class UserImpl implements User {
 
 	private static final long serialVersionUID = 1L;
@@ -40,6 +46,7 @@ public class UserImpl implements User {
 	@Column(name="password")
 	private String password = null;
 	
+	/*
 	@ManyToMany(cascade = {CascadeType.ALL}, 
 			fetch=FetchType.EAGER)
 	@JoinTable(
@@ -48,6 +55,11 @@ public class UserImpl implements User {
 			inverseJoinColumns={@JoinColumn(name="user_permission_id_user_permission")}
 			)
 	private Set<UserPermission> permissions = new HashSet<UserPermission>();
+	*/
+	@OneToMany
+	private List<UserPermissionUserMapping> permissionMappings;
+	
+	
 	
 	@Column(name="account_expired")
 	private boolean accountExpired;
@@ -78,6 +90,7 @@ public class UserImpl implements User {
 		populateLastModifiedUser();
 	}
 	
+	/*
 	public UserImpl(String subjectName, Set<UserPermission> permissions) {
 		this.subjectName = subjectName;
 		this.permissions = permissions;
@@ -88,7 +101,9 @@ public class UserImpl implements User {
 		this.accountEnabled = true;
 		populateLastModifiedUser();
 	}
+	*/
 	
+	/*
 	public UserImpl(String subjectName, String encodedPassword, Set<UserPermission> permissions) {
 		this.subjectName = subjectName;
 		this.permissions = permissions;
@@ -99,6 +114,7 @@ public class UserImpl implements User {
 		this.accountEnabled = true;
 		populateLastModifiedUser();
 	}
+	*/
 	
 	public UserImpl(String subjectName) {
 		this.subjectName = subjectName;
