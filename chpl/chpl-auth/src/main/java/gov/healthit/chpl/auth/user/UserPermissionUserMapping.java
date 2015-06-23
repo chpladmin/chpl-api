@@ -21,33 +21,74 @@ import org.hibernate.annotations.Where;
 @Where(clause = "deleted = false")
 public class UserPermissionUserMapping {
 
-	  @Id
-	  private long userId;
-	  @Id
-	  private long permissionId;
+	@Id
+	private long userId;
+	@Id
+	private long permissionId;
 	  
-	  @Column(name="deleted")
-	  private boolean deleted;
+	@Column(name="deleted")
+	private boolean deleted;
 	  
 	  
-	  @ManyToOne
-	  @PrimaryKeyJoinColumn(name="user_id", referencedColumnName="user_id")
+	@ManyToOne
+	@PrimaryKeyJoinColumn(name="user_id", referencedColumnName="user_id")
 	  /* if this JPA model doesn't create a table for the "PROJ_EMP" entity,
 	  *  please comment out the @PrimaryKeyJoinColumn, and use the ff:
 	  *  @JoinColumn(name = "employeeId", updatable = false, insertable = false)
 	  * or @JoinColumn(name = "employeeId", updatable = false, insertable = false, referencedColumnName = "id")
 	  */
-	  private UserImpl user;
+	private UserImpl user;
+	 
 	  
-	  @ManyToOne
-	  @PrimaryKeyJoinColumn(name="user_permission_id_user_permission", referencedColumnName="user_permission_id")
-	  /* the same goes here:
-	  *  if this JPA model doesn't create a table for the "PROJ_EMP" entity,
-	  *  please comment out the @PrimaryKeyJoinColumn, and use the ff:
-	  *  @JoinColumn(name = "projectId", updatable = false, insertable = false)
-	  * or @JoinColumn(name = "projectId", updatable = false, insertable = false, referencedColumnName = "id")
-	  */
-	  private UserPermission permission;
-	
+	@ManyToOne
+	@PrimaryKeyJoinColumn(name="user_permission_id_user_permission", referencedColumnName="user_permission_id")
+	//@PrimaryKeyJoinColumn(name="user_permission_id_user_permission", referencedColumnName="user_permission_id")
+		  /* the same goes here:
+		  *  if this JPA model doesn't create a table for the "PROJ_EMP" entity,
+		  *  please comment out the @PrimaryKeyJoinColumn, and use the ff:
+		  *  @JoinColumn(name = "projectId", updatable = false, insertable = false)
+		  * or @JoinColumn(name = "projectId", updatable = false, insertable = false, referencedColumnName = "id")
+		  * */
+	private UserPermission permission;
+	  
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+
+	public long getPermissionId() {
+		return permissionId;
+	}
+
+	public void setPermissionId(long permissionId) {
+		this.permissionId = permissionId;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public UserImpl getUser() {
+		return user;
+	}
+
+	public void setUser(UserImpl user) {
+		this.user = user;
+	}
+
+	public UserPermission getPermission() {
+		return permission;
+	}
+
+	public void setPermission(UserPermission permission) {
+		this.permission = permission;
+	}
 
 }

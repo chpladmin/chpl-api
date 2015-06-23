@@ -30,7 +30,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Entity
 @Table(name="`user`")
 @SQLDelete(sql = "UPDATE openchpl.\"user\" SET deleted = true WHERE user_id = ?")
-@Where(clause = "deleted = false")
+@Where(clause = "NOT deleted")
 public class UserImpl implements User {
 
 	private static final long serialVersionUID = 1L;
@@ -56,8 +56,8 @@ public class UserImpl implements User {
 			)
 	private Set<UserPermission> permissions = new HashSet<UserPermission>();
 	*/
-	@OneToMany
-	private List<UserPermissionUserMapping> permissionMappings;
+	@OneToMany(mappedBy="user", fetch=FetchType.EAGER)
+	private Set<UserPermissionUserMapping> permissionMappings;
 	
 	
 	
@@ -146,36 +146,60 @@ public class UserImpl implements User {
 	}
 	
 	public Set<UserPermission> getPermissions() {
-		return this.permissions;
+		
+		Set<UserPermission> permissions = new HashSet<UserPermission>();
+		
+		for (UserPermissionUserMapping permMapping : permissionMappings){
+			permissions.add(permMapping.getPermission());
+		}
+		return permissions;
 	}
 
 	public void setPermissions(Set<UserPermission> permissions) {
-		this.permissions = permissions;
+		
+		
+		for (UserPermission perm : permissions){
+			this.addPermission(perm);
+		}
 		populateLastModifiedUser();
+		
 	}
 	
 	public void addPermission(UserPermission permission){
-		this.permissions.add(permission);
+		
+		UserPermissionUserMapping permMapping = new UserPermissionUserMapping();
+		permMapping.setPermissionId(permission.getId());
+		permMapping.setPermission(permission);
+		permMapping.setUserId(this.id);
+		permMapping.setUser(this);
+		
+		this.permissionMappings.add(permMapping);
 		populateLastModifiedUser();
 	}
 
 	public void removePermission(String permissionValue) {
 		
 		UserPermission remove = new UserPermission(permissionValue);
-		permissions.remove(remove);
-		populateLastModifiedUser();
+		this.removePermission(remove);
+		
 	}
 	
 	@Override
 	public void removePermission(UserPermission permission) {
-		permissions.remove(permission);
+		
+		for (UserPermissionUserMapping permMapping : this.permissionMappings){
+			
+			if (permMapping.getPermission().equals(permission)){
+				this.permissionMappings.remove(permMapping);
+			}
+		}
 		populateLastModifiedUser();
 	}
 	
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.permissions;
+		return this.getPermissions();
 	}
 
 	@Override

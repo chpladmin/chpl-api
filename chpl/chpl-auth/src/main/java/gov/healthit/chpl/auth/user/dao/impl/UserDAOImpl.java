@@ -82,7 +82,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 		UserImpl user = null;
 		
-		Query query = entityManager.createQuery( "from UserImpl where (NOT deleted = true) AND (user_name = :uname) ", UserImpl.class );
+		Query query = entityManager.createQuery( "from UserImpl where ((NOT deleted = true) AND (user_name = (:uname))) ", UserImpl.class );
 		query.setParameter("uname", uname);
 		List<UserImpl> result = query.getResultList();
 		

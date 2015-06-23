@@ -41,8 +41,7 @@ public class UserPermission implements GrantedAuthority {
 	private Long lastModifiedUser;
 	
 	
-	
-	@OneToMany
+	@OneToMany(mappedBy="permission")
 	private List<UserPermissionUserMapping> userMappings;
 	
 	
