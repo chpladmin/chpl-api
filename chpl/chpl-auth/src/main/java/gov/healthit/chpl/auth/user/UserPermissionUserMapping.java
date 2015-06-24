@@ -2,6 +2,8 @@ package gov.healthit.chpl.auth.user;
 
 import gov.healthit.chpl.auth.permission.UserPermission;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -21,11 +23,14 @@ import org.hibernate.annotations.Where;
 //@IdClass(UserPermissionUserMappingId.class)
 //@SQLDelete(sql = "UPDATE global_user_permission_map SET deleted = true WHERE user_permission_id = ?")
 @Where(clause = "deleted = false")
+@AssociationOverrides({
+    @AssociationOverride(name = "pk.user", joinColumns = @JoinColumn(name = "user_id", insertable = false, updatable = false)),
+    @AssociationOverride(name = "pk.permission", joinColumns = @JoinColumn(name = "permission_id_user_permission", insertable = false, updatable = false)) })
 public class UserPermissionUserMapping {
 
 	
 	@EmbeddedId
-	private UserPermissionUserMappingId pk = new UserPermissionUserMappingId();
+	private UserPermissionUserMappingPk pk = new UserPermissionUserMappingPk();
 	/*
 	@Id
 	@Column(name="user_id")
@@ -40,23 +45,23 @@ public class UserPermissionUserMapping {
 	private boolean deleted;
 	
 	
-	@ManyToOne
+	//@ManyToOne
 	//@PrimaryKeyJoinColumn(name="user_id", referencedColumnName="user_id")
 	  /* if this JPA model doesn't create a table for the "PROJ_EMP" entity,
 	  *  please comment out the @PrimaryKeyJoinColumn, and use the ff:
 	  *  @JoinColumn(name = "employeeId", updatable = false, insertable = false)
 	  * or @JoinColumn(name = "employeeId", updatable = false, insertable = false, referencedColumnName = "id")
 	  */
-	@JoinColumn(name = "user_id", updatable = false, insertable = false, referencedColumnName = "user_id")
-	private UserImpl userImpl;
+	//@JoinColumn(name = "user_id", updatable = false, insertable = false, referencedColumnName = "user_id")
+	//private UserImpl userImpl;
 	 
 	  
-	@ManyToOne
+	//@ManyToOne
 	//@PrimaryKeyJoinColumn(name="permission_id_user_permission", referencedColumnName="user_permission_id")
 	//@PrimaryKeyJoinColumn(name="user_permission_id_user_permission", referencedColumnName="user_permission_id")
 	//@PrimaryKeyJoinColumn(name="user_permission_id_user_permission", referencedColumnName="user_permission_id")
-	@JoinColumn(name = "permission_id_user_permission", updatable = false, insertable = false, referencedColumnName = "user_permission_id")
-	private UserPermission permission;
+	//@JoinColumn(name = "permission_id_user_permission", updatable = false, insertable = false, referencedColumnName = "user_permission_id")
+	//private UserPermission permission;
 	
 	/*
 	public long getUserId() {
@@ -85,27 +90,27 @@ public class UserPermissionUserMapping {
 	}
 
 	public UserImpl getUserImpl() {
-		return userImpl;
+		return getPk().getUser();
 	}
 
 	public void setUserImpl(UserImpl user) {
-		this.userImpl = user;
+		this.getPk().setUser(user);
 	}
 
 	public UserPermission getPermission() {
-		return permission;
+		return this.getPk().getPermission();
 	}
 
 	public void setPermission(UserPermission permission) {
-		this.permission = permission;
+		this.getPk().setPermission(permission);
 	}
-	/*
-	public UserPermissionUserMappingId getPk() {
+	
+	public UserPermissionUserMappingPk getPk() {
 		return pk;
 	}
 
-	public void setPk(UserPermissionUserMappingId pk) {
+	public void setPk(UserPermissionUserMappingPk pk) {
 		this.pk = pk;
 	}
-	*/
+	
 }

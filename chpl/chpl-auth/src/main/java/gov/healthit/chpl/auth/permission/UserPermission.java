@@ -7,6 +7,7 @@ import gov.healthit.chpl.auth.user.UserPermissionUserMapping;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,7 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Entity
 @Table(name="user_permission")
 @SQLDelete(sql = "UPDATE user_permission SET deleted = true WHERE user_permission_id = ?")
-@Where(clause = "deleted = false")
+@Where(clause = "NOT deleted")
 public class UserPermission implements GrantedAuthority {
 	
 	private static final long serialVersionUID = 1L;
@@ -41,7 +42,7 @@ public class UserPermission implements GrantedAuthority {
 	private Long lastModifiedUser;
 	
 	
-	@OneToMany(mappedBy="permission")
+	@OneToMany(mappedBy="pk.permission", fetch=FetchType.EAGER)
 	private List<UserPermissionUserMapping> userMappings;
 	
 	

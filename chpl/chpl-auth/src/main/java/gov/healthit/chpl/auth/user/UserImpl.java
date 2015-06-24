@@ -56,7 +56,7 @@ public class UserImpl implements User {
 			)
 	private Set<UserPermission> permissions = new HashSet<UserPermission>();
 	*/
-	@OneToMany(mappedBy="userImpl", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER)
 	private Set<UserPermissionUserMapping> permissionMappings;
 	
 	
