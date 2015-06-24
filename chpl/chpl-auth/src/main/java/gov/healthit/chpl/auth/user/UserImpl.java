@@ -56,7 +56,7 @@ public class UserImpl implements User {
 			)
 	private Set<UserPermission> permissions = new HashSet<UserPermission>();
 	*/
-	@OneToMany(mappedBy="user", fetch=FetchType.EAGER)
+	@OneToMany(mappedBy="userImpl", fetch=FetchType.EAGER)
 	private Set<UserPermissionUserMapping> permissionMappings;
 	
 	
@@ -168,10 +168,10 @@ public class UserImpl implements User {
 	public void addPermission(UserPermission permission){
 		
 		UserPermissionUserMapping permMapping = new UserPermissionUserMapping();
-		permMapping.setPermissionId(permission.getId());
+		//permMapping.setPermissionId(permission.getId());
 		permMapping.setPermission(permission);
-		permMapping.setUserId(this.id);
-		permMapping.setUser(this);
+		//permMapping.setUserId(this.id);
+		permMapping.setUserImpl(this);
 		
 		this.permissionMappings.add(permMapping);
 		populateLastModifiedUser();
