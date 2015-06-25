@@ -24,7 +24,10 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 
 	@Override
 	public void update(UserPermission permission) {
-		entityManager.merge(permission);
+		
+		if (!permission.isGhost()){
+			entityManager.merge(permission);
+		}
 	}
 
 	@Override

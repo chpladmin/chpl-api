@@ -16,11 +16,11 @@ public class UserPermissionUserMappingPk implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", updatable = false, insertable = false)
 	private UserImpl user;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "permission_id_user_permission", updatable = false, insertable = false)
 	private UserPermission permission;
 	

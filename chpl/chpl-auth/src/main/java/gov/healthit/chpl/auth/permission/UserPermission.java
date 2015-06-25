@@ -41,15 +41,11 @@ public class UserPermission implements GrantedAuthority {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	
 	@OneToMany(mappedBy="pk.permission", fetch=FetchType.EAGER)
 	private List<UserPermissionUserMapping> userMappings;
 	
-	
 	@Transient
 	private boolean ghost;
-	
-	
 	
 	public UserPermission(){}
 	

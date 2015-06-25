@@ -46,19 +46,9 @@ public class UserImpl implements User {
 	@Column(name="password")
 	private String password = null;
 	
-	/*
-	@ManyToMany(cascade = {CascadeType.ALL}, 
-			fetch=FetchType.EAGER)
-	@JoinTable(
-			name="global_user_permission_map",
-			joinColumns={@JoinColumn(name="user_id")},
-			inverseJoinColumns={@JoinColumn(name="user_permission_id_user_permission")}
-			)
-	private Set<UserPermission> permissions = new HashSet<UserPermission>();
-	*/
-	@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER)
-	private Set<UserPermissionUserMapping> permissionMappings;
 	
+	@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<UserPermissionUserMapping> permissionMappings;
 	
 	
 	@Column(name="account_expired")
@@ -90,31 +80,6 @@ public class UserImpl implements User {
 		populateLastModifiedUser();
 	}
 	
-	/*
-	public UserImpl(String subjectName, Set<UserPermission> permissions) {
-		this.subjectName = subjectName;
-		this.permissions = permissions;
-		this.password = null;
-		this.accountExpired = false;
-		this.accountLocked = false;
-		this.credentialsExpired = false;
-		this.accountEnabled = true;
-		populateLastModifiedUser();
-	}
-	*/
-	
-	/*
-	public UserImpl(String subjectName, String encodedPassword, Set<UserPermission> permissions) {
-		this.subjectName = subjectName;
-		this.permissions = permissions;
-		this.password = encodedPassword;
-		this.accountExpired = false;
-		this.accountLocked = false;
-		this.credentialsExpired = false;
-		this.accountEnabled = true;
-		populateLastModifiedUser();
-	}
-	*/
 	
 	public UserImpl(String subjectName) {
 		this.subjectName = subjectName;
