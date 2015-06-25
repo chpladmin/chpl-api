@@ -1,6 +1,6 @@
-package gov.healthit.chpl.auth.user;
+package gov.healthit.chpl.auth.permission;
 
-import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.user.UserImpl;
 
 import java.io.Serializable;
 
@@ -21,7 +21,7 @@ public class UserPermissionUserMappingPk implements Serializable {
 	private UserImpl user;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "permission_id_user_permission", updatable = false, insertable = false)
+	@JoinColumn(name = "user_permission_id_user_permission", updatable = false, insertable = false)
 	private UserPermission permission;
 	
 	

@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth.user;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionUserMapping;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -38,7 +39,7 @@ public class UserImpl implements User {
 	@Id
 	@Column(name="user_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id = new Long(-1);
+	private Long id;
 
 	@Column(name="user_name", unique=true)
 	private String subjectName;
@@ -133,10 +134,8 @@ public class UserImpl implements User {
 	public void addPermission(UserPermission permission){
 		
 		UserPermissionUserMapping permMapping = new UserPermissionUserMapping();
-		//permMapping.setPermissionId(permission.getId());
 		permMapping.setPermission(permission);
-		//permMapping.setUserId(this.id);
-		permMapping.setUserImpl(this);
+		permMapping.setUser(this);
 		
 		this.permissionMappings.add(permMapping);
 		populateLastModifiedUser();

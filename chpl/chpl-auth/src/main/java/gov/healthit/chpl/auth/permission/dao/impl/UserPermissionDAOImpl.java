@@ -29,7 +29,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 			entityManager.merge(permission);
 		}
 	}
-
+	
 	@Override
 	public void deactivate(String authority) {
 

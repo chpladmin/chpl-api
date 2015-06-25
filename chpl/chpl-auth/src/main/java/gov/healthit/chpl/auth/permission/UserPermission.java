@@ -3,7 +3,6 @@ import java.util.List;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserPermissionUserMapping;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
