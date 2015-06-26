@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.user;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.PermissionMappingManager;
 import gov.healthit.chpl.auth.permission.UserPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMapping;
 
@@ -21,6 +22,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 
 
@@ -44,8 +46,13 @@ public class UserImpl implements User {
 	private String password = null;
 	
 	
-	@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<UserPermissionUserMapping> permissionMappings;
+	//@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	//@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	//private Set<UserPermissionUserMapping> permissionMappings;
+	
+	@Transient
+	@Autowired
+	private PermissionMappingManager permissionMappingManager;
 	
 	
 	@Column(name="account_expired")
@@ -109,43 +116,25 @@ public class UserImpl implements User {
 	
 	public Set<UserPermission> getPermissions() {
 		
-		Set<UserPermission> permissions = new HashSet<UserPermission>();
-		
-		for (UserPermissionUserMapping permMapping : permissionMappings){
-			permissions.add(permMapping.getPermission());
-		}
-		return permissions;
-	}
-
-	public void setPermissions(Set<UserPermission> permissions) {
-		
-		for (UserPermission perm : permissions){
-			this.addPermission(perm);
-		}
-		populateLastModifiedUser();
+		return permissionMappingManager.getPermissions(this);
 		
 	}
 	
 	public void addPermission(UserPermission permission){
-		
-		UserPermissionUserMapping permMapping = new UserPermissionUserMapping();
-		permMapping.setPermission(permission);
-		permMapping.setUser(this);
-		
-		this.permissionMappings.add(permMapping);
-		populateLastModifiedUser();
+
+		permissionMappingManager.grant(this, permission);
 	}
 
-	public void removePermission(String permissionValue) {
-		
-		UserPermission remove = new UserPermission(permissionValue);
-		this.removePermission(remove);
-		
+	public void removePermission(String permissionValue){
+	
+		permissionMappingManager.revoke(this, permissionValue);
 	}
 	
 	@Override
 	public void removePermission(UserPermission permission) {
 		
+		permissionMappingManager.revoke(this, permission);
+		/*
 		for (UserPermissionUserMapping permMapping : this.permissionMappings){
 			
 			if (permMapping.getPermission().equals(permission)){
@@ -153,6 +142,8 @@ public class UserImpl implements User {
 			}
 		}
 		populateLastModifiedUser();
+		*/
+		
 	}
 	
 

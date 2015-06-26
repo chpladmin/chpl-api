@@ -15,7 +15,7 @@ public interface User extends UserDetails , Authentication {
 	public String getSubjectName();
 	public void setSubjectName(String subject);
 	public Set<UserPermission> getPermissions();
-	public void setPermissions(Set<UserPermission> permissions);
+	//public void setPermissions(Set<UserPermission> permissions);
 	public void addPermission(UserPermission permission);
 	public void removePermission(String permissionValue);
 	public void removePermission(UserPermission permission);

@@ -25,9 +25,16 @@ public class PermissionMappingManagerImpl {
 	
 	public void grant(UserImpl user, UserPermission permission){
 		
+		UserPermissionUserMapping permissionMapping = new UserPermissionUserMapping();
+		permissionMapping.setPermission(permission);
+		permissionMapping.setUser(user);
+		userPermissionUserMappingDAO.create(permissionMapping);
+		
 	}
 	
 	public void revoke(UserImpl user, UserPermission permission){
+		
+		userPermissionUserMappingDAO.deactivate(user.getId(), permission.getId());
 		
 	}
 	
