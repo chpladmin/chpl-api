@@ -2,10 +2,14 @@ package gov.healthit.chpl.auth.permission.dao.impl;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMapping;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionUserMappingDAO;
 
+
+@Repository(value="userPermissionUserMappingDAO")
 public class UserPermissionUserMappingDAOImpl extends BaseDAOImpl implements
 		UserPermissionUserMappingDAO {
 	
