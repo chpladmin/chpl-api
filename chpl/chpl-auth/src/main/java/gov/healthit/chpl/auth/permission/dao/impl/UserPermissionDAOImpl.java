@@ -7,10 +7,10 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Repository(value="userPermissionDAO")
@@ -18,16 +18,13 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	
 
 	@Override
-	public void create(UserPermission permission) {
+	public void create(UserPermissionEntity permission) {
 		entityManager.persist(permission);
 	}
 
 	@Override
-	public void update(UserPermission permission) {
-		
-		if (!permission.isGhost()){
-			entityManager.merge(permission);
-		}
+	public void update(UserPermissionEntity permission) {
+		entityManager.merge(permission);
 	}
 	
 	@Override
@@ -49,20 +46,20 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 
 	@Override
-	public List<UserPermission> findAll() {
+	public List<UserPermissionEntity> findAll() {
 		
-		List<UserPermission> result = entityManager.createQuery( "from UserPermission  where (NOT deleted = true) ", UserPermission.class ).getResultList();
+		List<UserPermissionEntity> result = entityManager.createQuery( "from UserPermission  where (NOT deleted = true) ", UserPermissionEntity.class ).getResultList();
 		return result;
 	}
 	
 	@Override
-	public UserPermission getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException {			
+	public UserPermissionEntity getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException {			
 			
-		UserPermission permission = null;
+		UserPermissionEntity permission = null;
 			
-		Query query = entityManager.createQuery( "from UserPermission where (NOT deleted = true) AND (authority = :authority) ", UserPermission.class );
+		Query query = entityManager.createQuery( "from UserPermission where (NOT deleted = true) AND (authority = :authority) ", UserPermissionEntity.class );
 		query.setParameter("authority", authority);
-		List<UserPermission> result = query.getResultList();
+		List<UserPermissionEntity> result = query.getResultList();
 			
 		if (result.size() > 1){
 			throw new UserPermissionRetrievalException("Data error. Duplicate authority in database.");

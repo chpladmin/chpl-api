@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.permission;
 
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserEntity;
 
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
@@ -48,19 +48,19 @@ public class UserPermissionUserMapping {
 		this.deleted = deleted;
 	}
 
-	public UserImpl getUser() {
+	public UserEntity getUser() {
 		return getPk().getUser();
 	}
 	
-	public void setUser(UserImpl user) {
+	public void setUser(UserEntity user) {
 		this.getPk().setUser(user);
 	}
 	
-	public UserPermission getPermission() {
+	public UserPermissionEntity getPermission() {
 		return this.getPk().getPermission();
 	}
 	
-	public void setPermission(UserPermission permission) {
+	public void setPermission(UserPermissionEntity permission) {
 		this.getPk().setPermission(permission);
 	}
 	

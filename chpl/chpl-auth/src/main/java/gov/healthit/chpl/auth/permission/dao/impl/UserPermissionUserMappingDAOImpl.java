@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth.permission.dao.impl;
 
+import java.util.List;
+
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -43,4 +45,14 @@ public class UserPermissionUserMappingDAOImpl extends BaseDAOImpl implements
 		
 	}
 
+	@Override
+	public List<UserPermissionUserMapping> findPermissions(Long userId) {
+		
+		Query query = entityManager.createQuery( "from UserPermissionUserMapping where ((NOT deleted) AND (user_id = (:userid))) ", UserPermissionUserMapping.class );
+		query.setParameter("userid", userId);
+		List<UserPermissionUserMapping> result = query.getResultList();
+		return result;
+		
+	}
+	
 }

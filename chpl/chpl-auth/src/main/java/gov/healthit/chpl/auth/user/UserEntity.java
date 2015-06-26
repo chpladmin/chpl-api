@@ -3,6 +3,8 @@ package gov.healthit.chpl.auth.user;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.PermissionMappingManager;
 import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionEntity;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMapping;
 
 import java.util.Collection;
@@ -30,7 +32,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Table(name="`user`")
 @SQLDelete(sql = "UPDATE openchpl.\"user\" SET deleted = true WHERE user_id = ?")
 @Where(clause = "NOT deleted")
-public class UserImpl implements User {
+public class UserEntity implements User {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -45,15 +47,9 @@ public class UserImpl implements User {
 	@Column(name="password")
 	private String password = null;
 	
-	
-	//@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	//@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-	//private Set<UserPermissionUserMapping> permissionMappings;
-	
 	@Transient
 	@Autowired
 	private PermissionMappingManager permissionMappingManager;
-	
 	
 	@Column(name="account_expired")
 	private boolean accountExpired;
@@ -74,7 +70,7 @@ public class UserImpl implements User {
 	@Transient
 	private boolean authenticated = false;
 	
-	public UserImpl(){
+	public UserEntity(){
 		this.subjectName = null;
 		this.password = null;
 		this.accountExpired = false;
@@ -85,7 +81,7 @@ public class UserImpl implements User {
 	}
 	
 	
-	public UserImpl(String subjectName) {
+	public UserEntity(String subjectName) {
 		this.subjectName = subjectName;
 		this.password = null;
 		this.accountExpired = false;
@@ -95,7 +91,7 @@ public class UserImpl implements User {
 		populateLastModifiedUser();
 	}
 	
-	public UserImpl(String subjectName, String encodedPassword) {
+	public UserEntity(String subjectName, String encodedPassword) {
 		this.subjectName = subjectName;
 		this.password = encodedPassword;
 		this.accountExpired = false;
@@ -117,32 +113,37 @@ public class UserImpl implements User {
 	public Set<UserPermission> getPermissions() {
 		
 		return permissionMappingManager.getPermissions(this);
-		
 	}
 	
 	public void addPermission(UserPermission permission){
 
-		permissionMappingManager.grant(this, permission);
+		try {
+			permissionMappingManager.grant(this, permission.getAuthority());
+		} catch (UserPermissionRetrievalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void removePermission(String permissionValue){
 	
-		permissionMappingManager.revoke(this, permissionValue);
+		try {
+			permissionMappingManager.revoke(this, permissionValue);
+		} catch (UserPermissionRetrievalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void removePermission(UserPermission permission) {
 		
-		permissionMappingManager.revoke(this, permission);
-		/*
-		for (UserPermissionUserMapping permMapping : this.permissionMappings){
-			
-			if (permMapping.getPermission().equals(permission)){
-				this.permissionMappings.remove(permMapping);
-			}
+		try {
+			permissionMappingManager.revoke(this, permission.getAuthority());
+		} catch (UserPermissionRetrievalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		populateLastModifiedUser();
-		*/
 		
 	}
 	

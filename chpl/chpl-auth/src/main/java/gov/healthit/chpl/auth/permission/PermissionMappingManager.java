@@ -2,7 +2,7 @@ package gov.healthit.chpl.auth.permission;
 
 import java.util.Set;
 
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserEntity;
 
 public interface PermissionMappingManager {
 	
@@ -12,13 +12,16 @@ public interface PermissionMappingManager {
 	
 	public void delete(UserPermissionUserMapping userPermissionMapping);
 	
-	public void grant(UserImpl user, UserPermission permission);
+	public void grant(UserEntity user, UserPermissionEntity permission);
 	
-	public void grant(UserImpl user, String authority);
+	public void grant(UserEntity user, String authority) throws UserPermissionRetrievalException;
 	
-	public void revoke(UserImpl user, UserPermission permission);
+	public void revoke(UserEntity user, UserPermissionEntity permission);
 	
-	public void revoke(UserImpl user, String authority);
+	public void revoke(UserEntity user, String authority) throws UserPermissionRetrievalException;
 	
-	public Set<UserPermission> getPermissions(UserImpl user);
+	public Set<UserPermission> getPermissions(UserEntity user);
+	
+	public Set<UserPermissionEntity> getPermissionEntities(UserEntity user);
+	
 }

@@ -1,7 +1,7 @@
 package gov.healthit.chpl.auth.user.registration;
 
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
@@ -36,7 +36,7 @@ public class UserRegistrar {
 		} else {
 			
 			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
-			UserImpl userToCreate = new UserImpl(userInfo.getUserName(), encodedPassword);
+			UserEntity userToCreate = new UserEntity(userInfo.getUserName(), encodedPassword);
 			userManager.create(userToCreate);
 			return true;
 		}
@@ -49,7 +49,7 @@ public class UserRegistrar {
 		if (fetchedUser == null){
 			throw new UserRetrievalException("User not found");
 		} else {
-			UserImpl user = (UserImpl) fetchedUser;
+			UserEntity user = (UserEntity) fetchedUser;
 			String encodedPassword = getEncodedPassword(password);
 			user.setPassword(encodedPassword);
 			userManager.update(user);
@@ -64,7 +64,7 @@ public class UserRegistrar {
 		if (fetchedUser == null){
 			throw new UserRetrievalException("User not found");
 		} else {
-			UserImpl user = (UserImpl) fetchedUser;
+			UserEntity user = (UserEntity) fetchedUser;
 			userManager.delete(user);
 		}
 		return true;

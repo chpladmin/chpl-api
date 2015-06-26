@@ -1,5 +1,8 @@
 package gov.healthit.chpl.auth.permission.dao;
 
+import java.util.List;
+import java.util.Set;
+
 import gov.healthit.chpl.auth.permission.UserPermissionUserMapping;
 
 
@@ -12,5 +15,7 @@ public interface UserPermissionUserMappingDAO {
 	public void deactivate(UserPermissionUserMapping permissionMapping);
 	
 	public void deactivate(Long userId, Long permissionId);
+	
+	public List<UserPermissionUserMapping> findPermissions(Long userId);
 	
 }

@@ -21,6 +21,8 @@ public class AuthenticationController {
 	private Authenticator authenticator;
 	
 	
+	//TODO: Create emergency "BUMP TOKENS" method which invalidates all active tokens.
+	
 	@RequestMapping(value="/authenticate_json", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")

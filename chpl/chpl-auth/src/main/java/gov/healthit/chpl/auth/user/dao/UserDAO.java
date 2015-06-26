@@ -1,23 +1,23 @@
 package gov.healthit.chpl.auth.user.dao;
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 import java.util.List;
 
 public interface UserDAO {
 	
-	public void create(UserImpl user);
+	public void create(UserEntity user);
 	
 	public void deactivate(String uname);
 	
 	public void deactivate(Long userId);
 	
-	public List<UserImpl> findAll();
+	public List<UserEntity> findAll();
 
-	public UserImpl getById(Long userId) throws UserRetrievalException;
+	public UserEntity getById(Long userId) throws UserRetrievalException;
 	
-	public UserImpl getByName(String uname) throws UserRetrievalException;
+	public UserEntity getByName(String uname) throws UserRetrievalException;
 
-	public void update(UserImpl user);
+	public void update(UserEntity user);
 }
 

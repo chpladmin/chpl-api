@@ -3,10 +3,10 @@ package gov.healthit.chpl.auth.permission;
 
 public interface UserPermissionManager {	
 	
-	public void create(UserPermission permission);
+	public void create(UserPermissionEntity permission);
 	
-	public void update(UserPermission permission);
+	public void update(UserPermissionEntity permission);
 	
-	public void delete(UserPermission permission);
+	public void delete(UserPermissionEntity permission);
 
 }

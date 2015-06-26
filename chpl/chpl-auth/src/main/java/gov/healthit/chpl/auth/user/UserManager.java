@@ -11,25 +11,25 @@ import org.springframework.security.acls.model.Sid;
 public interface UserManager {
 	
 	
-	public void addAclPermission(UserImpl user, Sid recipient, Permission permission);
+	public void addAclPermission(UserEntity user, Sid recipient, Permission permission);
 	
 	
-	public void deleteAclPermission(UserImpl user, Sid recipient, Permission permission);
+	public void deleteAclPermission(UserEntity user, Sid recipient, Permission permission);
 	
 	
-	public void deleteRole(UserImpl user, String role) throws UserRetrievalException;
+	public void deleteRole(UserEntity user, String role) throws UserRetrievalException;
 	
 	
-	public void create(UserImpl user);
+	public void create(UserEntity user);
 	
 	
-	public void update(UserImpl user) throws UserRetrievalException;
+	public void update(UserEntity user) throws UserRetrievalException;
 	
 	
-	public void delete(UserImpl user);
+	public void delete(UserEntity user);
 	
 	
-	public List<UserImpl> getAll();
+	public List<UserEntity> getAll();
 	
 	
 	public User getById(Long id) throws UserRetrievalException;
@@ -38,10 +38,10 @@ public interface UserManager {
 	public User getByUserName(String uname) throws UserRetrievalException;
 
 
-	void grantRole(UserImpl user, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
+	void grantRole(UserEntity user, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
 
 
-	void grantAdmin(UserImpl user) throws UserRetrievalException, UserPermissionRetrievalException;
+	void grantAdmin(UserEntity user) throws UserRetrievalException, UserPermissionRetrievalException;
 	
 	
 }

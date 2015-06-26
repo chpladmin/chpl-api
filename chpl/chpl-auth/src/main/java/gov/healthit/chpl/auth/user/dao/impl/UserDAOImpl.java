@@ -2,7 +2,7 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
 
@@ -19,7 +19,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	@Transactional
 	@Override
-	public void create(UserImpl user) {
+	public void create(UserEntity user) {
 		
 		entityManager.persist(user);
 		
@@ -27,7 +27,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	@Transactional
 	@Override
-	public void update(UserImpl user) {
+	public void update(UserEntity user) {
 		
 		entityManager.merge(user);
 		
@@ -50,21 +50,21 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	}
 	
 	@Override
-	public List<UserImpl> findAll() {
+	public List<UserEntity> findAll() {
 		
-		List<UserImpl> result = entityManager.createQuery( "from UserImpl  where (NOT deleted = true) ", UserImpl.class ).getResultList();
+		List<UserEntity> result = entityManager.createQuery( "from UserImpl  where (NOT deleted = true) ", UserEntity.class ).getResultList();
 		
 		return result;
 	}
 
 	@Override
-	public UserImpl getById(Long userId) throws UserRetrievalException {
+	public UserEntity getById(Long userId) throws UserRetrievalException {
 		
-		UserImpl user = null;
+		UserEntity user = null;
 		
-		Query query = entityManager.createQuery( "from user where (NOT deleted = true) AND (user_id = :userid) ", UserImpl.class );
+		Query query = entityManager.createQuery( "from user where (NOT deleted = true) AND (user_id = :userid) ", UserEntity.class );
 		query.setParameter("userid", userId);
-		List<UserImpl> result = query.getResultList();
+		List<UserEntity> result = query.getResultList();
 		
 		if (result.size() > 1){
 			throw new UserRetrievalException("Data error. Duplicate user id in database.");
@@ -78,13 +78,13 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public UserImpl getByName(String uname) throws UserRetrievalException {
+	public UserEntity getByName(String uname) throws UserRetrievalException {
 		
-		UserImpl user = null;
+		UserEntity user = null;
 		
-		Query query = entityManager.createQuery( "from UserImpl where ((NOT deleted = true) AND (user_name = (:uname))) ", UserImpl.class );
+		Query query = entityManager.createQuery( "from UserImpl where ((NOT deleted = true) AND (user_name = (:uname))) ", UserEntity.class );
 		query.setParameter("uname", uname);
-		List<UserImpl> result = query.getResultList();
+		List<UserEntity> result = query.getResultList();
 		
 		if (result.size() > 1){
 			throw new UserRetrievalException("Data error. Duplicate user name in database.");

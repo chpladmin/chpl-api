@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.permission;
 
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserEntity;
 
 import java.io.Serializable;
 
@@ -18,11 +18,11 @@ public class UserPermissionUserMappingPk implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", updatable = false, insertable = false)
-	private UserImpl user;
+	private UserEntity user;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_permission_id_user_permission", updatable = false, insertable = false)
-	private UserPermission permission;
+	private UserPermissionEntity permission;
 	
 	
 	public int hashCode() {
@@ -37,19 +37,19 @@ public class UserPermissionUserMappingPk implements Serializable {
 		return false;
 	}
 	
-	public UserPermission getPermission() {
+	public UserPermissionEntity getPermission() {
 		return permission;
 	}
 	
-	public void setPermission(UserPermission permission) {
+	public void setPermission(UserPermissionEntity permission) {
 		this.permission = permission;
 	}
 	
-	public UserImpl getUser() {
+	public UserEntity getUser() {
 		return user;
 	}
 	
-	public void setUser(UserImpl user) {
+	public void setUser(UserEntity user) {
 		this.user = user;
 	}
 	

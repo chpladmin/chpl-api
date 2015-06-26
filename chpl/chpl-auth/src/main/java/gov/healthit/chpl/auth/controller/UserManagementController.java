@@ -3,7 +3,7 @@ package gov.healthit.chpl.auth.controller;
 
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -72,7 +72,7 @@ public class UserManagementController {
 	public String updateUserDetails(@RequestBody UserDTO userInfo) throws UserRetrievalException {
 		//TODO: Build out UserDTO to contain eg: Contacts
 		
-		UserImpl user = new UserImpl(userInfo.getUserName(), registrar.getEncodedPassword(userInfo.getPassword()));
+		UserEntity user = new UserEntity(userInfo.getUserName(), registrar.getEncodedPassword(userInfo.getPassword()));
 		userManager.create(user);
 		return "{\"userUpdated\" : true }";
 		
@@ -92,7 +92,7 @@ public class UserManagementController {
 		if (fetchedUser == null){
 			throw new UserRetrievalException("User not found");
 		} else {
-			UserImpl user = (UserImpl) fetchedUser;
+			UserEntity user = (UserEntity) fetchedUser;
 			userManager.grantRole(user, role);
 			isSuccess = String.valueOf(true);
 		}
@@ -114,7 +114,7 @@ public class UserManagementController {
 		if (fetchedUser == null){
 			throw new UserRetrievalException("User not found");
 		} else {
-			UserImpl user = (UserImpl) fetchedUser;
+			UserEntity user = (UserEntity) fetchedUser;
 			userManager.grantAdmin(user);
 			isSuccess = String.valueOf(true);
 		}
