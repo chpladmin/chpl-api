@@ -83,13 +83,19 @@ public class PermissionMappingManagerImpl implements PermissionMappingManager {
 		}
 		
 		return permissions;
-		
 	}
 
 	@Override
 	public Set<UserPermissionEntity> getPermissionEntities(UserEntity user) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Set<UserPermissionEntity> permissions = new HashSet<UserPermissionEntity>();
+		List<UserPermissionUserMapping> mappings = userPermissionUserMappingDAO.findPermissionMappingsForUser(user.getId());
+		
+		for (UserPermissionUserMapping mapping : mappings){
+			permissions.add(mapping.getPermission());
+		}
+		
+		return permissions;
 	}
 	
 }
