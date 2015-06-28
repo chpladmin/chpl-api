@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth.permission;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +75,14 @@ public class PermissionMappingManagerImpl implements PermissionMappingManager {
 	@Override
 	public Set<UserPermission> getPermissions(UserEntity user) {
 		
-		//userPermissionMappingDAO
+		Set<UserPermission> permissions = new HashSet<UserPermission>();
+		List<UserPermissionUserMapping> mappings = userPermissionUserMappingDAO.findPermissionMappingsForUser(user.getId());
+		
+		for (UserPermissionUserMapping mapping : mappings){
+			permissions.add(mapping.getPermission());
+		}
+		
+		return permissions;
 		
 	}
 

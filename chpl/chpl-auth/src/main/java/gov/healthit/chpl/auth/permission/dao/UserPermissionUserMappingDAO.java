@@ -16,6 +16,8 @@ public interface UserPermissionUserMappingDAO {
 	
 	public void deactivate(Long userId, Long permissionId);
 	
-	public List<UserPermissionUserMapping> findPermissions(Long userId);
+	public List<UserPermissionUserMapping> findPermissionMappingsForUser(Long userId);
+	
+	public List<UserPermissionUserMapping> findUserMappingsForPermission(Long permissionID);
 	
 }

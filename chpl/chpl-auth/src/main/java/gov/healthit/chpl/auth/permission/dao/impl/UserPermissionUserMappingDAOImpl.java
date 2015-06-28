@@ -46,10 +46,20 @@ public class UserPermissionUserMappingDAOImpl extends BaseDAOImpl implements
 	}
 
 	@Override
-	public List<UserPermissionUserMapping> findPermissions(Long userId) {
+	public List<UserPermissionUserMapping> findPermissionMappingsForUser(Long userId) {
 		
 		Query query = entityManager.createQuery( "from UserPermissionUserMapping where ((NOT deleted) AND (user_id = (:userid))) ", UserPermissionUserMapping.class );
 		query.setParameter("userid", userId);
+		List<UserPermissionUserMapping> result = query.getResultList();
+		return result;
+		
+	}
+	
+	@Override
+	public List<UserPermissionUserMapping> findUserMappingsForPermission(Long permissionID) {
+		
+		Query query = entityManager.createQuery( "from UserPermissionUserMapping where ((NOT deleted) AND (user_permission_id_user_permission = (:permissionid))) ", UserPermissionUserMapping.class );
+		query.setParameter("permissionid", permissionID);
 		List<UserPermissionUserMapping> result = query.getResultList();
 		return result;
 		
