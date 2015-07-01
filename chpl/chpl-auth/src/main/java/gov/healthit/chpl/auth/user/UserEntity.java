@@ -25,6 +25,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.core.GrantedAuthority;
 
 
@@ -32,7 +33,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Table(name="`user`")
 @SQLDelete(sql = "UPDATE openchpl.\"user\" SET deleted = true WHERE user_id = ?")
 @Where(clause = "NOT deleted")
-public class UserEntity implements User {
+public class UserEntity extends BaseDBAuthenticatedUser implements User {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -46,10 +47,6 @@ public class UserEntity implements User {
 	
 	@Column(name="password")
 	private String password = null;
-	
-	@Transient
-	@Autowired
-	private PermissionMappingManager permissionMappingManager;
 	
 	@Column(name="account_expired")
 	private boolean accountExpired;
@@ -112,13 +109,13 @@ public class UserEntity implements User {
 	
 	public Set<UserPermission> getPermissions() {
 		
-		return permissionMappingManager.getPermissions(this);
+		return getPermissionMappingManager().getPermissions(this);
 	}
 	
 	public void addPermission(UserPermission permission){
 
 		try {
-			permissionMappingManager.grant(this, permission.getAuthority());
+			getPermissionMappingManager().grant(this, permission.getAuthority());
 		} catch (UserPermissionRetrievalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -128,7 +125,7 @@ public class UserEntity implements User {
 	public void removePermission(String permissionValue){
 	
 		try {
-			permissionMappingManager.revoke(this, permissionValue);
+			getPermissionMappingManager().revoke(this, permissionValue);
 		} catch (UserPermissionRetrievalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -139,15 +136,14 @@ public class UserEntity implements User {
 	public void removePermission(UserPermission permission) {
 		
 		try {
-			permissionMappingManager.revoke(this, permission.getAuthority());
+			getPermissionMappingManager().revoke(this, permission.getAuthority());
 		} catch (UserPermissionRetrievalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}	
 	}
 	
-
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.getPermissions();
