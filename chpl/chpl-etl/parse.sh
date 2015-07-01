@@ -12,8 +12,8 @@ TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
 log=input/parsed/log.$TIMESTAMP.txt
 
 # create TIMESTAMP and filename for monthly log of 'nothing found' runs
-TIMESTAMP_NOACTIVITY=$(date "+%Y.%m")
-no_action=input/parsed/log.noaction.$TIMESTAMP_NOACTIVITY.txt
+TIMESTAMP_MONTH=$(date "+%Y.%m")
+monthly=input/parsed/log.monthly.$TIMESTAMP_MONTH.txt
 
 # loop through input files that end with .xlsx
 # for any given file,
@@ -24,15 +24,17 @@ no_action=input/parsed/log.noaction.$TIMESTAMP_NOACTIVITY.txt
 if ls input/*.xlsx 1> /dev/null 2>&1; then
     echo $log
     for i in $(ls input/*.xlsx); do
+        echo $i "found at:" $TIMESTAMP >> $monthly
         echo "####################################" >> $log
         echo "$i" >> $log
         java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar "./$i" ./src/main/resources/plugins >> $log
         echo "$i" >> $log
         echo "####################################" >> $log
-        mv "./$i" input/parsed/
+        mv "./$i" input/parsed/input/
+        cp to-update.csv input/parsed/$i-to-update.csv
     done
 else
-    echo "No files found at:" $TIMESTAMP >> $no_action
+    echo "No files found at:" $TIMESTAMP >> $monthly
 fi
 
 # restore filename delimiters
