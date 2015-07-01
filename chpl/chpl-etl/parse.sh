@@ -1,19 +1,39 @@
 #!/bin/bash
 (set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters
 
-TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
-log=input/parsed/log.$TIMESTAMP.txt # log file location
-echo $log # provided for tail -f, if script is run in background
+# deal with spaces in filenames by saving off the default file separator (including spaces)
+# and using a different one for this application
+SAVEIFS=$IFS
+IFS=$(echo -en "\n\b")
 
-if ls input/*.xlsx 1> /dev/null 2>&1; then # if data input files exist
-    for i in $(ls input/*.xlsx); do # loop through them
+# create timestamp and filename for log file
+# echo that file name to the console, so a manual user may run tail -f to follow the log
+TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
+log=input/parsed/log.$TIMESTAMP.txt
+
+# create TIMESTAMP and filename for monthly log of 'nothing found' runs
+TIMESTAMP_NOACTIVITY=$(date "+%Y.%m")
+no_action=input/parsed/log.noaction.$TIMESTAMP_NOACTIVITY.txt
+
+# loop through input files that end with .xlsx
+# for any given file,
+#   put the file name into the log file
+#   parse the file
+#   bracket the log with the filename again
+#   move the file to the /parsed subdirectory so it's not parsed again
+if ls input/*.xlsx 1> /dev/null 2>&1; then
+    echo $log
+    for i in $(ls input/*.xlsx); do
         echo "####################################" >> $log
-        echo $i >> $log # data file name goes into log
-        java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar ./$i ./src/main/resources/plugins >> $log # run ETL, pipe output into log
-        echo $i >> $log # data file name goes into log
+        echo "$i" >> $log
+        java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar "./$i" ./src/main/resources/plugins >> $log
+        echo "$i" >> $log
         echo "####################################" >> $log
-        mv ./$i input/parsed/ # move file out of parsing directory
+        mv "./$i" input/parsed/
     done
 else
-    echo "No input files found" > $log
+    echo "No files found at:" $TIMESTAMP >> $no_action
 fi
+
+# restore filename delimiters
+IFS=$SAVEIFS
