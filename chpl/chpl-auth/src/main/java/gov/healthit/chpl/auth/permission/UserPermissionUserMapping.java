@@ -16,9 +16,6 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name="global_user_permission_map")
 @Where(clause = "NOT deleted")
-@AssociationOverrides({
-    @AssociationOverride(name = "pk.user", joinColumns = @JoinColumn(name = "user_id", insertable = false, updatable = false)),
-    @AssociationOverride(name = "pk.permission", joinColumns = @JoinColumn(name = "user_permission_id_user_permission", insertable = false, updatable = false)) })
 public class UserPermissionUserMapping {
 	
 	
