@@ -7,9 +7,9 @@
 
 	<persistence-unit name="openchpl" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>gov.healthit.chpl.auth.user.UserImpl</class>
-		<class>gov.healthit.chpl.auth.permission.UserPermission</class>
-		<class>gov.healthit.chpl.auth.user.UserPermissionUserMapping</class>
+		<class>gov.healthit.chpl.auth.user.UserEntity</class>
+		<class>gov.healthit.chpl.auth.permission.UserPermissionEntity</class>
+		<class>gov.healthit.chpl.auth.permission.UserPermissionUserMapping</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

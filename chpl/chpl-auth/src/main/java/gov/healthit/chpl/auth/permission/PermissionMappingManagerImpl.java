@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionUserMappingDAO;
 import gov.healthit.chpl.auth.user.UserEntity;
 
+@Service
 public class PermissionMappingManagerImpl implements PermissionMappingManager {
 	
 	@Autowired
@@ -35,7 +37,7 @@ public class PermissionMappingManagerImpl implements PermissionMappingManager {
 		UserPermissionUserMapping permissionMapping = new UserPermissionUserMapping();
 		permissionMapping.setPermission(permission);
 		permissionMapping.setUser(user);
-		userPermissionUserMappingDAO.create(permissionMapping);
+		create(permissionMapping);
 		
 	}
 	

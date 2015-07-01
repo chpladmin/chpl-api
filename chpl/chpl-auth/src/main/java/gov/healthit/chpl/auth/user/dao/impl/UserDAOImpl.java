@@ -36,7 +36,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	@Transactional
 	@Override
 	public void deactivate(String uname) {
-		Query query = entityManager.createQuery("UPDATE UserImpl SET deleted = true WHERE c.user_id = :uname");
+		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :uname");
 		query.setParameter("uname", uname);
 		query.executeUpdate();
 	}
@@ -44,25 +44,27 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	@Transactional
 	@Override
 	public void deactivate(Long userId){
-		Query query = entityManager.createQuery("UPDATE UserImpl SET deleted = true WHERE c.user_id = :userid");
+		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :userid");
 		query.setParameter("userid", userId);
 		query.executeUpdate();
 	}
 	
+	@Transactional
 	@Override
 	public List<UserEntity> findAll() {
 		
-		List<UserEntity> result = entityManager.createQuery( "from UserImpl  where (NOT deleted = true) ", UserEntity.class ).getResultList();
+		List<UserEntity> result = entityManager.createQuery( "from UserEntity where (NOT deleted = true) ", UserEntity.class ).getResultList();
 		
 		return result;
 	}
 
+	@Transactional
 	@Override
 	public UserEntity getById(Long userId) throws UserRetrievalException {
 		
 		UserEntity user = null;
 		
-		Query query = entityManager.createQuery( "from user where (NOT deleted = true) AND (user_id = :userid) ", UserEntity.class );
+		Query query = entityManager.createQuery( "from UserEntity where (NOT deleted = true) AND (user_id = :userid) ", UserEntity.class );
 		query.setParameter("userid", userId);
 		List<UserEntity> result = query.getResultList();
 		
@@ -77,12 +79,13 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		return user;
 	}
 
+	@Transactional
 	@Override
 	public UserEntity getByName(String uname) throws UserRetrievalException {
 		
 		UserEntity user = null;
 		
-		Query query = entityManager.createQuery( "from UserImpl where ((NOT deleted = true) AND (user_name = (:uname))) ", UserEntity.class );
+		Query query = entityManager.createQuery( "from UserEntity where ((NOT deleted = true) AND (user_name = (:uname))) ", UserEntity.class );
 		query.setParameter("uname", uname);
 		List<UserEntity> result = query.getResultList();
 		
