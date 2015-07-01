@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Thu Jun 11 08:05:10 EDT 2015" modifiedBy="alarned" name="ChecksumAnalysis" revision="1.233" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed Jul 01 09:32:32 EDT 2015" modifiedBy="alarned" name="OpenCHPL_etl" revision="1.234" showComponentDetails="true">
 <Global>
 <Metadata id="All_data">
 <Record fieldDelimiter="^" name="All_data" recordDelimiter="\r\n" type="delimited">
@@ -287,8 +287,6 @@
 <Field name="CertifiedProduct_id" type="long"/>
 <Field label="Certification Edition Year" name="Certification_Edition_Year" type="string"/>
 <Field name="Edition_id" type="long"/>
-<Field name="CqmEdition_id" type="long"/>
-<Field name="CP_CqmEdition_map_id" type="long"/>
 <Field label="Version" name="Version" type="string"/>
 <Field name="Version_id" type="long"/>
 <Field eofAsDelimiter="true" label="Certifying ATCB" name="Certifying_ATCB" type="string"/>
@@ -945,19 +943,6 @@
 <Record fieldDelimiter="|" name="Classification_id" recordDelimiter="\r\n" type="delimited">
 <Field name="Classification_Name" type="string"/>
 <Field name="classification_type_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CP_CqmEdition_ids" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field name="cqm_edition_id" type="long"/>
-<Field name="certified_product_id" type="long"/>
-<Field name="certified_product_cqm_edition_map_id" type="long"/>
-</Record>
-</Metadata>
-<Metadata id="CqmEdition_id" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="|" name="CqmEdition_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
-<Field name="CqmEdition" type="string"/>
-<Field name="CqmEdition_id" type="long"/>
 </Record>
 </Metadata>
 <Metadata id="Edition_id" previewAttachmentCharset="ISO-8859-1">
