@@ -58,7 +58,14 @@ The default parameters are:
 
 ## Search a directory
 
-A batch parsing script is available in `parse.sh`. This script will look in a directory: `chpl-api/chpl/chpl-etl/input` for any files ending in `.xlsx`, and run those files through the ETL, then move the files that were processed into `input/parsed`, along with a timestamped log file that captures the output of the parsing activity.
+A batch parsing script is available in `parse-template.sh`. The script should be renamed to `parse.sh`, and will need to be modified to set user-specific configurations:
+ - "To" email address(es)
+ - "From" email address
+ - SMTP settings
+ - SMTP user name
+ - SMTP password
+
+This script will look in the directory `./input` for any files ending in `.xlsx`, and run those files through the ETL, then move the files that were processed into `./input/parsed/input`, along with a timestamped log file that captures the output of the parsing activity, as well as the specific `to-update.csv` file that was generated during that run.
 
 ## Resetting
 
