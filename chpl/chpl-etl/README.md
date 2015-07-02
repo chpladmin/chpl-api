@@ -17,13 +17,7 @@ $ cd chpl-api/chpl/chpl-etl
 
 ## Data model load
 
-Edit `openchpl-role.sql` to set the password for the `openchpl` role. These instructions assume the role/username used for the openchpl database is `openchpl`, and that the password in `openchpl-role.sql`, currently recorded as "change this password" will be update to match your installation. If the installer chooses to change the username/role, make sure it's also changed in the `openchpl.sql` file wherever the role is used.
-
-```sh
-$ psql -Upostgres -f chpl-api/openchpl-sql/openchpl-role.sql
-$ psql -Upostgres -f chpl-api/openchpl-sql/openchpl.sql
-$ psql -Upostgres -f chpl-api/openchpl-sql/preload-openchpl.sql
-```
+Before running the ETL, please see [the Open Data CHPL data model README](../../openchpl-sql/README.md).
 
 ## Installing on Linux
 
@@ -66,28 +60,6 @@ A batch parsing script is available in `parse-template.sh`. The script should be
  - SMTP password
 
 This script will look in the directory `./input` for any files ending in `.xlsx`, and run those files through the ETL, then move the files that were processed into `./input/parsed/input`, along with a timestamped log file that captures the output of the parsing activity, as well as the specific `to-update.csv` file that was generated during that run.
-
-## Resetting
-
-After running the ETL, if you want to clean the database to run it again, as if from scratch, go into the database, there are two tables that need to be emptied: the `vendor` and `certified_product_checksum` tables.
-
-### To truncate the tables
-
-```sh
-$ psql
-postgres=# truncate table openchpl.certified_product_checksum;
-postgres=# truncate table openchpl.vendor cascade;
-postgres=# \q
-```
-
-### To completely remove the database
-
-```sh
-$ psql
-postgres=# drop schema openchpl cascade;
-postgres=# drop role openchpl;
-postgres=# \q
-```
 
 # CloverETL
 
