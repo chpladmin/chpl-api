@@ -130,3 +130,4 @@ CREATE TRIGGER user_contact_map_audit AFTER INSERT OR UPDATE OR DELETE on opench
 CREATE TRIGGER acl_class_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.acl_class FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER acl_entry_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.acl_entry FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER acl_sid_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.acl_sid FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
+CREATE TRIGGER acl_object_identity_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.acl_object_identity FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
