@@ -61,6 +61,8 @@ public class UserEntity extends BaseDBAuthenticatedUser implements User {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
+	//@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER)
+ 	//private Set<UserPermissionUserMapping> permissionMappings;
 	
 	@Transient
 	private boolean authenticated = false;
