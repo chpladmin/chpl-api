@@ -42,7 +42,7 @@ public class UserPermissionEntity implements UserPermission {
 	
 	@OneToMany(mappedBy="pk.permission", fetch=FetchType.EAGER)
 	private List<UserPermissionUserMapping> userMappings;
-	
+
 	public UserPermissionEntity(){}
 	
 	public UserPermissionEntity(String authority){
@@ -75,10 +75,18 @@ public class UserPermissionEntity implements UserPermission {
 		return authority;
 	}
 	
+	public List<UserPermissionUserMapping> getUserMappings() {
+		return userMappings;
+	}
+
+	public void setUserMappings(List<UserPermissionUserMapping> userMappings) {
+		this.userMappings = userMappings;
+	}
+	
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof UserPermissionEntity))
+		if (!(obj instanceof UserPermission))
 			return false;
 
 		UserPermissionEntity claim = (UserPermissionEntity) obj;

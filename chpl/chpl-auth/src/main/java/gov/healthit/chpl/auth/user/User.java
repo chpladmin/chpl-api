@@ -16,7 +16,6 @@ public interface User extends UserDetails , Authentication {
 	public Set<UserPermission> getPermissions();
 	public void addPermission(UserPermission permission);
 	public void removePermission(String permissionValue);
-	public void removePermission(UserPermission permission);
 	
 	
 	// UserDetails interface

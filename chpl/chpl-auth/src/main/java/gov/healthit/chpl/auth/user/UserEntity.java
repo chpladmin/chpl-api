@@ -1,10 +1,8 @@
 package gov.healthit.chpl.auth.user;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.PermissionMappingManager;
 import gov.healthit.chpl.auth.permission.UserPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMapping;
 
 import java.util.Collection;
@@ -31,7 +29,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Table(name="`user`")
 @SQLDelete(sql = "UPDATE openchpl.\"user\" SET deleted = true WHERE user_id = ?")
 @Where(clause = "NOT deleted")
-public class UserEntity extends BaseDBAuthenticatedUser implements User {
+public class UserEntity implements User {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -61,8 +59,8 @@ public class UserEntity extends BaseDBAuthenticatedUser implements User {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	//@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER)
- 	//private Set<UserPermissionUserMapping> permissionMappings;
+	@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+ 	private Set<UserPermissionUserMapping> permissionMappings;
 	
 	@Transient
 	private boolean authenticated = false;
@@ -109,40 +107,29 @@ public class UserEntity extends BaseDBAuthenticatedUser implements User {
 	
 	public Set<UserPermission> getPermissions() {
 		
-		return getPermissionMappingManager().getPermissions(this);
+		Set<UserPermission> permissions = new HashSet<UserPermission>();
+		
+		for (UserPermissionUserMapping mapping : permissionMappings){
+			permissions.add(mapping.getPermission());
+		}
+		return permissions;
 	}
 	
 	public void addPermission(UserPermission permission){
-
-		try {
-			getPermissionMappingManager().grant(this, permission.getAuthority());
-		} catch (UserPermissionRetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		UserPermissionEntity permissionEntity = (UserPermissionEntity) permission;
+		UserPermissionUserMapping permissionMapping = new UserPermissionUserMapping();
+		
+		permissionMapping.setPermission(permissionEntity);
+		permissionMapping.setUser(this);
+		this.permissionMappings.add(permissionMapping);
+		permissionEntity.getUserMappings().add(permissionMapping);
+		
 	}
 
 	public void removePermission(String permissionValue){
-	
-		try {
-			getPermissionMappingManager().revoke(this, permissionValue);
-		} catch (UserPermissionRetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.permissionMappings.removeIf((UserPermissionUserMapping m) -> m.getPermission().getAuthority().equals(permissionValue));
 	}
-	
-	@Override
-	public void removePermission(UserPermission permission) {
-		
-		try {
-			getPermissionMappingManager().revoke(this, permission.getAuthority());
-		} catch (UserPermissionRetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-	}
-	
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

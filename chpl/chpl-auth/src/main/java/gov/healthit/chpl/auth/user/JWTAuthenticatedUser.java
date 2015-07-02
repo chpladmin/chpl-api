@@ -1,11 +1,14 @@
 package gov.healthit.chpl.auth.user;
 
 
+import gov.healthit.chpl.auth.permission.JWTAuthenticatedPermission;
 import gov.healthit.chpl.auth.permission.UserPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 
 import java.util.Collection;
 import java.util.Set;
+
+
 
 
 
@@ -56,14 +59,15 @@ public class JWTAuthenticatedUser implements User {
 	public void addPermission(UserPermission permission){
 		this.permissions.add(permission);
 	}
+	
+	public void addPermission(String permissionValue) {
+		UserPermission permission = new JWTAuthenticatedPermission(permissionValue);
+		this.permissions.add(permission);
+	}
 
+	@Override
 	public void removePermission(String permissionValue){
 		this.permissions.remove(new UserPermissionEntity(permissionValue));
-	}
-	
-	@Override
-	public void removePermission(UserPermission permission) {
-		this.permissions.remove(permission);
 	}
 
 	@Override
@@ -138,5 +142,6 @@ public class JWTAuthenticatedUser implements User {
 	public Long getId() {
 		return id;
 	}
+	
 
 }
