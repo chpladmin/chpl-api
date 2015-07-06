@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
@@ -18,34 +19,37 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	
 
 	@Override
+	@Transactional
 	public void create(UserPermissionEntity permission) {
 		entityManager.persist(permission);
 	}
 
 	@Override
+	@Transactional
 	public void update(UserPermissionEntity permission) {
 		entityManager.merge(permission);
 	}
 	
 	@Override
+	@Transactional
 	public void deactivate(String authority) {
 
 		Query query = entityManager.createQuery("UPDATE UserPermission SET deleted = true WHERE c.authority = :authority");
 		query.setParameter("authority", authority);
 		query.executeUpdate();
-		// TODO: Make sure result is removed from mapping table as well 
 	}
 
 	@Override
+	@Transactional
 	public void deactivate(Long permissionId) {
 		
 		Query query = entityManager.createQuery("UPDATE UserPermission SET deleted = true WHERE c.user_permission_id = :user_permission_id");
 		query.setParameter("user_permission_id", permissionId);
 		query.executeUpdate();
-		// TODO: Make sure result is removed from mapping table as well 
 	}
 
 	@Override
+	@Transactional
 	public List<UserPermissionEntity> findAll() {
 		
 		List<UserPermissionEntity> result = entityManager.createQuery( "from UserPermission  where (NOT deleted = true) ", UserPermissionEntity.class ).getResultList();
@@ -53,6 +57,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 	
 	@Override
+	@Transactional
 	public UserPermissionEntity getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException {			
 			
 		UserPermissionEntity permission = null;

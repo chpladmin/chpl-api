@@ -1,6 +1,5 @@
 package gov.healthit.chpl.auth.permission;
 
-import org.springframework.security.core.GrantedAuthority;
 
 public class JWTAuthenticatedPermission implements UserPermission {
 	

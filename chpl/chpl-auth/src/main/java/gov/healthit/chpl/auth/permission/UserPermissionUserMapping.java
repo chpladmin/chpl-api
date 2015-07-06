@@ -10,14 +10,15 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 
 @Entity
 @Table(name="global_user_permission_map")
+@SQLDelete(sql = "UPDATE global_user_permission_map SET deleted = true WHERE global_user_permission_id = ?")
 @Where(clause = "NOT deleted")
 public class UserPermissionUserMapping {
-	
 	
 	@EmbeddedId
 	private UserPermissionUserMappingPk pk = new UserPermissionUserMappingPk();
@@ -28,6 +29,8 @@ public class UserPermissionUserMapping {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
+	@Column(name="global_user_permission_id")
+	private Long permissionMappingId;
 	
 	public Long getLastModifiedUser() {
 		return lastModifiedUser;

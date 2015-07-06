@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMapping;
@@ -16,16 +17,19 @@ public class UserPermissionUserMappingDAOImpl extends BaseDAOImpl implements
 		UserPermissionUserMappingDAO {
 	
 	@Override
+	@Transactional
 	public void create(UserPermissionUserMapping permissionMapping) {
 		entityManager.persist(permissionMapping);
 	}
 
 	@Override
+	@Transactional
 	public void update(UserPermissionUserMapping permissionMapping) {
 		entityManager.merge(permissionMapping);
 	}
 
 	@Override
+	@Transactional
 	public void deactivate(UserPermissionUserMapping permissionMapping) {
 		
 		Query query = entityManager.createQuery("UPDATE UserPermissionUserMapping SET deleted = true WHERE c.user_id = :user_id AND c.user_permission_id_user_permission = :permission_id ");
@@ -36,6 +40,7 @@ public class UserPermissionUserMappingDAOImpl extends BaseDAOImpl implements
 	}
 
 	@Override
+	@Transactional
 	public void deactivate(Long userId, Long permissionId) {
 		
 		Query query = entityManager.createQuery("UPDATE UserPermissionUserMapping SET deleted = true WHERE c.user_id = :user_id AND c.user_permission_id_user_permission = :permission_id ");
@@ -46,6 +51,7 @@ public class UserPermissionUserMappingDAOImpl extends BaseDAOImpl implements
 	}
 
 	@Override
+	@Transactional
 	public List<UserPermissionUserMapping> findPermissionMappingsForUser(Long userId) {
 		
 		Query query = entityManager.createQuery( "from UserPermissionUserMapping where ((NOT deleted) AND (user_id = (:userid))) ", UserPermissionUserMapping.class );
@@ -56,6 +62,7 @@ public class UserPermissionUserMappingDAOImpl extends BaseDAOImpl implements
 	}
 	
 	@Override
+	@Transactional
 	public List<UserPermissionUserMapping> findUserMappingsForPermission(Long permissionID) {
 		
 		Query query = entityManager.createQuery( "from UserPermissionUserMapping where ((NOT deleted) AND (user_permission_id_user_permission = (:permissionid))) ", UserPermissionUserMapping.class );

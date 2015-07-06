@@ -6,7 +6,9 @@ import gov.healthit.chpl.auth.permission.UserPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+
 
 
 
@@ -22,7 +24,7 @@ public class JWTAuthenticatedUser implements User {
 	private Long id;
 	private String subjectName;
 	private String password = null;
-	private Set<UserPermission> permissions;
+	private Set<UserPermission> permissions = new HashSet<UserPermission>();
 	private final boolean accountExpired = false;
 	private final boolean accountLocked = false;
 	private final boolean credentialsExpired = false;
