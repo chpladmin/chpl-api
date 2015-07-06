@@ -8,8 +8,8 @@ CREATE TABLE audit.logged_actions (
     user_name text,
     action_tstamp TIMESTAMP WITH TIME zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     action text NOT NULL CHECK (action IN ('I','D','U')),
-    original_data text,
-    new_data text,
+    original_data json,
+    new_data json,
     query text
 ) WITH (fillfactor=100);
 
@@ -32,24 +32,24 @@ ON audit.logged_actions(action);
 --
 CREATE OR REPLACE FUNCTION audit.if_modified_func() RETURNS TRIGGER AS $body$
 DECLARE
-    v_old_data TEXT;
-    v_new_data TEXT;
+    v_old_data json;
+    v_new_data json;
 BEGIN
     /* This dance with casting the NEW and OLD values to a ROW is not necessary in pg 9.0+ */
 
     IF (TG_OP = 'UPDATE') THEN
-        v_old_data := ROW(OLD.*);
-        v_new_data := ROW(NEW.*);
+        v_old_data := row_to_json(OLD);
+        v_new_data := row_to_json(NEW);
         INSERT INTO audit.logged_actions (schema_name, table_name, user_name, action, original_data, new_data, query)
         VALUES (TG_TABLE_SCHEMA::TEXT, TG_TABLE_NAME::TEXT, session_user::TEXT, substring(TG_OP,1,1), v_old_data, v_new_data, current_query());
         RETURN NEW;
     ELSIF (TG_OP = 'DELETE') THEN
-        v_old_data := ROW(OLD.*);
+        v_old_data := row_to_json(OLD);
         INSERT INTO audit.logged_actions (schema_name, table_name, user_name, action, original_data, query)
         VALUES (TG_TABLE_SCHEMA::TEXT, TG_TABLE_NAME::TEXT, session_user::TEXT, substring(TG_OP,1,1), v_old_data, current_query());
         RETURN OLD;
     ELSIF (TG_OP = 'INSERT') THEN
-        v_new_data := ROW(NEW.*);
+        v_new_data := row_to_json(NEW);
         INSERT INTO audit.logged_actions (schema_name, table_name, user_name, action, new_data, query)
         VALUES (TG_TABLE_SCHEMA::TEXT, TG_TABLE_NAME::TEXT, session_user::TEXT, substring(TG_OP,1,1), v_new_data, current_query());
         RETURN NEW;
