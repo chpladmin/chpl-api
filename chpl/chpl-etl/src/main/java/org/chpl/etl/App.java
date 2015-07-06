@@ -13,6 +13,7 @@ public class App
 
     private static final String csvRawFileName = "./src/main/resources/chpl-raw.csv";
     private static final String csvChecksummedFileName = "./src/main/resources/chpl-wChecksum.csv";
+    private static final int minColumns = 271;
 
     public static void main( String[] args ) {
         String singleFile;
@@ -30,7 +31,7 @@ public class App
     }
 
     public static void convertFile(String filename) {
-        ExcelConverter excelConverter = new ExcelConverter(filename,csvRawFileName);
+        ExcelConverter excelConverter = new ExcelConverter(filename, csvRawFileName, minColumns);
         excelConverter.convert();
         excelConverter.setCsvHash(csvChecksummedFileName);
         excelConverter.calculateHash();
@@ -44,8 +45,8 @@ public class App
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, e);
         }
 
-        etlGraph.setGraph("/graphs/openchpl_etl.grf");
-        etlGraph.execute();
+//        etlGraph.setGraph("/graphs/openchpl_etl.grf");
+//        etlGraph.execute();
 
 //        etlGraph.setGraph("/graphs/openchpl_checksum_analysis.grf");
 //        etlGraph.execute();

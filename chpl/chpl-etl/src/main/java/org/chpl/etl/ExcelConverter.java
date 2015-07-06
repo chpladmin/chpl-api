@@ -27,13 +27,19 @@ public class ExcelConverter {
 	private File csvFile;
 	private File csvHashFile;
 	private String delimiter = "^";
+	private int minColumns;
 
 	public ExcelConverter() {
 	}
 
-	public ExcelConverter(String xlsxName, String csvName) {
+	public ExcelConverter(String xlsxName, String csvName, int minColumns) {
+		this.minColumns = minColumns;
 		xlsxFile = new File(xlsxName);
 		csvFile = new File(csvName);		
+	}
+
+	public ExcelConverter(String xlsxName, String csvName) {
+		this(xlsxName, csvName, -1);
 	}
 	
 	public void convert() {
@@ -41,7 +47,7 @@ public class ExcelConverter {
 		try {
 			PrintStream fOut = new PrintStream(csvFile);
 			p = OPCPackage.open(xlsxFile.getPath(), PackageAccess.READ);
-			XLSX2CSV xlsx2csv = new XLSX2CSV(p, fOut, -1);
+			XLSX2CSV xlsx2csv = new XLSX2CSV(p, fOut, minColumns);
 			xlsx2csv.process();
 		} catch ( IOException | OpenXML4JException |
 				ParserConfigurationException | SAXException e) {
