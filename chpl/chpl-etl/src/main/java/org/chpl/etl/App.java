@@ -48,11 +48,11 @@ public class App
 //        etlGraph.setGraph("/graphs/openchpl_etl.grf");
 //        etlGraph.execute();
 
-//        etlGraph.setGraph("/graphs/openchpl_checksum_analysis.grf");
-//        etlGraph.execute();
-//        etlGraph.setGraph("/graphs/openchpl_insert_vendor_and_product.grf");
-//        etlGraph.execute();
-//        etlGraph.setGraph("/graphs/openchpl_insert_certified_product.grf");
-//        etlGraph.execute();
+        etlGraph.setGraph("/graphs/openchpl_checksum_analysis.grf");
+        etlGraph.execute();
+        etlGraph.setGraph("/graphs/openchpl_insert_vendor_and_product.grf");
+        etlGraph.execute();
+        etlGraph.setGraph("/graphs/openchpl_insert_certified_product.grf");
+        etlGraph.execute();
     }
 }

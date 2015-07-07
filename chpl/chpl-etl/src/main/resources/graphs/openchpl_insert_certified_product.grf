@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Mon Jul 06 15:51:53 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.326" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Tue Jul 07 08:04:02 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.328" showComponentDetails="true">
 <Global>
 <Metadata id="CertificationBody_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CertificationBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
 <Field eofAsDelimiter="true" name="Certifying_ACB" type="string"/>
 <Field name="Certbody_id" type="long"/>
+</Record>
+</Metadata>
+<Metadata id="Classification_id1" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="|" name="CertificationStatus_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
+<Field name="Certification_Status" type="string"/>
+<Field name="certification_status_id" type="long"/>
 </Record>
 </Metadata>
 <Metadata id="CertifiedProduct" previewAttachmentCharset="ISO-8859-1">
@@ -28,6 +34,7 @@
 <Field name="Additional_Software" type="string"/>
 <Field name="Certification_Date" type="date"/>
 <Field name="Certification_Status" type="string"/>
+<Field name="certification_status_id" type="long"/>
 <Field name="Other_ACB" type="string"/>
 <Field name="Test_Report_Url" type="string"/>
 <Field name="Criteria170_302_a_" type="boolean"/>
@@ -707,6 +714,13 @@
 <Edge debugMode="false" fromNode="READ_IN_CSV:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (driver)" metadata="CHPL_To_Insert" outPort="Port 0 (output)" toNode="JOIN_CERT_PRODUCT_X_IDS:0"/>
 </Phase>
 <Phase number="3">
+<Node dbConnection="JDBC0" enabled="enabled" guiName="Get certification_status_ids" guiX="20" guiY="568" id="GET_CERTIFICATION_STATUS_IDS" type="DB_INPUT_TABLE">
+<attr name="sqlQuery"><![CDATA[SELECT 
+  $certification_status_id:=certification_status.certification_status_id,
+  $Certification_Status:=certification_status.certification_status
+FROM 
+  openchpl.certification_status;]]></attr>
+</Node>
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Get cert_body_ids" guiX="20" guiY="224" id="GET_CERT_BODY_IDS" type="DB_INPUT_TABLE">
 <attr name="sqlQuery"><![CDATA[SELECT 
   $Certbody_id:=certification_body.certification_body_id,
@@ -749,7 +763,7 @@ WHERE
   product.vendor_id = vendor.vendor_id AND
   product_version.product_id = product.product_id;]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join cert_product x ids" guiX="255" guiY="20" id="JOIN_CERT_PRODUCT_X_IDS" joinKey="$Certification_Edition_Year=$Certification_Edition_Year#$Certifying_ACB=$Certifying_ACB#$Product=$Product;$Vendor=$Vendor;$Version=$Version#$Practice_Setting=$Practice_Setting#$Product_Classification=$Classification_Name" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join cert_product x ids" guiX="255" guiY="20" id="JOIN_CERT_PRODUCT_X_IDS" joinKey="$Certification_Edition_Year=$Certification_Edition_Year#$Certifying_ACB=$Certifying_ACB#$Product=$Product;$Vendor=$Vendor;$Version=$Version#$Practice_Setting=$Practice_Setting#$Product_Classification=$Classification_Name#$Certification_Status=$Certification_Status" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 function boolean strToBool(string input) {
 	if (input == "1") { return true; }
@@ -773,6 +787,7 @@ function integer transform() {
 	$out.0.Version_id = $in.3.Version_id;
 	$out.0.Practice_Setting_id = $in.4.practice_type_id;
 	$out.0.Product_Classification_id = $in.5.classification_type_id;
+	$out.0.certification_status_id = $in.6.certification_status_id;
 	$out.0.STG_Certification_Certification_ID = $in.0.STG_Certification_Certification_ID;
 	$out.0.Certification_Edition_Year = $in.0.Certification_Edition_Year;
 	$out.0.CHPL_Display = strToBool($in.0.CHPL_Display);
@@ -1151,8 +1166,8 @@ $Edition_id != null AND $Version_id != null AND $Certbody_id != null]]></attr>
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.certified_product IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.certified_product 
-	(certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, atcb_certification_id, deleted, last_modified_user)
-       SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ACB_Certification_ID, not($CHPL_Display), -1
+	(certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, acb_certification_id, certification_status_id, report_file_location, other_acb, deleted, last_modified_user)
+       SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ACB_Certification_ID, $certification_status_id, $Test_Report_Url, $Other_ACB, not($CHPL_Display), -1
        WHERE NOT EXISTS (
              SELECT 1 FROM openchpl.certified_product WHERE
                     certification_edition_id = $Edition_id AND
@@ -1166,6 +1181,7 @@ COMMIT;]]></attr>
 </Node>
 <Node enabled="enabled" guiName="SimpleCopy" guiX="581" guiY="18" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
 <Node enabled="enabled" fileURL="./cert_products_x_ids_null.txt" guiName="UniversalDataWriter" guiX="422" guiY="171" id="UNIVERSAL_DATA_WRITER" type="DATA_WRITER"/>
+<Edge fromNode="GET_CERTIFICATION_STATUS_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 6 (slave)" metadata="Classification_id1" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:6"/>
 <Edge fromNode="GET_CERT_BODY_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 2 (slave)" metadata="CertificationBody_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:2"/>
 <Edge fromNode="GET_CLASSIFICATION_TYPE_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 5 (slave)" metadata="Classification_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:5"/>
 <Edge fromNode="GET_EDITION_IDS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 1 (slave)" metadata="Edition_id" outPort="Port 0 (out)" toNode="JOIN_CERT_PRODUCT_X_IDS:1"/>
@@ -1208,6 +1224,7 @@ function integer transform() {
 	$out.0.STG_Certification_Certification_ID = $in.0.STG_Certification_Certification_ID;
 	$out.0.CHPL_Display = $in.0.CHPL_Display;
 	$out.0.Certification_Status = $in.0.Certification_Status;
+	$out.0.certification_status_id = $in.0.certification_status_id;
 	$out.0.ACB_Certification_ID = $in.0.ACB_Certification_ID;
 	$out.0.Practice_Setting = $in.0.Practice_Setting;
 	$out.0.Practice_Setting_id = $in.0.Practice_Setting_id;
