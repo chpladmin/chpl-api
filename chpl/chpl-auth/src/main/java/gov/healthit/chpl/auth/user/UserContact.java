@@ -12,7 +12,7 @@ import org.hibernate.annotations.Where;
 
 
 @Entity
-@Table(name="`user`")
+@Table(name="contact")
 @SQLDelete(sql = "UPDATE openchpl.contact SET deleted = true WHERE contact_id = ?")
 @Where(clause = "NOT deleted")
 public class UserContact {
