@@ -16,7 +16,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -62,6 +64,10 @@ public class UserEntity implements User {
 	@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
  	private Set<UserPermissionUserMapping> permissionMappings;
 	
+	@OneToOne(optional=false, fetch=FetchType.LAZY)
+	@JoinColumn(name="contact_id", unique=true, nullable=false, updatable=false)
+	private UserContact contact;
+	
 	@Transient
 	private boolean authenticated = false;
 	
@@ -103,6 +109,22 @@ public class UserEntity implements User {
 	public void setSubjectName(String subject) {
 		this.subjectName = subject;
 		populateLastModifiedUser();
+	}
+	
+	public String getFirstName(){
+		return contact.getFirstName();
+	}
+	
+	public void setFirstName(String firstName){
+		contact.setFirstName(firstName);
+	}
+	
+	public String getLastName(){
+		return contact.getLastName();
+	}
+	
+	public void setLastName(String lastName){
+		contact.setLastName(lastName);
 	}
 	
 	public Set<UserPermission> getPermissions() {

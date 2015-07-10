@@ -151,8 +151,16 @@ public class UserManagerImpl implements UserManager {
 		}
 		
 		UserPermissionEntity permission = userPermissionDAO.getPermissionFromAuthority(role);
+		
+		if (permission == null){
+			permission = new UserPermissionEntity(role);
+			userPermissionDAO.create(permission);
+		}
+		
 		user.addPermission(permission);
 		update(user);
+		userPermissionDAO.update(permission);
+		
 	}
 	
 	@Override

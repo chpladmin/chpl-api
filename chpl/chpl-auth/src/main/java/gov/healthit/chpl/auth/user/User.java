@@ -13,10 +13,16 @@ public interface User extends UserDetails , Authentication {
 	
 	public String getSubjectName();
 	public void setSubjectName(String subject);
+	
+	public void setFirstName(String firstName);
+	public String getFirstName();
+	public void setLastName(String lastName);
+	public String getLastName();
+	
 	public Set<UserPermission> getPermissions();
 	public void addPermission(UserPermission permission);
 	public void removePermission(String permissionValue);
-	
+
 	
 	// UserDetails interface
 	@Override

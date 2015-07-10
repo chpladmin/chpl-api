@@ -49,6 +49,8 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			
 			user.setSubjectName(subject);
 			
+			
+			/*
 			List<String> claims = new ArrayList<String>();
 			
 			for (Map.Entry<String, Object> claim : validatedClaims.entrySet())
@@ -63,6 +65,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 				
 				user.addPermission(permission);
 			}
+			*/
 			
 		}
 		return user;

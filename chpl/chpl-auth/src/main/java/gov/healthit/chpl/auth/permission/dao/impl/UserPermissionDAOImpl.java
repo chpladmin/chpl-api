@@ -11,8 +11,6 @@ import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.user.UserEntity;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Repository(value="userPermissionDAO")
 public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermissionDAO {
@@ -34,7 +32,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Transactional
 	public void deactivate(String authority) {
 
-		Query query = entityManager.createQuery("UPDATE UserPermission SET deleted = true WHERE c.authority = :authority");
+		Query query = entityManager.createQuery("UPDATE UserPermissionEntity SET deleted = true WHERE c.authority = :authority");
 		query.setParameter("authority", authority);
 		query.executeUpdate();
 	}
@@ -43,7 +41,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Transactional
 	public void deactivate(Long permissionId) {
 		
-		Query query = entityManager.createQuery("UPDATE UserPermission SET deleted = true WHERE c.user_permission_id = :user_permission_id");
+		Query query = entityManager.createQuery("UPDATE UserPermissionEntity SET deleted = true WHERE c.user_permission_id = :user_permission_id");
 		query.setParameter("user_permission_id", permissionId);
 		query.executeUpdate();
 	}
@@ -52,7 +50,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Transactional
 	public List<UserPermissionEntity> findAll() {
 		
-		List<UserPermissionEntity> result = entityManager.createQuery( "from UserPermission  where (NOT deleted = true) ", UserPermissionEntity.class ).getResultList();
+		List<UserPermissionEntity> result = entityManager.createQuery( "from UserPermissionEntity where (NOT deleted = true) ", UserPermissionEntity.class ).getResultList();
 		return result;
 	}
 	
@@ -62,7 +60,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 			
 		UserPermissionEntity permission = null;
 			
-		Query query = entityManager.createQuery( "from UserPermission where (NOT deleted = true) AND (authority = :authority) ", UserPermissionEntity.class );
+		Query query = entityManager.createQuery( "from UserPermissionEntity where (NOT deleted = true) AND (authority = :authority) ", UserPermissionEntity.class );
 		query.setParameter("authority", authority);
 		List<UserPermissionEntity> result = query.getResultList();
 			

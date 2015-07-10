@@ -12,11 +12,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.security.core.GrantedAuthority;
+
 
 @Entity
 @Table(name="user_permission")
@@ -30,12 +29,15 @@ public class UserPermissionEntity implements UserPermission {
 	@Column(name="user_permission_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@Column(name="authority", unique=true)
-	private String authority;
+	
+	@Column(name="name")
+	private String name;
 	
 	@Column(name="description")
 	private String description;
+	
+	@Column(name="authority", unique=true)
+	private String authority;
 	
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
@@ -43,11 +45,30 @@ public class UserPermissionEntity implements UserPermission {
 	@OneToMany(mappedBy="pk.permission", fetch=FetchType.EAGER)
 	private List<UserPermissionUserMapping> userMappings;
 
-	public UserPermissionEntity(){}
+	public UserPermissionEntity(){
+		this.lastModifiedUser = getLastModifiedUserId();
+	}
 	
 	public UserPermissionEntity(String authority){
 		this.authority = authority;
+		this.name = authority;
+		this.description = authority;
+		this.lastModifiedUser = getLastModifiedUserId();
 	}
+	
+	public UserPermissionEntity(String name, String authority){
+		this.name = name;
+		this.authority = authority;
+		this.description = name;
+		this.lastModifiedUser = getLastModifiedUserId();
+	}
+	
+	public UserPermissionEntity(String name, String authority, String description){
+		this.name = name;
+		this.authority = authority;
+		this.description = description;
+		this.lastModifiedUser = getLastModifiedUserId();
+	}	
 	
 	public Long getId() {
 		return id;
@@ -81,6 +102,7 @@ public class UserPermissionEntity implements UserPermission {
 
 	public void setUserMappings(List<UserPermissionUserMapping> userMappings) {
 		this.userMappings = userMappings;
+		populateLastModifiedUser();
 	}
 	
 
@@ -112,6 +134,18 @@ public class UserPermissionEntity implements UserPermission {
 			userId = currentUser.getId();
 		}
 		this.lastModifiedUser = userId;
+	}
+	
+	private static Long getLastModifiedUserId(){
+		
+		User currentUser = Util.getCurrentUser();
+		
+		Long userId = new Long(-1);
+		
+		if (currentUser != null){
+			userId = currentUser.getId();
+		}
+		return userId;
 	}
 	
 }

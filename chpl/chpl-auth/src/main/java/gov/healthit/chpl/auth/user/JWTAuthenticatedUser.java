@@ -23,6 +23,8 @@ public class JWTAuthenticatedUser implements User {
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String subjectName;
+	private String firstName;
+	private String lastName;
 	private String password = null;
 	private Set<UserPermission> permissions = new HashSet<UserPermission>();
 	private final boolean accountExpired = false;
@@ -33,12 +35,10 @@ public class JWTAuthenticatedUser implements User {
 	
 	public JWTAuthenticatedUser(){
 		this.subjectName = null;
-		this.password = null;
 	}
 	
 	public JWTAuthenticatedUser(String subjectName) {
 		this.subjectName = subjectName;
-		this.password = null;
 	}
 	
 	public JWTAuthenticatedUser(String subjectName, String encodedPassword) {
@@ -52,6 +52,22 @@ public class JWTAuthenticatedUser implements User {
 	
 	public void setSubjectName(String subject) {
 		this.subjectName = subject;
+	}
+	
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	
 	public Set<UserPermission> getPermissions() {
