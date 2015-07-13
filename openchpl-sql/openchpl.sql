@@ -38,6 +38,7 @@ CREATE TABLE openchpl.user(
 	last_modified_date timestamp NOT NULL,
 	last_modified_user bigint NOT NULL,
 	deleted bool NOT NULL DEFAULT false,
+	contact_id bigint,
 	CONSTRAINT user_pk PRIMARY KEY (user_id)
 
 );
@@ -114,7 +115,8 @@ CREATE TABLE openchpl.user_permission(
 	last_modified_date timestamp NOT NULL DEFAULT NOW(),
 	last_modified_user bigint NOT NULL,
 	deleted bool NOT NULL DEFAULT false,
-	CONSTRAINT user_permission_pk PRIMARY KEY (user_permission_id)
+	CONSTRAINT user_permission_pk PRIMARY KEY (user_permission_id),
+	CONSTRAINT authority_unique UNIQUE (authority)
 
 );
 -- ddl-end --
@@ -132,13 +134,15 @@ CREATE TABLE openchpl.certified_product(
 	chpl_product_number varchar(250),
 	report_file_location varchar(255),
 	quality_management_system_att text,
-	atcb_certification_id varchar(250),
+	acb_certification_id varchar(250),
 	creation_date timestamp NOT NULL DEFAULT NOW(),
 	last_modified_date timestamp NOT NULL DEFAULT NOW(),
 	last_modified_user bigint NOT NULL,
 	deleted bool NOT NULL DEFAULT false,
 	practice_type_id bigint,
 	product_classification_type_id bigint,
+	other_acb character varying(64),
+	certification_status_id bigint NOT NULL,
 	CONSTRAINT certified_product_pk PRIMARY KEY (certified_product_id)
 
 );
@@ -307,7 +311,7 @@ CREATE TABLE openchpl.global_user_permission_map(
 	user_permission_id_user_permission bigint,
 	last_modified_date timestamp NOT NULL DEFAULT NOW(),
 	creation_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_user bigint NOT NULL,
+	last_modified_user bigint NOT NULL DEFAULT -1,
 	deleted bool DEFAULT false,
 	CONSTRAINT global_user_permission_map_pk PRIMARY KEY (user_id,user_permission_id_user_permission)
 
@@ -1234,47 +1238,6 @@ REFERENCES openchpl.certification_result (certification_result_id) MATCH FULL
 ON DELETE RESTRICT ON UPDATE CASCADE;
 -- ddl-end --
 
--- object: openchpl.user_contact_map | type: TABLE --
--- DROP TABLE IF EXISTS openchpl.user_contact_map CASCADE;
-CREATE TABLE openchpl.user_contact_map(
-	user_contact_map_id bigserial NOT NULL,
-	user_id bigint NOT NULL,
-	contact_id bigint NOT NULL,
-	creation_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_user bigint NOT NULL,
-	deleted bool NOT NULL,
-	CONSTRAINT user_contact_map_pk PRIMARY KEY (user_contact_map_id)
-
-);
--- ddl-end --
-ALTER TABLE openchpl.user_contact_map OWNER TO openchpl;
--- ddl-end --
-
--- object: user_fk | type: CONSTRAINT --
--- ALTER TABLE openchpl.user_contact_map DROP CONSTRAINT IF EXISTS user_fk CASCADE;
-ALTER TABLE openchpl.user_contact_map ADD CONSTRAINT user_fk FOREIGN KEY (user_id)
-REFERENCES openchpl.user (user_id) MATCH FULL
-ON DELETE RESTRICT ON UPDATE CASCADE;
--- ddl-end --
-
--- object: user_contact_map_uq | type: CONSTRAINT --
--- ALTER TABLE openchpl.user_contact_map DROP CONSTRAINT IF EXISTS user_contact_map_uq CASCADE;
-ALTER TABLE openchpl.user_contact_map ADD CONSTRAINT user_contact_map_uq UNIQUE (user_id);
--- ddl-end --
-
--- object: contact_fk | type: CONSTRAINT --
--- ALTER TABLE openchpl.user_contact_map DROP CONSTRAINT IF EXISTS contact_fk CASCADE;
-ALTER TABLE openchpl.user_contact_map ADD CONSTRAINT contact_fk FOREIGN KEY (contact_id)
-REFERENCES openchpl.contact (contact_id) MATCH FULL
-ON DELETE RESTRICT ON UPDATE CASCADE;
--- ddl-end --
-
--- object: user_contact_map_uq1 | type: CONSTRAINT --
--- ALTER TABLE openchpl.user_contact_map DROP CONSTRAINT IF EXISTS user_contact_map_uq1 CASCADE;
-ALTER TABLE openchpl.user_contact_map ADD CONSTRAINT user_contact_map_uq1 UNIQUE (contact_id);
--- ddl-end --
-
 -- object: openchpl.acl_class | type: TABLE --
 -- DROP TABLE IF EXISTS openchpl.acl_class CASCADE;
 CREATE TABLE openchpl.acl_class(
@@ -1369,6 +1332,13 @@ ON DELETE RESTRICT ON UPDATE CASCADE;
 ALTER TABLE openchpl.acl_entry ADD CONSTRAINT acl_entry_uk UNIQUE (acl_object_identity,ace_order);
 -- ddl-end --
 
+-- object: cqm_version_fk | type: CONSTRAINT --
+-- ALTER TABLE openchpl.cqm_criterion DROP CONSTRAINT IF EXISTS cqm_version_fk CASCADE;
+ALTER TABLE openchpl.cqm_criterion ADD CONSTRAINT cqm_version_fk FOREIGN KEY (cqm_version_id)
+REFERENCES openchpl.cqm_version (cqm_version_id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
 -- object: cqm_criterion_type_fk | type: CONSTRAINT --
 -- ALTER TABLE openchpl.cqm_criterion DROP CONSTRAINT IF EXISTS cqm_criterion_type_fk CASCADE;
 ALTER TABLE openchpl.cqm_criterion ADD CONSTRAINT cqm_criterion_type_fk FOREIGN KEY (cqm_criterion_type_id)
@@ -1381,6 +1351,36 @@ ON DELETE RESTRICT ON UPDATE CASCADE;
 ALTER TABLE openchpl.cqm_result ADD CONSTRAINT certified_product_fk FOREIGN KEY (certified_product_id)
 REFERENCES openchpl.certified_product (certified_product_id) MATCH FULL
 ON DELETE RESTRICT ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: openchpl.certification_status | type: TABLE --
+-- DROP TABLE IF EXISTS openchpl.certification_status CASCADE;
+CREATE TABLE openchpl.certification_status(
+	certification_status_id bigserial NOT NULL,
+	certification_status character varying(64),
+	creation_date timestamp NOT NULL DEFAULT NOW(),
+	last_modified_date timestamp NOT NULL DEFAULT NOW(),
+	last_modified_user bigint NOT NULL,
+	deleted bool NOT NULL DEFAULT false,
+	CONSTRAINT certified_status_pk PRIMARY KEY (certification_status_id)
+
+);
+-- ddl-end --
+ALTER TABLE openchpl.certification_status OWNER TO openchpl;
+-- ddl-end --
+
+-- object: certification_status_fk | type: CONSTRAINT --
+-- ALTER TABLE openchpl.certified_product DROP CONSTRAINT IF EXISTS certification_status_fk CASCADE;
+ALTER TABLE openchpl.certified_product ADD CONSTRAINT certification_status_fk FOREIGN KEY (certification_status_id)
+REFERENCES openchpl.certification_status (certification_status_id) MATCH FULL
+ON DELETE RESTRICT ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: contact_fk | type: CONSTRAINT --
+-- ALTER TABLE openchpl.user DROP CONSTRAINT IF EXISTS contact_fk CASCADE;
+ALTER TABLE openchpl.user ADD CONSTRAINT contact_fk FOREIGN KEY (contact_id)
+REFERENCES openchpl.contact (contact_id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: parent_criterion_fk | type: CONSTRAINT --

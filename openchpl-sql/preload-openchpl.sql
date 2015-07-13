@@ -5,34 +5,7 @@ insert into openchpl.cqm_criterion_type (name, description, last_modified_user) 
 insert into openchpl.certification_body (name, last_modified_user) values ('InfoGard', -1), ('CCHIT', -1), ('Drummond Group Inc.', -1), ('SLI Global', -1), ('Surescripts LLC', -1), ('ICSA Labs', -1), ('Pending', -1);
 insert into openchpl.event_type (name, description, last_modified_user) values ('Certification','Product is certified', -1);
 insert into openchpl.cqm_version (version, last_modified_user) values ('v0', -1), ('v1', -1), ('v2', -1), ('v3', -1), ('v4', -1);
-
--- needs to go into openchpl.sql
-create table openchpl.certification_status (
-        certification_status_id bigserial not null,
-        certification_status character varying(64),
-        creation_date timestamp without time zone not null default now(),
-        last_modified_date timestamp without time zone not null default now(),
-        last_modified_user bigint not null,
-        deleted boolean not null default false,
-        constraint certification_status_pk primary key (certification_status_id)
-        ) with (
-        oids=false
-        );
-    alter table openchpl.certification_status owner to openchpl;
--- to here
-
--- remove trigger when table is built in openchpl.sql
-CREATE TRIGGER certification_status_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.certification_status FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-
--- move up later
 insert into openchpl.certification_status (certification_status, last_modified_user) values ('Active', -1), ('Retired', -1), ('Withdrawn', -1);
-
--- needs to be in openchpl.sql
-    alter table openchpl.certified_product rename atcb_certification_id to acb_certification_id;
-    alter table openchpl.certified_product add other_acb character varying(64);
-    alter table openchpl.certified_product add certification_status_id bigint not null;
-    alter table openchpl.certified_product add constraint certification_status_fk foreign key (certification_status_id) references openchpl.certification_status (certification_status_id) match full on update cascade on delete set null;
--- to here
 
 INSERT INTO openchpl.certification_criterion (certification_edition_id, number, title, last_modified_user) VALUES
 (1, '170.302(a)', 'Drug-drug, drug-allergy', -1),
