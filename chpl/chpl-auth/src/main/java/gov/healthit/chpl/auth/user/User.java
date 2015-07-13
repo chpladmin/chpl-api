@@ -61,7 +61,7 @@ public interface User extends UserDetails , Authentication {
 
 	@Override
 	public void setAuthenticated(boolean arg0) throws IllegalArgumentException;
-
+	
 	@Override
 	public String getName();
 	

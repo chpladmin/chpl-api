@@ -33,4 +33,8 @@ public class Util {
 		return user;	
 	}
 	
+	public static String fromInt(Integer toStr){
+		return toStr.toString();
+	}
+	
 }

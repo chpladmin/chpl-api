@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
@@ -33,11 +34,22 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 			claimStrings.add(claim.getAuthority());
 		}
 		claims.put("Authorities", claimStrings);
+		
+		List<String> identity = new ArrayList<String>();
+		
+		identity.add(user.getId().toString());
+		identity.add(user.getName());
+		identity.add(user.getFirstName());
+		identity.add(user.getLastName());
+		
+		claims.put("Identity", identity);
+		
 		jwt = jwtAuthor.createJWT(user.getSubjectName(), claims);
 		return jwt;
 		
 	}
 	
+	@Transactional
 	public String getJWT(LoginCredentials credentials) throws JWTCreationException {
 		
 		String jwt = null;

@@ -25,6 +25,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Entity
@@ -61,10 +62,10 @@ public class UserEntity implements User {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	@OneToMany(mappedBy="pk.user", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy="pk.user", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
  	private Set<UserPermissionUserMapping> permissionMappings;
 	
-	@OneToOne(optional=false, fetch=FetchType.LAZY)
+	@OneToOne(optional=false, fetch=FetchType.EAGER)
 	@JoinColumn(name="contact_id", unique=true, nullable=false, updatable=false)
 	private UserContact contact;
 	
@@ -127,6 +128,7 @@ public class UserEntity implements User {
 		contact.setLastName(lastName);
 	}
 	
+	
 	public Set<UserPermission> getPermissions() {
 		
 		Set<UserPermission> permissions = new HashSet<UserPermission>();
@@ -170,7 +172,7 @@ public class UserEntity implements User {
 
 	@Override
 	public Object getPrincipal() {
-		return this.getName();
+		return this.subjectName;
 	}
 
 	@Override

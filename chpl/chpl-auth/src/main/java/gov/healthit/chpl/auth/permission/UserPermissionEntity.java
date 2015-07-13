@@ -4,6 +4,7 @@ import java.util.List;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.User;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,7 +43,8 @@ public class UserPermissionEntity implements UserPermission {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	@OneToMany(mappedBy="pk.permission", fetch=FetchType.EAGER)
+	//@OneToMany(mappedBy="pk.permission", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy="pk.permission", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UserPermissionUserMapping> userMappings;
 
 	public UserPermissionEntity(){

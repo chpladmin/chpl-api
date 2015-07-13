@@ -1,6 +1,5 @@
 package gov.healthit.chpl.auth.authentication;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 	
 	public User getAuthenticatedUser(String jwt) throws JWTValidationException {
 		
-		User user = new JWTAuthenticatedUser();
+		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
 		user.setAuthenticated(true);
 		
 		Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
@@ -50,22 +49,22 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			user.setSubjectName(subject);
 			
 			
-			/*
-			List<String> claims = new ArrayList<String>();
+			List<String> authorities = (List<String>) validatedClaims.get("Authorities");
+			List<String> identityInfo =(List<String>) validatedClaims.get("Identity");
 			
-			for (Map.Entry<String, Object> claim : validatedClaims.entrySet())
-			{
-			    List<String> values = (List<String>) claim.getValue();
-			    claims.addAll(values);
-			}
-			
-			for (String claimValue : claims){
-				
-				JWTAuthenticatedPermission permission = new JWTAuthenticatedPermission(claimValue);
-				
+			for (String claim: authorities){
+				JWTAuthenticatedPermission permission = new JWTAuthenticatedPermission(claim);
 				user.addPermission(permission);
 			}
-			*/
+			
+			String idString = identityInfo.get(0);
+			Long userId = Long.valueOf(idString);
+			String firstName = identityInfo.get(2);
+			String lastName = identityInfo.get(3);
+			
+			user.setId(userId);
+			user.setFirstName(firstName);
+			user.setLastName(lastName);
 			
 		}
 		return user;

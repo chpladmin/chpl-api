@@ -13,6 +13,7 @@ import gov.healthit.chpl.auth.user.registration.UserRegistrar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -86,6 +87,14 @@ public class UserManagementController {
 			@RequestParam("role") String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		
+		
+		String isSuccess = String.valueOf(false);
+		userManager.grantRole(userName, role);
+		isSuccess = String.valueOf(true);
+		
+		return "{\"roleAdded\" : "+isSuccess+" }";
+		
+		/*
 		User fetchedUser = userManager.getByUserName(userName);
 		String isSuccess = String.valueOf(false);
 		
@@ -98,7 +107,7 @@ public class UserManagementController {
 		}
 		
 		return "{\"roleAdded\" : "+isSuccess+" }";
-		
+		*/
 	}
 	
 	

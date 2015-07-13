@@ -143,8 +143,12 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Override
+	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void grantRole(UserEntity user, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+		
+		
+		UserEntity user = (UserEntity) getByUserName(userName);
 		
 		if ((role == "ROLE_ADMIN") || (role == "ROLE_ACL_ADMIN") || (role =="ROLE_ADMINISTRATOR")){
 			throw new UserManagementException("This role cannot be granted using the grant role functionality");
@@ -164,6 +168,7 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Override
+	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void grantAdmin(UserEntity user) throws UserPermissionRetrievalException, UserRetrievalException {
 		
@@ -174,14 +179,13 @@ public class UserManagerImpl implements UserManager {
 		
 	}
 	
-
+	
 	@Override
+	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void deleteRole(UserEntity user, String role) throws UserRetrievalException {
 		user.removePermission(role);
 		update(user);
 	}
-	
-
 	
 }

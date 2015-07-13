@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth.permission;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserEntity;
 
 import javax.persistence.AssociationOverride;
@@ -7,6 +9,9 @@ import javax.persistence.AssociationOverrides;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
@@ -16,7 +21,7 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name="global_user_permission_map")
-@SQLDelete(sql = "UPDATE global_user_permission_map SET deleted = true WHERE global_user_permission_id = ?")
+@SQLDelete(sql = "UPDATE openchpl.global_user_permission_map SET deleted = true WHERE global_user_permission_id = ?")
 @Where(clause = "NOT deleted")
 public class UserPermissionUserMapping {
 	
@@ -30,7 +35,13 @@ public class UserPermissionUserMapping {
 	private Long lastModifiedUser;
 	
 	@Column(name="global_user_permission_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long permissionMappingId;
+	
+	
+	public UserPermissionUserMapping(){
+		populateLastModifiedUser();
+	}
 	
 	public Long getLastModifiedUser() {
 		return lastModifiedUser;
@@ -38,6 +49,7 @@ public class UserPermissionUserMapping {
 
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+		populateLastModifiedUser();
 	}
 
 	public boolean isDeleted() {
@@ -46,6 +58,7 @@ public class UserPermissionUserMapping {
 	
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+		populateLastModifiedUser();
 	}
 
 	public UserEntity getUser() {
@@ -54,6 +67,7 @@ public class UserPermissionUserMapping {
 	
 	public void setUser(UserEntity user) {
 		this.getPk().setUser(user);
+		populateLastModifiedUser();
 	}
 	
 	public UserPermissionEntity getPermission() {
@@ -62,6 +76,7 @@ public class UserPermissionUserMapping {
 	
 	public void setPermission(UserPermissionEntity permission) {
 		this.getPk().setPermission(permission);
+		populateLastModifiedUser();
 	}
 	
 	public UserPermissionUserMappingPk getPk() {
@@ -70,6 +85,27 @@ public class UserPermissionUserMapping {
 	
 	public void setPk(UserPermissionUserMappingPk pk) {
 		this.pk = pk;
+		populateLastModifiedUser();
+	}
+	
+	public Long getPermissionMappingId() {
+		return permissionMappingId;
+	}
+
+	public void setPermissionMappingId(Long permissionMappingId) {
+		this.permissionMappingId = permissionMappingId;
+	}
+
+	
+	private void populateLastModifiedUser(){
+		User currentUser = Util.getCurrentUser();
+		
+		Long userId = new Long(-1);
+		
+		if (currentUser != null){
+			userId = currentUser.getId();
+		}
+		this.lastModifiedUser = userId;
 	}
 	
 }
