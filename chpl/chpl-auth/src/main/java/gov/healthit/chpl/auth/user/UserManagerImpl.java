@@ -149,7 +149,7 @@ public class UserManagerImpl implements UserManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void grantAdmin(UserEntity user) throws UserPermissionRetrievalException, UserRetrievalException {
+	public void grantAdmin(UserEntity user) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
 		
 		
 		UserPermissionEntity adminPermission = userPermissionDAO.getPermissionFromAuthority("ROLE_ADMIN");

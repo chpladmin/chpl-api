@@ -97,6 +97,18 @@ public class UserPermissionUserMapping {
 		this.permissionMappingId = permissionMappingId;
 	}
 
+	public int hashCode() {
+		return (int)(getUser().getId() + getPermission().getId());
+	}
+	
+	public boolean equals(Object object) {
+		if (object instanceof UserPermissionUserMapping) {
+			UserPermissionUserMapping other = (UserPermissionUserMapping) object;
+			return (other.getPk().equals(this.getPk()));
+		}
+		return false;
+	}
+	
 	
 	private void populateLastModifiedUser(){
 		User currentUser = Util.getCurrentUser();

@@ -20,7 +20,7 @@ public interface User extends UserDetails , Authentication {
 	public String getLastName();
 	
 	public Set<UserPermission> getPermissions();
-	public void addPermission(UserPermission permission);
+	public void addPermission(UserPermission permission) throws UserManagementException;
 	public void removePermission(String permissionValue);
 
 	

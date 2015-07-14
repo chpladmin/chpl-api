@@ -139,17 +139,30 @@ public class UserEntity implements User {
 		return permissions;
 	}
 	
-	public void addPermission(UserPermission permission){
+	public void addPermission(UserPermission permission) throws UserManagementException {
 		
 		UserPermissionEntity permissionEntity = (UserPermissionEntity) permission;
 		
-		// TODO: Replace this with DAO managed userPermissionUserMapping
 		UserPermissionUserMapping permissionMapping = new UserPermissionUserMapping();
 		
 		permissionMapping.setPermission(permissionEntity);
 		permissionMapping.setUser(this);
-		//this.permissionMappings.add(permissionMapping);
-		//permissionEntity.getUserMappings().add(permissionMapping);
+		
+		if (! this.permissionMappings.contains(permissionMapping)  ){
+			System.out.println("Adding mapping to user.");
+			this.permissionMappings.add(permissionMapping);
+		} else {
+			System.out.println("Mapping exists in user.");
+			throw new UserManagementException("This user-permission mapping already exists");
+		}
+		
+		if (! permissionEntity.getUserMappings().contains(permissionMapping)){
+			System.out.println("Adding mapping to permission.");
+			permissionEntity.getUserMappings().add(permissionMapping);
+		} else {
+			System.out.println("Mapping exists in permission.");
+			throw new UserManagementException("This user-permission mapping already exists");
+		}
 		
 	}
 

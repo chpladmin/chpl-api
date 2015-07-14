@@ -41,7 +41,7 @@ public interface UserManager {
 	void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
 
 
-	void grantAdmin(UserEntity user) throws UserRetrievalException, UserPermissionRetrievalException;
+	void grantAdmin(UserEntity user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 	
 	
 }
