@@ -54,27 +54,6 @@ public class UserManagerImpl implements UserManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void update(UserEntity user) throws UserRetrievalException {
 		
-		
-		// We need to do a few checks on the user being
-		// updated: 
-		User orig = getByUserName(user.getUsername());
-		
-		// In the case where the user has been created by a JWT,
-		// the password field will be null.
-		// go to the database and get the stored password, set
-		// password on the current user object before persisting
-		// the updates.
-		if (user.getPassword() == null){
-			
-			user.setPassword(orig.getPassword());
-		}
-		
-		// In order to preserve SIDs in ACL, usernames cannot
-		// be changed.
-		if (!(user.getSubjectName().equals(orig.getSubjectName()))){
-			user.setSubjectName(orig.getSubjectName());
-		}
-		
 		userDAO.update(user);
 	}
 	

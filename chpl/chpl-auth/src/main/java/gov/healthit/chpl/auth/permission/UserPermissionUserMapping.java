@@ -34,8 +34,9 @@ public class UserPermissionUserMapping {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	@Column(name="global_user_permission_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@Id
+	///@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="global_user_permission_id", columnDefinition="bigserial", insertable = false, updatable = false)
 	private Long permissionMappingId;
 	
 	

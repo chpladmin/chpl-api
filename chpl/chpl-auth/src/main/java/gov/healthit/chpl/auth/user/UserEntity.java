@@ -142,12 +142,14 @@ public class UserEntity implements User {
 	public void addPermission(UserPermission permission){
 		
 		UserPermissionEntity permissionEntity = (UserPermissionEntity) permission;
+		
+		// TODO: Replace this with DAO managed userPermissionUserMapping
 		UserPermissionUserMapping permissionMapping = new UserPermissionUserMapping();
 		
 		permissionMapping.setPermission(permissionEntity);
 		permissionMapping.setUser(this);
-		this.permissionMappings.add(permissionMapping);
-		permissionEntity.getUserMappings().add(permissionMapping);
+		//this.permissionMappings.add(permissionMapping);
+		//permissionEntity.getUserMappings().add(permissionMapping);
 		
 	}
 
