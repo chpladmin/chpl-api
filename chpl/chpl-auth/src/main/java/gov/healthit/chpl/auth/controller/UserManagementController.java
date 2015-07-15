@@ -3,12 +3,12 @@ package gov.healthit.chpl.auth.controller;
 
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserCreationException;
+import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.auth.user.registration.UserCreationException;
-import gov.healthit.chpl.auth.user.registration.UserDTO;
 import gov.healthit.chpl.auth.user.registration.UserRegistrar;
 
 import org.springframework.beans.factory.annotation.Autowired;

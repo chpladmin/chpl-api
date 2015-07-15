@@ -18,15 +18,18 @@ public interface UserManager {
 	
 	
 	public void deleteRole(UserEntity user, String role) throws UserRetrievalException;
+		
 	
-	
-	public void create(UserEntity user);
+	public void create(UserDTO userInfo) throws UserCreationException;
 	
 	
 	public void update(UserEntity user) throws UserRetrievalException;
 	
 	
 	public void delete(UserEntity user);
+	
+	
+	public void delete(String userName) throws UserRetrievalException;
 	
 	
 	public List<UserEntity> getAll();
@@ -38,10 +41,12 @@ public interface UserManager {
 	public User getByUserName(String uname) throws UserRetrievalException;
 
 
-	void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
+	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
 
 
-	void grantAdmin(UserEntity user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
+	public void grantAdmin(UserEntity user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
+
 	
+	public void updateUserPassword(String userName, String password) throws UserRetrievalException;
 	
 }

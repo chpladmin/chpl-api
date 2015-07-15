@@ -4,6 +4,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.user.dao.UserContactDAO;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
 
 import java.util.List;
@@ -21,9 +22,7 @@ import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,21 +33,57 @@ public class UserManagerImpl implements UserManager {
 	private UserDAO userDAO;
 	
 	@Autowired
+	private UserContactDAO userContactDAO;
+	
+	@Autowired
 	private MutableAclService mutableAclService;
 	
 	@Autowired
 	UserPermissionDAO userPermissionDAO;
 	
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	
+	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
-	public void create(UserEntity user){
+	public void create(UserDTO userInfo) throws UserCreationException {
 		
-		userDAO.create(user);
-		// Grant the current principal administrative permission to the user
-		addAclPermission(user, new PrincipalSid(Util.getUsername()),
-				BasePermission.ADMINISTRATION);
+		
+		// TODO: Refactor to create contact object first
+		User user = null;
+		try {
+			user = getByUserName(userInfo.getSubjectName());
+		} catch (UserRetrievalException e) {
+			throw new UserCreationException(e);
+		}
+		
+		if (user != null) {
+			throw new UserCreationException("user name: "+userInfo.getSubjectName() +" already exists.");
+		} else {
+			
+			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
+			UserEntity userToCreate = new UserEntity(userInfo.getSubjectName(), encodedPassword);
+			
+			UserContact contact = new UserContact();
+			contact.setEmail(userInfo.getEmail());
+			contact.setFirstName(userInfo.getFirstName());
+			contact.setLastName(userInfo.getLastName());
+			contact.setPhoneNumber(userInfo.getPhoneNumber());
+			contact.setTitle(userInfo.getTitle());
+			
+			userContactDAO.create(contact);
+			
+			
+			userDAO.create(userToCreate);
+			// Grant the current principal administrative permission to the user
+			addAclPermission(userToCreate, new PrincipalSid(Util.getUsername()),
+					BasePermission.ADMINISTRATION);	
+		}
 		
 	}
+	
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
@@ -61,11 +96,25 @@ public class UserManagerImpl implements UserManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, 'delete') or hasPermission(#user, admin)")
 	public void delete(UserEntity user){
 		
-		userDAO.deactivate(user.getId());
+		userDAO.delete(user.getId());
 		// Delete the ACL information as well
 		ObjectIdentity oid = new ObjectIdentityImpl(UserEntity.class, user.getId());
 		mutableAclService.deleteAcl(oid, false);
 	}
+	
+	@Override
+	public void delete(String userName) throws UserRetrievalException{
+		
+		User fetchedUser = getByUserName(userName);
+		if (fetchedUser == null){
+			throw new UserRetrievalException("User not found");
+		} else {
+			UserEntity user = (UserEntity) fetchedUser;
+			delete(user);
+		}
+		
+	}
+	
 	
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
@@ -165,6 +214,27 @@ public class UserManagerImpl implements UserManager {
 	public void deleteRole(UserEntity user, String role) throws UserRetrievalException {
 		user.removePermission(role);
 		update(user);
+	}
+	
+	@Override
+	@Transactional
+	public void updateUserPassword(String userName, String password) throws UserRetrievalException {
+		
+		User fetchedUser = getByUserName(userName);
+		
+		if (fetchedUser == null){
+			throw new UserRetrievalException("User not found");
+		} else {
+			UserEntity user = (UserEntity) fetchedUser;
+			String encodedPassword = getEncodedPassword(password);
+			user.setPassword(encodedPassword);
+			update(user);
+		}
+	}
+	
+	public String getEncodedPassword(String password){
+		String encodedPassword = bCryptPasswordEncoder.encode(password);
+		return encodedPassword;
 	}
 	
 }

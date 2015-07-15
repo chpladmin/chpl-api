@@ -17,15 +17,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Entity
@@ -65,7 +64,7 @@ public class UserEntity implements User {
 	@OneToMany(mappedBy="pk.user", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
  	private Set<UserPermissionUserMapping> permissionMappings;
 	
-	@OneToOne(optional=false, fetch=FetchType.EAGER)
+	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	@JoinColumn(name="contact_id", unique=true, nullable=false, updatable=false)
 	private UserContact contact;
 	
@@ -157,10 +156,8 @@ public class UserEntity implements User {
 		}
 		
 		if (! permissionEntity.getUserMappings().contains(permissionMapping)){
-			System.out.println("Adding mapping to permission.");
 			permissionEntity.getUserMappings().add(permissionMapping);
 		} else {
-			System.out.println("Mapping exists in permission.");
 			throw new UserManagementException("This user-permission mapping already exists");
 		}
 		

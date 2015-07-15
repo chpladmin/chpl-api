@@ -2,6 +2,8 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
+import gov.healthit.chpl.auth.user.UserContact;
+import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
@@ -25,6 +27,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 	}
 	
+	
 	@Transactional
 	@Override
 	public void update(UserEntity user) {
@@ -35,7 +38,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	@Transactional
 	@Override
-	public void deactivate(String uname) {
+	public void delete(String uname) {
 		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :uname");
 		query.setParameter("uname", uname);
 		query.executeUpdate();
@@ -43,7 +46,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	@Transactional
 	@Override
-	public void deactivate(Long userId){
+	public void delete(Long userId){
 		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :userid");
 		query.setParameter("userid", userId);
 		query.executeUpdate();
@@ -98,6 +101,10 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		}
 		
 		return user;
+	}
+	
+	private void getEncodedPassword(){
+		
 	}
 	
 }

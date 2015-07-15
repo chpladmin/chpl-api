@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.user.registration;
+package gov.healthit.chpl.auth.user;
 
 public class UserCreationException extends Exception {
 
