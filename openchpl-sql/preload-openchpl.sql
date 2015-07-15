@@ -2,9 +2,10 @@ insert into openchpl.practice_type (name, description, last_modified_user) value
 insert into openchpl.product_classification_type (name, description, last_modified_user) values ('Modular EHR', 'Modular EHR', -1), ('Complete EHR', 'Complete EHR', -1);
 insert into openchpl.certification_edition (year, last_modified_user) values (2011, -1), (2014,-1);
 insert into openchpl.cqm_criterion_type (name, description, last_modified_user) values ('Ambulatory', 'Ambulatory', -1), ('Inpatient','Inpatient',-1);
-insert into openchpl.certification_body (name, last_modified_user) values ('InfoGard', -1), ('CCHIT', -1), ('Drummond Group Inc.', -1), ('SLI Global', -1), ('Surescripts LLC', -1), ('ICSA Labs', -1);
+insert into openchpl.certification_body (name, last_modified_user) values ('InfoGard', -1), ('CCHIT', -1), ('Drummond Group Inc.', -1), ('SLI Global', -1), ('Surescripts LLC', -1), ('ICSA Labs', -1), ('Pending', -1);
 insert into openchpl.event_type (name, description, last_modified_user) values ('Certification','Product is certified', -1);
 insert into openchpl.cqm_version (version, last_modified_user) values ('v0', -1), ('v1', -1), ('v2', -1), ('v3', -1), ('v4', -1);
+insert into openchpl.certification_status (certification_status, last_modified_user) values ('Active', -1), ('Retired', -1), ('Withdrawn', -1);
 
 INSERT INTO openchpl.certification_criterion (certification_edition_id, number, title, last_modified_user) VALUES
 (1, '170.302(a)', 'Drug-drug, drug-allergy', -1),

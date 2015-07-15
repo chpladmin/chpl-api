@@ -245,3 +245,4 @@ pip-log.txt
 /chpl/chpl-etl/cert_products_x_ids_null.txt
 /chpl/chpl-etl/input/
 /chpl/chpl-etl/parse.sh
+/chpl/chpl-etl/log_checksum-analysis-finallines.txt
