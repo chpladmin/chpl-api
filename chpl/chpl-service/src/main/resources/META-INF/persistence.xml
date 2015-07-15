@@ -9,9 +9,9 @@
 	<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<class>gov.healthit.chpl.acb.CertificationBody</class>
 		<class>gov.healthit.chpl.auth.user.UserEntity</class>
-		<class>gov.healthit.chpl.auth.user.UserContact</class>
+		<class>gov.healthit.chpl.auth.user.UserContactEntity</class>
 		<class>gov.healthit.chpl.auth.permission.UserPermissionEntity</class>
-		<class>gov.healthit.chpl.auth.permission.UserPermissionUserMapping</class>
+		<class>gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

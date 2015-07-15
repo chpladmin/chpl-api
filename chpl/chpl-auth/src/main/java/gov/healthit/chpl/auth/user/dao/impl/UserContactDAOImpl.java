@@ -5,7 +5,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.user.UserContact;
+import gov.healthit.chpl.auth.user.UserContactEntity;
 import gov.healthit.chpl.auth.user.dao.UserContactDAO;
 
 
@@ -13,14 +13,14 @@ import gov.healthit.chpl.auth.user.dao.UserContactDAO;
 public class UserContactDAOImpl extends BaseDAOImpl implements UserContactDAO {
 
 	@Override
-	public void create(UserContact contact) {
+	public void create(UserContactEntity contact) {
 		
 		entityManager.persist(contact);
 		
 	}
 
 	@Override
-	public void update(UserContact contact) {
+	public void update(UserContactEntity contact) {
 		
 		entityManager.merge(contact);
 		

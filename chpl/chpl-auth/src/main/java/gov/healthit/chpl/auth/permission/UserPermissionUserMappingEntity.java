@@ -23,7 +23,7 @@ import org.hibernate.annotations.Where;
 @Table(name="global_user_permission_map")
 @SQLDelete(sql = "UPDATE openchpl.global_user_permission_map SET deleted = true WHERE global_user_permission_id = ?")
 @Where(clause = "NOT deleted")
-public class UserPermissionUserMapping {
+public class UserPermissionUserMappingEntity {
 	
 	@EmbeddedId
 	private UserPermissionUserMappingPk pk = new UserPermissionUserMappingPk();
@@ -34,13 +34,11 @@ public class UserPermissionUserMapping {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	//@Id
-	///@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="global_user_permission_id", columnDefinition="bigserial", insertable = false, updatable = false)
 	private Long permissionMappingId;
 	
 	
-	public UserPermissionUserMapping(){
+	public UserPermissionUserMappingEntity(){
 		populateLastModifiedUser();
 	}
 	
@@ -102,8 +100,8 @@ public class UserPermissionUserMapping {
 	}
 	
 	public boolean equals(Object object) {
-		if (object instanceof UserPermissionUserMapping) {
-			UserPermissionUserMapping other = (UserPermissionUserMapping) object;
+		if (object instanceof UserPermissionUserMappingEntity) {
+			UserPermissionUserMappingEntity other = (UserPermissionUserMappingEntity) object;
 			return (other.getPk().equals(this.getPk()));
 		}
 		return false;

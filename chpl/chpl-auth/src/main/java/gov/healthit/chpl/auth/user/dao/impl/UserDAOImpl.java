@@ -2,7 +2,7 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.user.UserContact;
+import gov.healthit.chpl.auth.user.UserContactEntity;
 import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository(value="userDAO")
 public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
-	@Transactional
+	
 	@Override
 	public void create(UserEntity user) {
 		
@@ -27,8 +27,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 	}
 	
-	
-	@Transactional
 	@Override
 	public void update(UserEntity user) {
 		
@@ -36,7 +34,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 	}
 	
-	@Transactional
 	@Override
 	public void delete(String uname) {
 		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :uname");
@@ -44,7 +41,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		query.executeUpdate();
 	}
 	
-	@Transactional
 	@Override
 	public void delete(Long userId){
 		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :userid");
@@ -52,7 +48,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		query.executeUpdate();
 	}
 	
-	@Transactional
 	@Override
 	public List<UserEntity> findAll() {
 		
@@ -61,7 +56,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		return result;
 	}
 
-	@Transactional
 	@Override
 	public UserEntity getById(Long userId) throws UserRetrievalException {
 		
@@ -82,7 +76,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		return user;
 	}
 
-	@Transactional
 	@Override
 	public UserEntity getByName(String uname) throws UserRetrievalException {
 		
@@ -101,10 +94,6 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		}
 		
 		return user;
-	}
-	
-	private void getEncodedPassword(){
-		
 	}
 	
 }

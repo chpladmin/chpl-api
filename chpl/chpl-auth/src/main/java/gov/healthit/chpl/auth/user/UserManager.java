@@ -26,9 +26,6 @@ public interface UserManager {
 	public void update(UserDTO userInfo) throws UserRetrievalException;
 	
 	
-	public void update(UserEntity user) throws UserRetrievalException;
-	
-	
 	public void delete(UserEntity user);
 	
 	
@@ -40,7 +37,9 @@ public interface UserManager {
 	
 	public User getById(Long id) throws UserRetrievalException;
 	
-	
+	//TODO: Refactor so not returning Entity
+	//Make this private
+	//Create AuthenticatedUserDTO
 	public User getByUserName(String uname) throws UserRetrievalException;
 
 

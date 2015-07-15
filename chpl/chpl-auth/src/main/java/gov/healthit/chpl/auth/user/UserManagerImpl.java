@@ -65,7 +65,7 @@ public class UserManagerImpl implements UserManager {
 			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
 			UserEntity userToCreate = new UserEntity(userInfo.getSubjectName(), encodedPassword);
 			
-			UserContact contact = new UserContact();
+			UserContactEntity contact = new UserContactEntity();
 			contact.setEmail(userInfo.getEmail());
 			contact.setFirstName(userInfo.getFirstName());
 			contact.setLastName(userInfo.getLastName());
@@ -80,8 +80,11 @@ public class UserManagerImpl implements UserManager {
 			// Grant the current principal administrative permission to the user
 			addAclPermission(userToCreate, new PrincipalSid(Util.getUsername()),
 					BasePermission.ADMINISTRATION);
-			// Grant the user administrative permission over itself. 
-			// TODO: Is this a good idea: eg. should users be able to delete themselves?
+			
+			addAclPermission(userToCreate, new PrincipalSid(Util.getUsername()),
+					BasePermission.DELETE);
+			
+			// Grant the user administrative permission over itself.
 			addAclPermission(userToCreate, new PrincipalSid(userToCreate.getSubjectName()),
 					BasePermission.ADMINISTRATION);
 			
@@ -90,11 +93,15 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	
-	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void update(UserEntity user) throws UserRetrievalException {
-		
+	private void update(UserEntity user) throws UserRetrievalException {
 		userDAO.update(user);
+	}
+	
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN) or hasPermission(#user, admin)")
+	private void updateContactInfo(UserEntity user){
+		userContactDAO.update(user.getContact());
 	}
 	
 	
@@ -103,7 +110,7 @@ public class UserManagerImpl implements UserManager {
 		
 		UserEntity user = (UserEntity) getByUserName(userInfo.getSubjectName());
 		
-		UserContact contact = user.getContact();
+		UserContactEntity contact = user.getContact();
 		contact.setEmail(userInfo.getEmail());
 		contact.setFirstName(userInfo.getFirstName());
 		contact.setLastName(userInfo.getLastName());
@@ -114,13 +121,13 @@ public class UserManagerImpl implements UserManager {
 			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
 			user.setPassword(encodedPassword);
 		}
-		userContactDAO.update(contact);//TODO: Is this necessary, if we are updating user?
-		userDAO.update(user);
+		updateContactInfo(user);
+		update(user);
 	}
 	
 	
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, 'delete') or hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(UserEntity user){
 		
 		userDAO.delete(user.getId());

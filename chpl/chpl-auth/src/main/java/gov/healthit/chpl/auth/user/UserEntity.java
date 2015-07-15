@@ -3,7 +3,7 @@ package gov.healthit.chpl.auth.user;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.UserPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
-import gov.healthit.chpl.auth.permission.UserPermissionUserMapping;
+import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -62,11 +62,12 @@ public class UserEntity implements User {
 	private Long lastModifiedUser;
 	
 	@OneToMany(mappedBy="pk.user", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
- 	private Set<UserPermissionUserMapping> permissionMappings;
+ 	private Set<UserPermissionUserMappingEntity> permissionMappings;
 	
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
+	//@JoinColumn(name="contact_id", unique=true, nullable=false, updatable=false) //TODO: Why was this non-updatable?
 	@JoinColumn(name="contact_id", unique=true, nullable=false, updatable=false)
-	private UserContact contact;
+	private UserContactEntity contact;
 	
 	@Transient
 	private boolean authenticated = false;
@@ -132,7 +133,7 @@ public class UserEntity implements User {
 		
 		Set<UserPermission> permissions = new HashSet<UserPermission>();
 		
-		for (UserPermissionUserMapping mapping : permissionMappings){
+		for (UserPermissionUserMappingEntity mapping : permissionMappings){
 			permissions.add(mapping.getPermission());
 		}
 		return permissions;
@@ -142,16 +143,14 @@ public class UserEntity implements User {
 		
 		UserPermissionEntity permissionEntity = (UserPermissionEntity) permission;
 		
-		UserPermissionUserMapping permissionMapping = new UserPermissionUserMapping();
+		UserPermissionUserMappingEntity permissionMapping = new UserPermissionUserMappingEntity();
 		
 		permissionMapping.setPermission(permissionEntity);
 		permissionMapping.setUser(this);
 		
 		if (! this.permissionMappings.contains(permissionMapping)  ){
-			System.out.println("Adding mapping to user.");
 			this.permissionMappings.add(permissionMapping);
 		} else {
-			System.out.println("Mapping exists in user.");
 			throw new UserManagementException("This user-permission mapping already exists");
 		}
 		
@@ -164,7 +163,7 @@ public class UserEntity implements User {
 	}
 
 	public void removePermission(String permissionValue){
-		this.permissionMappings.removeIf((UserPermissionUserMapping m) -> m.getPermission().getAuthority().equals(permissionValue));
+		this.permissionMappings.removeIf((UserPermissionUserMappingEntity m) -> m.getPermission().getAuthority().equals(permissionValue));
 	}
 	
 	@Override
@@ -241,11 +240,11 @@ public class UserEntity implements User {
 		return id;
 	}
 	
-	public UserContact getContact() {
+	public UserContactEntity getContact() {
 		return contact;
 	}
 	
-	public void setContact(UserContact contact) {
+	public void setContact(UserContactEntity contact) {
 		this.contact = contact;
 	}
 

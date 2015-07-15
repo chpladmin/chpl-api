@@ -45,7 +45,7 @@ public class UserPermissionEntity implements UserPermission {
 	
 	//@OneToMany(mappedBy="pk.permission", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@OneToMany(mappedBy="pk.permission", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<UserPermissionUserMapping> userMappings;
+	private List<UserPermissionUserMappingEntity> userMappings;
 
 	public UserPermissionEntity(){
 		this.lastModifiedUser = getLastModifiedUserId();
@@ -98,11 +98,11 @@ public class UserPermissionEntity implements UserPermission {
 		return authority;
 	}
 	
-	public List<UserPermissionUserMapping> getUserMappings() {
+	public List<UserPermissionUserMappingEntity> getUserMappings() {
 		return userMappings;
 	}
 
-	public void setUserMappings(List<UserPermissionUserMapping> userMappings) {
+	public void setUserMappings(List<UserPermissionUserMappingEntity> userMappings) {
 		this.userMappings = userMappings;
 		populateLastModifiedUser();
 	}
