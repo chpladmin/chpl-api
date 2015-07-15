@@ -49,7 +49,7 @@ if ls input/*.xlsx 1> /dev/null 2>&1; then
         mv "./$i" input/parsed/input/
         cp to-update.csv input/parsed/$i-to-update.csv
 
-        sendemail -f $E_FROM -t $E_TO -u $E_SUBJ -m $E_MSG -s $E_SMTP -xu $E_UN -xp $E_PW -a '"input/parsed/'$i'-to-update.csv"' '"input/parsed/'$i'"'
+        sendemail -f $E_FROM -t $E_TO -u $E_SUBJ -m $E_MSG -s $E_SMTP -xu $E_UN -xp $E_PW -a '"input/parsed/'$i'-to-update.csv"' '"input/parsed/'$i'"' $log
     done
 else
     echo "No files found at:" $TIMESTAMP >> $monthly
