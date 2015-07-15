@@ -74,11 +74,17 @@ public class UserManagerImpl implements UserManager {
 			
 			userContactDAO.create(contact);
 			
+			userToCreate.setContact(contact);
 			
 			userDAO.create(userToCreate);
 			// Grant the current principal administrative permission to the user
 			addAclPermission(userToCreate, new PrincipalSid(Util.getUsername()),
-					BasePermission.ADMINISTRATION);	
+					BasePermission.ADMINISTRATION);
+			// Grant the user administrative permission over itself. 
+			// TODO: Is this a good idea: eg. should users be able to delete themselves?
+			addAclPermission(userToCreate, new PrincipalSid(userToCreate.getSubjectName()),
+					BasePermission.ADMINISTRATION);
+			
 		}
 		
 	}
@@ -219,12 +225,16 @@ public class UserManagerImpl implements UserManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void grantAdmin(UserEntity user) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
+	public void grantAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
 		
 		
-		UserPermissionEntity adminPermission = userPermissionDAO.getPermissionFromAuthority("ROLE_ADMIN");
-		user.addPermission(adminPermission);
+		UserEntity user = (UserEntity) getByUserName(userName);
+		
+		UserPermissionEntity permission = userPermissionDAO.getPermissionFromAuthority("ROLE_ADMIN");
+		
+		user.addPermission(permission);
 		update(user);
+		userPermissionDAO.update(permission);
 		
 	}
 	

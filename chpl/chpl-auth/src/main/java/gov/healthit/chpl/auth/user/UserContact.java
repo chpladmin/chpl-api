@@ -1,5 +1,9 @@
 package gov.healthit.chpl.auth.user;
 
+import gov.healthit.chpl.auth.Util;
+
+import java.sql.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,7 +44,7 @@ public class UserContact {
 	private String title;
 	
 	@Column(name="signature_date")
-	private String signatureDate;
+	private Date signatureDate;
 	
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
@@ -52,6 +56,7 @@ public class UserContact {
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
+		populateLastModifiedUser();
 	}
 
 	public String getLastName() {
@@ -60,6 +65,7 @@ public class UserContact {
 	
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+		populateLastModifiedUser();
 	}
 	
 	public String getEmail() {
@@ -68,6 +74,7 @@ public class UserContact {
 	
 	public void setEmail(String email) {
 		this.email = email;
+		populateLastModifiedUser();
 	}
 
 	public String getPhoneNumber() {
@@ -76,6 +83,7 @@ public class UserContact {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+		populateLastModifiedUser();
 	}
 
 	public String getTitle() {
@@ -84,14 +92,16 @@ public class UserContact {
 
 	public void setTitle(String title) {
 		this.title = title;
+		populateLastModifiedUser();
 	}
 
-	public String getSignatureDate() {
+	public Date getSignatureDate() {
 		return signatureDate;
 	}
 
-	public void setSignatureDate(String signatureDate) {
+	public void setSignatureDate(Date signatureDate) {
 		this.signatureDate = signatureDate;
+		populateLastModifiedUser();
 	}
 
 	public Long getLastModifiedUser() {
@@ -100,10 +110,22 @@ public class UserContact {
 
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+		populateLastModifiedUser();
 	}
 
 	public Long getId() {
 		return id;
-	}	
+	}
+	
+	private void populateLastModifiedUser(){
+		User currentUser = Util.getCurrentUser();
+		
+		Long userId = new Long(-1);
+		
+		if (currentUser != null){
+			userId = currentUser.getId();
+		}
+		this.lastModifiedUser = userId;
+	}
 	
 }

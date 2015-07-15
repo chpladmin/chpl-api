@@ -2,18 +2,14 @@ package gov.healthit.chpl.auth.controller;
 
 
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserDTO;
-import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.auth.user.registration.UserRegistrar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,14 +35,14 @@ public class UserManagementController {
 	}
 	
 	
-	@RequestMapping(value="/deactivate_user", method= RequestMethod.POST, 
+	@RequestMapping(value="/delete_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")
-	public String deactivateUser(@RequestParam("userName") String userName) 
+	public String deleteUser(@RequestParam("userName") String userName) 
 			throws UserRetrievalException {
 		
-		String isSuccess = String.valueOf(registrar.deactivateUser(userName));
-		return "{\"deactivatedUser\" : "+isSuccess+" }";
+		userManager.delete(userName);
+		return "{\"deletedUser\" : true }";
 		
 	}
 	
@@ -87,20 +83,6 @@ public class UserManagementController {
 		
 		return "{\"roleAdded\" : "+isSuccess+" }";
 		
-		/*
-		User fetchedUser = userManager.getByUserName(userName);
-		String isSuccess = String.valueOf(false);
-		
-		if (fetchedUser == null){
-			throw new UserRetrievalException("User not found");
-		} else {
-			UserEntity user = (UserEntity) fetchedUser;
-			userManager.grantRole(user, role);
-			isSuccess = String.valueOf(true);
-		}
-		
-		return "{\"roleAdded\" : "+isSuccess+" }";
-		*/
 	}
 	
 	
@@ -110,18 +92,11 @@ public class UserManagementController {
 	public String grantUserAdmin(@RequestParam("userName") String userName) 
 			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
-		User fetchedUser = userManager.getByUserName(userName);
 		String isSuccess = String.valueOf(false);
+		userManager.grantAdmin(userName);
+		isSuccess = String.valueOf(true);
 		
-		if (fetchedUser == null){
-			throw new UserRetrievalException("User not found");
-		} else {
-			UserEntity user = (UserEntity) fetchedUser;
-			userManager.grantAdmin(user);
-			isSuccess = String.valueOf(true);
-		}
-		
-		return "{\"grantedAdmin\" : "+isSuccess+" }";
+		return "{\"grantedAdminPrivileges\" : "+isSuccess+" }";
 		
 	}
 	

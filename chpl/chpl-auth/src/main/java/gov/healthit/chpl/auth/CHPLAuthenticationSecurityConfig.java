@@ -264,6 +264,9 @@ public class CHPLAuthenticationSecurityConfig extends
 				lookupStrategy(), 
 				aclCache());
 		
+		bean.setClassIdentityQuery("select currval('acl_class_id_seq')");
+		bean.setSidIdentityQuery("select currval('acl_sid_id_seq')");
+		
 		return bean;
 	}
 	
