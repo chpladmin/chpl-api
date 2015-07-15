@@ -23,6 +23,9 @@ public interface UserManager {
 	public void create(UserDTO userInfo) throws UserCreationException;
 	
 	
+	public void update(UserDTO userInfo) throws UserRetrievalException;
+	
+	
 	public void update(UserEntity user) throws UserRetrievalException;
 	
 	

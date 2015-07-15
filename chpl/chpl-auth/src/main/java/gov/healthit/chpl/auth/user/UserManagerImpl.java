@@ -36,10 +36,10 @@ public class UserManagerImpl implements UserManager {
 	private UserContactDAO userContactDAO;
 	
 	@Autowired
-	private MutableAclService mutableAclService;
+	UserPermissionDAO userPermissionDAO;
 	
 	@Autowired
-	UserPermissionDAO userPermissionDAO;
+	private MutableAclService mutableAclService;
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -51,7 +51,6 @@ public class UserManagerImpl implements UserManager {
 	public void create(UserDTO userInfo) throws UserCreationException {
 		
 		
-		// TODO: Refactor to create contact object first
 		User user = null;
 		try {
 			user = getByUserName(userInfo.getSubjectName());
@@ -92,6 +91,28 @@ public class UserManagerImpl implements UserManager {
 		userDAO.update(user);
 	}
 	
+	
+	@Transactional
+	public void update(UserDTO userInfo) throws UserRetrievalException {
+		
+		UserEntity user = (UserEntity) getByUserName(userInfo.getSubjectName());
+		
+		UserContact contact = user.getContact();
+		contact.setEmail(userInfo.getEmail());
+		contact.setFirstName(userInfo.getFirstName());
+		contact.setLastName(userInfo.getLastName());
+		contact.setPhoneNumber(userInfo.getPhoneNumber());
+		contact.setTitle(userInfo.getTitle());
+		
+		if (userInfo.getPassword() != null){
+			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
+			user.setPassword(encodedPassword);
+		}
+		userContactDAO.update(contact);//TODO: Is this necessary, if we are updating user?
+		userDAO.update(user);
+	}
+	
+	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, 'delete') or hasPermission(#user, admin)")
 	public void delete(UserEntity user){
@@ -116,18 +137,18 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	
-	@Transactional(readOnly = true)
+	@Transactional
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<UserEntity> getAll(){
 		return userDAO.findAll();
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional
 	public User getByUserName(String uname) throws UserRetrievalException {
 		return userDAO.getByName(uname);
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id, 'gov.healthit.chpl.auth.user.User', admin)")
 	public User getById(Long id) throws UserRetrievalException{
 		return userDAO.getById(id);

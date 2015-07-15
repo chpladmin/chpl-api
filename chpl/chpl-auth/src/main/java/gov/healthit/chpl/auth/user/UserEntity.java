@@ -241,6 +241,14 @@ public class UserEntity implements User {
 		return id;
 	}
 	
+	public UserContact getContact() {
+		return contact;
+	}
+	
+	public void setContact(UserContact contact) {
+		this.contact = contact;
+	}
+
 	private void populateLastModifiedUser(){
 		User currentUser = Util.getCurrentUser();
 		

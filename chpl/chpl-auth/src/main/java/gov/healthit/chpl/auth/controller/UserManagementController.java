@@ -25,9 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserManagementController {
 	
 	@Autowired
-	UserRegistrar registrar;
-	
-	@Autowired
 	UserManager userManager;
 	
 	@RequestMapping(value="/create_user", method= RequestMethod.POST, 
@@ -35,7 +32,7 @@ public class UserManagementController {
 			produces="application/json; charset=utf-8")
 	public String createUser(@RequestBody UserDTO userInfo) throws UserCreationException {
 		
-		registrar.createUser(userInfo);
+		userManager.create(userInfo);
 		String isSuccess = String.valueOf(true);
 		return "{\"userCreated\" : "+isSuccess+" }";
 		
@@ -60,9 +57,8 @@ public class UserManagementController {
 	public String resetPassword(@RequestParam("userName") String userName, 
 			@RequestParam("password") String password) throws UserRetrievalException {
 		
-		boolean passwordUpdated = registrar.updateUserPassword(userName, password);
-		String isSuccess = String.valueOf(passwordUpdated);
-		return "{\"passwordUpdated\" : "+isSuccess+" }";
+		userManager.updateUserPassword(userName, password);
+		return "{\"passwordUpdated\" : true }";
 		
 	}
 	
@@ -71,10 +67,8 @@ public class UserManagementController {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public String updateUserDetails(@RequestBody UserDTO userInfo) throws UserRetrievalException {
-		//TODO: Build out UserDTO to contain eg: Contacts
 		
-		UserEntity user = new UserEntity(userInfo.getUserName(), registrar.getEncodedPassword(userInfo.getPassword()));
-		userManager.create(user);
+		userManager.update(userInfo);
 		return "{\"userUpdated\" : true }";
 		
 	}
@@ -85,7 +79,6 @@ public class UserManagementController {
 			produces="application/json; charset=utf-8")
 	public String grantUserRole(@RequestParam("userName") String userName, 
 			@RequestParam("role") String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
-		
 		
 		
 		String isSuccess = String.valueOf(false);
