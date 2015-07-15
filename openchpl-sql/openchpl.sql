@@ -483,39 +483,22 @@ REFERENCES openchpl.vendor (vendor_id) MATCH FULL
 ON DELETE RESTRICT ON UPDATE CASCADE;
 -- ddl-end --
 
--- object: openchpl.cqm_edition | type: TABLE --
--- DROP TABLE IF EXISTS openchpl.cqm_edition CASCADE;
-CREATE TABLE openchpl.cqm_edition(
-	cqm_edition_id bigserial NOT NULL,
-	edition varchar(10),
-	creation_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_user bigint NOT NULL,
-	deleted bool NOT NULL DEFAULT false,
-	CONSTRAINT cqm_edition_pk PRIMARY KEY (cqm_edition_id)
-
-);
--- ddl-end --
-ALTER TABLE openchpl.cqm_edition OWNER TO openchpl;
--- ddl-end --
-
 -- object: openchpl.cqm_criterion | type: TABLE --
 -- DROP TABLE IF EXISTS openchpl.cqm_criterion CASCADE;
 CREATE TABLE openchpl.cqm_criterion(
 	cqm_criterion_id bigserial NOT NULL,
-	cqm_edition_id bigint NOT NULL,
-	cqm_criterion_type_id bigint NOT NULL,
 	number varchar(20),
 	cms_id varchar(15),
 	title varchar(250),
 	description varchar(1000),
 	cqm_domain varchar(250),
 	nqf_number varchar(50),
-	cqm_version varchar(10),
 	creation_date timestamp NOT NULL DEFAULT now(),
 	last_modified_date timestamp NOT NULL DEFAULT now(),
 	last_modified_user bigint NOT NULL,
 	deleted bool NOT NULL DEFAULT false,
+	cqm_version_id bigint,
+	cqm_criterion_type_id bigint NOT NULL,
 	CONSTRAINT cqm_criterion_pk PRIMARY KEY (cqm_criterion_id)
 
 );
@@ -527,14 +510,13 @@ ALTER TABLE openchpl.cqm_criterion OWNER TO openchpl;
 -- DROP TABLE IF EXISTS openchpl.cqm_result CASCADE;
 CREATE TABLE openchpl.cqm_result(
 	cqm_result_id bigserial NOT NULL,
-	cqm_version_id bigint,
-	cqm_criterion_id bigint NOT NULL,
+	certified_product_id bigint NOT NULL,
 	success bool,
+	cqm_criterion_id bigint NOT NULL,
 	creation_date timestamp NOT NULL DEFAULT NOW(),
 	last_modified_date timestamp NOT NULL DEFAULT NOW(),
 	last_modified_user bigint NOT NULL,
 	deleted bool NOT NULL DEFAULT false,
-	certified_product_cqm_edition_map_id bigint NOT NULL,
 	CONSTRAINT cqm_result_pk PRIMARY KEY (cqm_result_id)
 
 );
@@ -546,13 +528,6 @@ ALTER TABLE openchpl.cqm_result OWNER TO openchpl;
 -- ALTER TABLE openchpl.certification_criterion DROP CONSTRAINT IF EXISTS certification_edition_fk CASCADE;
 ALTER TABLE openchpl.certification_criterion ADD CONSTRAINT certification_edition_fk FOREIGN KEY (certification_edition_id)
 REFERENCES openchpl.certification_edition (certification_edition_id) MATCH FULL
-ON DELETE RESTRICT ON UPDATE CASCADE;
--- ddl-end --
-
--- object: cqm_edition_fk | type: CONSTRAINT --
--- ALTER TABLE openchpl.cqm_criterion DROP CONSTRAINT IF EXISTS cqm_edition_fk CASCADE;
-ALTER TABLE openchpl.cqm_criterion ADD CONSTRAINT cqm_edition_fk FOREIGN KEY (cqm_edition_id)
-REFERENCES openchpl.cqm_edition (cqm_edition_id) MATCH FULL
 ON DELETE RESTRICT ON UPDATE CASCADE;
 -- ddl-end --
 
@@ -578,13 +553,6 @@ CREATE TABLE openchpl.cqm_criterion_type(
 );
 -- ddl-end --
 ALTER TABLE openchpl.cqm_criterion_type OWNER TO openchpl;
--- ddl-end --
-
--- object: cqm_criterion_type_fk | type: CONSTRAINT --
--- ALTER TABLE openchpl.cqm_criterion DROP CONSTRAINT IF EXISTS cqm_criterion_type_fk CASCADE;
-ALTER TABLE openchpl.cqm_criterion ADD CONSTRAINT cqm_criterion_type_fk FOREIGN KEY (cqm_criterion_type_id)
-REFERENCES openchpl.cqm_criterion_type (cqm_criterion_type_id) MATCH FULL
-ON DELETE RESTRICT ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: openchpl.criterion_standard | type: TABLE --
@@ -986,7 +954,6 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 -- DROP TABLE IF EXISTS openchpl.cqm_version CASCADE;
 CREATE TABLE openchpl.cqm_version(
 	cqm_version_id bigserial NOT NULL,
-	cqm_criterion_id bigint NOT NULL,
 	version varchar(25) NOT NULL,
 	creation_date timestamp NOT NULL DEFAULT NOW(),
 	last_modified_date timestamp NOT NULL DEFAULT NOW(),
@@ -997,20 +964,6 @@ CREATE TABLE openchpl.cqm_version(
 );
 -- ddl-end --
 ALTER TABLE openchpl.cqm_version OWNER TO openchpl;
--- ddl-end --
-
--- object: cqm_criterion_fk | type: CONSTRAINT --
--- ALTER TABLE openchpl.cqm_version DROP CONSTRAINT IF EXISTS cqm_criterion_fk CASCADE;
-ALTER TABLE openchpl.cqm_version ADD CONSTRAINT cqm_criterion_fk FOREIGN KEY (cqm_criterion_id)
-REFERENCES openchpl.cqm_criterion (cqm_criterion_id) MATCH FULL
-ON DELETE RESTRICT ON UPDATE CASCADE;
--- ddl-end --
-
--- object: cqm_version_fk | type: CONSTRAINT --
--- ALTER TABLE openchpl.cqm_result DROP CONSTRAINT IF EXISTS cqm_version_fk CASCADE;
-ALTER TABLE openchpl.cqm_result ADD CONSTRAINT cqm_version_fk FOREIGN KEY (cqm_version_id)
-REFERENCES openchpl.cqm_version (cqm_version_id) MATCH FULL
-ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: openchpl.test_data_alteration | type: TABLE --
@@ -1281,44 +1234,6 @@ REFERENCES openchpl.certification_result (certification_result_id) MATCH FULL
 ON DELETE RESTRICT ON UPDATE CASCADE;
 -- ddl-end --
 
--- object: openchpl.certified_product_cqm_edition_map | type: TABLE --
--- DROP TABLE IF EXISTS openchpl.certified_product_cqm_edition_map CASCADE;
-CREATE TABLE openchpl.certified_product_cqm_edition_map(
-	certified_product_cqm_edition_map_id bigserial NOT NULL,
-	cqm_edition_id bigint NOT NULL,
-	certified_product_id bigint NOT NULL,
-	creation_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_user bigint NOT NULL,
-	deleted bool NOT NULL DEFAULT false,
-	CONSTRAINT certified_product_cqm_edition_map_pk PRIMARY KEY (certified_product_cqm_edition_map_id)
-
-);
--- ddl-end --
-ALTER TABLE openchpl.certified_product_cqm_edition_map OWNER TO openchpl;
--- ddl-end --
-
--- object: cqm_edition_fk | type: CONSTRAINT --
--- ALTER TABLE openchpl.certified_product_cqm_edition_map DROP CONSTRAINT IF EXISTS cqm_edition_fk CASCADE;
-ALTER TABLE openchpl.certified_product_cqm_edition_map ADD CONSTRAINT cqm_edition_fk FOREIGN KEY (cqm_edition_id)
-REFERENCES openchpl.cqm_edition (cqm_edition_id) MATCH FULL
-ON DELETE RESTRICT ON UPDATE CASCADE;
--- ddl-end --
-
--- object: certified_product_fk | type: CONSTRAINT --
--- ALTER TABLE openchpl.certified_product_cqm_edition_map DROP CONSTRAINT IF EXISTS certified_product_fk CASCADE;
-ALTER TABLE openchpl.certified_product_cqm_edition_map ADD CONSTRAINT certified_product_fk FOREIGN KEY (certified_product_id)
-REFERENCES openchpl.certified_product (certified_product_id) MATCH FULL
-ON DELETE RESTRICT ON UPDATE CASCADE;
--- ddl-end --
-
--- object: certified_product_cqm_edition_map_fk | type: CONSTRAINT --
--- ALTER TABLE openchpl.cqm_result DROP CONSTRAINT IF EXISTS certified_product_cqm_edition_map_fk CASCADE;
-ALTER TABLE openchpl.cqm_result ADD CONSTRAINT certified_product_cqm_edition_map_fk FOREIGN KEY (certified_product_cqm_edition_map_id)
-REFERENCES openchpl.certified_product_cqm_edition_map (certified_product_cqm_edition_map_id) MATCH FULL
-ON DELETE RESTRICT ON UPDATE CASCADE;
--- ddl-end --
-
 -- object: openchpl.user_contact_map | type: TABLE --
 -- DROP TABLE IF EXISTS openchpl.user_contact_map CASCADE;
 CREATE TABLE openchpl.user_contact_map(
@@ -1452,6 +1367,20 @@ ON DELETE RESTRICT ON UPDATE CASCADE;
 -- object: acl_entry_uk | type: CONSTRAINT --
 -- ALTER TABLE openchpl.acl_entry DROP CONSTRAINT IF EXISTS acl_entry_uk CASCADE;
 ALTER TABLE openchpl.acl_entry ADD CONSTRAINT acl_entry_uk UNIQUE (acl_object_identity,ace_order);
+-- ddl-end --
+
+-- object: cqm_criterion_type_fk | type: CONSTRAINT --
+-- ALTER TABLE openchpl.cqm_criterion DROP CONSTRAINT IF EXISTS cqm_criterion_type_fk CASCADE;
+ALTER TABLE openchpl.cqm_criterion ADD CONSTRAINT cqm_criterion_type_fk FOREIGN KEY (cqm_criterion_type_id)
+REFERENCES openchpl.cqm_criterion_type (cqm_criterion_type_id) MATCH FULL
+ON DELETE RESTRICT ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: certified_product_fk | type: CONSTRAINT --
+-- ALTER TABLE openchpl.cqm_result DROP CONSTRAINT IF EXISTS certified_product_fk CASCADE;
+ALTER TABLE openchpl.cqm_result ADD CONSTRAINT certified_product_fk FOREIGN KEY (certified_product_id)
+REFERENCES openchpl.certified_product (certified_product_id) MATCH FULL
+ON DELETE RESTRICT ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: parent_criterion_fk | type: CONSTRAINT --
