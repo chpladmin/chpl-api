@@ -20,10 +20,10 @@ public interface UserManager {
 	public void deleteRole(UserEntity user, String role) throws UserRetrievalException;
 		
 	
-	public void create(UserDTO userInfo) throws UserCreationException;
+	public void create(UserUploadDTO userInfo) throws UserCreationException;
 	
 	
-	public void update(UserDTO userInfo) throws UserRetrievalException;
+	public void update(UserUploadDTO userInfo) throws UserRetrievalException;
 	
 	
 	public void delete(UserEntity user);
@@ -40,7 +40,7 @@ public interface UserManager {
 	//TODO: Refactor so not returning Entity
 	//Make this private
 	//Create AuthenticatedUserDTO
-	public User getByUserName(String uname) throws UserRetrievalException;
+	//public User getByUserName(String uname) throws UserRetrievalException;
 
 
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;

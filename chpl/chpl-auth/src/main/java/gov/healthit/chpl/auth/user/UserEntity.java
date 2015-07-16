@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.user;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.AuthenticatedPermission;
 import gov.healthit.chpl.auth.permission.UserPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
@@ -31,7 +32,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Table(name="`user`")
 @SQLDelete(sql = "UPDATE openchpl.\"user\" SET deleted = true WHERE user_id = ?")
 @Where(clause = "NOT deleted")
-public class UserEntity implements User {
+public class UserEntity {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -66,7 +67,7 @@ public class UserEntity implements User {
 	
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
 	//@JoinColumn(name="contact_id", unique=true, nullable=false, updatable=false) //TODO: Why was this non-updatable?
-	@JoinColumn(name="contact_id", unique=true, nullable=false, updatable=false)
+	@JoinColumn(name="contact_id", unique=true, nullable=false)
 	private UserContactEntity contact;
 	
 	@Transient
@@ -134,11 +135,14 @@ public class UserEntity implements User {
 		Set<UserPermission> permissions = new HashSet<UserPermission>();
 		
 		for (UserPermissionUserMappingEntity mapping : permissionMappings){
-			permissions.add(mapping.getPermission());
+			
+			permissions.add(new AuthenticatedPermission(mapping.getPermission().getAuthority()));
 		}
 		return permissions;
 	}
 	
+	/*
+	// TODO: Refactor this out to DAO Object
 	public void addPermission(UserPermission permission) throws UserManagementException {
 		
 		UserPermissionEntity permissionEntity = (UserPermissionEntity) permission;
@@ -161,47 +165,42 @@ public class UserEntity implements User {
 		}
 		
 	}
+	*/
 
+	/*
 	public void removePermission(String permissionValue){
 		this.permissionMappings.removeIf((UserPermissionUserMappingEntity m) -> m.getPermission().getAuthority().equals(permissionValue));
 	}
+	*/
 	
-	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.getPermissions();
 	}
 
-	@Override
 	public Object getCredentials() {
 		return this.getPassword();
 	}
 
-	@Override
 	public Object getDetails() {
 		return this;
 	}
 
-	@Override
 	public Object getPrincipal() {
 		return this.subjectName;
 	}
-
-	@Override
+	
 	public boolean isAuthenticated() {
 		return this.authenticated;
 	}
-
-	@Override
+	
 	public void setAuthenticated(boolean arg0) throws IllegalArgumentException {
 		this.authenticated = arg0;
 	}
 
-	@Override
 	public String getName() {
 		return subjectName;
 	}
 
-	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -211,27 +210,22 @@ public class UserEntity implements User {
 		populateLastModifiedUser();
 	}
 
-	@Override
 	public String getUsername() {
 		return subjectName;
 	}
 
-	@Override
 	public boolean isAccountNonExpired() {
 		return !accountExpired;
 	}
-
-	@Override
+	
 	public boolean isAccountNonLocked() {
 		return !accountLocked;
 	}
 
-	@Override
 	public boolean isCredentialsNonExpired() {
 		return !credentialsExpired;
 	}
 
-	@Override
 	public boolean isEnabled() {
 		return accountEnabled;
 	}

@@ -45,10 +45,13 @@ public class UserManagerImpl implements UserManager {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	
+	
+	
+	//TODO: Move this to DAO. Just use the manager as a wrapper here
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
-	public void create(UserDTO userInfo) throws UserCreationException {
+	public void create(UserUploadDTO userInfo) throws UserCreationException {
 		
 		
 		User user = null;
@@ -106,9 +109,9 @@ public class UserManagerImpl implements UserManager {
 	
 	
 	@Transactional
-	public void update(UserDTO userInfo) throws UserRetrievalException {
+	public void update(UserUploadDTO userInfo) throws UserRetrievalException {
 		
-		UserEntity user = (UserEntity) getByUserName(userInfo.getSubjectName());
+		UserEntity user = getByUserName(userInfo.getSubjectName());
 		
 		UserContactEntity contact = user.getContact();
 		contact.setEmail(userInfo.getEmail());
@@ -139,11 +142,10 @@ public class UserManagerImpl implements UserManager {
 	@Override
 	public void delete(String userName) throws UserRetrievalException{
 		
-		User fetchedUser = getByUserName(userName);
-		if (fetchedUser == null){
+		UserEntity user = getByUserName(userName);
+		if (user == null){
 			throw new UserRetrievalException("User not found");
 		} else {
-			UserEntity user = (UserEntity) fetchedUser;
 			delete(user);
 		}
 		
@@ -156,8 +158,8 @@ public class UserManagerImpl implements UserManager {
 		return userDAO.findAll();
 	}
 	
-	@Transactional
-	public User getByUserName(String uname) throws UserRetrievalException {
+	
+	private UserEntity getByUserName(String uname) throws UserRetrievalException {
 		return userDAO.getByName(uname);
 	}
 	
@@ -210,7 +212,7 @@ public class UserManagerImpl implements UserManager {
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		
-		UserEntity user = (UserEntity) getByUserName(userName);
+		UserEntity user = getByUserName(userName);
 		
 		if ((role == "ROLE_ADMIN") || (role == "ROLE_ACL_ADMIN") || (role =="ROLE_ADMINISTRATOR")){
 			throw new UserManagementException("This role cannot be granted using the grant role functionality");
@@ -235,7 +237,7 @@ public class UserManagerImpl implements UserManager {
 	public void grantAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
 		
 		
-		UserEntity user = (UserEntity) getByUserName(userName);
+		UserEntity user = getByUserName(userName);
 		
 		UserPermissionEntity permission = userPermissionDAO.getPermissionFromAuthority("ROLE_ADMIN");
 		
@@ -258,12 +260,11 @@ public class UserManagerImpl implements UserManager {
 	@Transactional
 	public void updateUserPassword(String userName, String password) throws UserRetrievalException {
 		
-		User fetchedUser = getByUserName(userName);
+		UserEntity user = getByUserName(userName);
 		
-		if (fetchedUser == null){
+		if (user == null){
 			throw new UserRetrievalException("User not found");
 		} else {
-			UserEntity user = (UserEntity) fetchedUser;
 			String encodedPassword = getEncodedPassword(password);
 			user.setPassword(encodedPassword);
 			update(user);

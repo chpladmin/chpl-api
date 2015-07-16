@@ -5,7 +5,7 @@ import java.util.Map;
 
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.permission.JWTAuthenticatedPermission;
+import gov.healthit.chpl.auth.permission.AuthenticatedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 
@@ -53,7 +53,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			List<String> identityInfo =(List<String>) validatedClaims.get("Identity");
 			
 			for (String claim: authorities){
-				JWTAuthenticatedPermission permission = new JWTAuthenticatedPermission(claim);
+				AuthenticatedPermission permission = new AuthenticatedPermission(claim);
 				user.addPermission(permission);
 			}
 			

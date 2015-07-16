@@ -2,8 +2,13 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
+import gov.healthit.chpl.auth.permission.UserPermissionEntity;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
+import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.user.DatabaseAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserContactEntity;
-import gov.healthit.chpl.auth.user.UserDTO;
+import gov.healthit.chpl.auth.user.UserUploadDTO;
 import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
@@ -12,6 +17,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository(value="userDAO")
 public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
+	@Autowired
+	UserPermissionDAO userPermissionDAO;
 	
 	@Override
 	public void create(UserEntity user) {
@@ -27,12 +35,20 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 	}
 	
-	@Override
-	public void update(UserEntity user) {
+	private void update(UserEntity user) {
 		
-		entityManager.merge(user);
+		entityManager.merge(user);	
+	
+	}
+	
+	@Override
+	public void update(DatabaseAuthenticatedUser user){
+		
 		
 	}
+	
+	
+	
 	
 	@Override
 	public void delete(String uname) {
@@ -56,8 +72,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		return result;
 	}
 
-	@Override
-	public UserEntity getById(Long userId) throws UserRetrievalException {
+	private UserEntity getEntityById(Long userId) throws UserRetrievalException {
 		
 		UserEntity user = null;
 		
@@ -76,8 +91,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		return user;
 	}
 
-	@Override
-	public UserEntity getByName(String uname) throws UserRetrievalException {
+	
+	private UserEntity getEntityByName(String uname) throws UserRetrievalException {
 		
 		UserEntity user = null;
 		
@@ -95,5 +110,12 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 		return user;
 	}
-	
+
+	@Override
+	public void addPermission(String uname, String authority) throws UserPermissionRetrievalException, UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityByName(uname);
+		userPermissionDAO.createMapping(userEntity, authority);
+		
+	}
 }

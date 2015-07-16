@@ -1,6 +1,5 @@
 package gov.healthit.chpl.auth.user;
 
-
 import gov.healthit.chpl.auth.permission.AuthenticatedPermission;
 import gov.healthit.chpl.auth.permission.UserPermission;
 
@@ -10,28 +9,31 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 
+public class DatabaseAuthenticatedUser implements User {
 
-public class JWTAuthenticatedUser implements User {
-	
 	
 	private static final long serialVersionUID = 1L;
 	private Long id;
 	private String subjectName;
 	private String firstName;
 	private String lastName;
+	private String email;
+	private String phoneNumber;
+	private String title;
 	private Set<UserPermission> permissions = new HashSet<UserPermission>();
-	private final boolean accountExpired = false;
-	private final boolean accountLocked = false;
-	private final boolean credentialsExpired = false;
-	private final boolean accountEnabled = true;
-	private boolean authenticated = true;
+	private boolean accountExpired;
+	private boolean accountLocked;
+	private boolean credentialsExpired;
+	private boolean accountEnabled;
+	private boolean authenticated;	
 	
-	public JWTAuthenticatedUser(){
-		this.subjectName = null;
+	
+	public Long getId() {
+		return id;
 	}
 	
-	public JWTAuthenticatedUser(String subjectName) {
-		this.subjectName = subjectName;
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 	public String getSubjectName() {
@@ -56,6 +58,30 @@ public class JWTAuthenticatedUser implements User {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	
 	public Set<UserPermission> getPermissions() {
@@ -142,13 +168,5 @@ public class JWTAuthenticatedUser implements User {
 		return accountEnabled;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
 
 }

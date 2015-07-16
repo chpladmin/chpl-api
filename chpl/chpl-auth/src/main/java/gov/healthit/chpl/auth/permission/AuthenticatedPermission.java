@@ -1,13 +1,17 @@
 package gov.healthit.chpl.auth.permission;
 
 
-public class JWTAuthenticatedPermission implements UserPermission {
+public class AuthenticatedPermission implements UserPermission {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private String authority;
+	private String name;
+	private String description;
 	
-	public JWTAuthenticatedPermission(String authority){
+	public AuthenticatedPermission(){}
+	
+	public AuthenticatedPermission(String authority){
 		this.authority = authority;
 	}
 	
@@ -21,6 +25,24 @@ public class JWTAuthenticatedPermission implements UserPermission {
 		this.authority = authority;
 	}
 	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	@Override
 	public String toString(){
 		return authority;
@@ -38,16 +60,6 @@ public class JWTAuthenticatedPermission implements UserPermission {
 	@Override
 	public int hashCode() {
 		return getAuthority() == null ? 0 : getAuthority().hashCode();
-	}
-
-	@Override
-	public String getName() {
-		return null;
-	}
-
-	@Override
-	public String getDescription() {
-		return null;
 	}
 
 }

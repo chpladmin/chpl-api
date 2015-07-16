@@ -22,7 +22,7 @@ import org.hibernate.annotations.Where;
 @Table(name="user_permission")
 @SQLDelete(sql = "UPDATE user_permission SET deleted = true WHERE user_permission_id = ?")
 @Where(clause = "NOT deleted")
-public class UserPermissionEntity implements UserPermission {
+public class UserPermissionEntity {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -42,8 +42,7 @@ public class UserPermissionEntity implements UserPermission {
 	
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
-	
-	//@OneToMany(mappedBy="pk.permission", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+
 	@OneToMany(mappedBy="pk.permission", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UserPermissionUserMappingEntity> userMappings;
 
@@ -81,6 +80,14 @@ public class UserPermissionEntity implements UserPermission {
 		populateLastModifiedUser();
 	}
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public String getDescription() {
 		return description;
 	}
@@ -98,6 +105,9 @@ public class UserPermissionEntity implements UserPermission {
 		return authority;
 	}
 	
+	
+
+
 	public List<UserPermissionUserMappingEntity> getUserMappings() {
 		return userMappings;
 	}
@@ -105,21 +115,6 @@ public class UserPermissionEntity implements UserPermission {
 	public void setUserMappings(List<UserPermissionUserMappingEntity> userMappings) {
 		this.userMappings = userMappings;
 		populateLastModifiedUser();
-	}
-	
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof UserPermission))
-			return false;
-
-		UserPermissionEntity claim = (UserPermissionEntity) obj;
-		return claim.getAuthority() == this.getAuthority() || claim.getAuthority().equals(this.getAuthority());
-	}
-
-	@Override
-	public int hashCode() {
-		return getAuthority() == null ? 0 : getAuthority().hashCode();
 	}
 	
 	@Override
