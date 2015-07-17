@@ -11,37 +11,32 @@ import org.springframework.security.acls.model.Sid;
 public interface UserManager {
 	
 	
-	public void addAclPermission(UserEntity user, Sid recipient, Permission permission);
+	public void addAclPermission(User user, Sid recipient, Permission permission);
 	
 	
-	public void deleteAclPermission(UserEntity user, Sid recipient, Permission permission);
-	
-	
-	public void deleteRole(UserEntity user, String role) throws UserRetrievalException;
+	public void deleteAclPermission(User user, Sid recipient, Permission permission);
 		
 	
-	public void create(UserUploadDTO userInfo) throws UserCreationException;
+	public void create(UserCreationDTO userInfo) throws UserCreationException, UserRetrievalException;
 	
 	
-	public void update(UserUploadDTO userInfo) throws UserRetrievalException;
+	public void update(UserDTO userInfo) throws UserRetrievalException;
 	
 	
-	public void delete(UserEntity user);
+	public void delete(User user);
 	
 	
 	public void delete(String userName) throws UserRetrievalException;
 	
 	
-	public List<UserEntity> getAll();
+	public List<UserDTO> getAll();
 	
 	
-	public User getById(Long id) throws UserRetrievalException;
+	public UserDTO getById(Long id) throws UserRetrievalException;
 	
-	//TODO: Refactor so not returning Entity
-	//Make this private
-	//Create AuthenticatedUserDTO
-	//public User getByUserName(String uname) throws UserRetrievalException;
-
+	
+	public UserDTO getByName(String userName);
+	
 
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
 
@@ -49,6 +44,12 @@ public interface UserManager {
 	public void grantAdmin(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 
 	
+	public void deleteRole(User user, String role) throws UserRetrievalException;
+	
+	
 	public void updateUserPassword(String userName, String password) throws UserRetrievalException;
+	
+	
+	public void getPassword(UserDTO user) throws UserRetrievalException;
 	
 }

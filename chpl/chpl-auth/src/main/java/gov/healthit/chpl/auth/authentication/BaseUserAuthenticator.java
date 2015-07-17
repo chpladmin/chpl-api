@@ -13,8 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.permission.UserPermission;
-import gov.healthit.chpl.auth.permission.UserPermissionEntity;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 public abstract class BaseUserAuthenticator implements Authenticator {
@@ -22,9 +21,9 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 	@Autowired
 	private JWTAuthor jwtAuthor;
 
-	abstract public User getUser(LoginCredentials credentials)  throws BadCredentialsException, AccountStatusException, UserRetrievalException;
+	abstract public UserDTO getUser(LoginCredentials credentials)  throws BadCredentialsException, AccountStatusException, UserRetrievalException;
 	
-	public String getJWT(User user) throws JWTCreationException {
+	public String getJWT(UserDTO user) throws JWTCreationException {
 		
 		String jwt = null;
 		Map<String, List<String>> claims = new HashMap<String, List<String>>();
@@ -53,7 +52,7 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 	public String getJWT(LoginCredentials credentials) throws JWTCreationException {
 		
 		String jwt = null;
-		User user = null;
+		UserDTO user = null;
 		
 		try {
 			user = getUser(credentials);

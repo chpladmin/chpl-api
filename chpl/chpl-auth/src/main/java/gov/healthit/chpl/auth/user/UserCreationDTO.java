@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.user;
 
-public class UserUploadDTO {
+public class UserCreationDTO {
 	
 	private String subjectName;
 	private String firstName;

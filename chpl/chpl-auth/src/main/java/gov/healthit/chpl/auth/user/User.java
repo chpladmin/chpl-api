@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public interface User extends UserDetails , Authentication {
 	
+	public Long getId();	
 	public String getSubjectName();
 	public void setSubjectName(String subject);
 	
@@ -64,7 +65,5 @@ public interface User extends UserDetails , Authentication {
 	
 	@Override
 	public String getName();
-	
-	public Long getId();
 	
 }

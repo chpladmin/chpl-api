@@ -16,7 +16,7 @@ import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.user.DatabaseAuthenticatedUser;
+import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -224,7 +224,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	
 	@Override
 	public void deleteMappingsForPermission(UserPermission userPermission){
-		
+		//TODO: Implement this
 	}	
 
 	/*

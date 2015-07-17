@@ -6,13 +6,16 @@ import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.user.DatabaseAuthenticatedUser;
+import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserContactEntity;
-import gov.healthit.chpl.auth.user.UserUploadDTO;
+import gov.healthit.chpl.auth.user.UserCreationException;
+import gov.healthit.chpl.auth.user.UserCreationDTO;
 import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.auth.user.dao.UserContactDAO;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -28,26 +31,67 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	@Autowired
 	UserPermissionDAO userPermissionDAO;
 	
-	@Override
-	public void create(UserEntity user) {
-		
-		entityManager.persist(user);
-		
-	}
-	
-	private void update(UserEntity user) {
-		
-		entityManager.merge(user);	
-	
-	}
+	@Autowired
+	UserContactDAO userContactDAO;
 	
 	@Override
-	public void update(DatabaseAuthenticatedUser user){
+	public void create(UserCreationDTO userInfo) throws UserCreationException {
+		
+		UserEntity userEntity = null;
+		try {
+			userEntity = getEntityByName(userInfo.getSubjectName());
+		} catch (UserRetrievalException e) {
+			throw new UserCreationException(e);
+		}
+		
+		if (userEntity != null) {
+			throw new UserCreationException("user name: "+userInfo.getSubjectName() +" already exists.");
+		} else {
+			
+			//String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
+			UserEntity userToCreate = new UserEntity(userInfo.getSubjectName(), encodedPassword);
+			
+			UserContactEntity contact = new UserContactEntity();
+			contact.setEmail(userInfo.getEmail());
+			contact.setFirstName(userInfo.getFirstName());
+			contact.setLastName(userInfo.getLastName());
+			contact.setPhoneNumber(userInfo.getPhoneNumber());
+			contact.setTitle(userInfo.getTitle());
+			
+			userContactDAO.create(contact);
+			
+			userToCreate.setContact(contact);
+			
+			create(userToCreate);			
+		}
+	}
+	
+	@Override
+	public void update(UserDTO user){
 		
 		
 	}
 	
-	
+	@Override
+	public void update(UserCreationDTO userInfo){
+		
+		UserEntity user = getEntityByName(userInfo.getSubjectName());
+		
+		UserContactEntity contact = user.getContact();
+		contact.setEmail(userInfo.getEmail());
+		contact.setFirstName(userInfo.getFirstName());
+		contact.setLastName(userInfo.getLastName());
+		contact.setPhoneNumber(userInfo.getPhoneNumber());
+		contact.setTitle(userInfo.getTitle());
+		
+		if (userInfo.getPassword() != null){
+			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
+			user.setPassword(encodedPassword);
+		}
+		userContactDAO.update(contact);
+		update(user);
+		
+	}
 	
 	
 	@Override
@@ -64,14 +108,37 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		query.executeUpdate();
 	}
 	
-	@Override
-	public List<UserEntity> findAll() {
+	public List<UserDTO> findAll(){
+		
+		List<UserEntity> entities = getAllEntities();
+		List<UserDTO> users = new ArrayList<>();
+		
+		for (UserEntity entity : entities){
+			UserDTO user = new UserDTO(entity);
+			users.add(user);
+		}
+		return users;
+	}
+	
+	private void create(UserEntity user) {
+		
+		entityManager.persist(user);
+		
+	}
+	
+	private void update(UserEntity user) {
+		
+		entityManager.merge(user);	
+	
+	}
+	
+	private List<UserEntity> getAllEntities() {
 		
 		List<UserEntity> result = entityManager.createQuery( "from UserEntity where (NOT deleted = true) ", UserEntity.class ).getResultList();
 		
 		return result;
 	}
-
+	
 	private UserEntity getEntityById(Long userId) throws UserRetrievalException {
 		
 		UserEntity user = null;

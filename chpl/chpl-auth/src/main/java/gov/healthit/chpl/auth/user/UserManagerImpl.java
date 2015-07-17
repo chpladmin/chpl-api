@@ -1,7 +1,6 @@
 package gov.healthit.chpl.auth.user;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.user.dao.UserContactDAO;
@@ -45,62 +44,38 @@ public class UserManagerImpl implements UserManager {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	
-	
-	
-	//TODO: Move this to DAO. Just use the manager as a wrapper here
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
-	public void create(UserUploadDTO userInfo) throws UserCreationException {
+	public void create(UserCreationDTO userInfo) throws UserCreationException, UserRetrievalException {
 		
 		
-		User user = null;
-		try {
-			user = getByUserName(userInfo.getSubjectName());
-		} catch (UserRetrievalException e) {
-			throw new UserCreationException(e);
-		}
+		userDAO.create(userInfo);
 		
-		if (user != null) {
-			throw new UserCreationException("user name: "+userInfo.getSubjectName() +" already exists.");
-		} else {
-			
-			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
-			UserEntity userToCreate = new UserEntity(userInfo.getSubjectName(), encodedPassword);
-			
-			UserContactEntity contact = new UserContactEntity();
-			contact.setEmail(userInfo.getEmail());
-			contact.setFirstName(userInfo.getFirstName());
-			contact.setLastName(userInfo.getLastName());
-			contact.setPhoneNumber(userInfo.getPhoneNumber());
-			contact.setTitle(userInfo.getTitle());
-			
-			userContactDAO.create(contact);
-			
-			userToCreate.setContact(contact);
-			
-			userDAO.create(userToCreate);
-			// Grant the current principal administrative permission to the user
-			addAclPermission(userToCreate, new PrincipalSid(Util.getUsername()),
-					BasePermission.ADMINISTRATION);
-			
-			addAclPermission(userToCreate, new PrincipalSid(Util.getUsername()),
-					BasePermission.DELETE);
-			
-			// Grant the user administrative permission over itself.
-			addAclPermission(userToCreate, new PrincipalSid(userToCreate.getSubjectName()),
-					BasePermission.ADMINISTRATION);
-			
-		}
+		User user = userDAO.getByName(userInfo.getSubjectName());
+		
+		// Grant the current principal administrative permission to the user
+		addAclPermission(user, new PrincipalSid(Util.getUsername()),
+				BasePermission.ADMINISTRATION);
+		
+		addAclPermission(user, new PrincipalSid(Util.getUsername()),
+				BasePermission.DELETE);
+		
+		// Grant the user administrative permission over itself.
+		addAclPermission(user, new PrincipalSid(user.getSubjectName()),
+				BasePermission.ADMINISTRATION);
 		
 	}
 	
 	
+	//@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
+	//private void update(UserEntity user) throws UserRetrievalException {
+	//	userDAO.update(user);
+	//}
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	private void update(UserEntity user) throws UserRetrievalException {
+	public void update(UserDTO user) throws UserRetrievalException {	
 		userDAO.update(user);
 	}
-	
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN) or hasPermission(#user, admin)")
 	private void updateContactInfo(UserEntity user){
@@ -109,23 +84,10 @@ public class UserManagerImpl implements UserManager {
 	
 	
 	@Transactional
-	public void update(UserUploadDTO userInfo) throws UserRetrievalException {
+	public void update(UserCreationDTO userInfo) throws UserRetrievalException {
 		
-		UserEntity user = getByUserName(userInfo.getSubjectName());
+		userDAO.update(userInfo);
 		
-		UserContactEntity contact = user.getContact();
-		contact.setEmail(userInfo.getEmail());
-		contact.setFirstName(userInfo.getFirstName());
-		contact.setLastName(userInfo.getLastName());
-		contact.setPhoneNumber(userInfo.getPhoneNumber());
-		contact.setTitle(userInfo.getTitle());
-		
-		if (userInfo.getPassword() != null){
-			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
-			user.setPassword(encodedPassword);
-		}
-		updateContactInfo(user);
-		update(user);
 	}
 	
 	
@@ -148,13 +110,12 @@ public class UserManagerImpl implements UserManager {
 		} else {
 			delete(user);
 		}
-		
 	}
 	
 	
 	@Transactional
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
-	public List<UserEntity> getAll(){
+	public List<UserDTO> getAll(){
 		return userDAO.findAll();
 	}
 	
@@ -171,10 +132,10 @@ public class UserManagerImpl implements UserManager {
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void addAclPermission(UserEntity user, Sid recipient, Permission permission){
+	public void addAclPermission(User user, Sid recipient, Permission permission){
 		
 		MutableAcl acl;
-		ObjectIdentity oid = new ObjectIdentityImpl(UserEntity.class, user.getId());
+		ObjectIdentity oid = new ObjectIdentityImpl(User.class, user.getId());
 
 		try {
 			acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -190,9 +151,9 @@ public class UserManagerImpl implements UserManager {
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void deleteAclPermission(UserEntity user, Sid recipient, Permission permission){
+	public void deleteAclPermission(User user, Sid recipient, Permission permission){
 		
-		ObjectIdentity oid = new ObjectIdentityImpl(UserEntity.class, user.getId());
+		ObjectIdentity oid = new ObjectIdentityImpl(User.class, user.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
 		
 		List<AccessControlEntry> entries = acl.getEntries();
@@ -265,15 +226,23 @@ public class UserManagerImpl implements UserManager {
 		if (user == null){
 			throw new UserRetrievalException("User not found");
 		} else {
-			String encodedPassword = getEncodedPassword(password);
+			String encodedPassword = encodePassword(password);
 			user.setPassword(encodedPassword);
 			update(user);
 		}
 	}
 	
-	public String getEncodedPassword(String password){
+	public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
+		UserEntity userEntity = getByUserName(user.getUsername());
+		return userEntity.getPassword();
+	}
+	
+	
+	public String encodePassword(String password){
 		String encodedPassword = bCryptPasswordEncoder.encode(password);
 		return encodedPassword;
 	}
+	
+	
 	
 }
