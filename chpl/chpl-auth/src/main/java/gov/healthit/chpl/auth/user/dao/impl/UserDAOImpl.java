@@ -83,7 +83,11 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		Set<UserPermissionDTO> permissions = user.getPermissions();
 		for (UserPermissionDTO permission : permissions){
 			//TODO: What about the "UserPermissionRetrievalException"
-			userPermissionDAO.createMapping(userEntity, permission.getAuthority());
+			try {
+				userPermissionDAO.createMapping(userEntity, permission.getAuthority());
+			} catch (UserPermissionRetrievalException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}

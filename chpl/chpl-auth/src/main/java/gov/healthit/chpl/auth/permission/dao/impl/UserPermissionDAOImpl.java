@@ -119,7 +119,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		return permissionEntity.getId();
 	}
 	
-	private UserPermissionEntity getEntityFromAuthority(String authority) throws UserPermissionRetrievalException {
+	private UserPermissionEntity getPermissionEntityFromAuthority(String authority) throws UserPermissionRetrievalException {
 		
 		UserPermissionEntity permissionEntity = null;
 		
@@ -143,6 +143,9 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	
 	@Override
 	public void createMapping(UserPermissionUserMappingEntity mapping) {
+		
+		//TODO: This is going to throw a SQL error if the mapping already
+		//exists. 
 		entityManager.persist(mapping);
 	}
 
@@ -158,7 +161,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Override
 	public void createMapping(UserEntity user, String authority) throws UserPermissionRetrievalException {
 		
-		UserPermissionEntity permissionEntity = getEntityFromAuthority(authority);
+		UserPermissionEntity permissionEntity = getPermissionEntityFromAuthority(authority);
 		createMapping(user, permissionEntity);
 		
 	}
@@ -217,12 +220,11 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		query.executeUpdate();
 		
 	}
-	
 
 	@Override
 	public void deleteMappingsForPermission(UserPermissionDTO userPermission) throws UserPermissionRetrievalException {
 		
-		UserPermissionEntity permissionEntity = this.getEntityFromAuthority(userPermission.getAuthority());
+		UserPermissionEntity permissionEntity = this.getPermissionEntityFromAuthority(userPermission.getAuthority());
 		
 		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE c.user_permission_id_user_permission = :permissionid");
 		query.setParameter("permissionid", permissionEntity.getId());

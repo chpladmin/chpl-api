@@ -81,14 +81,6 @@ public class UserManagerImpl implements UserManager {
 	
 	
 	@Transactional
-	public void update(UserCreationDTO userInfo) throws UserRetrievalException {
-		
-		userDAO.update(userInfo);
-		
-	}
-	
-	
-	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(UserDTO user){
 		
