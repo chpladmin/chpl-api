@@ -14,7 +14,7 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Service
 public class UserAuthenticator extends BaseUserAuthenticator {
-
+	
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -31,7 +31,7 @@ public class UserAuthenticator extends BaseUserAuthenticator {
 		UserDTO user = userManager.getByName(credentials.getUserName());
 		
 		if (user != null){
-			if (checkPassword(credentials.getPassword(), user.getPassword())){
+			if (checkPassword(credentials.getPassword(), userManager.getPassword(user))){
 				
 				try {
 					userDetailsChecker.check(user);

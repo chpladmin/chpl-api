@@ -192,7 +192,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Override
 	public void deleteMapping(String userName, String authority) throws UserRetrievalException, UserPermissionRetrievalException {
 		
-		User user = this.userDAO.getByName(userName);
+		UserDTO user = this.userDAO.getByName(userName);
 		Long permissionId = getIdFromAuthority(authority);
 		
 		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE c.user_id = :userid AND c.user_permission_id_user_permission = :permissionid");
@@ -205,8 +205,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Override
 	public void deleteMappingsForUser(String userName) throws UserRetrievalException{
 		
-		User user = this.userDAO.getByName(userName);
-		
+		UserDTO user = this.userDAO.getByName(userName);
 		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE c.user_id = :userid");
 		query.setParameter("userid", user.getId());
 		query.executeUpdate();

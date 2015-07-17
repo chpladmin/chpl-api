@@ -13,23 +13,25 @@ public interface UserDAO {
 	
 	public void create(UserCreationDTO user) throws UserCreationException;
 	
-	public void delete(String uname);
+	public void update(UserDTO user) throws UserRetrievalException;
+	
+	public void delete(String uname) throws UserRetrievalException;
 	
 	public void delete(Long userId);
 	
 	public List<UserDTO> findAll();
 
-	public User getById(Long userId) throws UserRetrievalException;
+	public UserDTO getById(Long userId) throws UserRetrievalException;
 	
-	public User getByName(String uname) throws UserRetrievalException;
-
-	public void update(UserDTO user);
-	
-	public void update(UserCreationDTO userInfo);
+	public UserDTO getByName(String uname) throws UserRetrievalException;
 	
 	public void addPermission(String uname, String authority) throws UserPermissionRetrievalException, UserRetrievalException;
 	
-	public void removePermission(String uname, String authority);
+	public void removePermission(String uname, String authority) throws UserRetrievalException, UserPermissionRetrievalException;
+	
+	public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException;
+
+	public String getEncodedPassword(UserDTO user) throws UserRetrievalException;
 	
 }
 

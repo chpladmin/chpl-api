@@ -26,7 +26,7 @@ public class UserManagementController {
 	@RequestMapping(value="/create_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String createUser(@RequestBody UserCreationDTO userInfo) throws UserCreationException {
+	public String createUser(@RequestBody UserCreationDTO userInfo) throws UserCreationException, UserRetrievalException {
 		
 		userManager.create(userInfo);
 		String isSuccess = String.valueOf(true);

@@ -6,8 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-public class UserDTO {
+public class UserDTO implements UserDetails {
 
 	
 	private static final long serialVersionUID = 1L;
@@ -110,29 +111,73 @@ public class UserDTO {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.getPermissions();
 	}
-
+	
 	public String getName() {
 		return subjectName;
 	}
 	
+	@Override
 	public String getUsername() {
 		return subjectName;
 	}
-
+	
+	@Override
 	public boolean isAccountNonExpired() {
 		return !accountExpired;
 	}
-
+	
+	@Override
 	public boolean isAccountNonLocked() {
 		return !accountLocked;
 	}
-
+	
+	@Override
 	public boolean isCredentialsNonExpired() {
 		return !credentialsExpired;
 	}
-
+	
+	@Override
 	public boolean isEnabled() {
 		return accountEnabled;
 	}
 
+	@Override
+	public String getPassword() {
+		return null;
+	}
+
+	public boolean isAccountExpired() {
+		return accountExpired;
+	}
+
+	public void setAccountExpired(boolean accountExpired) {
+		this.accountExpired = accountExpired;
+	}
+
+	public boolean isAccountLocked() {
+		return accountLocked;
+	}
+
+	public void setAccountLocked(boolean accountLocked) {
+		this.accountLocked = accountLocked;
+	}
+
+	public void setCredentialsExpired(boolean credentialsExpired) {
+		this.credentialsExpired = credentialsExpired;
+	}
+
+	public boolean isAccountEnabled() {
+		return accountEnabled;
+	}
+
+	public void setAccountEnabled(boolean accountEnabled) {
+		this.accountEnabled = accountEnabled;
+	}
+
+	public void setPermissions(Set<UserPermission> permissions) {
+		this.permissions = permissions;
+	}
+	
+	
+	
 }

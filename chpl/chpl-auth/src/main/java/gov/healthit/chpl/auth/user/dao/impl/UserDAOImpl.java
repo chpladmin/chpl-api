@@ -59,21 +59,31 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			contact.setTitle(userInfo.getTitle());
 			
 			userContactDAO.create(contact);
-			
 			userToCreate.setContact(contact);
-			
 			create(userToCreate);			
 		}
 	}
 	
 	@Override
-	public void update(UserDTO user){
+	public void update(UserDTO user) throws UserRetrievalException {
 		
+		UserEntity userEntity = getEntityByName(user.getSubjectName());
+		
+		userEntity.setFirstName(user.getFirstName());
+		userEntity.setLastName(user.getLastName());
+		userEntity.getContact().setEmail(user.getEmail());
+		userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
+		userEntity.getContact().setTitle(user.getTitle());
+		userEntity.setAccountEnabled(user.isAccountEnabled());
+		userEntity.setAccountExpired(user.isAccountExpired());
+		userEntity.setAccountLocked(user.isAccountLocked());
+		userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
 		
 	}
 	
+	/*
 	@Override
-	public void update(UserCreationDTO userInfo){
+	public void update(UserCreationDTO userInfo) throws UserRetrievalException{
 		
 		UserEntity user = getEntityByName(userInfo.getSubjectName());
 		
@@ -84,18 +94,24 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		contact.setPhoneNumber(userInfo.getPhoneNumber());
 		contact.setTitle(userInfo.getTitle());
 		
-		if (userInfo.getPassword() != null){
-			String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
-			user.setPassword(encodedPassword);
+		if (uerInfo.getPassword() != null){
+			//String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
+			//user.setPassword(encodedPassword);
+			
 		}
+		
 		userContactDAO.update(contact);
 		update(user);
 		
 	}
-	
+	*/
 	
 	@Override
-	public void delete(String uname) {
+	public void delete(String uname) throws UserRetrievalException {
+		
+		// First delete the user / permission mappings for this user.
+		userPermissionDAO.deleteMappingsForUser(uname);
+		
 		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :uname");
 		query.setParameter("uname", uname);
 		query.executeUpdate();
@@ -103,6 +119,10 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	@Override
 	public void delete(Long userId){
+		
+		// First delete the user / permission mappings for this user.
+		userPermissionDAO.deleteMappingsForUser(userId);
+		
 		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :userid");
 		query.setParameter("userid", userId);
 		query.executeUpdate();
@@ -185,4 +205,40 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		userPermissionDAO.createMapping(userEntity, authority);
 		
 	}
+
+	@Override
+	public UserDTO getById(Long userId) throws UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityById(userId);
+		UserDTO user = new UserDTO(userEntity);
+		return user;
+	}
+
+	@Override
+	public UserDTO getByName(String uname) throws UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityByName(uname);
+		UserDTO user = new UserDTO(userEntity);
+		return user;
+	}
+
+	@Override
+	public void removePermission(String uname, String authority) throws UserRetrievalException, UserPermissionRetrievalException {
+		userPermissionDAO.deleteMapping(uname, authority);
+	}
+
+	@Override
+	public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityByName(uname);
+		userEntity.setPassword(encodedPassword);
+		update(userEntity);
+		
+	}
+	
+	public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
+		UserEntity userEntity = getEntityByName(user.getUsername());
+		return userEntity.getPassword();
+	}
+	
 }

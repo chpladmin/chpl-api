@@ -62,7 +62,8 @@ public class UserEntity {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	@OneToMany(mappedBy="pk.user", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	//@OneToMany(mappedBy="pk.user", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy="pk.user", fetch=FetchType.LAZY)
  	private Set<UserPermissionUserMappingEntity> permissionMappings;
 	
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
@@ -70,8 +71,6 @@ public class UserEntity {
 	@JoinColumn(name="contact_id", unique=true, nullable=false)
 	private UserContactEntity contact;
 	
-	@Transient
-	private boolean authenticated = false;
 	
 	public UserEntity(){
 		this.subjectName = null;
@@ -142,32 +141,6 @@ public class UserEntity {
 	}
 	
 	/*
-	// TODO: Refactor this out to DAO Object
-	public void addPermission(UserPermission permission) throws UserManagementException {
-		
-		UserPermissionEntity permissionEntity = (UserPermissionEntity) permission;
-		
-		UserPermissionUserMappingEntity permissionMapping = new UserPermissionUserMappingEntity();
-		
-		permissionMapping.setPermission(permissionEntity);
-		permissionMapping.setUser(this);
-		
-		if (! this.permissionMappings.contains(permissionMapping)  ){
-			this.permissionMappings.add(permissionMapping);
-		} else {
-			throw new UserManagementException("This user-permission mapping already exists");
-		}
-		
-		if (! permissionEntity.getUserMappings().contains(permissionMapping)){
-			permissionEntity.getUserMappings().add(permissionMapping);
-		} else {
-			throw new UserManagementException("This user-permission mapping already exists");
-		}
-		
-	}
-	*/
-
-	/*
 	public void removePermission(String permissionValue){
 		this.permissionMappings.removeIf((UserPermissionUserMappingEntity m) -> m.getPermission().getAuthority().equals(permissionValue));
 	}
@@ -189,14 +162,6 @@ public class UserEntity {
 		return this.subjectName;
 	}
 	
-	public boolean isAuthenticated() {
-		return this.authenticated;
-	}
-	
-	public void setAuthenticated(boolean arg0) throws IllegalArgumentException {
-		this.authenticated = arg0;
-	}
-
 	public String getName() {
 		return subjectName;
 	}
@@ -241,6 +206,31 @@ public class UserEntity {
 	public void setContact(UserContactEntity contact) {
 		this.contact = contact;
 	}
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+
+	public void setAccountExpired(boolean accountExpired) {
+		this.accountExpired = accountExpired;
+	}
+
+
+	public void setAccountLocked(boolean accountLocked) {
+		this.accountLocked = accountLocked;
+	}
+
+
+	public void setCredentialsExpired(boolean credentialsExpired) {
+		this.credentialsExpired = credentialsExpired;
+	}
+
+
+	public void setAccountEnabled(boolean accountEnabled) {
+		this.accountEnabled = accountEnabled;
+	}
+
 
 	private void populateLastModifiedUser(){
 		User currentUser = Util.getCurrentUser();
