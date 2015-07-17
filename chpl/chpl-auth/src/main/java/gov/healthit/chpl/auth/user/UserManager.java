@@ -20,7 +20,7 @@ public interface UserManager {
 	public void create(UserCreationDTO userInfo) throws UserCreationException, UserRetrievalException;
 	
 	
-	public void update(UserDTO userInfo) throws UserRetrievalException;
+	public void update(UserDTO userInfo) throws UserRetrievalException, UserPermissionRetrievalException;
 	
 	
 	public void delete(UserDTO user);
@@ -54,6 +54,9 @@ public interface UserManager {
 	
 	
 	public String getEncodedPassword(UserDTO user) throws UserRetrievalException;
+
+
+	public String encodePassword(String password);
 	
 	
 }

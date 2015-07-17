@@ -1,8 +1,7 @@
 package gov.healthit.chpl.auth.user;
 
 
-import gov.healthit.chpl.auth.permission.AuthenticatedPermission;
-import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,7 +18,7 @@ public class JWTAuthenticatedUser implements User {
 	private String subjectName;
 	private String firstName;
 	private String lastName;
-	private Set<UserPermission> permissions = new HashSet<UserPermission>();
+	private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 	private final boolean accountExpired = false;
 	private final boolean accountLocked = false;
 	private final boolean credentialsExpired = false;
@@ -58,22 +57,22 @@ public class JWTAuthenticatedUser implements User {
 		this.lastName = lastName;
 	}
 	
-	public Set<UserPermission> getPermissions() {
+	public Set<GrantedPermission> getPermissions() {
 		return this.permissions;
 	}
 	
-	public void addPermission(UserPermission permission){
+	public void addPermission(GrantedPermission permission){
 		this.permissions.add(permission);
 	}
 	
 	public void addPermission(String permissionValue) {
-		UserPermission permission = new AuthenticatedPermission(permissionValue);
+		GrantedPermission permission = new GrantedPermission(permissionValue);
 		this.permissions.add(permission);
 	}
 
 	@Override
 	public void removePermission(String permissionValue){
-		this.permissions.remove(new AuthenticatedPermission(permissionValue));
+		this.permissions.remove(new GrantedPermission(permissionValue));
 	}
 
 	@Override

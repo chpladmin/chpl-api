@@ -2,7 +2,7 @@ package gov.healthit.chpl.auth.permission.dao;
 
 import java.util.List;
 
-import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
@@ -20,11 +20,11 @@ public interface UserPermissionDAO {
 	
 	public void delete(Long permissionId);
 	
-	public UserPermission getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException;
+	public UserPermissionDTO getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException;
 	
 	public Long getIdFromAuthority(String authority) throws UserPermissionRetrievalException;
 	
-	public List<UserPermission> findAll();
+	public List<UserPermissionDTO> findAll();
 	
 	public void createMapping(UserPermissionUserMappingEntity mapping);
 	
@@ -42,6 +42,6 @@ public interface UserPermissionDAO {
 	
 	public void deleteMappingsForUser(Long userId);
 	
-	public void deleteMappingsForPermission(UserPermission userPermission);
+	public void deleteMappingsForPermission(UserPermissionDTO userPermission) throws UserPermissionRetrievalException;
 	
 }

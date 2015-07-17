@@ -49,8 +49,8 @@ public class UserManagerImpl implements UserManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
 	public void create(UserCreationDTO userInfo) throws UserCreationException, UserRetrievalException {
 		
-		
-		userDAO.create(userInfo);
+		String encodedPassword = encodePassword(userInfo.getPassword());
+		userDAO.create(userInfo, encodedPassword);
 		
 		UserDTO user = userDAO.getByName(userInfo.getSubjectName());
 		
@@ -64,19 +64,16 @@ public class UserManagerImpl implements UserManager {
 		// Grant the user administrative permission over itself.
 		addAclPermission(user, new PrincipalSid(user.getSubjectName()),
 				BasePermission.ADMINISTRATION);
-		
 	}
 	
 	
-	//@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	//private void update(UserEntity user) throws UserRetrievalException {
-	//	userDAO.update(user);
-	//}
+	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void update(UserDTO user) throws UserRetrievalException {	
+	public void update(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException {	
 		userDAO.update(user);
 	}
 	
+	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN) or hasPermission(#user, admin)")
 	private void updateContactInfo(UserEntity user){
 		userContactDAO.update(user.getContact());
@@ -102,6 +99,7 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Override
+	@Transactional
 	public void delete(String userName) throws UserRetrievalException{
 		
 		UserDTO user = getByUserName(userName);
@@ -214,6 +212,7 @@ public class UserManagerImpl implements UserManager {
 		
 	}
 	
+	@Override
 	public String encodePassword(String password){
 		String encodedPassword = bCryptPasswordEncoder.encode(password);
 		return encodedPassword;

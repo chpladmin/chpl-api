@@ -2,9 +2,8 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.permission.UserPermissionEntity;
+import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserContactEntity;
@@ -17,6 +16,7 @@ import gov.healthit.chpl.auth.user.dao.UserDAO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -35,7 +35,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	UserContactDAO userContactDAO;
 	
 	@Override
-	public void create(UserCreationDTO userInfo) throws UserCreationException {
+	public void create(UserCreationDTO userInfo, String encodedPassword) throws UserCreationException {
 		
 		UserEntity userEntity = null;
 		try {
@@ -78,6 +78,13 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		userEntity.setAccountExpired(user.isAccountExpired());
 		userEntity.setAccountLocked(user.isAccountLocked());
 		userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
+		
+		//Add permissions to userEntity.
+		Set<UserPermissionDTO> permissions = user.getPermissions();
+		for (UserPermissionDTO permission : permissions){
+			//TODO: What about the "UserPermissionRetrievalException"
+			userPermissionDAO.createMapping(userEntity, permission.getAuthority());
+		}
 		
 	}
 	

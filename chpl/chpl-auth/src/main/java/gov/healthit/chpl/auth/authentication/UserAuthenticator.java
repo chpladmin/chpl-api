@@ -31,7 +31,7 @@ public class UserAuthenticator extends BaseUserAuthenticator {
 		UserDTO user = userManager.getByName(credentials.getUserName());
 		
 		if (user != null){
-			if (checkPassword(credentials.getPassword(), userManager.getPassword(user))){
+			if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))){
 				
 				try {
 					userDetailsChecker.check(user);

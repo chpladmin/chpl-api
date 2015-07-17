@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface UserDAO {
 	
-	public void create(UserCreationDTO user) throws UserCreationException;
+	void create(UserCreationDTO userInfo, String encodedPassword) throws UserCreationException;
 	
-	public void update(UserDTO user) throws UserRetrievalException;
+	public void update(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException;
 	
 	public void delete(String uname) throws UserRetrievalException;
 	
@@ -32,6 +32,7 @@ public interface UserDAO {
 	public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException;
 
 	public String getEncodedPassword(UserDTO user) throws UserRetrievalException;
+
 	
 }
 

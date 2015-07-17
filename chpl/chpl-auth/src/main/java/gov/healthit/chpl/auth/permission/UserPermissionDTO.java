@@ -1,7 +1,7 @@
 package gov.healthit.chpl.auth.permission;
 
 
-public class AuthenticatedPermission implements UserPermission {
+public class UserPermissionDTO  {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -9,23 +9,29 @@ public class AuthenticatedPermission implements UserPermission {
 	private String name;
 	private String description;
 	
-	public AuthenticatedPermission(){}
 	
-	public AuthenticatedPermission(String authority){
-		this.authority = authority;
+	public UserPermissionDTO(){}
+	
+	public UserPermissionDTO(UserPermissionEntity entity){
+		
+		this.authority = entity.getAuthority();
+		this.name = entity.getName();
+		this.description = entity.getDescription();
 	}
 	
-	@Override
+	
+	public GrantedPermission getGrantedPermission(){
+		return new GrantedPermission(authority);
+	}
+	
 	public String getAuthority() {
 		return authority;
 	}
 
-	@Override
 	public void setAuthority(String authority) {
 		this.authority = authority;
 	}
 	
-	@Override
 	public String getName() {
 		return name;
 	}
@@ -34,7 +40,6 @@ public class AuthenticatedPermission implements UserPermission {
 		this.name = name;
 	}
 
-	@Override
 	public String getDescription() {
 		return description;
 	}
@@ -43,23 +48,8 @@ public class AuthenticatedPermission implements UserPermission {
 		this.description = description;
 	}
 
-	@Override
 	public String toString(){
 		return authority;
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof UserPermission))
-			return false;
-
-		UserPermission claim = (UserPermission) obj;
-		return claim.getAuthority() == this.getAuthority() || claim.getAuthority().equals(this.getAuthority());
-	}
-
-	@Override
-	public int hashCode() {
-		return getAuthority() == null ? 0 : getAuthority().hashCode();
-	}
-
 }

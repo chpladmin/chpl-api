@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
@@ -29,7 +29,7 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 		Map<String, List<String>> claims = new HashMap<String, List<String>>();
 		List<String> claimStrings = new ArrayList<String>();
 		
-		for (UserPermission claim : user.getPermissions()){
+		for (UserPermissionDTO claim : user.getPermissions()){
 			claimStrings.add(claim.getAuthority());
 		}
 		claims.put("Authorities", claimStrings);

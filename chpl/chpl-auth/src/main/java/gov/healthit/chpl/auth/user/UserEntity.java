@@ -1,12 +1,9 @@
 package gov.healthit.chpl.auth.user;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.AuthenticatedPermission;
-import gov.healthit.chpl.auth.permission.UserPermission;
-import gov.healthit.chpl.auth.permission.UserPermissionEntity;
+import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,11 +18,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.security.core.GrantedAuthority;
 
 
 @Entity
@@ -129,43 +124,17 @@ public class UserEntity {
 	}
 	
 	
-	public Set<UserPermission> getPermissions() {
+	public Set<UserPermissionDTO> getPermissions() {
 		
-		Set<UserPermission> permissions = new HashSet<UserPermission>();
+		Set<UserPermissionDTO> permissions = new HashSet<UserPermissionDTO>();
 		
 		for (UserPermissionUserMappingEntity mapping : permissionMappings){
 			
-			permissions.add(new AuthenticatedPermission(mapping.getPermission().getAuthority()));
+			permissions.add(new UserPermissionDTO(mapping.getPermission()));
 		}
 		return permissions;
 	}
 	
-	/*
-	public void removePermission(String permissionValue){
-		this.permissionMappings.removeIf((UserPermissionUserMappingEntity m) -> m.getPermission().getAuthority().equals(permissionValue));
-	}
-	*/
-	
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.getPermissions();
-	}
-
-	public Object getCredentials() {
-		return this.getPassword();
-	}
-
-	public Object getDetails() {
-		return this;
-	}
-
-	public Object getPrincipal() {
-		return this.subjectName;
-	}
-	
-	public String getName() {
-		return subjectName;
-	}
-
 	public String getPassword() {
 		return password;
 	}

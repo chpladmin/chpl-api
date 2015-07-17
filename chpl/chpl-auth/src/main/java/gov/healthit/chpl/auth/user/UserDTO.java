@@ -1,5 +1,5 @@
 package gov.healthit.chpl.auth.user;
-import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,7 +19,7 @@ public class UserDTO implements UserDetails {
 	private String email;
 	private String phoneNumber;
 	private String title;
-	private Set<UserPermission> permissions = new HashSet<UserPermission>();
+	private Set<UserPermissionDTO> permissions = new HashSet<UserPermissionDTO>();
 	private boolean accountExpired;
 	private boolean accountLocked;
 	private boolean credentialsExpired;
@@ -100,16 +100,19 @@ public class UserDTO implements UserDetails {
 		this.title = title;
 	}
 	
-	public Set<UserPermission> getPermissions() {
+	public Set<UserPermissionDTO> getPermissions() {
 		return this.permissions;
 	}
 	
-	public void addPermission(UserPermission permission){
+	public void addPermission(UserPermissionDTO permission){
 		this.permissions.add(permission);
 	}
 	
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.getPermissions();
+		// We return null rather than returning authorities here because we
+		// don't actually want the DTO to have granted permissions (those
+		// come from the JWT token.)
+		return null;
 	}
 	
 	public String getName() {
@@ -174,10 +177,8 @@ public class UserDTO implements UserDetails {
 		this.accountEnabled = accountEnabled;
 	}
 
-	public void setPermissions(Set<UserPermission> permissions) {
+	public void setPermissions(Set<UserPermissionDTO> permissions) {
 		this.permissions = permissions;
 	}
-	
-	
-	
+		
 }

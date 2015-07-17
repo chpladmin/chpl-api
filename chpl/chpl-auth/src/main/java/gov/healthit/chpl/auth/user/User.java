@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 import java.util.Collection;
 import java.util.Set;
@@ -20,8 +20,8 @@ public interface User extends UserDetails , Authentication {
 	public void setLastName(String lastName);
 	public String getLastName();
 	
-	public Set<UserPermission> getPermissions();
-	public void addPermission(UserPermission permission) throws UserManagementException;
+	public Set<GrantedPermission> getPermissions();
+	public void addPermission(GrantedPermission permission);
 	public void removePermission(String permissionValue);
 
 	

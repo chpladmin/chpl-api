@@ -7,17 +7,14 @@ import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.permission.AuthenticatedPermission;
-import gov.healthit.chpl.auth.permission.UserPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.user.UserDTO;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
@@ -57,14 +54,14 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 
 	@Override
-	public List<UserPermission> findAll() {
+	public List<UserPermissionDTO> findAll() {
 		
 		List<UserPermissionEntity> results = entityManager.createQuery( "from UserPermissionEntity where (NOT deleted = true) ", UserPermissionEntity.class ).getResultList();
-		List<UserPermission> permissions = new ArrayList<UserPermission>();
+		List<UserPermissionDTO> permissions = new ArrayList<UserPermissionDTO>();
 		
 		for (UserPermissionEntity entity : results){
 			
-			AuthenticatedPermission permission = new AuthenticatedPermission(entity.getAuthority());
+			UserPermissionDTO permission = new UserPermissionDTO(entity);
 			permission.setDescription(entity.getDescription());
 			permission.setName(entity.getName());
 			permissions.add(permission);
@@ -74,10 +71,10 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 	
 	@Override
-	public UserPermission getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException {			
+	public UserPermissionDTO getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException {			
 			
 		UserPermissionEntity permissionEntity = null;
-		AuthenticatedPermission permission = new AuthenticatedPermission();
+		UserPermissionDTO permission = new UserPermissionDTO();
 		
 		Query query = entityManager.createQuery( "from UserPermissionEntity where (NOT deleted = true) AND (authority = :authority) ", UserPermissionEntity.class );
 		query.setParameter("authority", authority);
@@ -221,30 +218,15 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		
 	}
 	
+
 	@Override
-	public void deleteMappingsForPermission(UserPermission userPermission){
-		//TODO: Implement this
+	public void deleteMappingsForPermission(UserPermissionDTO userPermission) throws UserPermissionRetrievalException {
+		
+		UserPermissionEntity permissionEntity = this.getEntityFromAuthority(userPermission.getAuthority());
+		
+		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE c.user_permission_id_user_permission = :permissionid");
+		query.setParameter("permissionid", permissionEntity.getId());
+		query.executeUpdate();
 	}	
 
-	/*
-	public void addPermissionMapping(String authority, UserPermissionUserMappingEntity mapping) throws UserPermissionRetrievalException {
-		
-		UserPermissionEntity permissionEntity = null;
-		
-		Query query = entityManager.createQuery( "from UserPermissionEntity where (NOT deleted = true) AND (authority = :authority) ", UserPermissionEntity.class );
-		query.setParameter("authority", authority);
-		List<UserPermissionEntity> result = query.getResultList();
-			
-		if (result.size() > 1){
-			throw new UserPermissionRetrievalException("Data error. Duplicate authority in database.");
-		}
-		
-		if (result.size() > 0){
-			permissionEntity = result.get(0);
-		} else {
-			throw new UserPermissionRetrievalException("Permission does not exist.");
-		}
-		mapping.setPermission(permissionEntity);
-	}
-	*/
 }
