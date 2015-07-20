@@ -2,7 +2,6 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.user.UserDTO;
@@ -78,18 +77,9 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		userEntity.setAccountLocked(user.isAccountLocked());
 		userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
 		
-		//Add permissions to userEntity.
-		Set<UserPermissionDTO> permissions = user.getPermissions();
-		for (UserPermissionDTO permission : permissions){
-			//TODO: What about the "UserPermissionRetrievalException"
-			try {
-				userPermissionDAO.createMapping(userEntity, permission.getAuthority());
-			} catch (UserPermissionRetrievalException e) {
-				e.printStackTrace();
-			}
-		}
-		
+		update(userEntity);
 	}
+	
 	
 	/*
 	@Override

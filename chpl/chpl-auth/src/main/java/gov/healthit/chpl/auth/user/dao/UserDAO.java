@@ -1,11 +1,10 @@
 package gov.healthit.chpl.auth.user.dao;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserDTO;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationDTO;
+
 
 import java.util.List;
 

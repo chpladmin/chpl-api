@@ -1,9 +1,6 @@
 package gov.healthit.chpl.auth.user;
-import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +16,6 @@ public class UserDTO implements UserDetails {
 	private String email;
 	private String phoneNumber;
 	private String title;
-	private Set<UserPermissionDTO> permissions = new HashSet<UserPermissionDTO>();
 	private boolean accountExpired;
 	private boolean accountLocked;
 	private boolean credentialsExpired;
@@ -37,7 +33,6 @@ public class UserDTO implements UserDetails {
 		this.email = entity.getContact().getEmail();
 		this.phoneNumber = entity.getContact().getPhoneNumber();
 		this.title = entity.getContact().getEmail();
-		this.permissions = entity.getPermissions();
 		this.accountExpired = !entity.isAccountNonExpired();
 		this.accountLocked = !entity.isAccountNonLocked();
 		this.accountEnabled = entity.isEnabled();
@@ -98,14 +93,6 @@ public class UserDTO implements UserDetails {
 
 	public void setTitle(String title) {
 		this.title = title;
-	}
-	
-	public Set<UserPermissionDTO> getPermissions() {
-		return this.permissions;
-	}
-	
-	public void addPermission(UserPermissionDTO permission){
-		this.permissions.add(permission);
 	}
 	
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -175,10 +162,6 @@ public class UserDTO implements UserDetails {
 
 	public void setAccountEnabled(boolean accountEnabled) {
 		this.accountEnabled = accountEnabled;
-	}
-
-	public void setPermissions(Set<UserPermissionDTO> permissions) {
-		this.permissions = permissions;
 	}
 		
 }

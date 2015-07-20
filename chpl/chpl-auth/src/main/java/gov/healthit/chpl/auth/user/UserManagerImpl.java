@@ -1,12 +1,14 @@
 package gov.healthit.chpl.auth.user;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.user.dao.UserContactDAO;
 import gov.healthit.chpl.auth.user.dao.UserDAO;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
@@ -72,6 +74,7 @@ public class UserManagerImpl implements UserManager {
 	public void update(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException {	
 		userDAO.update(user);
 	}
+	
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN) or hasPermission(#user, admin)")
@@ -210,18 +213,17 @@ public class UserManagerImpl implements UserManager {
 		return encodedPassword;
 	}
 
-
-	@Override
-	public UserDTO getByName(String userName) throws UserRetrievalException {
-		return userDAO.getByName(userName);
-	}
-
-
 	@Override
 	public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
 		return userDAO.getEncodedPassword(user);
 	}
 	
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin) or hasPermission(#user, 'read')")
+	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user){
+		return this.userPermissionDAO.findPermissionsForUser(user.getId());
+	}
 	
 	
 }

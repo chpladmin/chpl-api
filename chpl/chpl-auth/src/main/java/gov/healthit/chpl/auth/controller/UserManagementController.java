@@ -4,6 +4,7 @@ package gov.healthit.chpl.auth.controller;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserCreationDTO;
+import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -62,7 +63,7 @@ public class UserManagementController {
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String updateUserDetails(@RequestBody UserCreationDTO userInfo) throws UserRetrievalException {
+	public String updateUserDetails(@RequestBody UserDTO userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
 		
 		userManager.update(userInfo);
 		return "{\"userUpdated\" : true }";

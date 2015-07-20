@@ -1,7 +1,9 @@
 package gov.healthit.chpl.auth.permission.dao.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -195,6 +197,26 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		
 	}
 	
+	
+	@Override
+	public Set<UserPermissionDTO> findPermissionsForUser(Long userId) {
+		
+		Query query = entityManager.createQuery("FROM UserPermissionUserMappingEntity m WHERE m.user_id = :userid");
+		query.setParameter("userid", userId);
+		List<UserPermissionUserMappingEntity> results = query.getResultList();
+		Set<UserPermissionDTO> userPermissions = new HashSet<UserPermissionDTO>();
+		
+		for (UserPermissionUserMappingEntity userMapping : results){
+			
+			UserPermissionEntity permission = userMapping.getPermission();
+			userPermissions.add(new UserPermissionDTO(permission));
+			
+		}
+		return userPermissions;
+	}
+	
+		
+	
 	private void createMapping(UserPermissionUserMappingEntity mapping) throws UserPermissionRetrievalException {
 		
 		if (mappingExists(mapping.getUser().getId(), mapping.getPermission().getId())){
@@ -219,6 +241,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	private void create(UserPermissionEntity permission) {
 		entityManager.persist(permission);
 	}
+	
 	
 	private boolean mappingExists(Long userId, Long permissionId){
 		

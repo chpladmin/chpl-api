@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusException;
@@ -14,12 +15,17 @@ import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.UserDTO;
+import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 public abstract class BaseUserAuthenticator implements Authenticator {
 
 	@Autowired
 	private JWTAuthor jwtAuthor;
+	
+	@Autowired
+	protected UserManager userManager;
+	
 
 	abstract public UserDTO getUser(LoginCredentials credentials)  throws BadCredentialsException, AccountStatusException, UserRetrievalException;
 	
@@ -29,7 +35,9 @@ public abstract class BaseUserAuthenticator implements Authenticator {
 		Map<String, List<String>> claims = new HashMap<String, List<String>>();
 		List<String> claimStrings = new ArrayList<String>();
 		
-		for (UserPermissionDTO claim : user.getPermissions()){
+		Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
+		
+		for (UserPermissionDTO claim : permissions){
 			claimStrings.add(claim.getAuthority());
 		}
 		claims.put("Authorities", claimStrings);

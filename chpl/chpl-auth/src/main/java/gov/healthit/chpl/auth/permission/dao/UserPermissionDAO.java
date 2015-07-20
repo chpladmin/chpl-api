@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.permission.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
@@ -33,5 +34,7 @@ public interface UserPermissionDAO {
 	public void deleteMappingsForUser(Long userId);
 	
 	public void deleteMappingsForPermission(UserPermissionDTO userPermission) throws UserPermissionRetrievalException;
+
+	public Set<UserPermissionDTO> findPermissionsForUser(Long userId);
 	
 }
