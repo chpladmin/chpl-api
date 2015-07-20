@@ -26,21 +26,46 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Autowired
 	UserDAO userDAO;
 	
-
-	@Override
-	public void create(UserPermissionEntity permission) {
-		entityManager.persist(permission);
+	public void create(UserPermissionDTO permission){
+		
+		UserPermissionEntity permissionEntity = new UserPermissionEntity();
+		permissionEntity.setAuthority(permission.getAuthority());
+		permissionEntity.setName(permission.getName());
+		permissionEntity.setDescription(permission.getDescription());
+		create(permissionEntity);
+		
 	}
-
+	
 	@Override
-	public void update(UserPermissionEntity permission) {
-		entityManager.merge(permission);
+	public void update(UserPermissionDTO permission) throws UserPermissionRetrievalException{
+		
+		UserPermissionEntity permissionEntity = null;
+		
+		Query query = entityManager.createQuery( "from UserPermissionEntity where (NOT deleted = true) AND (authority = :authority) ", UserPermissionEntity.class );
+		query.setParameter("authority", permission.getAuthority());
+		List<UserPermissionEntity> result = query.getResultList();
+			
+		if (result.size() > 1){
+			throw new UserPermissionRetrievalException("Data error. Duplicate authority in database.");
+		}
+		
+		if (result.size() > 0){
+			permissionEntity = result.get(0);
+		} else {
+			throw new UserPermissionRetrievalException("Permission does not exist.");
+		}
+		
+		permissionEntity.setAuthority(permission.getAuthority());
+		permissionEntity.setName(permission.getName());
+		permissionEntity.setDescription(permission.getDescription());
+		
+		update(permissionEntity);
 	}
 	
 	@Override
 	public void delete(String authority) {
 
-		Query query = entityManager.createQuery("UPDATE UserPermissionEntity SET deleted = true WHERE c.authority = :authority");
+		Query query = entityManager.createQuery("UPDATE UserPermissionEntity p SET deleted = true WHERE p.authority = :authority");
 		query.setParameter("authority", authority);
 		query.executeUpdate();
 	}
@@ -48,7 +73,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Override
 	public void delete(Long permissionId) {
 		
-		Query query = entityManager.createQuery("UPDATE UserPermissionEntity SET deleted = true WHERE c.user_permission_id = :user_permission_id");
+		Query query = entityManager.createQuery("UPDATE UserPermissionEntity p SET deleted = true WHERE p.user_permission_id = :user_permission_id");
 		query.setParameter("user_permission_id", permissionId);
 		query.executeUpdate();
 	}
@@ -119,75 +144,6 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		return permissionEntity.getId();
 	}
 	
-	private UserPermissionEntity getPermissionEntityFromAuthority(String authority) throws UserPermissionRetrievalException {
-		
-		UserPermissionEntity permissionEntity = null;
-		
-		Query query = entityManager.createQuery( "from UserPermissionEntity where (NOT deleted = true) AND (authority = :authority) ", UserPermissionEntity.class );
-		query.setParameter("authority", authority);
-		List<UserPermissionEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new UserPermissionRetrievalException("Data error. Duplicate authority in database.");
-		}
-		
-		if (result.size() > 0){
-			permissionEntity = result.get(0);
-		} else {
-			throw new UserPermissionRetrievalException("Permission does not exist.");
-		}
-		
-		return permissionEntity;
-	}
-	
-	
-	@Override
-	public void createMapping(UserPermissionUserMappingEntity mapping) {
-		
-		//TODO: This is going to throw a SQL error if the mapping already
-		//exists. 
-		entityManager.persist(mapping);
-	}
-
-	@Override
-	public void createMapping(UserEntity user, UserPermissionEntity permission) {
-		
-		UserPermissionUserMappingEntity permissionMapping = new UserPermissionUserMappingEntity();
-		permissionMapping.setUser(user);
-		permissionMapping.setPermission(permission);
-		createMapping(permissionMapping);
-	}
-
-	@Override
-	public void createMapping(UserEntity user, String authority) throws UserPermissionRetrievalException {
-		
-		UserPermissionEntity permissionEntity = getPermissionEntityFromAuthority(authority);
-		createMapping(user, permissionEntity);
-		
-	}
-	
-
-	@Override
-	public void deleteMapping(UserPermissionUserMappingEntity mapping) {
-		
-		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE c.user_id = :userid AND c.user_permission_id_user_permission = :permissionid");
-		query.setParameter("userid", mapping.getUser().getId());
-		query.setParameter("permissionid", mapping.getPermission().getId());
-		query.executeUpdate();
-		
-	}
-
-	@Override
-	public void deleteMapping(UserEntity user, UserPermissionEntity permission) throws UserPermissionRetrievalException {
-		
-		Long permissionId = getIdFromAuthority(permission.getAuthority());
-		
-		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE c.user_id = :userid AND c.user_permission_id_user_permission = :permissionid");
-		query.setParameter("userid", user.getId());
-		query.setParameter("permissionid", permissionId);
-		query.executeUpdate();
-		
-	}
 
 	@Override
 	public void deleteMapping(String userName, String authority) throws UserRetrievalException, UserPermissionRetrievalException {
@@ -195,7 +151,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		UserDTO user = this.userDAO.getByName(userName);
 		Long permissionId = getIdFromAuthority(authority);
 		
-		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE c.user_id = :userid AND c.user_permission_id_user_permission = :permissionid");
+		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity m SET deleted = true WHERE m.user_id = :userid AND m.user_permission_id_user_permission = :permissionid");
 		query.setParameter("userid", user.getId());
 		query.setParameter("permissionid", permissionId);
 		query.executeUpdate();
@@ -226,9 +182,72 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		
 		UserPermissionEntity permissionEntity = this.getPermissionEntityFromAuthority(userPermission.getAuthority());
 		
-		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE c.user_permission_id_user_permission = :permissionid");
+		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity m SET deleted = true WHERE m.user_permission_id_user_permission = :permissionid");
 		query.setParameter("permissionid", permissionEntity.getId());
 		query.executeUpdate();
-	}	
-
+	}
+	
+	@Override
+	public void createMapping(UserEntity user, String authority) throws UserPermissionRetrievalException {
+		
+		UserPermissionEntity permissionEntity = getPermissionEntityFromAuthority(authority);
+		createMapping(user, permissionEntity);
+		
+	}
+	
+	private void createMapping(UserPermissionUserMappingEntity mapping) throws UserPermissionRetrievalException {
+		
+		if (mappingExists(mapping.getUser().getId(), mapping.getPermission().getId())){
+			throw new UserPermissionRetrievalException("User - Permission mapping already exists.");
+		} else {
+			entityManager.persist(mapping);
+		}
+	}
+	
+	private void createMapping(UserEntity user, UserPermissionEntity permission) throws UserPermissionRetrievalException {
+		
+		UserPermissionUserMappingEntity permissionMapping = new UserPermissionUserMappingEntity();
+		permissionMapping.setUser(user);
+		permissionMapping.setPermission(permission);
+		createMapping(permissionMapping);
+	}
+	
+	private void update(UserPermissionEntity permission) {
+		entityManager.merge(permission);
+	}
+	
+	private void create(UserPermissionEntity permission) {
+		entityManager.persist(permission);
+	}
+	
+	private boolean mappingExists(Long userId, Long permissionId){
+		
+		Query query = entityManager.createQuery("SELECT COUNT(m.global_user_permission_id) FROM UserPermissionUserMappingEntity m WHERE m.user_id = :userid AND m.user_permission_id_user_permission = :permissionid");
+		query.setParameter("userid", userId);
+		query.setParameter("permissionid", permissionId);
+		Long count = (Long) query.getSingleResult();
+		return !(count < 1);
+	}
+	
+	private UserPermissionEntity getPermissionEntityFromAuthority(String authority) throws UserPermissionRetrievalException {
+		
+		UserPermissionEntity permissionEntity = null;
+		
+		Query query = entityManager.createQuery( "from UserPermissionEntity where (NOT deleted = true) AND (authority = :authority) ", UserPermissionEntity.class );
+		query.setParameter("authority", authority);
+		List<UserPermissionEntity> result = query.getResultList();
+		
+		if (result.size() > 1){
+			throw new UserPermissionRetrievalException("Data error. Duplicate authority in database.");
+		}
+		
+		if (result.size() > 0){
+			permissionEntity = result.get(0);
+		} else {
+			throw new UserPermissionRetrievalException("Permission does not exist.");
+		}
+		
+		return permissionEntity;
+	}
+	
 }

@@ -22,7 +22,6 @@ import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository(value="userDAO")
@@ -123,7 +122,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		// First delete the user / permission mappings for this user.
 		userPermissionDAO.deleteMappingsForUser(uname);
 		
-		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :uname");
+		Query query = entityManager.createQuery("UPDATE UserEntity u SET deleted = true WHERE u.user_id = :uname");
 		query.setParameter("uname", uname);
 		query.executeUpdate();
 	}
@@ -134,7 +133,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		// First delete the user / permission mappings for this user.
 		userPermissionDAO.deleteMappingsForUser(userId);
 		
-		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE c.user_id = :userid");
+		Query query = entityManager.createQuery("UPDATE UserEntity u SET deleted = true WHERE u.user_id = :userid");
 		query.setParameter("userid", userId);
 		query.executeUpdate();
 	}

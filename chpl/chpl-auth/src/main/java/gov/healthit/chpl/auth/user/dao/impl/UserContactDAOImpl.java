@@ -29,7 +29,7 @@ public class UserContactDAOImpl extends BaseDAOImpl implements UserContactDAO {
 	@Override
 	public void delete(Long contactId) {
 		
-		Query query = entityManager.createQuery("UPDATE UserContact SET deleted = true WHERE c.contact_id = :contactid");
+		Query query = entityManager.createQuery("UPDATE UserContact c SET deleted = true WHERE c.contact_id = :contactid");
 		query.setParameter("contactid", contactId);
 		query.executeUpdate();
 
