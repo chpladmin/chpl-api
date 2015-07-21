@@ -23,21 +23,17 @@ public class AuthenticationController {
 	
 	//TODO: Create emergency "BUMP TOKENS" method which invalidates all active tokens.
 	
-	@RequestMapping(value="/authenticate_json", method= RequestMethod.POST, 
+	@RequestMapping(value="/authenticate", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String authenticateJSON(@RequestBody LoginCredentials credentials) {
+	public String authenticateJSON(@RequestBody LoginCredentials credentials) throws JWTCreationException {
 		
 		String jwt = null;
-		try {
-			jwt = authenticator.getJWT(credentials);
-		} catch (JWTCreationException e) {
-			e.printStackTrace();
-		}
+		jwt = authenticator.getJWT(credentials);
 		return jwt;
 	}
 	
-	@RequestMapping(value="/authenticate", method= RequestMethod.POST, 
+	@RequestMapping(value="/authenticate_form", method= RequestMethod.POST, 
 			headers = {"content-type=application/x-www-form-urlencoded"},
 			produces="application/json; charset=utf-8")
 	public String authenticate(@RequestParam("userName") String userName, @RequestParam("password") String password) {

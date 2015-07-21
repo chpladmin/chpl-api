@@ -49,7 +49,7 @@ public class UserManagerImpl implements UserManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
-	public void create(UserCreationDTO userInfo) throws UserCreationException, UserRetrievalException {
+	public void create(UserCreationObject userInfo) throws UserCreationException, UserRetrievalException {
 		
 		String encodedPassword = encodePassword(userInfo.getPassword());
 		userDAO.create(userInfo, encodedPassword);
@@ -68,10 +68,40 @@ public class UserManagerImpl implements UserManager {
 				BasePermission.ADMINISTRATION);
 	}
 	
-	
+	@Override
 	@Transactional
+	public void update(UserUpdateObject userInfo) throws UserRetrievalException{
+		
+		UserDTO userDTO = getByUserName(userInfo.getSubjectName());
+		
+		if (userInfo.getFirstName() != null){
+			userDTO.setFirstName(userInfo.getFirstName());
+		}
+		
+		if (userInfo.getLastName() != null){
+			userDTO.setLastName(userInfo.getLastName());
+		}
+		
+		if (userInfo.getEmail() != null){
+			userDTO.setEmail(userInfo.getEmail());
+		}
+		
+		if (userInfo.getPhoneNumber() != null){
+			userDTO.setPhoneNumber(userInfo.getPhoneNumber());
+		}
+		
+		if (userInfo.getTitle() != null){
+			userDTO.setTitle(userInfo.getTitle());
+		}
+		
+		userDTO.setAccountLocked(userInfo.isAccountLocked());
+		userDTO.setAccountEnabled(userInfo.isAccountEnabled());
+		update(userDTO);
+	}
+	
+	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void update(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException {	
+	private void update(UserDTO user) throws UserRetrievalException {	
 		userDAO.update(user);
 	}
 	
@@ -203,9 +233,16 @@ public class UserManagerImpl implements UserManager {
 	public void updateUserPassword(String userName, String password) throws UserRetrievalException {
 		
 		String encodedPassword = encodePassword(password);
-		userDAO.updatePassword(userName, encodedPassword);
+		UserDTO userToUpdate = this.getByName(userName);
+		updatePassword(userToUpdate, encodedPassword);
 		
 	}
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
+	private void updatePassword(UserDTO user, String encodedPassword) throws UserRetrievalException{
+		userDAO.updatePassword(user.getSubjectName(), encodedPassword);
+	}
+	
 	
 	@Override
 	public String encodePassword(String password){
@@ -220,9 +257,16 @@ public class UserManagerImpl implements UserManager {
 	
 	
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin) or hasPermission(#user, 'read')")
+	//TODO: add security to this method?
 	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user){
 		return this.userPermissionDAO.findPermissionsForUser(user.getId());
+	}
+
+
+	@Override
+	//TODO: add security to this method.
+	public UserDTO getByName(String userName) throws UserRetrievalException {
+		return userDAO.getByName(userName);
 	}
 	
 	

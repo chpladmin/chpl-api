@@ -1,16 +1,19 @@
 package gov.healthit.chpl.auth.controller;
 
 
+import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserCreationDTO;
+import gov.healthit.chpl.auth.user.UserCreationObject;
 import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.auth.user.UserUpdateObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,7 +30,7 @@ public class UserManagementController {
 	@RequestMapping(value="/create_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String createUser(@RequestBody UserCreationDTO userInfo) throws UserCreationException, UserRetrievalException {
+	public String createUser(@RequestBody UserCreationObject userInfo) throws UserCreationException, UserRetrievalException {
 		
 		userManager.create(userInfo);
 		String isSuccess = String.valueOf(true);
@@ -36,10 +39,9 @@ public class UserManagementController {
 	}
 	
 	
-	@RequestMapping(value="/delete_user", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+	@RequestMapping(value="/delete_user/{userName}", method= RequestMethod.DELETE,
 			produces="application/json; charset=utf-8")
-	public String deleteUser(@RequestParam("userName") String userName) 
+	public String deleteUser(@PathVariable("userName") String userName) 
 			throws UserRetrievalException {
 		
 		userManager.delete(userName);
@@ -49,12 +51,11 @@ public class UserManagementController {
 	
 	
 	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String resetPassword(@RequestParam("userName") String userName, 
-			@RequestParam("password") String password) throws UserRetrievalException {
+	public String resetPassword(@RequestBody LoginCredentials newCredentials) throws UserRetrievalException {
 		
-		userManager.updateUserPassword(userName, password);
+		userManager.updateUserPassword(newCredentials.getPassword(), newCredentials.getPassword());
 		return "{\"passwordUpdated\" : true }";
 		
 	}
@@ -63,7 +64,7 @@ public class UserManagementController {
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String updateUserDetails(@RequestBody UserDTO userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
+	public String updateUserDetails(@RequestBody UserUpdateObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
 		
 		userManager.update(userInfo);
 		return "{\"userUpdated\" : true }";

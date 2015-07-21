@@ -3,16 +3,16 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.auth.user.UserCreationDTO;
+import gov.healthit.chpl.auth.user.UserCreationObject;
 
 
 import java.util.List;
 
 public interface UserDAO {
 	
-	void create(UserCreationDTO userInfo, String encodedPassword) throws UserCreationException;
+	void create(UserCreationObject userInfo, String encodedPassword) throws UserCreationException;
 	
-	public void update(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException;
+	public void update(UserDTO user) throws UserRetrievalException;
 	
 	public void delete(String uname) throws UserRetrievalException;
 	

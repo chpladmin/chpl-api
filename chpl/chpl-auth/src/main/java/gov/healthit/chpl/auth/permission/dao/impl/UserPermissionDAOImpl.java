@@ -67,7 +67,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Override
 	public void delete(String authority) {
 
-		Query query = entityManager.createQuery("UPDATE UserPermissionEntity p SET deleted = true WHERE p.authority = :authority");
+		Query query = entityManager.createQuery("UPDATE UserPermissionEntity SET deleted = true WHERE authority = :authority");
 		query.setParameter("authority", authority);
 		query.executeUpdate();
 	}
@@ -75,7 +75,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Override
 	public void delete(Long permissionId) {
 		
-		Query query = entityManager.createQuery("UPDATE UserPermissionEntity p SET deleted = true WHERE p.user_permission_id = :user_permission_id");
+		Query query = entityManager.createQuery("UPDATE UserPermissionEntity SET deleted = true WHERE user_permission_id = :user_permission_id");
 		query.setParameter("user_permission_id", permissionId);
 		query.executeUpdate();
 	}
@@ -153,7 +153,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		UserDTO user = this.userDAO.getByName(userName);
 		Long permissionId = getIdFromAuthority(authority);
 		
-		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity m SET deleted = true WHERE m.user_id = :userid AND m.user_permission_id_user_permission = :permissionid");
+		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE user_id = :userid AND user_permission_id_user_permission = :permissionid");
 		query.setParameter("userid", user.getId());
 		query.setParameter("permissionid", permissionId);
 		query.executeUpdate();
@@ -173,7 +173,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Override
 	public void deleteMappingsForUser(Long userId){
 		
-		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE c.user_id = :userid");
+		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE user_id = :userid");
 		query.setParameter("userid", userId);
 		query.executeUpdate();
 		
@@ -184,7 +184,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		
 		UserPermissionEntity permissionEntity = this.getPermissionEntityFromAuthority(userPermission.getAuthority());
 		
-		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity m SET deleted = true WHERE m.user_permission_id_user_permission = :permissionid");
+		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE user_permission_id_user_permission = :permissionid");
 		query.setParameter("permissionid", permissionEntity.getId());
 		query.executeUpdate();
 	}
@@ -201,7 +201,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Override
 	public Set<UserPermissionDTO> findPermissionsForUser(Long userId) {
 		
-		Query query = entityManager.createQuery("FROM UserPermissionUserMappingEntity m WHERE m.user_id = :userid");
+		Query query = entityManager.createQuery("FROM UserPermissionUserMappingEntity WHERE user_id = :userid");
 		query.setParameter("userid", userId);
 		List<UserPermissionUserMappingEntity> results = query.getResultList();
 		Set<UserPermissionDTO> userPermissions = new HashSet<UserPermissionDTO>();
@@ -245,7 +245,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	
 	private boolean mappingExists(Long userId, Long permissionId){
 		
-		Query query = entityManager.createQuery("SELECT COUNT(m.global_user_permission_id) FROM UserPermissionUserMappingEntity m WHERE m.user_id = :userid AND m.user_permission_id_user_permission = :permissionid");
+		Query query = entityManager.createQuery("SELECT COUNT(global_user_permission_id) FROM UserPermissionUserMappingEntity WHERE user_id = :userid AND user_permission_id_user_permission = :permissionid");
 		query.setParameter("userid", userId);
 		query.setParameter("permissionid", permissionId);
 		Long count = (Long) query.getSingleResult();

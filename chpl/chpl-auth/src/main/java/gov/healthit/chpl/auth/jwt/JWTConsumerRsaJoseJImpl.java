@@ -5,6 +5,8 @@ import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.jose4j.jwt.consumer.JwtConsumer;
@@ -21,6 +23,8 @@ public class JWTConsumerRsaJoseJImpl extends AuthPropertiesConsumer implements J
 	@Autowired
 	@Qualifier("RsaJose4JWebKey")
 	JSONWebKey jwk;
+	
+	Logger logger = LogManager.getLogger(JWTConsumerRsaJoseJImpl.class.getName());
 	
 	public Map<String, Object> consume(String jwt) {
 		
@@ -39,13 +43,13 @@ public class JWTConsumerRsaJoseJImpl extends AuthPropertiesConsumer implements J
 	    {
 	        //Validate the JWT and process it
 	        JwtClaims jwtClaims = jwtConsumer.processToClaims(jwt);
-	        //TODO: Add logging here?
 	        return jwtClaims.getClaimsMap();
 	    }
 	    catch (InvalidJwtException e)
 	    {
-	    	//TODO: Add logging here
-	        //System.out.println("Invalid JWT! " + e);
+	    	//TODO: Is it overkill to log every time an expired / invalid
+	    	// token is used?
+	    	logger.error("Invalid JWT", e);
 	        return null;
 	    }
 	}

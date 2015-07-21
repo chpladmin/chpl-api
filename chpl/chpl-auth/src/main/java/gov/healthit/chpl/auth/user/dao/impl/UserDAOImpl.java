@@ -7,7 +7,7 @@ import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserContactEntity;
 import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserCreationDTO;
+import gov.healthit.chpl.auth.user.UserCreationObject;
 import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.auth.user.dao.UserContactDAO;
@@ -33,7 +33,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	UserContactDAO userContactDAO;
 	
 	@Override
-	public void create(UserCreationDTO userInfo, String encodedPassword) throws UserCreationException {
+	public void create(UserCreationObject userInfo, String encodedPassword) throws UserCreationException {
 		
 		UserEntity userEntity = null;
 		try {
@@ -81,41 +81,17 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	}
 	
 	
-	/*
-	@Override
-	public void update(UserCreationDTO userInfo) throws UserRetrievalException{
-		
-		UserEntity user = getEntityByName(userInfo.getSubjectName());
-		
-		UserContactEntity contact = user.getContact();
-		contact.setEmail(userInfo.getEmail());
-		contact.setFirstName(userInfo.getFirstName());
-		contact.setLastName(userInfo.getLastName());
-		contact.setPhoneNumber(userInfo.getPhoneNumber());
-		contact.setTitle(userInfo.getTitle());
-		
-		if (uerInfo.getPassword() != null){
-			//String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
-			//user.setPassword(encodedPassword);
-			
-		}
-		
-		userContactDAO.update(contact);
-		update(user);
-		
-	}
-	*/
-	
 	@Override
 	public void delete(String uname) throws UserRetrievalException {
 		
 		// First delete the user / permission mappings for this user.
 		userPermissionDAO.deleteMappingsForUser(uname);
 		
-		Query query = entityManager.createQuery("UPDATE UserEntity u SET deleted = true WHERE u.user_id = :uname");
+		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE user_id = :uname");
 		query.setParameter("uname", uname);
 		query.executeUpdate();
 	}
+	
 	
 	@Override
 	public void delete(Long userId){
@@ -123,7 +99,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		// First delete the user / permission mappings for this user.
 		userPermissionDAO.deleteMappingsForUser(userId);
 		
-		Query query = entityManager.createQuery("UPDATE UserEntity u SET deleted = true WHERE u.user_id = :userid");
+		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE user_id = :userid");
 		query.setParameter("userid", userId);
 		query.executeUpdate();
 	}
@@ -217,8 +193,14 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	@Override
 	public UserDTO getByName(String uname) throws UserRetrievalException {
 		
+		UserDTO user = null;
 		UserEntity userEntity = this.getEntityByName(uname);
-		UserDTO user = new UserDTO(userEntity);
+		if (userEntity != null){
+			user = new UserDTO(userEntity);
+		} else {
+			throw new UserRetrievalException("User does not exist");
+		}
+		
 		return user;
 	}
 

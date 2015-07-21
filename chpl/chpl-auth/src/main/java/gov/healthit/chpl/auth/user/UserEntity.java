@@ -7,7 +7,6 @@ import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

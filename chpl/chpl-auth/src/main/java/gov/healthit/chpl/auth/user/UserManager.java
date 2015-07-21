@@ -19,10 +19,13 @@ public interface UserManager {
 	public void deleteAclPermission(UserDTO user, Sid recipient, Permission permission);
 		
 	
-	public void create(UserCreationDTO userInfo) throws UserCreationException, UserRetrievalException;
+	public void create(UserCreationObject userInfo) throws UserCreationException, UserRetrievalException;
 	
 	
-	public void update(UserDTO userInfo) throws UserRetrievalException, UserPermissionRetrievalException;
+	//public void update(UserDTO userInfo) throws UserRetrievalException, UserPermissionRetrievalException;
+	
+	
+	public void update(UserUpdateObject userInfo) throws UserRetrievalException;
 	
 	
 	public void delete(UserDTO user);
