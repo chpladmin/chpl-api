@@ -5,7 +5,6 @@ import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserCreationObject;
-import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -39,6 +38,17 @@ public class UserManagementController {
 	}
 	
 	
+	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String updateUserDetails(@RequestBody UserUpdateObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
+		
+		userManager.update(userInfo);
+		return "{\"userUpdated\" : true }";
+		
+	}
+	
+	
 	@RequestMapping(value="/delete_user/{userName}", method= RequestMethod.DELETE,
 			produces="application/json; charset=utf-8")
 	public String deleteUser(@PathVariable("userName") String userName) 
@@ -58,26 +68,13 @@ public class UserManagementController {
 		userManager.updateUserPassword(newCredentials.getPassword(), newCredentials.getPassword());
 		return "{\"passwordUpdated\" : true }";
 		
-	}
-	
-	
-	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_JSON_VALUE,
-			produces="application/json; charset=utf-8")
-	public String updateUserDetails(@RequestBody UserUpdateObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
-		
-		userManager.update(userInfo);
-		return "{\"userUpdated\" : true }";
-		
-	}
-	
+	}	
 	
 	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")
 	public String grantUserRole(@RequestParam("userName") String userName, 
 			@RequestParam("role") String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
-		
 		
 		String isSuccess = String.valueOf(false);
 		userManager.grantRole(userName, role);

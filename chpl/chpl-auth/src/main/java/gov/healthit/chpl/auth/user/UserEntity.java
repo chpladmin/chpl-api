@@ -122,7 +122,6 @@ public class UserEntity {
 		contact.setLastName(lastName);
 	}
 	
-	
 	public Set<UserPermissionDTO> getPermissions() {
 		
 		Set<UserPermissionDTO> permissions = new HashSet<UserPermissionDTO>();
@@ -178,28 +177,23 @@ public class UserEntity {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-
-
+	
 	public void setAccountExpired(boolean accountExpired) {
 		this.accountExpired = accountExpired;
 	}
-
-
+	
 	public void setAccountLocked(boolean accountLocked) {
 		this.accountLocked = accountLocked;
 	}
-
-
+	
 	public void setCredentialsExpired(boolean credentialsExpired) {
 		this.credentialsExpired = credentialsExpired;
 	}
-
-
+	
 	public void setAccountEnabled(boolean accountEnabled) {
 		this.accountEnabled = accountEnabled;
 	}
-
-
+	
 	private void populateLastModifiedUser(){
 		User currentUser = Util.getCurrentUser();
 		
