@@ -56,12 +56,10 @@ public class UserEntity {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	//@OneToMany(mappedBy="pk.user", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@OneToMany(mappedBy="pk.user", fetch=FetchType.LAZY)
  	private Set<UserPermissionUserMappingEntity> permissionMappings;
 	
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
-	//@JoinColumn(name="contact_id", unique=true, nullable=false, updatable=false) //TODO: Why was this non-updatable?
 	@JoinColumn(name="contact_id", unique=true, nullable=false)
 	private UserContactEntity contact;
 	
