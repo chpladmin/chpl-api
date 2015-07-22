@@ -32,7 +32,7 @@ public class UserDTO implements UserDetails {
 		this.lastName = entity.getLastName();
 		this.email = entity.getContact().getEmail();
 		this.phoneNumber = entity.getContact().getPhoneNumber();
-		this.title = entity.getContact().getEmail();
+		this.title = entity.getContact().getTitle();
 		this.accountExpired = !entity.isAccountNonExpired();
 		this.accountLocked = !entity.isAccountNonLocked();
 		this.accountEnabled = entity.isEnabled();

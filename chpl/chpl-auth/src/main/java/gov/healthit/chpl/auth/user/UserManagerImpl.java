@@ -2,7 +2,7 @@ package gov.healthit.chpl.auth.user;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.json.UserCreationObject;
-import gov.healthit.chpl.auth.json.UserUpdateObject;
+import gov.healthit.chpl.auth.json.UserInfoObject;
 import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
@@ -72,7 +72,7 @@ public class UserManagerImpl implements UserManager {
 	
 	@Override
 	@Transactional
-	public void update(UserUpdateObject userInfo) throws UserRetrievalException{
+	public void update(UserInfoObject userInfo) throws UserRetrievalException{
 		
 		UserDTO userDTO = getByUserName(userInfo.getSubjectName());
 		

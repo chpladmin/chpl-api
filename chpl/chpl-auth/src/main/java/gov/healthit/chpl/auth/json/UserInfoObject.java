@@ -1,7 +1,9 @@
 package gov.healthit.chpl.auth.json;
 
+import gov.healthit.chpl.auth.user.UserDTO;
 
-public class UserUpdateObject {
+
+public class UserInfoObject {
 	
 	private static final long serialVersionUID = 1L;
 	private String subjectName;
@@ -14,7 +16,20 @@ public class UserUpdateObject {
 	private boolean accountEnabled = true;
 	
 	
-	public UserUpdateObject(){}
+	public UserInfoObject(){}
+	
+	public UserInfoObject(UserDTO dto){
+		
+		this.subjectName = dto.getSubjectName();
+		this.firstName = dto.getFirstName();
+		this.lastName = dto.getLastName();
+		this.email = dto.getEmail();
+		this.phoneNumber = dto.getPhoneNumber();
+		this.title = dto.getTitle();
+		this.accountLocked = dto.isAccountLocked();
+		this.accountEnabled = dto.isAccountEnabled();
+		
+	}
 
 
 	public String getSubjectName() {

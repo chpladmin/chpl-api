@@ -1,24 +1,29 @@
 package gov.healthit.chpl.auth.controller;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.json.GrantAdminObject;
 import gov.healthit.chpl.auth.json.GrantRoleObject;
 import gov.healthit.chpl.auth.json.UserCreationObject;
-import gov.healthit.chpl.auth.json.UserUpdateObject;
+import gov.healthit.chpl.auth.json.UserInfoObject;
+import gov.healthit.chpl.auth.json.UserListObject;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
+import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,7 +48,7 @@ public class UserManagementController {
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String updateUserDetails(@RequestBody UserUpdateObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
+	public String updateUserDetails(@RequestBody UserInfoObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
 		
 		userManager.update(userInfo);
 		return "{\"userUpdated\" : true }";
@@ -85,7 +90,7 @@ public class UserManagementController {
 	}
 	
 	@RequestMapping(value="/grant_user_admin", method=RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public String grantUserAdmin(@RequestBody GrantAdminObject grantAdminObj) 
 			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
@@ -96,6 +101,24 @@ public class UserManagementController {
 		
 		return "{\"grantedAdminPrivileges\" : "+isSuccess+" }";
 		
-	}	
+	}
+	
+	@RequestMapping(value="/list_users", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody UserListObject getUsers(){
+		
+		List<UserDTO> userList = userManager.getAll();
+		List<UserInfoObject> userInfos = new ArrayList<UserInfoObject>();
+		
+		for (UserDTO user : userList){
+			userInfos.add(new UserInfoObject(user));
+		}
+		
+		UserListObject ulist = new UserListObject();
+		ulist.setUsers(userInfos);
+		return ulist;
+	}
+	
+	
 	
 }
