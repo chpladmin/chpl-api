@@ -2,13 +2,15 @@ package gov.healthit.chpl.auth.controller;
 
 
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
+import gov.healthit.chpl.auth.json.GrantAdminObject;
+import gov.healthit.chpl.auth.json.GrantRoleObject;
+import gov.healthit.chpl.auth.json.UserCreationObject;
+import gov.healthit.chpl.auth.json.UserUpdateObject;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserCreationObject;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.auth.user.UserUpdateObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -49,14 +51,13 @@ public class UserManagementController {
 	}
 	
 	
-	@RequestMapping(value="/delete_user/{userName}", method= RequestMethod.DELETE,
+	@RequestMapping(value="/delete_user", method= RequestMethod.DELETE,
 			produces="application/json; charset=utf-8")
-	public String deleteUser(@PathVariable("userName") String userName) 
+	public String deleteUser(@RequestParam("userName") String userName) 
 			throws UserRetrievalException {
 		
 		userManager.delete(userName);
 		return "{\"deletedUser\" : true }";
-		
 	}
 	
 	
@@ -67,36 +68,34 @@ public class UserManagementController {
 		
 		userManager.updateUserPassword(newCredentials.getPassword(), newCredentials.getPassword());
 		return "{\"passwordUpdated\" : true }";
-		
+	
 	}	
 	
 	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String grantUserRole(@RequestParam("userName") String userName, 
-			@RequestParam("role") String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+	public String grantUserRole(@RequestBody GrantRoleObject grantRoleObj) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		String isSuccess = String.valueOf(false);
-		userManager.grantRole(userName, role);
+		userManager.grantRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
 		isSuccess = String.valueOf(true);
 		
 		return "{\"roleAdded\" : "+isSuccess+" }";
 		
 	}
 	
-	
-	@RequestMapping(value="/grant_user_admin", method= RequestMethod.POST, 
+	@RequestMapping(value="/grant_user_admin", method=RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			produces="application/json; charset=utf-8")
-	public String grantUserAdmin(@RequestParam("userName") String userName) 
+	public String grantUserAdmin(@RequestBody GrantAdminObject grantAdminObj) 
 			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		String isSuccess = String.valueOf(false);
-		userManager.grantAdmin(userName);
+		userManager.grantAdmin(grantAdminObj.getSubjectName());
 		isSuccess = String.valueOf(true);
 		
 		return "{\"grantedAdminPrivileges\" : "+isSuccess+" }";
 		
-	}
+	}	
 	
 }
