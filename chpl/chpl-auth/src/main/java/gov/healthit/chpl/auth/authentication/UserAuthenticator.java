@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth.authentication;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -7,13 +9,15 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Service
 public class UserAuthenticator extends BaseUserAuthenticator {
-
+	
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -21,16 +25,14 @@ public class UserAuthenticator extends BaseUserAuthenticator {
 	@Autowired
 	private UserDetailsChecker userDetailsChecker;
 	
-	@Autowired
-	private UserManager userManager;
 	
 	@Override
-	public User getUser(LoginCredentials credentials) throws BadCredentialsException, AccountStatusException, UserRetrievalException {
+	public UserDTO getUser(LoginCredentials credentials) throws BadCredentialsException, AccountStatusException, UserRetrievalException {
 		
-		User user = userManager.getByUserName(credentials.getUserName());
+		UserDTO user = userManager.getByName(credentials.getUserName());
 		
 		if (user != null){
-			if (checkPassword(credentials.getPassword(), user.getPassword())){
+			if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))){
 				
 				try {
 					userDetailsChecker.check(user);

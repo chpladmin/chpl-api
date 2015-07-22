@@ -320,11 +320,11 @@ public class CHPLAuthenticationSecurityTestConfig extends
            
             // Construct DataSource
         	
-        	ds.setServerName("jdbc:postgresql://localhost/chpl_acl");
-            ds.setUser("chpl_acl");
-            ds.setPassword("Audac1ous");
+        	ds.setServerName("jdbc:postgresql://localhost/openchpl");
+            ds.setUser("openchpl");
+            ds.setPassword("openchpl1!");
             
-            ic.bind("java:/comp/env/jdbc/chpl_acl", ds);
+            ic.bind("java:/comp/env/jdbc/openchpl", ds);
         } catch (NamingException ex) {
         	ex.printStackTrace();
         }
