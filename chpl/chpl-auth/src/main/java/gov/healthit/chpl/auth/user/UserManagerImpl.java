@@ -255,7 +255,7 @@ public class UserManagerImpl implements UserManager {
 	
 	
 	@Override
-	//TODO: add security to this method?
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")
 	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user){
 		return this.userPermissionDAO.findPermissionsForUser(user.getId());
 	}
