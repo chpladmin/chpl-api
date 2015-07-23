@@ -26,9 +26,4 @@ public class CHPLAuthenticator extends UserAuthenticator {
 		
 	}
 	
-	/*
-	private List<UserPermission> getPermissions(User user){
-		
-	}
-	*/
 }

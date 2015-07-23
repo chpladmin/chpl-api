@@ -124,8 +124,7 @@ public class UserManagementController {
 			produces="application/json; charset=utf-8")
 	public @ResponseBody UserInfoObject getUser(@RequestParam("userName") String userName) throws UserRetrievalException{
 		
-		
-		return userInfo;
+		return userManager.getUserInfo(userName);
 		
 	}
 	
