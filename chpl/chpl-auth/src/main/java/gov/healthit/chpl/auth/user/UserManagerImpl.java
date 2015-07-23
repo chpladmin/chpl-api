@@ -74,7 +74,7 @@ public class UserManagerImpl implements UserManager {
 	@Transactional
 	public void update(UserInfoObject userInfo) throws UserRetrievalException{
 		
-		UserDTO userDTO = getByUserName(userInfo.getSubjectName());
+		UserDTO userDTO = getByName(userInfo.getSubjectName());
 		
 		if (userInfo.getFirstName() != null){
 			userDTO.setFirstName(userInfo.getFirstName());
@@ -129,7 +129,7 @@ public class UserManagerImpl implements UserManager {
 	@Transactional
 	public void delete(String userName) throws UserRetrievalException{
 		
-		UserDTO user = getByUserName(userName);
+		UserDTO user = getByName(userName);
 		if (user == null){
 			throw new UserRetrievalException("User not found");
 		} else {
@@ -144,10 +144,6 @@ public class UserManagerImpl implements UserManager {
 		return userDAO.findAll();
 	}
 	
-	
-	private UserDTO getByUserName(String uname) throws UserRetrievalException {
-		return userDAO.getByName(uname);
-	}
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id, 'gov.healthit.chpl.auth.user.User', admin)")
@@ -266,10 +262,15 @@ public class UserManagerImpl implements UserManager {
 
 
 	@Override
-	//TODO: add security to this method.
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")
 	public UserDTO getByName(String userName) throws UserRetrievalException {
 		return userDAO.getByName(userName);
 	}
 	
+	public UserInfoObject getUserInfo(String userName) throws UserRetrievalException {
+		UserDTO user = getByName(userName);
+		UserInfoObject userInfo = new UserInfoObject(user);
+		return userInfo;
+	}
 	
 }

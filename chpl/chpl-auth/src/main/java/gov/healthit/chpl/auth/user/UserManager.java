@@ -24,9 +24,6 @@ public interface UserManager {
 	public void create(UserCreationObject userInfo) throws UserCreationException, UserRetrievalException;
 	
 	
-	//public void update(UserDTO userInfo) throws UserRetrievalException, UserPermissionRetrievalException;
-	
-	
 	public void update(UserInfoObject userInfo) throws UserRetrievalException;
 	
 	
@@ -43,6 +40,9 @@ public interface UserManager {
 	
 	
 	public UserDTO getByName(String userName) throws UserRetrievalException;
+	
+	
+	public UserInfoObject getUserInfo(String userName) throws UserRetrievalException;
 	
 
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
