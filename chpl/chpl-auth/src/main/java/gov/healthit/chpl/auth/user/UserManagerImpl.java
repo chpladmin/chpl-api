@@ -110,7 +110,7 @@ public class UserManagerImpl implements UserManager {
 	@Transactional
 	public void delete(String userName) throws UserRetrievalException{
 		
-		UserDTO user = securedUserManager.getByName(userName);
+		UserDTO user = securedUserManager.getBySubjectName(userName);
 		if (user == null){
 			throw new UserRetrievalException("User not found");
 		} else {
@@ -200,7 +200,7 @@ public class UserManagerImpl implements UserManager {
 	public void updateUserPassword(String userName, String password) throws UserRetrievalException {
 		
 		String encodedPassword = encodePassword(password);
-		UserDTO userToUpdate = securedUserManager.getByName(userName);
+		UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
 		securedUserManager.updatePassword(userToUpdate, encodedPassword);
 		
 	}
@@ -225,12 +225,12 @@ public class UserManagerImpl implements UserManager {
 
 	@Override
 	public UserDTO getByName(String userName) throws UserRetrievalException {
-		return securedUserManager.getByName(userName);
+		return securedUserManager.getBySubjectName(userName);
 	}
 	
 	@Override
 	public UserInfoJSONObject getUserInfo(String userName) throws UserRetrievalException {
-		UserDTO user = securedUserManager.getByName(userName);
+		UserDTO user = securedUserManager.getBySubjectName(userName);
 		UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
 		return userInfo;
 	}

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
@@ -179,8 +180,8 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 
 
 	@Override
-	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")
-	public UserDTO getByName(String userName) throws UserRetrievalException {
+	@PostAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(returnObject, 'read') or hasPermission(returnObject, admin)")
+	public UserDTO getBySubjectName(String userName) throws UserRetrievalException {
 		return userDAO.getByName(userName);
 	}
 	

@@ -44,7 +44,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 				SecurityContextHolder.getContext().setAuthentication(null);
 				
 			} catch (JWTValidationException e) {
-				throw new ServletException(e);
+				throw new ServletException(e.getMessage());
 			}
 			
 		}

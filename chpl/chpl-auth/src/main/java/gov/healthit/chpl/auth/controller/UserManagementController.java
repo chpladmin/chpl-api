@@ -71,7 +71,7 @@ public class UserManagementController {
 			produces="application/json; charset=utf-8")
 	public String resetPassword(@RequestBody LoginCredentials newCredentials) throws UserRetrievalException {
 		
-		userManager.updateUserPassword(newCredentials.getPassword(), newCredentials.getPassword());
+		userManager.updateUserPassword(newCredentials.getUserName(), newCredentials.getPassword());
 		return "{\"passwordUpdated\" : true }";
 	
 	}	

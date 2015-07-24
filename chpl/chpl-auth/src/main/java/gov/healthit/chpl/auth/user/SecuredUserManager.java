@@ -41,7 +41,7 @@ public interface SecuredUserManager {
 	
 	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user);
 
-	public UserDTO getByName(String userName) throws UserRetrievalException;
+	public UserDTO getBySubjectName(String userName) throws UserRetrievalException;
 	
 	
 }
