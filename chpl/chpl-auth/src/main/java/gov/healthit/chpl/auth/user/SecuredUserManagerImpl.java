@@ -67,7 +67,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	}
 	
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN) or hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void updateContactInfo(UserEntity user){
 		userContactDAO.update(user.getContact());
 	}
