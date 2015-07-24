@@ -1,5 +1,4 @@
 package gov.healthit.chpl.auth.user.dao;
-import gov.healthit.chpl.auth.json.UserCreationObject;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserCreationException;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public interface UserDAO {
 	
-	void create(UserCreationObject userInfo, String encodedPassword) throws UserCreationException;
+	void create(UserDTO user, String encodedPassword) throws UserCreationException;
 	
 	public void update(UserDTO user) throws UserRetrievalException;
 	

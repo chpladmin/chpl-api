@@ -3,7 +3,7 @@ package gov.healthit.chpl.auth.json;
 import gov.healthit.chpl.auth.user.UserDTO;
 
 
-public class UserInfoObject {
+public class UserInfoJSONObject {
 	
 	private static final long serialVersionUID = 1L;
 	private String subjectName;
@@ -16,9 +16,9 @@ public class UserInfoObject {
 	private boolean accountEnabled = true;
 	
 	
-	public UserInfoObject(){}
+	public UserInfoJSONObject(){}
 	
-	public UserInfoObject(UserDTO dto){
+	public UserInfoJSONObject(UserDTO dto){
 		
 		this.subjectName = dto.getSubjectName();
 		this.firstName = dto.getFirstName();

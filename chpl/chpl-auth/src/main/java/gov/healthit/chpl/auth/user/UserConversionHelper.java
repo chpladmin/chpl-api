@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.auth.json.UserInfoObject;
+import gov.healthit.chpl.auth.json.UserCreationJSONObject;
+import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 
 public abstract class UserConversionHelper {
 	
@@ -21,10 +22,11 @@ public abstract class UserConversionHelper {
 			return dto;
 	}
 	
-	public static UserDTO createDTO(UserInfoObject info){
+	public static UserDTO createDTO(UserInfoJSONObject info){
 		
 		UserDTO dto = new UserDTO();
 		
+		dto.setId(null);
 		dto.setSubjectName(info.getSubjectName());
 		dto.setFirstName(info.getFirstName());
 		dto.setLastName(info.getLastName());
@@ -35,6 +37,24 @@ public abstract class UserConversionHelper {
 		dto.setAccountEnabled(info.isAccountEnabled());
 		
 		return dto;
-}
+	}
+	
+	public static UserDTO createDTO(UserCreationJSONObject info){
+		
+		UserDTO dto = new UserDTO();
+		
+		
+		dto.setId(null);
+		dto.setSubjectName(info.getSubjectName());
+		dto.setFirstName(info.getFirstName());
+		dto.setLastName(info.getLastName());
+		dto.setEmail(info.getEmail());
+		dto.setPhoneNumber(info.getPhoneNumber());
+		dto.setTitle(info.getTitle());
+		dto.setAccountLocked(false);
+		dto.setAccountEnabled(true);
+		
+		return dto;
+	}
 
 }

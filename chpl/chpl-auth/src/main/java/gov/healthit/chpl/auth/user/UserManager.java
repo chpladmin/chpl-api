@@ -1,8 +1,8 @@
 package gov.healthit.chpl.auth.user;
 
 
-import gov.healthit.chpl.auth.json.UserCreationObject;
-import gov.healthit.chpl.auth.json.UserInfoObject;
+import gov.healthit.chpl.auth.json.UserCreationJSONObject;
+import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 
@@ -13,18 +13,12 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
 public interface UserManager {
+			
+	
+	public void create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException;
 	
 	
-	public void addAclPermission(UserDTO user, Sid recipient, Permission permission);
-	
-	
-	public void deleteAclPermission(UserDTO user, Sid recipient, Permission permission);
-		
-	
-	public void create(UserCreationObject userInfo) throws UserCreationException, UserRetrievalException;
-	
-	
-	public void update(UserInfoObject userInfo) throws UserRetrievalException;
+	public void update(UserInfoJSONObject userInfo) throws UserRetrievalException;
 	
 	
 	public void delete(UserDTO user);
@@ -42,7 +36,7 @@ public interface UserManager {
 	public UserDTO getByName(String userName) throws UserRetrievalException;
 	
 	
-	public UserInfoObject getUserInfo(String userName) throws UserRetrievalException;
+	public UserInfoJSONObject getUserInfo(String userName) throws UserRetrievalException;
 	
 
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;

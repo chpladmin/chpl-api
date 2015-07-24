@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.json;
 
-public class UserCreationObject {
+public class UserCreationJSONObject {
 	
 	private String subjectName;
 	private String firstName;

@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.json;
 
-public class GrantAdminObject {
+public class GrantAdminJSONObject {
 	
 	private String subjectName;
 

@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
-import gov.healthit.chpl.auth.json.GrantAdminObject;
-import gov.healthit.chpl.auth.json.GrantRoleObject;
-import gov.healthit.chpl.auth.json.UserCreationObject;
-import gov.healthit.chpl.auth.json.UserInfoObject;
-import gov.healthit.chpl.auth.json.UserListObject;
+import gov.healthit.chpl.auth.json.GrantAdminJSONObject;
+import gov.healthit.chpl.auth.json.GrantRoleJSONObject;
+import gov.healthit.chpl.auth.json.UserCreationJSONObject;
+import gov.healthit.chpl.auth.json.UserInfoJSONObject;
+import gov.healthit.chpl.auth.json.UserListJSONObject;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserDTO;
@@ -36,7 +36,7 @@ public class UserManagementController {
 	@RequestMapping(value="/create_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String createUser(@RequestBody UserCreationObject userInfo) throws UserCreationException, UserRetrievalException {
+	public String createUser(@RequestBody UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
 		
 		userManager.create(userInfo);
 		String isSuccess = String.valueOf(true);
@@ -48,7 +48,7 @@ public class UserManagementController {
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String updateUserDetails(@RequestBody UserInfoObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
+	public String updateUserDetails(@RequestBody UserInfoJSONObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
 		
 		userManager.update(userInfo);
 		return "{\"userUpdated\" : true }";
@@ -79,7 +79,7 @@ public class UserManagementController {
 	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String grantUserRole(@RequestBody GrantRoleObject grantRoleObj) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+	public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		String isSuccess = String.valueOf(false);
 		userManager.grantRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
@@ -92,7 +92,7 @@ public class UserManagementController {
 	@RequestMapping(value="/grant_user_admin", method=RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String grantUserAdmin(@RequestBody GrantAdminObject grantAdminObj) 
+	public String grantUserAdmin(@RequestBody GrantAdminJSONObject grantAdminObj) 
 			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		String isSuccess = String.valueOf(false);
@@ -105,16 +105,16 @@ public class UserManagementController {
 	
 	@RequestMapping(value="/list_users", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody UserListObject getUsers(){
+	public @ResponseBody UserListJSONObject getUsers(){
 		
 		List<UserDTO> userList = userManager.getAll();
-		List<UserInfoObject> userInfos = new ArrayList<UserInfoObject>();
+		List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
 		
 		for (UserDTO user : userList){
-			userInfos.add(new UserInfoObject(user));
+			userInfos.add(new UserInfoJSONObject(user));
 		}
 		
-		UserListObject ulist = new UserListObject();
+		UserListJSONObject ulist = new UserListJSONObject();
 		ulist.setUsers(userInfos);
 		return ulist;
 	}
@@ -122,7 +122,7 @@ public class UserManagementController {
 	
 	@RequestMapping(value="/user_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody UserInfoObject getUser(@RequestParam("userName") String userName) throws UserRetrievalException{
+	public @ResponseBody UserInfoJSONObject getUser(@RequestParam("userName") String userName) throws UserRetrievalException{
 		
 		return userManager.getUserInfo(userName);
 		

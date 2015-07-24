@@ -30,11 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UserManagerImpl implements UserManager {
+public class SecuredUserManagerImpl implements SecuredUserManager {
 
-	@Autowired
-	private SecuredUserManager securedUserManager;
-	
 	@Autowired
 	private UserDAO userDAO;
 	
@@ -53,85 +50,51 @@ public class UserManagerImpl implements UserManager {
 	
 	@Override
 	@Transactional
-	public void create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
+	public void create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException {
+				
+		userDAO.create(user, encodedPassword);
 		
-		UserDTO user = UserConversionHelper.createDTO(userInfo);
-		String encodedPassword = encodePassword(userInfo.getPassword());
-		securedUserManager.create(user, encodedPassword);
+		// Grant the user administrative permission over itself.
+		addAclPermission(user, new PrincipalSid(user.getSubjectName()),
+				BasePermission.ADMINISTRATION);
 	}
 	
-	@Override
-	@Transactional
-	public void update(UserInfoJSONObject userInfo) throws UserRetrievalException{
-		
-		UserDTO userDTO = getByName(userInfo.getSubjectName());
-		
-		if (userInfo.getFirstName() != null){
-			userDTO.setFirstName(userInfo.getFirstName());
-		}
-		
-		if (userInfo.getLastName() != null){
-			userDTO.setLastName(userInfo.getLastName());
-		}
-		
-		if (userInfo.getEmail() != null){
-			userDTO.setEmail(userInfo.getEmail());
-		}
-		
-		if (userInfo.getPhoneNumber() != null){
-			userDTO.setPhoneNumber(userInfo.getPhoneNumber());
-		}
-		
-		if (userInfo.getTitle() != null){
-			userDTO.setTitle(userInfo.getTitle());
-		}
-		
-		userDTO.setAccountLocked(userInfo.isAccountLocked());
-		userDTO.setAccountEnabled(userInfo.isAccountEnabled());
-		securedUserManager.update(userDTO);
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
+	public void update(UserDTO user) throws UserRetrievalException {
+		userDAO.update(user);
 	}
 	
-	@Transactional
-	private void update(UserDTO user) throws UserRetrievalException {	
-		securedUserManager.update(user);
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN) or hasPermission(#user, admin)")
+	public void updateContactInfo(UserEntity user){
+		userContactDAO.update(user.getContact());
 	}
 	
-	@Transactional
-	private void updateContactInfo(UserEntity user){
-		securedUserManager.updateContactInfo(user);
-	}
 	
-	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(UserDTO user){
-		securedUserManager.delete(user);
-	}
-	
-	@Override
-	@Transactional
-	public void delete(String userName) throws UserRetrievalException{
 		
-		UserDTO user = securedUserManager.getByName(userName);
-		if (user == null){
-			throw new UserRetrievalException("User not found");
-		} else {
-			delete(user);
-		}
+		userDAO.delete(user.getId());
+		// Delete the ACL information as well
+		ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
+		mutableAclService.deleteAcl(oid, false);
 	}
 	
 	
-	@Transactional
+	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<UserDTO> getAll(){
-		return securedUserManager.getAll();
+		return userDAO.findAll();
 	}
 	
 	
-	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id, 'gov.healthit.chpl.auth.user.User', admin)")
 	public UserDTO getById(Long id) throws UserRetrievalException{
-		return securedUserManager.getById(id);
+		return userDAO.getById(id);
 	}
-
-	/*
-	@Transactional
+	
+	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void addAclPermission(UserDTO user, Sid recipient, Permission permission){
 		
@@ -149,10 +112,8 @@ public class UserManagerImpl implements UserManager {
 		mutableAclService.updateAcl(acl);
 		
 	}
-	*/
 	
-	/*
-	@Transactional
+	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void deleteAclPermission(UserDTO user, Sid recipient, Permission permission){
 		
@@ -169,70 +130,59 @@ public class UserManagerImpl implements UserManager {
 		}
 		mutableAclService.updateAcl(acl);	
 	}
-	*/
 	
 	@Override
-	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
-		securedUserManager.grantRole(userName, role);
+		
+		
+		if ((role == "ROLE_ADMIN") || (role == "ROLE_ACL_ADMIN") || (role =="ROLE_ADMINISTRATOR")){
+			throw new UserManagementException("This role cannot be granted using the grant role functionality");
+		}
+		
+		userDAO.addPermission(userName, role);
+		
 	}
 	
 	@Override
-	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void grantAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
-		securedUserManager.grantAdmin(userName);
+		
+		userDAO.addPermission(userName, "ROLE_ADMIN");
+		
 	}
 	
 	@Override
-	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException {
-		securedUserManager.removeRole(user, role);
+		userDAO.removePermission(user.getSubjectName(), role);
 	}
 	
 	@Override
-	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException {
-		securedUserManager.removeRole(userName, role);
+		userDAO.removePermission(userName, role);
 	}
 	
-	@Override
-	@Transactional
-	public void updateUserPassword(String userName, String password) throws UserRetrievalException {
-		
-		String encodedPassword = encodePassword(password);
-		UserDTO userToUpdate = securedUserManager.getByName(userName);
-		securedUserManager.updatePassword(userToUpdate, encodedPassword);
-		
-	}
 	
-	@Override
-	public String encodePassword(String password){
-		String encodedPassword = bCryptPasswordEncoder.encode(password);
-		return encodedPassword;
-	}
-
-	@Override
-	public String getEncodedPassword(UserDTO user) throws UserRetrievalException {
-		return userDAO.getEncodedPassword(user);
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
+	public void updatePassword(UserDTO user, String encodedPassword) throws UserRetrievalException{
+		userDAO.updatePassword(user.getSubjectName(), encodedPassword);
 	}
 	
 	
 	@Override
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")
 	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user){
-		return securedUserManager.getGrantedPermissionsForUser(user);
+		return this.userPermissionDAO.findPermissionsForUser(user.getId());
 	}
 
 
 	@Override
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")
 	public UserDTO getByName(String userName) throws UserRetrievalException {
-		return securedUserManager.getByName(userName);
+		return userDAO.getByName(userName);
 	}
 	
-	@Override
-	public UserInfoJSONObject getUserInfo(String userName) throws UserRetrievalException {
-		UserDTO user = securedUserManager.getByName(userName);
-		UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
-		return userInfo;
-	}
 	
 }

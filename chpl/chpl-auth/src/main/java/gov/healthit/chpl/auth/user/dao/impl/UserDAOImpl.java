@@ -2,7 +2,7 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.json.UserCreationObject;
+import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.user.UserDTO;
@@ -32,35 +32,36 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	@Autowired
 	UserContactDAO userContactDAO;
 	
+	
 	@Override
-	public void create(UserCreationObject userInfo, String encodedPassword) throws UserCreationException {
+	public void create(UserDTO user, String encodedPassword) throws UserCreationException {
 		
 		UserEntity userEntity = null;
 		try {
-			userEntity = getEntityByName(userInfo.getSubjectName());
+			userEntity = getEntityByName(user.getSubjectName());
 		} catch (UserRetrievalException e) {
 			throw new UserCreationException(e);
 		}
 		
 		if (userEntity != null) {
-			throw new UserCreationException("user name: "+userInfo.getSubjectName() +" already exists.");
+			throw new UserCreationException("user name: "+user.getSubjectName() +" already exists.");
 		} else {
 			
-			//String encodedPassword = bCryptPasswordEncoder.encode(userInfo.getPassword());
-			UserEntity userToCreate = new UserEntity(userInfo.getSubjectName(), encodedPassword);
+			UserEntity userToCreate = new UserEntity(user.getSubjectName(), encodedPassword);
 			
 			UserContactEntity contact = new UserContactEntity();
-			contact.setEmail(userInfo.getEmail());
-			contact.setFirstName(userInfo.getFirstName());
-			contact.setLastName(userInfo.getLastName());
-			contact.setPhoneNumber(userInfo.getPhoneNumber());
-			contact.setTitle(userInfo.getTitle());
+			contact.setEmail(user.getEmail());
+			contact.setFirstName(user.getFirstName());
+			contact.setLastName(user.getLastName());
+			contact.setPhoneNumber(user.getPhoneNumber());
+			contact.setTitle(user.getTitle());
 			
 			userContactDAO.create(contact);
 			userToCreate.setContact(contact);
 			create(userToCreate);			
 		}
 	}
+	
 	
 	@Override
 	public void update(UserDTO user) throws UserRetrievalException {

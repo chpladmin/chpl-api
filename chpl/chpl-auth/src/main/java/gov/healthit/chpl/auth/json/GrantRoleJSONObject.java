@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.json;
 
-public class GrantRoleObject {
+public class GrantRoleJSONObject {
 		
 		private String subjectName;
 		private String role;
