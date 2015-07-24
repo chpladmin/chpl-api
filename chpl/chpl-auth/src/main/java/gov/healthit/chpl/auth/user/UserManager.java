@@ -9,9 +9,6 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
-
 public interface UserManager {
 			
 	

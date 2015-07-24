@@ -46,7 +46,6 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 			} catch (JWTValidationException e) {
 				throw new ServletException(e.getMessage());
 			}
-			
 		}
 	}
 }

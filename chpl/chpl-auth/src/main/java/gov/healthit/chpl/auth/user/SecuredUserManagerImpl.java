@@ -1,8 +1,6 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.json.UserCreationJSONObject;
-import gov.healthit.chpl.auth.json.UserInfoJSONObject;
+
 import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;

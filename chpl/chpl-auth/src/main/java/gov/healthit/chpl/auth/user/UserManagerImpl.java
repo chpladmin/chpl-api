@@ -1,6 +1,5 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.permission.UserPermissionDTO;
@@ -13,18 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
-import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.AccessControlEntry;
-import org.springframework.security.acls.model.MutableAcl;
-import org.springframework.security.acls.model.MutableAclService;
-import org.springframework.security.acls.model.NotFoundException;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,9 +30,6 @@ public class UserManagerImpl implements UserManager {
 	
 	@Autowired
 	UserPermissionDAO userPermissionDAO;
-	
-	@Autowired
-	private MutableAclService mutableAclService;
 	
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -129,47 +113,6 @@ public class UserManagerImpl implements UserManager {
 	public UserDTO getById(Long id) throws UserRetrievalException{
 		return securedUserManager.getById(id);
 	}
-
-	/*
-	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void addAclPermission(UserDTO user, Sid recipient, Permission permission){
-		
-		MutableAcl acl;
-		ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
-
-		try {
-			acl = (MutableAcl) mutableAclService.readAclById(oid);
-		}
-		catch (NotFoundException nfe) {
-			acl = mutableAclService.createAcl(oid);
-		}
-
-		acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-		mutableAclService.updateAcl(acl);
-		
-	}
-	*/
-	
-	/*
-	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void deleteAclPermission(UserDTO user, Sid recipient, Permission permission){
-		
-		ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
-		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		
-		List<AccessControlEntry> entries = acl.getEntries();
-
-		for (int i = 0; i < entries.size(); i++) {
-			if (entries.get(i).getSid().equals(recipient)
-					&& entries.get(i).getPermission().equals(permission)) {
-				acl.deleteAce(i);
-			}
-		}
-		mutableAclService.updateAcl(acl);	
-	}
-	*/
 	
 	@Override
 	@Transactional

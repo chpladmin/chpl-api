@@ -6,7 +6,6 @@ import java.util.Map;
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.permission.UserPermissionDTO;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 
@@ -30,7 +29,7 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 		Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
 		
 		if (validatedClaims == null){
-			throw new JWTValidationException();
+			throw new JWTValidationException("Invalid authentication token.");
 		} else {
 			
 			/*
