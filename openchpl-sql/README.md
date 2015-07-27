@@ -17,7 +17,7 @@ $ cd openchpl-sql
 
 ## Data model load
 
-Edit `openchpl-role.sql` to set the password for the `openchpl` role. These instructions assume the role/username used for the openchpl database is `openchpl`, and that the password in `openchpl-role.sql`, currently recorded as "change this password" will be update to match your installation. If the installer chooses to change the username/role, make sure it's also changed in the `openchpl.sql` file wherever the role is used.
+Rename `openchpl-role-template.sql` to `openchpl-role.sql` and set the password for the `openchpl` role. These instructions assume the role/username used for the openchpl database is `openchpl`, and that the password in `openchpl-role.sql`, currently recorded as "change this password" will be update to match your installation. If the installer chooses to change the username/role, make sure it's also changed in the `openchpl.sql` file wherever the role is used.
 
 ```sh
 $ psql -Upostgres -f chpl-api/openchpl-sql/openchpl-role.sql
@@ -42,10 +42,8 @@ postgres=# \q
 
 ## To completely remove the databases
 
+The `reset.sh` script starts by dropping all openchpl required schemas as well as the openchpl role, then ingests the four `.sql` files that rebuild the database from scratch. This script may also be used on a fresh installation to build the databases for the first time.
+
 ```sh
-$ psql
-postgres=# drop schema audit cascade;
-postgres=# drop schema openchpl cascade;
-postgres=# drop role openchpl;
-postgres=# \q
+$ reset.sh
 ```
