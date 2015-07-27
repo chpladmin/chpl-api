@@ -106,11 +106,11 @@ public class UserAuthenticator implements Authenticator {
 		try {
 			user = getUser(credentials);
 		} catch (BadCredentialsException e) {
-			throw new JWTCreationException(e);
+			throw new JWTCreationException(e.getMessage());
 		} catch (AccountStatusException e1) {
-			throw new JWTCreationException(e1);
+			throw new JWTCreationException(e1.getMessage());
 		} catch (UserRetrievalException e2) {
-			throw new JWTCreationException(e2);
+			throw new JWTCreationException(e2.getMessage());
 		}
 		
 		if (user != null){
@@ -167,7 +167,7 @@ public class UserAuthenticator implements Authenticator {
 		return permissions;
 	}
 	
-	private UserDTO getUserByName(String userName) throws UserRetrievalException{
+	private UserDTO getUserByName(String userName) throws UserRetrievalException {
 		
 		Authentication authenticator = new Authentication() {
 			

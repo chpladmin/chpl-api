@@ -122,7 +122,7 @@ public class UserManagementController {
 	
 	@RequestMapping(value="/user_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody UserInfoJSONObject getUser(@RequestParam("userName") String userName) throws UserRetrievalException{
+	public @ResponseBody UserInfoJSONObject getUser(@RequestParam("userName") String userName) throws UserRetrievalException {
 		
 		return userManager.getUserInfo(userName);
 		
