@@ -1,9 +1,12 @@
 #!/bin/bash
 (set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters
 
-# create timestamp and filename for log file
+# create timestamp and filename
 TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
 log=input/parsed/log.$TIMESTAMP.txt
+
+# scrape and download XLSX source file
+wget -O input/chpl-$TIMESTAMP.xlsx "$(wget http://oncchpl.force.com/ehrcert/DownloadReport -q -O - | grep -Po '(?<=href=")[^"]*' | sed 's/amp;//g')"
 
 # create TIMESTAMP and filename for running (monthly) log action taken
 #   will output "no files found at $TIMESTAMP" if no files found

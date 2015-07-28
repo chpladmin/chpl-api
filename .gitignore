@@ -246,3 +246,4 @@ pip-log.txt
 /chpl/chpl-etl/input/
 /chpl/chpl-etl/parse.sh
 /chpl/chpl-etl/log_checksum-analysis-finallines.txt
+/openchpl-sql/openchpl-role.sql
