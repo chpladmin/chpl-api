@@ -1,5 +1,7 @@
 package gov.healthit.chpl.acb;
 
+import gov.healthit.chpl.entity.CertificationBody;
+
 import java.util.List;
 
 import org.springframework.security.acls.model.Permission;

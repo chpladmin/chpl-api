@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth.filter;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.user.User;
 
@@ -14,6 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JWTAuthenticationFilter extends GenericFilterBean {
 	
@@ -44,9 +48,13 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 				SecurityContextHolder.getContext().setAuthentication(null);
 				
 			} catch (JWTValidationException e) {
-				throw new ServletException(e);
+				
+				ErrorJSONObject errorObj = new ErrorJSONObject(e.getMessage());
+				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+				String json = ow.writeValueAsString(errorObj);
+				res.getOutputStream().write(json.getBytes());
+				
 			}
-			
 		}
 	}
 }

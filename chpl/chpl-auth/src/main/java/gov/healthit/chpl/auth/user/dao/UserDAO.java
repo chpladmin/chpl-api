@@ -1,24 +1,37 @@
 package gov.healthit.chpl.auth.user.dao;
-import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.UserDTO;
+import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+
+
 
 import java.util.List;
 
 public interface UserDAO {
 	
-	public void create(UserImpl user);
+	void create(UserDTO user, String encodedPassword) throws UserCreationException;
 	
-	public void deactivate(String uname);
+	public void update(UserDTO user) throws UserRetrievalException;
 	
-	public void deactivate(Long userId);
+	public void delete(String uname) throws UserRetrievalException;
 	
-	public List<UserImpl> findAll();
+	public void delete(Long userId);
+	
+	public List<UserDTO> findAll();
 
-	public UserImpl getById(Long userId) throws UserRetrievalException;
+	public UserDTO getById(Long userId) throws UserRetrievalException;
 	
-	public UserImpl getByName(String uname) throws UserRetrievalException;
+	public UserDTO getByName(String uname) throws UserRetrievalException;
+	
+	public void addPermission(String uname, String authority) throws UserPermissionRetrievalException, UserRetrievalException;
+	
+	public void removePermission(String uname, String authority) throws UserRetrievalException, UserPermissionRetrievalException;
+	
+	public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException;
 
-	public void update(UserImpl user);
+	public String getEncodedPassword(UserDTO user) throws UserRetrievalException;
+
+	
 }
 

@@ -1,9 +1,8 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.auth.authentication.Claim;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.core.Authentication;
@@ -12,15 +11,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public interface User extends UserDetails , Authentication {
 	
+	public Long getId();	
 	public String getSubjectName();
 	public void setSubjectName(String subject);
-	public Set<Claim> getClaims();
-	public void setClaims(Set<Claim> claims);
-	public void addClaim(String claimValue);
-	public void addClaim(Claim claim);
-	public void removeClaim(String claimValue);
-	public void removeClaim(Claim claim);
 	
+	public void setFirstName(String firstName);
+	public String getFirstName();
+	public void setLastName(String lastName);
+	public String getLastName();
+	
+	public Set<GrantedPermission> getPermissions();
+	public void addPermission(GrantedPermission permission);
+	public void removePermission(String permissionValue);
+
 	
 	// UserDetails interface
 	@Override
@@ -59,7 +62,7 @@ public interface User extends UserDetails , Authentication {
 
 	@Override
 	public void setAuthenticated(boolean arg0) throws IllegalArgumentException;
-
+	
 	@Override
 	public String getName();
 	
