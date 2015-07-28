@@ -5,7 +5,7 @@ import java.util.List;
 import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.entity.CertificationBody;
 import gov.healthit.chpl.json.CertificationJSONObject;
 import gov.healthit.chpl.json.CertifiedProductJSONObject;
 
@@ -57,7 +57,7 @@ public class CHPLServiceController {
 	@RequestMapping(value="/adminACB/{acbID}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String adminACB(@PathVariable String acbID) {
 		
-		List<CertificationBodyEntity> authorizedACBs = certificationBodyManager.getAll();
+		List<CertificationBody> authorizedACBs = certificationBodyManager.getAll();
 		
 		if (authorizedACBs.size() > 0){
 			return "{\"AdminsteringACB:\" : \""+acbID+"\"}";
@@ -72,7 +72,7 @@ public class CHPLServiceController {
 		System.out.println("Claims:");
 		System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 		
-		CertificationBodyEntity acb = new CertificationBodyEntity();
+		CertificationBody acb = new CertificationBody();
 		acb.setName(acbName);
 		acb.setWebsite("www.zombo.com");
 		certificationBodyManager.create(acb);
@@ -84,7 +84,7 @@ public class CHPLServiceController {
 	@RequestMapping(value="/renameACB/{acbId}/{acbName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String updateACBName(@PathVariable Long acbId, @PathVariable String acbName) {
 		
-		CertificationBodyEntity acb = certificationBodyManager.getById(acbId);
+		CertificationBody acb = certificationBodyManager.getById(acbId);
 		acb.setName(acbName);
 		certificationBodyManager.update(acb);
 		
@@ -95,13 +95,13 @@ public class CHPLServiceController {
 	@RequestMapping(value="/listMyACBs", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String listMyACBs() {
 		
-		List<CertificationBodyEntity> acbs = certificationBodyManager.getAll();
+		List<CertificationBody> acbs = certificationBodyManager.getAll();
 		
 		System.out.println("found: ");
 		System.out.println(acbs.size());
 		System.out.println("ACBs");
 		
-		for (CertificationBodyEntity cb : acbs){
+		for (CertificationBody cb : acbs){
 			
 			System.out.println(cb.toString());
 			System.out.println(cb.getName());

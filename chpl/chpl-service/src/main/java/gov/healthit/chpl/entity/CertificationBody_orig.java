@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="certification_body")
-public class CertificationBodyEntity {
+public class CertificationBody_orig {
 	
 	
 	@Id
@@ -45,6 +45,11 @@ public class CertificationBodyEntity {
 
 	public void setWebsite(String website) {
 		this.website = website;
+	}
+
+	public void setAddress(Address address) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
