@@ -135,7 +135,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		
-		if ((role == "ROLE_ADMIN") || (role == "ROLE_ACL_ADMIN") || (role =="ROLE_ADMINISTRATOR")){
+		if ((role == "ROLE_ADMIN") || (role == "ROLE_ACL_ADMIN") || (role =="ROLE_ADMINISTRATOR") || (role == "ROLE_USER_AUTHENTICATOR")){
 			throw new UserManagementException("This role cannot be granted using the grant role functionality");
 		}
 		
