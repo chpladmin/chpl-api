@@ -33,7 +33,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@Basic( optional = false )
 	@JoinColumn(name = "contact_id", nullable = false , insertable = false, updatable = false )
-	private UserContactEntity contact;
+	private Contact contact;
 
 	/** Field mapping. */
 	@ManyToOne( cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY )
@@ -59,7 +59,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	 * Return the value associated with the column: contact.
 	 * @return A Contact object (this.contact)
 	 */
-	public UserContactEntity getContact() {
+	public Contact getContact() {
 		return this.contact;
 		
 	}
@@ -68,10 +68,10 @@ public class VendorContactMapPK implements Cloneable, Serializable {
   
 	 /**  
 	 * Set the value related to the column: contact.
-	 * @param contact the contact value you wish to set
+	 * @param contact2 the contact value you wish to set
 	 */
-	public void setContact(final UserContactEntity contact) {
-		this.contact = contact;
+	public void setContact(final Contact contact2) {
+		this.contact = contact2;
 	}
 
 	 /**

@@ -455,7 +455,7 @@ public class Contact implements Cloneable, Serializable {
  	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@Basic( optional = false )
 	@Column( name = "contact_id", nullable = false  )
-	public Set<User> getUsers() {
+	public Set<UserEntity> getUsers() {
 		return this.users;
 		
 	}
