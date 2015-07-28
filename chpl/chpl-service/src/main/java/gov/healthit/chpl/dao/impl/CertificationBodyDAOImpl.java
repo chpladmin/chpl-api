@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dao.impl;
 
-import gov.healthit.chpl.acb.CertificationBody;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.entity.CertificationBody;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
 
 
 

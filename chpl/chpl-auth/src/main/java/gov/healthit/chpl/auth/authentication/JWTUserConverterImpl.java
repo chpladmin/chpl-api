@@ -1,12 +1,12 @@
 package gov.healthit.chpl.auth.authentication;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.user.UserImpl;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,13 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 	
 	public User getAuthenticatedUser(String jwt) throws JWTValidationException {
 		
-		User user = new UserImpl();
+		JWTAuthenticatedUser user = new JWTAuthenticatedUser();
 		user.setAuthenticated(true);
 		
 		Map<String, Object> validatedClaims = jwtConsumer.consume(jwt);
 		
 		if (validatedClaims == null){
-			throw new JWTValidationException();
+			throw new JWTValidationException("Invalid authentication token.");
 		} else {
 			
 			/*
@@ -48,17 +48,23 @@ public class JWTUserConverterImpl implements JWTUserConverter {
 			
 			user.setSubjectName(subject);
 			
-			List<String> claims = new ArrayList<String>();
 			
-			for (Map.Entry<String, Object> claim : validatedClaims.entrySet())
-			{
-			    List<String> values = (List<String>) claim.getValue();
-			    claims.addAll(values);
+			List<String> authorities = (List<String>) validatedClaims.get("Authorities");
+			List<String> identityInfo =(List<String>) validatedClaims.get("Identity");
+			
+			for (String claim: authorities){
+				GrantedPermission permission = new GrantedPermission(claim);
+				user.addPermission(permission);
 			}
 			
-			for (String claimValue : claims){
-				user.addClaim(claimValue);
-			}
+			String idString = identityInfo.get(0);
+			Long userId = Long.valueOf(idString);
+			String firstName = identityInfo.get(2);
+			String lastName = identityInfo.get(3);
+			
+			user.setId(userId);
+			user.setFirstName(firstName);
+			user.setLastName(lastName);
 			
 		}
 		return user;

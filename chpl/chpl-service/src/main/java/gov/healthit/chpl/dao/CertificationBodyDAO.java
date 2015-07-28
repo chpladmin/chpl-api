@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.acb.CertificationBody;
+import gov.healthit.chpl.entity.CertificationBody;
 
 import java.util.List;
 

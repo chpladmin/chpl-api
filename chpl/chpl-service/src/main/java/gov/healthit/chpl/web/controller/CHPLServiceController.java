@@ -2,8 +2,12 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import gov.healthit.chpl.acb.CertificationBody;
 import gov.healthit.chpl.acb.CertificationBodyManager;
+import gov.healthit.chpl.auth.json.UserInfoJSONObject;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.entity.CertificationBody;
+import gov.healthit.chpl.json.CertificationJSONObject;
+import gov.healthit.chpl.json.CertifiedProductJSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,18 +27,30 @@ public class CHPLServiceController {
 	private CertificationBodyManager certificationBodyManager;
 	
 	
+	@RequestMapping(value="/certified_product", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody CertifiedProductJSONObject getCertifiedProduct(@RequestParam("productId") Long id) throws UserRetrievalException {
+		
+		CertifiedProductJSONObject product = new CertifiedProductJSONObject();
+		
+		return null;
+	}
+	
+	@RequestMapping(value="/certified_products", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<CertifiedProductJSONObject> getCertifiedProducts() throws UserRetrievalException {
+		
+		CertifiedProductJSONObject product = new CertifiedProductJSONObject();
+		
+		return null;
+	}
+	
+	
 	@RequestMapping(value="/hello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String hello(@PathVariable String firstName, @PathVariable String lastName) {
 		
 		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";
 		
-	}
-	
-	
-	@PreAuthorize("@authorizerService.isChris(#firstName)")
-	@RequestMapping(value="/authhello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String authHello(@PathVariable String firstName, @PathVariable String lastName) {
-		return "{\"firstName\" : \""+firstName+"\", \"lastName\" : \""+lastName+"\" }";	
 	}
 	
 	
