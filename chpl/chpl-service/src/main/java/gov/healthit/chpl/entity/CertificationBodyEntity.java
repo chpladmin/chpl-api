@@ -1,4 +1,4 @@
-package gov.healthit.chpl.acb;
+package gov.healthit.chpl.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="certification_body")
-public class CertificationBody {
+public class CertificationBodyEntity {
 	
 	
 	@Id

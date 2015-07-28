@@ -7,7 +7,7 @@
 
 	<persistence-unit name="openchpl" transaction-type="RESOURCE_LOCAL">
 	<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>gov.healthit.chpl.acb.CertificationBody</class>
+		<class>gov.healthit.chpl.entity.CertificationBodyEntity</class>
 		<class>gov.healthit.chpl.auth.user.UserEntity</class>
 		<class>gov.healthit.chpl.auth.user.UserContactEntity</class>
 		<class>gov.healthit.chpl.auth.permission.UserPermissionEntity</class>

@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dao.impl;
 
-import gov.healthit.chpl.acb.CertificationBody;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
 
 
 
@@ -29,7 +30,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	
 	@Transactional
 	@Override
-	public void create(CertificationBody acb) {
+	public void create(CertificationBodyEntity acb) {
 		
 		entityManager.persist(acb);
 		
@@ -37,7 +38,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	
 	@Transactional
 	@Override
-	public void update(CertificationBody acb) {
+	public void update(CertificationBodyEntity acb) {
 		
 		entityManager.merge(acb);
 		
@@ -55,22 +56,22 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	
 	
 	@Override
-	public List<CertificationBody> findAll() {
+	public List<CertificationBodyEntity> findAll() {
 		
-		List<CertificationBody> result = entityManager.createQuery( "from CertificationBody", CertificationBody.class ).getResultList();
+		List<CertificationBodyEntity> result = entityManager.createQuery( "from CertificationBody", CertificationBodyEntity.class ).getResultList();
 		
 		return result;
 		
 	}
 
 	@Override
-	public CertificationBody getById(Long acbId) {
+	public CertificationBodyEntity getById(Long acbId) {
 		
-		CertificationBody acb = null;
+		CertificationBodyEntity acb = null;
 		
-		Query query = entityManager.createQuery( "from CertificationBody where id = :acbid", CertificationBody.class );
+		Query query = entityManager.createQuery( "from CertificationBody where id = :acbid", CertificationBodyEntity.class );
 		query.setParameter("acbid", acbId);
-		List<CertificationBody> result = query.getResultList();
+		List<CertificationBodyEntity> result = query.getResultList();
 		acb = result.get(0);
 		
 		return acb;

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.acb;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void create(CertificationBody acb) {
+	public void create(CertificationBodyEntity acb) {
 		// Create the ACB itself
 		certificationBodyDAO.create(acb);
 
@@ -48,18 +49,18 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
-	public void update(CertificationBody acb) {
+	public void update(CertificationBodyEntity acb) {
 		certificationBodyDAO.update(acb);
 		logger.debug("Updated acb " + acb);
 	}
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, 'delete') or hasPermission(#acb, admin)")
-	public void delete(CertificationBody acb) {
+	public void delete(CertificationBodyEntity acb) {
 		
 		certificationBodyDAO.delete(acb.getId());
 		// Delete the ACL information as well
-		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, acb.getId());
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyEntity.class, acb.getId());
 		mutableAclService.deleteAcl(oid, false);
 		
 		if (logger.isDebugEnabled()) {
@@ -70,9 +71,9 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
-	public void addPermission(CertificationBody acb, Sid recipient, Permission permission) {
+	public void addPermission(CertificationBodyEntity acb, Sid recipient, Permission permission) {
 		MutableAcl acl;
-		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, acb.getId());
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyEntity.class, acb.getId());
 
 		try {
 			acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -90,8 +91,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
-	public void deletePermission(CertificationBody acb, Sid recipient, Permission permission) {
-		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBody.class, acb.getId());
+	public void deletePermission(CertificationBodyEntity acb, Sid recipient, Permission permission) {
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyEntity.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
 		
 		List<AccessControlEntry> entries = acl.getEntries();
@@ -113,7 +114,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
-	public List<CertificationBody> getAll() {
+	public List<CertificationBodyEntity> getAll() {
 		
 		return certificationBodyDAO.findAll();
 		
@@ -122,7 +123,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Transactional(readOnly = true)
 	@PreAuthorize("hhasRole('ROLE_ADMIN') or asPermission(#id, 'gov.healthit.chpl.acb.CertificationBody', read) or "
 			+ "hasPermission(#id, 'gov.healthit.chpl.acb.CertificationBody', admin)")
-	public CertificationBody getById(Long id) {
+	public CertificationBodyEntity getById(Long id) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Returning acb with id: " + id);
 		}
