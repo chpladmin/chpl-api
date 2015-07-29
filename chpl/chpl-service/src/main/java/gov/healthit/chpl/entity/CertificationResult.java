@@ -79,7 +79,7 @@ public class CertificationResult implements Cloneable, Serializable {
 	/** Field mapping. */
 	private Boolean sedSuccessful;
 	/** Field mapping. */
-	private Set<StandardsMet> standardsMets = new HashSet<StandardsMet>();
+	private Set<StandardsMet> standardsMet = new HashSet<StandardsMet>();
 
 	/** Field mapping. */
 	private Boolean successful;
@@ -462,7 +462,7 @@ public class CertificationResult implements Cloneable, Serializable {
 	@Basic( optional = false )
 	@Column( name = "certification_result_id", nullable = false  )
 	public Set<StandardsMet> getStandardsMets() {
-		return this.standardsMets;
+		return this.standardsMet;
 		
 	}
 	
@@ -472,7 +472,7 @@ public class CertificationResult implements Cloneable, Serializable {
 	 */
 	public void addStandardsMet(StandardsMet standardsMet) {
 		standardsMet.setCertificationResult(this);
-		this.standardsMets.add(standardsMet);
+		this.standardsMet.add(standardsMet);
 	}
 
   
@@ -480,8 +480,8 @@ public class CertificationResult implements Cloneable, Serializable {
 	 * Set the value related to the column: standardsMet.
 	 * @param standardsMet the standardsMet value you wish to set
 	 */
-	public void setStandardsMets(final Set<StandardsMet> standardsMet) {
-		this.standardsMets = standardsMet;
+	public void setStandardsMet(final Set<StandardsMet> standardsMet) {
+		this.standardsMet = standardsMet;
 	}
 
 	 /**

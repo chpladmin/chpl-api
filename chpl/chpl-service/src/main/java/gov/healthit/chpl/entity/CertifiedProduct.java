@@ -60,6 +60,7 @@ public class CertifiedProduct implements Cloneable, Serializable {
 
 	/** Field mapping. */
 	private String atcbCertificationId;
+	
 	/** Field mapping. */
 	private Set<CertificationEvent> certificationEvents = new HashSet<CertificationEvent>();
 

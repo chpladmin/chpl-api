@@ -1,11 +1,15 @@
 package gov.healthit.chpl.entity;
 
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.user.User;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.WeakHashMap;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,6 +23,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
 import org.hibernate.proxy.HibernateProxy;
 
 
@@ -75,6 +80,7 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 	 */
 	public AdditionalSoftware(Long id) {
 		this.id = id;
+		this.populateLastModifiedUser();
 	}
 	
 	/** Constructor taking a given ID.
@@ -99,11 +105,9 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 		this.lastModifiedUser = lastModifiedUser;
 		this.name = name;
 		this.version = version;
+		this.populateLastModifiedUser();
 	}
 	
- 
-
-
  
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
@@ -135,6 +139,7 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 	 */
 	public void setCertifiedProduct(final CertifiedProduct certifiedProduct) {
 		this.certifiedProduct = certifiedProduct;
+		this.populateLastModifiedUser();
 	}
 
 	 /**
@@ -156,6 +161,7 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 	 */
 	public void setCreationDate(final Date creationDate) {
 		this.creationDate = creationDate;
+		this.populateLastModifiedUser();
 	}
 
 	 /**
@@ -177,6 +183,7 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 	 */
 	public void setDeleted(final Boolean deleted) {
 		this.deleted = deleted;
+		this.populateLastModifiedUser();
 	}
 
 	 /**
@@ -209,6 +216,7 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 		SAVED_HASHES.put( id, this.hashCode );
 		}
 		this.id = id;
+		this.populateLastModifiedUser();
 	}
 
 	 /**
@@ -230,6 +238,7 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 	 */
 	public void setJustification(final String justification) {
 		this.justification = justification;
+		this.populateLastModifiedUser();
 	}
 
 	 /**
@@ -251,6 +260,7 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 	 */
 	public void setLastModifiedDate(final Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+		this.populateLastModifiedUser();
 	}
 
 	 /**
@@ -293,6 +303,7 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 	 */
 	public void setName(final String name) {
 		this.name = name;
+		this.populateLastModifiedUser();
 	}
 
 	 /**
@@ -314,6 +325,7 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 	 */
 	public void setVersion(final String version) {
 		this.version = version;
+		this.populateLastModifiedUser();
 	}
 
 
@@ -444,6 +456,17 @@ public class AdditionalSoftware implements Cloneable, Serializable {
 		return (int) (this.hashCode & 0xffffff);
 	}
 	
+	
+	private void populateLastModifiedUser(){
+		User currentUser = Util.getCurrentUser();
+		
+		Long userId = new Long(-1);
+		
+		if (currentUser != null){
+			userId = currentUser.getId();
+		}
+		this.lastModifiedUser = userId;
+	}
 
 	
 }
