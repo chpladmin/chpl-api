@@ -35,7 +35,7 @@ CREATE TABLE openchpl.user(
 	credentials_expired bool NOT NULL,
 	account_enabled bool NOT NULL,
 	creation_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_date timestamp NOT NULL,
+	last_modified_date timestamp NOT NULL DEFAULT NOW(),
 	last_modified_user bigint NOT NULL,
 	deleted bool NOT NULL DEFAULT false,
 	contact_id bigint,
@@ -311,8 +311,9 @@ CREATE TABLE openchpl.global_user_permission_map(
 	user_permission_id_user_permission bigint,
 	last_modified_date timestamp NOT NULL DEFAULT NOW(),
 	creation_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_user bigint NOT NULL DEFAULT -1,
+	last_modified_user bigint NOT NULL,
 	deleted bool DEFAULT false,
+global_user_permission_id bigserial NOT NULL,
 	CONSTRAINT global_user_permission_map_pk PRIMARY KEY (user_id,user_permission_id_user_permission)
 
 );
@@ -1261,7 +1262,7 @@ CREATE TABLE openchpl.acl_entry(
 	mask integer NOT NULL,
 	granting bool NOT NULL,
 	audit_success bool NOT NULL,
-	audit_failure bigint NOT NULL,
+	audit_failure bool NOT NULL,
 	CONSTRAINT acl_entry_pk PRIMARY KEY (id)
 
 );
