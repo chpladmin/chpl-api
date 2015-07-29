@@ -2,34 +2,25 @@ package gov.healthit.chpl.dto;
 
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 public class CertifiedProductDTO {
 	
+	
 	private Long id;
-	private Set<AdditionalSoftwareDTO> additionalSoftwares = new HashSet<AdditionalSoftwareDTO>();
 	private String atcbCertificationId;
-	private Set<CertificationEventDTO> certificationEvents = new HashSet<CertificationEventDTO>();
-	private Set<CertificationResultDTO> certificationResults = new HashSet<CertificationResultDTO>();
-	private CertificationBodyDTO certificationBody;
-	private CertificationEditionDTO certificationEdition;
-	private Set<CertifiedProductCqmEditionMapDTO> certifiedProductCqmEditionMaps = new HashSet<CertifiedProductCqmEditionMapDTO>();
+	private Long certificationBodyId;
+	private Long certificationEditionId;
 	private String chplProductNumber;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	private Set<NewerStandardsMetDTO> newerStandardsMets = new HashSet<NewerStandardsMetDTO>();
-	private PracticeTypeDTO practiceType;
-	private ProductClassificationTypeDTO productClassificationType;
-	private ProductVersionDTO productVersion;
+	private Long practiceTypeId;
+	private Long productClassificationTypeId;
+	private Long productVersionId;
 	private String qualityManagementSystemAtt;
 	private String reportFileLocation;
-	private Set<TestDataAlterationDTO> testDataAlterations = new HashSet<TestDataAlterationDTO>();
-	private TestingLabDTO testingLab;
-	private Set<TestResultSummaryVersionDTO> testResultSummaryVersions = new HashSet<TestResultSummaryVersionDTO>();
-	private Set<UtilizedTestToolDTO> utilizedTestTools = new HashSet<UtilizedTestToolDTO>();
+	private Long testingLabId;
 	
 	
 	public Long getId() {
@@ -38,51 +29,23 @@ public class CertifiedProductDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Set<AdditionalSoftwareDTO> getAdditionalSoftwares() {
-		return additionalSoftwares;
-	}
-	public void setAdditionalSoftwares(
-			Set<AdditionalSoftwareDTO> additionalSoftwares) {
-		this.additionalSoftwares = additionalSoftwares;
-	}
 	public String getAtcbCertificationId() {
 		return atcbCertificationId;
 	}
 	public void setAtcbCertificationId(String atcbCertificationId) {
 		this.atcbCertificationId = atcbCertificationId;
 	}
-	public Set<CertificationEventDTO> getCertificationEvents() {
-		return certificationEvents;
+	public Long getCertificationBodyId() {
+		return certificationBodyId;
 	}
-	public void setCertificationEvents(
-			Set<CertificationEventDTO> certificationEvents) {
-		this.certificationEvents = certificationEvents;
+	public void setCertificationBodyId(Long certificationBodyId) {
+		this.certificationBodyId = certificationBodyId;
 	}
-	public Set<CertificationResultDTO> getCertificationResults() {
-		return certificationResults;
+	public Long getCertificationEditionId() {
+		return certificationEditionId;
 	}
-	public void setCertificationResults(
-			Set<CertificationResultDTO> certificationResults) {
-		this.certificationResults = certificationResults;
-	}
-	public CertificationBodyDTO getCertificationBody() {
-		return certificationBody;
-	}
-	public void setCertificationBody(CertificationBodyDTO certificationBody) {
-		this.certificationBody = certificationBody;
-	}
-	public CertificationEditionDTO getCertificationEdition() {
-		return certificationEdition;
-	}
-	public void setCertificationEdition(CertificationEditionDTO certificationEdition) {
-		this.certificationEdition = certificationEdition;
-	}
-	public Set<CertifiedProductCqmEditionMapDTO> getCertifiedProductCqmEditionMaps() {
-		return certifiedProductCqmEditionMaps;
-	}
-	public void setCertifiedProductCqmEditionMaps(
-			Set<CertifiedProductCqmEditionMapDTO> certifiedProductCqmEditionMaps) {
-		this.certifiedProductCqmEditionMaps = certifiedProductCqmEditionMaps;
+	public void setCertificationEditionId(Long certificationEditionId) {
+		this.certificationEditionId = certificationEditionId;
 	}
 	public String getChplProductNumber() {
 		return chplProductNumber;
@@ -114,30 +77,23 @@ public class CertifiedProductDTO {
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
-	public Set<NewerStandardsMetDTO> getNewerStandardsMets() {
-		return newerStandardsMets;
+	public Long getPracticeTypeId() {
+		return practiceTypeId;
 	}
-	public void setNewerStandardsMets(Set<NewerStandardsMetDTO> newerStandardsMets) {
-		this.newerStandardsMets = newerStandardsMets;
+	public void setPracticeTypeId(Long practiceTypeId) {
+		this.practiceTypeId = practiceTypeId;
 	}
-	public PracticeTypeDTO getPracticeType() {
-		return practiceType;
+	public Long getProductClassificationTypeId() {
+		return productClassificationTypeId;
 	}
-	public void setPracticeType(PracticeTypeDTO practiceType) {
-		this.practiceType = practiceType;
+	public void setProductClassificationTypeId(Long productClassificationTypeId) {
+		this.productClassificationTypeId = productClassificationTypeId;
 	}
-	public ProductClassificationTypeDTO getProductClassificationType() {
-		return productClassificationType;
+	public Long getProductVersionId() {
+		return productVersionId;
 	}
-	public void setProductClassificationType(
-			ProductClassificationTypeDTO productClassificationType) {
-		this.productClassificationType = productClassificationType;
-	}
-	public ProductVersionDTO getProductVersion() {
-		return productVersion;
-	}
-	public void setProductVersion(ProductVersionDTO productVersion) {
-		this.productVersion = productVersion;
+	public void setProductVersionId(Long productVersionId) {
+		this.productVersionId = productVersionId;
 	}
 	public String getQualityManagementSystemAtt() {
 		return qualityManagementSystemAtt;
@@ -151,35 +107,11 @@ public class CertifiedProductDTO {
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
 	}
-	public Set<TestDataAlterationDTO> getTestDataAlterations() {
-		return testDataAlterations;
+	public Long getTestingLabId() {
+		return testingLabId;
 	}
-	public void setTestDataAlterations(
-			Set<TestDataAlterationDTO> testDataAlterations) {
-		this.testDataAlterations = testDataAlterations;
+	public void setTestingLabId(Long testingLabId) {
+		this.testingLabId = testingLabId;
 	}
-	public TestingLabDTO getTestingLab() {
-		return testingLab;
-	}
-	public void setTestingLab(TestingLabDTO testingLab) {
-		this.testingLab = testingLab;
-	}
-	public Set<TestResultSummaryVersionDTO> getTestResultSummaryVersions() {
-		return testResultSummaryVersions;
-	}
-	public void setTestResultSummaryVersions(
-			Set<TestResultSummaryVersionDTO> testResultSummaryVersions) {
-		this.testResultSummaryVersions = testResultSummaryVersions;
-	}
-	public Set<UtilizedTestToolDTO> getUtilizedTestTools() {
-		return utilizedTestTools;
-	}
-	public void setUtilizedTestTools(Set<UtilizedTestToolDTO> utilizedTestTools) {
-		this.utilizedTestTools = utilizedTestTools;
-	}
-	
-	
-	
-	
 	
 }

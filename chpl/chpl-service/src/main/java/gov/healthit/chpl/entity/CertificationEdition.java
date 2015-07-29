@@ -162,7 +162,7 @@ public class CertificationEdition implements Cloneable, Serializable {
 	 * @param certifiedProduct item to add
 	 */
 	public void addCertifiedProduct(CertifiedProduct certifiedProduct) {
-		certifiedProduct.setCertificationEdition(this);
+		certifiedProduct.setCertificationEditionId(this.getId());
 		this.certifiedProducts.add(certifiedProduct);
 	}
 

@@ -187,7 +187,7 @@ public class CertificationBody implements Cloneable, Serializable {
 	 * @param certifiedProduct item to add
 	 */
 	public void addCertifiedProduct(CertifiedProduct certifiedProduct) {
-		certifiedProduct.setCertificationBody(this);
+		certifiedProduct.setCertificationBodyId(this.getId());
 		this.certifiedProducts.add(certifiedProduct);
 	}
 

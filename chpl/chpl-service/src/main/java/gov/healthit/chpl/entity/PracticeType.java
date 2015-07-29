@@ -130,7 +130,7 @@ public class PracticeType implements Cloneable, Serializable {
 	 * @param certifiedProduct item to add
 	 */
 	public void addCertifiedProduct(CertifiedProduct certifiedProduct) {
-		certifiedProduct.setPracticeType(this);
+		certifiedProduct.setPracticeTypeId(this.getId());
 		this.certifiedProducts.add(certifiedProduct);
 	}
 

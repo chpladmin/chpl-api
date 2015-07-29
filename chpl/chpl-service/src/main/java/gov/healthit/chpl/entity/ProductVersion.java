@@ -129,7 +129,7 @@ public class ProductVersion implements Cloneable, Serializable {
 	 * @param certifiedProduct item to add
 	 */
 	public void addCertifiedProduct(CertifiedProduct certifiedProduct) {
-		certifiedProduct.setProductVersion(this);
+		certifiedProduct.setProductVersionId(this.getId());
 		this.certifiedProducts.add(certifiedProduct);
 	}
 

@@ -130,7 +130,7 @@ public class ProductClassificationType implements Cloneable, Serializable {
 	 * @param certifiedProduct item to add
 	 */
 	public void addCertifiedProduct(CertifiedProduct certifiedProduct) {
-		certifiedProduct.setProductClassificationType(this);
+		certifiedProduct.setProductClassificationTypeId(this.getId());
 		this.certifiedProducts.add(certifiedProduct);
 	}
 

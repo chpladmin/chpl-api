@@ -212,7 +212,7 @@ public class TestingLab implements Cloneable, Serializable {
 	 * @param certifiedProduct item to add
 	 */
 	public void addCertifiedProduct(CertifiedProduct certifiedProduct) {
-		certifiedProduct.setTestingLab(this);
+		certifiedProduct.setTestingLabId(this.getId());
 		this.certifiedProducts.add(certifiedProduct);
 	}
 
