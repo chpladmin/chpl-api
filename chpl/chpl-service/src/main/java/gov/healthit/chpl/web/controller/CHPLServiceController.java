@@ -7,7 +7,7 @@ import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.entity.CertificationBody;
 import gov.healthit.chpl.json.CertificationJSONObject;
-import gov.healthit.chpl.json.CertifiedProductJSONObject;
+import gov.healthit.chpl.json.CertifiedProductSearchDetailsJSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,18 +29,18 @@ public class CHPLServiceController {
 	
 	@RequestMapping(value="/certified_product", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductJSONObject getCertifiedProduct(@RequestParam("productId") Long id) throws UserRetrievalException {
+	public @ResponseBody CertifiedProductSearchDetailsJSONObject getCertifiedProduct(@RequestParam("productId") Long id) throws UserRetrievalException {
 		
-		CertifiedProductJSONObject product = new CertifiedProductJSONObject();
+		CertifiedProductSearchDetailsJSONObject product = new CertifiedProductSearchDetailsJSONObject();
 		
 		return null;
 	}
 	
 	@RequestMapping(value="/certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductJSONObject> getCertifiedProducts() throws UserRetrievalException {
+	public @ResponseBody List<CertifiedProductSearchDetailsJSONObject> getCertifiedProducts() throws UserRetrievalException {
 		
-		CertifiedProductJSONObject product = new CertifiedProductJSONObject();
+		CertifiedProductSearchDetailsJSONObject product = new CertifiedProductSearchDetailsJSONObject();
 		
 		return null;
 	}

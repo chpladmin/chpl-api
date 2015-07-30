@@ -3,18 +3,18 @@ package gov.healthit.chpl.json;
 import java.util.Date;
 import java.util.List;
 
-public class CertifiedProductJSONObject {
+public class CertifiedProductSearchDetailsJSONObject {
 	
 	
 	private Long id;
-	private String additionalSoftware;
+	private List<String> additionalSoftware;
 	private String vendor;
 	private String product;
 	private String version;
 	private String edition;
 	private Date certDate;
 	private Date lastModifiedDate;
-	private List<ModificationItemJSONObject> lastModifiedItems;
+	private ModificationItemJSONObject lastModifiedItem;
 	private String practiceType;
 	private String certBody;
 	private List<CertificationJSONObject> certs;
@@ -27,11 +27,14 @@ public class CertifiedProductJSONObject {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getAdditionalSoftware() {
+	public List<String> getAdditionalSoftware() {
 		return additionalSoftware;
 	}
-	public void setAdditionalSoftware(String additionalSoftware) {
+	public void setAdditionalSoftware(List<String> additionalSoftware) {
 		this.additionalSoftware = additionalSoftware;
+	}
+	public void addAdditionalSoftware(String additionalSoftware){
+		this.additionalSoftware.add(additionalSoftware);
 	}
 	public String getVendor() {
 		return vendor;
@@ -69,12 +72,11 @@ public class CertifiedProductJSONObject {
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
-	public List<ModificationItemJSONObject> getLastModifiedItems() {
-		return lastModifiedItems;
+	public ModificationItemJSONObject getLastModifiedItems() {
+		return lastModifiedItem;
 	}
-	public void setLastModifiedItems(
-			List<ModificationItemJSONObject> lastModifiedItems) {
-		this.lastModifiedItems = lastModifiedItems;
+	public void setLastModifiedItem(ModificationItemJSONObject lastModifiedItem) {
+		this.lastModifiedItem = lastModifiedItem;
 	}
 	public String getPracticeType() {
 		return practiceType;
