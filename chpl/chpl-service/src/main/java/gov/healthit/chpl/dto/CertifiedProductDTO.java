@@ -1,6 +1,8 @@
 package gov.healthit.chpl.dto;
 
 
+import gov.healthit.chpl.entity.CertifiedProduct;
+
 import java.util.Date;
 
 public class CertifiedProductDTO {
@@ -21,6 +23,29 @@ public class CertifiedProductDTO {
 	private String qualityManagementSystemAtt;
 	private String reportFileLocation;
 	private Long testingLabId;
+	
+	
+	public CertifiedProductDTO(){}
+	
+	public CertifiedProductDTO(CertifiedProduct entity){
+		
+		this.id = entity.getId();
+		this.atcbCertificationId = entity.getAtcbCertificationId();
+		this.certificationBodyId = entity.getCertificationBodyId();
+		this.certificationEditionId = entity.getCertificationEditionId();
+		this.chplProductNumber = entity.getChplProductNumber();
+		this.creationDate = entity.getCreationDate();
+		this.deleted = entity.isDeleted();
+		this.lastModifiedDate = entity.getLastModifiedDate();
+		this.lastModifiedUser = entity.getLastModifiedUser();
+		this.practiceTypeId = entity.getPracticeTypeId();
+		this.productClassificationTypeId = entity.getProductClassificationTypeId();
+		this.productVersionId = entity.getProductVersionId();
+		this.qualityManagementSystemAtt = entity.getQualityManagementSystemAtt();
+		this.reportFileLocation = entity.getReportFileLocation();
+		this.testingLabId = entity.getTestingLabId();
+		
+	}
 	
 	
 	public Long getId() {

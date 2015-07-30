@@ -1,31 +1,18 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.entity.AdditionalSoftware;
-import gov.healthit.chpl.entity.CertificationEvent;
-import gov.healthit.chpl.entity.CertificationResult;
-import gov.healthit.chpl.entity.CertifiedProductCqmEditionMap;
-import gov.healthit.chpl.entity.NewerStandardsMet;
-import gov.healthit.chpl.entity.TestDataAlteration;
-import gov.healthit.chpl.entity.TestResultSummaryVersion;
-import gov.healthit.chpl.entity.UtilizedTestTool;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
