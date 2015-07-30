@@ -34,13 +34,15 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 			FilterChain chain) throws IOException, ServletException {
 		
 		HttpServletRequest request = (HttpServletRequest) req;
-		String jwt = request.getHeader("Bearer");
 		
-		if (jwt == null){
+		String authorizationHeader = request.getHeader("Authorization");
+		
+		if (authorizationHeader == null){
 			chain.doFilter(req, res); //continue
 			SecurityContextHolder.getContext().setAuthentication(null);
 		} else {
 			User authenticatedUser;
+			String jwt = authorizationHeader.split(" ")[1];
 			try {
 				authenticatedUser = userConverter.getAuthenticatedUser(jwt);
 				SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
