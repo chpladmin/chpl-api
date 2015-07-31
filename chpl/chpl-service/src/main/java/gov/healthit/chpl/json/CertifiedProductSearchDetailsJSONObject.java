@@ -5,12 +5,15 @@ import java.util.List;
 
 public class CertifiedProductSearchDetailsJSONObject {
 	
-	
 	private Long id;
-	private List<String> additionalSoftware;
 	private String vendor;
 	private String product;
 	private String version;
+	private String certsAndCQMs;
+	private String classification;
+	private String certifyingBody;
+	private String certificationEdition;
+	private List<String> additionalSoftware;
 	private String edition;
 	private Date certDate;
 	private Date lastModifiedDate;
@@ -21,20 +24,12 @@ public class CertifiedProductSearchDetailsJSONObject {
 	private List<CQMResultJSONObject> cqms;
 	private String chplNum;
 	
+	
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public List<String> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-	public void setAdditionalSoftware(List<String> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
-	public void addAdditionalSoftware(String additionalSoftware){
-		this.additionalSoftware.add(additionalSoftware);
 	}
 	public String getVendor() {
 		return vendor;
@@ -53,6 +48,36 @@ public class CertifiedProductSearchDetailsJSONObject {
 	}
 	public void setVersion(String version) {
 		this.version = version;
+	}
+	public String getCertsAndCQMs() {
+		return certsAndCQMs;
+	}
+	public void setCertsAndCQMs(String certsAndCQMs) {
+		this.certsAndCQMs = certsAndCQMs;
+	}
+	public String getClassification() {
+		return classification;
+	}
+	public void setClassification(String classification) {
+		this.classification = classification;
+	}
+	public String getCertifyingBody() {
+		return certifyingBody;
+	}
+	public void setCertifyingBody(String certifyingBody) {
+		this.certifyingBody = certifyingBody;
+	}
+	public String getCertificationEdition() {
+		return certificationEdition;
+	}
+	public void setCertificationEdition(String certificationEdition) {
+		this.certificationEdition = certificationEdition;
+	}
+	public List<String> getAdditionalSoftware() {
+		return additionalSoftware;
+	}
+	public void setAdditionalSoftware(List<String> additionalSoftware) {
+		this.additionalSoftware = additionalSoftware;
 	}
 	public String getEdition() {
 		return edition;
@@ -96,17 +121,19 @@ public class CertifiedProductSearchDetailsJSONObject {
 	public void setCerts(List<CertificationResultJSONObject> certs) {
 		this.certs = certs;
 	}
-	public String getChplNum() {
-		return chplNum;
-	}
-	public void setChplNum(String chplNum) {
-		this.chplNum = chplNum;
-	}
 	public List<CQMResultJSONObject> getCqms() {
 		return cqms;
 	}
 	public void setCqms(List<CQMResultJSONObject> cqms) {
 		this.cqms = cqms;
 	}
-
+	public String getChplNum() {
+		return chplNum;
+	}
+	public void setChplNum(String chplNum) {
+		this.chplNum = chplNum;
+	}
+	
+	
+	
 }

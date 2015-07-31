@@ -5,9 +5,7 @@ public class CertificationResultJSONObject {
 	
 	private String number;
 	private String title;
-	private boolean hasVersion;
-	private boolean isActive;
-	private String version;
+	private boolean successful;
 	
 	
 	public String getNumber() {
@@ -22,23 +20,11 @@ public class CertificationResultJSONObject {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public boolean isHasVersion() {
-		return hasVersion;
+	public boolean isSuccessful() {
+		return successful;
 	}
-	public void setHasVersion(boolean hasVersion) {
-		this.hasVersion = hasVersion;
-	}
-	public boolean isActive() {
-		return isActive;
-	}
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
-	public String getVersion() {
-		return version;
-	}
-	public void setVersion(String version) {
-		this.version = version;
+	public void setSuccessful(boolean successful) {
+		this.successful = successful;
 	}
 	
 }
