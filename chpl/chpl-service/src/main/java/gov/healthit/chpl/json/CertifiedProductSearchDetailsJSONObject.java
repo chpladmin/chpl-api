@@ -17,9 +17,9 @@ public class CertifiedProductSearchDetailsJSONObject {
 	private ModificationItemJSONObject lastModifiedItem;
 	private String practiceType;
 	private String certBody;
-	private List<CertificationJSONObject> certs;
+	private List<CertificationResultJSONObject> certs;
+	private List<CQMResultJSONObject> cqms;
 	private String chplNum;
-	
 	
 	public Long getId() {
 		return id;
@@ -72,7 +72,7 @@ public class CertifiedProductSearchDetailsJSONObject {
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
-	public ModificationItemJSONObject getLastModifiedItems() {
+	public ModificationItemJSONObject getLastModifiedItem() {
 		return lastModifiedItem;
 	}
 	public void setLastModifiedItem(ModificationItemJSONObject lastModifiedItem) {
@@ -90,10 +90,10 @@ public class CertifiedProductSearchDetailsJSONObject {
 	public void setCertBody(String certBody) {
 		this.certBody = certBody;
 	}
-	public List<CertificationJSONObject> getCerts() {
+	public List<CertificationResultJSONObject> getCerts() {
 		return certs;
 	}
-	public void setCerts(List<CertificationJSONObject> certs) {
+	public void setCerts(List<CertificationResultJSONObject> certs) {
 		this.certs = certs;
 	}
 	public String getChplNum() {
@@ -102,7 +102,11 @@ public class CertifiedProductSearchDetailsJSONObject {
 	public void setChplNum(String chplNum) {
 		this.chplNum = chplNum;
 	}
-	
-	
+	public List<CQMResultJSONObject> getCqms() {
+		return cqms;
+	}
+	public void setCqms(List<CQMResultJSONObject> cqms) {
+		this.cqms = cqms;
+	}
 
 }

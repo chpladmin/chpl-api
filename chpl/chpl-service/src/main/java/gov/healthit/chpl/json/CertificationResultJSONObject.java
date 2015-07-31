@@ -1,6 +1,6 @@
 package gov.healthit.chpl.json;
 
-public class CertificationJSONObject {
+public class CertificationResultJSONObject {
 	
 	
 	private String number;
