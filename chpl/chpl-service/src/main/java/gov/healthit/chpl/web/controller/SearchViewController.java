@@ -5,6 +5,7 @@ import java.util.List;
 import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.CQMResult;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
@@ -34,24 +35,73 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws UserRetrievalException {
+	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id){
 		
 		CertifiedProductSearchDetails product = certifiedProductSearchManager.getDetails(id);
 		
 		return product;
 	}
 	
-	@RequestMapping(value="/certified_products", method=RequestMethod.GET,
+	@RequestMapping(value="/list_certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResult> getCertifiedProducts() throws UserRetrievalException {
+	public @ResponseBody List<CertifiedProductSearchResult> listCertifiedProducts() {
 		
-		return certifiedProductSearchManager.getAll();
+		return certifiedProductSearchManager.getAllCertifiedProducts();
+	}
+	
+	@RequestMapping(value="/list_certs", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<CertificationResult> getCertifications() {
+		return null;
+	}
+	
+	@RequestMapping(value="/list_cqms", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<CQMResult> getCQMResults() {
+		return null;
+	}
+	
+	@RequestMapping(value="/list_classification_names", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<String> getClassificationNames() {
+		return null;
+	}
+	
+	@RequestMapping(value="/list_edition_names", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<String> getEditionNames() {
+		return null;
+	}
+	
+	
+	@RequestMapping(value="/list_practice_types", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<String> getPracticeTypeNames() {
+		return null;
+	}
+	
+	
+	@RequestMapping(value="/list_product_names", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<String> getProductNames() {
+		return null;
+	}
+	
+	@RequestMapping(value="/list_vendor_names", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<String> getVendorNames() {
+		return null;
+	}
+	
+	@RequestMapping(value="/list_certification_body_names", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<String> getCertBodyNames() {
+		return null;
 	}
 	
 	public CertificationBodyManager getCertificationBodyManager() {
 		return certificationBodyManager;
 	}
-
 
 	public void setCertificationBodyManager(
 			CertificationBodyManager certificationBodyManager) {

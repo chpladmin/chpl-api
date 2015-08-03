@@ -3,6 +3,10 @@ package gov.healthit.chpl.web.controller;
 import java.util.List;
 
 import gov.healthit.chpl.acb.CertificationBodyManager;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.CQMResult;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationBody;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController

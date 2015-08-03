@@ -34,7 +34,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		
 		cert1.setNumber("1242214");
 		cert1.setTitle("SADSAFDSAFSAD");
-		cert1.setSuccessful(true);
+		cert1.setSuccess(true);
 		certs.add(cert1);
 		
 		List<CQMResult> cqms = new ArrayList<CQMResult>();
@@ -225,14 +225,122 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 	}
 
 	@Override
-	public List<CertifiedProductSearchResult> getAll() {		
+	public List<CertifiedProductSearchResult> getAllCertifiedProducts() {		
 		return certifiedProducts;
 	}
 
 	@Override
-	public CertifiedProductSearchDetails getDetails(
+	public CertifiedProductSearchDetails getCertifiedProductDetails(
 			Long certifiedProductId) {
 		return details.get(certifiedProductId);
+	}
+
+	@Override
+	public List<CertificationResult> getCertifications() {
+		
+		List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+		
+		CertificationResult result1 = new CertificationResult();
+		result1.setNumber("123");
+		result1.setSuccess(true);
+		result1.setTitle("1214 Cert for something");
+		
+		CertificationResult result2 = new CertificationResult();
+		result2.setNumber("124");
+		result2.setSuccess(true);
+		result2.setTitle("1215 Cert for something else");
+		
+		certResults.add(result1);
+		certResults.add(result2);
+		
+		return certResults;
+	}
+
+	@Override
+	public List<CQMResult> getCQMResults() {
+		List<CQMResult> cqmResults = new ArrayList<CQMResult>();
+		
+		CQMResult result1 = new CQMResult();
+		result1.setNumber("123");
+		result1.setSuccess(true);
+		result1.setTitle("1214 Cert for something");
+		result1.setCmsId("123434");
+		result1.setCqmDomain("some domain");
+		result1.setCqmVersion("2014");
+		result1.setNqfNumber("12335");
+		
+		CQMResult result2 = new CQMResult();
+		result2.setNumber("124");
+		result2.setSuccess(true);
+		result2.setTitle("1215 Cert for something else");
+		result2.setCmsId("64341234");
+		result2.setCqmDomain("some domain");
+		result2.setCqmVersion("2011");
+		result2.setNqfNumber("1233111");
+		
+		cqmResults.add(result1);
+		cqmResults.add(result2);
+		
+		return cqmResults;
+	}
+
+	@Override
+	public List<String> getClassificationNames() {
+		List<String> classificationNames = new ArrayList<String>();
+		
+		classificationNames.add("Complete EHR");
+		classificationNames.add("Modular EHR");
+		
+		return classificationNames;
+	}
+
+	@Override
+	public List<String> getEditionNames() {
+		
+		List<String> editionNames = new ArrayList<String>();
+		
+		editionNames.add("2011");
+		editionNames.add("2014");
+		
+		return editionNames;
+	}
+
+	@Override
+	public List<String> getPracticeTypeNames() {
+		
+		List<String> names = new ArrayList<String>();
+		names.add("Inpatient");
+		names.add("Ambulatory");
+		return names;
+	}
+
+	@Override
+	public List<String> getProductNames() {
+		List<String> names = new ArrayList<String>();
+		names.add("MedProduct");
+		names.add("MedProduct2");
+		names.add("MedPro");
+		names.add("AmbulatoryMedLite");
+		names.add("HospitalIT");
+		return names;
+	}
+
+	@Override
+	public List<String> getVendorNames() {
+		List<String> names = new ArrayList<String>();
+		names.add("SuperMed");	
+		names.add("ProMed");
+		names.add("CVB");
+		return names;
+	}
+
+	@Override
+	public List<String> getCertBodyNames() {
+		List<String> names = new ArrayList<String>();
+		names.add("Drummond");	
+		names.add("SomeACB");
+		names.add("OtherACB");
+		return names;
 	}
 
 }
