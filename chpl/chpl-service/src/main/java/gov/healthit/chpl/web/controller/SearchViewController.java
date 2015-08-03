@@ -5,9 +5,11 @@ import java.util.List;
 import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.CertificationResultJSONObject;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetailsJSONObject;
+import gov.healthit.chpl.domain.CertifiedProductSearchResultJSONObject;
 import gov.healthit.chpl.entity.CertificationBody;
-import gov.healthit.chpl.json.CertificationResultJSONObject;
-import gov.healthit.chpl.json.CertifiedProductSearchDetailsJSONObject;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,25 +26,26 @@ public class SearchViewController {
 	
 	
 	@Autowired
+	CertifiedProductSearchManager certifiedProductSearchManager;
+	
+	@Autowired
 	private CertificationBodyManager certificationBodyManager;
 	
 	
-	@RequestMapping(value="/certified_product", method=RequestMethod.GET,
+	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetailsJSONObject getCertifiedProduct(@RequestParam("productId") Long id) throws UserRetrievalException {
+	public @ResponseBody CertifiedProductSearchDetailsJSONObject getCertifiedProductDetails(@RequestParam("productId") Long id) throws UserRetrievalException {
 		
-		CertifiedProductSearchDetailsJSONObject product = new CertifiedProductSearchDetailsJSONObject();
+		CertifiedProductSearchDetailsJSONObject product = certifiedProductSearchManager.getDetails(id);
 		
-		return null;
+		return product;
 	}
 	
 	@RequestMapping(value="/certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchDetailsJSONObject> getCertifiedProducts() throws UserRetrievalException {
+	public @ResponseBody List<CertifiedProductSearchResultJSONObject> getCertifiedProducts() throws UserRetrievalException {
 		
-		CertifiedProductSearchDetailsJSONObject product = new CertifiedProductSearchDetailsJSONObject();
-		
-		return null;
+		return certifiedProductSearchManager.getAll();
 	}
 	
 	public CertificationBodyManager getCertificationBodyManager() {

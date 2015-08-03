@@ -1,7 +1,7 @@
 package gov.healthit.chpl.manager;
 
-import gov.healthit.chpl.json.CertifiedProductSearchDetailsJSONObject;
-import gov.healthit.chpl.json.CertifiedProductSearchResultJSONObject;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetailsJSONObject;
+import gov.healthit.chpl.domain.CertifiedProductSearchResultJSONObject;
 
 import java.util.List;
 

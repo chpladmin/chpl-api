@@ -1,4 +1,4 @@
-package gov.healthit.chpl.json;
+package gov.healthit.chpl.domain;
 
 import java.util.Date;
 

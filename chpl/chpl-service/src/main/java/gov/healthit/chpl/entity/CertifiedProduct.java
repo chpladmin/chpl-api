@@ -120,30 +120,6 @@ public class CertifiedProduct {
 		this.id = id;
 	}
 	
-	/** Constructor taking a given ID.
-	 * @param certificationBody CertificationBody object;
-	 * @param certificationEdition CertificationEdition object;
-	 * @param creationDate Date object;
-	 * @param deleted Boolean object;
-	 * @param id Long object;
-	 * @param lastModifiedDate Date object;
-	 * @param lastModifiedUser Long object;
-	 * @param productVersion ProductVersion object;
-	 */
-	public CertifiedProduct(CertificationBody certificationBody, CertificationEdition certificationEdition, Date creationDate, 					
-			Boolean deleted, Long id, Date lastModifiedDate, 					
-			Long lastModifiedUser, ProductVersion productVersion) {
-
-		this.setCertificationBodyId(certificationBody.getId());
-		this.setCertificationEditionId(certificationEdition.getId());
-		this.creationDate = creationDate;
-		this.deleted = deleted;
-		this.id = id;
-		this.lastModifiedDate = lastModifiedDate;
-		this.lastModifiedUser = lastModifiedUser;
-		this.setProductVersionId(productVersion.getId());
-	}
-	
 	
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.

@@ -2,8 +2,8 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.List;
 
-import gov.healthit.chpl.json.CertifiedProductSearchDetailsJSONObject;
-import gov.healthit.chpl.json.CertifiedProductSearchResultJSONObject;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetailsJSONObject;
+import gov.healthit.chpl.domain.CertifiedProductSearchResultJSONObject;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 public class CertifiedProductSearchManagerImpl implements CertifiedProductSearchManager {

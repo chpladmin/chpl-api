@@ -1,4 +1,4 @@
-package gov.healthit.chpl.json;
+package gov.healthit.chpl.domain;
 
 import java.util.Date;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 public class CertifiedProductSearchDetailsJSONObject {
 	
 	private Long id;
+	private String chplNum;
 	private String vendor;
 	private String product;
 	private String version;
@@ -13,16 +14,15 @@ public class CertifiedProductSearchDetailsJSONObject {
 	private String classification;
 	private String certifyingBody;
 	private String certificationEdition;
-	private List<String> additionalSoftware;
+	private String practiceType;
 	private String edition;
 	private Date certDate;
 	private Date lastModifiedDate;
+	private List<String> additionalSoftware;
 	private ModificationItemJSONObject lastModifiedItem;
-	private String practiceType;
-	private String certBody;
 	private List<CertificationResultJSONObject> certs;
 	private List<CQMResultJSONObject> cqms;
-	private String chplNum;
+	
 	
 	
 	public Long getId() {
@@ -108,12 +108,6 @@ public class CertifiedProductSearchDetailsJSONObject {
 	}
 	public void setPracticeType(String practiceType) {
 		this.practiceType = practiceType;
-	}
-	public String getCertBody() {
-		return certBody;
-	}
-	public void setCertBody(String certBody) {
-		this.certBody = certBody;
 	}
 	public List<CertificationResultJSONObject> getCerts() {
 		return certs;

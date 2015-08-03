@@ -5,9 +5,9 @@ import java.util.List;
 import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.CertificationResultJSONObject;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetailsJSONObject;
 import gov.healthit.chpl.entity.CertificationBody;
-import gov.healthit.chpl.json.CertificationResultJSONObject;
-import gov.healthit.chpl.json.CertifiedProductSearchDetailsJSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

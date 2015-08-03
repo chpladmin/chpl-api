@@ -48,9 +48,10 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Override
 	public void delete(Long acbId) {
 		
-		Query query = entityManager.createNativeQuery("delete FROM certification_body WHERE id = :acbid");
-		query.setParameter("acbid", acbId);
-		query.executeUpdate();
+		//TODO: implement soft deletes here
+		//Query query = entityManager.createNativeQuery("delete FROM certification_body WHERE id = :acbid");
+		//query.setParameter("acbid", acbId);
+		//query.executeUpdate();
 		
 	}
 	
