@@ -1,7 +1,7 @@
 package gov.healthit.chpl.domain;
 
 
-public class CertifiedProductSearchResultJSONObject {
+public class CertifiedProductSearchResult {
 	
 	
 	private Long id;

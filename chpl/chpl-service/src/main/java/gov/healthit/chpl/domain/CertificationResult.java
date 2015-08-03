@@ -1,6 +1,6 @@
 package gov.healthit.chpl.domain;
 
-public class CertificationResultJSONObject {
+public class CertificationResult {
 	
 	
 	private String number;

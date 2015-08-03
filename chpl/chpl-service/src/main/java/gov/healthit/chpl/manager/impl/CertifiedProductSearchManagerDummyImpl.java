@@ -8,38 +8,38 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.domain.CQMResultJSONObject;
-import gov.healthit.chpl.domain.CertificationResultJSONObject;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetailsJSONObject;
-import gov.healthit.chpl.domain.CertifiedProductSearchResultJSONObject;
-import gov.healthit.chpl.domain.ModificationItemJSONObject;
+import gov.healthit.chpl.domain.CQMResult;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.domain.ModificationItem;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 @Service
 public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductSearchManager {
 
 	
-	static final Map<Long, CertifiedProductSearchDetailsJSONObject> details = new HashMap<Long, CertifiedProductSearchDetailsJSONObject>();
+	static final Map<Long, CertifiedProductSearchDetails> details = new HashMap<Long, CertifiedProductSearchDetails>();
 	static {
 		
 		List<String> additionalSoftware = new ArrayList();
 		additionalSoftware.add("MedTechSoft");
 		additionalSoftware.add("Office");
 		
-		ModificationItemJSONObject lastModifiedItem = new ModificationItemJSONObject();
+		ModificationItem lastModifiedItem = new ModificationItem();
 		
-		List<CertificationResultJSONObject> certs = new ArrayList<CertificationResultJSONObject>();
+		List<CertificationResult> certs = new ArrayList<CertificationResult>();
 		
-		CertificationResultJSONObject cert1 = new CertificationResultJSONObject();
+		CertificationResult cert1 = new CertificationResult();
 		
 		cert1.setNumber("1242214");
 		cert1.setTitle("SADSAFDSAFSAD");
 		cert1.setSuccessful(true);
 		certs.add(cert1);
 		
-		List<CQMResultJSONObject> cqms = new ArrayList<CQMResultJSONObject>();
+		List<CQMResult> cqms = new ArrayList<CQMResult>();
 		
-		CQMResultJSONObject cqm1 = new CQMResultJSONObject();
+		CQMResult cqm1 = new CQMResult();
 		cqm1.setCmsId("asdf");
 		cqm1.setCqmDomain("dsafsafdsdaf");
 		cqm1.setCqmVersion("2014E1");
@@ -50,7 +50,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		cqms.add(cqm1);
 		
 		
-		CertifiedProductSearchDetailsJSONObject obj1 = new CertifiedProductSearchDetailsJSONObject();
+		CertifiedProductSearchDetails obj1 = new CertifiedProductSearchDetails();
 		obj1.setId(new Long(1));
 		obj1.setCertificationEdition("2011");
 		obj1.setCertifyingBody("CB1");
@@ -68,7 +68,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		obj1.setCerts(certs);
 		obj1.setCqms(cqms);
 		
-		CertifiedProductSearchDetailsJSONObject obj2 = new CertifiedProductSearchDetailsJSONObject();
+		CertifiedProductSearchDetails obj2 = new CertifiedProductSearchDetails();
 		obj2.setId(new Long(2));
 		obj2.setCertificationEdition("2014");
 		obj2.setCertifyingBody("CB1");
@@ -86,7 +86,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		obj2.setCerts(certs);
 		obj2.setCqms(cqms);
 		
-		CertifiedProductSearchDetailsJSONObject obj3 = new CertifiedProductSearchDetailsJSONObject();
+		CertifiedProductSearchDetails obj3 = new CertifiedProductSearchDetails();
 		obj3.setId(new Long(3));
 		obj3.setCertificationEdition("2014");
 		obj3.setCertifyingBody("CB2");
@@ -104,7 +104,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		obj3.setCerts(certs);
 		obj3.setCqms(cqms);
 		
-		CertifiedProductSearchDetailsJSONObject obj4 = new CertifiedProductSearchDetailsJSONObject();
+		CertifiedProductSearchDetails obj4 = new CertifiedProductSearchDetails();
 		obj4.setId(new Long(4));
 		obj4.setCertificationEdition("2014");
 		obj4.setCertifyingBody("CB3");
@@ -123,7 +123,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		obj4.setCqms(cqms);
 		
 		
-		CertifiedProductSearchDetailsJSONObject obj5 = new CertifiedProductSearchDetailsJSONObject();
+		CertifiedProductSearchDetails obj5 = new CertifiedProductSearchDetails();
 		obj5.setId(new Long(5));
 		obj5.setCertificationEdition("CE1");
 		obj5.setCertifyingBody("CB1");
@@ -149,10 +149,10 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		
 	}
 	
-	static List<CertifiedProductSearchResultJSONObject> certifiedProducts = new ArrayList<>();
+	static List<CertifiedProductSearchResult> certifiedProducts = new ArrayList<>();
 	static {
 		
-		CertifiedProductSearchResultJSONObject obj1 = new CertifiedProductSearchResultJSONObject();
+		CertifiedProductSearchResult obj1 = new CertifiedProductSearchResult();
 		obj1.setId(new Long(1));
 		obj1.setCertificationEdition("2011");
 		obj1.setCertifyingBody("CB1");
@@ -164,7 +164,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		obj1.setVendor("SuperMed");
 		obj1.setVersion("1");
 		
-		CertifiedProductSearchResultJSONObject obj2 = new CertifiedProductSearchResultJSONObject();
+		CertifiedProductSearchResult obj2 = new CertifiedProductSearchResult();
 		obj2.setId(new Long(2));
 		obj2.setCertificationEdition("2014");
 		obj2.setCertifyingBody("CB1");
@@ -176,7 +176,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		obj2.setVendor("SuperMed");
 		obj2.setVersion("2");
 		
-		CertifiedProductSearchResultJSONObject obj3 = new CertifiedProductSearchResultJSONObject();
+		CertifiedProductSearchResult obj3 = new CertifiedProductSearchResult();
 		obj3.setId(new Long(3));
 		obj3.setCertificationEdition("2014");
 		obj3.setCertifyingBody("CB2");
@@ -188,7 +188,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		obj3.setVendor("ProMed");
 		obj3.setVersion("1");
 		
-		CertifiedProductSearchResultJSONObject obj4 = new CertifiedProductSearchResultJSONObject();
+		CertifiedProductSearchResult obj4 = new CertifiedProductSearchResult();
 		obj4.setId(new Long(4));
 		obj4.setCertificationEdition("2014");
 		obj4.setCertifyingBody("CB3");
@@ -200,7 +200,7 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		obj4.setVendor("ProMed");
 		obj4.setVersion("0.8");
 		
-		CertifiedProductSearchResultJSONObject obj5 = new CertifiedProductSearchResultJSONObject();
+		CertifiedProductSearchResult obj5 = new CertifiedProductSearchResult();
 		obj5.setId(new Long(5));
 		obj5.setCertificationEdition("CE1");
 		obj5.setCertifyingBody("CB1");
@@ -220,17 +220,17 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 	}
 	
 	@Override
-	public List<CertifiedProductSearchResultJSONObject> search(String query) {
+	public List<CertifiedProductSearchResult> search(String query) {
 		return null;
 	}
 
 	@Override
-	public List<CertifiedProductSearchResultJSONObject> getAll() {		
+	public List<CertifiedProductSearchResult> getAll() {		
 		return certifiedProducts;
 	}
 
 	@Override
-	public CertifiedProductSearchDetailsJSONObject getDetails(
+	public CertifiedProductSearchDetails getDetails(
 			Long certifiedProductId) {
 		return details.get(certifiedProductId);
 	}

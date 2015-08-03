@@ -2,8 +2,8 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.List;
 
-import gov.healthit.chpl.domain.CertifiedProductSearchDetailsJSONObject;
-import gov.healthit.chpl.domain.CertifiedProductSearchResultJSONObject;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 public class CertifiedProductSearchManagerImpl implements CertifiedProductSearchManager {
@@ -12,19 +12,19 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	//TODO add CQMResultDAO
 	
 	@Override
-	public List<CertifiedProductSearchResultJSONObject> search(String query) {
+	public List<CertifiedProductSearchResult> search(String query) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<CertifiedProductSearchResultJSONObject> getAll() {
+	public List<CertifiedProductSearchResult> getAll() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public CertifiedProductSearchDetailsJSONObject getDetails(
+	public CertifiedProductSearchDetails getDetails(
 			Long certifiedProductId) {
 		// TODO Auto-generated method stub
 		return null;

@@ -5,9 +5,9 @@ import java.util.List;
 import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.domain.CertificationResultJSONObject;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetailsJSONObject;
-import gov.healthit.chpl.domain.CertifiedProductSearchResultJSONObject;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.entity.CertificationBody;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
@@ -34,16 +34,16 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetailsJSONObject getCertifiedProductDetails(@RequestParam("productId") Long id) throws UserRetrievalException {
+	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws UserRetrievalException {
 		
-		CertifiedProductSearchDetailsJSONObject product = certifiedProductSearchManager.getDetails(id);
+		CertifiedProductSearchDetails product = certifiedProductSearchManager.getDetails(id);
 		
 		return product;
 	}
 	
 	@RequestMapping(value="/certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResultJSONObject> getCertifiedProducts() throws UserRetrievalException {
+	public @ResponseBody List<CertifiedProductSearchResult> getCertifiedProducts() throws UserRetrievalException {
 		
 		return certifiedProductSearchManager.getAll();
 	}

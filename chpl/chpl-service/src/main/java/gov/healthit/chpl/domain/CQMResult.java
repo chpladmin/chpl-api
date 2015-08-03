@@ -1,6 +1,6 @@
 package gov.healthit.chpl.domain;
 
-public class CQMResultJSONObject {
+public class CQMResult {
 	
 	private String number;
 	private String cmsId;

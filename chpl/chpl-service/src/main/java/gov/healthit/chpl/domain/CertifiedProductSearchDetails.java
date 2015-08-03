@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain;
 import java.util.Date;
 import java.util.List;
 
-public class CertifiedProductSearchDetailsJSONObject {
+public class CertifiedProductSearchDetails {
 	
 	private Long id;
 	private String chplNum;
@@ -19,9 +19,9 @@ public class CertifiedProductSearchDetailsJSONObject {
 	private Date certDate;
 	private Date lastModifiedDate;
 	private List<String> additionalSoftware;
-	private ModificationItemJSONObject lastModifiedItem;
-	private List<CertificationResultJSONObject> certs;
-	private List<CQMResultJSONObject> cqms;
+	private ModificationItem lastModifiedItem;
+	private List<CertificationResult> certs;
+	private List<CQMResult> cqms;
 	
 	
 	
@@ -97,10 +97,10 @@ public class CertifiedProductSearchDetailsJSONObject {
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
-	public ModificationItemJSONObject getLastModifiedItem() {
+	public ModificationItem getLastModifiedItem() {
 		return lastModifiedItem;
 	}
-	public void setLastModifiedItem(ModificationItemJSONObject lastModifiedItem) {
+	public void setLastModifiedItem(ModificationItem lastModifiedItem) {
 		this.lastModifiedItem = lastModifiedItem;
 	}
 	public String getPracticeType() {
@@ -109,16 +109,16 @@ public class CertifiedProductSearchDetailsJSONObject {
 	public void setPracticeType(String practiceType) {
 		this.practiceType = practiceType;
 	}
-	public List<CertificationResultJSONObject> getCerts() {
+	public List<CertificationResult> getCerts() {
 		return certs;
 	}
-	public void setCerts(List<CertificationResultJSONObject> certs) {
+	public void setCerts(List<CertificationResult> certs) {
 		this.certs = certs;
 	}
-	public List<CQMResultJSONObject> getCqms() {
+	public List<CQMResult> getCqms() {
 		return cqms;
 	}
-	public void setCqms(List<CQMResultJSONObject> cqms) {
+	public void setCqms(List<CQMResult> cqms) {
 		this.cqms = cqms;
 	}
 	public String getChplNum() {
