@@ -5,7 +5,7 @@ public class CertificationResultJSONObject {
 	
 	private String number;
 	private String title;
-	private boolean successful;
+	private boolean success;
 	
 	
 	public String getNumber() {
@@ -20,11 +20,11 @@ public class CertificationResultJSONObject {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public boolean isSuccessful() {
-		return successful;
+	public boolean isSuccess() {
+		return success;
 	}
-	public void setSuccessful(boolean successful) {
-		this.successful = successful;
+	public void setSuccess(boolean successful) {
+		this.success = successful;
 	}
 	
 }
