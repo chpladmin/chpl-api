@@ -37,7 +37,7 @@ public class SearchViewController {
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id){
 		
-		CertifiedProductSearchDetails product = certifiedProductSearchManager.getDetails(id);
+		CertifiedProductSearchDetails product = certifiedProductSearchManager.getCertifiedProductDetails(id);
 		
 		return product;
 	}
@@ -52,51 +52,51 @@ public class SearchViewController {
 	@RequestMapping(value="/list_certs", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertificationResult> getCertifications() {
-		return null;
+		return certifiedProductSearchManager.getCertifications();
 	}
 	
 	@RequestMapping(value="/list_cqms", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CQMResult> getCQMResults() {
-		return null;
+		return certifiedProductSearchManager.getCQMResults();
 	}
 	
 	@RequestMapping(value="/list_classification_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getClassificationNames() {
-		return null;
+		return certifiedProductSearchManager.getClassificationNames();
 	}
 	
 	@RequestMapping(value="/list_edition_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getEditionNames() {
-		return null;
+		return certifiedProductSearchManager.getEditionNames();
 	}
 	
 	
 	@RequestMapping(value="/list_practice_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getPracticeTypeNames() {
-		return null;
+		return certifiedProductSearchManager.getPracticeTypeNames();
 	}
 	
 	
 	@RequestMapping(value="/list_product_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getProductNames() {
-		return null;
+		return certifiedProductSearchManager.getProductNames();
 	}
 	
 	@RequestMapping(value="/list_vendor_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getVendorNames() {
-		return null;
+		return certifiedProductSearchManager.getVendorNames();
 	}
 	
 	@RequestMapping(value="/list_certification_body_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getCertBodyNames() {
-		return null;
+		return certifiedProductSearchManager.getCertBodyNames();
 	}
 	
 	public CertificationBodyManager getCertificationBodyManager() {
