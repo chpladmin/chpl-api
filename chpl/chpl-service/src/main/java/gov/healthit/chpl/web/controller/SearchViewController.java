@@ -27,7 +27,7 @@ public class SearchViewController {
 	
 	
 	@Autowired
-	CertifiedProductSearchManager certifiedProductSearchManager;
+	private CertifiedProductSearchManager certifiedProductSearchManager;
 	
 	@Autowired
 	private CertificationBodyManager certificationBodyManager;

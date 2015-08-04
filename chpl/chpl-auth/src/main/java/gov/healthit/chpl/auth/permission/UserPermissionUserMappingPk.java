@@ -24,7 +24,6 @@ public class UserPermissionUserMappingPk implements Serializable {
 	@JoinColumn(name = "user_permission_id_user_permission", updatable = false, insertable = false)
 	private UserPermissionEntity permission;
 	
-	
 	public int hashCode() {
 		return (int)(user.getId() + permission.getId());
 	}
