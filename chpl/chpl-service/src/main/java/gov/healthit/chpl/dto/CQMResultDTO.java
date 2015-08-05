@@ -1,17 +1,34 @@
 package gov.healthit.chpl.dto;
 
+import gov.healthit.chpl.entity.CQMResultEntity;
+
 import java.util.Date;
 
 public class CQMResultDTO {
 	
+	private Long id;
 	private Long cqmCriterionId;
 	private Long cqmVersionId;
 	private Date creationDate;
-	private Boolean deleted;
-	private Long id;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private Boolean success;
+	private Boolean deleted;
+	
+	public CQMResultDTO(){}
+	
+	public CQMResultDTO(CQMResultEntity entity){
+		
+		this.id = entity.getId();
+		this.cqmCriterionId = entity.getCqmCriterionId();
+		this.cqmVersionId = entity.getCqmVersionId();
+		this.creationDate = entity.getCreationDate();
+		this.lastModifiedDate = entity.getLastModifiedDate();
+		this.lastModifiedUser = entity.getLastModifiedUser();
+		this.success = entity.isSuccess();
+		this.deleted = entity.isDeleted();
+	}
+	
 	public Long getCqmCriterionId() {
 		return cqmCriterionId;
 	}

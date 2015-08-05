@@ -80,7 +80,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 	public void delete(Long productId){
 		
 		// TODO: How to delete this without leaving orphans
-		Query query = entityManager.createQuery("UPDATE CertifiedProduct SET deleted = true WHERE certified_product_id = :productid");
+		Query query = entityManager.createQuery("UPDATE CertifiedProductEntity SET deleted = true WHERE certified_product_id = :productid");
 		query.setParameter("productid", productId);
 		query.executeUpdate();
 		
@@ -121,15 +121,16 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 	
 	private List<CertifiedProductEntity> getAllEntities() {
 		
-		List<CertifiedProductEntity> result = entityManager.createQuery( "from CertifiedProduct where (NOT deleted = true) ", CertifiedProductEntity.class).getResultList();
+		List<CertifiedProductEntity> result = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) ", CertifiedProductEntity.class).getResultList();
 		return result;
+		
 	}
 	
 	private CertifiedProductEntity getEntityById(Long entityId) throws EntityRetrievalException {
 		
 		CertifiedProductEntity entity = null;
 		
-		Query query = entityManager.createQuery( "from CertifiedProduct where (NOT deleted = true) AND (certified_product_id = :entityid) ", CertifiedProductEntity.class );
+		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ", CertifiedProductEntity.class );
 		query.setParameter("entityid", entityId);
 		List<CertifiedProductEntity> result = query.getResultList();
 		
@@ -143,7 +144,5 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 		
 		return entity;
 	}
-	
-	
 	
 }

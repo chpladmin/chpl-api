@@ -1,5 +1,7 @@
 package gov.healthit.chpl.dto;
 
+import gov.healthit.chpl.entity.CertificationResultEntity;
+
 import java.util.Date;
 
 public class CertificationResultDTO {
@@ -7,7 +9,7 @@ public class CertificationResultDTO {
 	private Boolean automatedMeasureCapable;
 	private Boolean automatedNumerator;
 	private Long certificationCriterionId;
-	private CertifiedProductDTO certifiedProduct;
+	private Long certifiedProductId;
 	private Date creationDate;
 	private Boolean deleted;
 	private Boolean gap;
@@ -20,6 +22,30 @@ public class CertificationResultDTO {
 	private Boolean successful;
 	private Long testDataVersionId;
 	private Long testProcedureVersionId;
+	
+	public CertificationResultDTO(){}
+	
+	public CertificationResultDTO(CertificationResultEntity entity){
+	
+		this.id = entity.getId();
+		
+		this.automatedMeasureCapable = entity.isAutomatedMeasureCapable();
+		this.automatedNumerator = entity.isAutomatedNumerator();
+		this.certificationCriterionId = entity.getCertificationCriterionId();
+		this.certifiedProductId = entity.getCertifiedProductId();
+		this.creationDate = entity.getCreationDate();
+		this.gap = entity.isGap();
+		this.inherited = entity.isInherited();
+		this.lastModifiedDate = entity.getLastModifiedDate();
+		this.lastModifiedUser = entity.getLastModifiedUser();
+		this.sedInherited = entity.isSedInherited();
+		this.sedSuccessful = entity.isSedSuccessful();
+		this.successful = entity.isSuccessful();
+		this.testDataVersionId = entity.getTestDataVersionId();
+		this.testProcedureVersionId = entity.getTestProcedureVersionId();
+		this.deleted = entity.isDeleted();
+		
+	}
 	
 	
 	public Boolean getAutomatedMeasureCapable() {
@@ -40,11 +66,11 @@ public class CertificationResultDTO {
 	public void setCertificationCriterionId(Long certificationCriterionId) {
 		this.certificationCriterionId = certificationCriterionId;
 	}
-	public CertifiedProductDTO getCertifiedProduct() {
-		return certifiedProduct;
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
 	}
-	public void setCertifiedProduct(CertifiedProductDTO certifiedProduct) {
-		this.certifiedProduct = certifiedProduct;
+	public void setCertifiedProduct(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
 	}
 	public Date getCreationDate() {
 		return creationDate;

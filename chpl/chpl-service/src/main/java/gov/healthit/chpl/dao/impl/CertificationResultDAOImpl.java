@@ -9,8 +9,7 @@ public class CertificationResultDAOImpl implements CertificationResultDAO {
 
 	@Override
 	public void create(CertificationResultDTO result) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
