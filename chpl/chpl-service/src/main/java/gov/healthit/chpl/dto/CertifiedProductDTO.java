@@ -1,7 +1,7 @@
 package gov.healthit.chpl.dto;
 
 
-import gov.healthit.chpl.entity.CertifiedProduct;
+import gov.healthit.chpl.entity.CertifiedProductEntity;
 
 import java.util.Date;
 
@@ -27,7 +27,7 @@ public class CertifiedProductDTO {
 	
 	public CertifiedProductDTO(){}
 	
-	public CertifiedProductDTO(CertifiedProduct entity){
+	public CertifiedProductDTO(CertifiedProductEntity entity){
 		
 		this.id = entity.getId();
 		this.atcbCertificationId = entity.getAtcbCertificationId();

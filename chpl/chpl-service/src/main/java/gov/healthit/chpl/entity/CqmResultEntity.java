@@ -31,7 +31,7 @@ import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Table(name = "cqm_result", catalog = "openchpl", schema = "openchpl")
-public class CqmResult implements Cloneable, Serializable {
+public class CqmResultEntity implements Cloneable, Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -4125711786498917959L;
@@ -85,14 +85,14 @@ public class CqmResult implements Cloneable, Serializable {
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
-	public CqmResult() {
+	public CqmResultEntity() {
 		// Default constructor
 	} 
 
 	/** Constructor taking a given ID.
 	 * @param id to set
 	 */
-	public CqmResult(Long id) {
+	public CqmResultEntity(Long id) {
 		this.id = id;
 	}
 	
@@ -102,7 +102,7 @@ public class CqmResult implements Cloneable, Serializable {
 	*/
 	@Transient
 	public Class<?> getClassType() {
-		return CqmResult.class;
+		return CqmResultEntity.class;
 	}
  
 
@@ -324,9 +324,9 @@ public class CqmResult implements Cloneable, Serializable {
 			 return false;
 		}
 		
-		final CqmResult that; 
+		final CqmResultEntity that; 
 		try {
-			that = (CqmResult) proxyThat;
+			that = (CqmResultEntity) proxyThat;
 			if ( !(that.getClassType().equals(this.getClassType()))){
 				return false;
 			}

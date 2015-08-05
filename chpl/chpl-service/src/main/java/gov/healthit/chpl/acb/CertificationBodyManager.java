@@ -1,6 +1,6 @@
 package gov.healthit.chpl.acb;
 
-import gov.healthit.chpl.entity.CertificationBody;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 import java.util.List;
 
@@ -11,24 +11,24 @@ import org.springframework.security.acls.model.Sid;
 public interface CertificationBodyManager {
 	
 	
-	public void addPermission(CertificationBody acb, Sid recipient, Permission permission);
+	public void addPermission(CertificationBodyEntity acb, Sid recipient, Permission permission);
 	
 	
-	public void deletePermission(CertificationBody acb, Sid recipient, Permission permission);
+	public void deletePermission(CertificationBodyEntity acb, Sid recipient, Permission permission);
 	
 	
-	public void create(CertificationBody acb);
+	public void create(CertificationBodyEntity acb);
 	
 	
-	public void update(CertificationBody acb);
+	public void update(CertificationBodyEntity acb);
 	
 	
-	public void delete(CertificationBody acb);
+	public void delete(CertificationBodyEntity acb);
 	
 	
-	public List<CertificationBody> getAll();
+	public List<CertificationBodyEntity> getAll();
 	
 
-	public CertificationBody getById(Long id);
+	public CertificationBodyEntity getById(Long id);
 	
 }

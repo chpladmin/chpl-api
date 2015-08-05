@@ -9,7 +9,7 @@ import gov.healthit.chpl.domain.CQMResult;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.entity.CertificationBody;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 import org.springframework.beans.factory.annotation.Autowired;

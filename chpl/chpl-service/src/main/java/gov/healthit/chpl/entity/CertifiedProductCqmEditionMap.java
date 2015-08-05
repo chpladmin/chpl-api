@@ -1,6 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.entity.CqmResult;
+import gov.healthit.chpl.entity.CqmResultEntity;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
@@ -49,12 +49,12 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 	
 
 	/** Field mapping. */
-	private CertifiedProduct certifiedProduct;
+	private CertifiedProductEntity certifiedProduct;
 	/** Field mapping. */
-	private Set<CqmResult> cqmResults = new HashSet<CqmResult>();
+	private Set<CqmResultEntity> cqmResults = new HashSet<CqmResultEntity>();
 
 	/** Field mapping. */
-	private CqmEdition cqmEdition;
+	private CqmEditionEntity cqmEdition;
 	/** Field mapping. */
 	private Date creationDate;
 	/** Field mapping. */
@@ -88,7 +88,7 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 	 * @param lastModifiedDate Date object;
 	 * @param lastModifiedUser Long object;
 	 */
-	public CertifiedProductCqmEditionMap(CertifiedProduct certifiedProduct, CqmEdition cqmEdition, Date creationDate, 					
+	public CertifiedProductCqmEditionMap(CertifiedProductEntity certifiedProduct, CqmEditionEntity cqmEdition, Date creationDate, 					
 			Boolean deleted, Long id, Date lastModifiedDate, 					
 			Long lastModifiedUser) {
 
@@ -122,7 +122,7 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@Basic( optional = false )
 	@JoinColumn(name = "certified_product_id", nullable = false )
-	public CertifiedProduct getCertifiedProduct() {
+	public CertifiedProductEntity getCertifiedProduct() {
 		return this.certifiedProduct;
 		
 	}
@@ -133,7 +133,7 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 	 * Set the value related to the column: certifiedProduct.
 	 * @param certifiedProduct the certifiedProduct value you wish to set
 	 */
-	public void setCertifiedProduct(final CertifiedProduct certifiedProduct) {
+	public void setCertifiedProduct(final CertifiedProductEntity certifiedProduct) {
 		this.certifiedProduct = certifiedProduct;
 	}
 
@@ -145,7 +145,7 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
  	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@Basic( optional = false )
 	@Column( name = "certified_product_cqm_edition_map_id", nullable = false  )
-	public Set<CqmResult> getCqmResults() {
+	public Set<CqmResultEntity> getCqmResults() {
 		return this.cqmResults;
 		
 	}
@@ -154,7 +154,7 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 	 * Adds a bi-directional link of type CqmResult to the cqmResults set.
 	 * @param cqmResult item to add
 	 */
-	public void addCqmResult(CqmResult cqmResult) {
+	public void addCqmResult(CqmResultEntity cqmResult) {
 		cqmResult.setCertifiedProductCqmEditionMap(this);
 		this.cqmResults.add(cqmResult);
 	}
@@ -164,7 +164,7 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 	 * Set the value related to the column: cqmResult.
 	 * @param cqmResult the cqmResult value you wish to set
 	 */
-	public void setCqmResults(final Set<CqmResult> cqmResult) {
+	public void setCqmResults(final Set<CqmResultEntity> cqmResult) {
 		this.cqmResults = cqmResult;
 	}
 
@@ -176,7 +176,7 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@Basic( optional = false )
 	@JoinColumn(name = "cqm_edition_id", nullable = false )
-	public CqmEdition getCqmEdition() {
+	public CqmEditionEntity getCqmEdition() {
 		return this.cqmEdition;
 		
 	}
@@ -187,7 +187,7 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 	 * Set the value related to the column: cqmEdition.
 	 * @param cqmEdition the cqmEdition value you wish to set
 	 */
-	public void setCqmEdition(final CqmEdition cqmEdition) {
+	public void setCqmEdition(final CqmEditionEntity cqmEdition) {
 		this.cqmEdition = cqmEdition;
 	}
 

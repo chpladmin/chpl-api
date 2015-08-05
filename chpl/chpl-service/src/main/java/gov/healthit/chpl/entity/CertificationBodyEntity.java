@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="certification_body")
-public class CertificationBody {
+public class CertificationBodyEntity {
 	
 	
 	@Id

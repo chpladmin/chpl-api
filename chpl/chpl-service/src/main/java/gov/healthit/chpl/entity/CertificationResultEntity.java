@@ -25,7 +25,7 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "certification_result", catalog = "openchpl", schema = "openchpl")
-public class CertificationResult implements Serializable {
+public class CertificationResultEntity implements Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -9050374846030066967L;
@@ -46,7 +46,7 @@ public class CertificationResult implements Serializable {
 	/** Field mapping. */
 	private Long certificationCriterionId;
 	/** Field mapping. */
-	private CertifiedProduct certifiedProduct;
+	private CertifiedProductEntity certifiedProduct;
 	/** Field mapping. */
 	private Date creationDate;
 	/** Field mapping. */
@@ -75,14 +75,14 @@ public class CertificationResult implements Serializable {
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
-	public CertificationResult() {
+	public CertificationResultEntity() {
 		// Default constructor
 	} 
 
 	/** Constructor taking a given ID.
 	 * @param id to set
 	 */
-	public CertificationResult(Long id) {
+	public CertificationResultEntity(Long id) {
 		this.id = id;
 	}
 	
@@ -91,7 +91,7 @@ public class CertificationResult implements Serializable {
 	*/
 	@Transient
 	public Class<?> getClassType() {
-		return CertificationResult.class;
+		return CertificationResultEntity.class;
 	}
  
 
@@ -159,7 +159,7 @@ public class CertificationResult implements Serializable {
 	 * Return the value associated with the column: certifiedProduct.
 	 * @return A CertifiedProduct object (this.certifiedProduct)
 	 */
-	public CertifiedProduct getCertifiedProduct() {
+	public CertifiedProductEntity getCertifiedProduct() {
 		return this.certifiedProduct;
 		
 	}
@@ -170,7 +170,7 @@ public class CertificationResult implements Serializable {
 	 * Set the value related to the column: certifiedProduct.
 	 * @param certifiedProduct the certifiedProduct value you wish to set
 	 */
-	public void setCertifiedProduct(final CertifiedProduct certifiedProduct) {
+	public void setCertifiedProduct(final CertifiedProductEntity certifiedProduct) {
 		this.certifiedProduct = certifiedProduct;
 	}
 
@@ -444,9 +444,9 @@ public class CertificationResult implements Serializable {
 			 return false;
 		}
 		
-		final CertificationResult that; 
+		final CertificationResultEntity that; 
 		try {
-			that = (CertificationResult) proxyThat;
+			that = (CertificationResultEntity) proxyThat;
 			if ( !(that.getClassType().equals(this.getClassType()))){
 				return false;
 			}

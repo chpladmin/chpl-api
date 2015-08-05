@@ -20,6 +20,8 @@ public class CertificationResultDTO {
 	private Boolean successful;
 	private Long testDataVersionId;
 	private Long testProcedureVersionId;
+	
+	
 	public Boolean getAutomatedMeasureCapable() {
 		return automatedMeasureCapable;
 	}

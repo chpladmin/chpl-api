@@ -28,7 +28,7 @@ import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Table(name = "certified_product", catalog = "openchpl", schema = "openchpl")
-public class CertifiedProduct {
+public class CertifiedProductEntity {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -2928065796550377879L;
@@ -109,14 +109,14 @@ public class CertifiedProduct {
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
-	public CertifiedProduct() {
+	public CertifiedProductEntity() {
 		// Default constructor
 	} 
 
 	/** Constructor taking a given ID.
 	 * @param id to set
 	 */
-	public CertifiedProduct(Long id) {
+	public CertifiedProductEntity(Long id) {
 		this.id = id;
 	}
 	
@@ -126,7 +126,7 @@ public class CertifiedProduct {
 	*/
 	@Transient
 	public Class<?> getClassType() {
-		return CertifiedProduct.class;
+		return CertifiedProductEntity.class;
 	}
 
    public Long getHashCode() {
@@ -284,9 +284,9 @@ public class CertifiedProduct {
 			 return false;
 		}
 		
-		final CertifiedProduct that; 
+		final CertifiedProductEntity that; 
 		try {
-			that = (CertifiedProduct) proxyThat;
+			that = (CertifiedProductEntity) proxyThat;
 			if ( !(that.getClassType().equals(this.getClassType()))){
 				return false;
 			}

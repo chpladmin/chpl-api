@@ -26,7 +26,7 @@ import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Table(name = "cqm_edition", catalog = "openchpl", schema = "openchpl")
-public class CqmEdition implements Cloneable, Serializable {
+public class CqmEditionEntity implements Cloneable, Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -5403669520776600083L;
@@ -54,14 +54,14 @@ public class CqmEdition implements Cloneable, Serializable {
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
-	public CqmEdition() {
+	public CqmEditionEntity() {
 		// Default constructor
 	} 
 
 	/** Constructor taking a given ID.
 	 * @param id to set
 	 */
-	public CqmEdition(Long id) {
+	public CqmEditionEntity(Long id) {
 		this.id = id;
 	}
 	
@@ -72,7 +72,7 @@ public class CqmEdition implements Cloneable, Serializable {
 	 * @param lastModifiedDate Date object;
 	 * @param lastModifiedUser Long object;
 	 */
-	public CqmEdition(Date creationDate, Boolean deleted, Long id, 					
+	public CqmEditionEntity(Date creationDate, Boolean deleted, Long id, 					
 			Date lastModifiedDate, Long lastModifiedUser) {
 
 		this.creationDate = creationDate;
@@ -87,7 +87,7 @@ public class CqmEdition implements Cloneable, Serializable {
 	*/
 	@Transient
 	public Class<?> getClassType() {
-		return CqmEdition.class;
+		return CqmEditionEntity.class;
 	}
 
 	 /**
@@ -272,9 +272,9 @@ public class CqmEdition implements Cloneable, Serializable {
 			 return false;
 		}
 		
-		final CqmEdition that; 
+		final CqmEditionEntity that; 
 		try {
-			that = (CqmEdition) proxyThat;
+			that = (CqmEditionEntity) proxyThat;
 			if ( !(that.getClassType().equals(this.getClassType()))){
 				return false;
 			}

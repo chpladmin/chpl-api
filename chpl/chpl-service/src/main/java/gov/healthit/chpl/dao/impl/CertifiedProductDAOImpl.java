@@ -5,7 +5,7 @@ package gov.healthit.chpl.dao.impl;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.entity.CertifiedProduct;
+import gov.healthit.chpl.entity.CertifiedProductEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 	
 	public void create(CertifiedProductDTO product) throws EntityCreationException{
 		
-		CertifiedProduct productEntity = null;
+		CertifiedProductEntity productEntity = null;
 		try {
 			if (product.getId() != null){
 				productEntity = this.getEntityById(product.getId());
@@ -31,7 +31,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 			throw new EntityCreationException("A product with this ID already exists.");
 		} else {
 			
-			productEntity = new CertifiedProduct();
+			productEntity = new CertifiedProductEntity();
 			
 			productEntity.setAtcbCertificationId(product.getAtcbCertificationId());
 			productEntity.setCertificationBodyId(product.getCertificationBodyId());
@@ -55,7 +55,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 
 	public void update(CertifiedProductDTO product) throws EntityRetrievalException{
 		
-		CertifiedProduct productEntity = getEntityById(product.getId());		
+		CertifiedProductEntity productEntity = getEntityById(product.getId());		
 		
 		productEntity.setId(product.getId());
 		productEntity.setAtcbCertificationId(product.getAtcbCertificationId());
@@ -88,10 +88,10 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 	
 	public List<CertifiedProductDTO> findAll(){
 		
-		List<CertifiedProduct> entities = getAllEntities();
+		List<CertifiedProductEntity> entities = getAllEntities();
 		List<CertifiedProductDTO> products = new ArrayList<>();
 		
-		for (CertifiedProduct entity : entities) {
+		for (CertifiedProductEntity entity : entities) {
 			CertifiedProductDTO product = new CertifiedProductDTO(entity);
 			products.add(product);
 		}
@@ -101,37 +101,37 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 	
 	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException{
 		
-		CertifiedProduct entity = getEntityById(productId);
+		CertifiedProductEntity entity = getEntityById(productId);
 		CertifiedProductDTO dto = new CertifiedProductDTO(entity);
 		return dto;
 		
 	}
 	
-	private void create(CertifiedProduct product) {
+	private void create(CertifiedProductEntity product) {
 		
 		entityManager.persist(product);
 		
 	}
 	
-	private void update(CertifiedProduct product) {
+	private void update(CertifiedProductEntity product) {
 		
 		entityManager.merge(product);	
 	
 	}
 	
-	private List<CertifiedProduct> getAllEntities() {
+	private List<CertifiedProductEntity> getAllEntities() {
 		
-		List<CertifiedProduct> result = entityManager.createQuery( "from CertifiedProduct where (NOT deleted = true) ", CertifiedProduct.class).getResultList();
+		List<CertifiedProductEntity> result = entityManager.createQuery( "from CertifiedProduct where (NOT deleted = true) ", CertifiedProductEntity.class).getResultList();
 		return result;
 	}
 	
-	private CertifiedProduct getEntityById(Long userId) throws EntityRetrievalException {
+	private CertifiedProductEntity getEntityById(Long userId) throws EntityRetrievalException {
 		
-		CertifiedProduct user = null;
+		CertifiedProductEntity user = null;
 		
-		Query query = entityManager.createQuery( "from CertifiedProduct where (NOT deleted = true) AND (user_id = :userid) ", CertifiedProduct.class );
+		Query query = entityManager.createQuery( "from CertifiedProduct where (NOT deleted = true) AND (user_id = :userid) ", CertifiedProductEntity.class );
 		query.setParameter("userid", userId);
-		List<CertifiedProduct> result = query.getResultList();
+		List<CertifiedProductEntity> result = query.getResultList();
 		
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
