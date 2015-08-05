@@ -39,39 +39,67 @@ public class CertificationResultEntity implements Serializable {
 	private volatile Long hashCode;
 	
 
-	/** Field mapping. */
-	private Boolean automatedMeasureCapable;
-	/** Field mapping. */
-	private Boolean automatedNumerator;
-	/** Field mapping. */
-	private Long certificationCriterionId;
-	/** Field mapping. */
-	private CertifiedProductEntity certifiedProduct;
-	/** Field mapping. */
-	private Date creationDate;
-	/** Field mapping. */
-	private Boolean deleted;
-	/** Field mapping. */
-	private Boolean gap;
-	/** Field mapping. */
+    @Id 
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificationResultCertification_result_idGenerator")
+	@Basic( optional = false )
+	@Column( name = "certification_result_id", nullable = false  )
+	@SequenceGenerator(name = "certificationResultCertification_result_idGenerator", sequenceName = "openchpl.openchpl.certification_result_certification_result_id_seq", schema = "openchpl", catalog = "openchpl")
 	private Long id;
-	/** Field mapping. */
+	
+	@Basic( optional = true )
+	@Column( name = "automated_measure_capable"  )
+	private Boolean automatedMeasureCapable;
+	
+	@Basic( optional = true )
+	@Column( name = "automated_numerator"  )
+	private Boolean automatedNumerator;
+	
+	@Basic( optional = false )
+	@Column(name = "certification_criterion_id", nullable = false )
+	private Long certificationCriterionId;
+	
+	@Basic( optional = false )
+	@Column(name = "certified_product_id", nullable = false )
+	private Long certifiedProductId;
+	
+	@Basic( optional = false )
+	@Column( name = "creation_date", nullable = false  )
+	private Date creationDate;
+	
+	@Basic( optional = false )
+	@Column( nullable = false  )
+	private Boolean deleted;
+	
+	private Boolean gap;
+    
 	private Boolean inherited;
-	/** Field mapping. */
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	/** Field mapping. */
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-
-	/** Field mapping. */
+	
+	@Basic( optional = true )
+	@Column( name = "sed_inherited"  )
 	private Boolean sedInherited;
-	/** Field mapping. */
+	
+	@Basic( optional = true )
+	@Column( name = "sed_successful"  )
 	private Boolean sedSuccessful;
-	/** Field mapping. */
+	
+	@Basic( optional = false )
+	@Column( nullable = false  )
 	private Boolean successful;
-	/** Field mapping. */
+	
+	@Column(name = "test_data_version_id")
 	private Long testDataVersionId;
-	/** Field mapping. */
+	
+	@Column(name = "test_procedure_version_id")
 	private Long testProcedureVersionId;
+	
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -99,15 +127,11 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: automatedMeasureCapable.
 	 * @return A Boolean object (this.automatedMeasureCapable)
 	 */
-	@Basic( optional = true )
-	@Column( name = "automated_measure_capable"  )
 	public Boolean isAutomatedMeasureCapable() {
 		return this.automatedMeasureCapable;
 		
 	}
 	
-
-  
 	 /**  
 	 * Set the value related to the column: automatedMeasureCapable.
 	 * @param automatedMeasureCapable the automatedMeasureCapable value you wish to set
@@ -120,15 +144,11 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: automatedNumerator.
 	 * @return A Boolean object (this.automatedNumerator)
 	 */
-	@Basic( optional = true )
-	@Column( name = "automated_numerator"  )
 	public Boolean isAutomatedNumerator() {
 		return this.automatedNumerator;
 		
 	}
 	
-
-  
 	 /**  
 	 * Set the value related to the column: automatedNumerator.
 	 * @param automatedNumerator the automatedNumerator value you wish to set
@@ -145,8 +165,6 @@ public class CertificationResultEntity implements Serializable {
 		return this.certificationCriterionId;
 	}
 	
-
-  
 	 /**  
 	 * Set the value related to the column: certificationCriterion.
 	 * @param certificationCriterion the certificationCriterion value you wish to set
@@ -159,34 +177,28 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: certifiedProduct.
 	 * @return A CertifiedProduct object (this.certifiedProduct)
 	 */
-	public CertifiedProductEntity getCertifiedProduct() {
-		return this.certifiedProduct;
+	public Long getCertifiedProductId() {
+		return this.certifiedProductId;
 		
 	}
 	
-
-  
 	 /**  
 	 * Set the value related to the column: certifiedProduct.
 	 * @param certifiedProduct the certifiedProduct value you wish to set
 	 */
-	public void setCertifiedProduct(final CertifiedProductEntity certifiedProduct) {
-		this.certifiedProduct = certifiedProduct;
+	public void setCertifiedProductId(final Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
 	}
 
 	 /**
 	 * Return the value associated with the column: creationDate.
 	 * @return A Date object (this.creationDate)
 	 */
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
 	public Date getCreationDate() {
 		return this.creationDate;
 		
 	}
 	
-
-  
 	 /**  
 	 * Set the value related to the column: creationDate.
 	 * @param creationDate the creationDate value you wish to set
@@ -199,15 +211,11 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: deleted.
 	 * @return A Boolean object (this.deleted)
 	 */
-	@Basic( optional = false )
-	@Column( nullable = false  )
 	public Boolean isDeleted() {
 		return this.deleted;
 		
 	}
 	
-
-  
 	 /**  
 	 * Set the value related to the column: deleted.
 	 * @param deleted the deleted value you wish to set
@@ -221,11 +229,8 @@ public class CertificationResultEntity implements Serializable {
 	 * @return A Boolean object (this.gap)
 	 */
 	public Boolean isGap() {
-		return this.gap;
-		
+		return this.gap;	
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: gap.
@@ -239,18 +244,10 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: id.
 	 * @return A Long object (this.id)
 	 */
-    @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificationResultCertification_result_idGenerator")
-	@Basic( optional = false )
-	@Column( name = "certification_result_id", nullable = false  )
-	@SequenceGenerator(name = "certificationResultCertification_result_idGenerator", sequenceName = "openchpl.openchpl.certification_result_certification_result_id_seq", schema = "openchpl", catalog = "openchpl")
 	public Long getId() {
 		return this.id;
-		
 	}
 	
-
-  
 	 /**  
 	 * Set the value related to the column: id.
 	 * @param id the id value you wish to set
@@ -290,8 +287,6 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: lastModifiedDate.
 	 * @return A Date object (this.lastModifiedDate)
 	 */
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
 	public Date getLastModifiedDate() {
 		return this.lastModifiedDate;
 		
@@ -311,14 +306,10 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: lastModifiedUser.
 	 * @return A Long object (this.lastModifiedUser)
 	 */
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
 	public Long getLastModifiedUser() {
 		return this.lastModifiedUser;
 		
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: lastModifiedUser.
@@ -332,8 +323,6 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: sedInherited.
 	 * @return A Boolean object (this.sedInherited)
 	 */
-	@Basic( optional = true )
-	@Column( name = "sed_inherited"  )
 	public Boolean isSedInherited() {
 		return this.sedInherited;
 		
@@ -353,8 +342,6 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: sedSuccessful.
 	 * @return A Boolean object (this.sedSuccessful)
 	 */
-	@Basic( optional = true )
-	@Column( name = "sed_successful"  )
 	public Boolean isSedSuccessful() {
 		return this.sedSuccessful;
 		
@@ -374,11 +361,8 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: successful.
 	 * @return A Boolean object (this.successful)
 	 */
-	@Basic( optional = false )
-	@Column( nullable = false  )
 	public Boolean isSuccessful() {
-		return this.successful;
-		
+		return this.successful;		
 	}
 	
 
@@ -462,7 +446,7 @@ public class CertificationResultEntity implements Serializable {
 		result = result && (((isAutomatedMeasureCapable() == null) && (that.isAutomatedMeasureCapable() == null)) || (isAutomatedMeasureCapable() != null && isAutomatedMeasureCapable().equals(that.isAutomatedMeasureCapable())));
 		result = result && (((isAutomatedNumerator() == null) && (that.isAutomatedNumerator() == null)) || (isAutomatedNumerator() != null && isAutomatedNumerator().equals(that.isAutomatedNumerator())));
 		result = result && (((getCertificationCriterionId() == null) && (that.getCertificationCriterionId() == null)) || (getCertificationCriterionId() != null && getCertificationCriterionId().equals(that.getCertificationCriterionId())));	
-		result = result && (((getCertifiedProduct() == null) && (that.getCertifiedProduct() == null)) || (getCertifiedProduct() != null && getCertifiedProduct().getId().equals(that.getCertifiedProduct().getId())));	
+		result = result && (((getCertifiedProductId() == null) && (that.getCertifiedProductId() == null)) || (getCertifiedProductId() != null && getCertifiedProductId().equals(that.getCertifiedProductId())));	
 		result = result && (((getCreationDate() == null) && (that.getCreationDate() == null)) || (getCreationDate() != null && getCreationDate().equals(that.getCreationDate())));
 		result = result && (((isDeleted() == null) && (that.isDeleted() == null)) || (isDeleted() != null && isDeleted().equals(that.isDeleted())));
 		result = result && (((isGap() == null) && (that.isGap() == null)) || (isGap() != null && isGap().equals(that.isGap())));

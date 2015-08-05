@@ -119,7 +119,7 @@ public class CqmResultEntity implements Cloneable, Serializable {
 		
 	}
   
-	 /**  
+	 /** 
 	 * Set the value related to the column: certifiedProductCqmEditionMap.
 	 * @param certifiedProductCqmEditionMap the certifiedProductCqmEditionMap value you wish to set
 	 */
@@ -137,7 +137,7 @@ public class CqmResultEntity implements Cloneable, Serializable {
 	 * Set the value related to the column: cqmCriterion.
 	 * @param cqmCriterion the cqmCriterion value you wish to set
 	 */
-	public void setCqmCriterion(Long cqmCriterionId) {
+	public void setCqmCriterionId(Long cqmCriterionId) {
 		this.cqmCriterionId = cqmCriterionId;
 	}
 

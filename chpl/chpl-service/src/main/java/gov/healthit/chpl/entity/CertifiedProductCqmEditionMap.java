@@ -34,7 +34,7 @@ import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Table(name = "certified_product_cqm_edition_map", catalog = "openchpl", schema = "openchpl")
-public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
+public class CertifiedProductCqmEditionMap implements Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -7739329779543085451L;
@@ -308,31 +308,6 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 	}
 
 
-   /**
-    * Deep copy.
-	* @return cloned object
-	* @throws CloneNotSupportedException on error
-    */
-    @Override
-    public CertifiedProductCqmEditionMap clone() throws CloneNotSupportedException {
-		
-        final CertifiedProductCqmEditionMap copy = (CertifiedProductCqmEditionMap)super.clone();
-
-		copy.setCertifiedProduct(this.getCertifiedProduct());
-		if (this.getCqmResults() != null) {
-			copy.getCqmResults().addAll(this.getCqmResults());
-		}
-		copy.setCqmEdition(this.getCqmEdition());
-		copy.setCreationDate(this.getCreationDate());
-		copy.setDeleted(this.isDeleted());
-		copy.setId(this.getId());
-		copy.setLastModifiedDate(this.getLastModifiedDate());
-		copy.setLastModifiedUser(this.getLastModifiedUser());
-		return copy;
-	}
-	
-
-
 	/** Provides toString implementation.
 	 * @see java.lang.Object#toString()
 	 * @return String representation of this class.
@@ -420,7 +395,6 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 							newHashCode = getId();
 						} else {
 							newHashCode = (long) super.hashCode();
-
 						}
 					}
 					
@@ -429,8 +403,5 @@ public class CertifiedProductCqmEditionMap implements Cloneable, Serializable {
 			}
 		}
 		return (int) (this.hashCode & 0xffffff);
-	}
-	
-
-	
+	}	
 }

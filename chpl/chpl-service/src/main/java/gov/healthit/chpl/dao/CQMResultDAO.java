@@ -6,10 +6,10 @@ import gov.healthit.chpl.dto.CQMResultDTO;
 
 public interface CQMResultDAO {
 	
-	public void create(CQMResultDTO cqmResult);
+	public void create(CQMResultDTO cqmResult) throws EntityCreationException;
 	public void delete(Long cqmResultId);
 	public List<CQMResultDTO> findAll();
 	public CQMResultDTO getById(Long cqmResultId);
-	public void update(CQMResultDTO cqmResult);
+	public void update(CQMResultDTO cqmResult) throws EntityRetrievalException;
 
 }

@@ -26,7 +26,7 @@ import org.hibernate.proxy.HibernateProxy;
 
 @Entity
 @Table(name = "cqm_edition", catalog = "openchpl", schema = "openchpl")
-public class CqmEditionEntity implements Cloneable, Serializable {
+public class CqmEditionEntity implements Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -5403669520776600083L;

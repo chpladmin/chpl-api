@@ -125,12 +125,12 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 		return result;
 	}
 	
-	private CertifiedProductEntity getEntityById(Long userId) throws EntityRetrievalException {
+	private CertifiedProductEntity getEntityById(Long entityId) throws EntityRetrievalException {
 		
-		CertifiedProductEntity user = null;
+		CertifiedProductEntity entity = null;
 		
-		Query query = entityManager.createQuery( "from CertifiedProduct where (NOT deleted = true) AND (user_id = :userid) ", CertifiedProductEntity.class );
-		query.setParameter("userid", userId);
+		Query query = entityManager.createQuery( "from CertifiedProduct where (NOT deleted = true) AND (certified_product_id = :entityid) ", CertifiedProductEntity.class );
+		query.setParameter("entityid", entityId);
 		List<CertifiedProductEntity> result = query.getResultList();
 		
 		if (result.size() > 1){
@@ -138,10 +138,10 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 		}
 		
 		if (result.size() < 0){
-			user = result.get(0);
+			entity = result.get(0);
 		}
 		
-		return user;
+		return entity;
 	}
 	
 	
