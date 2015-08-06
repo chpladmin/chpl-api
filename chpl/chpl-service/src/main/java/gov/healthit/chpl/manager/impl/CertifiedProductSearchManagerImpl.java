@@ -1,17 +1,35 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import gov.healthit.chpl.dao.CQMResultDAO;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CQMResult;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 public class CertifiedProductSearchManagerImpl implements CertifiedProductSearchManager {
 
-	//TODO Add CertificationResultDAO
-	//TODO add CQMResultDAO
+	@Autowired
+	private CertificationBodyDAO certificationBodyDAO;
+	
+	@Autowired
+	private CertifiedProductDAO certifiedProductDAO;
+	
+	@Autowired
+	private CertificationResultDAO certificationResultDAO;
+	
+	@Autowired
+	private CQMResultDAO cqmResultDAO;
 	
 	@Override
 	public List<CertifiedProductSearchResult> search(String query) {
@@ -21,8 +39,27 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
 	@Override
 	public List<CertifiedProductSearchResult> getAllCertifiedProducts() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<CertifiedProductSearchResult> searchResults = new ArrayList<>();
+		
+		for (CertifiedProductDTO dto : certifiedProductDAO.findAll()){
+			
+			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
+			
+			searchResult.setId(id);
+			searchResult.setCertificationEdition(dto.getCertificationEditionId());
+			searchResult.setCertifyingBody(dto.getCertificationBodyId());
+			searchResult.setCertsAndCQMs(certsAndCQMs);
+			searchResult.setChplNum(dto.getChplProductNumber());
+			searchResult.setClassification(classification);
+			searchResult.setPracticeType(practiceType);
+			searchResult.setProduct(product);
+			searchResult.setVendor(vendor);
+			searchResult.setVersion(version);
+			
+		}
+		
+		return ;
 	}
 
 	@Override
@@ -76,6 +113,12 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
 	@Override
 	public List<String> getCertBodyNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PopulateSearchOptions getPopulateSearchOptions() {
 		// TODO Auto-generated method stub
 		return null;
 	}

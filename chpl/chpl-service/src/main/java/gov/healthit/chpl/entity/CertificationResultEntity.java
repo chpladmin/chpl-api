@@ -169,7 +169,7 @@ public class CertificationResultEntity implements Serializable {
 	 * Set the value related to the column: certificationCriterion.
 	 * @param certificationCriterion the certificationCriterion value you wish to set
 	 */
-	public void setCertificationCriterion(final Long certificationCriterionId) {
+	public void setCertificationCriterionId(final Long certificationCriterionId) {
 		this.certificationCriterionId = certificationCriterionId;
 	}
 
@@ -390,7 +390,7 @@ public class CertificationResultEntity implements Serializable {
 	 * Set the value related to the column: testDataVersion.
 	 * @param testDataVersion the testDataVersion value you wish to set
 	 */
-	public void setTestDataVersion(final Long testDataVersionId) {
+	public void setTestDataVersionId(final Long testDataVersionId) {
 		this.testDataVersionId = testDataVersionId;
 	}
 
@@ -407,7 +407,7 @@ public class CertificationResultEntity implements Serializable {
 	 * Set the value related to the column: testProcedureVersion.
 	 * @param testProcedureVersion the testProcedureVersion value you wish to set
 	 */
-	public void setTestProcedureVersion(Long testProcedureVersion) {
+	public void setTestProcedureVersionId(Long testProcedureVersion) {
 		this.testProcedureVersionId = testProcedureVersion;
 	}
 	

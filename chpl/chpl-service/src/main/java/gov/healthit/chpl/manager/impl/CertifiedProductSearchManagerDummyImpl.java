@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.ModificationItem;
+import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 @Service
@@ -341,6 +342,12 @@ public class CertifiedProductSearchManagerDummyImpl implements CertifiedProductS
 		names.add("SomeACB");
 		names.add("OtherACB");
 		return names;
+	}
+
+	@Override
+	public PopulateSearchOptions getPopulateSearchOptions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

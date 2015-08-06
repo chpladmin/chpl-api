@@ -1,19 +1,20 @@
 package gov.healthit.chpl.dao;
 
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 import java.util.List;
 
 public interface CertificationBodyDAO {
 	
-	public void create(CertificationBodyEntity acb);
+	public void create(CertificationBodyDTO acb) throws EntityCreationException;
 
-	public void delete(Long contactId);
+	public void delete(Long acbId);
 
-	public List<CertificationBodyEntity> findAll();
+	public List<CertificationBodyDTO> findAll();
 
-	public CertificationBodyEntity getById(Long id);
+	public CertificationBodyDTO getById(Long id);
 
-	public void update(CertificationBodyEntity contact);
+	public void update(CertificationBodyDTO contact);
 	
 }

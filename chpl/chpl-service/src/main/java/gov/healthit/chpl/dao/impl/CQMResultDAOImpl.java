@@ -5,12 +5,16 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.entity.CQMResultEntity;
 
+@Repository(value="cqmResultDAO")
 public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 
 	@Override
@@ -35,8 +39,8 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 			entity.setCreationDate(cqmResult.getCreationDate());
 			entity.setDeleted(cqmResult.getDeleted());
 			entity.setId(cqmResult.getId());
-			entity.setLastModifiedDate(cqmResult.getLastModifiedDate());
-			entity.setLastModifiedUser(cqmResult.getLastModifiedUser());
+			//entity.setLastModifiedDate(cqmResult.getLastModifiedDate());
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setSuccess(cqmResult.getSuccess());
 			
 			create(entity);	
@@ -57,7 +61,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		entity.setLastModifiedUser(cqmResult.getLastModifiedUser());
 		entity.setSuccess(cqmResult.getSuccess());
 		
-		create(entity);	
+		update(entity);	
 		
 	}
 
@@ -110,7 +114,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		List<CQMResultEntity> result = query.getResultList();
 		
 		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. CQM result id in database.");
+			throw new EntityRetrievalException("Data error. Duplicate CQM result id in database.");
 		}
 		
 		if (result.size() < 0){

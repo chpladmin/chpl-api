@@ -4,6 +4,7 @@ import gov.healthit.chpl.domain.CQMResult;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.domain.PopulateSearchOptions;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public interface CertifiedProductSearchManager {
 	public List<String> getProductNames();
 	public List<String> getVendorNames();
 	public List<String> getCertBodyNames();
+	public PopulateSearchOptions getPopulateSearchOptions();
 
 	
 }

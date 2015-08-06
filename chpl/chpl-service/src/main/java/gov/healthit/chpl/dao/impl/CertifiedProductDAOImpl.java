@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.impl;
 
 
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -12,8 +13,10 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
+@Repository(value="certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl {
-	
 	
 	
 	public void create(CertifiedProductDTO product) throws EntityCreationException{
@@ -39,8 +42,8 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl {
 			productEntity.setChplProductNumber(product.getChplProductNumber());
 			productEntity.setCreationDate(product.getCreationDate());
 			productEntity.setDeleted(product.getDeleted());
-			productEntity.setLastModifiedDate(product.getLastModifiedDate());
-			productEntity.setLastModifiedUser(product.getLastModifiedUser());
+			//productEntity.setLastModifiedDate(product.getLastModifiedDate());
+			productEntity.setLastModifiedUser(Util.getCurrentUser().getId());
 			productEntity.setPracticeTypeId(product.getPracticeTypeId());
 			productEntity.setProductClassificationTypeId(product.getProductClassificationTypeId());
 			productEntity.setProductVersionId(product.getProductVersionId());
