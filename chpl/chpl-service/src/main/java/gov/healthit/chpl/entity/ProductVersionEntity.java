@@ -67,7 +67,8 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	@Column(name = "product_id", nullable = false )
 	private Long productId;
 	
-	/** Field mapping. */
+	@Basic( optional = true )
+	@Column(name = "version")
 	private String version;
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -200,7 +201,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 * Return the value associated with the column: product.
 	 * @return A Product object (this.product)
 	 */
-	public Long getProduct() {
+	public Long getProductId() {
 		return this.productId;
 		
 	}
@@ -209,7 +210,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 * Set the value related to the column: product.
 	 * @param product the product value you wish to set
 	 */
-	public void setProduct(Long productId) {
+	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
 
