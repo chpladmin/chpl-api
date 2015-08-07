@@ -62,9 +62,12 @@ public class ProductClassificationTypeEntity implements Serializable {
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
 	
-	
+	@Basic( optional = false )
+	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	/** Field mapping. */
+	
+	@Basic( optional = false )
+	@Column( nullable = false, length = 50  )
 	private String name;
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -194,8 +197,6 @@ public class ProductClassificationTypeEntity implements Serializable {
 	 * Return the value associated with the column: lastModifiedUser.
 	 * @return A Long object (this.lastModifiedUser)
 	 */
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
 	public Long getLastModifiedUser() {
 		return this.lastModifiedUser;
 		
@@ -215,8 +216,6 @@ public class ProductClassificationTypeEntity implements Serializable {
 	 * Return the value associated with the column: name.
 	 * @return A String object (this.name)
 	 */
-	@Basic( optional = false )
-	@Column( nullable = false, length = 50  )
 	public String getName() {
 		return this.name;
 		
