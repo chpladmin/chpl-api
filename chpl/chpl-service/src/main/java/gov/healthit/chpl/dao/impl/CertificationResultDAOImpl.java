@@ -68,8 +68,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		entity.setDeleted(result.getDeleted());
 		entity.setGap(result.getGap());
 		entity.setInherited(result.getInherited());
-		entity.setLastModifiedDate(result.getLastModifiedDate());
-		entity.setLastModifiedUser(result.getLastModifiedUser());
+		//entity.setLastModifiedDate(result.getLastModifiedDate());
+		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setSedInherited(result.getSedInherited());
 		entity.setSedSuccessful(result.getSedSuccessful());
 		entity.setSuccessful(result.getSuccessful());

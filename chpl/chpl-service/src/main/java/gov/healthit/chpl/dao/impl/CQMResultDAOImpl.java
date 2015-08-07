@@ -57,8 +57,8 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		entity.setCreationDate(cqmResult.getCreationDate());
 		entity.setDeleted(cqmResult.getDeleted());
 		entity.setId(cqmResult.getId());
-		entity.setLastModifiedDate(cqmResult.getLastModifiedDate());
-		entity.setLastModifiedUser(cqmResult.getLastModifiedUser());
+		//entity.setLastModifiedDate(cqmResult.getLastModifiedDate());
+		entity.setLastModifiedUser(Util.getCurrentUser().getId());;
 		entity.setSuccess(cqmResult.getSuccess());
 		
 		update(entity);	

@@ -46,7 +46,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 			acbEntity.setId(acb.getId());
 			acbEntity.setCreationDate(acb.getCreationDate());
 			acbEntity.setDeleted(acb.getDeleted());
-			acbEntity.setLastModifiedDate(acb.getLastModifiedDate());
+			//acbEntity.setLastModifiedDate(acb.getLastModifiedDate());
 			acbEntity.setLastModifiedUser(Util.getCurrentUser().getId());
 			acbEntity.setName(acb.getName());
 			acbEntity.setWebsite(acb.getWebsite());
@@ -61,20 +61,12 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		CertificationBodyEntity acbEntity = getEntityById(acb.getId());		
 		
 		acbEntity.setId(acb.getId());
-		acbEntity.setAtcbCertificationId(acb.getAtcbCertificationId());
-		acbEntity.setCertificationBodyId(acb.getCertificationBodyId());
-		acbEntity.setCertificationEditionId(acb.getCertificationEditionId());
-		acbEntity.setChplProductNumber(acb.getChplProductNumber());
 		acbEntity.setCreationDate(acb.getCreationDate());
 		acbEntity.setDeleted(acb.getDeleted());
-		acbEntity.setLastModifiedDate(acb.getLastModifiedDate());
-		acbEntity.setLastModifiedUser(acb.getLastModifiedUser());
-		acbEntity.setPracticeTypeId(acb.getPracticeTypeId());
-		acbEntity.setProductClassificationTypeId(acb.getProductClassificationTypeId());
-		acbEntity.setProductVersionId(acb.getProductVersionId());
-		acbEntity.setQualityManagementSystemAtt(acb.getQualityManagementSystemAtt());
-		acbEntity.setReportFileLocation(acb.getReportFileLocation());
-		acbEntity.setTestingLabId(acb.getTestingLabId());
+		//acbEntity.setLastModifiedDate(acb.getLastModifiedDate());
+		acbEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+		acbEntity.setName(acb.getName());
+		acbEntity.setWebsite(acb.getWebsite());
 		
 		update(acbEntity);
 		

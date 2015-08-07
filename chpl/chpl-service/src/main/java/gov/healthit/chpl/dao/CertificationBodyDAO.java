@@ -13,8 +13,8 @@ public interface CertificationBodyDAO {
 
 	public List<CertificationBodyDTO> findAll();
 
-	public CertificationBodyDTO getById(Long id);
+	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
 
-	public void update(CertificationBodyDTO contact);
+	public void update(CertificationBodyDTO contact) throws EntityRetrievalException;
 	
 }

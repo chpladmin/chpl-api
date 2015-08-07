@@ -48,13 +48,16 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setId(id);
 			searchResult.setCertificationEdition(dto.getCertificationEditionId());
-			searchResult.setCertifyingBody(dto.getCertificationBodyId());
+			searchResult.setCertifyingBody(
+					certificationBodyDAO.getById(dto.getCertificationBodyId())
+					.getName()
+					);
 			searchResult.setCertsAndCQMs(certsAndCQMs);
 			searchResult.setChplNum(dto.getChplProductNumber());
-			searchResult.setClassification(classification);
-			searchResult.setPracticeType(practiceType);
-			searchResult.setProduct(product);
-			searchResult.setVendor(vendor);
+			searchResult.setClassification(dto.getProductClassificationTypeId());
+			searchResult.setPracticeType(dto.getPracticeTypeId());
+			searchResult.setProduct();
+			searchResult.setVendor(dto.get);
 			searchResult.setVersion(version);
 			
 		}
