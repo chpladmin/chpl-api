@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ProductEntityDTO {
+public class ProductDTO {
 	
 	private Long id;
 	private Date creationDate;
@@ -19,8 +19,8 @@ public class ProductEntityDTO {
 	private String reportFileLocation;
 	private Long vendorId;
 	
-	public ProductEntityDTO(){}
-	public ProductEntityDTO(ProductEntity entity){
+	public ProductDTO(){}
+	public ProductDTO(ProductEntity entity){
 		
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();
