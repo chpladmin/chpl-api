@@ -52,8 +52,26 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	}
 
 	@Override
-	public void update(CertificationCriterionDTO result) throws EntityRetrievalException {
+	public void update(CertificationCriterionDTO dto) throws EntityRetrievalException, EntityCreationException {
 		
+		CertificationCriterionEntity entity = this.getEntityById(dto.getId());;
+			
+		entity = new CertificationCriterionEntity();
+		entity.setAutomatedMeasureCapable(dto.getAutomatedMeasureCapable());
+		entity.setAutomatedNumeratorCapable(dto.getAutomatedNumeratorCapable());
+		entity.setCertificationEdition(dto.getCertificationEditionId());
+		entity.setCreationDate(dto.getCreationDate());
+		entity.setDeleted(dto.getDeleted());
+		entity.setDescription(dto.getDescription());
+		entity.setId(dto.getId());
+		//entity.setLastModifiedDate(result.getLastModifiedDate());
+		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		entity.setNumber(dto.getNumber());
+		entity.setParentCriterion(this.getEntityById(dto.getParentCriterionId()));
+		entity.setRequiresSed(dto.getRequiresSed());
+		entity.setTitle(dto.getTitle());
+		
+		update(entity);
 	}
 	
 	@Override
@@ -68,6 +86,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	
 	@Override
 	public List<CertificationCriterionDTO> findAll() {
+		
 		List<CertificationCriterionEntity> entities = getAllEntities();
 		List<CertificationCriterionDTO> dtos = new ArrayList<>();
 		

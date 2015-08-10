@@ -8,7 +8,7 @@ public interface CertificationCriterionDAO {
 	
 	public void create(CertificationCriterionDTO result) throws EntityCreationException, EntityRetrievalException;
 
-	public void update(CertificationCriterionDTO result) throws EntityRetrievalException;
+	public void update(CertificationCriterionDTO result) throws EntityRetrievalException, EntityCreationException;
 	
 	public void delete(Long criterionId);
 	
