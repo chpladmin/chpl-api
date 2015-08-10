@@ -43,15 +43,13 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 			create(entity);	
 		}
 		
-		
 	}
 
 	@Override
 	public void update(CertificationEditionDTO dto)
 			throws EntityRetrievalException {
 		
-		CertificationEditionEntity entity = this.getEntityById(dto.getId());;	
-		entity = new CertificationEditionEntity();
+		CertificationEditionEntity entity = this.getEntityById(dto.getId());
 		//entity.setCertificationCriterions();
 		entity.setCreationDate(dto.getCreationDate());
 		entity.setDeleted(dto.getDeleted());
