@@ -7,8 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
+import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CQMResult;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -31,6 +35,19 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	@Autowired
 	private CQMResultDAO cqmResultDAO;
 	
+	@Autowired
+	private CertificationEditionDAO certificationResultResultDAO;
+	
+	@Autowired
+	private ProductClassificationTypeDAO productClassificationTypeDAO;
+	
+	@Autowired
+	private ProductVersionDAO productVersionDAO;
+	
+	@Autowired
+	private ProductDAO productDAO;
+	
+	
 	@Override
 	public List<CertifiedProductSearchResult> search(String query) {
 		// TODO Auto-generated method stub
@@ -46,20 +63,33 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
 			
-			searchResult.setId(id);
-			searchResult.setCertificationEdition(dto.getCertificationEditionId());
+			searchResult.setId(dto.getId());
+			searchResult.setCertificationEdition(
+					certificationResultResultDAO.getById(dto.getCertificationEditionId())
+					.getYear()
+					);
 			searchResult.setCertifyingBody(
 					certificationBodyDAO.getById(dto.getCertificationBodyId())
 					.getName()
 					);
-			searchResult.setCertsAndCQMs(certsAndCQMs);
+			//searchResult.setCertsAndCQMs(certsAndCQMs);
 			searchResult.setChplNum(dto.getChplProductNumber());
-			searchResult.setClassification(dto.getProductClassificationTypeId());
+			searchResult.setClassification(
+					productClassificationTypeDAO.getById(dto.getProductClassificationTypeId()
+					).getName()
+					);
 			searchResult.setPracticeType(dto.getPracticeTypeId());
-			searchResult.setProduct();
-			searchResult.setVendor(dto.get);
-			searchResult.setVersion(version);
 			
+			Long productId = productVersionDAO.getById(dto.getProductVersionId()).getProductId();
+			String productName = productDAO.getById(productId).getName();
+			searchResult.setProduct(productName);
+			
+			searchResult.setVendor();
+			
+			searchResult.setVersion(
+					productVersionDAO.getById(dto.getProductVersionId())
+					.getVersion()
+					);
 		}
 		
 		return ;
