@@ -33,14 +33,14 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@Basic( optional = false )
 	@JoinColumn(name = "contact_id", nullable = false , insertable = false, updatable = false )
-	private Contact contact;
+	private ContactEntity contact;
 
 	/** Field mapping. */
 	@ManyToOne( cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY )
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@Basic( optional = false )
 	@JoinColumn(name = "vendor_id_vendor", nullable = false , insertable = false, updatable = false )
-	private Vendor vendorIdVendor;
+	private VendorEntity vendorIdVendor;
 
  
 
@@ -59,7 +59,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	 * Return the value associated with the column: contact.
 	 * @return A Contact object (this.contact)
 	 */
-	public Contact getContact() {
+	public ContactEntity getContact() {
 		return this.contact;
 		
 	}
@@ -70,7 +70,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	 * Set the value related to the column: contact.
 	 * @param contact2 the contact value you wish to set
 	 */
-	public void setContact(final Contact contact2) {
+	public void setContact(final ContactEntity contact2) {
 		this.contact = contact2;
 	}
 
@@ -78,7 +78,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	 * Return the value associated with the column: vendorIdVendor.
 	 * @return A Vendor object (this.vendorIdVendor)
 	 */
-	public Vendor getVendorIdVendor() {
+	public VendorEntity getVendorIdVendor() {
 		return this.vendorIdVendor;
 		
 	}
@@ -89,7 +89,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	 * Set the value related to the column: vendorIdVendor.
 	 * @param vendorIdVendor the vendorIdVendor value you wish to set
 	 */
-	public void setVendorIdVendor(final Vendor vendorIdVendor) {
+	public void setVendorIdVendor(final VendorEntity vendorIdVendor) {
 		this.vendorIdVendor = vendorIdVendor;
 	}
 
