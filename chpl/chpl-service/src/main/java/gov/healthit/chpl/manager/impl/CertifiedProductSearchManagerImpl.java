@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 public class CertifiedProductSearchManagerImpl implements CertifiedProductSearchManager {
@@ -81,9 +82,12 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setPracticeType(dto.getPracticeTypeId());
 			
 			Long productId = productVersionDAO.getById(dto.getProductVersionId()).getProductId();
-			String productName = productDAO.getById(productId).getName();
+			ProductDTO product =  productDAO.getById(productId);
+			String productName = product.getName();
+			
 			searchResult.setProduct(productName);
 			
+			Long vendorId = product.getVendorId();
 			searchResult.setVendor();
 			
 			searchResult.setVersion(
