@@ -1,10 +1,6 @@
-﻿--
+--
 -- PostgreSQL database dump
 --
-
--- Dumped from database version 9.3.4
--- Dumped by pg_dump version 9.3.4
--- Started on 2015-07-22 15:04:41
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -93,7 +89,7 @@ SELECT pg_catalog.setval('acl_sid_id_seq', 1, true);
 -- Data for Name: contact; Type: TABLE DATA; Schema: openchpl; Owner: openchpl
 --
 
-INSERT INTO contact VALUES (-2, 'Administrator', 'Administrator', 'info@ainq.com', '(301) 560-6999', 'Administrator', '2015-09-13', '2015-07-13 09:40:45.151', '2015-07-13 09:40:45.151', -1, false);
+INSERT INTO contact (contact_id, first_name, last_name, email, phone_number, signature_date, last_modified_user) VALUES (-2, 'Administrator', 'Administrator', 'info@ainq.com', '(301) 560-6999', '2015-09-13', -1);
 
 
 --
@@ -111,7 +107,7 @@ SELECT pg_catalog.setval('contact_contact_id_seq', 1, true);
 -- Data for Name: user; Type: TABLE DATA; Schema: openchpl; Owner: openchpl
 --
 
-INSERT INTO "user" VALUES (-2, 'admin', '$2a$10$vVXOupd9DckGsQPtZ5h9seYCGzqYb3A35r/GNuP/rRbK2eq2KxtA2', false, false, false, true, '2015-06-01 09:39:27.822', '2015-07-22 14:26:23.301', -1, false, -2);
+INSERT INTO "user" (user_id, user_name, password, account_expired, account_locked, credentials_expired, account_enabled, last_modified_user, contact_id) VALUES (-2, 'admin', '$2a$10$vVXOupd9DckGsQPtZ5h9seYCGzqYb3A35r/GNuP/rRbK2eq2KxtA2', false, false, false, true, -1, -2);
 
 
 --
@@ -120,7 +116,7 @@ INSERT INTO "user" VALUES (-2, 'admin', '$2a$10$vVXOupd9DckGsQPtZ5h9seYCGzqYb3A3
 -- Data for Name: user_permission; Type: TABLE DATA; Schema: openchpl; Owner: openchpl
 --
 
-INSERT INTO user_permission VALUES (-2, 'ADMIN', 'This permission confers administrative privileges to its owner.', 'ROLE_ADMIN', '2015-06-17 17:06:06.904', '2015-06-17 17:06:06.904', -1, false);
+INSERT INTO user_permission (user_permission_id, "name", description, authority, last_modified_user) VALUES (-2, 'ADMIN', 'This permission confers administrative privileges to its owner.', 'ROLE_ADMIN', -1);
 
 
 --
@@ -133,8 +129,8 @@ SELECT pg_catalog.setval('user_permission_user_permission_id_seq', 1, true);
 
 
 
-INSERT INTO user_permission ("name", description, authority, creation_date, last_modified_date, last_modified_user, deleted) VALUES 
-('USER_CREATOR' ,'This permission allows a user to create other users',	'ROLE_USER_CREATOR' , '2015-06-17 17:06:06.904', '2015-06-17 17:06:06.904', -1, false);
+INSERT INTO user_permission ("name", description, authority, last_modified_user) VALUES
+('USER_CREATOR' ,'This permission allows a user to create other users',	'ROLE_USER_CREATOR' , -1);
 
 
 --
@@ -143,7 +139,7 @@ INSERT INTO user_permission ("name", description, authority, creation_date, last
 -- Data for Name: global_user_permission_map; Type: TABLE DATA; Schema: openchpl; Owner: openchpl
 --
 
-INSERT INTO global_user_permission_map VALUES (-2, -2, '2015-07-22 15:00:07.388', '2015-06-17 17:10:15.37', -1, false, 1);
+INSERT INTO global_user_permission_map (user_id, user_permission_id_user_permission, last_modified_user) VALUES (-2, -2, -1);
 
 
 --
