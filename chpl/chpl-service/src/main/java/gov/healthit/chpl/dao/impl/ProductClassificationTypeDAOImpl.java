@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -12,6 +14,7 @@ import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.entity.ProductClassificationTypeEntity;
 
+@Repository("productClassificationTypeDAO")
 public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements ProductClassificationTypeDAO {
 
 	@Override

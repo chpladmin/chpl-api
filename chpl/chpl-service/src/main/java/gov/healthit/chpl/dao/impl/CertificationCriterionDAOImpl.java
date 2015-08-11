@@ -14,6 +14,9 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
+@Repository("certificationCriterionDAO")
 public class CertificationCriterionDAOImpl extends BaseDAOImpl implements CertificationCriterionDAO {
 	
 	@Override

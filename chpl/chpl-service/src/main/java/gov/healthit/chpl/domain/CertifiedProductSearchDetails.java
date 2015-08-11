@@ -1,28 +1,29 @@
 package gov.healthit.chpl.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CertifiedProductSearchDetails {
 	
 	private Long id;
-	private String chplNum;
-	private String vendor;
-	private String product;
+	private Map<String, String> vendor = new HashMap<String, String>();
+	private Map<String, String> product = new HashMap<String, String>();
 	private String version;
-	private String certsAndCQMs;
-	private String classification;
-	private String certifyingBody;
-	private String certificationEdition;
+	private String chplNum;
 	private String practiceType;
-	private String edition;
+	private String classification;
+	private Map<String, String> certifyingBody = new HashMap<String, String>();
+	private String certificationEdition;
 	private Date certDate;
 	private Date lastModifiedDate;
-	private List<String> additionalSoftware;
+	private List<String> additionalSoftware = new ArrayList<String>();
 	private ModificationItem lastModifiedItem;
+	private String certsAndCQMs;
 	private List<CertificationResult> certs;
 	private List<CQMResult> cqms;
-	
 	
 	
 	public Long getId() {
@@ -31,16 +32,16 @@ public class CertifiedProductSearchDetails {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getVendor() {
+	public Map<String, String> getVendor() {
 		return vendor;
 	}
-	public void setVendor(String vendor) {
+	public void setVendor(Map<String, String> vendor) {
 		this.vendor = vendor;
 	}
-	public String getProduct() {
+	public Map<String, String> getProduct() {
 		return product;
 	}
-	public void setProduct(String product) {
+	public void setProduct(Map<String, String> product) {
 		this.product = product;
 	}
 	public String getVersion() {
@@ -61,10 +62,10 @@ public class CertifiedProductSearchDetails {
 	public void setClassification(String classification) {
 		this.classification = classification;
 	}
-	public String getCertifyingBody() {
+	public Map<String,String> getCertifyingBody() {
 		return certifyingBody;
 	}
-	public void setCertifyingBody(String certifyingBody) {
+	public void setCertifyingBody(Map<String, String> certifyingBody) {
 		this.certifyingBody = certifyingBody;
 	}
 	public String getCertificationEdition() {
@@ -78,12 +79,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setAdditionalSoftware(List<String> additionalSoftware) {
 		this.additionalSoftware = additionalSoftware;
-	}
-	public String getEdition() {
-		return edition;
-	}
-	public void setEdition(String edition) {
-		this.edition = edition;
 	}
 	public Date getCertDate() {
 		return certDate;

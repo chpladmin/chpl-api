@@ -2,14 +2,15 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import gov.healthit.chpl.acb.CertificationBodyManager;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResult;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/list_certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResult> listCertifiedProducts() {
+	public @ResponseBody List<CertifiedProductSearchResult> listCertifiedProducts() throws EntityRetrievalException {
 		
 		return certifiedProductSearchManager.getAllCertifiedProducts();
 	}

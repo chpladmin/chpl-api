@@ -20,6 +20,10 @@ public class CertificationBodyEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Basic( optional = true )
+	@Column(name = "address_id", nullable = true )
+	private Long addressId;
+	
 	@Column(name="name")
 	private String name;
 	

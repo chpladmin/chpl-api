@@ -42,15 +42,5 @@ public class AuthExceptionControllerAdvice {
 		return new ErrorJSONObject(e.getMessage());
 	}
 	
-	//JWTCreationException
-	
-	// Unfortunately, looks like we might not be able to use this
-	// for ServletException thrown by filter
-	/*
-	@ExceptionHandler(ServletException.class)
-	public @ResponseBody ErrorJSONObject exception(ServletException e) {
-		return new ErrorJSONObject(e.getMessage());
-	}	
-	*/
 	
 }

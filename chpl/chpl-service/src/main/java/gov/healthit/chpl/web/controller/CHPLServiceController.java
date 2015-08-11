@@ -2,20 +2,17 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import gov.healthit.chpl.acb.CertificationBodyManager;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.domain.CQMResult;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
+
+
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,25 +31,13 @@ public class CHPLServiceController {
 	}
 	
 	
-	@RequestMapping(value="/adminACB/{acbID}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String adminACB(@PathVariable String acbID) {
-		
-		List<CertificationBodyEntity> authorizedACBs = certificationBodyManager.getAll();
-		
-		if (authorizedACBs.size() > 0){
-			return "{\"AdminsteringACB:\" : \""+acbID+"\"}";
-		} else {
-			return "{\"AdminsteringACB:\" : \"-1\"}";
-		}
-	}
-	
 	@RequestMapping(value="/createACB/{acbName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String createACB(@PathVariable String acbName) {
+	public String createACB(@PathVariable String acbName) throws EntityCreationException {
 		
 		System.out.println("Claims:");
 		System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 		
-		CertificationBodyEntity acb = new CertificationBodyEntity();
+		CertificationBodyDTO acb = new CertificationBodyDTO();
 		acb.setName(acbName);
 		acb.setWebsite("www.zombo.com");
 		certificationBodyManager.create(acb);
@@ -61,27 +46,16 @@ public class CHPLServiceController {
 		
 	}
 	
-	@RequestMapping(value="/renameACB/{acbId}/{acbName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String updateACBName(@PathVariable Long acbId, @PathVariable String acbName) {
-		
-		CertificationBodyEntity acb = certificationBodyManager.getById(acbId);
-		acb.setName(acbName);
-		certificationBodyManager.update(acb);
-		
-		return acb.toString();
-		
-	}
-	
 	@RequestMapping(value="/listMyACBs", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String listMyACBs() {
 		
-		List<CertificationBodyEntity> acbs = certificationBodyManager.getAll();
+		List<CertificationBodyDTO> acbs = certificationBodyManager.getAll();
 		
 		System.out.println("found: ");
 		System.out.println(acbs.size());
 		System.out.println("ACBs");
 		
-		for (CertificationBodyEntity cb : acbs){
+		for (CertificationBodyDTO cb : acbs){
 			
 			System.out.println(cb.toString());
 			System.out.println(cb.getName());

@@ -10,9 +10,12 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
+import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.domain.CQMResult;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -48,6 +51,12 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	@Autowired
 	private ProductDAO productDAO;
 	
+	@Autowired
+	private PracticeTypeDAO practiceTypeDAO;
+	
+	@Autowired
+	private VendorDAO vendorDAO;
+	
 	
 	@Override
 	public List<CertifiedProductSearchResult> search(String query) {
@@ -56,7 +65,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	}
 
 	@Override
-	public List<CertifiedProductSearchResult> getAllCertifiedProducts() {
+	public List<CertifiedProductSearchResult> getAllCertifiedProducts() throws EntityRetrievalException {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<>();
 		
@@ -79,16 +88,20 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 					productClassificationTypeDAO.getById(dto.getProductClassificationTypeId()
 					).getName()
 					);
-			searchResult.setPracticeType(dto.getPracticeTypeId());
+			
+			
+			Long practiceTypeId = dto.getPracticeTypeId();
+			String practiceTypeName = practiceTypeDAO.getById(practiceTypeId).getName();
+			searchResult.setPracticeType(practiceTypeName);
 			
 			Long productId = productVersionDAO.getById(dto.getProductVersionId()).getProductId();
 			ProductDTO product =  productDAO.getById(productId);
 			String productName = product.getName();
-			
 			searchResult.setProduct(productName);
 			
 			Long vendorId = product.getVendorId();
-			searchResult.setVendor();
+			String vendorName = vendorDAO.getById(vendorId).getName();
+			searchResult.setVendor(vendorName);
 			
 			searchResult.setVersion(
 					productVersionDAO.getById(dto.getProductVersionId())
@@ -96,7 +109,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 					);
 		}
 		
-		return ;
+		return searchResults;
 	}
 
 	@Override
