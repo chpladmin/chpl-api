@@ -50,7 +50,7 @@ public class CertificationEditionEntity implements Serializable {
 	@SequenceGenerator(name = "certificationEditionCertification_edition_idGenerator", sequenceName = "openchpl.openchpl.certification_edition_certification_edition_id_seq", schema = "openchpl", catalog = "openchpl")
 	private Long id;
     
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "certificationEdition"  )
+ 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "certificationEditionId"  )
 	@Basic( optional = false )
 	@Column( name = "certification_edition_id", nullable = false  )
 	private Set<CertificationCriterionEntity> certificationCriterions = new HashSet<CertificationCriterionEntity>();

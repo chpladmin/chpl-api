@@ -1,9 +1,10 @@
-package gov.healthit.chpl.manager;
+package gov.healthit.chpl.manager.impl;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
 	
+	@Autowired
 	private MutableAclService mutableAclService;
 
 

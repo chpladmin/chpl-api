@@ -6,14 +6,14 @@ import java.util.List;
 
 public interface CertifiedProductDAO {
 	
-	public void create(CertifiedProductDTO product);
+	public void create(CertifiedProductDTO product) throws EntityCreationException;
 
-	public void update(CertifiedProductDTO product);
+	public void update(CertifiedProductDTO product) throws EntityRetrievalException;
 	
 	public void delete(Long productId);
 	
 	public List<CertifiedProductDTO> findAll();
 	
-	public CertifiedProductDTO getById(Long productId);
+	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException;
 	
 }

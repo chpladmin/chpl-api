@@ -78,7 +78,9 @@ public class VendorEntity implements Cloneable, Serializable {
 	@Column(name = "name" )
 	private String name;
 
-	/** Field mapping. */
+ 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id.vendorIdVendor"  )
+	@Basic( optional = false )
+	@Column( name = "vendor_id", nullable = false  )
 	private Set<VendorContactMap> vendorContactMaps = new HashSet<VendorContactMap>();
 
 	@Basic( optional = true )
@@ -270,10 +272,6 @@ public class VendorEntity implements Cloneable, Serializable {
 	 * Return the value associated with the column: vendorContactMap.
 	 * @return A Set&lt;VendorContactMap&gt; object (this.vendorContactMap)
 	 */
- 	@OneToMany( fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "id.vendorIdVendor"  )
- 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
-	@Basic( optional = false )
-	@Column( name = "vendor_id", nullable = false  )
 	public Set<VendorContactMap> getVendorContactMaps() {
 		return this.vendorContactMaps;
 		

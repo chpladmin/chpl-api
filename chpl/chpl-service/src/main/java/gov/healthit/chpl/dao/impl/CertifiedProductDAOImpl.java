@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao.impl;
 
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -16,7 +17,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository(value="certifiedProductDAO")
-public class CertifiedProductDAOImpl extends BaseDAOImpl {
+public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
 	
 	
 	public void create(CertifiedProductDTO product) throws EntityCreationException{

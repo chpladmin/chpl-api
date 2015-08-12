@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -25,6 +26,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
+@Service
 public class CertifiedProductSearchManagerImpl implements CertifiedProductSearchManager {
 
 	@Autowired

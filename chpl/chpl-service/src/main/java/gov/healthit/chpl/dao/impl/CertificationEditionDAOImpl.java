@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -12,6 +14,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
 
+@Repository("certificationEditionDAO")
 public class CertificationEditionDAOImpl extends BaseDAOImpl implements CertificationEditionDAO {
 
 	@Override

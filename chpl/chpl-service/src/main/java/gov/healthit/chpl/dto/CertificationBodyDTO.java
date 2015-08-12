@@ -11,7 +11,7 @@ public class CertificationBodyDTO {
 	private Boolean deleted;
 	private Long id;
 	private Date lastModifiedDate;
-	private Integer lastModifiedUser;
+	private Long lastModifiedUser;
 	private String name;
 	private String website;
 	
@@ -19,6 +19,12 @@ public class CertificationBodyDTO {
 	public CertificationBodyDTO(){}
 	
 	public CertificationBodyDTO(CertificationBodyEntity entity){
+		this.id = entity.getId();
+		this.deleted = entity.getDeleted();
+		this.lastModifiedDate = entity.getLastModifiedDate();
+		this.lastModifiedUser = entity.getLastModifiedUser();
+		this.name = entity.getName();
+		this.website = entity.getWebsite();
 		this.creationDate = entity.getCreationDate();
 	}
 	
@@ -47,10 +53,10 @@ public class CertificationBodyDTO {
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
-	public Integer getLastModifiedUser() {
+	public Long getLastModifiedUser() {
 		return lastModifiedUser;
 	}
-	public void setLastModifiedUser(Integer lastModifiedUser) {
+	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 	public String getName() {

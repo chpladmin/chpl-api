@@ -74,7 +74,7 @@ public class ProductEntity implements Serializable {
 	@Column( name = "name")
 	private String name;
 	
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "product"  )
+ 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "productId"  )
 	@Basic( optional = false )
 	@Column( name = "product_id", nullable = false  )
 	private Set<ProductVersionEntity> productVersions = new HashSet<ProductVersionEntity>();
