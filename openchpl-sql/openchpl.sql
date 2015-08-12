@@ -26,7 +26,7 @@ SET search_path TO pg_catalog,public,openchpl;
 
 -- object: openchpl.user | type: TABLE --
 -- DROP TABLE IF EXISTS openchpl.user CASCADE;
-CREATE TABLE openchpl.user(
+CREATE TABLE openchpl."user"(
 	user_id bigserial NOT NULL,
 	user_name varchar(25) NOT NULL,
 	password varchar(255) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE openchpl.user(
 	credentials_expired bool NOT NULL,
 	account_enabled bool NOT NULL,
 	creation_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_date timestamp NOT NULL,
+	last_modified_date timestamp NOT NULL DEFAULT NOW(),
 	last_modified_user bigint NOT NULL,
 	deleted bool NOT NULL DEFAULT false,
 	contact_id bigint,
@@ -43,7 +43,7 @@ CREATE TABLE openchpl.user(
 
 );
 -- ddl-end --
-ALTER TABLE openchpl.user OWNER TO openchpl;
+ALTER TABLE openchpl."user" OWNER TO openchpl;
 -- ddl-end --
 
 -- object: openchpl.certification_body | type: TABLE --
@@ -311,17 +311,19 @@ CREATE TABLE openchpl.global_user_permission_map(
 	user_permission_id_user_permission bigint,
 	last_modified_date timestamp NOT NULL DEFAULT NOW(),
 	creation_date timestamp NOT NULL DEFAULT NOW(),
-	last_modified_user bigint NOT NULL DEFAULT -1,
+	last_modified_user bigint NOT NULL,
 	deleted bool DEFAULT false,
+global_user_permission_id bigserial NOT NULL,
 	CONSTRAINT global_user_permission_map_pk PRIMARY KEY (user_id,user_permission_id_user_permission)
 
 );
+ALTER TABLE openchpl.global_user_permission_map OWNER TO openchpl;
 -- ddl-end --
 
 -- object: user_fk | type: CONSTRAINT --
 -- ALTER TABLE openchpl.global_user_permission_map DROP CONSTRAINT IF EXISTS user_fk CASCADE;
 ALTER TABLE openchpl.global_user_permission_map ADD CONSTRAINT user_fk FOREIGN KEY (user_id)
-REFERENCES openchpl.user (user_id) MATCH FULL
+REFERENCES openchpl."user" (user_id) MATCH FULL
 ON DELETE RESTRICT ON UPDATE CASCADE;
 -- ddl-end --
 
@@ -414,6 +416,7 @@ CREATE TABLE openchpl.atl_contact_map(
 	CONSTRAINT atl_contact_map_pk PRIMARY KEY (contact_id,testing_lab_id_testing_lab)
 
 );
+ALTER TABLE openchpl.atl_contact_map OWNER TO openchpl;
 -- ddl-end --
 
 -- object: contact_fk | type: CONSTRAINT --
@@ -443,6 +446,7 @@ CREATE TABLE openchpl.acb_contact_map(
 	CONSTRAINT acb_contact_map_pk PRIMARY KEY (contact_id,certification_body_id_certification_body)
 
 );
+ALTER TABLE openchpl.acb_contact_map OWNER TO openchpl;
 -- ddl-end --
 
 -- object: contact_fk | type: CONSTRAINT --
@@ -471,6 +475,7 @@ CREATE TABLE openchpl.vendor_contact_map(
 	CONSTRAINT vendor_contact_map_pk PRIMARY KEY (contact_id,vendor_id_vendor)
 
 );
+ALTER TABLE openchpl.vendor_contact_map OWNER TO openchpl;
 -- ddl-end --
 
 -- object: contact_fk | type: CONSTRAINT --
@@ -1261,7 +1266,7 @@ CREATE TABLE openchpl.acl_entry(
 	mask integer NOT NULL,
 	granting bool NOT NULL,
 	audit_success bool NOT NULL,
-	audit_failure bigint NOT NULL,
+	audit_failure bool NOT NULL,
 	CONSTRAINT acl_entry_pk PRIMARY KEY (id)
 
 );
@@ -1378,7 +1383,7 @@ ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- object: contact_fk | type: CONSTRAINT --
 -- ALTER TABLE openchpl.user DROP CONSTRAINT IF EXISTS contact_fk CASCADE;
-ALTER TABLE openchpl.user ADD CONSTRAINT contact_fk FOREIGN KEY (contact_id)
+ALTER TABLE openchpl."user" ADD CONSTRAINT contact_fk FOREIGN KEY (contact_id)
 REFERENCES openchpl.contact (contact_id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
@@ -1403,5 +1408,3 @@ ALTER TABLE openchpl.acl_object_identity ADD CONSTRAINT parent_object_fk FOREIGN
 REFERENCES openchpl.acl_object_identity (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
-
-

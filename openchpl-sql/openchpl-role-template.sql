@@ -6,7 +6,7 @@
 
 -- object: openchpl | type: ROLE --
 -- DROP ROLE IF EXISTS openchpl;
-CREATE ROLE openchpl WITH 
+CREATE ROLE openchpl WITH
 	LOGIN
 	UNENCRYPTED PASSWORD 'change this password';
 -- ddl-end --
