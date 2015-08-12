@@ -43,6 +43,7 @@ public class AuthenticationController {
 		
 		String jwt = null;
 		jwt = authenticator.getJWT(credentials);
+		String jwtJSON = "{\"token\" : \""+jwt+"\"}";
 		return jwtJSON;
 	}
 	
