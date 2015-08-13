@@ -34,7 +34,7 @@
 	
 	<tx:annotation-driven transaction-manager="transactionManager"
 		proxy-target-class="true" />
-	
+	<!--  
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
                 <property name="persistenceUnitName" value="openchpl" />
     </bean>
@@ -44,5 +44,6 @@
 	</bean>
 	
 	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+	-->
 	
 </beans>
