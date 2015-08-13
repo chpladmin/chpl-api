@@ -18,7 +18,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
-//@ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig.class })
 public class JWTConsumerRsaJoseJImplTest {
 	
 	@Autowired
@@ -49,14 +48,12 @@ public class JWTConsumerRsaJoseJImplTest {
             // Construct DataSource
             PGPoolingDataSource ds = new PGPoolingDataSource();
         	ds.setServerName("jdbc:postgresql://localhost/openchpl");
-            
-            //ds.setURL("jdbc:oracle:thin:@localhost:5432:chpl_acl");
+        	
             ds.setUser("openchpl");
             ds.setPassword("Audac1ous");
             
             ic.bind("java:/comp/env/jdbc/openchpl", ds);
         } catch (NamingException ex) {
-            //Logger.getLogger(MyDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         	ex.printStackTrace();
         }
         

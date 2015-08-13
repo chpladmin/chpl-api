@@ -251,7 +251,7 @@ public class CHPLAuthenticationSecurityTestConfig extends
 	
 	
 	@Bean
-	public BasicLookupStrategy lookupStrategy() throws Exception{
+	public BasicLookupStrategy lookupStrategy() throws Exception {
 		
 		DataSource datasource = (DataSource) aclDataSource();//.getObject();
 		
@@ -267,7 +267,7 @@ public class CHPLAuthenticationSecurityTestConfig extends
 	@Bean
 	public JdbcMutableAclService mutableAclService() throws Exception{
 		
-		DataSource datasource = (DataSource) aclDataSource();//.getObject();
+		DataSource datasource = (DataSource) aclDataSource();
 		
 		JdbcMutableAclService bean = new JdbcMutableAclService(datasource, 
 				lookupStrategy(), 
@@ -291,7 +291,7 @@ public class CHPLAuthenticationSecurityTestConfig extends
 	
 	
 	@Bean
-	public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception{
+	public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception {
 		
 		DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
 		bean.setPermissionEvaluator(permissionEvaluator());
@@ -330,6 +330,5 @@ public class CHPLAuthenticationSecurityTestConfig extends
         }
         return ds;
     }
-	
 	
 }
