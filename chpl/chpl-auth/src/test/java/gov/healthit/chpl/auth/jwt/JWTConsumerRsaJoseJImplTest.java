@@ -54,7 +54,6 @@ public class JWTConsumerRsaJoseJImplTest {
             
             ic.bind("java:/comp/env/jdbc/openchpl", ds);
         } catch (NamingException ex) {
-            //Logger.getLogger(MyDAOTest.class.getName()).log(Level.SEVERE, null, ex);
         	ex.printStackTrace();
         }
         

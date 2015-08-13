@@ -15,10 +15,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @Configuration
 @EnableWebSecurity
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
-public class CHPLConfig {
+public class CHPLTestConfig  {
 	
 	
-	public static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+	public static final String DEFAULT_PROPERTIES_FILE = "environment.test.properties";
 	
 	protected Properties props;
 	
@@ -64,5 +64,4 @@ public class CHPLConfig {
 	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
-	
 }
