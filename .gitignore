@@ -247,3 +247,5 @@ pip-log.txt
 /chpl/chpl-etl/parse.sh
 /chpl/chpl-etl/log_checksum-analysis-finallines.txt
 /openchpl-sql/openchpl-role.sql
+/chpl/chpl-api/chpl/chpl-service/src/test/resources/environment.test.properties
+/chpl/chpl-api/chpl/chpl-auth/src/test/resources/environment.auth.test.properties
