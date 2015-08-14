@@ -17,11 +17,14 @@ monthly=input/parsed/log.monthly.$TIMESTAMP_MONTH.txt
 # email parameters
 E_TO="to@example.com to-also@example.com"
 E_FROM=notifier@example.com
-E_SUBJ='"CHPL Updates found"'
+E_SUBJ='"CHPL Updates found at '$TIMESTAMP'"'
 E_MSG='"Updates were found during the run. Please find attached the to-update file, the original .xlsx file, and the parsing log."'
+E_SUBJ_NO='"No CHPL Updates found at '$TIMESTAMP'"'
+E_MSG_NO='"No CHPL Updates found. Please find attached the parsing log."'
 E_SMTP=smtp.example.com:25
 E_UN=username
 E_PW=password
+MINIMUM_SIZE=3812
 
 # ensure output folders exist
 mkdir -p input/parsed/input
@@ -52,7 +55,13 @@ if ls input/*.xlsx 1> /dev/null 2>&1; then
         mv "./$i" input/parsed/input/
         cp to-update.csv input/parsed/$i-to-update.csv
 
-        sendemail -f $E_FROM -t $E_TO -u $E_SUBJ -m $E_MSG -s $E_SMTP -xu $E_UN -xp $E_PW -a '"input/parsed/'$i'-to-update.csv"' '"input/parsed/'$i'"' $log
+        updatefile='input/parsed/'$i'-to-update.csv'
+        updatesize=$(wc -c < "$updatefile")
+        if [ $updatesize -le $MINIMUM_SIZE ]; then
+            sendemail -f $E_FROM -t $E_TO -u $E_SUBJ_NO -m $E_MSG_NO -s $E_SMTP -xu $E_UN -xp $E_PW -a $log
+        else
+            sendemail -f $E_FROM -t $E_TO -u $E_SUBJ -m $E_MSG -s $E_SMTP -xu $E_UN -xp $E_PW -a $updatefile 'input/parsed/'$i $log
+        fi
     done
 else
     echo "No files found at:" $TIMESTAMP >> $monthly
