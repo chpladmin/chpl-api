@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.postgresql.ds.PGPoolingDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
