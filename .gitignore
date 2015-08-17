@@ -249,3 +249,4 @@ pip-log.txt
 /openchpl-sql/openchpl-role.sql
 #/chpl/chpl-api/chpl/chpl-service/src/test/resources/environment.test.properties
 #/chpl/chpl-api/chpl/chpl-auth/src/test/resources/environment.auth.test.properties
+/chpl/chpl-service/test-target/
