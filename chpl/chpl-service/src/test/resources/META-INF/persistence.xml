@@ -11,6 +11,12 @@
 		<class>gov.healthit.chpl.auth.user.UserContactEntity</class>
 		<class>gov.healthit.chpl.auth.permission.UserPermissionEntity</class>
 		<class>gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity</class>
+		<class>gov.healthit.chpl.entity.AddressEntity</class>
+		<class>gov.healthit.chpl.entity.ContactEntity</class>
+		<class>gov.healthit.chpl.entity.VendorContactMap</class>
+		<class>gov.healthit.chpl.entity.VendorEntity</class>
+		<class>gov.healthit.chpl.entity.ProductEntity</class>
+		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

@@ -16,4 +16,6 @@ public interface ProductVersionDAO {
 	
 	public ProductVersionDTO getById(Long id) throws EntityRetrievalException;
 	
+	public List<ProductVersionDTO> getByProductId(Long productId);
+	
 }

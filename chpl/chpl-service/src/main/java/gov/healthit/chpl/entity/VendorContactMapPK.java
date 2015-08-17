@@ -1,7 +1,5 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.auth.user.UserContactEntity;
-
 import java.io.Serializable;
 
 import javax.persistence.Basic;

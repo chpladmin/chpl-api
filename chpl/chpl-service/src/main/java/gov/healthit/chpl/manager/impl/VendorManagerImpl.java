@@ -33,21 +33,25 @@ public class VendorManagerImpl implements VendorManager {
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@Transactional(readOnly = false)
 	public void update(VendorDTO vendor) throws EntityRetrievalException {
 		vendorDao.update(vendor);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@Transactional(readOnly = false)
 	public void create(VendorDTO dto) throws EntityRetrievalException, EntityCreationException {
 		vendorDao.create(dto);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@Transactional(readOnly = false)
 	public void delete(VendorDTO dto) {
 		vendorDao.delete(dto.getId());
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@Transactional(readOnly = false)
 	public void delete(Long vendorId) {
 		vendorDao.delete(vendorId);
 	}

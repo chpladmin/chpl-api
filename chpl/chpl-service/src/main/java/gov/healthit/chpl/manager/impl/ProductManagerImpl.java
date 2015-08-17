@@ -38,21 +38,29 @@ public class ProductManagerImpl implements ProductManager {
 	}
 	
 	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
 		productDao.update(dto);
 	}
 
 	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void update(ProductDTO dto) throws EntityRetrievalException {
 		
 	}
 
 	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(ProductDTO dto) {
 		delete(dto.getId());
 	}
 
 	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(Long productId) {
 		productDao.delete(productId);
 	}

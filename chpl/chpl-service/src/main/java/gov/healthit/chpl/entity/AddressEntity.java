@@ -11,16 +11,32 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.springframework.transaction.annotation.Transactional;
+
+import gov.healthit.chpl.dto.AddressDTO;
+
 @Entity
 @Table(name="address")
 public class AddressEntity {
 	
+	public AddressEntity() {}
+	public AddressEntity(AddressDTO dto) {
+		this.setStreetLineOne(dto.getStreetLineOne());
+		this.setStreetLineTwo(dto.getStreetLineTwo());
+		this.setCity(dto.getCity());
+		this.setRegion(dto.getRegion());
+		this.setCountry(dto.getCountry());
+		this.setDeleted(dto.getDeleted());
+		this.setLastModifiedDate(dto.getLastModifiedDate());
+		this.setLastModifiedUser(dto.getLastModifiedUser());
+		this.setCreationDate(dto.getCreationDate());
+	}
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addressAddress_idGenerator")
 	@Basic( optional = false )
 	@Column( name = "address_id", nullable = false  )
-	@SequenceGenerator(name = "addressAddress_idGenerator", sequenceName = "openchpl.openchpl.address_address_id_seq", schema = "openchpl", catalog = "openchpl")
+	@SequenceGenerator(name = "addressAddress_idGenerator", sequenceName = "address_address_id_seq")
 	private Long id;
 	
 	@Column(name="street_line_1")

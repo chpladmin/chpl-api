@@ -2,10 +2,8 @@ package gov.healthit.chpl.entity;
 
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.WeakHashMap;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.hibernate.proxy.HibernateProxy;
 
 
 /** 
@@ -26,7 +23,7 @@ import org.hibernate.proxy.HibernateProxy;
  */
 
 @Entity
-@Table(name = "product_version", catalog = "openchpl", schema = "openchpl")
+@Table(name = "product_version")
 public class ProductVersionEntity implements Cloneable, Serializable {
 
 	/** Serial Version UID. */
@@ -44,7 +41,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productVersionProduct_version_idGenerator")
 	@Basic( optional = false )
 	@Column( name = "product_version_id", nullable = false  )
-	@SequenceGenerator(name = "productVersionProduct_version_idGenerator", sequenceName = "openchpl.openchpl.product_version_product_version_id_seq", schema = "openchpl", catalog = "openchpl")
+	@SequenceGenerator(name = "productVersionProduct_version_idGenerator", sequenceName = "product_version_product_version_id_seq")
 	private Long id;
     
 	@Basic( optional = false )

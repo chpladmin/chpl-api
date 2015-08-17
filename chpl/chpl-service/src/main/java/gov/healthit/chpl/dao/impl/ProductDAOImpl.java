@@ -89,6 +89,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	public ProductDTO getById(Long id) throws EntityRetrievalException {
 		
 		ProductEntity entity = getEntityById(id);
+		if(entity == null) { 
+			return null;
+		}
 		ProductDTO dto = new ProductDTO(entity);
 		return dto;
 		
@@ -97,13 +100,25 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	public List<ProductDTO> getByVendor(Long vendorId) {		
 		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND (vendor_id = :entityid) ", ProductEntity.class );
 		query.setParameter("entityid", vendorId);
-		return query.getResultList();
+		List<ProductEntity> results = query.getResultList();
+		
+		List<ProductDTO> dtoResults = new ArrayList<ProductDTO>();
+		for(ProductEntity result : results) {
+			dtoResults.add(new ProductDTO(result));
+		}
+		return dtoResults;
 	}
 	
 	public List<ProductDTO> getByVendors(List<Long> vendorIds) {
 		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND vendor_id IN :idList ", ProductEntity.class );
 		query.setParameter("idList", vendorIds);
-		return query.getResultList();
+		List<ProductEntity> results = query.getResultList();
+
+		List<ProductDTO> dtoResults = new ArrayList<ProductDTO>();
+		for(ProductEntity result : results) {
+			dtoResults.add(new ProductDTO(result));
+		}
+		return dtoResults;
 	}
 	
 	private void create(ProductEntity entity) {
@@ -135,9 +150,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate product version id in database.");
-		}
-		
-		if (result.size() < 0){
+		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
 		

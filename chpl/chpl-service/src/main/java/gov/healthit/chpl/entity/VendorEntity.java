@@ -28,7 +28,7 @@ import javax.persistence.Transient;
  */
 
 @Entity
-@Table(name = "vendor", catalog = "openchpl", schema = "openchpl")
+@Table(name = "vendor")
 public class VendorEntity implements Cloneable, Serializable {
 
 	/** Serial Version UID. */
@@ -38,7 +38,7 @@ public class VendorEntity implements Cloneable, Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vendorVendor_idGenerator")
 	@Basic( optional = false )
 	@Column( name = "vendor_id", nullable = false  )
-	@SequenceGenerator(name = "vendorVendor_idGenerator", sequenceName = "openchpl.openchpl.vendor_vendor_id_seq", schema = "openchpl", catalog = "openchpl")
+	@SequenceGenerator(name = "vendorVendor_idGenerator", sequenceName = "vendor_vendor_id_seq")
 	private Long id;
 	
 	@Basic( optional = true )

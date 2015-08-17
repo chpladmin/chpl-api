@@ -12,6 +12,8 @@
 		<class>gov.healthit.chpl.auth.permission.UserPermissionEntity</class>
 		<class>gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity</class>
 		<class>gov.healthit.chpl.entity.VendorEntity</class>
+		<class>gov.healthit.chpl.entity.AddressEntity</class>
+		<class>gov.healthit.chpl.entity.ProductEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

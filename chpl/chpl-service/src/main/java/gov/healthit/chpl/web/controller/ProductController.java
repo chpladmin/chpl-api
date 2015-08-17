@@ -5,32 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.authentication.LoginCredentials;
-import gov.healthit.chpl.auth.json.GrantAdminJSONObject;
-import gov.healthit.chpl.auth.json.GrantRoleJSONObject;
-import gov.healthit.chpl.auth.json.UserCreationJSONObject;
-import gov.healthit.chpl.auth.json.UserInfoJSONObject;
-import gov.healthit.chpl.auth.json.UserListJSONObject;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserDTO;
-import gov.healthit.chpl.auth.user.UserManagementException;
-import gov.healthit.chpl.auth.user.UserManager;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.domain.UpdateProductsRequest;
-import gov.healthit.chpl.domain.UpdateVendorsRequest;
-import gov.healthit.chpl.domain.Vendor;
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.VendorDTO;
-import gov.healthit.chpl.manager.ProductManager;
-import gov.healthit.chpl.manager.VendorManager;
-import gov.healthit.chpl.web.controller.results.VendorResults;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.UpdateProductsRequest;
+import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.manager.ProductManager;
 
 @RestController
 @RequestMapping("/product")

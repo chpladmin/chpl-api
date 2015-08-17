@@ -30,13 +30,6 @@ public class ProductDTO {
 		this.name = entity.getName();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.vendorId = entity.getVendorId();
-		
-		Set<ProductVersionEntity> productVersioneEntities = entity.getProductVersions();
-		for (ProductVersionEntity pvEntity : productVersioneEntities){
-			ProductVersionDTO pvDto = new ProductVersionDTO(pvEntity);
-			this.productVersions.add(pvDto);
-		}
-		
 	}
 	
 	

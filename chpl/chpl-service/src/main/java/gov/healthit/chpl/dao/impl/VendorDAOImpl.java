@@ -67,7 +67,12 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		
 		if(dto.getAddress() != null)
 		{
-			entity.setAddress(mergeVendorAddress(dto.getAddress()));
+			try {
+				entity.setAddress(mergeVendorAddress(dto.getAddress()));
+			} catch(EntityCreationException ex) {
+				logger.error("Could not create new address in the database.", ex);
+				entity.setAddress(null);
+			}
 		}
 		
 		entity.setCreationDate(dto.getCreationDate());
@@ -147,7 +152,7 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		return entity;
 	}
 	
-	private AddressEntity mergeVendorAddress(AddressDTO addressDto) {
+	private AddressEntity mergeVendorAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException {
 		AddressEntity address = null;
 		if(addressDto.getId() != null) {
 			//try to lookup via id if it was provided
@@ -170,7 +175,7 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 			address.setCity(addressDto.getCity());
 			address.setRegion(addressDto.getRegion());
 			address.setCountry(addressDto.getCountry());
-			entityManager.persist(address);
+			addressDao.create(addressDto);
 		}
 		
 		return address;

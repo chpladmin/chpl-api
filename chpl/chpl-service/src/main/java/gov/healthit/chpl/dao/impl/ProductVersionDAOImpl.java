@@ -11,7 +11,9 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductVersionDAO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 
 @Repository("productVersionDAO")
@@ -92,6 +94,18 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 		
 	}
 	
+	@Override
+	public List<ProductVersionDTO> getByProductId(Long productId) {
+		Query query = entityManager.createQuery( "from ProductVersionEntity where (NOT deleted = true) AND (product_id = :productId)", ProductVersionEntity.class );
+		query.setParameter("productId", productId);
+		List<ProductVersionEntity> results = query.getResultList();
+		
+		List<ProductVersionDTO> dtoResults = new ArrayList<ProductVersionDTO>();
+		for(ProductVersionEntity result : results) {
+			dtoResults.add(new ProductVersionDTO(result));
+		}
+		return dtoResults;
+	}
 	
 	private void create(ProductVersionEntity entity) {
 		
@@ -122,9 +136,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 		
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate product version id in database.");
-		}
-		
-		if (result.size() < 0){
+		} else if (result.size() == 1){
 			entity = result.get(0);
 		}
 			

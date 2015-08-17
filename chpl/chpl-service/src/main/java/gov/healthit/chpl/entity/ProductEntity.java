@@ -1,15 +1,11 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.entity.ProductVersionEntity;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
+
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,12 +13,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.hibernate.proxy.HibernateProxy;
 
 
 /** 
@@ -33,9 +27,17 @@ import org.hibernate.proxy.HibernateProxy;
  */
 
 @Entity
-@Table(name = "product", catalog = "openchpl", schema = "openchpl")
+@Table(name = "product")
 public class ProductEntity implements Serializable {
+	private static final long serialVersionUID = -5332080900089062551L;
 
+	@Id 
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productProduct_idGenerator")
+	@Basic( optional = false )
+	@Column( name = "product_id", nullable = false  )
+	@SequenceGenerator(name = "productProduct_idGenerator", sequenceName = "product_product_id_seq")
+	private Long id;
+    
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -43,13 +45,6 @@ public class ProductEntity implements Serializable {
 	@Basic( optional = false )
 	@Column(name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
-    @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productProduct_idGenerator")
-	@Basic( optional = false )
-	@Column( name = "product_id", nullable = false  )
-	@SequenceGenerator(name = "productProduct_idGenerator", sequenceName = "openchpl.openchpl.product_product_id_seq", schema = "openchpl", catalog = "openchpl")
-	private Long id;
     
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
@@ -72,7 +67,7 @@ public class ProductEntity implements Serializable {
 	private String reportFileLocation;
 	
 	@Basic( optional = false )
-	@JoinColumn(name = "vendor_id", nullable = false )
+	@Column(name = "vendor_id", nullable = false )
 	private Long vendorId;
 	/**
 	 * Default constructor, mainly for hibernate use.
