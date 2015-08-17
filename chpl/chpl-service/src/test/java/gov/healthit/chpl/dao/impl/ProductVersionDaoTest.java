@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-public class ProductVersionTest extends TestCase {
+public class ProductVersionDaoTest extends TestCase {
 
 	@Autowired
 	private ProductVersionDAO versionDao;
