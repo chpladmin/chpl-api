@@ -6,7 +6,7 @@
 	version="2.0">
 
 	<persistence-unit name="openchpl-test" transaction-type="RESOURCE_LOCAL">
-		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+	<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<class>gov.healthit.chpl.auth.user.UserEntity</class>
 		<class>gov.healthit.chpl.auth.user.UserContactEntity</class>
 		<class>gov.healthit.chpl.auth.permission.UserPermissionEntity</class>
@@ -15,7 +15,7 @@
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.driver_class" value="org.postgresql.Driver" />
-			<property name="hibernate.connection.datasource" value="java:/comp/env/jdbc/openchpl" />
+			<property name="hibernate.connection.datasource" value="java:comp/env/jdbc/openchpl"/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
 			<property name="hibernate.flush_before_completion" value="true" />
 			<property name="hibernate.c3p0.min_size" value="5" />
@@ -24,9 +24,6 @@
 			<property name="hibernate.c3p0.max_statements" value="50" />
 			<property name="hibernate.c3p0.idle_test_period" value="3000" />
 		</properties>
-
-
 	</persistence-unit>
-
 
 </persistence>
