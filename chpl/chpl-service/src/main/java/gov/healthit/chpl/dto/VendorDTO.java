@@ -7,7 +7,7 @@ import java.util.Date;
 public class VendorDTO {
 
 	private Long id;
-	private Long addressId;
+	private AddressDTO address;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
@@ -20,7 +20,9 @@ public class VendorDTO {
 	public VendorDTO(VendorEntity entity){
 		
 		this.id = entity.getId();
-		this.addressId = entity.getAddressId();
+		if(entity.getAddress() != null) {
+			this.address = new AddressDTO(entity.getAddress());			
+		}
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -37,12 +39,14 @@ public class VendorDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Long getAddressId() {
-		return addressId;
+	public AddressDTO getAddress() {
+		return address;
 	}
-	public void setAddressId(Long addressId) {
-		this.addressId = addressId;
+
+	public void setAddress(AddressDTO address) {
+		this.address = address;
 	}
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

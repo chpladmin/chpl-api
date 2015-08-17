@@ -94,6 +94,17 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		
 	}
 	
+	public List<ProductDTO> getByVendor(Long vendorId) {		
+		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND (vendor_id = :entityid) ", ProductEntity.class );
+		query.setParameter("entityid", vendorId);
+		return query.getResultList();
+	}
+	
+	public List<ProductDTO> getByVendors(List<Long> vendorIds) {
+		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND vendor_id IN :idList ", ProductEntity.class );
+		query.setParameter("idList", vendorIds);
+		return query.getResultList();
+	}
 	
 	private void create(ProductEntity entity) {
 		
@@ -132,5 +143,4 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		
 		return entity;
 	}
-	
 }

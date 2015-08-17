@@ -1,15 +1,11 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.entity.ProductEntity;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
+
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,12 +13,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.hibernate.proxy.HibernateProxy;
 
 
 /** 
@@ -38,14 +33,6 @@ public class VendorEntity implements Cloneable, Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -1396979009499564864L;
-
-	/** Use a WeakHashMap so entries will be garbage collected once all entities 
-		referring to a saved hash are garbage collected themselves. */
-	private static final Map<Serializable, Long> SAVED_HASHES =
-		Collections.synchronizedMap(new WeakHashMap<Serializable, Long>());
-	
-	/** hashCode temporary storage. */
-	private volatile Long hashCode;
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vendorVendor_idGenerator")
@@ -55,8 +42,9 @@ public class VendorEntity implements Cloneable, Serializable {
 	private Long id;
 	
 	@Basic( optional = true )
-	@Column(name = "address_id", nullable = true )
-	private Long addressId;
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "address_id", unique=true, nullable = true)
+	private AddressEntity address;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -133,16 +121,16 @@ public class VendorEntity implements Cloneable, Serializable {
 	 * Return the value associated with the column: address.
 	 * @return A Address object (this.address)
 	 */
-	public Long getAddressId() {
-		return this.addressId;
+	public AddressEntity getAddress() {
+		return this.address;
 	}
   
 	 /**  
 	 * Set the value related to the column: address.
 	 * @param address the address value you wish to set
 	 */
-	public void setAddressId(Long addressId) {
-		this.addressId = addressId;
+	public void setAddress (AddressEntity address) {
+		this.address = address;
 	}
 
 	 /**
@@ -199,14 +187,6 @@ public class VendorEntity implements Cloneable, Serializable {
 	 * @param id the id value you wish to set
 	 */
 	public void setId(final Long id) {
-		// If we've just been persisted and hashCode has been
-		// returned then make sure other entities with this
-		// ID return the already returned hash code
-		if ( (this.id == null || this.id == 0L) &&
-				(id != null) &&
-				(this.hashCode != null) ) {
-		SAVED_HASHES.put( id, this.hashCode );
-		}
 		this.id = id;
 	}
 
@@ -332,90 +312,4 @@ public class VendorEntity implements Cloneable, Serializable {
 		sb.append("website: " + this.getWebsite());
 		return sb.toString();		
 	}
-
-
-	/** Equals implementation. 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @param aThat Object to compare with
-	 * @return true/false
-	 */
-	@Override
-	public boolean equals(final Object aThat) {
-		Object proxyThat = aThat;
-		
-		if ( this == aThat ) {
-			 return true;
-		}
-
-		
-		if (aThat instanceof HibernateProxy) {
- 			// narrow down the proxy to the class we are dealing with.
- 			try {
-				proxyThat = ((HibernateProxy) aThat).getHibernateLazyInitializer().getImplementation(); 
-			} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		   	}
-		}
-		if (aThat == null)  {
-			 return false;
-		}
-		
-		final VendorEntity that; 
-		try {
-			that = (VendorEntity) proxyThat;
-			if ( !(that.getClassType().equals(this.getClassType()))){
-				return false;
-			}
-		} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		} catch (ClassCastException e) {
-				return false;
-		}
-		
-		
-		boolean result = true;
-		result = result && (((this.getId() == null) && ( that.getId() == null)) || (this.getId() != null  && this.getId().equals(that.getId())));
-		result = result && (((getAddressId() == null) && (that.getAddressId() == null)) || (getAddressId() != null && getAddressId().equals(that.getAddressId())));	
-		result = result && (((getCreationDate() == null) && (that.getCreationDate() == null)) || (getCreationDate() != null && getCreationDate().equals(that.getCreationDate())));
-		result = result && (((isDeleted() == null) && (that.isDeleted() == null)) || (isDeleted() != null && isDeleted().equals(that.isDeleted())));
-		result = result && (((getLastModifiedDate() == null) && (that.getLastModifiedDate() == null)) || (getLastModifiedDate() != null && getLastModifiedDate().equals(that.getLastModifiedDate())));
-		result = result && (((getLastModifiedUser() == null) && (that.getLastModifiedUser() == null)) || (getLastModifiedUser() != null && getLastModifiedUser().equals(that.getLastModifiedUser())));
-		result = result && (((getName() == null) && (that.getName() == null)) || (getName() != null && getName().equals(that.getName())));
-		result = result && (((getWebsite() == null) && (that.getWebsite() == null)) || (getWebsite() != null && getWebsite().equals(that.getWebsite())));
-		return result;
-	}
-	
-	/** Calculate the hashcode.
-	 * @see java.lang.Object#hashCode()
-	 * @return a calculated number
-	 */
-	@Override
-	public int hashCode() {
-		if ( this.hashCode == null ) {
-			synchronized ( this ) {
-				if ( this.hashCode == null ) {
-					Long newHashCode = null;
-
-					if ( getId() != null ) {
-					newHashCode = SAVED_HASHES.get( getId() );
-					}
-					
-					if ( newHashCode == null ) {
-						if ( getId() != null && getId() != 0L) {
-							newHashCode = getId();
-						} else {
-							newHashCode = (long) super.hashCode();
-
-						}
-					}
-					
-					this.hashCode = newHashCode;
-				}
-			}
-		}
-		return (int) (this.hashCode & 0xffffff);
-	}
-	
-
-	
 }
