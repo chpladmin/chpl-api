@@ -30,8 +30,8 @@ public class JWTConsumerRsaJoseJImplTest {
 	
     @BeforeClass
     public static void setUpClass() throws Exception {
-        // rcarver - setup the jndi context and the datasource
-        try {
+        //try {
+        	/*
             // Create initial context
             System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 "org.apache.naming.java.javaURLContextFactory");
@@ -52,9 +52,10 @@ public class JWTConsumerRsaJoseJImplTest {
             ds.setPassword("Audac1ous");
             
             ic.bind("java:/comp/env/jdbc/openchpl", ds);
-        } catch (NamingException ex) {
-        	ex.printStackTrace();
-        }
+            */
+        //} catch (NamingException ex) {
+        //	ex.printStackTrace();
+        //}
         
     }
     
