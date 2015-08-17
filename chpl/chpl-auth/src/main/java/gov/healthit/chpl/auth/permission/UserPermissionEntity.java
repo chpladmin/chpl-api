@@ -43,7 +43,7 @@ public class UserPermissionEntity {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 
-	@OneToMany(mappedBy="pk.permission", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy="permission", fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UserPermissionUserMappingEntity> userMappings;
 
 	public UserPermissionEntity(){

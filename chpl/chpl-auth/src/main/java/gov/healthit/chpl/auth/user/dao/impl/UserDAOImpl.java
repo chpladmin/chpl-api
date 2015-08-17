@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth.user.dao.impl;
 
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.user.UserDTO;
@@ -47,12 +48,22 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			
 			UserEntity userToCreate = new UserEntity(user.getSubjectName(), encodedPassword);
 			
+			userToCreate.setFirstName(user.getFirstName());
+			userToCreate.setLastName(user.getLastName());
+			userToCreate.setAccountEnabled(user.isAccountEnabled());
+			userToCreate.setAccountExpired(user.isAccountExpired());
+			userToCreate.setAccountLocked(user.isAccountLocked());
+			userToCreate.setCredentialsExpired(!user.isCredentialsNonExpired());
+			userToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+			
+			
 			UserContactEntity contact = new UserContactEntity();
 			contact.setEmail(user.getEmail());
 			contact.setFirstName(user.getFirstName());
 			contact.setLastName(user.getLastName());
 			contact.setPhoneNumber(user.getPhoneNumber());
 			contact.setTitle(user.getTitle());
+			contact.setLastModifiedUser(Util.getCurrentUser().getId());
 			
 			userContactDAO.create(contact);
 			userToCreate.setContact(contact);
@@ -75,8 +86,11 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		userEntity.setAccountExpired(user.isAccountExpired());
 		userEntity.setAccountLocked(user.isAccountLocked());
 		userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
+		userEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+		userEntity.getContact().setLastModifiedUser(Util.getCurrentUser().getId());
 		
 		update(userEntity);
+		
 	}
 	
 	

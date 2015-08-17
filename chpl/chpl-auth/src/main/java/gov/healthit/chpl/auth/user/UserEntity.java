@@ -56,7 +56,7 @@ public class UserEntity {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
-	@OneToMany(mappedBy="pk.user", fetch=FetchType.LAZY)
+	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
  	private Set<UserPermissionUserMappingEntity> permissionMappings;
 	
 	@ManyToOne(optional=false, fetch=FetchType.EAGER)
@@ -71,7 +71,6 @@ public class UserEntity {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
-		populateLastModifiedUser();
 	}
 	
 	
@@ -82,7 +81,6 @@ public class UserEntity {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
-		populateLastModifiedUser();
 	}
 	
 	public UserEntity(String subjectName, String encodedPassword) {
@@ -92,7 +90,6 @@ public class UserEntity {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
-		populateLastModifiedUser();
 	}
 	
 	public String getSubjectName() {
@@ -101,7 +98,6 @@ public class UserEntity {
 	
 	public void setSubjectName(String subject) {
 		this.subjectName = subject;
-		populateLastModifiedUser();
 	}
 	
 	public String getFirstName(){
@@ -137,7 +133,6 @@ public class UserEntity {
 	
 	public void setPassword(String encodedPassword){
 		this.password = encodedPassword;
-		populateLastModifiedUser();
 	}
 
 	public String getUsername() {
@@ -191,16 +186,17 @@ public class UserEntity {
 	public void setAccountEnabled(boolean accountEnabled) {
 		this.accountEnabled = accountEnabled;
 	}
-	
-	private void populateLastModifiedUser(){
-		User currentUser = Util.getCurrentUser();
-		
-		Long userId = new Long(-1);
-		
-		if (currentUser != null){
-			userId = currentUser.getId();
-		}
-		this.lastModifiedUser = userId;
+
+
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
 	}
+
+
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
+	}
+	
+	
 	
 }

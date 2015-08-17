@@ -101,9 +101,6 @@ public class CHPLTestConfig  {
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 	
-	
-	
-	
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder(){
 		return new BCryptPasswordEncoder();
@@ -272,14 +269,5 @@ public class CHPLTestConfig  {
 		bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
 		return bean;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

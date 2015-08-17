@@ -1,10 +1,8 @@
 package gov.healthit.chpl.auth.permission;
 
-import gov.healthit.chpl.auth.user.UserEntity;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -16,41 +14,39 @@ public class UserPermissionUserMappingPk implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", updatable = false, insertable = false)
-	private UserEntity user;
+	private Long userId;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_permission_id_user_permission", updatable = false, insertable = false)
-	private UserPermissionEntity permission;
+	private Long permissionId;
 	
 	
 	public int hashCode() {
-		return (int)(user.getId() + permission.getId());
+		return (int)(userId + permissionId);
 	}
 	
 	public boolean equals(Object object) {
 		if (object instanceof UserPermissionUserMappingPk) {
 			UserPermissionUserMappingPk otherPk = (UserPermissionUserMappingPk) object;
-			return (otherPk.getUser() == this.getUser()) && (otherPk.getPermission() == this.getPermission());
+			return (otherPk.getUserId() == this.getUserId()) && (otherPk.getPermissionId() == this.getPermissionId());
 		}
 		return false;
 	}
 	
-	public UserPermissionEntity getPermission() {
-		return permission;
+	public Long getPermissionId() {
+		return permissionId;
 	}
 	
-	public void setPermission(UserPermissionEntity permission) {
-		this.permission = permission;
+	public void setPermissionId(Long permissionId) {
+		this.permissionId = permissionId;
 	}
 	
-	public UserEntity getUser() {
-		return user;
+	public Long getUserId() {
+		return userId;
 	}
 	
-	public void setUser(UserEntity user) {
-		this.user = user;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 	
 }

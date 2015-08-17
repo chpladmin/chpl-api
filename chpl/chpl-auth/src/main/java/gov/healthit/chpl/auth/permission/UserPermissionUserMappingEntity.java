@@ -1,18 +1,14 @@
 package gov.healthit.chpl.auth.permission;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.user.User;
+
 import gov.healthit.chpl.auth.user.UserEntity;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.SQLDelete;
@@ -37,10 +33,16 @@ public class UserPermissionUserMappingEntity {
 	@Column(name="global_user_permission_id", columnDefinition="bigserial", insertable = false, updatable = false)
 	private Long permissionMappingId;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", updatable = false, insertable = false)
+	private UserEntity user;
 	
-	public UserPermissionUserMappingEntity(){
-		populateLastModifiedUser();
-	}
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_permission_id_user_permission", updatable = false, insertable = false)
+	private UserPermissionEntity permission;
+	
+	
+	public UserPermissionUserMappingEntity(){}
 	
 	public Long getLastModifiedUser() {
 		return lastModifiedUser;
@@ -48,7 +50,6 @@ public class UserPermissionUserMappingEntity {
 
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
-		populateLastModifiedUser();
 	}
 
 	public boolean isDeleted() {
@@ -57,25 +58,24 @@ public class UserPermissionUserMappingEntity {
 	
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
-		populateLastModifiedUser();
 	}
 
 	public UserEntity getUser() {
-		return getPk().getUser();
+		return user;
 	}
 	
 	public void setUser(UserEntity user) {
-		this.getPk().setUser(user);
-		populateLastModifiedUser();
+		this.user = user;
+		this.getPk().setUserId(user.getId());
 	}
 	
 	public UserPermissionEntity getPermission() {
-		return this.getPk().getPermission();
+		return permission;
 	}
 	
 	public void setPermission(UserPermissionEntity permission) {
-		this.getPk().setPermission(permission);
-		populateLastModifiedUser();
+		this.permission = permission;
+		this.getPk().setPermissionId(permission.getId());
 	}
 	
 	public UserPermissionUserMappingPk getPk() {
@@ -84,7 +84,6 @@ public class UserPermissionUserMappingEntity {
 	
 	public void setPk(UserPermissionUserMappingPk pk) {
 		this.pk = pk;
-		populateLastModifiedUser();
 	}
 	
 	public Long getPermissionMappingId() {
@@ -105,18 +104,6 @@ public class UserPermissionUserMappingEntity {
 			return (other.getPk().equals(this.getPk()));
 		}
 		return false;
-	}
-	
-	
-	private void populateLastModifiedUser(){
-		User currentUser = Util.getCurrentUser();
-		
-		Long userId = new Long(-1);
-		
-		if (currentUser != null){
-			userId = currentUser.getId();
-		}
-		this.lastModifiedUser = userId;
 	}
 	
 }

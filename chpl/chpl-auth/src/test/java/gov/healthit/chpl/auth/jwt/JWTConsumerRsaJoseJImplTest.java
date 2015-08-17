@@ -31,32 +31,6 @@ public class JWTConsumerRsaJoseJImplTest {
 	
     @BeforeClass
     public static void setUpClass() throws Exception {
-        //try {
-        	/*
-            // Create initial context
-            System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-                "org.apache.naming.java.javaURLContextFactory");
-            System.setProperty(Context.URL_PKG_PREFIXES, 
-                "org.apache.naming");            
-            InitialContext ic = new InitialContext();
-
-            ic.createSubcontext("java:");
-            ic.createSubcontext("java:/comp");
-            ic.createSubcontext("java:/comp/env");
-            ic.createSubcontext("java:/comp/env/jdbc");
-           
-            // Construct DataSource
-            PGPoolingDataSource ds = new PGPoolingDataSource();
-        	ds.setServerName("jdbc:postgresql://localhost/openchpl");
-        	
-            ds.setUser("openchpl");
-            ds.setPassword("Audac1ous");
-            
-            ic.bind("java:/comp/env/jdbc/openchpl", ds);
-            */
-        //} catch (NamingException ex) {
-        //	ex.printStackTrace();
-        //}
         
     }
     

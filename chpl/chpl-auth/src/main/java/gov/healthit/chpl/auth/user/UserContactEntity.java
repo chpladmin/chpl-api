@@ -56,7 +56,6 @@ public class UserContactEntity {
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
-		populateLastModifiedUser();
 	}
 
 	public String getLastName() {
@@ -65,7 +64,6 @@ public class UserContactEntity {
 	
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
-		populateLastModifiedUser();
 	}
 	
 	public String getEmail() {
@@ -74,7 +72,6 @@ public class UserContactEntity {
 	
 	public void setEmail(String email) {
 		this.email = email;
-		populateLastModifiedUser();
 	}
 
 	public String getPhoneNumber() {
@@ -83,7 +80,6 @@ public class UserContactEntity {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
-		populateLastModifiedUser();
 	}
 
 	public String getTitle() {
@@ -92,7 +88,6 @@ public class UserContactEntity {
 
 	public void setTitle(String title) {
 		this.title = title;
-		populateLastModifiedUser();
 	}
 
 	public Date getSignatureDate() {
@@ -101,7 +96,6 @@ public class UserContactEntity {
 
 	public void setSignatureDate(Date signatureDate) {
 		this.signatureDate = signatureDate;
-		populateLastModifiedUser();
 	}
 
 	public Long getLastModifiedUser() {
@@ -110,22 +104,10 @@ public class UserContactEntity {
 
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
-		populateLastModifiedUser();
 	}
 
 	public Long getId() {
 		return id;
-	}
-	
-	private void populateLastModifiedUser(){
-		User currentUser = Util.getCurrentUser();
-		
-		Long userId = new Long(-1);
-		
-		if (currentUser != null){
-			userId = currentUser.getId();
-		}
-		this.lastModifiedUser = userId;
 	}
 	
 }
