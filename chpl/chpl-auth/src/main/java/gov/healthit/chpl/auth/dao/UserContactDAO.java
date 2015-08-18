@@ -1,6 +1,6 @@
-package gov.healthit.chpl.auth.user.dao;
+package gov.healthit.chpl.auth.dao;
 
-import gov.healthit.chpl.auth.user.UserContactEntity;
+import gov.healthit.chpl.auth.entity.UserContactEntity;
 
 
 public interface UserContactDAO {

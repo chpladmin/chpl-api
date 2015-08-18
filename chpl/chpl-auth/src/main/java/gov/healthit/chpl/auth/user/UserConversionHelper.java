@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth.user;
 
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 

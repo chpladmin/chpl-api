@@ -1,4 +1,6 @@
-package gov.healthit.chpl.auth.user;
+package gov.healthit.chpl.auth.dto;
+
+import gov.healthit.chpl.auth.entity.UserEntity;
 
 import java.util.Collection;
 

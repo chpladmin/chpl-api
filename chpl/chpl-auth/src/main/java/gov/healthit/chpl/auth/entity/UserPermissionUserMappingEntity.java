@@ -1,7 +1,5 @@
-package gov.healthit.chpl.auth.permission;
+package gov.healthit.chpl.auth.entity;
 
-
-import gov.healthit.chpl.auth.user.UserEntity;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;

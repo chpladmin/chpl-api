@@ -1,17 +1,17 @@
-package gov.healthit.chpl.auth.user.dao.impl;
+package gov.healthit.chpl.auth.dao.impl;
 
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserContactDAO;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.entity.UserContactEntity;
+import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.user.UserDTO;
-import gov.healthit.chpl.auth.user.UserContactEntity;
 import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.auth.user.dao.UserContactDAO;
-import gov.healthit.chpl.auth.user.dao.UserDAO;
 
 import java.util.ArrayList;
 import java.util.List;

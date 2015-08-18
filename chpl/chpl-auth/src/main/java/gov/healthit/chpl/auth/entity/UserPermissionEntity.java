@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.permission;
+package gov.healthit.chpl.auth.entity;
 import java.util.List;
 
 import gov.healthit.chpl.auth.Util;

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.permission.dao.impl;
+package gov.healthit.chpl.auth.dao.impl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,15 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.permission.UserPermissionDTO;
-import gov.healthit.chpl.auth.permission.UserPermissionEntity;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.auth.entity.UserPermissionEntity;
+import gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
-import gov.healthit.chpl.auth.permission.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.user.UserDTO;
-import gov.healthit.chpl.auth.user.UserEntity;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.auth.user.dao.UserDAO;
 
 @Repository(value="userPermissionDAO")
 public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermissionDAO {

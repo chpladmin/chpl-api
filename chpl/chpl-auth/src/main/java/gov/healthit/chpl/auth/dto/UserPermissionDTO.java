@@ -1,4 +1,7 @@
-package gov.healthit.chpl.auth.permission;
+package gov.healthit.chpl.auth.dto;
+
+import gov.healthit.chpl.auth.entity.UserPermissionEntity;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 
 public class UserPermissionDTO  {

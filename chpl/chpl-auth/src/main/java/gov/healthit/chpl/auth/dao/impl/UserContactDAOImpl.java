@@ -1,12 +1,12 @@
-package gov.healthit.chpl.auth.user.dao.impl;
+package gov.healthit.chpl.auth.dao.impl;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.user.UserContactEntity;
-import gov.healthit.chpl.auth.user.dao.UserContactDAO;
+import gov.healthit.chpl.auth.dao.UserContactDAO;
+import gov.healthit.chpl.auth.entity.UserContactEntity;
 
 
 @Repository(value="userContactDAO")

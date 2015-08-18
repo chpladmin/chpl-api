@@ -1,8 +1,9 @@
-package gov.healthit.chpl.auth.user.dao;
+package gov.healthit.chpl.auth.dao;
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+
 
 
 

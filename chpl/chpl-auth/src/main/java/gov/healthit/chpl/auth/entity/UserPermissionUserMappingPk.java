@@ -1,12 +1,10 @@
-package gov.healthit.chpl.auth.permission;
+package gov.healthit.chpl.auth.entity;
 
 
 import java.io.Serializable;
 
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Embeddable
 public class UserPermissionUserMappingPk implements Serializable {

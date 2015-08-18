@@ -1,8 +1,6 @@
-package gov.healthit.chpl.auth.user;
+package gov.healthit.chpl.auth.entity;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.UserPermissionDTO;
-import gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 
 import java.util.HashSet;
 import java.util.Set;

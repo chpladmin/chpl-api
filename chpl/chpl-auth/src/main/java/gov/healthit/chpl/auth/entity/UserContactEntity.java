@@ -1,6 +1,4 @@
-package gov.healthit.chpl.auth.user;
-
-import gov.healthit.chpl.auth.Util;
+package gov.healthit.chpl.auth.entity;
 
 import java.sql.Date;
 
