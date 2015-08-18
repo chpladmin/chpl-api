@@ -27,7 +27,7 @@ import org.hibernate.proxy.HibernateProxy;
  */
 
 @Entity
-@Table(name = "certified_product", catalog = "openchpl", schema = "openchpl")
+@Table(name = "certified_product")
 public class CertifiedProductEntity {
 
 	/** Serial Version UID. */
@@ -46,7 +46,7 @@ public class CertifiedProductEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certifiedProductCertified_product_idGenerator")
 	@Basic( optional = false )
 	@Column( name = "certified_product_id", nullable = false  )
-	@SequenceGenerator(name = "certifiedProductCertified_product_idGenerator", sequenceName = "openchpl.openchpl.certified_product_certified_product_id_seq", schema = "openchpl", catalog = "openchpl")
+	@SequenceGenerator(name = "certifiedProductCertified_product_idGenerator", sequenceName = "openchpl.openchpl.certified_product_certified_product_id_seq")
 	private Long id;
     
     

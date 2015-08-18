@@ -1,7 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-
-
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;

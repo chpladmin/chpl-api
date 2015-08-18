@@ -42,7 +42,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	private CQMResultDAO cqmResultDAO;
 	
 	@Autowired
-	private CertificationEditionDAO certificationResultResultDAO;
+	private CertificationEditionDAO certificationEditionDAO;
 	
 	@Autowired
 	private ProductClassificationTypeDAO productClassificationTypeDAO;
@@ -77,7 +77,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setId(dto.getId());
 			searchResult.setCertificationEdition(
-					certificationResultResultDAO.getById(dto.getCertificationEditionId())
+					certificationEditionDAO.getById(dto.getCertificationEditionId())
 					.getYear()
 					);
 			searchResult.setCertifyingBody(

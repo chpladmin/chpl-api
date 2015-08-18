@@ -1,0 +1,263 @@
+package gov.healthit.chpl.entity;
+
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+
+@Entity
+@Table(name = "certified_product_details")
+public class CertifiedProductDetailsEntity {
+
+	/** Serial Version UID. */
+	private static final long serialVersionUID = -2928065796550377879L;
+	
+    @Id 
+	@Basic( optional = false )
+	@Column( name = "certified_product_id", nullable = false  )
+	private Long id;
+    
+    @Column(name = "testingLabId")
+    private Long testingLabId;
+    
+    @Column(name = "chpl_product_number")
+    private Long chplProductNumber;
+    
+    @Column(name = "report_file_location")
+    private String reportFileLocation;
+    
+    @Column(name = "quality_management_system_att")
+    private String qualityManagementSystemAtt;
+    
+    @Column(name = "acb_certification_id")
+    private String acbCertificationId;
+    
+    @Column(name = "practice_type_id")
+    private Long practiceTypeId;
+    
+    @Column(name = "product_classification_type_id")
+    private Long productClassificationTypeId;
+    
+    @Column(name = "other_acb")
+    private String otherAcb;
+    
+    @Column(name = "certification_status_id")
+    private String certificationStatusId;
+    
+    @Column(name = "certification_edition_id")
+    private Long certificationEditionId;
+    
+    @Column(name = "year")
+    private String year;
+    
+    @Column(name = "certificationBodyId")
+    private Long certificationBodyId;
+    
+    @Column(name = "certification_body_name")
+    private String certificationBodyName;
+    
+    @Column(name = "product_classification_name")
+    private String productClassificationName;
+    
+    @Column(name = "product_type_name")
+    private String productTypeName;
+    
+    @Column(name = "product_version_id")
+    private Long productVersionId;
+    
+    @Column(name = "product_version")
+    private String productVersion;
+    
+    @Column(name = "product_id")
+    private Long productId;
+    
+    @Column(name = "product_name")
+    private String productName;
+    
+    @Column(name = "vendor_id")
+    private Long vendorId;
+    
+    @Column(name = "vendor_name")
+    private String vendorName;
+
+    
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getTestingLabId() {
+		return testingLabId;
+	}
+
+	public void setTestingLabId(Long testingLabId) {
+		this.testingLabId = testingLabId;
+	}
+
+	public Long getChplProductNumber() {
+		return chplProductNumber;
+	}
+
+	public void setChplProductNumber(Long chplProductNumber) {
+		this.chplProductNumber = chplProductNumber;
+	}
+
+	public String getReportFileLocation() {
+		return reportFileLocation;
+	}
+
+	public void setReportFileLocation(String reportFileLocation) {
+		this.reportFileLocation = reportFileLocation;
+	}
+
+	public String getQualityManagementSystemAtt() {
+		return qualityManagementSystemAtt;
+	}
+
+	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
+		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
+	}
+
+	public String getAcbCertificationId() {
+		return acbCertificationId;
+	}
+
+	public void setAcbCertificationId(String acbCertificationId) {
+		this.acbCertificationId = acbCertificationId;
+	}
+
+	public Long getPracticeTypeId() {
+		return practiceTypeId;
+	}
+
+	public void setPracticeTypeId(Long practiceTypeId) {
+		this.practiceTypeId = practiceTypeId;
+	}
+
+	public Long getProductClassificationTypeId() {
+		return productClassificationTypeId;
+	}
+
+	public void setProductClassificationTypeId(Long productClassificationTypeId) {
+		this.productClassificationTypeId = productClassificationTypeId;
+	}
+
+	public String getOtherAcb() {
+		return otherAcb;
+	}
+
+	public void setOtherAcb(String otherAcb) {
+		this.otherAcb = otherAcb;
+	}
+
+	public String getCertificationStatusId() {
+		return certificationStatusId;
+	}
+
+	public void setCertificationStatusId(String certificationStatusId) {
+		this.certificationStatusId = certificationStatusId;
+	}
+
+	public Long getCertificationEditionId() {
+		return certificationEditionId;
+	}
+
+	public void setCertificationEditionId(Long certificationEditionId) {
+		this.certificationEditionId = certificationEditionId;
+	}
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+
+	public Long getCertificationBodyId() {
+		return certificationBodyId;
+	}
+
+	public void setCertificationBodyId(Long certificationBodyId) {
+		this.certificationBodyId = certificationBodyId;
+	}
+
+	public String getCertificationBodyName() {
+		return certificationBodyName;
+	}
+
+	public void setCertificationBodyName(String certificationBodyName) {
+		this.certificationBodyName = certificationBodyName;
+	}
+
+	public String getProductClassificationName() {
+		return productClassificationName;
+	}
+
+	public void setProductclassificationName(String productclassificationName) {
+		this.productClassificationName = productclassificationName;
+	}
+
+	public String getProductTypeName() {
+		return productTypeName;
+	}
+
+	public void setProductTypeName(String productTypeName) {
+		this.productTypeName = productTypeName;
+	}
+
+	public Long getProductVersionId() {
+		return productVersionId;
+	}
+
+	public void setProductVersionId(Long productVersionId) {
+		this.productVersionId = productVersionId;
+	}
+
+	public String getProductVersion() {
+		return productVersion;
+	}
+
+	public void setProductVersion(String productVersion) {
+		this.productVersion = productVersion;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public Long getVendorId() {
+		return vendorId;
+	}
+
+	public void setVendorId(Long vendorId) {
+		this.vendorId = vendorId;
+	}
+
+	public String getVendorName() {
+		return vendorName;
+	}
+
+	public void setVendorName(String vendorName) {
+		this.vendorName = vendorName;
+	}
+    
+}
