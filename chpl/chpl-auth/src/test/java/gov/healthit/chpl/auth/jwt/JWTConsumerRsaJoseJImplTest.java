@@ -9,7 +9,6 @@ import javax.naming.NamingException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.postgresql.ds.PGConnectionPoolDataSource;
 import org.postgresql.ds.PGPoolingDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

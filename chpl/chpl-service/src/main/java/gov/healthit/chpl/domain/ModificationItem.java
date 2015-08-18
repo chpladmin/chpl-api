@@ -1,8 +1,8 @@
-package gov.healthit.chpl.json;
+package gov.healthit.chpl.domain;
 
 import java.util.Date;
 
-public class ModificationItemJSONObject {
+public class ModificationItem {
 
 	
 	private String subject;

@@ -62,6 +62,7 @@ public class CHPLTestConfig  {
 	
 	@Bean
 	public DataSource dataSource() {
+
 		
         PGSimpleDataSource ds = new PGSimpleDataSource();
     	ds.setServerName(this.props.getProperty("testDbServer"));
