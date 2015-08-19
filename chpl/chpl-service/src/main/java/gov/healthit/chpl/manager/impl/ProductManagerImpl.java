@@ -48,7 +48,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void update(ProductDTO dto) throws EntityRetrievalException {
-		
+		productDao.update(dto);
 	}
 
 	@Override

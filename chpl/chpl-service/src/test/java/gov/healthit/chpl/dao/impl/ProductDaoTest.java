@@ -18,6 +18,8 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.VendorEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -76,5 +78,28 @@ public class ProductDaoTest extends TestCase {
 		products = productDao.getByVendors(vendorIds);
 		assertNotNull(products);
 		assertEquals(3, products.size());
+	}
+	
+	@Test
+	public void updateProduct() {
+		ProductDTO product = productDao.findAll().get(0);
+		product.setVendorId(2L);
+		
+		ProductEntity result = null;
+		try {
+			result = productDao.update(product);
+		} catch(Exception ex) {
+			fail("could not update product!");
+			System.out.println(ex.getStackTrace());
+		}
+		assertNotNull(result);
+
+		try {
+			ProductDTO updatedProduct = productDao.getById(product.getId());
+			assertTrue(updatedProduct.getVendorId() == 2L);
+		} catch(Exception ex) {
+			fail("could not find product!");
+			System.out.println(ex.getStackTrace());
+		}
 	}
 }

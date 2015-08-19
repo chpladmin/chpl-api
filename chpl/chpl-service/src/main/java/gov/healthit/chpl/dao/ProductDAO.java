@@ -1,14 +1,15 @@
 package gov.healthit.chpl.dao;
 
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.entity.ProductEntity;
 
 import java.util.List;
 
 public interface ProductDAO {
 	
-	public void create(ProductDTO dto) throws EntityCreationException, EntityRetrievalException;
+	public ProductEntity create(ProductDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-	public void update(ProductDTO dto) throws EntityRetrievalException;
+	public ProductEntity update(ProductDTO dto) throws EntityRetrievalException;
 	
 	public void delete(Long id);
 	
