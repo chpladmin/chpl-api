@@ -1,8 +1,10 @@
 package gov.healthit.chpl.dto;
 
+import java.util.Date;
+
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
-public class CertifiedProductDetailsDTO {
+public class CertifiedProductSearchDetailsDTO {
 	
 	private Long id;
     private Long testingLabId;
@@ -11,6 +13,7 @@ public class CertifiedProductDetailsDTO {
     private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Long practiceTypeId;
+    private String practiceTypeName;
     private Long productClassificationTypeId;
     private String otherAcb;
     private String certificationStatusId;
@@ -19,17 +22,17 @@ public class CertifiedProductDetailsDTO {
     private Long certificationBodyId;
     private String certificationBodyName;
     private String productClassificationName;
-    private String productTypeName;
     private Long productVersionId;
     private String productVersion;
     private Long productId;
     private String productName;
     private Long vendorId;
     private String vendorName;
+    private Date certificationDate;
     
-    public CertifiedProductDetailsDTO(){}
+    public CertifiedProductSearchDetailsDTO(){}
     
-    public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
+    public CertifiedProductSearchDetailsDTO(CertifiedProductDetailsEntity entity){
     	
     	this.id = entity.getId();
     	this.acbCertificationId = entity.getAcbCertificationId();
@@ -40,11 +43,11 @@ public class CertifiedProductDetailsDTO {
     	this.chplProductNumber = entity.getChplProductNumber();
     	this.otherAcb = entity.getOtherAcb();
     	this.practiceTypeId = entity.getPracticeTypeId();
+       	this.practiceTypeName = entity.getPracticeTypeName();
     	this.productClassificationName = entity.getProductClassificationName();
     	this.productClassificationTypeId = entity.getProductClassificationTypeId();
     	this.productId = entity.getProductId();
     	this.productName = entity.getProductName();
-    	this.productTypeName = entity.getProductTypeName();
     	this.productVersion = entity.getProductVersion();
     	this.productVersionId = entity.getProductVersionId();
     	this.qualityManagementSystemAtt = entity.getQualityManagementSystemAtt();
@@ -53,6 +56,7 @@ public class CertifiedProductDetailsDTO {
     	this.vendorId = entity.getVendorId();
     	this.vendorName = entity.getVendorName();
     	this.year = entity.getYear();
+    	this.certificationDate = entity.getCertificationDate();
     	
     }
     
@@ -147,12 +151,6 @@ public class CertifiedProductDetailsDTO {
 	public void setProductclassificationName(String productclassificationName) {
 		this.productClassificationName = productclassificationName;
 	}
-	public String getProductTypeName() {
-		return productTypeName;
-	}
-	public void setProductTypeName(String productTypeName) {
-		this.productTypeName = productTypeName;
-	}
 	public Long getProductVersionId() {
 		return productVersionId;
 	}
@@ -188,6 +186,18 @@ public class CertifiedProductDetailsDTO {
 	}
 	public void setVendorName(String vendorName) {
 		this.vendorName = vendorName;
+	}
+	public String getPracticeTypeName() {
+		return practiceTypeName;
+	}
+	public void setPracticeTypeName(String practiceTypeName) {
+		this.practiceTypeName = practiceTypeName;
+	}
+	public Date getCertificationDate() {
+		return certificationDate;
+	}
+	public void setCertificationDate(Date certificationDate) {
+		this.certificationDate = certificationDate;
 	}
     
 }

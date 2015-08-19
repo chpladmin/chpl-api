@@ -7,15 +7,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.WeakHashMap;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -268,7 +264,7 @@ public class CQMResultEntity implements Serializable {
 		sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
 		sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
 		sb.append("success: " + this.isSuccess());
-		return sb.toString();		
+		return sb.toString();
 	}
 
 

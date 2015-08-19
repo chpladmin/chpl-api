@@ -1,6 +1,8 @@
 package gov.healthit.chpl.entity;
 
 
+import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,6 +40,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "practice_type_id")
     private Long practiceTypeId;
     
+    @Column(name = "practice_type_name")
+    private String practiceTypeName;
+    
     @Column(name = "product_classification_type_id")
     private Long productClassificationTypeId;
     
@@ -62,9 +67,6 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "product_classification_name")
     private String productClassificationName;
     
-    @Column(name = "product_type_name")
-    private String productTypeName;
-    
     @Column(name = "product_version_id")
     private Long productVersionId;
     
@@ -83,7 +85,10 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "vendor_name")
     private String vendorName;
 
+    @Column(name = "certification_date")
+    private Date certificationDate;
     
+
 	public Long getId() {
 		return id;
 	}
@@ -200,16 +205,16 @@ public class CertifiedProductDetailsEntity {
 		return productClassificationName;
 	}
 
-	public void setProductclassificationName(String productclassificationName) {
-		this.productClassificationName = productclassificationName;
+	public void setProductClassificationName(String productClassificationName) {
+		this.productClassificationName = productClassificationName;
+	}
+	
+	public String getPracticeTypeName() {
+		return practiceTypeName;
 	}
 
-	public String getProductTypeName() {
-		return productTypeName;
-	}
-
-	public void setProductTypeName(String productTypeName) {
-		this.productTypeName = productTypeName;
+	public void setPracticeTypeName(String practiceTypeName) {
+		this.practiceTypeName = practiceTypeName;
 	}
 
 	public Long getProductVersionId() {
@@ -260,4 +265,11 @@ public class CertifiedProductDetailsEntity {
 		this.vendorName = vendorName;
 	}
     
+	public Date getCertificationDate() {
+		return certificationDate;
+	}
+
+	public void setCertificationDate(Date certificationDate) {
+		this.certificationDate = certificationDate;
+	}
 }

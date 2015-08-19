@@ -9,21 +9,48 @@ import java.util.Map;
 public class CertifiedProductSearchDetails {
 	
 	private Long id;
+    private Long testingLabId;
+    private Long chplProductNumber;
+    private String reportFileLocation;
+    private String qualityManagementSystemAtt;
+    private String acbCertificationId;
+    
+    private Map<String, String> classificationType = new HashMap<String, String>();
+    //private Long productClassificationTypeId;
+    //private String productClassificationName;
+    
+    private String otherAcb;
+    private String certificationStatusId;
+    
 	private Map<String, String> vendor = new HashMap<String, String>();
+    //private Long vendorId;
+    //private String vendorName;
+	
 	private Map<String, String> product = new HashMap<String, String>();
-	private String version;
-	private String chplNum;
-	private String practiceType;
-	private String classification;
+	//private Long productVersionId;
+    //private String productVersion;
+    //private Long productId;
+    //private String productName;
+	
+	private Map<String, String> certificationEdition = new HashMap<String, String>();
+	//private Long certificationEditionId;
+    //private String year;
+	
+	private Map<String, String> practiceType = new HashMap<String, String>();
+	//private Long practiceTypeId;
+	//private String practiceTypeName;
+	
 	private Map<String, String> certifyingBody = new HashMap<String, String>();
-	private String certificationEdition;
-	private Date certDate;
-	private Date lastModifiedDate;
-	private List<String> additionalSoftware = new ArrayList<String>();
-	private ModificationItem lastModifiedItem;
+    //private Long certificationBodyId;
+    //private String certificationBodyName;
+	
+	//private List<String> additionalSoftware = new ArrayList<String>();
+	
+	private Date certificationDate;
+	
 	private String certsAndCQMs;
-	private List<CertificationResult> certs;
-	private List<CQMResult> cqms;
+	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
+	private List<CQMResult> cqmResults = new ArrayList<CQMResult>();
 	
 	
 	public Long getId() {
@@ -31,6 +58,54 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public Long getTestingLabId() {
+		return testingLabId;
+	}
+	public void setTestingLabId(Long testingLabId) {
+		this.testingLabId = testingLabId;
+	}
+	public Long getChplProductNumber() {
+		return chplProductNumber;
+	}
+	public void setChplProductNumber(Long chplProductNumber) {
+		this.chplProductNumber = chplProductNumber;
+	}
+	public String getReportFileLocation() {
+		return reportFileLocation;
+	}
+	public void setReportFileLocation(String reportFileLocation) {
+		this.reportFileLocation = reportFileLocation;
+	}
+	public String getQualityManagementSystemAtt() {
+		return qualityManagementSystemAtt;
+	}
+	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
+		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
+	}
+	public String getAcbCertificationId() {
+		return acbCertificationId;
+	}
+	public void setAcbCertificationId(String acbCertificationId) {
+		this.acbCertificationId = acbCertificationId;
+	}
+	public Map<String, String> getClassificationType() {
+		return classificationType;
+	}
+	public void setClassificationType(Map<String, String> classificationType) {
+		this.classificationType = classificationType;
+	}
+	public String getOtherAcb() {
+		return otherAcb;
+	}
+	public void setOtherAcb(String otherAcb) {
+		this.otherAcb = otherAcb;
+	}
+	public String getCertificationStatusId() {
+		return certificationStatusId;
+	}
+	public void setCertificationStatusId(String certificationStatusId) {
+		this.certificationStatusId = certificationStatusId;
 	}
 	public Map<String, String> getVendor() {
 		return vendor;
@@ -44,11 +119,35 @@ public class CertifiedProductSearchDetails {
 	public void setProduct(Map<String, String> product) {
 		this.product = product;
 	}
-	public String getVersion() {
-		return version;
+	public Map<String, String> getCertificationEdition() {
+		return certificationEdition;
 	}
-	public void setVersion(String version) {
-		this.version = version;
+	public void setCertificationEdition(Map<String, String> certificationEdition) {
+		this.certificationEdition = certificationEdition;
+	}
+	public Map<String, String> getPracticeType() {
+		return practiceType;
+	}
+	public void setPracticeType(Map<String, String> practiceType) {
+		this.practiceType = practiceType;
+	}
+	public Map<String, String> getCertifyingBody() {
+		return certifyingBody;
+	}
+	public void setCertifyingBody(Map<String, String> certifyingBody) {
+		this.certifyingBody = certifyingBody;
+	}
+	//public List<String> getAdditionalSoftware() {
+	//	return additionalSoftware;
+	//}
+	//public void setAdditionalSoftware(List<String> additionalSoftware) {
+	//	this.additionalSoftware = additionalSoftware;
+	//}
+	public Date getCertificationDate() {
+		return certificationDate;
+	}
+	public void setCertificationDate(Date certificationDate) {
+		this.certificationDate = certificationDate;
 	}
 	public String getCertsAndCQMs() {
 		return certsAndCQMs;
@@ -56,73 +155,18 @@ public class CertifiedProductSearchDetails {
 	public void setCertsAndCQMs(String certsAndCQMs) {
 		this.certsAndCQMs = certsAndCQMs;
 	}
-	public String getClassification() {
-		return classification;
+	public List<CertificationResult> getCertificationResults() {
+		return certificationResults;
 	}
-	public void setClassification(String classification) {
-		this.classification = classification;
+	public void setCertificationResults(
+			List<CertificationResult> certificationResults) {
+		this.certificationResults = certificationResults;
 	}
-	public Map<String,String> getCertifyingBody() {
-		return certifyingBody;
+	public List<CQMResult> getCqmResults() {
+		return cqmResults;
 	}
-	public void setCertifyingBody(Map<String, String> certifyingBody) {
-		this.certifyingBody = certifyingBody;
+	public void setCqmResults(List<CQMResult> cqmResults) {
+		this.cqmResults = cqmResults;
 	}
-	public String getCertificationEdition() {
-		return certificationEdition;
-	}
-	public void setCertificationEdition(String certificationEdition) {
-		this.certificationEdition = certificationEdition;
-	}
-	public List<String> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-	public void setAdditionalSoftware(List<String> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
-	public Date getCertDate() {
-		return certDate;
-	}
-	public void setCertDate(Date certDate) {
-		this.certDate = certDate;
-	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public ModificationItem getLastModifiedItem() {
-		return lastModifiedItem;
-	}
-	public void setLastModifiedItem(ModificationItem lastModifiedItem) {
-		this.lastModifiedItem = lastModifiedItem;
-	}
-	public String getPracticeType() {
-		return practiceType;
-	}
-	public void setPracticeType(String practiceType) {
-		this.practiceType = practiceType;
-	}
-	public List<CertificationResult> getCerts() {
-		return certs;
-	}
-	public void setCerts(List<CertificationResult> certs) {
-		this.certs = certs;
-	}
-	public List<CQMResult> getCqms() {
-		return cqms;
-	}
-	public void setCqms(List<CQMResult> cqms) {
-		this.cqms = cqms;
-	}
-	public String getChplNum() {
-		return chplNum;
-	}
-	public void setChplNum(String chplNum) {
-		this.chplNum = chplNum;
-	}
-	
-	
 	
 }

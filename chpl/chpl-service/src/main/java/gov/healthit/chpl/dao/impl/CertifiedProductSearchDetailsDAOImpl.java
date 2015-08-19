@@ -5,34 +5,36 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import gov.healthit.chpl.dao.CertifiedProductDetailsDAO;
+import org.springframework.stereotype.Repository;
+
+import gov.healthit.chpl.dao.CertifiedProductSearchDetailsDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductSearchDetailsDTO;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
-
-public class CertifiedProductDetailsDAOImpl extends BaseDAOImpl implements
-		CertifiedProductDetailsDAO {
+@Repository(value = "certifiedProductSearchDetails")
+public class CertifiedProductSearchDetailsDAOImpl extends BaseDAOImpl implements
+		CertifiedProductSearchDetailsDAO {
 
 	
 	@Override
-	public List<CertifiedProductDetailsDTO> findAll() {
+	public List<CertifiedProductSearchDetailsDTO> findAll() {
 		
 		List<CertifiedProductDetailsEntity> entities = getAllEntities();
-		List<CertifiedProductDetailsDTO> products = new ArrayList<>();
+		List<CertifiedProductSearchDetailsDTO> products = new ArrayList<>();
 		
 		for (CertifiedProductDetailsEntity entity : entities) {
-			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+			CertifiedProductSearchDetailsDTO product = new CertifiedProductSearchDetailsDTO(entity);
 			products.add(product);
 		}
 		return products;	
 	}
 
 	
-	public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException {
+	public CertifiedProductSearchDetailsDTO getById(Long productId) throws EntityRetrievalException {
 		
 		CertifiedProductDetailsEntity entity = getEntityById(productId);
-		CertifiedProductDetailsDTO dto = new CertifiedProductDetailsDTO(entity);
+		CertifiedProductSearchDetailsDTO dto = new CertifiedProductSearchDetailsDTO(entity);
 		return dto;
 		
 	}
