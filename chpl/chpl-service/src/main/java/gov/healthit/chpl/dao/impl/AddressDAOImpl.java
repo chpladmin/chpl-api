@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -10,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -22,30 +24,90 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 
 	@Override
 	@Transactional
-	public void create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException {
-		AddressEntity entity = new AddressEntity(dto);
-		entityManager.persist(entity);
-	}
+	public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException {
+		AddressEntity toInsert = new AddressEntity();
+		toInsert.setStreetLineOne(dto.getStreetLineOne());
+		toInsert.setStreetLineTwo(dto.getStreetLineTwo());
+		toInsert.setCity(dto.getCity());
+		toInsert.setRegion(dto.getRegion());
+		toInsert.setCountry(dto.getCountry());
 
-	@Override
-	public void update(AddressDTO dto) throws EntityRetrievalException {
-		// TODO Auto-generated method stub
+		if(dto.getDeleted() != null) {
+			toInsert.setDeleted(dto.getDeleted());
+		} else {
+			toInsert.setDeleted(false);
+		}
 		
+		if(dto.getLastModifiedUser() != null) {
+			toInsert.setLastModifiedUser(dto.getLastModifiedUser());
+		} else {
+			toInsert.setLastModifiedUser(Util.getCurrentUser().getId());
+		}
+		if(dto.getLastModifiedDate() != null) {
+			toInsert.setLastModifiedDate(dto.getLastModifiedDate());
+		} else {
+			toInsert.setLastModifiedDate(new Date());
+		}
+		if(dto.getCreationDate() != null) {
+			toInsert.setCreationDate(dto.getCreationDate());
+		} else {
+			toInsert.setCreationDate(new Date());
+		}		
+		
+		entityManager.persist(toInsert);
+		return toInsert;
 	}
 
 	@Override
+	@Transactional
+	public AddressEntity update(AddressDTO addressDto) throws EntityRetrievalException {
+		AddressEntity address = this.getEntityById(addressDto.getId());
+
+		if(addressDto.getStreetLineOne() != null) {
+			address.setStreetLineOne(addressDto.getStreetLineOne());
+		}
+		
+		if(addressDto.getStreetLineTwo() != null) {
+			address.setStreetLineTwo(addressDto.getStreetLineTwo());
+		}
+		
+		if(addressDto.getCity() != null) {
+			address.setCity(addressDto.getCity());
+		}
+		
+		if(addressDto.getRegion() != null) {
+			address.setRegion(addressDto.getRegion());
+		}
+		
+		if(addressDto.getCountry() != null) {
+			address.setCountry(addressDto.getCountry());
+		}
+		
+		if(addressDto.getDeleted() != null) {
+			address.setDeleted(addressDto.getDeleted());
+		}
+		
+		if(addressDto.getLastModifiedUser() != null) {
+			address.setLastModifiedUser(addressDto.getLastModifiedUser());
+		} else {
+			address.setLastModifiedUser(Util.getCurrentUser().getId());
+		}
+		if(addressDto.getLastModifiedDate() != null) {
+			address.setLastModifiedDate(addressDto.getLastModifiedDate());
+		} else {
+			address.setLastModifiedDate(new Date());
+		}
+		
+		entityManager.merge(address);
+		return address;
+	}
+
+	@Override
+	@Transactional
 	public void delete(Long id) {
-		AddressDTO toRemove = null;
-		try
-		{
-			toRemove = getById(id);
-		} catch(EntityRetrievalException ex) {
-			logger.error("could not find address with id " + id, ex);
-		}
-		
-		if(toRemove != null) {
-			entityManager.remove(toRemove);
-		}
+		Query query = entityManager.createQuery("UPDATE AddressEntity SET deleted = true WHERE address_id = :entityid");
+		query.setParameter("entityid", id);
+		query.executeUpdate();
 	}
 
 	@Override
@@ -85,40 +147,5 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		}
 		
 		return entity;
-	}
-	
-	@Override
-	public AddressDTO search(String line1, String line2, String city, String region, String country) {
-		AddressDTO result = null;
-		AddressEntity ae = getEntityByValues(line1, line2, city, region, country);
-		if(ae != null) {
-			result = new AddressDTO(ae);
-		}
-		return result;
-	}
-	
-	@Override
-	public AddressEntity searchForEntity(String line1, String line2, String city, String region, String country) {
-		return getEntityByValues(line1, line2, city, region, country);
-	}
-	
-	private AddressEntity getEntityByValues(String line1, String line2, String city, String region, String country) {		
-		Query query = entityManager.createQuery( "SELECT a from AddressEntity a where (NOT a.deleted = true) "
-				+ "AND (street_line_1 = :line1) "
-				+ "AND (street_line_2 = :line2) "
-				+ "AND (city = :city) "
-				+ "AND (region = :region)"
-				+ "AND (country = :country)", AddressEntity.class );
-		query.setParameter("line1", line1)
-			 .setParameter("line2", line2)
-			 .setParameter("city", city)
-			 .setParameter("region", region)
-			 .setParameter("country", country);
-		
-		List<AddressEntity> result = query.getResultList();
-		if(result.size() == 0) {
-			return null;
-		}
-		return result.get(0);
 	}
 }

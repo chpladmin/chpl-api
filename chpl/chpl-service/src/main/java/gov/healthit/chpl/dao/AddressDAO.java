@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface AddressDAO {
 	
-	public void create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException;
+	public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException;
 	
-	public void update(AddressDTO dto) throws EntityRetrievalException;
+	public AddressEntity update(AddressDTO dto) throws EntityRetrievalException;
 	
 	public void delete(Long id);
 	
@@ -18,7 +18,4 @@ public interface AddressDAO {
 	
 	public AddressDTO getById(Long id) throws EntityRetrievalException;
 	public AddressEntity getEntityById(Long id) throws EntityRetrievalException;
-	
-	public AddressDTO search(String line1, String line2, String city, String region, String country);
-	public AddressEntity searchForEntity(String line1, String line2, String city, String region, String country);
 }

@@ -11,26 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.transaction.annotation.Transactional;
-
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dto.AddressDTO;
 
 @Entity
 @Table(name="address")
 public class AddressEntity {
-	
-	public AddressEntity() {}
-	public AddressEntity(AddressDTO dto) {
-		this.setStreetLineOne(dto.getStreetLineOne());
-		this.setStreetLineTwo(dto.getStreetLineTwo());
-		this.setCity(dto.getCity());
-		this.setRegion(dto.getRegion());
-		this.setCountry(dto.getCountry());
-		this.setDeleted(dto.getDeleted());
-		this.setLastModifiedDate(dto.getLastModifiedDate());
-		this.setLastModifiedUser(dto.getLastModifiedUser());
-		this.setCreationDate(dto.getCreationDate());
-	}
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addressAddress_idGenerator")
@@ -39,18 +25,22 @@ public class AddressEntity {
 	@SequenceGenerator(name = "addressAddress_idGenerator", sequenceName = "address_address_id_seq")
 	private Long id;
 	
+	@Basic( optional = false )
 	@Column(name="street_line_1")
 	private String streetLineOne;
 	
 	@Column(name="street_line_2")
 	private String streetLineTwo;
 	
+	@Basic( optional = false )
 	@Column(name = "city")
 	private String city;
 	
+	@Basic( optional = false )
 	@Column(name = "region")
 	private String region;
 	
+	@Basic( optional = false )
 	@Column(name = "country")
 	private String country;
 	

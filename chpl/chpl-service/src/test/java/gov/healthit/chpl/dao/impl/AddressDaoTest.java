@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.entity.AddressEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,6 +51,33 @@ public class AddressDaoTest extends TestCase {
 	}
 	
 	@Test
+	public void updateAddress() {
+		Long vendorId = 1L;
+		AddressDTO toUpdate = null;
+		try {
+			toUpdate = addressDao.getById(vendorId);
+		} catch(EntityRetrievalException ex) {
+			fail("Could not find address with the id");
+		}
+		
+		toUpdate.setCity("Annapolis");
+		
+		try {
+			addressDao.update(toUpdate);
+		} catch(EntityRetrievalException ex) {
+			fail("could not update entity");
+		}
+		
+		try {
+			toUpdate = addressDao.getById(vendorId);
+		} catch(EntityRetrievalException ex) {
+			fail("Could not find address with the id");
+		}
+		assertNotNull(toUpdate);
+		assertEquals("Annapolis", toUpdate.getCity());
+	}
+	
+	@Test
 	public void createAddress() {
 		AddressDTO newAddress = new AddressDTO();
 		newAddress.setStreetLineOne("800 Frederick Road");
@@ -60,26 +88,29 @@ public class AddressDaoTest extends TestCase {
 		newAddress.setCreationDate(new Date());
 		newAddress.setLastModifiedDate(new Date());
 		newAddress.setDeleted(false);
+		
+		AddressEntity result = null;
 		try
 		{
-			addressDao.create(newAddress);
+			result = addressDao.create(newAddress);
 		} catch(EntityRetrievalException ex) {
 			fail("retrieval exception");
 		} catch(EntityCreationException crex) {
 			fail("creation exception");
 		}
 		
-		assertNotNull(newAddress.getId());
+		assertNotNull(result);
+		assertNotNull(result.getId());
 		
 		//try to look up the created thing
 		try
 		{
-			AddressDTO inserted = addressDao.getById(newAddress.getId());
+			AddressDTO inserted = addressDao.getById(result.getId());
 			assertNotNull(inserted);
 		} catch(EntityRetrievalException ex) {
-			fail("could not find address with id " + newAddress.getId());
+			fail("could not find address with id " + result.getId());
 		}
 		
-		addressDao.delete(newAddress.getId());
+		addressDao.delete(result.getId());
 	}
 }
