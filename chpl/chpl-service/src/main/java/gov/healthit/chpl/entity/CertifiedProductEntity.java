@@ -32,14 +32,6 @@ public class CertifiedProductEntity {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -2928065796550377879L;
-
-	/** Use a WeakHashMap so entries will be garbage collected once all entities 
-		referring to a saved hash are garbage collected themselves. */
-	private static final Map<Serializable, Long> SAVED_HASHES =
-		Collections.synchronizedMap(new WeakHashMap<Serializable, Long>());
-	
-	/** hashCode temporary storage. */
-	private volatile Long hashCode;
 	
 	
     @Id 
@@ -127,14 +119,6 @@ public class CertifiedProductEntity {
 	@Transient
 	public Class<?> getClassType() {
 		return CertifiedProductEntity.class;
-	}
-
-   public Long getHashCode() {
-		return hashCode;
-	}
-
-	public void setHashCode(Long hashCode) {
-		this.hashCode = hashCode;
 	}
 
 	public Long getId() {
@@ -256,96 +240,5 @@ public class CertifiedProductEntity {
 	public void setTestingLabId(Long testingLabId) {
 		this.testingLabId = testingLabId;
 	}
-
-
-	/** Equals implementation. 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @param aThat Object to compare with
-	 * @return true/false
-	 */
-	@Override
-	public boolean equals(final Object aThat) {
-		Object proxyThat = aThat;
-		
-		if ( this == aThat ) {
-			 return true;
-		}
-
-		
-		if (aThat instanceof HibernateProxy) {
- 			// narrow down the proxy to the class we are dealing with.
- 			try {
-				proxyThat = ((HibernateProxy) aThat).getHibernateLazyInitializer().getImplementation(); 
-			} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		   	}
-		}
-		if (aThat == null)  {
-			 return false;
-		}
-		
-		final CertifiedProductEntity that; 
-		try {
-			that = (CertifiedProductEntity) proxyThat;
-			if ( !(that.getClassType().equals(this.getClassType()))){
-				return false;
-			}
-		} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		} catch (ClassCastException e) {
-				return false;
-		}
-		
-		
-		boolean result = true;
-		result = result && (((this.getId() == null) && ( that.getId() == null)) || (this.getId() != null  && this.getId().equals(that.getId())));
-		result = result && (((getAtcbCertificationId() == null) && (that.getAtcbCertificationId() == null)) || (getAtcbCertificationId() != null && getAtcbCertificationId().equals(that.getAtcbCertificationId())));
-		result = result && (((getCertificationBodyId() == null) && (that.getCertificationBodyId() == null)) || (getCertificationBodyId() != null && getCertificationBodyId().equals(that.getCertificationBodyId())));	
-		result = result && (((getCertificationEditionId() == null) && (that.getCertificationEditionId() == null)) || (getCertificationEditionId() != null && getCertificationEditionId().equals(that.getCertificationEditionId())));	
-		result = result && (((getChplProductNumber() == null) && (that.getChplProductNumber() == null)) || (getChplProductNumber() != null && getChplProductNumber().equals(that.getChplProductNumber())));
-		result = result && (((getCreationDate() == null) && (that.getCreationDate() == null)) || (getCreationDate() != null && getCreationDate().equals(that.getCreationDate())));
-		result = result && (((isDeleted() == null) && (that.isDeleted() == null)) || (isDeleted() != null && isDeleted().equals(that.isDeleted())));
-		result = result && (((getLastModifiedDate() == null) && (that.getLastModifiedDate() == null)) || (getLastModifiedDate() != null && getLastModifiedDate().equals(that.getLastModifiedDate())));
-		result = result && (((getLastModifiedUser() == null) && (that.getLastModifiedUser() == null)) || (getLastModifiedUser() != null && getLastModifiedUser().equals(that.getLastModifiedUser())));
-		result = result && (((getPracticeTypeId() == null) && (that.getPracticeTypeId() == null)) || (getPracticeTypeId() != null && getPracticeTypeId().equals(that.getPracticeTypeId())));	
-		result = result && (((getProductClassificationTypeId() == null) && (that.getProductClassificationTypeId() == null)) || (getProductClassificationTypeId() != null && getProductClassificationTypeId().equals(that.getProductClassificationTypeId())));	
-		result = result && (((getProductVersionId() == null) && (that.getProductVersionId() == null)) || (getProductVersionId() != null && getProductVersionId().equals(that.getProductVersionId())));	
-		result = result && (((getQualityManagementSystemAtt() == null) && (that.getQualityManagementSystemAtt() == null)) || (getQualityManagementSystemAtt() != null && getQualityManagementSystemAtt().equals(that.getQualityManagementSystemAtt())));
-		result = result && (((getReportFileLocation() == null) && (that.getReportFileLocation() == null)) || (getReportFileLocation() != null && getReportFileLocation().equals(that.getReportFileLocation())));
-		result = result && (((getTestingLabId() == null) && (that.getTestingLabId() == null)) || (getTestingLabId() != null && getTestingLabId().equals(that.getTestingLabId())));	
-		return result;
-	}
-	
-	/** Calculate the hashcode.
-	 * @see java.lang.Object#hashCode()
-	 * @return a calculated number
-	 */
-	@Override
-	public int hashCode() {
-		if ( this.hashCode == null ) {
-			synchronized ( this ) {
-				if ( this.hashCode == null ) {
-					Long newHashCode = null;
-
-					if ( getId() != null ) {
-					newHashCode = SAVED_HASHES.get( getId() );
-					}
-					
-					if ( newHashCode == null ) {
-						if ( getId() != null && getId() != 0L) {
-							newHashCode = getId();
-						} else {
-							newHashCode = (long) super.hashCode();
-
-						}
-					}
-					
-					this.hashCode = newHashCode;
-				}
-			}
-		}
-		return (int) (this.hashCode & 0xffffff);
-	}
-
 
 }

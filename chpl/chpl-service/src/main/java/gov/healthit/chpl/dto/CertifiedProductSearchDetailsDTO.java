@@ -8,7 +8,7 @@ public class CertifiedProductSearchDetailsDTO {
 	
 	private Long id;
     private Long testingLabId;
-    private Long chplProductNumber;
+    private String chplProductNumber;
     private String reportFileLocation;
     private String qualityManagementSystemAtt;
     private String acbCertificationId;
@@ -73,10 +73,10 @@ public class CertifiedProductSearchDetailsDTO {
 	public void setTestingLabId(Long testingLabId) {
 		this.testingLabId = testingLabId;
 	}
-	public Long getChplProductNumber() {
+	public String getChplProductNumber() {
 		return chplProductNumber;
 	}
-	public void setChplProductNumber(Long chplProductNumber) {
+	public void setChplProductNumber(String chplProductNumber) {
 		this.chplProductNumber = chplProductNumber;
 	}
 	public String getReportFileLocation() {

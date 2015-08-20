@@ -1,6 +1,5 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 
 public class CQMResultDetails {
@@ -42,23 +41,11 @@ public class CQMResultDetails {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getCqmDomain() {
-		return cqmDomain;
-	}
-	public void setCqmDomain(String cqmDomain) {
-		this.cqmDomain = cqmDomain;
-	}
 	public String getNqfNumber() {
 		return nqfNumber;
 	}
 	public void setNqfNumber(String nqfNumber) {
 		this.nqfNumber = nqfNumber;
-	}
-	public String getCqmVersion() {
-		return cqmVersion;
-	}
-	public void setCqmVersion(String cqmVersion) {
-		this.cqmVersion = cqmVersion;
 	}
 	public boolean isSuccess() {
 		return success;

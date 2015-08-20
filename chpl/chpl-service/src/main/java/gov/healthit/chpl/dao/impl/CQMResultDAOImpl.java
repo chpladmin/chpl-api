@@ -131,7 +131,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 			throw new EntityRetrievalException("Data error. Duplicate CQM result id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 			

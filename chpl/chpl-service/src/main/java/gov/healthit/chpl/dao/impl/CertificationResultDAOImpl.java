@@ -143,7 +143,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			throw new EntityRetrievalException("Data error. Duplicate result id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 			

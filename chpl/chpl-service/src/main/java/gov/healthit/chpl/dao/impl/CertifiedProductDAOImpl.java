@@ -140,7 +140,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 		

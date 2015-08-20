@@ -6,8 +6,9 @@ import java.util.List;
 
 public interface CertifiedProductSearchDetailsDAO {
 	
-	public List<CertifiedProductSearchDetailsDTO> findAll();
-	
 	public CertifiedProductSearchDetailsDTO getById(Long productId) throws EntityRetrievalException;
+
+	public List<CertifiedProductSearchDetailsDTO> getCertifiedProductSearchDetails(
+			Integer pageNum, Integer pageSize);
 	
 }

@@ -122,7 +122,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 			throw new EntityRetrievalException("Data error. Duplicate product version id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 		

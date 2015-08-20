@@ -18,9 +18,9 @@ public class CertifiedProductSearchDetailsDAOImpl extends BaseDAOImpl implements
 
 	
 	@Override
-	public List<CertifiedProductSearchDetailsDTO> findAll() {
+	public List<CertifiedProductSearchDetailsDTO> getCertifiedProductSearchDetails(Integer pageNum, Integer pageSize) {
 		
-		List<CertifiedProductDetailsEntity> entities = getAllEntities();
+		List<CertifiedProductDetailsEntity> entities =  getPage(pageNum, pageSize);
 		List<CertifiedProductSearchDetailsDTO> products = new ArrayList<>();
 		
 		for (CertifiedProductDetailsEntity entity : entities) {
@@ -40,9 +40,13 @@ public class CertifiedProductSearchDetailsDAOImpl extends BaseDAOImpl implements
 	}
 	
 	
-	private List<CertifiedProductDetailsEntity> getAllEntities() {
+	private List<CertifiedProductDetailsEntity> getPage(Integer pageNum, Integer pageSize) {
 		
-		List<CertifiedProductDetailsEntity> result = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) ", CertifiedProductDetailsEntity.class).getResultList();
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) ", CertifiedProductDetailsEntity.class);
+		query.setMaxResults(pageSize);
+	    query.setFirstResult(pageNum * pageSize);
+		
+		List<CertifiedProductDetailsEntity> result = query.getResultList();
 		return result;
 		
 	}
@@ -60,7 +64,7 @@ public class CertifiedProductSearchDetailsDAOImpl extends BaseDAOImpl implements
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 		

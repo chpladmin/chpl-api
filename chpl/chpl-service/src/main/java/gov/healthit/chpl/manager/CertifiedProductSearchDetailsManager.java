@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface CertifiedProductSearchDetailsManager {
 	
-	public List<CertifiedProductSearchDetails> getAllCertifiedProducts() throws EntityRetrievalException;
 	public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId);
+	public List<CertifiedProductSearchDetails> getCertifiedProducts(Integer pageNum,
+			Integer pageSize) throws EntityRetrievalException;
 
 }

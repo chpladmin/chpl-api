@@ -22,11 +22,11 @@ public class CertifiedProductDetailsEntity {
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long id;
     
-    @Column(name = "testingLabId")
+    @Column(name = "testing_lab_id")
     private Long testingLabId;
     
     @Column(name = "chpl_product_number")
-    private Long chplProductNumber;
+    private String chplProductNumber;
     
     @Column(name = "report_file_location")
     private String reportFileLocation;
@@ -58,7 +58,7 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "year")
     private String year;
     
-    @Column(name = "certificationBodyId")
+    @Column(name = "certification_body_id")
     private Long certificationBodyId;
     
     @Column(name = "certification_body_name")
@@ -105,11 +105,11 @@ public class CertifiedProductDetailsEntity {
 		this.testingLabId = testingLabId;
 	}
 
-	public Long getChplProductNumber() {
+	public String getChplProductNumber() {
 		return chplProductNumber;
 	}
 
-	public void setChplProductNumber(Long chplProductNumber) {
+	public void setChplProductNumber(String chplProductNumber) {
 		this.chplProductNumber = chplProductNumber;
 	}
 

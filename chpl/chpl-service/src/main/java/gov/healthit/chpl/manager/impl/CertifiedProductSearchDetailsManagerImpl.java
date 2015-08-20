@@ -1,13 +1,11 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
@@ -16,13 +14,13 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertifiedProductSearchDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductSearchDetailsManager;
 
+@Service
 public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProductSearchDetailsManager {
 
 	@Autowired
@@ -39,13 +37,13 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 	
 	
 	@Override
-	public List<CertifiedProductSearchDetails> getAllCertifiedProducts()
+	public List<CertifiedProductSearchDetails> getCertifiedProducts(Integer pageNum, Integer pageSize)
 			throws EntityRetrievalException {
 		
-		for (CertifiedProductSearchDetailsDTO dto : certifiedProductSearchDetailsDAO.findAll()){
-			
-			
-			
+		List<CertifiedProductSearchDetails> searchResults = new ArrayList<CertifiedProductSearchDetails>();
+		
+		for (CertifiedProductSearchDetailsDTO dto : certifiedProductSearchDetailsDAO.getCertifiedProductSearchDetails(pageNum, pageSize)){
+				
 			
 			CertifiedProductSearchDetails searchDetails = new CertifiedProductSearchDetails();
 			
@@ -90,7 +88,7 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 			
 			List<CertificationResultDTO> certificationResultDTOs = certificationResultDAO.findByCertifiedProductId(dto.getId());
 			List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
-			
+			/*
 			for (CertificationResultDTO certResult : certificationResultDTOs){
 				
 				CertificationCriterionDTO certCriterion = certificationCriterionDAO.getById(certResult.getCertificationCriterionId());
@@ -99,18 +97,23 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 				result.setNumber(certCriterion.getNumber());
 				result.setTitle(certCriterion.getTitle());
 				certificationResults.add(result);
-				
 			}
-			
+			*/
 			searchDetails.setCertificationResults(certificationResults);
 			
 			List<CQMResultDetailsDTO> cqmResultDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(dto.getId());
 			List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 			
-			for (CQMResultDetailsDTO cqmResult : cqmResultDTOs){
+			for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs){
 				
 				CQMResultDetails result = new CQMResultDetails();
 				
+				result.setCmsId(cqmResultDTO.getCmsId());
+				result.setNqfNumber(cqmResultDTO.getNqfNumber());
+				result.setNumber(cqmResultDTO.getNumber());
+				result.setSuccess(cqmResultDTO.getSuccess());
+				result.setTitle(cqmResultDTO.getTitle());
+				result.setVersion(cqmResultDTO.getVersion());
 				
 				cqmResults.add(result);
 				
@@ -118,9 +121,11 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 			
 			searchDetails.setCqmResults(cqmResults);
 			
+			searchResults.add(searchDetails);
+			
 		}
 		
-		//return 
+		return searchResults; 
 	}
 
 	@Override
