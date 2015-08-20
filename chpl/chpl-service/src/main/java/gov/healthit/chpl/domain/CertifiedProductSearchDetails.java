@@ -14,43 +14,19 @@ public class CertifiedProductSearchDetails {
     private String reportFileLocation;
     private String qualityManagementSystemAtt;
     private String acbCertificationId;
-    
     private Map<String, String> classificationType = new HashMap<String, String>();
-    //private Long productClassificationTypeId;
-    //private String productClassificationName;
-    
     private String otherAcb;
     private String certificationStatusId;
-    
 	private Map<String, String> vendor = new HashMap<String, String>();
-    //private Long vendorId;
-    //private String vendorName;
-	
 	private Map<String, String> product = new HashMap<String, String>();
-	//private Long productVersionId;
-    //private String productVersion;
-    //private Long productId;
-    //private String productName;
-	
 	private Map<String, String> certificationEdition = new HashMap<String, String>();
-	//private Long certificationEditionId;
-    //private String year;
-	
 	private Map<String, String> practiceType = new HashMap<String, String>();
-	//private Long practiceTypeId;
-	//private String practiceTypeName;
-	
 	private Map<String, String> certifyingBody = new HashMap<String, String>();
-    //private Long certificationBodyId;
-    //private String certificationBodyName;
-	
-	//private List<String> additionalSoftware = new ArrayList<String>();
-	
 	private Date certificationDate;
-	
-	private String certsAndCQMs;
+	private Integer countCertsSuccessful;
+	private Integer countCQMsSuccessful;
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
-	private List<CQMResult> cqmResults = new ArrayList<CQMResult>();
+	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	
 	
 	public Long getId() {
@@ -149,12 +125,6 @@ public class CertifiedProductSearchDetails {
 	public void setCertificationDate(Date certificationDate) {
 		this.certificationDate = certificationDate;
 	}
-	public String getCertsAndCQMs() {
-		return certsAndCQMs;
-	}
-	public void setCertsAndCQMs(String certsAndCQMs) {
-		this.certsAndCQMs = certsAndCQMs;
-	}
 	public List<CertificationResult> getCertificationResults() {
 		return certificationResults;
 	}
@@ -162,11 +132,23 @@ public class CertifiedProductSearchDetails {
 			List<CertificationResult> certificationResults) {
 		this.certificationResults = certificationResults;
 	}
-	public List<CQMResult> getCqmResults() {
+	public List<CQMResultDetails> getCqmResults() {
 		return cqmResults;
 	}
-	public void setCqmResults(List<CQMResult> cqmResults) {
+	public void setCqmResults(List<CQMResultDetails> cqmResults) {
 		this.cqmResults = cqmResults;
+	}
+	public Integer getCountCertsSuccessful() {
+		return countCertsSuccessful;
+	}
+	public void setCountCertsSuccessful(Integer countCertsSuccessful) {
+		this.countCertsSuccessful = countCertsSuccessful;
+	}
+	public Integer getCountCQMsSuccessful() {
+		return countCQMsSuccessful;
+	}
+	public void setCountCQMsSuccessful(Integer countCQMsSuccessful) {
+		this.countCQMsSuccessful = countCQMsSuccessful;
 	}
 	
 }

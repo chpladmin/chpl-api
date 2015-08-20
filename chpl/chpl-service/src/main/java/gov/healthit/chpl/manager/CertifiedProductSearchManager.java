@@ -1,7 +1,7 @@
 package gov.healthit.chpl.manager;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CQMResult;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
@@ -16,7 +16,7 @@ public interface CertifiedProductSearchManager {
 	public List<CertifiedProductSearchResult> getAllCertifiedProducts() throws EntityRetrievalException;
 	public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId);
 	public List<CertificationResult> getCertifications();
-	public List<CQMResult> getCQMResults();
+	public List<CQMResultDetails> getCQMResults();
 	public List<String> getClassificationNames();
 	public List<String> getEditionNames();
 	public List<String> getPracticeTypeNames();

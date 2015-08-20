@@ -5,7 +5,7 @@ import java.util.List;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CQMResult;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
@@ -58,7 +58,7 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/list_cqms", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CQMResult> getCQMResults() {
+	public @ResponseBody List<CQMResultDetails> getCQMResults() {
 		return certifiedProductSearchManager.getCQMResults();
 	}
 	

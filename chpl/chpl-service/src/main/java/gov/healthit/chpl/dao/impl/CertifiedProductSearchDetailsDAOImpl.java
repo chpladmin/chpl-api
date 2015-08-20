@@ -12,7 +12,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductSearchDetailsDTO;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
-@Repository(value = "certifiedProductSearchDetails")
+@Repository(value = "certifiedProductSearchDetailsDAO")
 public class CertifiedProductSearchDetailsDAOImpl extends BaseDAOImpl implements
 		CertifiedProductSearchDetailsDAO {
 

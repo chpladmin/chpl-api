@@ -26,7 +26,7 @@ import org.hibernate.proxy.HibernateProxy;
  */
 
 @Entity
-@Table(name = "cqm_result", catalog = "openchpl", schema = "openchpl")
+@Table(name = "cqm_result", schema = "openchpl")
 public class CQMResultEntity implements Serializable {
 
 	/** Serial Version UID. */

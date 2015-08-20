@@ -1,15 +1,28 @@
 package gov.healthit.chpl.domain;
 
-public class CQMResult {
+import gov.healthit.chpl.dto.CQMResultDTO;
+import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+
+public class CQMResultDetails {
 	
 	private String number;
 	private String cmsId;
 	private String title;
-	private String cqmDomain;
 	private String nqfNumber;
-	private String cqmVersion;
-	private boolean success;
+	private Boolean success;
+	private String version;
 	
+	public CQMResultDetails(){}
+	
+	public CQMResultDetails(CQMResultDetailsDTO dto){
+		this.number = dto.getNumber();
+		this.cmsId = dto.getCmsId();
+		this.title = dto.getTitle();
+		this.nqfNumber = dto.getNqfNumber();
+		this.success = dto.getSuccess();
+		this.version = dto.getVersion();
+		
+	}
 	
 	public String getNumber() {
 		return number;
@@ -52,6 +65,14 @@ public class CQMResult {
 	}
 	public void setSuccess(boolean success) {
 		this.success = success;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 	
 }
