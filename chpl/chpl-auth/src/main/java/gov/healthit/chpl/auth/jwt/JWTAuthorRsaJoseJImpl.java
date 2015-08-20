@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
@@ -22,6 +24,10 @@ public class JWTAuthorRsaJoseJImpl extends AuthPropertiesConsumer implements JWT
 	@Autowired
 	@Qualifier("RsaJose4JWebKey")
 	JSONWebKey jwk;
+	
+	
+	Logger logger = LogManager.getLogger(JWTAuthorRsaJoseJImpl.class.getName());
+	
 	
 	@Override
 	public String createJWT(String subject, Map<String, List<String> > claims) {
@@ -73,8 +79,7 @@ public class JWTAuthorRsaJoseJImpl extends AuthPropertiesConsumer implements JWT
 		try {
 			jwt = jws.getCompactSerialization();
 		} catch (JoseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Token creation error", e);
 		}
 	    
 	    return jwt;

@@ -12,6 +12,8 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.jose4j.jwk.PublicJsonWebKey;
 import org.jose4j.jwk.RsaJsonWebKey;
 import org.jose4j.keys.RsaKeyUtil;
@@ -22,9 +24,9 @@ import org.springframework.stereotype.Service;
 public class JSONWebKeyRsaJoseJImpl extends AuthPropertiesConsumer implements JSONWebKey {
 
 	
-	//private String keyLocation = "D:\\CHPL\\Keys\\JSONRsaJoseJWebKey.txt";
-	
 	RsaJsonWebKey rsaJsonWebKey = null;
+	
+	Logger logger = LogManager.getLogger(JSONWebKeyRsaJoseJImpl.class.getName());
 	
 	
 	public JSONWebKeyRsaJoseJImpl() {
@@ -36,8 +38,9 @@ public class JSONWebKeyRsaJoseJImpl extends AuthPropertiesConsumer implements JS
 			try {
 				loadSavedKey(keyLocation);
 			} catch (ClassNotFoundException | IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				
+				logger.error("Key not found or error loading key. Creating new key. " , e1);
+				
 				try {
 			        RsaKeyUtil keyUtil = new RsaKeyUtil();
 			        KeyPair keyPair;
@@ -46,8 +49,7 @@ public class JSONWebKeyRsaJoseJImpl extends AuthPropertiesConsumer implements JS
 			        rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
 			        saveKey(keyLocation);
 				} catch (JoseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Error creating key: " , e1);
 					throw new RuntimeException(e);
 				}
 			}
@@ -64,8 +66,9 @@ public class JSONWebKeyRsaJoseJImpl extends AuthPropertiesConsumer implements JS
 			try {
 				loadSavedKey(keyLocation);
 			} catch (ClassNotFoundException | IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				
+				logger.error("Key not found or error loading key. Creating new key. " , e1);
+				
 				try {
 			        RsaKeyUtil keyUtil = new RsaKeyUtil();
 			        KeyPair keyPair;
@@ -74,8 +77,9 @@ public class JSONWebKeyRsaJoseJImpl extends AuthPropertiesConsumer implements JS
 			        rsaJsonWebKey.setPrivateKey(keyPair.getPrivate());
 			        saveKey(keyLocation);
 				} catch (JoseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					logger.error("Error creating key: " , e1);
+					
 					throw new RuntimeException(e);
 				}
 			}
@@ -118,8 +122,7 @@ public class JSONWebKeyRsaJoseJImpl extends AuthPropertiesConsumer implements JS
 			out.close();
 			fileOut.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error saving key: " , e);
 		}
 	}
 	

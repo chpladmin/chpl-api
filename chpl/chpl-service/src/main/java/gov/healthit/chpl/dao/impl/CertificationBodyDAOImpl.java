@@ -1,18 +1,16 @@
 package gov.healthit.chpl.dao.impl;
 
-import gov.healthit.chpl.acb.CertificationBody;
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-
-
-
-
-
-
-
 
 
 import javax.persistence.Query;
@@ -27,54 +25,119 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository(value="certificationBodyDAO")
 public class CertificationBodyDAOImpl extends BaseDAOImpl implements CertificationBodyDAO {
 	
-	@Transactional
-	@Override
-	public void create(CertificationBody acb) {
+	
+	public void create(CertificationBodyDTO acb) throws EntityCreationException{
 		
-		entityManager.persist(acb);
+		CertificationBodyEntity acbEntity = null;
+		try {
+			if (acb.getId() != null){
+				acbEntity = this.getEntityById(acb.getId());
+			}
+		} catch (EntityRetrievalException e) {
+			throw new EntityCreationException(e);
+		}
+		
+		if (acbEntity != null) {
+			throw new EntityCreationException("A acb with this ID already exists.");
+		} else {
+			
+			acbEntity = new CertificationBodyEntity();
+			
+			acbEntity.setId(acb.getId());
+			acbEntity.setCreationDate(acb.getCreationDate());
+			acbEntity.setDeleted(acb.getDeleted());
+			//acbEntity.setLastModifiedDate(acb.getLastModifiedDate());
+			acbEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+			acbEntity.setName(acb.getName());
+			acbEntity.setWebsite(acb.getWebsite());
+			
+			create(acbEntity);	
+		}
+		
+	}
+
+	public void update(CertificationBodyDTO acb) throws EntityRetrievalException{
+		
+		CertificationBodyEntity acbEntity = getEntityById(acb.getId());		
+		
+		acbEntity.setId(acb.getId());
+		acbEntity.setCreationDate(acb.getCreationDate());
+		acbEntity.setDeleted(acb.getDeleted());
+		//acbEntity.setLastModifiedDate(acb.getLastModifiedDate());
+		acbEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+		acbEntity.setName(acb.getName());
+		acbEntity.setWebsite(acb.getWebsite());
+		
+		update(acbEntity);
 		
 	}
 	
-	@Transactional
-	@Override
-	public void update(CertificationBody acb) {
+	public void delete(Long acbId){
 		
-		entityManager.merge(acb);
-		
-	}
-	
-	@Transactional
-	@Override
-	public void delete(Long acbId) {
-		
-		Query query = entityManager.createNativeQuery("delete FROM certification_body WHERE id = :acbid");
+		// TODO: How to delete this without leaving orphans
+		Query query = entityManager.createQuery("UPDATE CertificationBodyEntity SET deleted = true WHERE certified_product_id = :acbid");
 		query.setParameter("acbid", acbId);
 		query.executeUpdate();
 		
 	}
 	
+	public List<CertificationBodyDTO> findAll(){
+		
+		List<CertificationBodyEntity> entities = getAllEntities();
+		List<CertificationBodyDTO> acbs = new ArrayList<>();
+		
+		for (CertificationBodyEntity entity : entities) {
+			CertificationBodyDTO acb = new CertificationBodyDTO(entity);
+			acbs.add(acb);
+		}
+		return acbs;
+		
+	}
 	
-	@Override
-	public List<CertificationBody> findAll() {
+	public CertificationBodyDTO getById(Long acbId) throws EntityRetrievalException{
 		
-		List<CertificationBody> result = entityManager.createQuery( "from CertificationBody", CertificationBody.class ).getResultList();
+		CertificationBodyEntity entity = getEntityById(acbId);
+		CertificationBodyDTO dto = new CertificationBodyDTO(entity);
+		return dto;
 		
+	}
+	
+	private void create(CertificationBodyEntity acb) {
+		
+		entityManager.persist(acb);
+		
+	}
+	
+	private void update(CertificationBodyEntity acb) {
+		
+		entityManager.merge(acb);	
+	
+	}
+	
+	private List<CertificationBodyEntity> getAllEntities() {
+		
+		List<CertificationBodyEntity> result = entityManager.createQuery( "from CertificationBodyEntity where (NOT deleted = true) ", CertificationBodyEntity.class).getResultList();
 		return result;
 		
 	}
-
-	@Override
-	public CertificationBody getById(Long acbId) {
+	
+	private CertificationBodyEntity getEntityById(Long entityId) throws EntityRetrievalException {
 		
-		CertificationBody acb = null;
+		CertificationBodyEntity entity = null;
 		
-		Query query = entityManager.createQuery( "from CertificationBody where id = :acbid", CertificationBody.class );
-		query.setParameter("acbid", acbId);
-		List<CertificationBody> result = query.getResultList();
-		acb = result.get(0);
+		Query query = entityManager.createQuery( "from CertificationBodyEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ", CertificationBodyEntity.class );
+		query.setParameter("entityid", entityId);
+		List<CertificationBodyEntity> result = query.getResultList();
 		
-		return acb;
+		if (result.size() > 1){
+			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
+		}
 		
+		if (result.size() < 0){
+			entity = result.get(0);
+		}
+		
+		return entity;
 	}
 	
 }

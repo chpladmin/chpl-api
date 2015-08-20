@@ -1,0 +1,5 @@
+testDbUser=changeit
+testDdbPassword=changeit
+testDdbServer=jdbc:postgresql://localhost/changeit
+persistenceUnitName=changeit
+authAclCacheName=aclCache

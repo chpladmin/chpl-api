@@ -1,14 +1,21 @@
 package gov.healthit.chpl.auth.controller;
 
 
-import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserImpl;
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.healthit.chpl.auth.authentication.LoginCredentials;
+import gov.healthit.chpl.auth.json.GrantAdminJSONObject;
+import gov.healthit.chpl.auth.json.GrantRoleJSONObject;
+import gov.healthit.chpl.auth.json.UserCreationJSONObject;
+import gov.healthit.chpl.auth.json.UserInfoJSONObject;
+import gov.healthit.chpl.auth.json.UserListJSONObject;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.UserCreationException;
+import gov.healthit.chpl.auth.user.UserDTO;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.auth.user.registration.UserCreationException;
-import gov.healthit.chpl.auth.user.registration.UserDTO;
-import gov.healthit.chpl.auth.user.registration.UserRegistrar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,44 +31,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserManagementController {
 	
 	@Autowired
-	UserRegistrar registrar;
-	
-	@Autowired
 	UserManager userManager;
 	
 	@RequestMapping(value="/create_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String createUser(@RequestBody UserDTO userInfo) throws UserCreationException {
+	public String createUser(@RequestBody UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
 		
-		registrar.createUser(userInfo);
+		userManager.create(userInfo);
 		String isSuccess = String.valueOf(true);
 		return "{\"userCreated\" : "+isSuccess+" }";
-		
-	}
-	
-	
-	@RequestMapping(value="/deactivate_user", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-			produces="application/json; charset=utf-8")
-	public String deactivateUser(@RequestParam("userName") String userName) 
-			throws UserRetrievalException {
-		
-		String isSuccess = String.valueOf(registrar.deactivateUser(userName));
-		return "{\"deactivatedUser\" : "+isSuccess+" }";
-		
-	}
-	
-	
-	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-			produces="application/json; charset=utf-8")
-	public String resetPassword(@RequestParam("userName") String userName, 
-			@RequestParam("password") String password) throws UserRetrievalException {
-		
-		boolean passwordUpdated = registrar.updateUserPassword(userName, password);
-		String isSuccess = String.valueOf(passwordUpdated);
-		return "{\"passwordUpdated\" : "+isSuccess+" }";
 		
 	}
 	
@@ -68,64 +48,84 @@ public class UserManagementController {
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String updateUserDetails(@RequestBody UserDTO userInfo) throws UserRetrievalException {
-		//TODO: Build out UserDTO to contain eg: Contacts
+	public String updateUserDetails(@RequestBody UserInfoJSONObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
 		
-		UserImpl user = new UserImpl(userInfo.getUserName(), registrar.getEncodedPassword(userInfo.getPassword()));
-		userManager.create(user);
+		userManager.update(userInfo);
 		return "{\"userUpdated\" : true }";
 		
 	}
 	
 	
-	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+	@RequestMapping(value="/delete_user", method= RequestMethod.DELETE,
 			produces="application/json; charset=utf-8")
-	public String grantUserRole(@RequestParam("userName") String userName, 
-			@RequestParam("role") String role) throws UserRetrievalException, UserManagementException {
+	public String deleteUser(@RequestParam("userName") String userName) 
+			throws UserRetrievalException {
 		
+		userManager.delete(userName);
+		return "{\"deletedUser\" : true }";
+	}
+	
+	
+	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String resetPassword(@RequestBody LoginCredentials newCredentials) throws UserRetrievalException {
 		
-		User fetchedUser = userManager.getByUserName(userName);
+		userManager.updateUserPassword(newCredentials.getUserName(), newCredentials.getPassword());
+		return "{\"passwordUpdated\" : true }";
+	
+	}	
+	
+	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+		
 		String isSuccess = String.valueOf(false);
-		
-		if (fetchedUser == null){
-			throw new UserRetrievalException("User not found");
-		} else {
-			UserImpl user = (UserImpl) fetchedUser;
-			userManager.grantRole(user, role);
-			isSuccess = String.valueOf(true);
-		}
+		userManager.grantRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
+		isSuccess = String.valueOf(true);
 		
 		return "{\"roleAdded\" : "+isSuccess+" }";
 		
 	}
 	
-	
-	@RequestMapping(value="/grant_user_admin", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+	@RequestMapping(value="/grant_user_admin", method=RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String grantUserAdmin(@RequestParam("userName") String userName) 
-			throws UserRetrievalException, UserManagementException {
+	public String grantUserAdmin(@RequestBody GrantAdminJSONObject grantAdminObj) 
+			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
-		User fetchedUser = userManager.getByUserName(userName);
 		String isSuccess = String.valueOf(false);
+		userManager.grantAdmin(grantAdminObj.getSubjectName());
+		isSuccess = String.valueOf(true);
 		
-		if (fetchedUser == null){
-			throw new UserRetrievalException("User not found");
-		} else {
-			UserImpl user = (UserImpl) fetchedUser;
-			userManager.grantAdmin(user);
-			isSuccess = String.valueOf(true);
+		return "{\"grantedAdminPrivileges\" : "+isSuccess+" }";
+		
+	}
+	
+	@RequestMapping(value="/list_users", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody UserListJSONObject getUsers(){
+		
+		List<UserDTO> userList = userManager.getAll();
+		List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
+		
+		for (UserDTO user : userList){
+			userInfos.add(new UserInfoJSONObject(user));
 		}
 		
-		return "{\"grantedAdmin\" : "+isSuccess+" }";
+		UserListJSONObject ulist = new UserListJSONObject();
+		ulist.setUsers(userInfos);
+		return ulist;
+	}
+	
+	@RequestMapping(value="/user_details", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody UserInfoJSONObject getUser(@RequestParam("userName") String userName) throws UserRetrievalException {
+		
+		return userManager.getUserInfo(userName);
 		
 	}
 	
-	
-	@RequestMapping(value="/init_admin", method= RequestMethod.GET)
-	public void initAdminUser() {
-		registrar.createAdminUser();
-	}
 	
 }

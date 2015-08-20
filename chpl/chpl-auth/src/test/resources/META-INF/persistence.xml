@@ -5,15 +5,17 @@
    http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 	version="2.0">
 
-	<persistence-unit name="chpl_acl" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="openchpl-test" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>gov.healthit.chpl.auth.user.UserImpl</class>
-		<class>gov.healthit.chpl.auth.authentication.Claim</class>
+		<class>gov.healthit.chpl.auth.user.UserEntity</class>
+		<class>gov.healthit.chpl.auth.user.UserContactEntity</class>
+		<class>gov.healthit.chpl.auth.permission.UserPermissionEntity</class>
+		<class>gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.driver_class" value="org.postgresql.Driver" />
-			<property name="hibernate.connection.datasource" value="java:/comp/env/jdbc/chpl_acl" />
+			<property name="hibernate.connection.datasource" value="java:/comp/env/jdbc/openchpl" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
 			<property name="hibernate.flush_before_completion" value="true" />
 			<property name="hibernate.c3p0.min_size" value="5" />

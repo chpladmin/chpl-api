@@ -17,17 +17,21 @@ $ cd chpl-api/chpl/chpl-etl
 
 ## Data model load
 
-Edit `openchpl-role.sql` to set the password for the `openchpl` role. The role can be changed as well, but then make sure the other `.sql` files are adjusted appropriately.
+Before running the ETL, please see [the Open Data CHPL data model README](../../openchpl-sql/README.md).
 
-```sh
-$ psql -Upostgres -f openchpl-sql/openchpl-role.sql
-$ psql -Upostgres -f openchpl-sql/openchpl.sql
-$ psql -Upostgres -f openchpl-sql/preload-openchpl.sql
-```
+## Installing on Linux
+
+If installing on a Linux machine, some modifications are needed. In the files:
+ - `parse.sh`
+ - `linux_deploy.sh`
+
+Remove the line: `(set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters`
+
+Next, run the script `linux_deploy.sh`. This script will modify the strings used as recordDelimiters in the CloverETL graphs from the Windows specific `\r\n` to the Linux `\n`.
 
 ## ETL
 
-Edit the parameters-template.prm file to fill in the JDBC database connection URL, username, and password for your database, and rename it to `parameters.prm`.
+Edit the parameters-template.prm file to fill in the JDBC database connection URL, username, and password for your database, and rename it to `parameters.prm`. The username and password in the newly created `parameters.prm` file much match the username/role and password from the `openchpl-role.sql` file referenced in the previous section.
 
 ```sh
 $ vi parameters-template.prm
@@ -39,9 +43,26 @@ $ mvn package
 
 ```sh
 $ cd chpl-api/chpl/chpl-etl
-$ java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar 'path-to-excel-file' 'path-to-plugins-directory'
+$ java -jar target/chpl-etl-0.0.1-SNAPSHOT-jar-with-dependencies.jar 'excel-file' 'plugins-directory'
 ```
 
 The default parameters are:
  - Excel file: `./src/main/resources/chpl-large.xlsx`
  - Plugins directory: `./src/main/resources/plugins`
+
+## Search a directory
+
+A batch parsing script is available in `parse-template.sh`. The script should be renamed to `parse.sh`, and will need to be modified to set user-specific configurations:
+ - "To" email address(es)
+ - "From" email address
+ - SMTP settings
+ - SMTP user name
+ - SMTP password
+
+This script will look in the directory `./input` for any files ending in `.xlsx`, and run those files through the ETL, then move the files that were processed into `./input/parsed/input`, along with a timestamped log file that captures the output of the parsing activity, as well as the specific `to-update.csv` file that was generated during that run.
+
+# CloverETL
+
+This ETL makes use of the CloverETL engine. The first few steps of this process are outside of the CloverETL engine. This includes a conversion from the provided .xlsx files to a version of a .csv, where the actual separating character is a `^`, in order to avoid running into issues with commas in the data. That conversion also includes a step where a hash of each row of the data file is appended to that row, in order to track if the data in the row changes at some point in the future.
+
+After the conversion and appending of the hash, the CloverETL engine picks up the outputted .csv and processes it. A graphical view of that process is here: ![CloverETL process](openchpl_etl.png)

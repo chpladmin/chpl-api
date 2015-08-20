@@ -1,45 +1,63 @@
 package gov.healthit.chpl.auth.user;
 
 
-import java.util.List;
+import gov.healthit.chpl.auth.json.UserCreationJSONObject;
+import gov.healthit.chpl.auth.json.UserInfoJSONObject;
+import gov.healthit.chpl.auth.permission.UserPermissionDTO;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
+import java.util.List;
+import java.util.Set;
 
 public interface UserManager {
+			
+	
+	public void create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException;
 	
 	
-	public void addPermission(UserImpl user, Sid recipient, Permission permission);
+	public void update(UserInfoJSONObject userInfo) throws UserRetrievalException;
 	
 	
-	public void deletePermission(UserImpl user, Sid recipient, Permission permission);
+	public void delete(UserDTO user);
 	
 	
-	public void deleteRole(UserImpl user, String role) throws UserRetrievalException;
+	public void delete(String userName) throws UserRetrievalException;
 	
 	
-	public void create(UserImpl user);
+	public List<UserDTO> getAll();
 	
 	
-	public void update(UserImpl user) throws UserRetrievalException;
+	public UserDTO getById(Long id) throws UserRetrievalException;
 	
 	
-	public void delete(UserImpl user);
+	public UserDTO getByName(String userName) throws UserRetrievalException;
 	
 	
-	public List<UserImpl> getAll();
+	public UserInfoJSONObject getUserInfo(String userName) throws UserRetrievalException;
 	
-	
-	public User getById(Long id) throws UserRetrievalException;
-	
-	
-	public User getByUserName(String uname) throws UserRetrievalException;
+
+	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
 
 
-	void grantRole(UserImpl user, String role) throws UserRetrievalException, UserManagementException;
+	public void grantAdmin(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
+
+	
+	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException;
+	
+	
+	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException;
+	
+	
+	public void updateUserPassword(String userName, String password) throws UserRetrievalException;
+	
+	
+	public String getEncodedPassword(UserDTO user) throws UserRetrievalException;
 
 
-	void grantAdmin(UserImpl user) throws UserRetrievalException;
+	public String encodePassword(String password);
+
+
+	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user);
 	
 	
 }
