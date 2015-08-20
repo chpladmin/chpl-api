@@ -107,10 +107,9 @@ public class AddressDaoTest extends TestCase {
 		{
 			AddressDTO inserted = addressDao.getById(result.getId());
 			assertNotNull(inserted);
+			addressDao.delete(result.getId());
 		} catch(EntityRetrievalException ex) {
 			fail("could not find address with id " + result.getId());
 		}
-		
-		addressDao.delete(result.getId());
 	}
 }

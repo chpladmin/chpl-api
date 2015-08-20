@@ -54,6 +54,7 @@ public class ProductEntity implements Serializable {
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
 	
+	@Basic( optional = false )
 	@Column( name = "name")
 	private String name;
 	

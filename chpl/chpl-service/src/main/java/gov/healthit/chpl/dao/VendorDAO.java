@@ -11,7 +11,7 @@ public interface VendorDAO {
 
 	public VendorEntity update(VendorDTO dto) throws EntityRetrievalException;
 	
-	public void delete(Long id);
+	public void delete(Long id) throws EntityRetrievalException;
 	
 	public List<VendorDTO> findAll();
 	

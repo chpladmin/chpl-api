@@ -126,10 +126,15 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 
 	@Override
 	@Transactional
-	public void delete(Long id) {
-		Query query = entityManager.createQuery("UPDATE VendorEntity SET deleted = true WHERE vendor_id = :entityid");
-		query.setParameter("entityid", id);
-		query.executeUpdate();
+	public void delete(Long id) throws EntityRetrievalException {
+		VendorEntity toDelete = getEntityById(id);
+		
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			update(toDelete);
+		}
 	}
 
 	@Override
@@ -202,6 +207,8 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 			toUpdate.setRegion(addressDto.getRegion());
 			toUpdate.setCountry(addressDto.getCountry());
 			address = addressDao.update(toUpdate);
+		} else {
+			address = addressDao.getEntityByValues(addressDto);
 		}
 		
 		if(address == null) {

@@ -11,11 +11,10 @@ public interface AddressDAO {
 	
 	public AddressEntity update(AddressDTO dto) throws EntityRetrievalException;
 	
-	public void delete(Long id);
+	public void delete(Long id) throws EntityRetrievalException;
 	
-	public List<AddressDTO> findAll();
-	public List<AddressEntity> findAllEntities();
-	
+	public List<AddressDTO> findAll();	
 	public AddressDTO getById(Long id) throws EntityRetrievalException;
-	public AddressEntity getEntityById(Long id) throws EntityRetrievalException;
+	public AddressDTO getByValues(AddressDTO address);
+	public AddressEntity getEntityByValues(AddressDTO address);
 }
