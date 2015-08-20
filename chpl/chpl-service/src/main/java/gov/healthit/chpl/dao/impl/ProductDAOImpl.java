@@ -79,14 +79,8 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		ProductEntity entity = this.getEntityById(dto.getId());
 		
 		entity.setReportFileLocation(dto.getReportFileLocation());
-
-		if(dto.getName() != null) {
-			entity.setName(dto.getName());
-		}
-		
-		if(dto.getVendorId() != null) {
-			entity.setVendorId(dto.getVendorId());
-		}
+		entity.setName(dto.getName());
+		entity.setVendorId(dto.getVendorId());
 				
 		if(dto.getDeleted() != null) {
 			entity.setDeleted(dto.getDeleted());

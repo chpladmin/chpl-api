@@ -71,7 +71,11 @@ public class ProductController {
 			newProduct.setName(productInfo.getProduct().getName());
 			newProduct.setLastModifiedUser(Util.getCurrentUser().getId());
 			newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
+			if(productInfo.getNewVendorId() != null) {
+				newProduct.setVendorId(productInfo.getNewVendorId());
+			}
 			result = productManager.create(newProduct);
+			
 			//search for any versions assigned to the list of products passed in
 			List<ProductVersionDTO> assignedVersions = versionManager.getByProducts(productInfo.getProductIds());
 			//reassign those versions to the new product
@@ -92,6 +96,10 @@ public class ProductController {
 			toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
 			toUpdate.setName(productInfo.getProduct().getName());
 			toUpdate.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
+			//update the vendor if an id is supplied
+			if(productInfo.getNewVendorId() != null) {
+				toUpdate.setVendorId(productInfo.getNewVendorId());
+			}
 			result = productManager.update(toUpdate);
 		}
 		
