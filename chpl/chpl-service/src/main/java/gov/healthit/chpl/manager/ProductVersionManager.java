@@ -9,8 +9,9 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 public interface ProductVersionManager {
 	public ProductVersionDTO getById(Long id) throws EntityRetrievalException;
 	public List<ProductVersionDTO> getByProduct(Long productId);
-	public void create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException;
-	public void update(ProductVersionDTO dto) throws EntityRetrievalException;
-	public void delete(ProductVersionDTO dto);
-	public void delete(Long productVersionId);
+	public List<ProductVersionDTO> getByProducts(List<Long> productIds);
+	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException;
+	public ProductVersionDTO update(ProductVersionDTO dto) throws EntityRetrievalException;
+	public void delete(ProductVersionDTO dto) throws EntityRetrievalException;
+	public void delete(Long productVersionId) throws EntityRetrievalException;
 }

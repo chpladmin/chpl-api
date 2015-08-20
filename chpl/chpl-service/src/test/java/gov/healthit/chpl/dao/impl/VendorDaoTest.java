@@ -201,10 +201,10 @@ public class VendorDaoTest extends TestCase {
 		List<VendorDTO> vendors = vendorDao.findAll();
 		
 		Long vendorIdToDelete = vendors.get(vendors.size()-1).getId();
-		vendorDao.delete(vendorIdToDelete);
 		
 		try
 		{
+			vendorDao.delete(vendorIdToDelete);
 			VendorDTO deletedVendor = vendorDao.getById(vendorIdToDelete);
 			assertNull(deletedVendor);
 		} catch(EntityRetrievalException ex) {

@@ -20,14 +20,16 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.manager.ProductVersionManager;
 
 @RestController
 @RequestMapping("/product")
 public class ProductController {
 	
-	@Autowired
-	ProductManager productManager;
+	@Autowired ProductManager productManager;
+	@Autowired ProductVersionManager versionManager;
 	
 	@RequestMapping(value="/get_product", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
@@ -59,7 +61,9 @@ public class ProductController {
 	@RequestMapping(value="/update_product", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String updateProduct(@RequestBody(required=true) UpdateProductsRequest productInfo) throws EntityCreationException, EntityRetrievalException {
+	public Product updateProduct(@RequestBody(required=true) UpdateProductsRequest productInfo) throws EntityCreationException, EntityRetrievalException {
+		ProductDTO result = null;
+		
 		if(productInfo.getProductIds().size() > 1) {
 			//merge these products into one 
 			// - create a new product with the rest of the passed in information
@@ -67,10 +71,14 @@ public class ProductController {
 			newProduct.setName(productInfo.getProduct().getName());
 			newProduct.setLastModifiedUser(Util.getCurrentUser().getId());
 			newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-			productManager.create(newProduct);
-			//TODO - search for any versions assigned to the list of products passed in
-			
-			//TODO - reassign those versions to the new product
+			result = productManager.create(newProduct);
+			//search for any versions assigned to the list of products passed in
+			List<ProductVersionDTO> assignedVersions = versionManager.getByProducts(productInfo.getProductIds());
+			//reassign those versions to the new product
+			for(ProductVersionDTO version : assignedVersions) {
+				version.setProductId(result.getId());
+				versionManager.update(version);
+			}
 			
 			// - mark the passed in products as deleted
 			for(Long productId : productInfo.getProductIds()) {
@@ -84,13 +92,12 @@ public class ProductController {
 			toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
 			toUpdate.setName(productInfo.getProduct().getName());
 			toUpdate.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-			//TODO: what about the version stuff?
-			productManager.update(toUpdate);
+			result = productManager.update(toUpdate);
 		}
 		
-		//TODO: return something better here
-		String isSuccess = String.valueOf(true);
-		return "{\"success\" : "+isSuccess+" }";
-		
+		if(result == null) {
+			throw new EntityCreationException("There was an error inserting or updating the product information.");
+		}
+		return new Product(result);
 	}
 }
