@@ -29,6 +29,8 @@ public class CertifiedProductDetailsDTO {
     private Long vendorId;
     private String vendorName;
     private Date certificationDate;
+    private Integer countCertifications;
+    private Integer countCqms;
     
     public CertifiedProductDetailsDTO(){}
     
@@ -57,6 +59,8 @@ public class CertifiedProductDetailsDTO {
     	this.vendorName = entity.getVendorName();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
+    	this.countCqms = entity.getCountCqms();
+    	this.countCertifications = entity.getCountCertifications();
     	
     }
     
@@ -198,6 +202,24 @@ public class CertifiedProductDetailsDTO {
 	}
 	public void setCertificationDate(Date certificationDate) {
 		this.certificationDate = certificationDate;
+	}
+	public String getProductClassificationName() {
+		return productClassificationName;
+	}
+	public void setProductClassificationName(String productClassificationName) {
+		this.productClassificationName = productClassificationName;
+	}
+	public Integer getCountCertifications() {
+		return countCertifications;
+	}
+	public void setCountCertifications(Integer countCertifications) {
+		this.countCertifications = countCertifications;
+	}
+	public Integer getCountCqms() {
+		return countCqms;
+	}
+	public void setCountCqms(Integer countCqms) {
+		this.countCqms = countCqms;
 	}
     
 }

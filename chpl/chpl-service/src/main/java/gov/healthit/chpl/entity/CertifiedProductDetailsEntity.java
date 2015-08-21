@@ -88,6 +88,12 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_date")
     private Date certificationDate;
     
+    @Column(name = "count_certifications")
+    private Integer countCertifications;
+    
+    @Column(name = "count_cqms")
+    private Integer countCqms;
+    
 
 	public Long getId() {
 		return id;
@@ -272,4 +278,21 @@ public class CertifiedProductDetailsEntity {
 	public void setCertificationDate(Date certificationDate) {
 		this.certificationDate = certificationDate;
 	}
+
+	public Integer getCountCertifications() {
+		return countCertifications;
+	}
+
+	public void setCountCertifications(Integer countCertifications) {
+		this.countCertifications = countCertifications;
+	}
+
+	public Integer getCountCqms() {
+		return countCqms;
+	}
+
+	public void setCountCqms(Integer countCqms) {
+		this.countCqms = countCqms;
+	}
+	
 }

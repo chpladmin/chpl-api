@@ -24,8 +24,8 @@ public class CertifiedProductSearchResult {
 	private Map<String, String> practiceType = new HashMap<String, String>();
 	private Map<String, String> certifyingBody = new HashMap<String, String>();
 	private Date certificationDate;
-	private Integer countCertsSuccessful;
-	private Integer countCQMsSuccessful;
+	private Integer countCerts;
+	private Integer countCqms;
 	
 	public Long getId() {
 		return id;
@@ -117,17 +117,17 @@ public class CertifiedProductSearchResult {
 	public void setCertificationDate(Date certificationDate) {
 		this.certificationDate = certificationDate;
 	}
-	public Integer getCountCertsSuccessful() {
-		return countCertsSuccessful;
+	public Integer getCountCerts() {
+		return countCerts;
 	}
-	public void setCountCertsSuccessful(Integer countCertsSuccessful) {
-		this.countCertsSuccessful = countCertsSuccessful;
+	public void setCountCerts(Integer countCerts) {
+		this.countCerts = countCerts;
 	}
-	public Integer getCountCQMsSuccessful() {
-		return countCQMsSuccessful;
+	public Integer getCountCqms() {
+		return countCqms;
 	}
-	public void setCountCQMsSuccessful(Integer countCQMsSuccessful) {
-		this.countCQMsSuccessful = countCQMsSuccessful;
+	public void setCountCqms(Integer countCqms) {
+		this.countCqms = countCqms;
 	}
 	
 }

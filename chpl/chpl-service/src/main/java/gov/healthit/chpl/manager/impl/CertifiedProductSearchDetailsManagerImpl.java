@@ -50,6 +50,8 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 		
 		searchDetails.setId(dto.getId());
 		searchDetails.setAcbCertificationId(dto.getAcbCertificationId());
+		
+		//TODO: fetch & add additional software here. 
 		//searchDetails.setAdditionalSoftware(additionalSoftware);
 		searchDetails.setCertificationDate(dto.getCertificationDate());
 			
