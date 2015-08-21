@@ -79,8 +79,15 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		ProductEntity entity = this.getEntityById(dto.getId());
 		
 		entity.setReportFileLocation(dto.getReportFileLocation());
-		entity.setName(dto.getName());
-		entity.setVendorId(dto.getVendorId());
+		
+		if(dto.getName() != null) {
+			entity.setName(dto.getName());
+		}
+		
+		if(dto.getVendorId() != null)
+		{
+			entity.setVendorId(dto.getVendorId());
+		}
 				
 		if(dto.getDeleted() != null) {
 			entity.setDeleted(dto.getDeleted());
@@ -195,8 +202,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		query.setParameter("entityid", id);
 		List<ProductEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate product version id in database.");
+		if(result == null || result.size() == 0) {
+			throw new EntityRetrievalException("No active product with id " + id + " was found in the database.");
+		} else if (result.size() > 1){
+			throw new EntityRetrievalException("Data error. Duplicate product id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}

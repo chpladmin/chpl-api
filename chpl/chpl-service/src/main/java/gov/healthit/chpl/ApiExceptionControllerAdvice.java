@@ -4,6 +4,7 @@ package gov.healthit.chpl;
 import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,11 @@ public class ApiExceptionControllerAdvice {
 	
 	@ExceptionHandler(EntityCreationException.class)
 	public ResponseEntity<ErrorJSONObject> exception(EntityCreationException e) {
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(InvalidArgumentsException.class)
+	public ResponseEntity<ErrorJSONObject> exception(InvalidArgumentsException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	

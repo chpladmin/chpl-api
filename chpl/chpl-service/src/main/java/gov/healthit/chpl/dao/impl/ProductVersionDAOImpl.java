@@ -12,11 +12,8 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.ProductVersionEntity;
-import gov.healthit.chpl.entity.VendorEntity;
 
 @Repository("productVersionDAO")
 public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersionDAO {
@@ -39,31 +36,72 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 		} else {
 			
 			entity = new ProductVersionEntity();
-			entity.setCreationDate(dto.getCreationDate());
-			entity.setDeleted(dto.getDeleted());
-			entity.setId(dto.getId());
 			entity.setProductId(dto.getProductId());
 			entity.setVersion(dto.getVersion());
-			//entity.setLastModifiedDate(result.getLastModifiedDate());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+
+			if(dto.getCreationDate() != null) {
+				entity.setCreationDate(dto.getCreationDate());
+			} else {
+				entity.setCreationDate(new Date());
+			}
 			
+			if(dto.getDeleted() != null) {
+				entity.setDeleted(dto.getDeleted());
+			} else {
+				entity.setDeleted(false);
+			}
+			
+			if(dto.getLastModifiedDate() != null) {
+				entity.setLastModifiedDate(dto.getLastModifiedDate());
+			} else {
+				entity.setLastModifiedDate(new Date());
+			}
+			
+			if(dto.getLastModifiedUser() != null) {
+				entity.setLastModifiedUser(dto.getLastModifiedUser());
+			} else {
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			}
 			create(entity);
-			return entity;
 		}
 		
+		return entity;
 	}
 
 	@Override
 	public ProductVersionEntity update(ProductVersionDTO dto) throws EntityRetrievalException {
 		
 		ProductVersionEntity entity = this.getEntityById(dto.getId());
-		entity.setCreationDate(dto.getCreationDate());
-		entity.setDeleted(dto.getDeleted());
-		entity.setId(dto.getId());
-		entity.setProductId(dto.getProductId());
-		entity.setVersion(dto.getVersion());
-		//entity.setLastModifiedDate(result.getLastModifiedDate());
-		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		
+		entity.setVersion(dto.getVersion()); //version can be null
+
+		if(dto.getProductId() != null) {
+			entity.setProductId(dto.getProductId());
+		}
+		
+		if(dto.getCreationDate() != null) {
+			entity.setCreationDate(dto.getCreationDate());
+		} else {
+			entity.setCreationDate(new Date());
+		}
+		
+		if(dto.getDeleted() != null) {
+			entity.setDeleted(dto.getDeleted());
+		} else {
+			entity.setDeleted(false);
+		}
+		
+		if(dto.getLastModifiedDate() != null) {
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
+		} else {
+			entity.setLastModifiedDate(new Date());
+		}
+		
+		if(dto.getLastModifiedUser() != null) {
+			entity.setLastModifiedUser(dto.getLastModifiedUser());
+		} else {
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		}
 			
 		update(entity);
 		return entity;
