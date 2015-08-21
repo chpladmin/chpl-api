@@ -28,7 +28,10 @@ f.product_id,
 g.product_name,
 g.vendor_id,
 h.vendor_name,
-i.certification_date
+i.certification_date,
+COALESCE(k.count_certifications, 0) as "count_certifications",
+COALESCE(m.count_cqms, 0) as "count_cqms"
+
 
 
 FROM openchpl.certified_product a 
@@ -47,6 +50,11 @@ LEFT JOIN (SELECT product_id, vendor_id, name as "product_name" FROM openchpl.pr
 
 LEFT JOIN (SELECT vendor_id, name as "vendor_name" from openchpl.vendor) h on g.vendor_id = h.vendor_id
 
-LEFT JOIN (SELECT certified_product_id, event_date as "certification_date" FROM openchpl.certification_event WHERE event_type_id = 1) i on a.certified_product_id = i.certified_product_id;
+LEFT JOIN (SELECT DISTINCT ON (certified_product_id) certified_product_id, event_date as "certification_date" FROM openchpl.certification_event WHERE event_type_id = 1) i on a.certified_product_id = i.certified_product_id
+
+LEFT JOIN (SELECT certified_product_id, count(*) as "count_certifications" FROM (SELECT * FROM openchpl.certification_result WHERE successful = true) j GROUP BY certified_product_id) k ON a.certified_product_id = k.certified_product_id
+
+LEFT JOIN (SELECT certified_product_id, count(*) as "count_cqms" FROM (SELECT * FROM openchpl.cqm_result WHERE success = true) l GROUP BY certified_product_id) m ON a.certified_product_id = m.certified_product_id
+;
 
 ALTER VIEW openchpl.certified_product_details OWNER TO openchpl;
