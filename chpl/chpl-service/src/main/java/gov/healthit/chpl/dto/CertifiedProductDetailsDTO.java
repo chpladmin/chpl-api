@@ -4,7 +4,7 @@ import java.util.Date;
 
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
-public class CertifiedProductSearchDetailsDTO {
+public class CertifiedProductDetailsDTO {
 	
 	private Long id;
     private Long testingLabId;
@@ -30,9 +30,9 @@ public class CertifiedProductSearchDetailsDTO {
     private String vendorName;
     private Date certificationDate;
     
-    public CertifiedProductSearchDetailsDTO(){}
+    public CertifiedProductDetailsDTO(){}
     
-    public CertifiedProductSearchDetailsDTO(CertifiedProductDetailsEntity entity){
+    public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
     	
     	this.id = entity.getId();
     	this.acbCertificationId = entity.getAcbCertificationId();

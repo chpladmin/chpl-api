@@ -25,6 +25,7 @@ public class CertifiedProductSearchDetails {
 	private Date certificationDate;
 	private Integer countCertsSuccessful;
 	private Integer countCQMsSuccessful;
+	// TODO: Add Additional Software Here
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	

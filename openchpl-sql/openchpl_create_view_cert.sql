@@ -6,8 +6,10 @@ CREATE VIEW openchpl.certification_result_details AS
 SELECT 
 
 a.certification_result_id,
+a.certified_product_id,
 a.certification_criterion_id,
 a.successful,
+a.deleted,
 b.number,
 b.title
 

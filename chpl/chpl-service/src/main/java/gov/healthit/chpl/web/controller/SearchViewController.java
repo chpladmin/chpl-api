@@ -6,6 +6,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -36,14 +37,14 @@ public class SearchViewController {
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id){
 		
 		CertifiedProductSearchDetails product = certifiedProductSearchManager.getCertifiedProductDetails(id);
-		
 		return product;
 	}
 	
 	@RequestMapping(value="/list_certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchDetails> listCertifiedProducts(@RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) throws EntityRetrievalException {
-		return certifiedProductSearchDetailsManager.getCertifiedProducts(pageNum, pageSize);
+	public @ResponseBody List<CertifiedProductSearchResult> listCertifiedProducts(@RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) throws EntityRetrievalException {
+		//return certifiedProductSearchDetailsManager.getCertifiedProducts(pageNum, pageSize);
+		return null;
 	}
 	
 	@RequestMapping(value="/list_certs", method=RequestMethod.GET,

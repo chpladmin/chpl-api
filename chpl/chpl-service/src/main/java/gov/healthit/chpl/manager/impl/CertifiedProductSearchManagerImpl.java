@@ -68,6 +68,13 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
 	@Override
 	public List<CertifiedProductSearchResult> getAllCertifiedProducts() throws EntityRetrievalException {
+		return null;
+	}
+	
+	
+	/*
+	@Override
+	public List<CertifiedProductSearchResult> getAllCertifiedProducts() throws EntityRetrievalException {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<>();
 		
@@ -113,7 +120,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 		
 		return searchResults;
 	}
-
+	 */
 	@Override
 	public CertifiedProductSearchDetails getCertifiedProductDetails(
 			Long certifiedProductId) {
