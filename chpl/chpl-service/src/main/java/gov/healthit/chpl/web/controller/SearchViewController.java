@@ -46,6 +46,12 @@ public class SearchViewController {
 		return certifiedProductSearchDetailsManager.getCertifiedProducts(pageNum, pageSize);
 	}
 	
+	@RequestMapping(value="/simple_search", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<CertifiedProductSearchResult> simpleSearch(@RequestParam("searchTerm") String searchTerm , @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) throws EntityRetrievalException {
+		return certifiedProductSearchDetailsManager.simpleSearch(searchTerm, pageNum, pageSize);
+	}
+	
 	@RequestMapping(value="/list_certs", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertificationResult> getCertifications() {
