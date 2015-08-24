@@ -19,6 +19,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 
 
 /** 
@@ -42,16 +44,24 @@ public class VendorEntity implements Cloneable, Serializable {
 	@SequenceGenerator(name = "vendorVendor_idGenerator", sequenceName = "vendor_vendor_id_seq")
 	private Long id;
 	
+	@Column(name = "name" )
+	private String name;
+
+	@Column( length = 300  )
+	private String website;
+	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "address_id", unique=true, nullable = true)
 	private AddressEntity address;
 	
 	@Basic( optional = false )
+	@Past
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
 	
 	@Basic( optional = false )
+	@NotNull
 	@Column( nullable = false  )
 	private Boolean deleted;
 	
@@ -61,20 +71,15 @@ public class VendorEntity implements Cloneable, Serializable {
 	private Date lastModifiedDate;
 	
 	@Basic( optional = false )
+	@NotNull
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
-	@Column(name = "name" )
-	private String name;
 
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id.vendorIdVendor"  )
 	@Basic( optional = false )
 	@Column( name = "vendor_id", nullable = false  )
 	private Set<VendorContactMap> vendorContactMaps = new HashSet<VendorContactMap>();
-
-	@Basic( optional = true )
-	@Column( length = 300  )
-	private String website;
+ 	
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */

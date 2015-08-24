@@ -136,7 +136,7 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 			update(toDelete);
 		}
 	}
-
+	
 	@Override
 	public List<VendorDTO> findAll() {
 		

@@ -10,9 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dto.AddressDTO;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="address")
@@ -26,6 +27,7 @@ public class AddressEntity {
 	private Long id;
 	
 	@Basic( optional = false )
+	@Size(min=1)
 	@Column(name="street_line_1")
 	private String streetLineOne;
 	
@@ -33,18 +35,22 @@ public class AddressEntity {
 	private String streetLineTwo;
 	
 	@Basic( optional = false )
+	@Size(min=1)
 	@Column(name = "city")
 	private String city;
 	
 	@Basic( optional = false )
+	@Size(min=1)
 	@Column(name = "region")
 	private String region;
 	
 	@Basic( optional = false )
+	@Size(min=1)
 	@Column(name = "country")
 	private String country;
 	
 	@Basic( optional = false )
+	@Past()
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
 	
@@ -53,10 +59,12 @@ public class AddressEntity {
 	private Date lastModifiedDate;
 	
 	@Basic( optional = false )
+	@NotNull()
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
 	
 	@Basic( optional = false )
+	@NotNull()
 	@Column( nullable = false  )
 	private Boolean deleted;
 	
