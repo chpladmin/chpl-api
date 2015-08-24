@@ -53,7 +53,7 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 		
 		//TODO: fetch & add additional software here. 
 		//searchDetails.setAdditionalSoftware(additionalSoftware);
-		searchDetails.setCertificationDate(dto.getCertificationDate());
+		searchDetails.setCertificationDate(dto.getCertificationDate().toString());
 			
 		searchDetails.getCertificationEdition().put("id", dto.getCertificationEditionId().toString());
 		searchDetails.getCertificationEdition().put("name", dto.getYear());
@@ -62,9 +62,6 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 			
 		searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId().toString());
 		searchDetails.getCertifyingBody().put("name", dto.getCertificationBodyName());
-				
-		searchDetails.setCountCertsSuccessful(searchDetails.getCertificationResults().size());
-		searchDetails.setCountCQMsSuccessful(searchDetails.getCqmResults().size());
 			
 		searchDetails.setChplProductNumber(dto.getChplProductNumber());
 		
@@ -90,7 +87,10 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 		
 		List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
-				
+		
+		searchDetails.setCountCerts(dto.getCountCertifications());
+		searchDetails.setCountCqms(dto.getCountCqms());
+		
 		for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs){
 			CertificationResult result = new CertificationResult();
 				
@@ -122,7 +122,7 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 		}
 				
 		searchDetails.setCqmResults(cqmResults);
-				
+		
 		return searchDetails;
 	}
 
@@ -140,7 +140,7 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 			
 			searchResult.setId(dto.getId());
 			searchResult.setAcbCertificationId(dto.getAcbCertificationId());
-			searchResult.setCertificationDate(dto.getCertificationDate());
+			searchResult.setCertificationDate(dto.getCertificationDate().toString());
 			
 			searchResult.getCertificationEdition().put("id", dto.getCertificationEditionId().toString());
 			searchResult.getCertificationEdition().put("name", dto.getYear());
@@ -149,9 +149,6 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 			
 			searchResult.getCertifyingBody().put("id", dto.getCertificationBodyId().toString());
 			searchResult.getCertifyingBody().put("name", dto.getCertificationBodyName());
-			
-			//searchResult.setCountCertsSuccessful();
-			//searchResult.setCountCQMsSuccessful();
 			
 			searchResult.setChplProductNumber(dto.getChplProductNumber());
 			
@@ -175,11 +172,8 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 			searchResult.getVendor().put("id", dto.getVendorId().toString());
 			searchResult.getVendor().put("name", dto.getVendorName());
 			
-			List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
-			List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
-		
-			//searchResult.setCertificationResults(certificationResults);
-			//searchResult.setCqmResults(cqmResults);
+			searchResult.setCountCerts(dto.getCountCertifications());
+			searchResult.setCountCqms(dto.getCountCqms());
 			
 			searchResults.add(searchResult);
 		}

@@ -34,17 +34,16 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id){
+	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws EntityRetrievalException{
 		
-		CertifiedProductSearchDetails product = certifiedProductSearchManager.getCertifiedProductDetails(id);
+		CertifiedProductSearchDetails product = certifiedProductSearchDetailsManager.getCertifiedProductDetails(id);
 		return product;
 	}
 	
 	@RequestMapping(value="/list_certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertifiedProductSearchResult> listCertifiedProducts(@RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) throws EntityRetrievalException {
-		//return certifiedProductSearchDetailsManager.getCertifiedProducts(pageNum, pageSize);
-		return null;
+		return certifiedProductSearchDetailsManager.getCertifiedProducts(pageNum, pageSize);
 	}
 	
 	@RequestMapping(value="/list_certs", method=RequestMethod.GET,

@@ -22,9 +22,9 @@ public class CertifiedProductSearchDetails {
 	private Map<String, String> certificationEdition = new HashMap<String, String>();
 	private Map<String, String> practiceType = new HashMap<String, String>();
 	private Map<String, String> certifyingBody = new HashMap<String, String>();
-	private Date certificationDate;
-	private Integer countCertsSuccessful;
-	private Integer countCQMsSuccessful;
+	private String certificationDate;
+	private Integer countCerts;
+	private Integer countCqms;
 	// TODO: Add Additional Software Here
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
@@ -120,10 +120,10 @@ public class CertifiedProductSearchDetails {
 	//public void setAdditionalSoftware(List<String> additionalSoftware) {
 	//	this.additionalSoftware = additionalSoftware;
 	//}
-	public Date getCertificationDate() {
+	public String getCertificationDate() {
 		return certificationDate;
 	}
-	public void setCertificationDate(Date certificationDate) {
+	public void setCertificationDate(String certificationDate) {
 		this.certificationDate = certificationDate;
 	}
 	public List<CertificationResult> getCertificationResults() {
@@ -139,17 +139,17 @@ public class CertifiedProductSearchDetails {
 	public void setCqmResults(List<CQMResultDetails> cqmResults) {
 		this.cqmResults = cqmResults;
 	}
-	public Integer getCountCertsSuccessful() {
-		return countCertsSuccessful;
+	public Integer getCountCerts() {
+		return countCerts;
 	}
-	public void setCountCertsSuccessful(Integer countCertsSuccessful) {
-		this.countCertsSuccessful = countCertsSuccessful;
+	public void setCountCerts(Integer countCertsSuccessful) {
+		this.countCerts = countCertsSuccessful;
 	}
-	public Integer getCountCQMsSuccessful() {
-		return countCQMsSuccessful;
+	public Integer getCountCqms() {
+		return countCqms;
 	}
-	public void setCountCQMsSuccessful(Integer countCQMsSuccessful) {
-		this.countCQMsSuccessful = countCQMsSuccessful;
+	public void setCountCqms(Integer countCQMsSuccessful) {
+		this.countCqms = countCQMsSuccessful;
 	}
 	
 }

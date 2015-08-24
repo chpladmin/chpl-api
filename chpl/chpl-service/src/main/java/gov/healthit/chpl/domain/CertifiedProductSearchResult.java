@@ -23,7 +23,7 @@ public class CertifiedProductSearchResult {
 	private Map<String, String> certificationEdition = new HashMap<String, String>();
 	private Map<String, String> practiceType = new HashMap<String, String>();
 	private Map<String, String> certifyingBody = new HashMap<String, String>();
-	private Date certificationDate;
+	private String certificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
 	
@@ -111,10 +111,10 @@ public class CertifiedProductSearchResult {
 	public void setCertifyingBody(Map<String, String> certifyingBody) {
 		this.certifyingBody = certifyingBody;
 	}
-	public Date getCertificationDate() {
+	public String getCertificationDate() {
 		return certificationDate;
 	}
-	public void setCertificationDate(Date certificationDate) {
+	public void setCertificationDate(String certificationDate) {
 		this.certificationDate = certificationDate;
 	}
 	public Integer getCountCerts() {
