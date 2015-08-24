@@ -138,7 +138,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 			throw new EntityRetrievalException("Data error. Duplicate criterion id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 			

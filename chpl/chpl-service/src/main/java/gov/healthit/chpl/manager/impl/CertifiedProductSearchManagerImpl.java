@@ -17,7 +17,7 @@ import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.VendorDAO;
-import gov.healthit.chpl.domain.CQMResult;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
@@ -42,7 +42,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	private CQMResultDAO cqmResultDAO;
 	
 	@Autowired
-	private CertificationEditionDAO certificationResultResultDAO;
+	private CertificationEditionDAO certificationEditionDAO;
 	
 	@Autowired
 	private ProductClassificationTypeDAO productClassificationTypeDAO;
@@ -68,6 +68,13 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
 	@Override
 	public List<CertifiedProductSearchResult> getAllCertifiedProducts() throws EntityRetrievalException {
+		return null;
+	}
+	
+	
+	/*
+	@Override
+	public List<CertifiedProductSearchResult> getAllCertifiedProducts() throws EntityRetrievalException {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<>();
 		
@@ -77,7 +84,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setId(dto.getId());
 			searchResult.setCertificationEdition(
-					certificationResultResultDAO.getById(dto.getCertificationEditionId())
+					certificationEditionDAO.getById(dto.getCertificationEditionId())
 					.getYear()
 					);
 			searchResult.setCertifyingBody(
@@ -113,7 +120,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 		
 		return searchResults;
 	}
-
+	 */
 	@Override
 	public CertifiedProductSearchDetails getCertifiedProductDetails(
 			Long certifiedProductId) {
@@ -128,7 +135,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	}
 
 	@Override
-	public List<CQMResult> getCQMResults() {
+	public List<CQMResultDetails> getCQMResults() {
 		// TODO Auto-generated method stub
 		return null;
 	}

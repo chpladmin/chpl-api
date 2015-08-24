@@ -33,7 +33,14 @@ public class CertificationCriterionDTO {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.number = entity.getNumber();
-		this.parentCriterionId = entity.getParentCriterion().getId();
+		
+		if (!(entity.getParentCriterion() == null)){
+			this.parentCriterionId = entity.getParentCriterion().getId();
+		} else {
+			this.parentCriterionId = null;
+		}
+		
+		
 		this.requiresSed = entity.isRequiresSed();
 		this.title = entity.getTitle();
 		

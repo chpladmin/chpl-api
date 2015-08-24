@@ -34,14 +34,6 @@ public class CertificationCriterionEntity implements Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = 5366674516357955978L;
-
-	/** Use a WeakHashMap so entries will be garbage collected once all entities 
-		referring to a saved hash are garbage collected themselves. */
-	private static final Map<Serializable, Long> SAVED_HASHES =
-		Collections.synchronizedMap(new WeakHashMap<Serializable, Long>());
-	
-	/** hashCode temporary storage. */
-	private volatile Long hashCode;
 	
     @Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificationCriterionCertification_criterion_idGenerator")
@@ -250,14 +242,6 @@ public class CertificationCriterionEntity implements Serializable {
 	 * @param id the id value you wish to set
 	 */
 	public void setId(final Long id) {
-		// If we've just been persisted and hashCode has been
-		// returned then make sure other entities with this
-		// ID return the already returned hash code
-		if ( (this.id == null || this.id == 0L) &&
-				(id != null) &&
-				(this.hashCode != null) ) {
-		SAVED_HASHES.put( id, this.hashCode );
-		}
 		this.id = id;
 	}
 
@@ -395,94 +379,5 @@ public class CertificationCriterionEntity implements Serializable {
 		sb.append("title: " + this.getTitle());
 		return sb.toString();		
 	}
-
-
-	/** Equals implementation. 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @param aThat Object to compare with
-	 * @return true/false
-	 */
-	@Override
-	public boolean equals(final Object aThat) {
-		Object proxyThat = aThat;
-		
-		if ( this == aThat ) {
-			 return true;
-		}
-
-		
-		if (aThat instanceof HibernateProxy) {
- 			// narrow down the proxy to the class we are dealing with.
- 			try {
-				proxyThat = ((HibernateProxy) aThat).getHibernateLazyInitializer().getImplementation(); 
-			} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		   	}
-		}
-		if (aThat == null)  {
-			 return false;
-		}
-		
-		final CertificationCriterionEntity that; 
-		try {
-			that = (CertificationCriterionEntity) proxyThat;
-			if ( !(that.getClassType().equals(this.getClassType()))){
-				return false;
-			}
-		} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		} catch (ClassCastException e) {
-				return false;
-		}
-		
-		
-		boolean result = true;
-		result = result && (((this.getId() == null) && ( that.getId() == null)) || (this.getId() != null  && this.getId().equals(that.getId())));
-		result = result && (((isAutomatedMeasureCapable() == null) && (that.isAutomatedMeasureCapable() == null)) || (isAutomatedMeasureCapable() != null && isAutomatedMeasureCapable().equals(that.isAutomatedMeasureCapable())));
-		result = result && (((isAutomatedNumeratorCapable() == null) && (that.isAutomatedNumeratorCapable() == null)) || (isAutomatedNumeratorCapable() != null && isAutomatedNumeratorCapable().equals(that.isAutomatedNumeratorCapable())));
-		result = result && (((getCreationDate() == null) && (that.getCreationDate() == null)) || (getCreationDate() != null && getCreationDate().equals(that.getCreationDate())));
-		result = result && (((isDeleted() == null) && (that.isDeleted() == null)) || (isDeleted() != null && isDeleted().equals(that.isDeleted())));
-		result = result && (((getDescription() == null) && (that.getDescription() == null)) || (getDescription() != null && getDescription().equals(that.getDescription())));
-		result = result && (((getLastModifiedDate() == null) && (that.getLastModifiedDate() == null)) || (getLastModifiedDate() != null && getLastModifiedDate().equals(that.getLastModifiedDate())));
-		result = result && (((getLastModifiedUser() == null) && (that.getLastModifiedUser() == null)) || (getLastModifiedUser() != null && getLastModifiedUser().equals(that.getLastModifiedUser())));
-		result = result && (((getNumber() == null) && (that.getNumber() == null)) || (getNumber() != null && getNumber().equals(that.getNumber())));
-		result = result && (((getParentCriterion() == null) && (that.getParentCriterion() == null)) || (getParentCriterion() != null && getParentCriterion().getId().equals(that.getParentCriterion().getId())));	
-		result = result && (((isRequiresSed() == null) && (that.isRequiresSed() == null)) || (isRequiresSed() != null && isRequiresSed().equals(that.isRequiresSed())));
-		result = result && (((getTitle() == null) && (that.getTitle() == null)) || (getTitle() != null && getTitle().equals(that.getTitle())));
-		return result;
-	}
-	
-	/** Calculate the hashcode.
-	 * @see java.lang.Object#hashCode()
-	 * @return a calculated number
-	 */
-	@Override
-	public int hashCode() {
-		if ( this.hashCode == null ) {
-			synchronized ( this ) {
-				if ( this.hashCode == null ) {
-					Long newHashCode = null;
-
-					if ( getId() != null ) {
-					newHashCode = SAVED_HASHES.get( getId() );
-					}
-					
-					if ( newHashCode == null ) {
-						if ( getId() != null && getId() != 0L) {
-							newHashCode = getId();
-						} else {
-							newHashCode = (long) super.hashCode();
-
-						}
-					}
-					
-					this.hashCode = newHashCode;
-				}
-			}
-		}
-		return (int) (this.hashCode & 0xffffff);
-	}
-	
-
 	
 }

@@ -7,6 +7,8 @@ public class CertificationResult {
 	private String title;
 	private boolean success;
 	
+	public CertificationResult(){}
+	
 	
 	public String getNumber() {
 		return number;

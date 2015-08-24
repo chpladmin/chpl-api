@@ -3,10 +3,10 @@ package gov.healthit.chpl.security;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.auth.authentication.UserAuthenticator;
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.user.UserDTO;
-import gov.healthit.chpl.auth.user.UserManager;
+import gov.healthit.chpl.auth.manager.UserManager;
 
 
 

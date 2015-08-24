@@ -7,17 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 
-import org.junit.BeforeClass;
-import org.postgresql.ds.PGConnectionPoolDataSource;
-import org.postgresql.ds.PGPoolingDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
@@ -28,8 +22,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.jndi.JndiObjectFactoryBean;
-import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
 import org.springframework.security.acls.AclPermissionEvaluator;
@@ -163,24 +155,6 @@ public class CHPLAuthenticationSecurityTestConfig extends
 		return bean;
 	}
 	
-	/*
-	@Bean
-	public JndiObjectFactoryBean aclDataSource(){
-		
-		JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-		
-		if (this.props == null){
-			try {
-				this.loadProperties();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		bean.setJndiName(this.props.getProperty("authJndiName"));
-		return bean;
-	}
-	*/
 	
 	@Bean
 	public EhCacheManagerFactoryBean ehCacheManagerFactoryBean(){
@@ -307,36 +281,4 @@ public class CHPLAuthenticationSecurityTestConfig extends
 		return bean;
 	}
 	
-	/*
-	@Bean
-	public PGPoolingDataSource aclDataSource() throws Exception {
-		
-		PGPoolingDataSource ds = new PGPoolingDataSource();
-    	
-        try {
-            // Create initial context
-            System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-                "org.apache.naming.java.javaURLContextFactory");
-            System.setProperty(Context.URL_PKG_PREFIXES, 
-                "org.apache.naming");            
-            InitialContext ic = new InitialContext();
-
-            ic.createSubcontext("java:");
-            ic.createSubcontext("java:/comp");
-            ic.createSubcontext("java:/comp/env");
-            ic.createSubcontext("java:/comp/env/jdbc");
-           
-            // Construct DataSource
-        	
-        	ds.setServerName("jdbc:postgresql://localhost/openchpl");
-            ds.setUser("openchpl");
-            ds.setPassword("openchpl1!");
-            
-            ic.bind("java:/comp/env/jdbc/openchpl", ds);
-        } catch (NamingException ex) {
-        	ex.printStackTrace();
-        }
-        return ds;
-    }
-	*/
 }
