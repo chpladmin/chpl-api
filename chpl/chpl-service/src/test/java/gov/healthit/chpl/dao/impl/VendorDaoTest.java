@@ -9,8 +9,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -19,12 +25,16 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.VendorDTO;
-import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.VendorEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class,
+    DbUnitTestExecutionListener.class })
+@DatabaseSetup("classpath:data/testData.xml")
 public class VendorDaoTest extends TestCase {
 
 	@Autowired private VendorDAO vendorDao;
@@ -44,7 +54,7 @@ public class VendorDaoTest extends TestCase {
 	public void getAllVendors() {
 		List<VendorDTO> results = vendorDao.findAll();
 		assertNotNull(results);
-		assertEquals(2, results.size());
+		assertEquals(3, results.size());
 	}
 
 	@Test
@@ -64,7 +74,7 @@ public class VendorDaoTest extends TestCase {
 	
 	@Test
 	public void getVendorWithoutAddress() {
-		Long vendorId = 2L;
+		Long vendorId = 3L;
 		VendorDTO vendor = null;
 		try {
 			vendor = vendorDao.getById(vendorId);
@@ -72,7 +82,7 @@ public class VendorDaoTest extends TestCase {
 			fail("Could not find vendor with id " + vendorId);
 		}
 		assertNotNull(vendor);
-		assertEquals(2, vendor.getId().longValue());
+		assertEquals(3, vendor.getId().longValue());
 		assertNull(vendor.getAddress());
 	}
 	
@@ -193,22 +203,6 @@ public class VendorDaoTest extends TestCase {
 		} catch(Exception ex) {
 			fail("could not find vendor!");
 			System.out.println(ex.getStackTrace());
-		}
-	}
-	
-	@Test
-	public void deleteVendor() {
-		List<VendorDTO> vendors = vendorDao.findAll();
-		
-		Long vendorIdToDelete = vendors.get(vendors.size()-1).getId();
-		vendorDao.delete(vendorIdToDelete);
-		
-		try
-		{
-			VendorDTO deletedVendor = vendorDao.getById(vendorIdToDelete);
-			assertNull(deletedVendor);
-		} catch(EntityRetrievalException ex) {
-			fail("exception looking up vendor by id");
 		}
 	}
 }

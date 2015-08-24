@@ -17,6 +17,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
+import gov.healthit.chpl.entity.VendorEntity;
 
 @Repository("addressDao")
 public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
@@ -63,12 +64,9 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 	public AddressEntity update(AddressDTO addressDto) throws EntityRetrievalException {
 		AddressEntity address = this.getEntityById(addressDto.getId());
 
+		address.setStreetLineTwo(addressDto.getStreetLineTwo());
 		if(addressDto.getStreetLineOne() != null) {
 			address.setStreetLineOne(addressDto.getStreetLineOne());
-		}
-		
-		if(addressDto.getStreetLineTwo() != null) {
-			address.setStreetLineTwo(addressDto.getStreetLineTwo());
 		}
 		
 		if(addressDto.getCity() != null) {
@@ -104,10 +102,15 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 
 	@Override
 	@Transactional
-	public void delete(Long id) {
-		Query query = entityManager.createQuery("UPDATE AddressEntity SET deleted = true WHERE address_id = :entityid");
-		query.setParameter("entityid", id);
-		query.executeUpdate();
+	public void delete(Long id) throws EntityRetrievalException {
+		AddressEntity toDelete = getEntityById(id);
+		
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.merge(toDelete);
+		}
 	}
 
 	@Override
@@ -119,12 +122,6 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		}
 		return dtos;
 	}
-
-	@Override
-	public List<AddressEntity> findAllEntities() {
-		Query query = entityManager.createQuery("SELECT a from AddressEntity a where (NOT a.deleted = true)");
-		return query.getResultList();
-	}
 	
 	@Override
 	public AddressDTO getById(Long id) throws EntityRetrievalException {
@@ -133,7 +130,25 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 	}
 
 	@Override
-	public AddressEntity getEntityById(Long id) throws EntityRetrievalException {
+	public AddressDTO getByValues(AddressDTO address) {
+		AddressEntity ae = this.searchEntities(address);
+		if(ae == null) {
+			return null;
+		}
+		return new AddressDTO(ae);
+	}
+	
+	@Override
+	public AddressEntity getEntityByValues(AddressDTO address) {
+		return this.searchEntities(address);
+	}
+	
+	private List<AddressEntity> findAllEntities() {
+		Query query = entityManager.createQuery("SELECT a from AddressEntity a where (NOT a.deleted = true)");
+		return query.getResultList();
+	}
+	
+	private AddressEntity getEntityById(Long id) throws EntityRetrievalException {
 		AddressEntity entity = null;
 		
 		Query query = entityManager.createQuery( "from AddressEntity a where (NOT deleted = true) AND (address_id = :entityid) ", AddressEntity.class );
@@ -145,6 +160,37 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
+		
+		return entity;
+	}
+	
+	private AddressEntity searchEntities(AddressDTO toSearch) {
+		AddressEntity entity = null;
+		
+		String addressQuery = "from AddressEntity a where (NOT deleted = true) "
+				+ " AND (street_line_1 = :line1) "
+				+ " AND (city = :city)"
+				+ " AND (region = :region)"
+				+ " AND (country = :country)";
+		if(toSearch.getStreetLineTwo() != null) {
+			addressQuery += " AND (street_line_2 = :line2)";
+		} else {
+			addressQuery += " AND (street_line_2 IS NULL)";
+		}
+		Query query = entityManager.createQuery(addressQuery, AddressEntity.class );
+		query.setParameter("line1", toSearch.getStreetLineOne());
+		query.setParameter("city", toSearch.getCity());
+		query.setParameter("region", toSearch.getRegion());
+		query.setParameter("country", toSearch.getCountry());
+		if(toSearch.getStreetLineTwo() != null) {
+			query.setParameter("line2", toSearch.getStreetLineTwo());
+		}
+		
+		List<AddressEntity> result = query.getResultList();
+		
+		if (result.size() >= 1){
+			entity = result.get(0);
+		} 
 		
 		return entity;
 	}

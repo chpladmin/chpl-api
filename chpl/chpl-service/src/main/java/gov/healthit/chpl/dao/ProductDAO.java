@@ -11,7 +11,7 @@ public interface ProductDAO {
 
 	public ProductEntity update(ProductDTO dto) throws EntityRetrievalException;
 	
-	public void delete(Long id);
+	public void delete(Long id) throws EntityRetrievalException;
 	
 	public List<ProductDTO> findAll();
 	
