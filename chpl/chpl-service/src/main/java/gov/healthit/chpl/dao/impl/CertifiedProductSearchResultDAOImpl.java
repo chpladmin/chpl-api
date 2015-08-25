@@ -142,7 +142,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	private Query getCQMOnlyQuery(SearchFilters searchFilters){
 		
 		String queryStr = "SELECT "
-				+ "c.certified_product_id as \"certified_product_id\", " 
+				+ "a.certified_product_id as \"certified_product_id\", " 
 				+ "certification_edition_id, " 
 				+ "product_version_id, "
 				+ "certification_body_id," 
@@ -239,7 +239,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	private Query getCertOnlyQuery(SearchFilters searchFilters){
 		
 		String queryStr = "SELECT "
-				+ "c.certified_product_id as \"certified_product_id\", " 
+				+ "a.certified_product_id as \"certified_product_id\", " 
 				+ "certification_edition_id, " 
 				+ "product_version_id, "
 				+ "certification_body_id," 
