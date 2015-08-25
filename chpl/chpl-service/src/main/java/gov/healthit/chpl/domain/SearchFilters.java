@@ -44,7 +44,7 @@ public class SearchFilters {
 	public List<String> getCqms() {
 		return cqms;
 	}
-	public void setCqm(List<String> cqms) {
+	public void setCqms(List<String> cqms) {
 		this.cqms = cqms;
 	}
 	public String getCertificationEdition() {

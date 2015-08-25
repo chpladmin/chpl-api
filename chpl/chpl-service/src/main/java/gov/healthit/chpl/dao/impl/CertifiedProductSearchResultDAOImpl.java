@@ -2,7 +2,6 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Query;
 
@@ -445,7 +444,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		String queryStr = "from CertifiedProductDetailsEntity where (NOT deleted = true)";
 		
 		if ((searchFilters.getVendor() != null) && (searchFilters.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname)) ";
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) ";
 		} else if (searchFilters.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		} else if (searchFilters.getProduct() != null){
@@ -468,16 +467,14 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (version = :version) ";
 		}
 		
-		queryStr += ";";
-		
 		Query query = entityManager.createQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
 		if (searchFilters.getVendor() != null){
-			query.setParameter("vendorname", searchFilters.getVendor());
+			query.setParameter("vendorname", "%"+searchFilters.getVendor()+"%");
 		}
 		
 		if (searchFilters.getProduct() != null){
-			query.setParameter("productname", searchFilters.getProduct());
+			query.setParameter("productname", "%"+searchFilters.getProduct()+"%");
 		}
 		
 		if (searchFilters.getCertificationEdition() != null) {

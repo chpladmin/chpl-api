@@ -1,17 +1,24 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.auth.json.UserCreationJSONObject;
+import gov.healthit.chpl.auth.user.UserCreationException;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.domain.SearchFilters;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,6 +59,48 @@ public class SearchViewController {
 		return certifiedProductSearchDetailsManager.simpleSearch(searchTerm, pageNum, pageSize);
 	}
 	
+	@RequestMapping(value="/advanced_search", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<CertifiedProductSearchResult> createUser(
+			@RequestBody SearchFilters searchFilters, 
+			@RequestParam("pageNum") Integer pageNum, 
+			@RequestParam("pageSize") Integer pageSize) {
+		return certifiedProductSearchDetailsManager.multiFilterSearch(searchFilters, pageNum, pageSize);
+	}
+	
+	
+	//TODO: Experimental
+	@RequestMapping(value="/advanced_search", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<CertifiedProductSearchResult> advancedSearch(
+			@RequestParam("pageNum") Integer pageNum, 
+			@RequestParam("pageSize") Integer pageSize,
+			@RequestParam("vendor") String vendor,
+			@RequestParam("product") String product,
+			@RequestParam("version") String version,
+			@RequestParam("certificationCriteria") List<String> certificationCriteria,
+			@RequestParam("cqms") List<String> cqms,
+			@RequestParam("certificationEdition") String certificationEdition,
+			@RequestParam("productClassification") String productClassification,
+			@RequestParam("practiceType") String practiceType
+			
+			) throws EntityRetrievalException {
+		
+		SearchFilters searchFilters = new SearchFilters();
+		searchFilters.setVendor(vendor);
+		searchFilters.setProduct(product);
+		searchFilters.setVersion(version);
+		searchFilters.setCertificationCriteria(certificationCriteria);
+		searchFilters.setCqms(cqms);
+		searchFilters.setCertificationEdition(certificationEdition);
+		searchFilters.setProductClassification(productClassification);
+		searchFilters.setPracticeType(practiceType);
+		
+		return certifiedProductSearchDetailsManager.multiFilterSearch(searchFilters, pageNum, pageSize);
+	}
+	
+	
 	@RequestMapping(value="/list_certs", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertificationResult> getCertifications() {
@@ -76,13 +125,11 @@ public class SearchViewController {
 		return certifiedProductSearchManager.getEditionNames();
 	}
 	
-	
 	@RequestMapping(value="/list_practice_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getPracticeTypeNames() {
 		return certifiedProductSearchManager.getPracticeTypeNames();
 	}
-	
 	
 	@RequestMapping(value="/list_product_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
