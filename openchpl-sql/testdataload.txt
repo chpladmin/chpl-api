@@ -1,0 +1,8 @@
+insert into address values(nextval('address_address_id_seq'), '1000 Hilltop Circle', 'Apt 2', 'Baltimore', 'MD', 'USA', now(), now(), -2, false);
+insert into vendor values(nextval('vendor_vendor_id_seq'), 1, 'Katy Test Vendor', NULL, now(), now(), -2, false);
+insert into vendor values(nextval('vendor_vendor_id_seq'), NULL, 'Vendor No Address', NULL, now(), now(), -2, false);
+insert into product values(nextval('product_product_id_seq'), 1, 'A Great Product', NULL, now(), now(), -2, false);
+insert into product values(nextval('product_product_id_seq'), 2, 'Other Vendor Product', NULL, now(), now(), -2, false);
+insert into product values(nextval('product_product_id_seq'), 2, 'Other Vendor Product 2', NULL, now(), now(), -2, false);
+insert into product_version values(nextval('product_version_product_version_id_seq'), 1, '1.2.1', now(), now(), -2, false);
+insert into product_version values(nextval('product_version_product_version_id_seq'), 1, '1.2.2', now(), now(), -2, false);

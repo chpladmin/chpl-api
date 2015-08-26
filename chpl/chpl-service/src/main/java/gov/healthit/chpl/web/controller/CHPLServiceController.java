@@ -2,21 +2,17 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import gov.healthit.chpl.acb.CertificationBodyManager;
-import gov.healthit.chpl.auth.json.UserInfoJSONObject;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.entity.CertificationBody;
-import gov.healthit.chpl.json.CertificationJSONObject;
-import gov.healthit.chpl.json.CertifiedProductJSONObject;
+
+
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,25 +23,6 @@ public class CHPLServiceController {
 	private CertificationBodyManager certificationBodyManager;
 	
 	
-	@RequestMapping(value="/certified_product", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductJSONObject getCertifiedProduct(@RequestParam("productId") Long id) throws UserRetrievalException {
-		
-		CertifiedProductJSONObject product = new CertifiedProductJSONObject();
-		
-		return null;
-	}
-	
-	@RequestMapping(value="/certified_products", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductJSONObject> getCertifiedProducts() throws UserRetrievalException {
-		
-		CertifiedProductJSONObject product = new CertifiedProductJSONObject();
-		
-		return null;
-	}
-	
-	
 	@RequestMapping(value="/hello/{firstName}/{lastName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String hello(@PathVariable String firstName, @PathVariable String lastName) {
 		
@@ -54,25 +31,13 @@ public class CHPLServiceController {
 	}
 	
 	
-	@RequestMapping(value="/adminACB/{acbID}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String adminACB(@PathVariable String acbID) {
-		
-		List<CertificationBody> authorizedACBs = certificationBodyManager.getAll();
-		
-		if (authorizedACBs.size() > 0){
-			return "{\"AdminsteringACB:\" : \""+acbID+"\"}";
-		} else {
-			return "{\"AdminsteringACB:\" : \"-1\"}";
-		}
-	}
-	
 	@RequestMapping(value="/createACB/{acbName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String createACB(@PathVariable String acbName) {
+	public String createACB(@PathVariable String acbName) throws EntityCreationException {
 		
 		System.out.println("Claims:");
 		System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 		
-		CertificationBody acb = new CertificationBody();
+		CertificationBodyDTO acb = new CertificationBodyDTO();
 		acb.setName(acbName);
 		acb.setWebsite("www.zombo.com");
 		certificationBodyManager.create(acb);
@@ -81,27 +46,16 @@ public class CHPLServiceController {
 		
 	}
 	
-	@RequestMapping(value="/renameACB/{acbId}/{acbName}", method= RequestMethod.GET, produces="application/json; charset=utf-8")
-	public String updateACBName(@PathVariable Long acbId, @PathVariable String acbName) {
-		
-		CertificationBody acb = certificationBodyManager.getById(acbId);
-		acb.setName(acbName);
-		certificationBodyManager.update(acb);
-		
-		return acb.toString();
-		
-	}
-	
 	@RequestMapping(value="/listMyACBs", method= RequestMethod.GET, produces="application/json; charset=utf-8")
 	public String listMyACBs() {
 		
-		List<CertificationBody> acbs = certificationBodyManager.getAll();
+		List<CertificationBodyDTO> acbs = certificationBodyManager.getAll();
 		
 		System.out.println("found: ");
 		System.out.println(acbs.size());
 		System.out.println("ACBs");
 		
-		for (CertificationBody cb : acbs){
+		for (CertificationBodyDTO cb : acbs){
 			
 			System.out.println(cb.toString());
 			System.out.println(cb.getName());
