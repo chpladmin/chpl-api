@@ -2,16 +2,16 @@ package gov.healthit.chpl.manager;
 
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 
-import java.util.List;
+import java.util.Set;
 
 public interface SearchMenuManager {
 	
-	public List<String> getClassificationNames();
-	public List<String> getEditionNames();
-	public List<String> getPracticeTypeNames();
-	public List<String> getProductNames();
-	public List<String> getVendorNames();
-	public List<String> getCertBodyNames();
+	public Set<String> getClassificationNames();
+	public Set<String> getEditionNames();
+	public Set<String> getPracticeTypeNames();
+	public Set<String> getProductNames();
+	public Set<String> getVendorNames();
+	public Set<String> getCertBodyNames();
 	public PopulateSearchOptions getPopulateSearchOptions();
 	
 }
