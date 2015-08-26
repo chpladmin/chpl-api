@@ -9,7 +9,7 @@
         </layout>
     </appender>
  
-    <appender name="FILE" class="org.apache.log4j.rolling.RollingFileAppender">
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
         <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
             <param name="FileNamePattern" value="${catalina.home}/logs/CHPLService.%d{yyyy-MM-dd}.log" />
         </rollingPolicy>
