@@ -1,12 +1,14 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -122,38 +124,44 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/list_classification_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<String> getClassificationNames() {
+	public @ResponseBody Set<String> getClassificationNames() {
 		return searchMenuManager.getClassificationNames();
 	}
 	
 	@RequestMapping(value="/list_edition_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<String> getEditionNames() {
+	public @ResponseBody Set<String> getEditionNames() {
 		return searchMenuManager.getEditionNames();
 	}
 	
 	@RequestMapping(value="/list_practice_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<String> getPracticeTypeNames() {
+	public @ResponseBody Set<String> getPracticeTypeNames() {
 		return searchMenuManager.getPracticeTypeNames();
 	}
 	
 	@RequestMapping(value="/list_product_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<String> getProductNames() {
+	public @ResponseBody Set<String> getProductNames() {
 		return searchMenuManager.getProductNames();
 	}
 	
 	@RequestMapping(value="/list_vendor_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<String> getVendorNames() {
+	public @ResponseBody Set<String> getVendorNames() {
 		return searchMenuManager.getVendorNames();
 	}
 	
 	@RequestMapping(value="/list_certification_body_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<String> getCertBodyNames() {
+	public @ResponseBody Set<String> getCertBodyNames() {
 		return searchMenuManager.getCertBodyNames();
+	}
+	
+	@RequestMapping(value="/populate_search_options", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody PopulateSearchOptions getPopulateSearchData() {
+		return searchMenuManager.getPopulateSearchOptions();
 	}
 	
 	public CertificationBodyManager getCertificationBodyManager() {

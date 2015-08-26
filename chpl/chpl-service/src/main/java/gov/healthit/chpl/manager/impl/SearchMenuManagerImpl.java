@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -60,7 +61,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	private VendorDAO vendorDAO;
 	
 	
-
+	@Transactional
 	@Override
 	public Set<String> getClassificationNames() {
 		
@@ -74,6 +75,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return classificationTypeNames;
 	}
 
+	@Transactional
 	@Override
 	public Set<String> getEditionNames() {
 		
@@ -87,6 +89,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return editionNames;
 	}
 
+	@Transactional
 	@Override
 	public Set<String> getPracticeTypeNames() {
 		
@@ -100,6 +103,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return practiceTypeNames;
 	}
 
+	@Transactional
 	@Override
 	public Set<String> getProductNames() {
 		
@@ -113,6 +117,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return productNames;
 	}
 
+	@Transactional
 	@Override
 	public Set<String> getVendorNames() {
 		
@@ -126,6 +131,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return vendorNames;
 	}
 
+	@Transactional
 	@Override
 	public Set<String> getCertBodyNames() {
 		
@@ -139,6 +145,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return acbNames;
 	}
 
+	@Transactional
 	@Override
 	public PopulateSearchOptions getPopulateSearchOptions() {
 		
