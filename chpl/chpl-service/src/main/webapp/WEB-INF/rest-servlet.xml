@@ -26,23 +26,8 @@
    <sec:global-method-security pre-post-annotations="enabled" >
    		<sec:expression-handler ref="expressionHandler" />
    </sec:global-method-security>
-   
-	
-	<bean id="certificationBodyManager" class="gov.healthit.chpl.acb.CertificationBodyManagerImpl">
-		<property name="mutableAclService" ref="mutableAclService" />
-	</bean>
 	
 	<tx:annotation-driven transaction-manager="transactionManager"
 		proxy-target-class="true" />
-	
-	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
-                <property name="persistenceUnitName" value="openchpl" />
-    </bean>
-	
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
-	</bean>
-	
-	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
-	
+
 </beans>

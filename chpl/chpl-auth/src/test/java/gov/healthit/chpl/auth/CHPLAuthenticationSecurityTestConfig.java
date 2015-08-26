@@ -18,6 +18,7 @@ import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 import org.junit.BeforeClass;
 import org.postgresql.ds.PGConnectionPoolDataSource;
 import org.postgresql.ds.PGPoolingDataSource;
+import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -59,7 +60,7 @@ public class CHPLAuthenticationSecurityTestConfig extends
 	@Autowired
 	private JWTUserConverter userConverter;
 	
-	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "environment.auth.properties";
+	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "environment.auth.test.properties";
 	
 	protected Properties props;
 	
@@ -108,24 +109,31 @@ public class CHPLAuthenticationSecurityTestConfig extends
 	
 	
 	@Bean
-	public LocalEntityManagerFactoryBean entityManagerFactory(){
+	public DataSource dataSource() {
 		
-		LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+        PGSimpleDataSource ds = new PGSimpleDataSource();
+    	ds.setServerName(this.props.getProperty("testDbServer"));
+        ds.setUser(this.props.getProperty("testDbUser"));
+        ds.setPassword(this.props.getProperty("testDbPassword"));
+		return ds;
 		
-		if (this.props == null){
+	}
+	
+	
+	@Bean
+	public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory(){
+		
+		if (props == null){
 			try {
-				this.loadProperties();
+				loadProperties();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		
-		
-		Properties jpaProps = new Properties();
-		jpaProps.put("persistenceUnitName", this.props.getProperty("authPersistenceUnitName"));
-		
-		bean.setJpaProperties(jpaProps);
-		
+		org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
+		bean.setDataSource(dataSource());
+		bean.setPersistenceUnitName(this.props.getProperty("persistenceUnitName"));
 		return bean;
 	}
 	
@@ -251,9 +259,9 @@ public class CHPLAuthenticationSecurityTestConfig extends
 	
 	
 	@Bean
-	public BasicLookupStrategy lookupStrategy() throws Exception{
+	public BasicLookupStrategy lookupStrategy() throws Exception {
 		
-		DataSource datasource = (DataSource) aclDataSource();//.getObject();
+		DataSource datasource = (DataSource) dataSource();//.getObject();
 		
 		BasicLookupStrategy bean = new BasicLookupStrategy(
 				datasource,
@@ -267,7 +275,7 @@ public class CHPLAuthenticationSecurityTestConfig extends
 	@Bean
 	public JdbcMutableAclService mutableAclService() throws Exception{
 		
-		DataSource datasource = (DataSource) aclDataSource();//.getObject();
+		DataSource datasource = (DataSource) dataSource();
 		
 		JdbcMutableAclService bean = new JdbcMutableAclService(datasource, 
 				lookupStrategy(), 
@@ -291,7 +299,7 @@ public class CHPLAuthenticationSecurityTestConfig extends
 	
 	
 	@Bean
-	public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception{
+	public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception {
 		
 		DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
 		bean.setPermissionEvaluator(permissionEvaluator());
@@ -299,7 +307,7 @@ public class CHPLAuthenticationSecurityTestConfig extends
 		return bean;
 	}
 	
-	
+	/*
 	@Bean
 	public PGPoolingDataSource aclDataSource() throws Exception {
 		
@@ -330,6 +338,5 @@ public class CHPLAuthenticationSecurityTestConfig extends
         }
         return ds;
     }
-	
-	
+	*/
 }

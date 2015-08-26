@@ -14,13 +14,6 @@
   <name>chpl-service Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <dependencies>
-  		<dependency>
-      		<groupId>junit</groupId>
-      		<artifactId>junit</artifactId>
-      		<version>3.8.1</version>
-      		<scope>test</scope>
-    	</dependency>
-    	
     	<dependency>
 			<groupId>gov.healthit.chpl</groupId>
 				<artifactId>chpl-auth</artifactId>
@@ -89,6 +82,13 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>org.bitbucket.b_c</groupId>
+			<artifactId>jose4j</artifactId>
+			<version>0.4.1</version>
+		</dependency>
+		
+		
+		<dependency>
 		  <groupId>com.fasterxml.jackson.core</groupId>
 		  <artifactId>jackson-core</artifactId>
 		  <version>2.2.2</version>
@@ -100,6 +100,75 @@
 			<version>2.2.2</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.10.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901-1.jdbc4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-catalina</artifactId>
+			<version>8.0.21</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.2.1.Final</version>
+		</dependency>
+		
+		<!-- for unit/integration testing of the dao calls -->
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+			<exclusions>
+		        <exclusion>
+		            <artifactId>hamcrest-core</artifactId>
+		            <groupId>org.hamcrest</groupId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-test</artifactId>
+		    <version>${org.springframework.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>com.github.springtestdbunit</groupId>
+		    <artifactId>spring-test-dbunit</artifactId>
+		    <version>1.2.0</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.dbunit</groupId>
+		    <artifactId>dbunit</artifactId>
+		    <version>2.5.0</version>
+		    <scope>test</scope>
+		    <exclusions>
+		        <exclusion>
+		            <artifactId>junit</artifactId>
+		            <groupId>junit</groupId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
   </dependencies>
   <build>
     <finalName>chpl-service</finalName>
