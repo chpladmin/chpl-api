@@ -11,7 +11,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.domain.SearchFilters;
+import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -55,15 +55,27 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/simple_search", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResult> simpleSearch(@RequestParam("searchTerm") String searchTerm , @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) throws EntityRetrievalException {
-		return certifiedProductSearchDetailsManager.simpleSearch(searchTerm, pageNum, pageSize);
+	public @ResponseBody List<CertifiedProductSearchResult> simpleSearch(
+			@RequestParam("searchTerm") String searchTerm, 
+			@RequestParam("pageNum") Integer pageNum, 
+			@RequestParam("pageSize") Integer pageSize,
+			@RequestParam(value="orderBy", required = false) String orderBy
+			) throws EntityRetrievalException {
+		if (orderBy != null){
+			return certifiedProductSearchDetailsManager.simpleSearch(searchTerm, pageNum, pageSize, orderBy);
+		} else {
+			return certifiedProductSearchDetailsManager.simpleSearch(searchTerm, pageNum, pageSize);
+		}
+		
 	}
+	
+	
 	
 	@RequestMapping(value="/advanced_search", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResult> createUser(
-			@RequestBody SearchFilters searchFilters, 
+	public @ResponseBody List<CertifiedProductSearchResult> advancedSearch(
+			@RequestBody SearchRequest searchFilters, 
 			@RequestParam("pageNum") Integer pageNum, 
 			@RequestParam("pageSize") Integer pageSize) {
 		return certifiedProductSearchDetailsManager.multiFilterSearch(searchFilters, pageNum, pageSize);
@@ -87,7 +99,7 @@ public class SearchViewController {
 			
 			) throws EntityRetrievalException {
 		
-		SearchFilters searchFilters = new SearchFilters();
+		SearchRequest searchFilters = new SearchRequest();
 		searchFilters.setVendor(vendor);
 		searchFilters.setProduct(product);
 		searchFilters.setVersion(version);

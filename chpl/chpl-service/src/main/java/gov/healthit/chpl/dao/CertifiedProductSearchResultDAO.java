@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.domain.SearchFilters;
+import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 import java.util.List;
@@ -13,9 +13,9 @@ public interface CertifiedProductSearchResultDAO {
 			Integer pageNum, Integer pageSize);
 	
 	public List<CertifiedProductDetailsDTO> simpleSearch(String searchTerm,
-			Integer pageNum, Integer pageSize);
+			Integer pageNum, Integer pageSize, String orderBy);
 	
 	public List<CertifiedProductDetailsDTO> multiFilterSearch(
-			SearchFilters searchFilters, Integer pageNum, Integer pageSize);
+			SearchRequest searchRequest, Integer pageNum, Integer pageSize);
 	
 }

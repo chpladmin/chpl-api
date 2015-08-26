@@ -1,7 +1,9 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.SearchFilters;
+import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
@@ -17,6 +19,18 @@ import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		CertifiedProductSearchResultDAO {
 	
+	static final Map<String, String> columnNameRef = new HashMap<String, String>();
+	static {
+		
+		columnNameRef.put("vendor","vendor_name");
+		columnNameRef.put("product","product_name");
+		columnNameRef.put("version","product_version");
+		columnNameRef.put("certificationEdition","year");
+		columnNameRef.put("productClassification","product_classification_name");
+		columnNameRef.put("practiceType","practice_type_name");
+		
+	}
+
 	
 	@Override
 	public List<CertifiedProductDetailsDTO> getCertifiedProductSearchDetails(Integer pageNum, Integer pageSize) {
@@ -28,7 +42,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
 			products.add(product);
 		}
-		return products;	
+		return products;
 	}
 
 	@Override
@@ -42,9 +56,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	
 	@Override
 	public List<CertifiedProductDetailsDTO> simpleSearch(
-			String searchTerm, Integer pageNum, Integer pageSize) {
+			String searchTerm, Integer pageNum, Integer pageSize, String orderBy) {
 		
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) AND ((UPPER(vendor_name)  LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname)))  ", CertifiedProductDetailsEntity.class );
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity "
+				+ "where (NOT deleted = true) AND ((UPPER(vendor_name)  "
+				+ "LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) "
+				+ "ORDER BY "+columnNameRef.get(orderBy)+" "
+				, CertifiedProductDetailsEntity.class );
 		query.setParameter("vendorname", "%"+searchTerm+"%");
 		query.setParameter("productname", "%"+searchTerm+"%");
 		
@@ -65,9 +83,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	@Override
 	public List<CertifiedProductDetailsDTO> multiFilterSearch(
-			SearchFilters searchFilters, Integer pageNum, Integer pageSize) {
+			SearchRequest searchRequest, Integer pageNum, Integer pageSize) {
 		
-		Query query = getQueryForSearchFilters(searchFilters);
+		Query query = getQueryForSearchFilters(searchRequest);
 		query.setMaxResults(pageSize);
 	    query.setFirstResult(pageNum * pageSize);
 	    
@@ -115,31 +133,31 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		return entity;
 	}
 
-	private Query getQueryForSearchFilters(SearchFilters searchFilters){
+	private Query getQueryForSearchFilters(SearchRequest searchRequest){
 	
 		Query query = null;
 		
-		if (searchFilters.getCertificationCriteria().isEmpty() && searchFilters.getCqms().isEmpty()){
+		if (searchRequest.getCertificationCriteria().isEmpty() && searchRequest.getCqms().isEmpty()){
 			
-			query = this.getBasicQuery(searchFilters);
+			query = this.getBasicQuery(searchRequest);
 			
-		} else if (searchFilters.getCertificationCriteria().isEmpty()){
+		} else if (searchRequest.getCertificationCriteria().isEmpty()){
 			
-			query = this.getCQMOnlyQuery(searchFilters);
+			query = this.getCQMOnlyQuery(searchRequest);
 			
-		} else if (searchFilters.getCertificationCriteria().isEmpty()) {
+		} else if (searchRequest.getCertificationCriteria().isEmpty()) {
 			
-			query = this.getCertOnlyQuery(searchFilters);
+			query = this.getCertOnlyQuery(searchRequest);
 			
 		} else {
 			
-			query = this.getCertCQMQuery(searchFilters);
+			query = this.getCertCQMQuery(searchRequest);
 		}
 		return query;
 		
 	}
 	
-	private Query getCQMOnlyQuery(SearchFilters searchFilters){
+	private Query getCQMOnlyQuery(SearchRequest searchRequest){
 		
 		String queryStr = "SELECT "
 				+ "a.certified_product_id as \"certified_product_id\", " 
@@ -179,64 +197,64 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		+ "";
 		
 		
-		if ((searchFilters.getVendor() != null) && (searchFilters.getProduct() != null)){
+		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
 			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname)) ";
-		} else if (searchFilters.getVendor() != null){
+		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchFilters.getProduct() != null){
+		} else if (searchRequest.getProduct() != null){
 			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
 		}
 		
-		if (searchFilters.getCertificationEdition() != null) {
+		if (searchRequest.getCertificationEdition() != null) {
 			queryStr += " AND (year = :certificationedition) ";
 		}
 		
-		if (searchFilters.getPracticeType() != null) {
+		if (searchRequest.getPracticeType() != null) {
 			queryStr += " AND (practice_type = :practicetype) "; 
 		}
 		
-		if (searchFilters.getProductClassification() != null) {
+		if (searchRequest.getProductClassification() != null) {
 			queryStr += " AND (product_classification = :productclassification) ";
 		}
 		
-		if (searchFilters.getVersion() != null) {
+		if (searchRequest.getVersion() != null) {
 			queryStr += " AND (UPPER(version) LIKE UPPER(:version)) ";
 		}
 		
-		queryStr += "";
+		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
-		query.setParameter("cqms", searchFilters.getCqms());
+		query.setParameter("cqms", searchRequest.getCqms());
 		
 		
-		if (searchFilters.getVendor() != null){
-			query.setParameter("vendorname", "%"+searchFilters.getVendor()+"%");
+		if (searchRequest.getVendor() != null){
+			query.setParameter("vendorname", "%"+searchRequest.getVendor()+"%");
 		}
 		
-		if (searchFilters.getProduct() != null){
-			query.setParameter("productname", "%"+searchFilters.getProduct()+"%");
+		if (searchRequest.getProduct() != null){
+			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
 		}
 		
-		if (searchFilters.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchFilters.getCertificationEdition());
+		if (searchRequest.getCertificationEdition() != null) {
+			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
 		}
 		
-		if (searchFilters.getPracticeType() != null) {
-			query.setParameter("practicetype", searchFilters.getPracticeType());
+		if (searchRequest.getPracticeType() != null) {
+			query.setParameter("practicetype", searchRequest.getPracticeType());
 		}
 		
-		if (searchFilters.getProductClassification() != null) {
-			query.setParameter("productclassification", searchFilters.getProductClassification());
+		if (searchRequest.getProductClassification() != null) {
+			query.setParameter("productclassification", searchRequest.getProductClassification());
 		}
 		
-		if (searchFilters.getVersion() != null) {
-			query.setParameter("version", searchFilters.getVersion());
+		if (searchRequest.getVersion() != null) {
+			query.setParameter("version", searchRequest.getVersion());
 		}
 		return query;
 	}
 	
-	private Query getCertOnlyQuery(SearchFilters searchFilters){
+	private Query getCertOnlyQuery(SearchRequest searchRequest){
 		
 		String queryStr = "SELECT "
 				+ "a.certified_product_id as \"certified_product_id\", " 
@@ -278,64 +296,64 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		+ "";
 		
 		
-		if ((searchFilters.getVendor() != null) && (searchFilters.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname)) ";
-		} else if (searchFilters.getVendor() != null){
+		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname)) ";
+		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchFilters.getProduct() != null){
+		} else if (searchRequest.getProduct() != null){
 			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
 		}
 		
-		if (searchFilters.getCertificationEdition() != null) {
+		if (searchRequest.getCertificationEdition() != null) {
 			queryStr += " AND (year = :certificationedition) ";
 		}
 		
-		if (searchFilters.getPracticeType() != null) {
+		if (searchRequest.getPracticeType() != null) {
 			queryStr += " AND (practice_type = :practicetype) "; 
 		}
 		
-		if (searchFilters.getProductClassification() != null) {
+		if (searchRequest.getProductClassification() != null) {
 			queryStr += " AND (product_classification = :productclassification) ";
 		}
 		
-		if (searchFilters.getVersion() != null) {
+		if (searchRequest.getVersion() != null) {
 			queryStr += " AND (UPPER(version) LIKE UPPER(:version)) ";
 		}
 		
-		queryStr += ";";
+		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
-		query.setParameter("certs", searchFilters.getCertificationCriteria());
+		query.setParameter("certs", searchRequest.getCertificationCriteria());
 		
-		if (searchFilters.getVendor() != null){
-			query.setParameter("vendorname", "%"+searchFilters.getVendor()+"%");
+		if (searchRequest.getVendor() != null){
+			query.setParameter("vendorname", "%"+searchRequest.getVendor()+"%");
 		}
 		
-		if (searchFilters.getProduct() != null){
-			query.setParameter("productname", "%"+searchFilters.getProduct()+"%");
+		if (searchRequest.getProduct() != null){
+			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
 		}
 		
-		if (searchFilters.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchFilters.getCertificationEdition());
+		if (searchRequest.getCertificationEdition() != null) {
+			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
 		}
 		
-		if (searchFilters.getPracticeType() != null) {
-			query.setParameter("practicetype", searchFilters.getPracticeType());
+		if (searchRequest.getPracticeType() != null) {
+			query.setParameter("practicetype", searchRequest.getPracticeType());
 		}
 		
-		if (searchFilters.getProductClassification() != null) {
-			query.setParameter("productclassification", searchFilters.getProductClassification());
+		if (searchRequest.getProductClassification() != null) {
+			query.setParameter("productclassification", searchRequest.getProductClassification());
 		}
 		
-		if (searchFilters.getVersion() != null) {
-			query.setParameter("version", searchFilters.getVersion());
+		if (searchRequest.getVersion() != null) {
+			query.setParameter("version", searchRequest.getVersion());
 		}
 		return query;
 		
 	}
 	
-	private Query getCertCQMQuery(SearchFilters searchFilters){
+	private Query getCertCQMQuery(SearchRequest searchRequest){
 		
 		String queryStr = "SELECT "
 				+ "c.certified_product_id as \"certified_product_id\", " 
@@ -381,116 +399,118 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		+ "";
 		
 		
-		if ((searchFilters.getVendor() != null) && (searchFilters.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname)) ";
-		} else if (searchFilters.getVendor() != null){
+		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname)) ";
+		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchFilters.getProduct() != null){
+		} else if (searchRequest.getProduct() != null){
 			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
 		}
 		
-		if (searchFilters.getCertificationEdition() != null) {
+		if (searchRequest.getCertificationEdition() != null) {
 			queryStr += " AND (year = :certificationedition) ";
 		}
 		
-		if (searchFilters.getPracticeType() != null) {
+		if (searchRequest.getPracticeType() != null) {
 			queryStr += " AND (practice_type = :practicetype) "; 
 		}
 		
-		if (searchFilters.getProductClassification() != null) {
+		if (searchRequest.getProductClassification() != null) {
 			queryStr += " AND (product_classification = :productclassification) ";
 		}
 		
-		if (searchFilters.getVersion() != null) {
+		if (searchRequest.getVersion() != null) {
 			queryStr += " AND (UPPER(version) LIKE UPPER(:version)) ";
 		}
 		
-		queryStr += ";";
+		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
-		query.setParameter("certs", searchFilters.getCertificationCriteria());
-		query.setParameter("cqms", searchFilters.getCqms());
+		query.setParameter("certs", searchRequest.getCertificationCriteria());
+		query.setParameter("cqms", searchRequest.getCqms());
 		
 		
-		if (searchFilters.getVendor() != null){
-			query.setParameter("vendorname", "%"+searchFilters.getVendor()+"%");
+		if (searchRequest.getVendor() != null){
+			query.setParameter("vendorname", "%"+searchRequest.getVendor()+"%");
 		}
 		
-		if (searchFilters.getProduct() != null){
-			query.setParameter("productname", "%"+searchFilters.getProduct()+"%");
+		if (searchRequest.getProduct() != null){
+			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
 		}
 		
-		if (searchFilters.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchFilters.getCertificationEdition());
+		if (searchRequest.getCertificationEdition() != null) {
+			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
 		}
 		
-		if (searchFilters.getPracticeType() != null) {
-			query.setParameter("practicetype", searchFilters.getPracticeType());
+		if (searchRequest.getPracticeType() != null) {
+			query.setParameter("practicetype", searchRequest.getPracticeType());
 		}
 		
-		if (searchFilters.getProductClassification() != null) {
-			query.setParameter("productclassification", searchFilters.getProductClassification());
+		if (searchRequest.getProductClassification() != null) {
+			query.setParameter("productclassification", searchRequest.getProductClassification());
 		}
 		
-		if (searchFilters.getVersion() != null) {
-			query.setParameter("version", searchFilters.getVersion());
+		if (searchRequest.getVersion() != null) {
+			query.setParameter("version", searchRequest.getVersion());
 		}
 		return query;
 	}
 	
-	private Query getBasicQuery(SearchFilters searchFilters){
+	private Query getBasicQuery(SearchRequest searchRequest){
 		
 		String queryStr = "from CertifiedProductDetailsEntity where (NOT deleted = true)";
 		
-		if ((searchFilters.getVendor() != null) && (searchFilters.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) ";
-		} else if (searchFilters.getVendor() != null){
+		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
+		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchFilters.getProduct() != null){
+		} else if (searchRequest.getProduct() != null){
 			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
 		}
 		
-		if (searchFilters.getCertificationEdition() != null) {
+		if (searchRequest.getCertificationEdition() != null) {
 			queryStr += " AND (year = :certificationedition) ";
 		}
 		
-		if (searchFilters.getPracticeType() != null) {
+		if (searchRequest.getPracticeType() != null) {
 			queryStr += " AND (practice_type = :practicetype) "; 
 		}
 		
-		if (searchFilters.getProductClassification() != null) {
+		if (searchRequest.getProductClassification() != null) {
 			queryStr += " AND (product_classification = :productclassification) ";
 		}
 		
-		if (searchFilters.getVersion() != null) {
+		if (searchRequest.getVersion() != null) {
 			queryStr += " AND (version = :version) ";
 		}
 		
+		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
+		
 		Query query = entityManager.createQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
-		if (searchFilters.getVendor() != null){
-			query.setParameter("vendorname", "%"+searchFilters.getVendor()+"%");
+		if (searchRequest.getVendor() != null){
+			query.setParameter("vendorname", "%"+searchRequest.getVendor()+"%");
 		}
 		
-		if (searchFilters.getProduct() != null){
-			query.setParameter("productname", "%"+searchFilters.getProduct()+"%");
+		if (searchRequest.getProduct() != null){
+			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
 		}
 		
-		if (searchFilters.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchFilters.getCertificationEdition());
+		if (searchRequest.getCertificationEdition() != null) {
+			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
 		}
 		
-		if (searchFilters.getPracticeType() != null) {
-			query.setParameter("practicetype", searchFilters.getPracticeType());
+		if (searchRequest.getPracticeType() != null) {
+			query.setParameter("practicetype", searchRequest.getPracticeType());
 		}
 		
-		if (searchFilters.getProductClassification() != null) {
-			query.setParameter("productclassification", searchFilters.getProductClassification());
+		if (searchRequest.getProductClassification() != null) {
+			query.setParameter("productclassification", searchRequest.getProductClassification());
 		}
 		
-		if (searchFilters.getVersion() != null) {
-			query.setParameter("version", searchFilters.getVersion());
+		if (searchRequest.getVersion() != null) {
+			query.setParameter("version", searchRequest.getVersion());
 		}
 		
 		return query;

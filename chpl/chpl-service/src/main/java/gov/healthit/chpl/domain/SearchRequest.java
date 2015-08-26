@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchFilters {
+public class SearchRequest {
 	
 	String vendor = null;
 	String product = null;
@@ -13,6 +13,7 @@ public class SearchFilters {
 	String certificationEdition = null;
 	String productClassification = null;
 	String practiceType = null;
+	String orderBy = "product";
 	
 	public String getVendor() {
 		return vendor;
@@ -65,5 +66,10 @@ public class SearchFilters {
 	public void setPracticeType(String practiceType) {
 		this.practiceType = practiceType;
 	}
-	
+	public String getOrderBy() {
+		return orderBy;
+	}
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
 }

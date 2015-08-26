@@ -17,7 +17,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.domain.SearchFilters;
+import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
@@ -181,6 +181,60 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 		
 		return searchResults; 
 	}
+	
+	
+	@Override
+	public List<CertifiedProductSearchResult> simpleSearch(String searchTerm,
+			Integer pageNum, Integer pageSize, String orderBy) {
+		
+		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
+		
+		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.simpleSearch(searchTerm, pageNum, pageSize, orderBy)){
+			
+			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
+			
+			searchResult.setId(dto.getId());
+			searchResult.setAcbCertificationId(dto.getAcbCertificationId());
+			searchResult.setCertificationDate(dto.getCertificationDate().toString());
+			
+			searchResult.getCertificationEdition().put("id", dto.getCertificationEditionId().toString());
+			searchResult.getCertificationEdition().put("name", dto.getYear());
+			
+			searchResult.setCertificationStatusId(dto.getCertificationStatusId());	
+			
+			searchResult.getCertifyingBody().put("id", dto.getCertificationBodyId().toString());
+			searchResult.getCertifyingBody().put("name", dto.getCertificationBodyName());
+			
+			searchResult.setChplProductNumber(dto.getChplProductNumber());
+			
+			searchResult.getClassificationType().put("id", dto.getProductClassificationTypeId().toString());
+			searchResult.getClassificationType().put("name", dto.getProductclassificationName());
+			
+			searchResult.setOtherAcb(dto.getOtherAcb());
+			
+			searchResult.getPracticeType().put("id", dto.getPracticeTypeId().toString());
+			searchResult.getPracticeType().put("name", dto.getPracticeTypeName());
+			
+			searchResult.getProduct().put("id",dto.getProductId().toString());
+			searchResult.getProduct().put("name",dto.getProductName());
+			searchResult.getProduct().put("versionId",dto.getProductVersionId().toString());
+			searchResult.getProduct().put("version", dto.getProductVersion());
+			
+			searchResult.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
+			searchResult.setReportFileLocation(dto.getReportFileLocation());
+			searchResult.setTestingLabId(dto.getTestingLabId());
+			
+			searchResult.getVendor().put("id", dto.getVendorId().toString());
+			searchResult.getVendor().put("name", dto.getVendorName());
+			
+			searchResult.setCountCerts(dto.getCountCertifications());
+			searchResult.setCountCqms(dto.getCountCqms());
+			
+			searchResults.add(searchResult);
+		}
+		
+		return searchResults; 
+	}
 
 
 	@Override
@@ -189,7 +243,7 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
 		
-		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.simpleSearch(searchTerm, pageNum, pageSize)){
+		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.simpleSearch(searchTerm, pageNum, pageSize, "product")){
 			
 			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
 			
@@ -236,12 +290,10 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 		return searchResults; 
 	}
 	
-
-
-
+	
 	@Override
 	public List<CertifiedProductSearchResult> multiFilterSearch(
-			SearchFilters searchFilters, Integer pageNum, Integer pageSize) {
+			SearchRequest searchFilters, Integer pageNum, Integer pageSize) {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
 		
