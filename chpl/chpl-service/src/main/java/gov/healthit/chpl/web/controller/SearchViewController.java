@@ -27,27 +27,27 @@ public class SearchViewController {
 	
 	
 	@Autowired
-	private SearchMenuManager certifiedProductSearchManager;
+	private SearchMenuManager searchMenuManager;
 	
 	@Autowired
 	private CertificationBodyManager certificationBodyManager;
 	
 	@Autowired
-	private CertifiedProductSearchManager certifiedProductSearchDetailsManager;
+	private CertifiedProductSearchManager certifiedProductSearchManager;
 	
 	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws EntityRetrievalException{
 		
-		CertifiedProductSearchDetails product = certifiedProductSearchDetailsManager.getCertifiedProductDetails(id);
+		CertifiedProductSearchDetails product = certifiedProductSearchManager.getCertifiedProductDetails(id);
 		return product;
 	}
 	
 	@RequestMapping(value="/list_certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertifiedProductSearchResult> listCertifiedProducts(@RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) throws EntityRetrievalException {
-		return certifiedProductSearchDetailsManager.getCertifiedProducts(pageNum, pageSize);
+		return certifiedProductSearchManager.getCertifiedProducts(pageNum, pageSize);
 	}
 	
 	@RequestMapping(value="/simple_search", method=RequestMethod.GET,
@@ -59,9 +59,9 @@ public class SearchViewController {
 			@RequestParam(value="orderBy", required = false) String orderBy
 			) throws EntityRetrievalException {
 		if (orderBy != null){
-			return certifiedProductSearchDetailsManager.simpleSearch(searchTerm, pageNum, pageSize, orderBy);
+			return certifiedProductSearchManager.simpleSearch(searchTerm, pageNum, pageSize, orderBy);
 		} else {
-			return certifiedProductSearchDetailsManager.simpleSearch(searchTerm, pageNum, pageSize);
+			return certifiedProductSearchManager.simpleSearch(searchTerm, pageNum, pageSize);
 		}
 	}
 	
@@ -73,7 +73,7 @@ public class SearchViewController {
 			@RequestBody SearchRequest searchFilters, 
 			@RequestParam("pageNum") Integer pageNum, 
 			@RequestParam("pageSize") Integer pageSize) {
-		return certifiedProductSearchDetailsManager.multiFilterSearch(searchFilters, pageNum, pageSize);
+		return certifiedProductSearchManager.multiFilterSearch(searchFilters, pageNum, pageSize);
 	}
 	
 	
@@ -104,56 +104,56 @@ public class SearchViewController {
 		searchFilters.setProductClassification(productClassification);
 		searchFilters.setPracticeType(practiceType);
 		
-		return certifiedProductSearchDetailsManager.multiFilterSearch(searchFilters, pageNum, pageSize);
+		return certifiedProductSearchManager.multiFilterSearch(searchFilters, pageNum, pageSize);
 	}
 	
 	
 	@RequestMapping(value="/list_certs", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertificationResult> getCertifications() {
-		return certifiedProductSearchManager.getCertifications();
+		return null;//searchMenuManager.getCertifications();
 	}
 	
 	@RequestMapping(value="/list_cqms", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CQMResultDetails> getCQMResults() {
-		return certifiedProductSearchManager.getCQMResults();
+		return null;//searchMenuManager.getCQMResults();
 	}
 	
 	@RequestMapping(value="/list_classification_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getClassificationNames() {
-		return certifiedProductSearchManager.getClassificationNames();
+		return searchMenuManager.getClassificationNames();
 	}
 	
 	@RequestMapping(value="/list_edition_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getEditionNames() {
-		return certifiedProductSearchManager.getEditionNames();
+		return searchMenuManager.getEditionNames();
 	}
 	
 	@RequestMapping(value="/list_practice_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getPracticeTypeNames() {
-		return certifiedProductSearchManager.getPracticeTypeNames();
+		return searchMenuManager.getPracticeTypeNames();
 	}
 	
 	@RequestMapping(value="/list_product_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getProductNames() {
-		return certifiedProductSearchManager.getProductNames();
+		return searchMenuManager.getProductNames();
 	}
 	
 	@RequestMapping(value="/list_vendor_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getVendorNames() {
-		return certifiedProductSearchManager.getVendorNames();
+		return searchMenuManager.getVendorNames();
 	}
 	
 	@RequestMapping(value="/list_certification_body_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<String> getCertBodyNames() {
-		return certifiedProductSearchManager.getCertBodyNames();
+		return searchMenuManager.getCertBodyNames();
 	}
 	
 	public CertificationBodyManager getCertificationBodyManager() {
