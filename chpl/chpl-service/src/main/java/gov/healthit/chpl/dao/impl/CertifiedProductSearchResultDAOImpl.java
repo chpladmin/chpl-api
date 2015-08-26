@@ -173,7 +173,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 		+ " (SELECT "
 		+ " DISTINCT ON (certified_product_id) certified_product_id FROM openchpl.cqm_result_details "
-		+ " WHERE deleted <> true AND success = true AND number IN :cqms ) a "
+		+ " WHERE deleted <> true AND success = true AND number IN (:cqms) ) a "
 		+ " INNER JOIN openchpl.certified_product_details b " 
 		+ " ON a.certified_product_id = b.certified_product_id " 
 		+ "";
@@ -203,7 +203,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (UPPER(version) LIKE UPPER(:version)) ";
 		}
 		
-		queryStr += ";";
+		queryStr += "";
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
@@ -269,7 +269,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		+ " FROM "
 
 		+ " (SELECT DISTINCT ON (certified_product_id) certified_product_id FROM openchpl.certification_result_details "
-		+ " WHERE deleted <> true AND successful = true AND number IN :certs) a "
+		+ " WHERE deleted <> true AND successful = true AND number IN (:certs)) a "
 		
 
 		+ " INNER JOIN openchpl.certified_product_details b "
@@ -368,11 +368,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		+ " FROM "
 		+ " ("
 		+ " (SELECT DISTINCT ON (certified_product_id) certified_product_id FROM openchpl.cqm_result_details "
-		+ " WHERE deleted <> true AND success = true AND number IN :cqms ) a "
+		+ " WHERE deleted <> true AND success = true AND number IN (:cqms) ) a "
 		+ " INNER JOIN "
 
 		+ " (SELECT DISTINCT ON (certified_product_id) certified_product_id as \"cert_certified_product_id\" FROM openchpl.certification_result_details "
-		+ " WHERE deleted <> true AND successful = true AND number IN  :certs ) b "
+		+ " WHERE deleted <> true AND successful = true AND number IN  (:certs) ) b "
 		+ " ON a.certified_product_id = b.cert_certified_product_id "
 		+ " ) c "
 		+ " INNER JOIN openchpl.certified_product_details d "
