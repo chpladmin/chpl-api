@@ -18,6 +18,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
@@ -127,8 +128,6 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 		return searchDetails;
 	}
 
-
-
 	@Override
 	public List<CertifiedProductSearchResult> getCertifiedProducts(
 			Integer pageNum, Integer pageSize) throws EntityRetrievalException {
@@ -184,10 +183,11 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 	
 	
 	@Override
-	public List<CertifiedProductSearchResult> simpleSearch(String searchTerm,
+	public SearchResponse simpleSearch(String searchTerm,
 			Integer pageNum, Integer pageSize, String orderBy) {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
+		Integer countSearchResults = certifiedProductSearchResultDAO.countSimpleSearchResults(searchTerm).intValue();
 		
 		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.simpleSearch(searchTerm, pageNum, pageSize, orderBy)){
 			
@@ -233,15 +233,22 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 			searchResults.add(searchResult);
 		}
 		
-		return searchResults; 
+		SearchResponse response = new SearchResponse(countSearchResults, 
+				searchResults,
+				pageSize,
+				pageNum
+				);
+		
+		return response;
 	}
 
 
 	@Override
-	public List<CertifiedProductSearchResult> simpleSearch(String searchTerm,
+	public SearchResponse simpleSearch(String searchTerm,
 			Integer pageNum, Integer pageSize) {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
+		Integer countSearchResults =  certifiedProductSearchResultDAO.countSimpleSearchResults(searchTerm).intValue();
 		
 		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.simpleSearch(searchTerm, pageNum, pageSize, "product")){
 			
@@ -287,17 +294,23 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 			searchResults.add(searchResult);
 		}
 		
-		return searchResults; 
+		SearchResponse response = new SearchResponse(countSearchResults, 
+				searchResults,
+				pageSize,
+				pageNum
+				);
+		return response;
 	}
 	
 	
 	@Override
-	public List<CertifiedProductSearchResult> multiFilterSearch(
-			SearchRequest searchFilters, Integer pageNum, Integer pageSize) {
+	public SearchResponse multiFilterSearch(
+			SearchRequest searchRequest, Integer pageNum, Integer pageSize) {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
+		Integer countSearchResults =  certifiedProductSearchResultDAO.countMultiFilterSearchResults(searchRequest).intValue();
 		
-		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.multiFilterSearch(searchFilters, pageNum, pageSize))
+		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.multiFilterSearch(searchRequest, pageNum, pageSize))
 		{
 			
 			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
@@ -342,7 +355,11 @@ public class CertifiedProductSearchDetailsManagerImpl implements CertifiedProduc
 			searchResults.add(searchResult);
 		}
 		
-		return searchResults; 
+		SearchResponse response = new SearchResponse(countSearchResults, 
+				searchResults,
+				pageSize,
+				pageNum
+				);
+		return response;
 	}
-	
 }

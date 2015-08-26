@@ -4,6 +4,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SearchResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -19,13 +20,13 @@ public interface CertifiedProductSearchDetailsManager {
 	public List<CertifiedProductSearchResult> getCertifiedProducts(Integer pageNum,
 			Integer pageSize) throws EntityRetrievalException;
 	
-	public List<CertifiedProductSearchResult> simpleSearch(String searchTerm,
+	public SearchResponse simpleSearch(String searchTerm,
 			Integer pageNum, Integer pageSize);
 	
-	public List<CertifiedProductSearchResult> simpleSearch(String searchTerm,
+	public SearchResponse simpleSearch(String searchTerm,
 			Integer pageNum, Integer pageSize, String orderBy);
 
-	public List<CertifiedProductSearchResult> multiFilterSearch(
+	public SearchResponse multiFilterSearch(
 			SearchRequest searchFilters, Integer pageNum, Integer pageSize);	
 	
 }

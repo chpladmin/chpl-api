@@ -1,17 +1,14 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.auth.json.UserCreationJSONObject;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -55,7 +52,7 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/simple_search", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResult> simpleSearch(
+	public @ResponseBody SearchResponse simpleSearch(
 			@RequestParam("searchTerm") String searchTerm, 
 			@RequestParam("pageNum") Integer pageNum, 
 			@RequestParam("pageSize") Integer pageSize,
@@ -66,15 +63,13 @@ public class SearchViewController {
 		} else {
 			return certifiedProductSearchDetailsManager.simpleSearch(searchTerm, pageNum, pageSize);
 		}
-		
 	}
-	
 	
 	
 	@RequestMapping(value="/advanced_search", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResult> advancedSearch(
+	public @ResponseBody SearchResponse advancedSearch(
 			@RequestBody SearchRequest searchFilters, 
 			@RequestParam("pageNum") Integer pageNum, 
 			@RequestParam("pageSize") Integer pageSize) {
@@ -85,17 +80,17 @@ public class SearchViewController {
 	//TODO: Experimental
 	@RequestMapping(value="/advanced_search", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResult> advancedSearch(
-			@RequestParam("pageNum") Integer pageNum, 
-			@RequestParam("pageSize") Integer pageSize,
-			@RequestParam("vendor") String vendor,
-			@RequestParam("product") String product,
-			@RequestParam("version") String version,
-			@RequestParam("certificationCriteria") List<String> certificationCriteria,
-			@RequestParam("cqms") List<String> cqms,
-			@RequestParam("certificationEdition") String certificationEdition,
-			@RequestParam("productClassification") String productClassification,
-			@RequestParam("practiceType") String practiceType
+	public @ResponseBody SearchResponse advancedSearch(
+			@RequestParam(value = "pageNum") Integer pageNum, 
+			@RequestParam(value = "pageSize") Integer pageSize,
+			@RequestParam(value = "vendor", required = false) String vendor,
+			@RequestParam(value = "product", required = false) String product,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "certificationCriteria", required = false) List<String> certificationCriteria,
+			@RequestParam(value = "cqms", required = false) List<String> cqms,
+			@RequestParam(value = "certificationEdition", required = false) String certificationEdition,
+			@RequestParam(value = "productClassification", required = false) String productClassification,
+			@RequestParam(value = "practiceType", required = false) String practiceType
 			
 			) throws EntityRetrievalException {
 		

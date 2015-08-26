@@ -15,7 +15,11 @@ public interface CertifiedProductSearchResultDAO {
 	public List<CertifiedProductDetailsDTO> simpleSearch(String searchTerm,
 			Integer pageNum, Integer pageSize, String orderBy);
 	
+	public Long countSimpleSearchResults(String searchTerm);
+	
 	public List<CertifiedProductDetailsDTO> multiFilterSearch(
 			SearchRequest searchRequest, Integer pageNum, Integer pageSize);
+
+	public Long countMultiFilterSearchResults(SearchRequest searchRequest);
 	
 }
