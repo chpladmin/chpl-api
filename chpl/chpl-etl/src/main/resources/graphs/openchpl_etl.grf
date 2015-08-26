@@ -1760,7 +1760,7 @@ function integer transform() {
 	$out.0.Vendor = $in.0.Vendor;
 	$out.0.Additional_Software = $in.0.Additional_Software;
 	$out.0.Version = $in.0.Version;
-	$out.0.Certification_Date = str2date($in.0.Certification_Date, "M/dd/yyyy");
+	$out.0.Certification_Date = str2date($in.0.Certification_Date, "M/dd/yy");
 	$out.0.Certifying_ACB = $in.0.Certifying_ACB;
     $out.0.Other_ACB = $in.0.Other_ACB;
 	$out.0.Test_Report_Url = $in.0.Test_Report_Url;
