@@ -10,8 +10,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.manager.CertifiedProductSearchDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import gov.healthit.chpl.manager.SearchMenuManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,13 +27,13 @@ public class SearchViewController {
 	
 	
 	@Autowired
-	private CertifiedProductSearchManager certifiedProductSearchManager;
+	private SearchMenuManager certifiedProductSearchManager;
 	
 	@Autowired
 	private CertificationBodyManager certificationBodyManager;
 	
 	@Autowired
-	private CertifiedProductSearchDetailsManager certifiedProductSearchDetailsManager;
+	private CertifiedProductSearchManager certifiedProductSearchDetailsManager;
 	
 	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,

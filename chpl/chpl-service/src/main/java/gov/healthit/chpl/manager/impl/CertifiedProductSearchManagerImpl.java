@@ -24,10 +24,10 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.manager.CertifiedProductSearchDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 @Service
-public class CertifiedProductSearchManagerImpl implements CertifiedProductSearchDetailsManager {
+public class CertifiedProductSearchManagerImpl implements CertifiedProductSearchManager {
 
 	@Autowired
 	CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
@@ -355,7 +355,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResults.add(searchResult);
 		}
 		
-		SearchResponse response = new SearchResponse(countSearchResults, 
+		SearchResponse response = new SearchResponse(countSearchResults,
 				searchResults,
 				pageSize,
 				pageNum
