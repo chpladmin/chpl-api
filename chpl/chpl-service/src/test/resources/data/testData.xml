@@ -29,18 +29,8 @@
 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" />
 	
 	
-	<product_version product_version_id="1" product_id="1" version="0.1" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<product_version product_version_id="2" product_id="2" version="0.2" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	
-	<product product_id="1" vendor_id="1" name="Test Product A" report_file_location="" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<product product_id="2" vendor_id="2" name="Test Product B" report_file_location="" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	
-	<vendor vendor_id="1" name="Test Vendor A" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<vendor vendor_id="2" name="Test Vendor B" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	
-	
-	<certification_event certification_event_id="1" certified_product_id="1" event_type_id="1" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<certification_event certification_event_id="2" certified_product_id="2" event_type_id="1" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
+	<certification_event certification_event_id="1" certified_product_id="1" event_type_id="1" event_date="2015-08-20 13:14:00"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
+	<certification_event certification_event_id="2" certified_product_id="2" event_type_id="1" event_date="2015-08-20 13:14:00" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
 	
 	<certification_result certification_result_id="1" certification_criterion_id="1" certified_product_id="1" successful="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
 	<certification_result certification_result_id="2" certification_criterion_id="2" certified_product_id="1" successful="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
@@ -48,7 +38,6 @@
 	<certification_result certification_result_id="4" certification_criterion_id="4" certified_product_id="1" successful="false"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
 	<certification_result certification_result_id="5" certification_criterion_id="5" certified_product_id="1" successful="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
 	<certification_result certification_result_id="6" certification_criterion_id="6" certified_product_id="1" successful="false"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	
 	
 	<cqm_result cqm_result_id="1" certified_product_id="1" cqm_criterion_id="1" success="false" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
 	<cqm_result cqm_result_id="2" certified_product_id="1" cqm_criterion_id="2" success="false" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
