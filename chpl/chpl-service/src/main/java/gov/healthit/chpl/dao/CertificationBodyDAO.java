@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 import java.util.List;
 

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.entity.ProductEntity;
-import gov.healthit.chpl.entity.ProductVersionEntity;
 
 import java.util.Date;
 import java.util.HashSet;
