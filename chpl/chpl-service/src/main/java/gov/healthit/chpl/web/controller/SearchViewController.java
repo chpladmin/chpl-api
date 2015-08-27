@@ -164,13 +164,4 @@ public class SearchViewController {
 		return searchMenuManager.getPopulateSearchOptions();
 	}
 	
-	public CertificationBodyManager getCertificationBodyManager() {
-		return certificationBodyManager;
-	}
-
-	public void setCertificationBodyManager(
-			CertificationBodyManager certificationBodyManager) {
-		this.certificationBodyManager = certificationBodyManager;
-	}
-	
 }
