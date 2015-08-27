@@ -11,6 +11,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.manager.ProductVersionManager;
 
 @Service
@@ -31,30 +32,38 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	}
 	
 	@Override
+	@Transactional(readOnly = true)
+	public List<ProductVersionDTO> getByProducts(List<Long> productIds) {
+		return dao.getByProductIds(productIds);
+	}
+	
+	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException {
-		//TODO: something
+	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException {
+		ProductVersionEntity result = dao.create(dto);
+		return new ProductVersionDTO(result);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void update(ProductVersionDTO dto) throws EntityRetrievalException {
-		//TODO: something
+	public ProductVersionDTO update(ProductVersionDTO dto) throws EntityRetrievalException {
+		ProductVersionEntity result = dao.update(dto);
+		return new ProductVersionDTO(result);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(ProductVersionDTO dto) {
+	public void delete(ProductVersionDTO dto) throws EntityRetrievalException {
 		delete(dto.getId());
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(Long id) {
+	public void delete(Long id) throws EntityRetrievalException {
 		dao.delete(id);
 	}
 }

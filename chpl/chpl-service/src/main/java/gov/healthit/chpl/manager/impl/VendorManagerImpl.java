@@ -12,6 +12,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.entity.VendorEntity;
 import gov.healthit.chpl.manager.VendorManager;
 
 @Service
@@ -34,25 +35,27 @@ public class VendorManagerImpl implements VendorManager {
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
-	public void update(VendorDTO vendor) throws EntityRetrievalException {
-		vendorDao.update(vendor);
+	public VendorDTO update(VendorDTO vendor) throws EntityRetrievalException {
+		VendorEntity result = vendorDao.update(vendor);
+		return new VendorDTO(result);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
-	public void create(VendorDTO dto) throws EntityRetrievalException, EntityCreationException {
-		vendorDao.create(dto);
+	public VendorDTO create(VendorDTO dto) throws EntityRetrievalException, EntityCreationException {
+		VendorEntity result = vendorDao.create(dto);
+		return new VendorDTO(result);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
-	public void delete(VendorDTO dto) {
+	public void delete(VendorDTO dto) throws EntityRetrievalException {
 		vendorDao.delete(dto.getId());
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
-	public void delete(Long vendorId) {
+	public void delete(Long vendorId) throws EntityRetrievalException {
 		vendorDao.delete(vendorId);
 	}
 }

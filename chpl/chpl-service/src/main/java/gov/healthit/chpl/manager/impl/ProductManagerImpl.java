@@ -12,6 +12,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.manager.ProductManager;
 
 @Service
@@ -25,6 +26,12 @@ public class ProductManagerImpl implements ProductManager {
 		return productDao.getById(id);
 	}
 
+	@Override
+	@Transactional(readOnly = true) 
+	public List<ProductDTO> getAll() {
+		return productDao.findAll();
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProductDTO> getByVendor(Long vendorId) {
@@ -40,28 +47,30 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
-		productDao.update(dto);
+	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
+		ProductEntity result = productDao.create(dto);
+		return new ProductDTO(result);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void update(ProductDTO dto) throws EntityRetrievalException {
-		
+	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException {
+		ProductEntity result = productDao.update(dto);
+		return new ProductDTO(result);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(ProductDTO dto) {
+	public void delete(ProductDTO dto) throws EntityRetrievalException {
 		delete(dto.getId());
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(Long productId) {
+	public void delete(Long productId) throws EntityRetrievalException {
 		productDao.delete(productId);
 	}
 

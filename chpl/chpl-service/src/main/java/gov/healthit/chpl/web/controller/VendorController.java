@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +66,14 @@ public class VendorController {
 	@RequestMapping(value="/update_vendor", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String updateVendor(@RequestBody(required=true) UpdateVendorsRequest vendorInfo) throws EntityCreationException, EntityRetrievalException {
+	public Vendor updateVendor(@RequestBody(required=true) UpdateVendorsRequest vendorInfo) throws EntityCreationException, EntityRetrievalException {
+		VendorDTO result = null;
+		
 		if(vendorInfo.getVendorIds().size() > 1) {
 			//merge these vendors into one 
 			// - create a new vendor with the rest of the passed in information
 			VendorDTO newVendor = new VendorDTO();
 			newVendor.setName(vendorInfo.getVendor().getName());
-			newVendor.setLastModifiedUser(Util.getCurrentUser().getId());
 			newVendor.setWebsite(vendorInfo.getVendor().getWebsite());
 			AddressDTO address = new AddressDTO();
 			if(vendorInfo.getVendor().getAddress() != null) {
@@ -81,14 +83,17 @@ public class VendorController {
 				address.setCity(vendorInfo.getVendor().getAddress().getCity());
 				address.setRegion(vendorInfo.getVendor().getAddress().getRegion());
 				address.setCountry(vendorInfo.getVendor().getAddress().getCountry());
+				address.setDeleted(false);
+				address.setLastModifiedDate(new Date());
+				address.setLastModifiedUser(Util.getCurrentUser().getId());
 			}
 			newVendor.setAddress(address);
-			vendorManager.create(newVendor);
+			result = vendorManager.create(newVendor);
 			// - search for any products assigned to the list of vendors passed in
 			List<ProductDTO> vendorProducts = productManager.getByVendors(vendorInfo.getVendorIds());
 			// - reassign those products to the new vendor
 			for(ProductDTO product : vendorProducts) {
-				product.setVendorId(newVendor.getId());
+				product.setVendorId(result.getId());
 				productManager.update(product);
 			}
 			// - mark the passed in vendors as deleted
@@ -98,23 +103,29 @@ public class VendorController {
 		} else if(vendorInfo.getVendorIds().size() == 1) {
 			//update the information for the vendor id supplied in the database
 			VendorDTO toUpdate = new VendorDTO();
+			toUpdate.setId(vendorInfo.getVendorIds().get(0));
 			toUpdate.setName(vendorInfo.getVendor().getName());
 			toUpdate.setWebsite(vendorInfo.getVendor().getWebsite());
-			AddressDTO address = new AddressDTO();
 			if(vendorInfo.getVendor().getAddress() != null) {
+				AddressDTO address = new AddressDTO();
 				address.setId(vendorInfo.getVendor().getAddress().getAddressId());
 				address.setStreetLineOne(vendorInfo.getVendor().getAddress().getLine1());
 				address.setStreetLineTwo(vendorInfo.getVendor().getAddress().getLine2());
 				address.setCity(vendorInfo.getVendor().getAddress().getCity());
 				address.setRegion(vendorInfo.getVendor().getAddress().getRegion());
 				address.setCountry(vendorInfo.getVendor().getAddress().getCountry());
+				address.setDeleted(false);
+				address.setLastModifiedDate(new Date());
+				address.setLastModifiedUser(Util.getCurrentUser().getId());
+				toUpdate.setAddress(address);
 			}
-			toUpdate.setAddress(address);
-			vendorManager.update(toUpdate);
+			result = vendorManager.update(toUpdate);
 		}
-		//TODO: return something more accurate??
-		String isSuccess = String.valueOf(true);
-		return "{\"success\" : "+isSuccess+" }";
 		
+		if(result == null) {
+			throw new EntityCreationException("There was an error inserting or updating the vendor information.");
+		}
+		Vendor restResult = new Vendor(result);
+		return restResult;
 	}
 }

@@ -57,15 +57,23 @@ public class ProductVersionController {
 	@RequestMapping(value="/update_version", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String updateVersion(@RequestBody(required=true) UpdateVersionRequest versionInfo) throws EntityCreationException, EntityRetrievalException {
+	public ProductVersion updateVersion(@RequestBody(required=true) UpdateVersionRequest versionInfo) throws 
+		EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
+		ProductVersionDTO result = null;
+		
+		if(versionInfo == null || versionInfo.getVersionId() == null) {
+			throw new InvalidArgumentsException("versionId must be provided in the request body.");
+		}
+		
 		ProductVersionDTO toUpdate = new ProductVersionDTO();
 		toUpdate.setId(versionInfo.getVersionId());
 		toUpdate.setVersion(versionInfo.getVersion());
-		pvManager.update(toUpdate);
+		result = pvManager.update(toUpdate);
 
-		//TODO: return something better here
-		String isSuccess = String.valueOf(true);
-		return "{\"success\" : "+isSuccess+" }";
+		if(result == null) {
+			throw new EntityCreationException("There was an error inserting or updating the version information.");
+		}
+		return new ProductVersion(result);
 		
 	}
 }

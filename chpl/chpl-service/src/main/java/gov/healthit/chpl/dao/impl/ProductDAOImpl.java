@@ -1,11 +1,13 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -13,12 +15,14 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.VendorEntity;
 
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 
 	@Override
-	public void create(ProductDTO dto) throws EntityCreationException,
+	@Transactional
+	public ProductEntity create(ProductDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
 		
 		ProductEntity entity = null;
@@ -35,41 +39,91 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		} else {
 			
 			entity = new ProductEntity();
-			entity.setCreationDate(dto.getCreationDate());
-			entity.setDeleted(dto.getDeleted());
-			entity.setId(dto.getId());
 			entity.setName(dto.getName());
 			entity.setReportFileLocation(dto.getReportFileLocation());
 			entity.setVendorId(dto.getVendorId());
-			//entity.setLastModifiedDate(result.getLastModifiedDate());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			
+			if(dto.getDeleted() != null) {
+				entity.setDeleted(dto.getDeleted());
+			} else {
+				entity.setDeleted(false);
+			}
+			
+			if(dto.getLastModifiedUser() != null) {
+				entity.setLastModifiedUser(dto.getLastModifiedUser());
+			} else {
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			}		
+			
+			if(dto.getLastModifiedDate() != null) {
+				entity.setLastModifiedDate(dto.getLastModifiedDate());
+			} else {
+				entity.setLastModifiedDate(new Date());
+			}
+			
+			if(dto.getCreationDate() != null) {
+				entity.setCreationDate(dto.getCreationDate());
+			} else {
+				entity.setCreationDate(new Date());
+			}
 			
 			create(entity);	
+			return entity;
 		}
 		
 	}
 
 	@Override
-	public void update(ProductDTO dto) throws EntityRetrievalException {
-		
+	@Transactional
+	public ProductEntity update(ProductDTO dto) throws EntityRetrievalException {
 		ProductEntity entity = this.getEntityById(dto.getId());
-		entity.setCreationDate(dto.getCreationDate());
-		entity.setDeleted(dto.getDeleted());
-		entity.setId(dto.getId());
-		entity.setName(dto.getName());
+		
 		entity.setReportFileLocation(dto.getReportFileLocation());
-		entity.setVendorId(dto.getVendorId());
-		//entity.setLastModifiedDate(result.getLastModifiedDate());
-		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			
+		
+		if(dto.getName() != null) {
+			entity.setName(dto.getName());
+		}
+		
+		if(dto.getVendorId() != null)
+		{
+			entity.setVendorId(dto.getVendorId());
+		}
+				
+		if(dto.getDeleted() != null) {
+			entity.setDeleted(dto.getDeleted());
+		} 
+		
+		if(dto.getCreationDate() != null) {
+			entity.setCreationDate(dto.getCreationDate());
+		} 
+		
+		if(dto.getLastModifiedUser() != null) {
+			entity.setLastModifiedUser(dto.getLastModifiedUser());
+		} else {
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		}		
+		
+		if(dto.getLastModifiedDate() != null) {
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
+		} else {
+			entity.setLastModifiedDate(new Date());
+		}
+		
 		update(entity);
+		return entity;
 	}
 
 	@Override
-	public void delete(Long id) {
-		Query query = entityManager.createQuery("UPDATE ProductEntity SET deleted = true WHERE product_id = :entityid");
-		query.setParameter("entityid", id);
-		query.executeUpdate();
+	@Transactional
+	public void delete(Long id) throws EntityRetrievalException {
+		ProductEntity toDelete = getEntityById(id);
+		
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			update(toDelete);
+		}
 	}
 
 	@Override
@@ -148,8 +202,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		query.setParameter("entityid", id);
 		List<ProductEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate product version id in database.");
+		if(result == null || result.size() == 0) {
+			throw new EntityRetrievalException("No active product with id " + id + " was found in the database.");
+		} else if (result.size() > 1){
+			throw new EntityRetrievalException("Data error. Duplicate product id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}

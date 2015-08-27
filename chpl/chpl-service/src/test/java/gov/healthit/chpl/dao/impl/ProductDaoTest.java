@@ -3,25 +3,35 @@ package gov.healthit.chpl.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.entity.ProductEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class,
+    DbUnitTestExecutionListener.class })
+@DatabaseSetup("classpath:data/testData.xml")
 public class ProductDaoTest extends TestCase {
 
 	@Autowired
@@ -41,8 +51,7 @@ public class ProductDaoTest extends TestCase {
 	public void getAllProducts() {
 		List<ProductDTO> results = productDao.findAll();
 		assertNotNull(results);
-		assertEquals(3, results.size());
-		assertEquals(1, results.get(0).getId().longValue());
+		assertEquals(4, results.size());
 	}
 
 	@Test
@@ -64,7 +73,7 @@ public class ProductDaoTest extends TestCase {
 		List<ProductDTO> products = null;
 		products = productDao.getByVendor(vendorId);
 		assertNotNull(products);
-		assertEquals(1, products.size());
+		assertEquals(3, products.size());
 	}
 	
 	@Test
@@ -75,6 +84,29 @@ public class ProductDaoTest extends TestCase {
 		List<ProductDTO> products = null;
 		products = productDao.getByVendors(vendorIds);
 		assertNotNull(products);
-		assertEquals(3, products.size());
+		assertEquals(4, products.size());
+	}
+	
+	@Test
+	public void updateProduct() throws EntityRetrievalException {
+		ProductDTO product = productDao.getById(1L);
+		product.setVendorId(2L);
+		
+		ProductEntity result = null;
+		try {
+			result = productDao.update(product);
+		} catch(Exception ex) {
+			fail("could not update product!");
+			System.out.println(ex.getStackTrace());
+		}
+		assertNotNull(result);
+
+		try {
+			ProductDTO updatedProduct = productDao.getById(product.getId());
+			assertTrue(updatedProduct.getVendorId() == 2L);
+		} catch(Exception ex) {
+			fail("could not find product!");
+			System.out.println(ex.getStackTrace());
+		}
 	}
 }

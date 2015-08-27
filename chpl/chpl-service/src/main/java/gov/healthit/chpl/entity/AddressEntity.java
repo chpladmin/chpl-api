@@ -10,27 +10,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.springframework.transaction.annotation.Transactional;
-
-import gov.healthit.chpl.dto.AddressDTO;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="address")
 public class AddressEntity {
-	
-	public AddressEntity() {}
-	public AddressEntity(AddressDTO dto) {
-		this.setStreetLineOne(dto.getStreetLineOne());
-		this.setStreetLineTwo(dto.getStreetLineTwo());
-		this.setCity(dto.getCity());
-		this.setRegion(dto.getRegion());
-		this.setCountry(dto.getCountry());
-		this.setDeleted(dto.getDeleted());
-		this.setLastModifiedDate(dto.getLastModifiedDate());
-		this.setLastModifiedUser(dto.getLastModifiedUser());
-		this.setCreationDate(dto.getCreationDate());
-	}
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addressAddress_idGenerator")
@@ -39,22 +26,31 @@ public class AddressEntity {
 	@SequenceGenerator(name = "addressAddress_idGenerator", sequenceName = "address_address_id_seq")
 	private Long id;
 	
+	@Basic( optional = false )
+	@Size(min=1)
 	@Column(name="street_line_1")
 	private String streetLineOne;
 	
 	@Column(name="street_line_2")
 	private String streetLineTwo;
 	
+	@Basic( optional = false )
+	@Size(min=1)
 	@Column(name = "city")
 	private String city;
 	
+	@Basic( optional = false )
+	@Size(min=1)
 	@Column(name = "region")
 	private String region;
 	
+	@Basic( optional = false )
+	@Size(min=1)
 	@Column(name = "country")
 	private String country;
 	
 	@Basic( optional = false )
+	@Past()
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
 	
@@ -63,10 +59,12 @@ public class AddressEntity {
 	private Date lastModifiedDate;
 	
 	@Basic( optional = false )
+	@NotNull()
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
 	
 	@Basic( optional = false )
+	@NotNull()
 	@Column( nullable = false  )
 	private Boolean deleted;
 	

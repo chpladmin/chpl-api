@@ -10,6 +10,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
@@ -28,7 +29,8 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	@Autowired AddressDAO addressDao;
 	
 	@Override
-	public void create(VendorDTO dto) throws EntityCreationException, EntityRetrievalException {
+	@Transactional
+	public VendorEntity create(VendorDTO dto) throws EntityCreationException, EntityRetrievalException {
 		
 		VendorEntity entity = null;
 		try {
@@ -49,20 +51,41 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 				entity.setAddress(mergeVendorAddress(dto.getAddress()));
 			}
 			
-			entity.setCreationDate(dto.getCreationDate());
-			entity.setDeleted(dto.getDeleted());
-			entity.setId(dto.getId());
 			entity.setName(dto.getName());
 			entity.setWebsite(dto.getWebsite());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			
-			create(entity);	
+			if(dto.getDeleted() != null) {
+				entity.setDeleted(dto.getDeleted());
+			} else {
+				entity.setDeleted(false);
+			}
+			
+			if(dto.getLastModifiedUser() != null) {
+				entity.setLastModifiedUser(dto.getLastModifiedUser());
+			} else {
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			}		
+			
+			if(dto.getLastModifiedDate() != null) {
+				entity.setLastModifiedDate(dto.getLastModifiedDate());
+			} else {
+				entity.setLastModifiedDate(new Date());
+			}
+			
+			if(dto.getCreationDate() != null) {
+				entity.setCreationDate(dto.getCreationDate());
+			} else {
+				entity.setCreationDate(new Date());
+			}
+			
+			create(entity);
+			return entity;
 		}	
 	}
 
 	@Override
-	public void update(VendorDTO dto) throws EntityRetrievalException {
-		
+	@Transactional
+	public VendorEntity update(VendorDTO dto) throws EntityRetrievalException {
 		VendorEntity entity = this.getEntityById(dto.getId());
 		
 		if(dto.getAddress() != null)
@@ -75,24 +98,45 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 			}
 		}
 		
-		entity.setCreationDate(dto.getCreationDate());
-		entity.setDeleted(dto.getDeleted());
-		entity.setId(dto.getId());
-		entity.setName(dto.getName());
-		entity.setWebsite(dto.getWebsite());
-		entity.setLastModifiedDate(new Date());
-		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		if(dto.getDeleted() != null) {
+			entity.setDeleted(dto.getDeleted());
+		}
+		if(dto.getName() != null) {
+			entity.setName(dto.getName());
+		}
+		if(dto.getWebsite() != null) {
+			entity.setWebsite(dto.getWebsite());
+		}
+		
+		if(dto.getLastModifiedUser() != null) {
+			entity.setLastModifiedUser(dto.getLastModifiedUser());
+		} else {
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		}		
+		
+		if(dto.getLastModifiedDate() != null) {
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
+		} else {
+			entity.setLastModifiedDate(new Date());
+		}
 			
 		update(entity);
+		return entity;
 	}
 
 	@Override
-	public void delete(Long id) {
-		Query query = entityManager.createQuery("UPDATE VendorEntity SET deleted = true WHERE vendor_id = :entityid");
-		query.setParameter("entityid", id);
-		query.executeUpdate();
+	@Transactional
+	public void delete(Long id) throws EntityRetrievalException {
+		VendorEntity toDelete = getEntityById(id);
+		
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			update(toDelete);
+		}
 	}
-
+	
 	@Override
 	public List<VendorDTO> findAll() {
 		
@@ -110,7 +154,10 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	public VendorDTO getById(Long id) throws EntityRetrievalException {
 		
 		VendorEntity entity = getEntityById(id);
-		VendorDTO dto = new VendorDTO(entity);
+		VendorDTO dto = null;
+		if(entity != null) {
+			dto = new VendorDTO(entity);
+		}
 		return dto;
 	}
 	
@@ -118,7 +165,6 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	private void create(VendorEntity entity) {
 		
 		entityManager.persist(entity);
-		
 	}
 	
 	private void update(VendorEntity entity) {
@@ -143,9 +189,7 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate vendor id in database.");
-		} else if(result.size() <= 0) {
-			throw new EntityRetrievalException("No vendor with id " + id + " was found in the database.");
-		} else {
+		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
 
@@ -155,27 +199,21 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	private AddressEntity mergeVendorAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException {
 		AddressEntity address = null;
 		if(addressDto.getId() != null) {
-			//try to lookup via id if it was provided
-			try {
-				address = addressDao.getEntityById(addressDto.getId());
-			} catch(EntityRetrievalException ere) {
-				logger.error("Could not get address with id " + addressDto.getId(), ere);
-			}
+			//update the address
+			AddressDTO toUpdate = addressDao.getById(addressDto.getId());
+			toUpdate.setStreetLineOne(addressDto.getStreetLineOne());
+			toUpdate.setStreetLineTwo(addressDto.getStreetLineTwo());
+			toUpdate.setCity(addressDto.getCity());
+			toUpdate.setRegion(addressDto.getRegion());
+			toUpdate.setCountry(addressDto.getCountry());
+			address = addressDao.update(toUpdate);
 		} else {
-			//otherwise look up via all attributes
-			address = addressDao.searchForEntity(addressDto.getStreetLineOne(), addressDto.getStreetLineTwo(), 
-					addressDto.getCity(), addressDto.getRegion(), addressDto.getCountry());
+			address = addressDao.getEntityByValues(addressDto);
 		}
 		
 		if(address == null) {
-			//otherwise create and save a new address entity before setting it on the vendor
-			address = new AddressEntity();
-			address.setStreetLineOne(addressDto.getStreetLineOne());
-			address.setStreetLineTwo(addressDto.getStreetLineTwo());
-			address.setCity(addressDto.getCity());
-			address.setRegion(addressDto.getRegion());
-			address.setCountry(addressDto.getCountry());
-			addressDao.create(addressDto);
+			//if we didn't find it, create and save a new address entity before setting it on the vendor
+			address = addressDao.create(addressDto);
 		}
 		
 		return address;
