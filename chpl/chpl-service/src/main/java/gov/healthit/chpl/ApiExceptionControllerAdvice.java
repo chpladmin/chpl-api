@@ -31,7 +31,7 @@ public class ApiExceptionControllerAdvice {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	
+	/*
 	@ExceptionHandler(SQLGrammarException.class)
 	public ResponseEntity<ErrorJSONObject> exception(SQLGrammarException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(
@@ -44,4 +44,5 @@ public class ApiExceptionControllerAdvice {
 	public ResponseEntity<ErrorJSONObject> exception(Exception e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+	*/
 }

@@ -227,11 +227,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type = :practicetype) "; 
+			queryStr += " AND (practice_type_name= :practicetype) "; 
 		}
 		
 		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification = :productclassification) ";
+			queryStr += " AND (product_classification_name = :productclassification) ";
 		}
 		
 		if (searchRequest.getVersion() != null) {
@@ -326,11 +326,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type = :practicetype) "; 
+			queryStr += " AND (practice_type_name= :practicetype) "; 
 		}
 		
 		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification = :productclassification) ";
+			queryStr += " AND (product_classification_name = :productclassification) ";
 		}
 		
 		if (searchRequest.getVersion() != null) {
@@ -429,11 +429,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type = :practicetype) "; 
+			queryStr += " AND (practice_type_name= :practicetype) "; 
 		}
 		
 		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification = :productclassification) ";
+			queryStr += " AND (product_classification_name= :productclassification) ";
 		}
 		
 		if (searchRequest.getVersion() != null) {
@@ -491,11 +491,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type = :practicetype) "; 
+			queryStr += " AND (practice_type_name= :practicetype) "; 
 		}
 		
 		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification = :productclassification) ";
+			queryStr += " AND (product_classification_name= :productclassification) ";
 		}
 		
 		if (searchRequest.getVersion() != null) {
@@ -591,11 +591,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type = :practicetype) "; 
+			queryStr += " AND (practice_type_name= :practicetype) "; 
 		}
 		
 		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification = :productclassification) ";
+			queryStr += " AND (product_classification_name= :productclassification) ";
 		}
 		
 		if (searchRequest.getVersion() != null) {
@@ -662,11 +662,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type = :practicetype) "; 
+			queryStr += " AND (practice_type_name= :practicetype) "; 
 		}
 		
 		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification = :productclassification) ";
+			queryStr += " AND (product_classification_name= :productclassification) ";
 		}
 		
 		if (searchRequest.getVersion() != null) {
@@ -736,11 +736,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type = :practicetype) "; 
+			queryStr += " AND (practice_type_name= :practicetype) "; 
 		}
 		
 		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification = :productclassification) ";
+			queryStr += " AND (product_classification_name= :productclassification) ";
 		}
 		
 		if (searchRequest.getVersion() != null) {
@@ -796,11 +796,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type = :practicetype) "; 
+			queryStr += " AND (practice_type_name= :practicetype) "; 
 		}
 		
 		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification = :productclassification) ";
+			queryStr += " AND (product_classification_name= :productclassification) ";
 		}
 		
 		if (searchRequest.getVersion() != null) {
