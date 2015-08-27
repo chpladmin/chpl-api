@@ -10,6 +10,8 @@ public class PopulateSearchOptions {
 	private Set<String> productNames;
 	private Set<String> vendorNames;
 	private Set<String> certBodyNames;
+	private Set<String> certificationCriterionNumbers;
+	private Set<String> cqmCriterionNumbers;
 	
 	
 	
@@ -48,6 +50,19 @@ public class PopulateSearchOptions {
 	}
 	public void setCertBodyNames(Set<String> certBodyNames) {
 		this.certBodyNames = certBodyNames;
+	}
+	public Set<String> getCertificationCriterionNumbers() {
+		return certificationCriterionNumbers;
+	}
+	public void setCertificationCriterionNumbers(
+			Set<String> certificationCriterionNumbers) {
+		this.certificationCriterionNumbers = certificationCriterionNumbers;
+	}
+	public Set<String> getCqmCriterionNumbers() {
+		return cqmCriterionNumbers;
+	}
+	public void setCQMCriterionNumbers(Set<String> cqmCriterionNumbers) {
+		this.cqmCriterionNumbers = cqmCriterionNumbers;
 	}
 	
 }

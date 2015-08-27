@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -19,7 +21,9 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
@@ -37,10 +41,10 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	private CertifiedProductDAO certifiedProductDAO;
 	
 	@Autowired
-	private CertificationResultDAO certificationResultDAO;
+	private CQMCriterionDAO cqmCriterionDAO;
 	
 	@Autowired
-	private CQMResultDAO cqmResultDAO;
+	private CertificationCriterionDAO certificationCriterionDAO;
 	
 	@Autowired
 	private CertificationEditionDAO certificationEditionDAO;
@@ -144,6 +148,35 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		
 		return acbNames;
 	}
+	
+	@Transactional
+	@Override
+	public Set<String> getCertificationCriterionNumbers(){
+
+		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
+		Set<String> criterionNames = new HashSet<String>();
+		
+		for (CertificationCriterionDTO dto : dtos) {
+			criterionNames.add(dto.getNumber());
+		}
+		
+		return criterionNames;
+		
+	}
+	
+	@Transactional
+	@Override
+	public Set<String> getCQMCriterionNumbers(){
+
+		List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
+		Set<String> criterionNames = new HashSet<String>();
+		
+		for (CQMCriterionDTO dto : dtos) {
+			criterionNames.add(dto.getNumber());
+		}
+		return criterionNames;
+	}
+	
 
 	@Transactional
 	@Override
@@ -156,6 +189,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		searchOptions.setProductClassifications(this.getClassificationNames());
 		searchOptions.setProductNames(this.getProductNames());
 		searchOptions.setVendorNames(this.getVendorNames());
+		searchOptions.setCQMCriterionNumbers(this.getCQMCriterionNumbers());
+		searchOptions.setCertificationCriterionNumbers(this.getCertificationCriterionNumbers());
+		
 		return searchOptions;
 		
 	}

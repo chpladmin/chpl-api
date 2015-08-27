@@ -12,6 +12,8 @@ public interface SearchMenuManager {
 	public Set<String> getProductNames();
 	public Set<String> getVendorNames();
 	public Set<String> getCertBodyNames();
+	public Set<String> getCertificationCriterionNumbers();
+	public Set<String> getCQMCriterionNumbers();
 	public PopulateSearchOptions getPopulateSearchOptions();
 	
 }
