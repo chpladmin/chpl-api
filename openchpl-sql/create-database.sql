@@ -1,5 +1,3 @@
--- Database: openchpl
-
 DROP DATABASE IF EXISTS openchpl;
 
 CREATE DATABASE openchpl

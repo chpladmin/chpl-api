@@ -11,7 +11,9 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.entity.CQMResultEntity;
 import gov.healthit.chpl.entity.CertificationResultEntity;
 
 @Repository(value="certificationResultDAO")
@@ -141,11 +143,33 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			throw new EntityRetrievalException("Data error. Duplicate result id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 			
 		return entity;
 	}
+	
+	@Override
+	public List<CertificationResultDTO> findByCertifiedProductId(
+			Long certifiedProductId) {
+		List<CertificationResultEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
+		List<CertificationResultDTO> cqmResults = new ArrayList<>();
+		
+		for (CertificationResultEntity entity : entities) {
+			CertificationResultDTO cqmResult = new CertificationResultDTO(entity);
+			cqmResults.add(cqmResult);
+		}
+		return cqmResults;
+	}
+	
+	private List<CertificationResultEntity> getEntitiesByCertifiedProductId(Long certifiedProductId) {
+		
+		Query query = entityManager.createQuery( "from CertificationResultEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ", CertificationResultEntity.class );
+		query.setParameter("entityid", certifiedProductId);
+		List<CertificationResultEntity> result = query.getResultList();
+		return result;
+	}
+	
 
 }

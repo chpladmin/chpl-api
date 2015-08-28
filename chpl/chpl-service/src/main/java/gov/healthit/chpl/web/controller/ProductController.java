@@ -44,6 +44,24 @@ public class ProductController {
 		return result;
 	}
 	
+	@RequestMapping(value="/list_products", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody ProductResults getAllProducts() {
+		List<ProductDTO> productList = productManager.getAll();
+		
+		List<Product> products = new ArrayList<Product>();
+		if(productList != null && productList.size() > 0) {
+			for(ProductDTO dto : productList) {
+				Product result = new Product(dto);
+				products.add(result);
+			}
+		}
+		
+		ProductResults results = new ProductResults();
+		results.setProducts(products);
+		return results;
+	}
+	
 	@RequestMapping(value="/list_products_by_vendor", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody ProductResults getProductsByVendor(@RequestParam(required=true) Long vendorId) {

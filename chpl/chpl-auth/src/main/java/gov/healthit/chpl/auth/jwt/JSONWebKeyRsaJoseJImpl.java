@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth.jwt;
 
 import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -116,11 +117,15 @@ public class JSONWebKeyRsaJoseJImpl extends AuthPropertiesConsumer implements JS
 	public void saveKey(String keyPairPath){
 		
 		try {
-			FileOutputStream fileOut = new FileOutputStream(keyPairPath);
+			
+			File file = new File(keyPairPath);
+			file.getParentFile().mkdirs();
+			FileOutputStream fileOut = new FileOutputStream(file);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(rsaJsonWebKey);
 			out.close();
 			fileOut.close();
+			
 		} catch (IOException e) {
 			logger.error("Error saving key: " , e);
 		}

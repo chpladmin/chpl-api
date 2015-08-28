@@ -133,7 +133,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 		

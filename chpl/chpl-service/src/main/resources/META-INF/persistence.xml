@@ -7,13 +7,17 @@
 
 	<persistence-unit name="openchpl" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>gov.healthit.chpl.auth.user.UserEntity</class>
-		<class>gov.healthit.chpl.auth.user.UserContactEntity</class>
-		<class>gov.healthit.chpl.auth.permission.UserPermissionEntity</class>
-		<class>gov.healthit.chpl.auth.permission.UserPermissionUserMappingEntity</class>
-		<class>gov.healthit.chpl.entity.VendorEntity</class>
+		<class>gov.healthit.chpl.auth.entity.UserEntity</class>
+		<class>gov.healthit.chpl.auth.entity.UserContactEntity</class>
+		<class>gov.healthit.chpl.auth.entity.UserPermissionEntity</class>
+		<class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
 		<class>gov.healthit.chpl.entity.AddressEntity</class>
+		<class>gov.healthit.chpl.entity.ContactEntity</class>
+		<class>gov.healthit.chpl.entity.VendorContactMap</class>
+		<class>gov.healthit.chpl.entity.VendorEntity</class>
 		<class>gov.healthit.chpl.entity.ProductEntity</class>
+		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
+		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />
