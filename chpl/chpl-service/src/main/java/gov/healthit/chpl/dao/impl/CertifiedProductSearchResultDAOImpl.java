@@ -89,7 +89,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "where (NOT deleted = true) AND ((UPPER(vendor_name)  "
 				+ "LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) "
 				+ " "
-				, Long.class );
+				 );
 		query.setParameter("vendorname", "%"+searchTerm+"%");
 		query.setParameter("productname", "%"+searchTerm+"%");
 		
@@ -162,12 +162,12 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			
 			query = this.getCQMOnlyQuery(searchRequest);
 			
-		} else if (searchRequest.getCertificationCriteria().isEmpty()) {
+		} else if (searchRequest.getCqms().isEmpty()) {
 			
 			query = this.getCertOnlyQuery(searchRequest);
 			
 		} else {
-			
+			System.out.println(searchRequest.getCqms().isEmpty());
 			query = this.getCertCQMQuery(searchRequest);
 		}
 		return query;
@@ -215,7 +215,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		
 		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname)) ";
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) ";
 		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		} else if (searchRequest.getProduct() != null){
@@ -314,7 +314,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		
 		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname)) ";
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
 		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		} else if (searchRequest.getProduct() != null){
@@ -417,7 +417,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		
 		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname)) ";
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
 		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		} else if (searchRequest.getProduct() != null){
@@ -536,8 +536,15 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	@Override
 	public Long countMultiFilterSearchResults(SearchRequest searchRequest) {
 		Query query = getCountQueryForSearchFilters(searchRequest);
-		Long result = (Long) query.getSingleResult();
-		return result;
+		
+		Object queryResult = query.getSingleResult();
+		if (queryResult instanceof java.math.BigInteger){
+			java.math.BigInteger bigIntResult = (java.math.BigInteger) query.getSingleResult();
+			return bigIntResult.longValue();
+		} else {
+			Long result = (Long) query.getSingleResult();
+			return result;
+		}
 	}
 
 	private Query getCountQueryForSearchFilters(SearchRequest searchRequest){
@@ -552,7 +559,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			
 			query = this.getCQMOnlyCountQuery(searchRequest);
 			
-		} else if (searchRequest.getCertificationCriteria().isEmpty()) {
+		} else if (searchRequest.getCqms().isEmpty()) {
 			
 			query = this.getCertOnlyCountQuery(searchRequest);
 			
@@ -579,7 +586,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		
 		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname)) ";
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) ";
 		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		} else if (searchRequest.getProduct() != null){
@@ -602,7 +609,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
 		}
 		
-		Query query = entityManager.createNativeQuery(queryStr, Long.class);
+		Query query = entityManager.createNativeQuery(queryStr);
 		
 		query.setParameter("cqms", searchRequest.getCqms());
 		
@@ -650,7 +657,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		
 		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname)) ";
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
 		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		} else if (searchRequest.getProduct() != null){
@@ -673,7 +680,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
 		}
 		
-		Query query = entityManager.createNativeQuery(queryStr, Long.class);
+		Query query = entityManager.createNativeQuery(queryStr);
 		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
 		
@@ -724,7 +731,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		
 		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname)) ";
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
 		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		} else if (searchRequest.getProduct() != null){
@@ -747,7 +754,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
 		}
 		
-		Query query = entityManager.createNativeQuery(queryStr, Long.class);
+		Query query = entityManager.createNativeQuery(queryStr);
 		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
 		query.setParameter("cqms", searchRequest.getCqms());
@@ -807,7 +814,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
 		}
 		
-		Query query = entityManager.createQuery(queryStr, Long.class);
+		Query query = entityManager.createQuery(queryStr);
 		
 		if (searchRequest.getVendor() != null){
 			query.setParameter("vendorname", "%"+searchRequest.getVendor()+"%");
