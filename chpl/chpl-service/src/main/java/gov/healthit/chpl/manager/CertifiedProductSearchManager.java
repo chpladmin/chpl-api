@@ -24,6 +24,6 @@ public interface CertifiedProductSearchManager {
 			Integer pageNum, Integer pageSize, String orderBy);
 
 	public SearchResponse multiFilterSearch(
-			SearchRequest searchFilters, Integer pageNum, Integer pageSize);	
+			SearchRequest searchRequest, Integer pageNum, Integer pageSize);	
 	
 }
