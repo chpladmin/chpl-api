@@ -46,20 +46,24 @@ public class SearchViewController {
 		return product;
 	}
 	
-	@RequestMapping(value="/list_certified_products", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResult> listCertifiedProducts(@RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) throws EntityRetrievalException {
-		return certifiedProductSearchManager.getCertifiedProducts(pageNum, pageSize);
-	}
-	
 	@RequestMapping(value="/simple_search", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SearchResponse simpleSearch(
 			@RequestParam("searchTerm") String searchTerm, 
-			@RequestParam("pageNum") Integer pageNum, 
-			@RequestParam("pageSize") Integer pageSize,
-			@RequestParam(value="orderBy", required = false) String orderBy
+			@RequestParam(value = "pageNum", required = false) Integer pageNum, 
+			@RequestParam(value = "pageSize", required = false) Integer pageSize,
+			@RequestParam(value = "orderBy", required = false) String orderBy
 			) throws EntityRetrievalException {
+		
+		
+		if (pageNum == null){
+			pageNum = 0;
+		}
+		
+		if (pageSize == null){
+			pageSize = 20;
+		}
+		
 		if (orderBy != null){
 			return certifiedProductSearchManager.simpleSearch(searchTerm, pageNum, pageSize, orderBy);
 		} else {
@@ -109,18 +113,6 @@ public class SearchViewController {
 		return certifiedProductSearchManager.multiFilterSearch(searchFilters, pageNum, pageSize);
 	}
 	
-	
-	@RequestMapping(value="/list_certs", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertificationResult> getCertifications() {
-		return null;//searchMenuManager.getCertifications();
-	}
-	
-	@RequestMapping(value="/list_cqms", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CQMResultDetails> getCQMResults() {
-		return null;//searchMenuManager.getCQMResults();
-	}
 	
 	@RequestMapping(value="/list_classification_names", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")

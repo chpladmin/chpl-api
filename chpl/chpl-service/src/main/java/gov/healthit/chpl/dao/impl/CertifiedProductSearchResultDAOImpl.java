@@ -31,20 +31,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 	}
 
-	
-	@Override
-	public List<CertifiedProductDetailsDTO> getCertifiedProductSearchDetails(Integer pageNum, Integer pageSize) {
-		
-		List<CertifiedProductDetailsEntity> entities =  getPage(pageNum, pageSize);
-		List<CertifiedProductDetailsDTO> products = new ArrayList<>();
-		
-		for (CertifiedProductDetailsEntity entity : entities) {
-			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
-			products.add(product);
-		}
-		return products;
-	}
-
 	@Override
 	public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException {
 		
