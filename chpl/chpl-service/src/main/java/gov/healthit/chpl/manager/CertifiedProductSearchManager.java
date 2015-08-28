@@ -17,9 +17,6 @@ public interface CertifiedProductSearchManager {
 	public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId) 
 			throws EntityRetrievalException;
 	
-	public List<CertifiedProductSearchResult> getCertifiedProducts(Integer pageNum,
-			Integer pageSize) throws EntityRetrievalException;
-	
 	public SearchResponse simpleSearch(String searchTerm,
 			Integer pageNum, Integer pageSize);
 	

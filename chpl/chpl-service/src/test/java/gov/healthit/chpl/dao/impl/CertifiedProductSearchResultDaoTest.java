@@ -79,5 +79,21 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 	}
 	
+	@Test
+	@Transactional
+	public void multiFilterSearchResults(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setVendor("Test");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.multiFilterSearch(searchRequest, 0, 20);
+		assertEquals(3, products.size());
+		
+		searchRequest.setVersion("1.0.0");
+		List<CertifiedProductDetailsDTO> versionSpecificProducts = searchResultDAO.multiFilterSearch(searchRequest, 0, 20);
+		assertEquals(1, versionSpecificProducts.size());
+		
+	}
+	
+	
 	
 }

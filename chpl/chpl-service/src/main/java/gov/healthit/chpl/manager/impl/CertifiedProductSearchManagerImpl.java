@@ -129,60 +129,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 		return searchDetails;
 	}
 
-	@Transactional
-	@Override
-	public List<CertifiedProductSearchResult> getCertifiedProducts(
-			Integer pageNum, Integer pageSize) throws EntityRetrievalException {
-		
-		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
-		
-		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.getCertifiedProductSearchDetails(pageNum, pageSize)){
-			
-			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
-			
-			searchResult.setId(dto.getId());
-			searchResult.setAcbCertificationId(dto.getAcbCertificationId());
-			searchResult.setCertificationDate(dto.getCertificationDate().toString());
-			
-			searchResult.getCertificationEdition().put("id", dto.getCertificationEditionId().toString());
-			searchResult.getCertificationEdition().put("name", dto.getYear());
-			
-			searchResult.setCertificationStatusId(dto.getCertificationStatusId());	
-			
-			searchResult.getCertifyingBody().put("id", dto.getCertificationBodyId().toString());
-			searchResult.getCertifyingBody().put("name", dto.getCertificationBodyName());
-			
-			searchResult.setChplProductNumber(dto.getChplProductNumber());
-			
-			searchResult.getClassificationType().put("id", dto.getProductClassificationTypeId().toString());
-			searchResult.getClassificationType().put("name", dto.getProductclassificationName());
-			
-			searchResult.setOtherAcb(dto.getOtherAcb());
-			
-			searchResult.getPracticeType().put("id", dto.getPracticeTypeId().toString());
-			searchResult.getPracticeType().put("name", dto.getPracticeTypeName());
-			
-			searchResult.getProduct().put("id",dto.getProductId().toString());
-			searchResult.getProduct().put("name",dto.getProductName());
-			searchResult.getProduct().put("versionId",dto.getProductVersionId().toString());
-			searchResult.getProduct().put("version", dto.getProductVersion());
-			
-			searchResult.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
-			searchResult.setReportFileLocation(dto.getReportFileLocation());
-			searchResult.setTestingLabId(dto.getTestingLabId());
-			
-			searchResult.getVendor().put("id", dto.getVendorId().toString());
-			searchResult.getVendor().put("name", dto.getVendorName());
-			
-			searchResult.setCountCerts(dto.getCountCertifications());
-			searchResult.setCountCqms(dto.getCountCqms());
-			
-			searchResults.add(searchResult);
-		}
-		
-		return searchResults; 
-	}
-	
+
 	@Transactional
 	@Override
 	public SearchResponse simpleSearch(String searchTerm,
