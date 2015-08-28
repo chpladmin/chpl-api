@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -41,7 +42,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	@Autowired
 	private CertificationResultDetailsDAO certificationResultDetailsDAO;
 	
-	
+	@Transactional
 	@Override
 	public CertifiedProductSearchDetails getCertifiedProductDetails(
 			Long certifiedProductId) throws EntityRetrievalException {
@@ -128,6 +129,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 		return searchDetails;
 	}
 
+	@Transactional
 	@Override
 	public List<CertifiedProductSearchResult> getCertifiedProducts(
 			Integer pageNum, Integer pageSize) throws EntityRetrievalException {
@@ -181,7 +183,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 		return searchResults; 
 	}
 	
-	
+	@Transactional
 	@Override
 	public SearchResponse simpleSearch(String searchTerm,
 			Integer pageNum, Integer pageSize, String orderBy) {
@@ -242,7 +244,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 		return response;
 	}
 
-
+	@Transactional
 	@Override
 	public SearchResponse simpleSearch(String searchTerm,
 			Integer pageNum, Integer pageSize) {
@@ -302,7 +304,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 		return response;
 	}
 	
-	
+	@Transactional
 	@Override
 	public SearchResponse multiFilterSearch(
 			SearchRequest searchRequest, Integer pageNum, Integer pageSize) {
