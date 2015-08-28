@@ -5,7 +5,9 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
+import gov.healthit.chpl.entity.ProductVersionEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +109,18 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		CertifiedProductDTO dto = new CertifiedProductDTO(entity);
 		return dto;
 		
+	}
+	
+	public List<CertifiedProductDTO> getByProductVersion(Long productVersionId) {
+		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) AND (product_version_id = :productVersionId)", CertifiedProductEntity.class );
+		query.setParameter("productVersioniId", productVersionId);
+		List<CertifiedProductEntity> results = query.getResultList();
+		
+		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>();
+		for(CertifiedProductEntity result : results) {
+			dtoResults.add(new CertifiedProductDTO(result));
+		}
+		return dtoResults;
 	}
 	
 	private void create(CertifiedProductEntity product) {
