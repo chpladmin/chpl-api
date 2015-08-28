@@ -11,6 +11,7 @@ public class SearchRequest {
 	List<String> certificationCriteria = new ArrayList<String>();
 	List<String> cqms = new ArrayList<String>();
 	String certificationEdition = null;
+	String certificationBody = null;
 	String productClassification = null;
 	String practiceType = null;
 	String orderBy = "product";
@@ -71,5 +72,11 @@ public class SearchRequest {
 	}
 	public void setOrderBy(String orderBy) {
 		this.orderBy = orderBy;
+	}
+	public String getCertificationBody() {
+		return certificationBody;
+	}
+	public void setCertificationBody(String certifyingBody) {
+		this.certificationBody = certifyingBody;
 	}
 }
