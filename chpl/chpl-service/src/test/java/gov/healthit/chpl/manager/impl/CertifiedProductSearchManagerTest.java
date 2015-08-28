@@ -2,6 +2,8 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.List;
 
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -52,9 +54,21 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	
 	@Test
 	public void testSimpleSearch(){
-		SearchResponse response = certifiedProductSearchManager.simpleSearch("Test", 0, 10, "product");
+		SearchResponse response = certifiedProductSearchManager.simpleSearch("Test", 0, 10);
 		assertEquals((int)response.getRecordCount(), response.getResults().size());
-		assertEquals(3, response.getResults().size());	
+		assertEquals(3, response.getResults().size());
+		
+		SearchResponse responseSorted = certifiedProductSearchManager.simpleSearch("Test", 0, 10, "product");
+		assertEquals((int)responseSorted.getRecordCount(), responseSorted.getResults().size());
+		assertEquals(3, responseSorted.getResults().size());
+	}
+	
+	@Test
+	public void TestGetCertifiedProductDetails() throws EntityRetrievalException{
+		
+		CertifiedProductSearchDetails details = certifiedProductSearchManager.getCertifiedProductDetails(1L);
+		
+		
 	}
 	
 	

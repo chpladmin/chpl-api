@@ -13,7 +13,6 @@ import java.util.Map;
 
 public interface CertifiedProductSearchManager {
 	
-	
 	public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId) 
 			throws EntityRetrievalException;
 	
