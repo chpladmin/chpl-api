@@ -14,12 +14,14 @@ import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository(value="userDAO")
@@ -33,7 +35,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	
 	
 	@Override
-	public void create(UserDTO user, String encodedPassword) throws UserCreationException {
+	@Transactional
+	public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException {
 		
 		UserEntity userEntity = null;
 		try {
@@ -46,16 +49,17 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			throw new UserCreationException("user name: "+user.getSubjectName() +" already exists.");
 		} else {
 			
-			UserEntity userToCreate = new UserEntity(user.getSubjectName(), encodedPassword);
+			userEntity = new UserEntity(user.getSubjectName(), encodedPassword);
 			
-			userToCreate.setFirstName(user.getFirstName());
-			userToCreate.setLastName(user.getLastName());
-			userToCreate.setAccountEnabled(user.isAccountEnabled());
-			userToCreate.setAccountExpired(user.isAccountExpired());
-			userToCreate.setAccountLocked(user.isAccountLocked());
-			userToCreate.setCredentialsExpired(!user.isCredentialsNonExpired());
-			userToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-			
+			userEntity.setFirstName(user.getFirstName());
+			userEntity.setLastName(user.getLastName());
+			userEntity.setAccountEnabled(user.isAccountEnabled());
+			userEntity.setAccountExpired(user.isAccountExpired());
+			userEntity.setAccountLocked(user.isAccountLocked());
+			userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
+			userEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+			userEntity.setLastModifiedDate(new Date());
+			userEntity.setDeleted(false);
 			
 			UserContactEntity contact = new UserContactEntity();
 			contact.setEmail(user.getEmail());
@@ -64,16 +68,21 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			contact.setPhoneNumber(user.getPhoneNumber());
 			contact.setTitle(user.getTitle());
 			contact.setLastModifiedUser(Util.getCurrentUser().getId());
+			contact.setLastModifiedDate(new Date());
+			contact.setDeleted(false);
 			
 			userContactDAO.create(contact);
-			userToCreate.setContact(contact);
-			create(userToCreate);			
+			userEntity.setContact(contact);
+			create(userEntity);	
 		}
+
+		return new UserDTO(userEntity);
 	}
 	
 	
 	@Override
-	public void update(UserDTO user) throws UserRetrievalException {
+	@Transactional
+	public UserDTO update(UserDTO user) throws UserRetrievalException {
 		
 		UserEntity userEntity = getEntityByName(user.getSubjectName());
 		
@@ -90,31 +99,52 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		userEntity.getContact().setLastModifiedUser(Util.getCurrentUser().getId());
 		
 		update(userEntity);
-		
+		return new UserDTO(userEntity);
 	}
 	
 	
 	@Override
+	@Transactional
 	public void delete(String uname) throws UserRetrievalException {
 		
 		// First delete the user / permission mappings for this user.
 		userPermissionDAO.deleteMappingsForUser(uname);
 		
-		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE user_id = :uname");
-		query.setParameter("uname", uname);
-		query.executeUpdate();
+		UserEntity toDelete = getEntityByName(uname);
+		if(toDelete == null) {
+			throw new UserRetrievalException("Could not find user with name " + uname);
+		}
+		
+		delete(toDelete);
 	}
 	
 	
 	@Override
-	public void delete(Long userId){
+	@Transactional
+	public void delete(Long userId) throws UserRetrievalException {
 		
 		// First delete the user / permission mappings for this user.
 		userPermissionDAO.deleteMappingsForUser(userId);
 		
-		Query query = entityManager.createQuery("UPDATE UserEntity SET deleted = true WHERE user_id = :userid");
-		query.setParameter("userid", userId);
-		query.executeUpdate();
+		UserEntity toDelete = getEntityById(userId);
+		if(toDelete == null) {
+			throw new UserRetrievalException("Could not find user with id " + userId);
+		}
+		
+		delete(toDelete);
+	}
+	
+	private void delete(UserEntity toDelete) {
+		//delete the contact
+		if(toDelete.getContact() != null) {
+			userContactDAO.delete(toDelete.getContact());
+		}
+		
+		//delete the user
+		toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+		toDelete.setLastModifiedDate(new Date());
+		toDelete.setDeleted(true);
+		update(toDelete);
 	}
 	
 	public List<UserDTO> findAll(){
@@ -129,10 +159,23 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		return users;
 	}
 	
+	public List<UserDTO> findByNames(List<String> names) {
+		Query query = entityManager.createQuery( "from UserEntity where deleted <> true AND user_name in (:names)", UserEntity.class );
+		query.setParameter("names", names);
+		List<UserEntity> queryResult = query.getResultList();
+
+		List<UserDTO> result = new ArrayList<UserDTO>();
+		if(queryResult != null) {
+			for(UserEntity entity : queryResult) {
+				result.add(new UserDTO(entity));
+			}
+		}
+		return result;
+	}
+	
 	private void create(UserEntity user) {
 		
 		entityManager.persist(user);
-		
 	}
 	
 	private void update(UserEntity user) {
@@ -160,11 +203,10 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			throw new UserRetrievalException("Data error. Duplicate user id in database.");
 		}
 		
-		if (result.size() < 0){
-			user = result.get(0);
+		if(result.size() == 0) {
+			return null;
 		}
-		
-		return user;
+		return result.get(0);
 	}
 
 	
@@ -178,16 +220,16 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 		if (result.size() > 1){
 			throw new UserRetrievalException("Data error. Duplicate user name in database.");
-		}
+		} 
 		
-		if (result.size() > 0){
-			user = result.get(0);
+		if(result.size() == 0) {
+			return null;
 		}
-		
-		return user;
+		return result.get(0);
 	}
 
 	@Override
+	@Transactional
 	public void addPermission(String uname, String authority) throws UserPermissionRetrievalException, UserRetrievalException {
 		
 		UserEntity userEntity = this.getEntityByName(uname);
@@ -199,30 +241,29 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	public UserDTO getById(Long userId) throws UserRetrievalException {
 		
 		UserEntity userEntity = this.getEntityById(userId);
-		UserDTO user = new UserDTO(userEntity);
-		return user;
+		if(userEntity == null) {
+			return null;
+		}
+		return new UserDTO(userEntity);
 	}
 
 	@Override
 	public UserDTO getByName(String uname) throws UserRetrievalException {
-		
-		UserDTO user = null;
 		UserEntity userEntity = this.getEntityByName(uname);
-		if (userEntity != null){
-			user = new UserDTO(userEntity);
-		} else {
-			throw new UserRetrievalException("User does not exist");
+		if(userEntity == null) {
+			return null;
 		}
-		
-		return user;
+		return new UserDTO(userEntity);
 	}
 
 	@Override
+	@Transactional
 	public void removePermission(String uname, String authority) throws UserRetrievalException, UserPermissionRetrievalException {
 		userPermissionDAO.deleteMapping(uname, authority);
 	}
 
 	@Override
+	@Transactional
 	public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException {
 		
 		UserEntity userEntity = this.getEntityByName(uname);

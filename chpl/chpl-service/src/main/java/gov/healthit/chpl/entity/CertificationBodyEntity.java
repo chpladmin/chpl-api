@@ -5,9 +5,12 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -21,8 +24,9 @@ public class CertificationBodyEntity {
 	private Long id;
 	
 	@Basic( optional = true )
-	@Column(name = "address_id", nullable = true )
-	private Long addressId;
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "address_id", unique=true, nullable = true)
+	private AddressEntity address;
 	
 	@Column(name="name")
 	private String name;
@@ -101,6 +105,14 @@ public class CertificationBodyEntity {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public AddressEntity getAddress() {
+		return address;
+	}
+
+	public void setAddress(AddressEntity address) {
+		this.address = address;
 	}
 	
 }

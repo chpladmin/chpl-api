@@ -17,7 +17,7 @@ SET search_path = openchpl, pg_catalog;
 -- Data for Name: acl_class; Type: TABLE DATA; Schema: openchpl; Owner: openchpl
 --
 
-INSERT INTO acl_class VALUES (1, 'gov.healthit.chpl.auth.user.UserDTO');
+INSERT INTO acl_class VALUES (1, 'gov.healthit.chpl.auth.dto.UserDTO'), (2, 'gov.healthit.chpl.dto.CertificationBodyDTO');
 
 
 --
@@ -130,7 +130,9 @@ SELECT pg_catalog.setval('user_permission_user_permission_id_seq', 1, true);
 
 
 INSERT INTO user_permission ("name", description, authority, last_modified_user) VALUES
-('USER_CREATOR' ,'This permission allows a user to create other users',	'ROLE_USER_CREATOR' , -1);
+('USER_CREATOR' ,'This permission allows a user to create other users',	'ROLE_USER_CREATOR' , -1),
+('ACB_ADMIN' ,'This permission gives a user write access to their ACBs.',	'ROLE_ACB_ADMIN' , -1),
+('ACB_STAFF' ,'This permission gives a user read access to their ACBs',	'ROLE_ACB_STAFF' , -1);
 
 
 --

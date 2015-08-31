@@ -1,11 +1,14 @@
 package gov.healthit.chpl.manager.impl;
 
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,31 +34,33 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
 	
+	@Autowired UserDAO userDAO;
+	
 	@Autowired
 	private MutableAclService mutableAclService;
 
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void create(CertificationBodyDTO acb) throws EntityCreationException {
+	public CertificationBodyDTO create(CertificationBodyDTO acb) throws EntityCreationException, EntityRetrievalException {
 		// Create the ACB itself
-		certificationBodyDAO.create(acb);
+		CertificationBodyDTO result = certificationBodyDAO.create(acb);
 
 		// Grant the current principal administrative permission to the ACB
 		addPermission(acb, new PrincipalSid(gov.healthit.chpl.auth.Util.getUsername()),
 				BasePermission.ADMINISTRATION);
 		
-		if (logger.isDebugEnabled()) {
-			logger.debug("Created acb " + acb
+		logger.debug("Created acb " + acb
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
-		}
+		return result;
 	}
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
-	public void update(CertificationBodyDTO acb) throws EntityRetrievalException {
-		certificationBodyDAO.update(acb);
+	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException {
+		CertificationBodyDTO result = certificationBodyDAO.update(acb);
 		logger.debug("Updated acb " + acb);
+		return result;
 	}
 	
 	@Transactional
@@ -71,6 +76,24 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			logger.debug("Deleted acb " + acb + " including ACL permissions");
 		}
 		
+	}
+	
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin) or hasPermission(#acb, read)")
+	public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb) {
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
+		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+		
+		List<String> userNames = new ArrayList<String>();
+		List<AccessControlEntry> entries = acl.getEntries();
+		for (int i = 0; i < entries.size(); i++) {
+			Sid sid = entries.get(i).getSid();
+			userNames.add(sid.toString());
+		}
+
+		//pull back the userdto for the sids
+		List<UserDTO> users = userDAO.findByNames(userNames);
+		return users;
 	}
 	
 	@Transactional
@@ -109,13 +132,27 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		}
 
 		mutableAclService.updateAcl(acl);
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Deleted acb " + acb + " ACL permissions for recipient "
-					+ recipient);
-		}
+		logger.debug("Deleted acb " + acb + " ACL permission " + permission + " for recipient " + recipient);
 	}
 
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
+	public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient) {
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
+		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+		
+		List<AccessControlEntry> entries = acl.getEntries();
+
+		for (int i = 0; i < entries.size(); i++) {
+			if(entries.get(i).getSid().equals(recipient)) {
+				acl.deleteAce(i);
+			}
+		}
+
+		mutableAclService.updateAcl(acl);
+		logger.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
+	}
+	
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<CertificationBodyDTO> getAll() {

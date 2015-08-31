@@ -1,25 +1,20 @@
 package gov.healthit.chpl.auth;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
-
 import org.postgresql.ds.PGSimpleDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -32,103 +27,57 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 
 @Configuration
 @EnableWebSecurity
-@ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
-public class CHPLAuthenticationSecurityTestConfig extends
-		WebSecurityConfigurerAdapter {
+@PropertySource("classpath:environment.auth.test.properties")
+@EnableTransactionManagement
+@ComponentScan(basePackages = {"gov.healthit.chpl.auth**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+public class CHPLAuthenticationSecurityTestConfig implements EnvironmentAware {
 	
-	
-	@Autowired
-	private JWTUserConverter userConverter;
-	
-	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "environment.auth.test.properties";
-	
-	protected Properties props;
-	
-	
-	public CHPLAuthenticationSecurityTestConfig() {
-		super(true);
-	}
-	
-	protected void loadProperties() throws IOException {
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_AUTH_PROPERTIES_FILE);
-		
-		if (in == null)
-		{
-			props = null;
-			throw new FileNotFoundException("Auth Environment Properties File not found in class path.");
-		}
-		else
-		{
-			props = new Properties();
-			props.load(in);
-		}
-	}
+private Environment env;
 	
 	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-
-		http
-				.exceptionHandling().and()
-				.anonymous().and()
-				.servletApi().and()
-				//.headers().cacheControl().and()
-				.authorizeRequests()
-				.antMatchers("/favicon.ico").permitAll()
-				.antMatchers("/resources/**").permitAll()
-				
-				//defined Admin only API area
-				//.antMatchers("/admin/**").hasRole("ADMIN")
-				
-				//allow anonymous resource requests
-				.antMatchers("/").permitAll().and()
-				// custom Token based authentication based on the header previously given to the client
-				.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
-			.headers().cacheControl();
-		
+	public void setEnvironment(final Environment e) {
+		this.env = e;
 	}
-	
 	
 	@Bean
 	public DataSource dataSource() {
-		
         PGSimpleDataSource ds = new PGSimpleDataSource();
-    	ds.setServerName(this.props.getProperty("testDbServer"));
-        ds.setUser(this.props.getProperty("testDbUser"));
-        ds.setPassword(this.props.getProperty("testDbPassword"));
+    	ds.setServerName(env.getRequiredProperty("testDbServer"));
+        ds.setUser(env.getRequiredProperty("testDbUser"));
+        ds.setPassword(env.getRequiredProperty("testDbPassword"));
 		return ds;
-		
 	}
 	
 	
 	@Bean
 	public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory(){
-		
-		if (props == null){
-			try {
-				loadProperties();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
 		bean.setDataSource(dataSource());
-		bean.setPersistenceUnitName(this.props.getProperty("persistenceUnitName"));
+		bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
 		return bean;
 	}
 	
+	@Bean
+	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
+		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
+		bean.setEntityManagerFactory(entityManagerFactory().getObject());
+		return bean;
+	}
+	
+	@Bean
+	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
+		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
+	}
 	
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder(){
@@ -155,7 +104,6 @@ public class CHPLAuthenticationSecurityTestConfig extends
 		return bean;
 	}
 	
-	
 	@Bean
 	public EhCacheManagerFactoryBean ehCacheManagerFactoryBean(){
 		EhCacheManagerFactoryBean bean = new EhCacheManagerFactoryBean();
@@ -165,20 +113,10 @@ public class CHPLAuthenticationSecurityTestConfig extends
 	
 	@Bean
 	public EhCacheFactoryBean ehCacheFactoryBean(){
-		
-		
-		if (this.props == null){
-			try {
-				this.loadProperties();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		EhCacheFactoryBean bean = new EhCacheFactoryBean();
 		bean.setCacheManager(ehCacheManagerFactoryBean().getObject());
 		//bean.setCacheName("aclCache");
-		bean.setCacheName(this.props.getProperty("authAclCacheName"));
+		bean.setCacheName(env.getProperty("authAclCacheName"));
 		
 		return bean;
 	}
@@ -254,7 +192,9 @@ public class CHPLAuthenticationSecurityTestConfig extends
 		JdbcMutableAclService bean = new JdbcMutableAclService(datasource, 
 				lookupStrategy(), 
 				aclCache());
-		
+		//set these because the default spring-provided query is invalid in postgres
+		bean.setClassIdentityQuery("select currval('acl_class_id_seq')");
+		bean.setSidIdentityQuery("select currval('acl_sid_id_seq')");
 		return bean;
 	}
 	
@@ -280,5 +220,4 @@ public class CHPLAuthenticationSecurityTestConfig extends
 		bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
 		return bean;
 	}
-	
 }
