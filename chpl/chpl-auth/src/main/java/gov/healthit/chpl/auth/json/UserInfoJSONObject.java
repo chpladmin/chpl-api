@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.json;
 
-import gov.healthit.chpl.auth.user.UserDTO;
+import gov.healthit.chpl.auth.dto.UserDTO;
 
 
 public class UserInfoJSONObject {

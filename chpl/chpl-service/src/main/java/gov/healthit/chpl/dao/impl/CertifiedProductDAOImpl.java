@@ -1,7 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-
-
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -142,7 +140,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 		

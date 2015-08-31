@@ -219,13 +219,4 @@ public class CHPLTestConfig implements EnvironmentAware {
 		return bean;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

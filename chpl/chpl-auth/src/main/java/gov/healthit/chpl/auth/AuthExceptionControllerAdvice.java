@@ -1,6 +1,5 @@
 package gov.healthit.chpl.auth;
 
-import javax.servlet.ServletException;
 
 import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;

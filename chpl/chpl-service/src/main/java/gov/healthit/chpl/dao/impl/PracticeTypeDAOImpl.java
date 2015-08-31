@@ -124,7 +124,7 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 			throw new EntityRetrievalException("Data error. Duplicate vendor id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 		

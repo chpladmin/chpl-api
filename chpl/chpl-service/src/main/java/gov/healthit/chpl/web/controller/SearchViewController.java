@@ -2,21 +2,16 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import gov.healthit.chpl.auth.json.UserInfoJSONObject;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CQMResult;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductSearchDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,21 +28,28 @@ public class SearchViewController {
 	@Autowired
 	private CertificationBodyManager certificationBodyManager;
 	
+	@Autowired
+	private CertifiedProductSearchDetailsManager certifiedProductSearchDetailsManager;
+	
 	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id){
+	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws EntityRetrievalException{
 		
-		CertifiedProductSearchDetails product = certifiedProductSearchManager.getCertifiedProductDetails(id);
-		
+		CertifiedProductSearchDetails product = certifiedProductSearchDetailsManager.getCertifiedProductDetails(id);
 		return product;
 	}
 	
 	@RequestMapping(value="/list_certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProductSearchResult> listCertifiedProducts() throws EntityRetrievalException {
-		
-		return certifiedProductSearchManager.getAllCertifiedProducts();
+	public @ResponseBody List<CertifiedProductSearchResult> listCertifiedProducts(@RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) throws EntityRetrievalException {
+		return certifiedProductSearchDetailsManager.getCertifiedProducts(pageNum, pageSize);
+	}
+	
+	@RequestMapping(value="/simple_search", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<CertifiedProductSearchResult> simpleSearch(@RequestParam("searchTerm") String searchTerm , @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize) throws EntityRetrievalException {
+		return certifiedProductSearchDetailsManager.simpleSearch(searchTerm, pageNum, pageSize);
 	}
 	
 	@RequestMapping(value="/list_certs", method=RequestMethod.GET,
@@ -58,7 +60,7 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/list_cqms", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CQMResult> getCQMResults() {
+	public @ResponseBody List<CQMResultDetails> getCQMResults() {
 		return certifiedProductSearchManager.getCQMResults();
 	}
 	

@@ -125,8 +125,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 
 	@Transactional(readOnly = true)
-	@PreAuthorize("hhasRole('ROLE_ADMIN') or asPermission(#id, 'gov.healthit.chpl.acb.CertificationBody', read) or "
-			+ "hasPermission(#id, 'gov.healthit.chpl.acb.CertificationBody', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', read) or "
+			+ "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Returning acb with id: " + id);

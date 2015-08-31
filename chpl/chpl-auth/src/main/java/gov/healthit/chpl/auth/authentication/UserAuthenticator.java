@@ -18,12 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.permission.UserPermissionDTO;
-import gov.healthit.chpl.auth.user.UserDTO;
-import gov.healthit.chpl.auth.user.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Service

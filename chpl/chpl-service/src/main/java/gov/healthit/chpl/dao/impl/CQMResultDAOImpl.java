@@ -85,6 +85,20 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		}
 		return cqmResults;
 	}
+	
+	@Override
+	public List<CQMResultDTO> findByCertifiedProductId(Long certifiedProductId){
+		
+		List<CQMResultEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
+		List<CQMResultDTO> cqmResults = new ArrayList<>();
+		
+		for (CQMResultEntity entity : entities) {
+			CQMResultDTO cqmResult = new CQMResultDTO(entity);
+			cqmResults.add(cqmResult);
+		}
+		return cqmResults;
+		
+	}
 
 	@Override
 	public CQMResultDTO getById(Long cqmResultId) throws EntityRetrievalException {
@@ -117,7 +131,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 			throw new EntityRetrievalException("Data error. Duplicate CQM result id in database.");
 		}
 		
-		if (result.size() < 0){
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 			
@@ -127,6 +141,14 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 	private List<CQMResultEntity> getAllEntities() {
 		
 		List<CQMResultEntity> result = entityManager.createQuery( "from CQMResultEntity where (NOT deleted = true) ", CQMResultEntity.class).getResultList();
+		return result;
+	}
+	
+	private List<CQMResultEntity> getEntitiesByCertifiedProductId(Long certifiedProductId) {
+		
+		Query query = entityManager.createQuery( "from CQMResultEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ", CQMResultEntity.class );
+		query.setParameter("entityid", certifiedProductId);
+		List<CQMResultEntity> result = query.getResultList();
 		return result;
 	}
 
