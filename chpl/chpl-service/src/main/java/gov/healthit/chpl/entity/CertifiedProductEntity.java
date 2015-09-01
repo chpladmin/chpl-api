@@ -33,7 +33,6 @@ public class CertifiedProductEntity {
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -2928065796550377879L;
 	
-	
     @Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certifiedProductCertified_product_idGenerator")
 	@Basic( optional = false )
@@ -41,17 +40,16 @@ public class CertifiedProductEntity {
 	@SequenceGenerator(name = "certifiedProductCertified_product_idGenerator", sequenceName = "openchpl.openchpl.certified_product_certified_product_id_seq")
 	private Long id;
     
-    
 	@Basic( optional = true )
-	@Column( name = "atcb_certification_id", length = 250  )
-	private String atcbCertificationId;
+	@Column( name = "acb_certification_id", length = 250  )
+	private String acbCertificationId;
 	
 	@Basic( optional = false )
-	@JoinColumn(name = "certification_body_id", nullable = false )
+	@Column(name = "certification_body_id", nullable = false )
 	private Long certificationBodyId;
 	
 	@Basic( optional = false )
-	@JoinColumn(name = "certification_edition_id", nullable = false )
+	@Column(name = "certification_edition_id", nullable = false )
 	private Long certificationEditionId;
 	
 	@Basic( optional = true )
@@ -79,11 +77,11 @@ public class CertifiedProductEntity {
 	private Long practiceTypeId;
 	
 	@Basic( optional = true )
-	@JoinColumn(name = "product_classification_type_id", nullable = true )
+	@Column(name = "product_classification_type_id", nullable = true )
 	private Long productClassificationTypeId;
 	
 	@Basic( optional = false )
-	@JoinColumn(name = "product_version_id", nullable = false )
+	@Column(name = "product_version_id", nullable = false )
 	private Long productVersionId;
 	
 	@Basic( optional = true )
@@ -112,7 +110,6 @@ public class CertifiedProductEntity {
 		this.id = id;
 	}
 	
-	
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
 	*/
@@ -129,12 +126,12 @@ public class CertifiedProductEntity {
 		this.id = id;
 	}
 
-	public String getAtcbCertificationId() {
-		return atcbCertificationId;
+	public String getAcbCertificationId() {
+		return acbCertificationId;
 	}
 
-	public void setAtcbCertificationId(String atcbCertificationId) {
-		this.atcbCertificationId = atcbCertificationId;
+	public void setAcbCertificationId(String acbCertificationId) {
+		this.acbCertificationId = acbCertificationId;
 	}
 
 	public Long getCertificationBodyId() {

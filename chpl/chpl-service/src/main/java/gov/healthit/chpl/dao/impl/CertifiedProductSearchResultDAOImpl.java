@@ -133,7 +133,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		CertifiedProductDetailsEntity entity = null;
 		
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ", CertifiedProductDetailsEntity.class );
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (certified_product_id = :entityid) ", CertifiedProductDetailsEntity.class );
 		query.setParameter("entityid", entityId);
 		
 		
