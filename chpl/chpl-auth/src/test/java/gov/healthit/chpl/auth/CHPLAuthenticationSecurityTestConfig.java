@@ -33,6 +33,9 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.github.springtestdbunit.bean.DatabaseConfigBean;
+import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
+
 
 
 @Configuration
@@ -58,6 +61,24 @@ private Environment env;
 		return ds;
 	}
 	
+	//we need this because dbunit deletes everything from the db to start with
+	//and the table "user" is declared as "user" and not user (since user is a reserved word
+	//and perhaps not the best choice of table name). The syntax "delete from user" is invalid
+	//but "delete from "user"" is valid. we need the table names escaped.
+	@Bean
+	public DatabaseConfigBean databaseConfig() {
+		DatabaseConfigBean bean = new DatabaseConfigBean();
+		bean.setEscapePattern("\"?\"");
+		return bean;
+	}
+	
+	@Bean
+	public DatabaseDataSourceConnectionFactoryBean dbUnitDatabaseConnection() {
+		DatabaseDataSourceConnectionFactoryBean bean = new DatabaseDataSourceConnectionFactoryBean();
+		bean.setDataSource(dataSource());
+		bean.setDatabaseConfig(databaseConfig());
+		return bean;
+	}
 	
 	@Bean
 	public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory(){

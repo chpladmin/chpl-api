@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -7,6 +8,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.model.AccessControlEntry;
+import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.NotFoundException;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -38,6 +47,7 @@ import junit.framework.TestCase;
 public class CertificationBodyDaoTest extends TestCase {
 
 	@Autowired private CertificationBodyDAO acbDao;
+	@Autowired private MutableAclService mutableAclService;
 	
 	private static JWTAuthenticatedUser adminUser;
 
@@ -110,5 +120,59 @@ public class CertificationBodyDaoTest extends TestCase {
 		assertNotNull(acb.getAddress().getId());
 		assertTrue(acb.getAddress().getId() > 0L);
 		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	public void testUpdateAcb() {
+		CertificationBodyDTO toUpdate = acbDao.findAll().get(0);
+		toUpdate.setName("UPDATED NAME");
+		
+		CertificationBodyDTO result = null;
+		try {
+			result = acbDao.update(toUpdate);
+		} catch(Exception ex) {
+			fail("could not update acb!");
+			System.out.println(ex.getStackTrace());
+		}
+		assertNotNull(result);
+
+		try {
+			CertificationBodyDTO updatedAcb = acbDao.getById(toUpdate.getId());
+			assertEquals("UPDATED NAME", updatedAcb.getName());
+		} catch(Exception ex) {
+			fail("could not find acb!");
+			System.out.println(ex.getStackTrace());
+		}
+	}
+	
+	@Test
+	public void testDeleteAcb() throws EntityRetrievalException {
+		Long deleteId = 1L;
+		acbDao.delete(deleteId);
+		
+		CertificationBodyDTO deleted = acbDao.getById(deleteId);
+		assertNull(deleted);
+	}
+	
+	@Test
+	public void listUsersForAcb() {
+		Long acbIdWithUsers=3L;
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acbIdWithUsers);
+		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+		
+		List<String> userNames = new ArrayList<String>();
+		List<AccessControlEntry> entries = acl.getEntries();
+		for (int i = 0; i < entries.size(); i++) {
+			Sid sid = entries.get(i).getSid();
+			if(sid instanceof PrincipalSid) {
+				PrincipalSid psid = (PrincipalSid)sid;
+				userNames.add(psid.getPrincipal());
+			} else {
+				userNames.add(sid.toString());
+			}
+		}
+
+		assertNotNull(userNames);
+		assertEquals(2, userNames.size());
 	}
 }

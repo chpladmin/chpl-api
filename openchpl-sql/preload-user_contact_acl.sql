@@ -45,7 +45,13 @@ INSERT INTO acl_sid VALUES (-2, true, 'admin');
 --
 
 INSERT INTO acl_object_identity VALUES (-2, 1, -2, NULL, -2, true);
-
+INSERT INTO acl_object_identity VALUES (1, 2, 1, NULL, -2, true);
+INSERT INTO acl_object_identity VALUES (2, 2, 2, NULL, -2, true);
+INSERT INTO acl_object_identity VALUES (3, 2, 3, NULL, -2, true);
+INSERT INTO acl_object_identity VALUES (4, 2, 4, NULL, -2, true);
+INSERT INTO acl_object_identity VALUES (5, 2, 5, NULL, -2, true);
+INSERT INTO acl_object_identity VALUES (6, 2, 6, NULL, -2, true);
+INSERT INTO acl_object_identity VALUES (7, 2, 7, NULL, -2, true);
 
 --
 -- TOC entry 2257 (class 0 OID 177912)
@@ -54,6 +60,13 @@ INSERT INTO acl_object_identity VALUES (-2, 1, -2, NULL, -2, true);
 --
 
 INSERT INTO acl_entry VALUES (1, -2, 0, -2, 16, true, false, false);
+INSERT INTO acl_entry VALUES (2, 1, 0, -2, 16, true, false, false);
+INSERT INTO acl_entry VALUES (3, 2, 0, -2, 16, true, false, false);
+INSERT INTO acl_entry VALUES (4, 3, 0, -2, 16, true, false, false);
+INSERT INTO acl_entry VALUES (5, 4, 0, -2, 16, true, false, false);
+INSERT INTO acl_entry VALUES (6, 5, 0, -2, 16, true, false, false);
+INSERT INTO acl_entry VALUES (7, 6, 0, -2, 16, true, false, false);
+INSERT INTO acl_entry VALUES (8, 7, 0, -2, 16, true, false, false);
 
 
 --
@@ -62,7 +75,7 @@ INSERT INTO acl_entry VALUES (1, -2, 0, -2, 16, true, false, false);
 -- Name: acl_entry_id_seq; Type: SEQUENCE SET; Schema: openchpl; Owner: openchpl
 --
 
-SELECT pg_catalog.setval('acl_entry_id_seq', 1, true);
+SELECT pg_catalog.setval('acl_entry_id_seq', 8, true);
 
 
 --
@@ -71,8 +84,7 @@ SELECT pg_catalog.setval('acl_entry_id_seq', 1, true);
 -- Name: acl_object_identity_id_seq; Type: SEQUENCE SET; Schema: openchpl; Owner: openchpl
 --
 
-SELECT pg_catalog.setval('acl_object_identity_id_seq', 1, true);
-
+SELECT pg_catalog.setval('acl_object_identity_id_seq', 7, true);
 
 --
 -- TOC entry 2270 (class 0 OID 0)

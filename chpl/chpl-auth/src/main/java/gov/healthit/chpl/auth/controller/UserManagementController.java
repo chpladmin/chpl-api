@@ -77,7 +77,7 @@ public class UserManagementController {
 	}
 	
 	
-	@RequestMapping(value="/delete_user", method= RequestMethod.DELETE,
+	@RequestMapping(value="/delete_user", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteUser(@RequestParam("userName") String userName) 
 			throws UserRetrievalException {

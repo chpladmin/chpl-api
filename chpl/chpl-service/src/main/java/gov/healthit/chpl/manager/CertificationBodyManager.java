@@ -35,5 +35,5 @@ public interface CertificationBodyManager {
 
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
 	public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
-	
+	public List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);
 }

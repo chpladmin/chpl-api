@@ -9,7 +9,9 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
@@ -47,10 +49,10 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		CertificationBodyDTO result = certificationBodyDAO.create(acb);
 
 		// Grant the current principal administrative permission to the ACB
-		addPermission(acb, new PrincipalSid(gov.healthit.chpl.auth.Util.getUsername()),
+		addPermission(result, new PrincipalSid(gov.healthit.chpl.auth.Util.getUsername()),
 				BasePermission.ADMINISTRATION);
 		
-		logger.debug("Created acb " + acb
+		logger.debug("Created acb " + result
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
 		return result;
 	}
@@ -84,16 +86,41 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
 		
-		List<String> userNames = new ArrayList<String>();
+		Set<String> userNames = new HashSet<String>();
 		List<AccessControlEntry> entries = acl.getEntries();
 		for (int i = 0; i < entries.size(); i++) {
 			Sid sid = entries.get(i).getSid();
-			userNames.add(sid.toString());
+			if(sid instanceof PrincipalSid) {
+				PrincipalSid psid = (PrincipalSid)sid;
+				userNames.add(psid.getPrincipal());
+			} else {
+				userNames.add(sid.toString());
+			}
 		}
 
 		//pull back the userdto for the sids
-		List<UserDTO> users = userDAO.findByNames(userNames);
+		List<UserDTO> users = new ArrayList<UserDTO>();
+		if(userNames != null && userNames.size() > 0) {
+			List<String> usernameList = new ArrayList<String>(userNames);
+			users.addAll(userDAO.findByNames(usernameList));
+		}
 		return users;
+	}
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, read) or hasPermission(#acb, admin)") 
+	public List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient) {
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
+		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+		
+		List<Permission> permissions = new ArrayList<Permission>();
+		List<AccessControlEntry> entries = acl.getEntries();
+		for (int i = 0; i < entries.size(); i++) {
+			AccessControlEntry currEntry = entries.get(i);
+			if(currEntry.getSid().equals(recipient)) {
+				permissions.add(currEntry.getPermission());
+			}
+		}
+		return permissions;
 	}
 	
 	@Transactional
@@ -109,11 +136,14 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			acl = mutableAclService.createAcl(oid);
 		}
 
-		acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-		mutableAclService.updateAcl(acl);
-
-		logger.debug("Added permission " + permission + " for Sid " + recipient
-				+ " acb " + acb);
+		if(permissionExists(acl, recipient, permission)) {
+			logger.debug("User " + recipient + " already has permission on the ACB " + acb.getName());
+		} else {
+			acl.insertAce(acl.getEntries().size(), permission, recipient, true);
+			mutableAclService.updateAcl(acl);
+			logger.debug("Added permission " + permission + " for Sid " + recipient
+					+ " acb " + acb);
+		}
 	}
 
 	@Transactional
@@ -124,14 +154,18 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		
 		List<AccessControlEntry> entries = acl.getEntries();
 
-		for (int i = 0; i < entries.size(); i++) {
-			if (entries.get(i).getSid().equals(recipient)
-					&& entries.get(i).getPermission().equals(permission)) {
-				acl.deleteAce(i);
+		//if the current size is only 1 we shouldn't be able to delete the last one right??
+		//then nobody would be able to ever add or delete or read from the acb again
+		//in fact the spring code will throw runtime errors if we try to access the ACLs for this ACB.
+		if(entries != null && entries.size() > 1) {
+			for (int i = 0; i < entries.size(); i++) {
+				if (entries.get(i).getSid().equals(recipient)
+						&& entries.get(i).getPermission().equals(permission)) {
+					acl.deleteAce(i);
+				}
 			}
+			mutableAclService.updateAcl(acl);
 		}
-
-		mutableAclService.updateAcl(acl);
 		logger.debug("Deleted acb " + acb + " ACL permission " + permission + " for recipient " + recipient);
 	}
 
@@ -141,16 +175,42 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
 		
+		//TODO: this seems very dangerous. I think we should somehow prevent from deleting the ADMIN user???
 		List<AccessControlEntry> entries = acl.getEntries();
 
 		for (int i = 0; i < entries.size(); i++) {
 			if(entries.get(i).getSid().equals(recipient)) {
 				acl.deleteAce(i);
+				//cannot just loop through deleting because the "entries" 
+				//list changes size each time that we delete one
+				//so we have to re-fetch the entries and re-set the counter
+				entries = acl.getEntries();
+				i = 0;
 			}
 		}
 
 		mutableAclService.updateAcl(acl);
 		logger.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
+	}
+	
+	private boolean permissionExists(CertificationBodyDTO acb, Sid recipient, Permission permission) {
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
+		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+		return permissionExists(acl, recipient, permission);
+	}
+	
+	private boolean permissionExists(MutableAcl acl, Sid recipient, Permission permission) {
+		boolean permissionExists = false;
+		List<AccessControlEntry> entries = acl.getEntries();
+
+		for (int i = 0; i < entries.size(); i++) {
+			AccessControlEntry currEntry = entries.get(i);
+			if(currEntry.getSid().equals(recipient) && 
+					currEntry.getPermission().equals(permission)) {
+				permissionExists = true;
+			}
+		}
+		return permissionExists;
 	}
 	
 	@Transactional(readOnly = true)

@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -18,9 +19,11 @@ import javax.persistence.Table;
 public class CertificationBodyEntity {
 	
 	
-	@Id
-	@Column(name="certification_body_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id 
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certification_body_id_generator")
+	@Basic( optional = false )
+	@Column( name = "certification_body_id", nullable = false  )
+	@SequenceGenerator(name = "certification_body_id_generator", sequenceName = "certification_body_certification_body_id_seq")
 	private Long id;
 	
 	@Basic( optional = true )

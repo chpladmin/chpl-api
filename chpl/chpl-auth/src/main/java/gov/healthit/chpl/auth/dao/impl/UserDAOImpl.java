@@ -160,11 +160,16 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	}
 	
 	public List<UserDTO> findByNames(List<String> names) {
+		List<UserDTO> result = new ArrayList<UserDTO>();
+
+		if(names == null || names.size() == 0) {
+			return result;
+		}
+		
 		Query query = entityManager.createQuery( "from UserEntity where deleted <> true AND user_name in (:names)", UserEntity.class );
 		query.setParameter("names", names);
 		List<UserEntity> queryResult = query.getResultList();
 
-		List<UserDTO> result = new ArrayList<UserDTO>();
 		if(queryResult != null) {
 			for(UserEntity entity : queryResult) {
 				result.add(new UserDTO(entity));

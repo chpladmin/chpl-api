@@ -125,7 +125,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		
 		// TODO: How to delete this without leaving orphans
 		
-		Query query = entityManager.createQuery("UPDATE CertificationBodyEntity SET deleted = true WHERE certified_product_id = :acbid");
+		Query query = entityManager.createQuery("UPDATE CertificationBodyEntity SET deleted = true WHERE certification_body_id = :acbid");
 		query.setParameter("acbid", acbId);
 		query.executeUpdate();
 		
@@ -145,9 +145,12 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 	
 	public CertificationBodyDTO getById(Long acbId) throws EntityRetrievalException{
-		
 		CertificationBodyEntity entity = getEntityById(acbId);
-		CertificationBodyDTO dto = new CertificationBodyDTO(entity);
+		
+		CertificationBodyDTO dto = null;
+		if(entity != null) {
+			dto = new CertificationBodyDTO(entity);
+		}
 		return dto;
 		
 	}

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,7 +9,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,18 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.json.UserInfoJSONObject;
-import gov.healthit.chpl.auth.json.UserListJSONObject;
+import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationBodyPermission;
+import gov.healthit.chpl.domain.CertificationBodyUser;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
+import gov.healthit.chpl.web.controller.results.CertificationBodyUserListResults;
 
 @RestController
 @RequestMapping("/acb")
@@ -87,6 +88,7 @@ public class CertificationBodyController {
 			produces="application/json; charset=utf-8")
 	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws EntityRetrievalException {
 		CertificationBodyDTO toUpdate = new CertificationBodyDTO();
+		toUpdate.setId(acbInfo.getId());
 		toUpdate.setName(acbInfo.getName());
 		toUpdate.setWebsite(acbInfo.getWebsite());
 		AddressDTO address = new AddressDTO();
@@ -108,9 +110,9 @@ public class CertificationBodyController {
 	}
 	
 	
-	@RequestMapping(value="/delete", method= RequestMethod.DELETE,
+	@RequestMapping(value="/delete/{acbId}", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public String deleteAcb(@RequestParam("acbId") Long acbId) {
+	public String deleteAcb(@PathVariable("acbId") Long acbId) {
 		CertificationBodyDTO toDelete = new CertificationBodyDTO();
 		toDelete.setId(acbId);
 		acbManager.delete(toDelete);
@@ -132,12 +134,7 @@ public class CertificationBodyController {
 			throw new InvalidArgumentsException("Could not find either ACB or User specified");
 		}
 
-		Permission permission = null;
-		if(authority == CertificationBodyPermission.STAFF) {
-			permission = BasePermission.READ;
-		} else if(authority == CertificationBodyPermission.ADMIN) {
-			permission = BasePermission.ADMINISTRATION;
-		}
+		Permission permission = CertificationBodyPermission.toPermission(authority);
 		acbManager.addPermission(acb, new PrincipalSid(user.getSubjectName()), permission);
 		return "{\"userAdded\" : true }";
 	}
@@ -161,12 +158,7 @@ public class CertificationBodyController {
 			//delete all permissions on that acb
 			acbManager.deleteAllPermissionsOnAcb(acb, new PrincipalSid(user.getSubjectName()));
 		} else {
-			Permission permission = null;
-			if(authority == CertificationBodyPermission.STAFF) {
-				permission = BasePermission.READ;
-			} else if(authority == CertificationBodyPermission.ADMIN) {
-				permission = BasePermission.ADMINISTRATION;
-			}
+			Permission permission = CertificationBodyPermission.toPermission(authority);
 			acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), permission);
 		}
 		return "{\"userDeleted\" : true }";
@@ -174,18 +166,27 @@ public class CertificationBodyController {
 	
 	@RequestMapping(value="/list_users/{acbId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody UserListJSONObject getUsers(@PathVariable("acbId") Long acbId){
-		CertificationBodyDTO acb = new CertificationBodyDTO();
-		acb.setId(acbId);
-		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
-		
-		UserListJSONObject result = new UserListJSONObject();
-		if(users != null) {
-			for(UserDTO user : users) {
-				UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
-				result.getUsers().add(userInfo);
-			}
+	public @ResponseBody CertificationBodyUserListResults getUsers(@PathVariable("acbId") Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
+		CertificationBodyDTO acb = acbManager.getById(acbId);
+		if(acb == null) {
+			throw new InvalidArgumentsException("Could not find the ACB specified.");
 		}
-		return result;
+		
+		List<CertificationBodyUser> acbUsers = new ArrayList<CertificationBodyUser>();
+		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
+		for(UserDTO user : users) {
+			List<Permission> permissions = acbManager.getPermissionsForUser(acb, new PrincipalSid(user.getSubjectName()));
+			
+			User userObj = new User(user);
+			List<CertificationBodyPermission> acbPerm = new ArrayList<CertificationBodyPermission>(permissions.size());
+			for(Permission permission : permissions) {
+				acbPerm.add(CertificationBodyPermission.fromPermission(permission));
+			}
+			acbUsers.add(new CertificationBodyUser(userObj, acbId, acbPerm));
+		}
+		
+		CertificationBodyUserListResults results = new CertificationBodyUserListResults();
+		results.setUsers(acbUsers);
+		return results;
 	}
 }

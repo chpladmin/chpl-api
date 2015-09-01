@@ -18,8 +18,15 @@ import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
@@ -33,6 +40,11 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class,
+    DbUnitTestExecutionListener.class })
+@DatabaseSetup("classpath:data/testData.xml")
 public class UserDaoTest {
 
 	@Autowired private UserDAO dao;
@@ -82,54 +94,11 @@ public class UserDaoTest {
 		UserDTO deletedUser = dao.getById(insertedUserId);
 		assertNull(deletedUser);
 	}
-
-	
-	@Test
-	@Transactional
-	public void testAddAclPermission() throws UserRetrievalException, UserCreationException {
-		String password = "password";
-		String encryptedPassword = bCryptPasswordEncoder.encode(password);
-		
-		UserDTO testUser = dao.getByName("kekey3");
-		
-		if(testUser == null) {
-			testUser = new UserDTO();
-			testUser.setAccountEnabled(true);
-			testUser.setAccountExpired(false);
-			testUser.setAccountLocked(false);
-			testUser.setCredentialsExpired(false);
-			testUser.setEmail("kekey@ainq.com");
-			testUser.setFirstName("Katy");
-			testUser.setLastName("Ekey-Test");
-			testUser.setPhoneNumber("443-745-0987");
-			testUser.setSubjectName("kekey3");
-			testUser.setTitle("Developer");
-			testUser = dao.create(testUser, encryptedPassword);
-		}
-		
-		assertNotNull(testUser.getId());
-		assertEquals("kekey3", testUser.getSubjectName());
-		assertTrue(testUser.getId().longValue() > 0);
-		
-		MutableAcl acl;
-		ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, testUser.getId());
-
-		try {
-			acl = (MutableAcl) mutableAclService.readAclById(oid);
-		}
-		catch (NotFoundException nfe) {
-			acl = mutableAclService.createAcl(oid);
-		}
-		
-		acl.insertAce(acl.getEntries().size(), BasePermission.ADMINISTRATION, 
-				new PrincipalSid(testUser.getSubjectName()), true);
-		mutableAclService.updateAcl(acl);
-	}
 	
 	@Test
 	public void testAddAcbStaffPermission() throws 
 		UserRetrievalException , UserPermissionRetrievalException {
-		UserDTO toEdit = dao.getByName("kekey3");
+		UserDTO toEdit = dao.getByName("TESTUSER");
 		assertNotNull(toEdit);
 		
 		dao.removePermission(toEdit.getSubjectName(), ROLE_ACB_STAFF);
@@ -149,7 +118,7 @@ public class UserDaoTest {
 	@Test
 	public void testAddAcbAdminPermission() throws 
 		UserRetrievalException , UserPermissionRetrievalException {
-		UserDTO toEdit = dao.getByName("kekey3");
+		UserDTO toEdit = dao.getByName("TESTUSER");
 		assertNotNull(toEdit);
 		
 		dao.removePermission(toEdit.getSubjectName(), ROLE_ACB_ADMIN);
@@ -169,7 +138,7 @@ public class UserDaoTest {
 	@Test
 	public void testAddInvalidPermission() throws 
 		UserRetrievalException , UserPermissionRetrievalException {
-		UserDTO toEdit = dao.getByName("kekey3");
+		UserDTO toEdit = dao.getByName("TESTUSER");
 		assertNotNull(toEdit);
 		
 		boolean caught = false;
