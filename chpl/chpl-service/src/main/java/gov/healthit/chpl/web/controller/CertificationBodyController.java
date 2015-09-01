@@ -139,10 +139,10 @@ public class CertificationBodyController {
 		return "{\"userAdded\" : true }";
 	}
 	
-	@RequestMapping(value="/delete_user/{acbId}", method= RequestMethod.POST, 
+	@RequestMapping(value="/delete_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String deleteUserFromAcb(@PathVariable("acbId") Long acbId,
+	public String deleteUserFromAcb(@RequestParam("acbId") Long acbId,
 								@RequestParam("userId") Long userId,
 								@RequestParam(value="authority", required=false) CertificationBodyPermission authority) 
 								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException{

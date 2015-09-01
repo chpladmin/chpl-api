@@ -79,10 +79,11 @@ public class UserManagementController {
 	
 	@RequestMapping(value="/delete_user", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public String deleteUser(@RequestParam("userName") String userName) 
+	public String deleteUser(@RequestParam("userId") Long userId) 
 			throws UserRetrievalException {
-		
-		userManager.delete(userName);
+		UserDTO toDelete = new UserDTO();
+		toDelete.setId(userId);
+		userManager.delete(toDelete);
 		return "{\"deletedUser\" : true }";
 	}
 	
@@ -107,6 +108,19 @@ public class UserManagementController {
 		isSuccess = String.valueOf(true);
 		
 		return "{\"roleAdded\" : "+isSuccess+" }";
+		
+	}
+	
+	@RequestMapping(value="/revoke_user_role", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+		
+		String isSuccess = String.valueOf(false);
+		userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
+		isSuccess = String.valueOf(true);
+		
+		return "{\"roleRemoved\" : "+isSuccess+" }";
 		
 	}
 	
