@@ -1,81 +1,131 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Query;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-
-import javax.persistence.Query;
-
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 
 @Repository(value="certificationBodyDAO")
 public class CertificationBodyDAOImpl extends BaseDAOImpl implements CertificationBodyDAO {
 	
+	private static final Logger logger = LogManager.getLogger(CertificationBodyDAOImpl.class);
+	@Autowired AddressDAO addressDao;
 	
-	public void create(CertificationBodyDTO acb) throws EntityCreationException{
-		
-		CertificationBodyEntity acbEntity = null;
+	@Transactional
+	public CertificationBodyDTO create(CertificationBodyDTO dto) throws EntityRetrievalException, EntityCreationException {
+		CertificationBodyEntity entity = null;
 		try {
-			if (acb.getId() != null){
-				acbEntity = this.getEntityById(acb.getId());
+			if (dto.getId() != null){
+				entity = this.getEntityById(dto.getId());
 			}
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 		
-		if (acbEntity != null) {
-			throw new EntityCreationException("A acb with this ID already exists.");
-		} else {
+		if (entity != null) {
+			throw new EntityCreationException("An entity with this ID already exists.");
+		} else {			
+			entity = new CertificationBodyEntity();
+
+			if(dto.getAddress() != null)
+			{
+				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
+			}
 			
-			acbEntity = new CertificationBodyEntity();
+			entity.setName(dto.getName());
+			entity.setWebsite(dto.getWebsite());
 			
-			acbEntity.setId(acb.getId());
-			acbEntity.setCreationDate(acb.getCreationDate());
-			acbEntity.setDeleted(acb.getDeleted());
-			//acbEntity.setLastModifiedDate(acb.getLastModifiedDate());
-			acbEntity.setLastModifiedUser(Util.getCurrentUser().getId());
-			acbEntity.setName(acb.getName());
-			acbEntity.setWebsite(acb.getWebsite());
+			if(dto.getDeleted() != null) {
+				entity.setDeleted(dto.getDeleted());
+			} else {
+				entity.setDeleted(false);
+			}
 			
-			create(acbEntity);	
-		}
-		
+			if(dto.getLastModifiedUser() != null) {
+				entity.setLastModifiedUser(dto.getLastModifiedUser());
+			} else {
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			}		
+			
+			if(dto.getLastModifiedDate() != null) {
+				entity.setLastModifiedDate(dto.getLastModifiedDate());
+			} else {
+				entity.setLastModifiedDate(new Date());
+			}
+			
+			if(dto.getCreationDate() != null) {
+				entity.setCreationDate(dto.getCreationDate());
+			} else {
+				entity.setCreationDate(new Date());
+			}
+			
+			create(entity);
+			return new CertificationBodyDTO(entity);
+		}	
 	}
 
-	public void update(CertificationBodyDTO acb) throws EntityRetrievalException{
+	@Transactional
+	public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException{
 		
-		CertificationBodyEntity acbEntity = getEntityById(acb.getId());		
+		CertificationBodyEntity entity = getEntityById(dto.getId());		
+		if(dto.getAddress() != null)
+		{
+			try {
+				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
+			} catch(EntityCreationException ex) {
+				logger.error("Could not create new address in the database.", ex);
+				entity.setAddress(null);
+			}
+		}
 		
-		acbEntity.setId(acb.getId());
-		acbEntity.setCreationDate(acb.getCreationDate());
-		acbEntity.setDeleted(acb.getDeleted());
-		//acbEntity.setLastModifiedDate(acb.getLastModifiedDate());
-		acbEntity.setLastModifiedUser(Util.getCurrentUser().getId());
-		acbEntity.setName(acb.getName());
-		acbEntity.setWebsite(acb.getWebsite());
+		if(dto.getDeleted() != null) {
+			entity.setDeleted(dto.getDeleted());
+		}
+		if(dto.getName() != null) {
+			entity.setName(dto.getName());
+		}
+		if(dto.getWebsite() != null) {
+			entity.setWebsite(dto.getWebsite());
+		}
 		
-		update(acbEntity);
+		if(dto.getLastModifiedUser() != null) {
+			entity.setLastModifiedUser(dto.getLastModifiedUser());
+		} else {
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		}		
 		
+		if(dto.getLastModifiedDate() != null) {
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
+		} else {
+			entity.setLastModifiedDate(new Date());
+		}
+			
+		update(entity);
+		return new CertificationBodyDTO(entity);
 	}
 	
+	@Transactional
 	public void delete(Long acbId){
 		
 		// TODO: How to delete this without leaving orphans
-		Query query = entityManager.createQuery("UPDATE CertificationBodyEntity SET deleted = true WHERE certified_product_id = :acbid");
+		
+		Query query = entityManager.createQuery("UPDATE CertificationBodyEntity SET deleted = true WHERE certification_body_id = :acbid");
 		query.setParameter("acbid", acbId);
 		query.executeUpdate();
 		
@@ -95,9 +145,12 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 	
 	public CertificationBodyDTO getById(Long acbId) throws EntityRetrievalException{
-		
 		CertificationBodyEntity entity = getEntityById(acbId);
-		CertificationBodyDTO dto = new CertificationBodyDTO(entity);
+		
+		CertificationBodyDTO dto = null;
+		if(entity != null) {
+			dto = new CertificationBodyDTO(entity);
+		}
 		return dto;
 		
 	}
@@ -116,27 +169,24 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	
 	private List<CertificationBodyEntity> getAllEntities() {
 		
-		List<CertificationBodyEntity> result = entityManager.createQuery( "from CertificationBodyEntity where (NOT deleted = true) ", CertificationBodyEntity.class).getResultList();
+		List<CertificationBodyEntity> result = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true)", CertificationBodyEntity.class).getResultList();
 		return result;
-		
 	}
 	
 	private CertificationBodyEntity getEntityById(Long entityId) throws EntityRetrievalException {
 		
 		CertificationBodyEntity entity = null;
 		
-		Query query = entityManager.createQuery( "from CertificationBodyEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ", CertificationBodyEntity.class );
+		Query query = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true) AND (certification_body_id = :entityid) ", CertificationBodyEntity.class );
 		query.setParameter("entityid", entityId);
 		List<CertificationBodyEntity> result = query.getResultList();
 		
 		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
-		}
-		
-		if (result.size() > 0){
+			throw new EntityRetrievalException("Data error. Duplicate certificaiton body id in database.");
+		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
 	

@@ -56,19 +56,21 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
-	public void create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException {
+	public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException {
 				
-		userDAO.create(user, encodedPassword);
+		user = userDAO.create(user, encodedPassword);
 		
 		// Grant the user administrative permission over itself.
 		addAclPermission(user, new PrincipalSid(user.getSubjectName()),
 				BasePermission.ADMINISTRATION);
+		
+		return user;
 	}
 	
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void update(UserDTO user) throws UserRetrievalException {
-		userDAO.update(user);
+	public UserDTO update(UserDTO user) throws UserRetrievalException {
+		return userDAO.update(user);
 	}
 	
 	
@@ -79,7 +81,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(UserDTO user){
+	public void delete(UserDTO user) throws UserRetrievalException {
 		
 		userDAO.delete(user.getId());
 		// Delete the ACL information as well
@@ -117,7 +119,6 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 		mutableAclService.updateAcl(acl);
 		
 	}
-	
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void deleteAclPermission(UserDTO user, Sid recipient, Permission permission){
