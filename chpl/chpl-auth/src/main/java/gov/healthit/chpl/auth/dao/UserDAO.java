@@ -1,5 +1,6 @@
 package gov.healthit.chpl.auth.dao;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -11,20 +12,22 @@ import java.util.List;
 
 public interface UserDAO {
 	
-	void create(UserDTO user, String encodedPassword) throws UserCreationException;
+	public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException;
 	
-	public void update(UserDTO user) throws UserRetrievalException;
+	public UserDTO update(UserDTO user) throws UserRetrievalException;
 	
 	public void delete(String uname) throws UserRetrievalException;
 	
-	public void delete(Long userId);
+	public void delete(Long userId)  throws UserRetrievalException;
 	
 	public List<UserDTO> findAll();
+	
+	public List<UserDTO> findByNames(List<String> names);
 
 	public UserDTO getById(Long userId) throws UserRetrievalException;
 	
 	public UserDTO getByName(String uname) throws UserRetrievalException;
-	
+		
 	public void addPermission(String uname, String authority) throws UserPermissionRetrievalException, UserRetrievalException;
 	
 	public void removePermission(String uname, String authority) throws UserRetrievalException, UserPermissionRetrievalException;

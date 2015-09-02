@@ -26,19 +26,19 @@ public class UserDTO implements UserDetails {
 	
 	public UserDTO(){}
 	
-	public UserDTO(UserEntity entity){
-		
-		this.id = entity.getId();
-		this.subjectName = entity.getSubjectName();
-		this.firstName = entity.getFirstName();
-		this.lastName = entity.getLastName();
-		this.email = entity.getContact().getEmail();
-		this.phoneNumber = entity.getContact().getPhoneNumber();
-		this.title = entity.getContact().getTitle();
-		this.accountExpired = !entity.isAccountNonExpired();
-		this.accountLocked = !entity.isAccountNonLocked();
-		this.accountEnabled = entity.isEnabled();
-		
+	public UserDTO(UserEntity entity) {
+		if(entity != null) {
+			this.id = entity.getId();
+			this.subjectName = entity.getSubjectName();
+			this.firstName = entity.getFirstName();
+			this.lastName = entity.getLastName();
+			this.email = entity.getContact().getEmail();
+			this.phoneNumber = entity.getContact().getPhoneNumber();
+			this.title = entity.getContact().getTitle();
+			this.accountExpired = !entity.isAccountNonExpired();
+			this.accountLocked = !entity.isAccountNonLocked();
+			this.accountEnabled = entity.isEnabled();
+		}
 	}
 	
 	public Long getId() {

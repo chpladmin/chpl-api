@@ -16,13 +16,13 @@ import java.util.Set;
 public interface UserManager {
 			
 	
-	public void create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException;
+	public UserDTO create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException;
 	
 	
-	public void update(UserInfoJSONObject userInfo) throws UserRetrievalException;
+	public UserDTO update(UserInfoJSONObject userInfo) throws UserRetrievalException;
 	
 	
-	public void delete(UserDTO user);
+	public void delete(UserDTO user) throws UserRetrievalException;
 	
 	
 	public void delete(String userName) throws UserRetrievalException;
@@ -38,7 +38,7 @@ public interface UserManager {
 	
 	
 	public UserInfoJSONObject getUserInfo(String userName) throws UserRetrievalException;
-	
+
 
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
 

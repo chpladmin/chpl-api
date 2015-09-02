@@ -9,8 +9,10 @@ import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.BaseDAOImpl;
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
@@ -28,6 +30,8 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Autowired
 	UserDAO userDAO;
 	
+	@Override
+	@Transactional
 	public void create(UserPermissionDTO permission){
 		
 		UserPermissionEntity permissionEntity = new UserPermissionEntity();
@@ -39,6 +43,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 	
 	@Override
+	@Transactional
 	public void update(UserPermissionDTO permission) throws UserPermissionRetrievalException{
 		
 		UserPermissionEntity permissionEntity = null;
@@ -65,6 +70,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 	
 	@Override
+	@Transactional
 	public void delete(String authority) {
 
 		Query query = entityManager.createQuery("UPDATE UserPermissionEntity SET deleted = true WHERE authority = :authority");
@@ -73,6 +79,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 
 	@Override
+	@Transactional
 	public void delete(Long permissionId) {
 		
 		Query query = entityManager.createQuery("UPDATE UserPermissionEntity SET deleted = true WHERE user_permission_id = :user_permission_id");
@@ -148,6 +155,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	
 
 	@Override
+	@Transactional
 	public void deleteMapping(String userName, String authority) throws UserRetrievalException, UserPermissionRetrievalException {
 		
 		UserDTO user = this.userDAO.getByName(userName);
@@ -161,6 +169,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 	
 	@Override
+	@Transactional
 	public void deleteMappingsForUser(String userName) throws UserRetrievalException{
 		
 		UserDTO user = this.userDAO.getByName(userName);
@@ -171,6 +180,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 	
 	@Override
+	@Transactional
 	public void deleteMappingsForUser(Long userId){
 		
 		Query query = entityManager.createQuery("UPDATE UserPermissionUserMappingEntity SET deleted = true WHERE user_id = :userid");
@@ -180,6 +190,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 
 	@Override
+	@Transactional
 	public void deleteMappingsForPermission(UserPermissionDTO userPermission) throws UserPermissionRetrievalException {
 		
 		UserPermissionEntity permissionEntity = this.getPermissionEntityFromAuthority(userPermission.getAuthority());
@@ -190,18 +201,18 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 	
 	@Override
+	@Transactional
 	public void createMapping(UserEntity user, String authority) throws UserPermissionRetrievalException {
-		
 		UserPermissionEntity permissionEntity = getPermissionEntityFromAuthority(authority);
 		createMapping(user, permissionEntity);
-		
 	}
 	
 	
 	@Override
+	@Transactional
 	public Set<UserPermissionDTO> findPermissionsForUser(Long userId) {
 		
-		Query query = entityManager.createQuery("FROM UserPermissionUserMappingEntity WHERE user_id = :userid");
+		Query query = entityManager.createQuery("FROM UserPermissionUserMappingEntity pme JOIN FETCH pme.permission WHERE user_id = :userid");
 		query.setParameter("userid", userId);
 		List<UserPermissionUserMappingEntity> results = query.getResultList();
 		Set<UserPermissionDTO> userPermissions = new HashSet<UserPermissionDTO>();
@@ -218,19 +229,24 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		
 	
 	private void createMapping(UserPermissionUserMappingEntity mapping) throws UserPermissionRetrievalException {
-		
-		if (mappingExists(mapping.getUser().getId(), mapping.getPermission().getId())){
-			throw new UserPermissionRetrievalException("User - Permission mapping already exists.");
+		UserPermissionUserMappingEntity existingMap = getMapping(mapping.getUser().getId(), mapping.getPermission().getId());
+		if (existingMap != null){
+			//the mapping exists, make sure it's not deleted
+			if(existingMap.isDeleted()) {
+				existingMap.setDeleted(false);
+				entityManager.merge(existingMap);
+			}
 		} else {
 			entityManager.persist(mapping);
 		}
 	}
 	
 	private void createMapping(UserEntity user, UserPermissionEntity permission) throws UserPermissionRetrievalException {
-		
 		UserPermissionUserMappingEntity permissionMapping = new UserPermissionUserMappingEntity();
 		permissionMapping.setUser(user);
 		permissionMapping.setPermission(permission);
+		permissionMapping.setDeleted(false);
+		permissionMapping.setLastModifiedUser(Util.getCurrentUser().getId());
 		createMapping(permissionMapping);
 	}
 	
@@ -243,13 +259,18 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 	
 	
-	private boolean mappingExists(Long userId, Long permissionId){
+	private UserPermissionUserMappingEntity getMapping(Long userId, Long permissionId){
 		
-		Query query = entityManager.createQuery("SELECT COUNT(global_user_permission_id) FROM UserPermissionUserMappingEntity WHERE user_id = :userid AND user_permission_id_user_permission = :permissionid");
+		Query query = entityManager.createQuery("SELECT e FROM UserPermissionUserMappingEntity e "
+				+ "WHERE user_id = :userid AND user_permission_id_user_permission = :permissionid", UserPermissionUserMappingEntity.class);
 		query.setParameter("userid", userId);
 		query.setParameter("permissionid", permissionId);
-		Long count = (Long) query.getSingleResult();
-		return !(count < 1);
+		
+		List<UserPermissionUserMappingEntity> results = query.getResultList();
+		if(results == null || results.size() == 0) {
+			return null;
+		}
+		return results.get(0);
 	}
 	
 	private UserPermissionEntity getPermissionEntityFromAuthority(String authority) throws UserPermissionRetrievalException {

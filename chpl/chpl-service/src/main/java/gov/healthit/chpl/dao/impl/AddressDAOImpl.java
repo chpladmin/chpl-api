@@ -139,8 +139,27 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 	}
 	
 	@Override
-	public AddressEntity getEntityByValues(AddressDTO address) {
-		return this.searchEntities(address);
+	public AddressEntity mergeAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException {
+		AddressEntity address = null;
+		if(addressDto.getId() != null) {
+			//update the address
+			AddressDTO toUpdate = getById(addressDto.getId());
+			toUpdate.setStreetLineOne(addressDto.getStreetLineOne());
+			toUpdate.setStreetLineTwo(addressDto.getStreetLineTwo());
+			toUpdate.setCity(addressDto.getCity());
+			toUpdate.setRegion(addressDto.getRegion());
+			toUpdate.setCountry(addressDto.getCountry());
+			address = update(toUpdate);
+		} else {
+			address = getEntityByValues(addressDto);
+		}
+		
+		if(address == null) {
+			//if we didn't find it, create and save a new address entity before setting it on the vendor
+			address = create(addressDto);
+		}
+		
+		return address;
 	}
 	
 	private List<AddressEntity> findAllEntities() {
@@ -162,6 +181,10 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		}
 		
 		return entity;
+	}
+	
+	private AddressEntity getEntityByValues(AddressDTO address) {
+		return this.searchEntities(address);
 	}
 	
 	private AddressEntity searchEntities(AddressDTO toSearch) {
