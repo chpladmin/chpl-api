@@ -47,7 +47,8 @@ public class VendorEntity implements Cloneable, Serializable {
 	@Column(name = "name" )
 	private String name;
 
-	@Column( length = 300  )
+	@Basic(optional = true)
+	@Column( length = 300, nullable = true )
 	private String website;
 	
 	@Basic( optional = true )

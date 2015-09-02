@@ -71,8 +71,10 @@ public class UserManagementController {
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public User updateUserDetails(@RequestBody UserInfoJSONObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
-
+	public User updateUserDetails(@RequestBody User userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
+		if(userInfo.getUserId() <= 0) {
+			throw new UserRetrievalException("Cannot update user with ID less than 0");
+		}
 		UserDTO updated = userManager.update(userInfo);
 		return new User(updated);
 	}
@@ -82,6 +84,9 @@ public class UserManagementController {
 			produces="application/json; charset=utf-8")
 	public String deleteUser(@PathVariable("userId") Long userId) 
 			throws UserRetrievalException {
+		if(userId <= 0) {
+			throw new UserRetrievalException("Cannot delete user with ID less than 0");
+		}
 		UserDTO toDelete = new UserDTO();
 		toDelete.setId(userId);
 		userManager.delete(toDelete);

@@ -66,8 +66,9 @@ public class CertificationBodyController {
 		CertificationBodyDTO toCreate = new CertificationBodyDTO();
 		toCreate.setName(acbInfo.getName());
 		toCreate.setWebsite(acbInfo.getWebsite());
-		AddressDTO address = new AddressDTO();
+		AddressDTO address = null;
 		if(acbInfo.getAddress() != null) {
+			address = new AddressDTO();
 			address.setId(acbInfo.getAddress().getAddressId());
 			address.setStreetLineOne(acbInfo.getAddress().getLine1());
 			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
@@ -92,8 +93,9 @@ public class CertificationBodyController {
 		toUpdate.setId(acbInfo.getId());
 		toUpdate.setName(acbInfo.getName());
 		toUpdate.setWebsite(acbInfo.getWebsite());
-		AddressDTO address = new AddressDTO();
+		AddressDTO address = null;
 		if(acbInfo.getAddress() != null) {
+			address = new AddressDTO();
 			address.setId(acbInfo.getAddress().getAddressId());
 			address.setStreetLineOne(acbInfo.getAddress().getLine1());
 			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
@@ -126,8 +128,8 @@ public class CertificationBodyController {
 	public String addUserToAcb(@RequestBody UpdateUserAndAcbRequest updateRequest) 
 									throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 		
-		if(updateRequest.getAcbId() == null || updateRequest.getUserId() == null || updateRequest.getAuthority() == null) {
-			throw new InvalidArgumentsException("ACB ID, User ID, and Authority are required.");
+		if(updateRequest.getAcbId() == null || updateRequest.getUserId() == null || updateRequest.getUserId() <= 0 || updateRequest.getAuthority() == null) {
+			throw new InvalidArgumentsException("ACB ID, User ID (greater than 0), and Authority are required.");
 		}
 		
 		UserDTO user = userManager.getById(updateRequest.getUserId());
@@ -148,8 +150,8 @@ public class CertificationBodyController {
 	public String deleteUserFromAcb(@RequestBody UpdateUserAndAcbRequest updateRequest) 
 								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException{
 		
-		if(updateRequest.getAcbId() == null || updateRequest.getUserId() == null) {
-			throw new InvalidArgumentsException("ACB ID and User ID are required.");
+		if(updateRequest.getAcbId() == null || updateRequest.getUserId() == null || updateRequest.getUserId() <= 0) {
+			throw new InvalidArgumentsException("ACB ID and User ID (greater than 0) are required.");
 		}
 		
 		UserDTO user = userManager.getById(updateRequest.getUserId());
@@ -180,14 +182,16 @@ public class CertificationBodyController {
 		List<CertificationBodyUser> acbUsers = new ArrayList<CertificationBodyUser>();
 		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
 		for(UserDTO user : users) {
-			List<Permission> permissions = acbManager.getPermissionsForUser(acb, new PrincipalSid(user.getSubjectName()));
-			
-			User userObj = new User(user);
-			List<CertificationBodyPermission> acbPerm = new ArrayList<CertificationBodyPermission>(permissions.size());
-			for(Permission permission : permissions) {
-				acbPerm.add(CertificationBodyPermission.fromPermission(permission));
+			if(user.getId() > 0) {
+				List<Permission> permissions = acbManager.getPermissionsForUser(acb, new PrincipalSid(user.getSubjectName()));
+				
+				User userObj = new User(user);
+				List<CertificationBodyPermission> acbPerm = new ArrayList<CertificationBodyPermission>(permissions.size());
+				for(Permission permission : permissions) {
+					acbPerm.add(CertificationBodyPermission.fromPermission(permission));
+				}
+				acbUsers.add(new CertificationBodyUser(userObj, acbId, acbPerm));
 			}
-			acbUsers.add(new CertificationBodyUser(userObj, acbId, acbPerm));
 		}
 		
 		CertificationBodyUserListResults results = new CertificationBodyUserListResults();

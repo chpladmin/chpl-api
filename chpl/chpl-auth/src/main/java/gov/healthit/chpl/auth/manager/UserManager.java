@@ -3,6 +3,7 @@ package gov.healthit.chpl.auth.manager;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
@@ -19,7 +20,7 @@ public interface UserManager {
 	public UserDTO create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException;
 	
 	
-	public UserDTO update(UserInfoJSONObject userInfo) throws UserRetrievalException;
+	public UserDTO update(User userInfo) throws UserRetrievalException;
 	
 	
 	public void delete(UserDTO user) throws UserRetrievalException;
