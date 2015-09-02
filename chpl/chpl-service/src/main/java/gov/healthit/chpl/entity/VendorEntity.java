@@ -56,7 +56,6 @@ public class VendorEntity implements Cloneable, Serializable {
 	private AddressEntity address;
 	
 	@Basic( optional = false )
-	@Past
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
 	

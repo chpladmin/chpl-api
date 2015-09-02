@@ -22,6 +22,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -77,9 +78,9 @@ public class UserManagementController {
 	}
 	
 	
-	@RequestMapping(value="/delete_user", method= RequestMethod.POST,
+	@RequestMapping(value="/delete_user/{userId}", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public String deleteUser(@RequestParam("userId") Long userId) 
+	public String deleteUser(@PathVariable("userId") Long userId) 
 			throws UserRetrievalException {
 		UserDTO toDelete = new UserDTO();
 		toDelete.setId(userId);

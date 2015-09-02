@@ -6,6 +6,7 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 public class UserInfoJSONObject {
 	
 	private static final long serialVersionUID = 1L;
+	private Long userId;
 	private String subjectName;
 	private String firstName = null;
 	private String lastName = null;
@@ -19,7 +20,7 @@ public class UserInfoJSONObject {
 	public UserInfoJSONObject(){}
 	
 	public UserInfoJSONObject(UserDTO dto){
-		
+		this.userId = dto.getId();
 		this.subjectName = dto.getSubjectName();
 		this.firstName = dto.getFirstName();
 		this.lastName = dto.getLastName();
@@ -109,6 +110,14 @@ public class UserInfoJSONObject {
 
 	public void setAccountEnabled(boolean accountEnabled) {
 		this.accountEnabled = accountEnabled;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 	
 }

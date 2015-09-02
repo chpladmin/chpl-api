@@ -75,7 +75,7 @@ INSERT INTO acl_entry VALUES (8, 7, 0, -2, 16, true, false, false);
 -- Name: acl_entry_id_seq; Type: SEQUENCE SET; Schema: openchpl; Owner: openchpl
 --
 
-SELECT pg_catalog.setval('acl_entry_id_seq', 8, true);
+SELECT pg_catalog.setval('acl_entry_id_seq', 12, true);
 
 
 --
@@ -171,7 +171,7 @@ SELECT pg_catalog.setval('global_user_permission_map_global_user_permission_id_s
 -- Name: user_user_id_seq; Type: SEQUENCE SET; Schema: openchpl; Owner: openchpl
 --
 
-SELECT pg_catalog.setval('user_user_id_seq', 1, true);
+SELECT pg_catalog.setval('user_user_id_seq', 4, true);
 
 
 -- Completed on 2015-07-22 15:04:41
