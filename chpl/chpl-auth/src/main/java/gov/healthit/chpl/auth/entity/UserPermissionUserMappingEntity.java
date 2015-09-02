@@ -16,7 +16,6 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name="global_user_permission_map")
 @SQLDelete(sql = "UPDATE openchpl.global_user_permission_map SET deleted = true WHERE global_user_permission_id = ?")
-@Where(clause = "NOT deleted")
 public class UserPermissionUserMappingEntity {
 	
 	@EmbeddedId

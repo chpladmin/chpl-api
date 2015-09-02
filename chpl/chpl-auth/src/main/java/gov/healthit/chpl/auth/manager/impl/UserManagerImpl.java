@@ -45,16 +45,17 @@ public class UserManagerImpl implements UserManager {
 	
 	@Override
 	@Transactional
-	public void create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
+	public UserDTO create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
 		
 		UserDTO user = UserConversionHelper.createDTO(userInfo);
 		String encodedPassword = encodePassword(userInfo.getPassword());
-		securedUserManager.create(user, encodedPassword);
+		user = securedUserManager.create(user, encodedPassword);
+		return user;
 	}
 	
 	@Override
 	@Transactional
-	public void update(UserInfoJSONObject userInfo) throws UserRetrievalException{
+	public UserDTO update(UserInfoJSONObject userInfo) throws UserRetrievalException{
 		
 		UserDTO userDTO = getByName(userInfo.getSubjectName());
 		
@@ -80,7 +81,7 @@ public class UserManagerImpl implements UserManager {
 		
 		userDTO.setAccountLocked(userInfo.isAccountLocked());
 		userDTO.setAccountEnabled(userInfo.isAccountEnabled());
-		securedUserManager.update(userDTO);
+		return securedUserManager.update(userDTO);
 	}
 	
 	@Transactional
@@ -94,7 +95,7 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Transactional
-	public void delete(UserDTO user){
+	public void delete(UserDTO user) throws UserRetrievalException{
 		securedUserManager.delete(user);
 	}
 	
@@ -121,6 +122,7 @@ public class UserManagerImpl implements UserManager {
 	public UserDTO getById(Long id) throws UserRetrievalException{
 		return securedUserManager.getById(id);
 	}
+	
 	
 	@Override
 	@Transactional

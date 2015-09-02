@@ -91,13 +91,9 @@ ALTER FUNCTION openchpl.update_last_modified_date_column() OWNER TO openchpl;
 -- Adding triggers for audit & last_modified_date updates
 CREATE TRIGGER acb_contact_map_timestamp BEFORE UPDATE on openchpl.acb_contact_map FOR EACH ROW EXECUTE PROCEDURE openchpl.update_last_modified_date_column();
 CREATE TRIGGER acb_contact_map_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.acb_contact_map FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-CREATE TRIGGER acl_class_timestamp BEFORE UPDATE on openchpl.acl_class FOR EACH ROW EXECUTE PROCEDURE openchpl.update_last_modified_date_column();
 CREATE TRIGGER acl_class_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.acl_class FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-CREATE TRIGGER acl_entry_timestamp BEFORE UPDATE on openchpl.acl_entry FOR EACH ROW EXECUTE PROCEDURE openchpl.update_last_modified_date_column();
 CREATE TRIGGER acl_entry_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.acl_entry FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-CREATE TRIGGER acl_object_identity_timestamp BEFORE UPDATE on openchpl.acl_object_identity FOR EACH ROW EXECUTE PROCEDURE openchpl.update_last_modified_date_column();
 CREATE TRIGGER acl_object_identity_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.acl_object_identity FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
-CREATE TRIGGER acl_sid_timestamp BEFORE UPDATE on openchpl.acl_sid FOR EACH ROW EXECUTE PROCEDURE openchpl.update_last_modified_date_column();
 CREATE TRIGGER acl_sid_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.acl_sid FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();
 CREATE TRIGGER additional_software_timestamp BEFORE UPDATE on openchpl.additional_software FOR EACH ROW EXECUTE PROCEDURE openchpl.update_last_modified_date_column();
 CREATE TRIGGER additional_software_audit AFTER INSERT OR UPDATE OR DELETE on openchpl.additional_software FOR EACH ROW EXECUTE PROCEDURE audit.if_modified_func();

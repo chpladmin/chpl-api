@@ -26,7 +26,7 @@ SET search_path TO pg_catalog,public,openchpl;
 
 -- object: openchpl.user | type: TABLE --
 -- DROP TABLE IF EXISTS openchpl.user CASCADE;
-CREATE TABLE openchpl."user"(
+CREATE TABLE openchpl.user(
 	user_id bigserial NOT NULL,
 	user_name varchar(25) NOT NULL,
 	password varchar(255) NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE openchpl."user"(
 
 );
 -- ddl-end --
-ALTER TABLE openchpl."user" OWNER TO openchpl;
+ALTER TABLE openchpl.user OWNER TO openchpl;
 -- ddl-end --
 
 -- object: openchpl.certification_body | type: TABLE --

@@ -71,5 +71,15 @@
 	    <url-pattern>/*</url-pattern>
 	    <dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
+	
+	<!-- Allow Cross domain requests (critical for the API)  - We may want to filter the connection method at some point -->
+	<filter>
+  		<filter-name>CorsFilter</filter-name>
+  		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+	</filter>
+	<filter-mapping>
+  		<filter-name>CorsFilter</filter-name>
+  		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 
 </web-app>

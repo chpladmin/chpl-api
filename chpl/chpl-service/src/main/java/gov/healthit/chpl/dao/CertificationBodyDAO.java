@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CertificationBodyDAO {
 	
-	public void create(CertificationBodyDTO acb) throws EntityCreationException;
+	public CertificationBodyDTO create(CertificationBodyDTO acb) throws EntityRetrievalException, EntityCreationException;
 
 	public void delete(Long acbId);
 
@@ -14,6 +14,6 @@ public interface CertificationBodyDAO {
 
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
 
-	public void update(CertificationBodyDTO contact) throws EntityRetrievalException;
+	public CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
 	
 }

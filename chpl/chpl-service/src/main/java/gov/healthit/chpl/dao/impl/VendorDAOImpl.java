@@ -48,7 +48,7 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 
 			if(dto.getAddress() != null)
 			{
-				entity.setAddress(mergeVendorAddress(dto.getAddress()));
+				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
 			}
 			
 			entity.setName(dto.getName());
@@ -91,7 +91,7 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		if(dto.getAddress() != null)
 		{
 			try {
-				entity.setAddress(mergeVendorAddress(dto.getAddress()));
+				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
 			} catch(EntityCreationException ex) {
 				logger.error("Could not create new address in the database.", ex);
 				entity.setAddress(null);
@@ -194,28 +194,5 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		}
 
 		return entity;
-	}
-	
-	private AddressEntity mergeVendorAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException {
-		AddressEntity address = null;
-		if(addressDto.getId() != null) {
-			//update the address
-			AddressDTO toUpdate = addressDao.getById(addressDto.getId());
-			toUpdate.setStreetLineOne(addressDto.getStreetLineOne());
-			toUpdate.setStreetLineTwo(addressDto.getStreetLineTwo());
-			toUpdate.setCity(addressDto.getCity());
-			toUpdate.setRegion(addressDto.getRegion());
-			toUpdate.setCountry(addressDto.getCountry());
-			address = addressDao.update(toUpdate);
-		} else {
-			address = addressDao.getEntityByValues(addressDto);
-		}
-		
-		if(address == null) {
-			//if we didn't find it, create and save a new address entity before setting it on the vendor
-			address = addressDao.create(addressDto);
-		}
-		
-		return address;
 	}
 }
