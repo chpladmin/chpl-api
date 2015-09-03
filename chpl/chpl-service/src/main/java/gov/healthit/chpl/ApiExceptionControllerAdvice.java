@@ -29,9 +29,9 @@ public class ApiExceptionControllerAdvice {
 	public ResponseEntity<ErrorJSONObject> exception(InvalidArgumentsException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-
-//	@ExceptionHandler(Exception.class)
-//	public ResponseEntity<ErrorJSONObject> exception(Exception e) {
-//		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-//	}
+	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorJSONObject> exception(Exception e) {
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }

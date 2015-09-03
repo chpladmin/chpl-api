@@ -3,9 +3,11 @@ package gov.healthit.chpl.auth.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.GrantRoleJSONObject;
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
@@ -138,7 +140,15 @@ public class UserManagementController {
 		List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
 		
 		for (UserDTO user : userList){
-			userInfos.add(new UserInfoJSONObject(user));
+			Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
+			
+			UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
+			List<String> permissionList = new ArrayList<String>(permissions.size());
+			for(UserPermissionDTO permission : permissions) {
+				permissionList.add(permission.getAuthority());
+			}
+			userInfo.setPermissions(permissionList);
+			userInfos.add(userInfo);
 		}
 		
 		UserListJSONObject ulist = new UserListJSONObject();
