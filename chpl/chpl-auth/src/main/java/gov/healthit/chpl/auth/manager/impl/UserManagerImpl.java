@@ -76,10 +76,7 @@ public class UserManagerImpl implements UserManager {
 			userDTO.setPhoneNumber(userInfo.getPhoneNumber());
 		}
 		
-		if (userInfo.getTitle() != null){
-			userDTO.setTitle(userInfo.getTitle());
-		}
-		
+		userDTO.setTitle(userInfo.getTitle());		
 		userDTO.setAccountLocked(userInfo.getAccountLocked());
 		userDTO.setAccountEnabled(userInfo.getAccountEnabled());
 		return securedUserManager.update(userDTO);
