@@ -42,7 +42,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 			entity.setCreationDate(dto.getCreationDate());
 			entity.setDeleted(dto.getDeleted());
 			entity.setDescription(dto.getDescription());
-			entity.setId(dto.getId());
+			//entity.setId(dto.getId());
 			//entity.setLastModifiedDate(result.getLastModifiedDate());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setNumber(dto.getNumber());
@@ -81,7 +81,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	public void delete(Long criterionId) {
 		
 		// TODO: How to delete this without leaving orphans
-		Query query = entityManager.createQuery("UPDATE CertificationResultEntity SET deleted = true WHERE certification_criterion_id = :entityid");
+		Query query = entityManager.createQuery("UPDATE CertificationCriterionEntity SET deleted = true WHERE certification_criterion_id = :entityid");
 		query.setParameter("entityid", criterionId);
 		query.executeUpdate();
 		

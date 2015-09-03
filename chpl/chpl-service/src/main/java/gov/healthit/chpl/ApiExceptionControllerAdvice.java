@@ -12,19 +12,19 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
-@ControllerAdvice 
+@ControllerAdvice
 public class ApiExceptionControllerAdvice {
-	
+
 	@ExceptionHandler(EntityRetrievalException.class)
 	public ResponseEntity<ErrorJSONObject> exception(EntityRetrievalException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.NOT_FOUND);
 	}
-	
+
 	@ExceptionHandler(EntityCreationException.class)
 	public ResponseEntity<ErrorJSONObject> exception(EntityCreationException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	
+
 	@ExceptionHandler(InvalidArgumentsException.class)
 	public ResponseEntity<ErrorJSONObject> exception(InvalidArgumentsException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
