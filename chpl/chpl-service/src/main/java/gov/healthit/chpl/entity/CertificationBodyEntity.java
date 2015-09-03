@@ -34,7 +34,8 @@ public class CertificationBodyEntity {
 	@Column(name="name")
 	private String name;
 	
-	@Column(name="website")
+	@Basic(optional = true)
+	@Column(name="website", nullable = true)
 	private String website;
 	
 	@Basic( optional = false )

@@ -24,7 +24,6 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 	private static final Logger logger = LogManager.getLogger(AddressDAOImpl.class);
 
 	@Override
-	@Transactional
 	public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException {
 		AddressEntity toInsert = new AddressEntity();
 		toInsert.setStreetLineOne(dto.getStreetLineOne());

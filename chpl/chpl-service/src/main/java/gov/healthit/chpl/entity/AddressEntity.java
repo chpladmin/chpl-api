@@ -50,7 +50,6 @@ public class AddressEntity {
 	private String country;
 	
 	@Basic( optional = false )
-	@Past()
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
 	

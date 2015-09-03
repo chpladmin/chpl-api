@@ -29,14 +29,14 @@ public abstract class UserConversionHelper {
 		UserDTO dto = new UserDTO();
 		
 		dto.setId(null);
-		dto.setSubjectName(info.getSubjectName());
-		dto.setFirstName(info.getFirstName());
-		dto.setLastName(info.getLastName());
-		dto.setEmail(info.getEmail());
-		dto.setPhoneNumber(info.getPhoneNumber());
-		dto.setTitle(info.getTitle());
-		dto.setAccountLocked(info.isAccountLocked());
-		dto.setAccountEnabled(info.isAccountEnabled());
+		dto.setSubjectName(info.getUser().getSubjectName());
+		dto.setFirstName(info.getUser().getFirstName());
+		dto.setLastName(info.getUser().getLastName());
+		dto.setEmail(info.getUser().getEmail());
+		dto.setPhoneNumber(info.getUser().getPhoneNumber());
+		dto.setTitle(info.getUser().getTitle());
+		dto.setAccountLocked(info.getUser().getAccountLocked());
+		dto.setAccountEnabled(info.getUser().getAccountEnabled());
 		
 		return dto;
 	}
