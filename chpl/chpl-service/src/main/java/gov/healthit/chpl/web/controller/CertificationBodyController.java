@@ -29,6 +29,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationBodyPermission;
 import gov.healthit.chpl.domain.CertificationBodyUser;
+import gov.healthit.chpl.domain.UpdateUserAndAcbRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -65,8 +66,9 @@ public class CertificationBodyController {
 		CertificationBodyDTO toCreate = new CertificationBodyDTO();
 		toCreate.setName(acbInfo.getName());
 		toCreate.setWebsite(acbInfo.getWebsite());
-		AddressDTO address = new AddressDTO();
+		AddressDTO address = null;
 		if(acbInfo.getAddress() != null) {
+			address = new AddressDTO();
 			address.setId(acbInfo.getAddress().getAddressId());
 			address.setStreetLineOne(acbInfo.getAddress().getLine1());
 			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
@@ -91,8 +93,9 @@ public class CertificationBodyController {
 		toUpdate.setId(acbInfo.getId());
 		toUpdate.setName(acbInfo.getName());
 		toUpdate.setWebsite(acbInfo.getWebsite());
-		AddressDTO address = new AddressDTO();
+		AddressDTO address = null;
 		if(acbInfo.getAddress() != null) {
+			address = new AddressDTO();
 			address.setId(acbInfo.getAddress().getAddressId());
 			address.setStreetLineOne(acbInfo.getAddress().getLine1());
 			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
@@ -119,22 +122,24 @@ public class CertificationBodyController {
 		return "{\"deletedAcb\" : true }";
 	}
 	
-	@RequestMapping(value="/add_user/{acbId}", method= RequestMethod.POST, 
+	@RequestMapping(value="/add_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String addUserToAcb(@PathVariable("acbId") Long acbId,
-								@RequestParam("userId") Long userId,
-								@RequestParam("authority") CertificationBodyPermission authority) 
+	public String addUserToAcb(@RequestBody UpdateUserAndAcbRequest updateRequest) 
 									throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 		
-		UserDTO user = userManager.getById(userId);
-		CertificationBodyDTO acb = acbManager.getById(acbId);
+		if(updateRequest.getAcbId() == null || updateRequest.getUserId() == null || updateRequest.getUserId() <= 0 || updateRequest.getAuthority() == null) {
+			throw new InvalidArgumentsException("ACB ID, User ID (greater than 0), and Authority are required.");
+		}
+		
+		UserDTO user = userManager.getById(updateRequest.getUserId());
+		CertificationBodyDTO acb = acbManager.getById(updateRequest.getAcbId());
 		
 		if(user == null || acb == null) {
 			throw new InvalidArgumentsException("Could not find either ACB or User specified");
 		}
 
-		Permission permission = CertificationBodyPermission.toPermission(authority);
+		Permission permission = CertificationBodyPermission.toPermission(updateRequest.getAuthority());
 		acbManager.addPermission(acb, new PrincipalSid(user.getSubjectName()), permission);
 		return "{\"userAdded\" : true }";
 	}
@@ -142,23 +147,25 @@ public class CertificationBodyController {
 	@RequestMapping(value="/delete_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String deleteUserFromAcb(@RequestParam("acbId") Long acbId,
-								@RequestParam("userId") Long userId,
-								@RequestParam(value="authority", required=false) CertificationBodyPermission authority) 
+	public String deleteUserFromAcb(@RequestBody UpdateUserAndAcbRequest updateRequest) 
 								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException{
 		
-		UserDTO user = userManager.getById(userId);
-		CertificationBodyDTO acb = acbManager.getById(acbId);
+		if(updateRequest.getAcbId() == null || updateRequest.getUserId() == null || updateRequest.getUserId() <= 0) {
+			throw new InvalidArgumentsException("ACB ID and User ID (greater than 0) are required.");
+		}
+		
+		UserDTO user = userManager.getById(updateRequest.getUserId());
+		CertificationBodyDTO acb = acbManager.getById(updateRequest.getAcbId());
 		
 		if(user == null || acb == null) {
 			throw new InvalidArgumentsException("Could not find either ACB or User specified");
 		}
 		
-		if(authority == null) {
+		if(updateRequest.getAuthority() == null) {
 			//delete all permissions on that acb
 			acbManager.deleteAllPermissionsOnAcb(acb, new PrincipalSid(user.getSubjectName()));
 		} else {
-			Permission permission = CertificationBodyPermission.toPermission(authority);
+			Permission permission = CertificationBodyPermission.toPermission(updateRequest.getAuthority());
 			acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), permission);
 		}
 		return "{\"userDeleted\" : true }";
@@ -175,14 +182,16 @@ public class CertificationBodyController {
 		List<CertificationBodyUser> acbUsers = new ArrayList<CertificationBodyUser>();
 		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
 		for(UserDTO user : users) {
-			List<Permission> permissions = acbManager.getPermissionsForUser(acb, new PrincipalSid(user.getSubjectName()));
-			
-			User userObj = new User(user);
-			List<CertificationBodyPermission> acbPerm = new ArrayList<CertificationBodyPermission>(permissions.size());
-			for(Permission permission : permissions) {
-				acbPerm.add(CertificationBodyPermission.fromPermission(permission));
+			if(user.getId() > 0) {
+				List<Permission> permissions = acbManager.getPermissionsForUser(acb, new PrincipalSid(user.getSubjectName()));
+				
+				User userObj = new User(user);
+				List<CertificationBodyPermission> acbPerm = new ArrayList<CertificationBodyPermission>(permissions.size());
+				for(Permission permission : permissions) {
+					acbPerm.add(CertificationBodyPermission.fromPermission(permission));
+				}
+				acbUsers.add(new CertificationBodyUser(userObj, acbId, acbPerm));
 			}
-			acbUsers.add(new CertificationBodyUser(userObj, acbId, acbPerm));
 		}
 		
 		CertificationBodyUserListResults results = new CertificationBodyUserListResults();

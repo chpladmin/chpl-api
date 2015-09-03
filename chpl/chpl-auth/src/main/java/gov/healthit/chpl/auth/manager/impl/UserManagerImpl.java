@@ -6,6 +6,7 @@ import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.manager.SecuredUserManager;
@@ -55,7 +56,7 @@ public class UserManagerImpl implements UserManager {
 	
 	@Override
 	@Transactional
-	public UserDTO update(UserInfoJSONObject userInfo) throws UserRetrievalException{
+	public UserDTO update(User userInfo) throws UserRetrievalException{
 		
 		UserDTO userDTO = getByName(userInfo.getSubjectName());
 		
@@ -79,8 +80,8 @@ public class UserManagerImpl implements UserManager {
 			userDTO.setTitle(userInfo.getTitle());
 		}
 		
-		userDTO.setAccountLocked(userInfo.isAccountLocked());
-		userDTO.setAccountEnabled(userInfo.isAccountEnabled());
+		userDTO.setAccountLocked(userInfo.getAccountLocked());
+		userDTO.setAccountEnabled(userInfo.getAccountEnabled());
 		return securedUserManager.update(userDTO);
 	}
 	

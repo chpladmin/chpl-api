@@ -88,6 +88,10 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	public VendorEntity update(VendorDTO dto) throws EntityRetrievalException {
 		VendorEntity entity = this.getEntityById(dto.getId());
 		
+		if(entity == null) {
+			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+		}
+		
 		if(dto.getAddress() != null)
 		{
 			try {
@@ -96,16 +100,17 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 				logger.error("Could not create new address in the database.", ex);
 				entity.setAddress(null);
 			}
+		} else {
+			entity.setAddress(null);
+		}
+		
+		entity.setWebsite(dto.getWebsite());
+		if(dto.getName() != null) {
+			entity.setName(dto.getName());
 		}
 		
 		if(dto.getDeleted() != null) {
 			entity.setDeleted(dto.getDeleted());
-		}
-		if(dto.getName() != null) {
-			entity.setName(dto.getName());
-		}
-		if(dto.getWebsite() != null) {
-			entity.setWebsite(dto.getWebsite());
 		}
 		
 		if(dto.getLastModifiedUser() != null) {

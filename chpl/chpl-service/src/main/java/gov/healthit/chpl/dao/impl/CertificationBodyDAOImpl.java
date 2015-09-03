@@ -83,7 +83,11 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Transactional
 	public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException{
 		
-		CertificationBodyEntity entity = getEntityById(dto.getId());		
+		CertificationBodyEntity entity = getEntityById(dto.getId());	
+		if(entity == null) {
+			throw new EntityRetrievalException("Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
+		}
+		
 		if(dto.getAddress() != null)
 		{
 			try {
@@ -92,18 +96,18 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 				logger.error("Could not create new address in the database.", ex);
 				entity.setAddress(null);
 			}
+		} else {
+			entity.setAddress(null);
+		}
+		
+		entity.setWebsite(dto.getWebsite());
+		if(dto.getName() != null) {
+			entity.setName(dto.getName());
 		}
 		
 		if(dto.getDeleted() != null) {
 			entity.setDeleted(dto.getDeleted());
 		}
-		if(dto.getName() != null) {
-			entity.setName(dto.getName());
-		}
-		if(dto.getWebsite() != null) {
-			entity.setWebsite(dto.getWebsite());
-		}
-		
 		if(dto.getLastModifiedUser() != null) {
 			entity.setLastModifiedUser(dto.getLastModifiedUser());
 		} else {

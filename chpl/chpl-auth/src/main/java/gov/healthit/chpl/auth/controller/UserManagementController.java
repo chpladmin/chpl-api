@@ -22,6 +22,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -70,17 +71,22 @@ public class UserManagementController {
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public User updateUserDetails(@RequestBody UserInfoJSONObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
-
+	public User updateUserDetails(@RequestBody User userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
+		if(userInfo.getUserId() <= 0) {
+			throw new UserRetrievalException("Cannot update user with ID less than 0");
+		}
 		UserDTO updated = userManager.update(userInfo);
 		return new User(updated);
 	}
 	
 	
-	@RequestMapping(value="/delete_user", method= RequestMethod.POST,
+	@RequestMapping(value="/delete_user/{userId}", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public String deleteUser(@RequestParam("userId") Long userId) 
+	public String deleteUser(@PathVariable("userId") Long userId) 
 			throws UserRetrievalException {
+		if(userId <= 0) {
+			throw new UserRetrievalException("Cannot delete user with ID less than 0");
+		}
 		UserDTO toDelete = new UserDTO();
 		toDelete.setId(userId);
 		userManager.delete(toDelete);
