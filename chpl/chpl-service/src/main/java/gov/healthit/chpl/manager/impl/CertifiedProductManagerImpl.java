@@ -24,7 +24,43 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	
 	@Override
 	@Transactional(readOnly = true)
+	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
+		return dao.getById(id);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
 	public List<CertifiedProductDTO> getByVersion(Long versionId) {
 		return dao.getByVersionId(versionId);
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<CertifiedProductDTO> getByVersions(List<Long> versionIds) {
+		return dao.getByVersionIds(versionIds);
+	}
+	
+//	@Override
+//	@Transactional(readOnly = true)
+//	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityRetrievalException, EntityCreationException {
+//		return dao.create(dto);
+//	}
+//	
+	@Override
+	@Transactional(readOnly = true)
+	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException {
+		return dao.update(dto);
+	}
+//	
+//	@Override
+//	@Transactional(readOnly = true)
+//	public void delete(CertifiedProductDTO dto) throws EntityRetrievalException {
+//		
+//	}
+//	
+//	@Override
+//	@Transactional(readOnly = true)
+//	public void delete(Long certifiedProductId) throws EntityRetrievalException {
+//		
+//	}
 }
