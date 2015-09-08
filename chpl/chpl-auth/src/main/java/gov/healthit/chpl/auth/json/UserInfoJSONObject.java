@@ -8,7 +8,7 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 public class UserInfoJSONObject {
 	
 	private User user;
-	private List<String> permissions;
+	private List<String> roles;
 	
 	public UserInfoJSONObject(){}
 	
@@ -24,12 +24,13 @@ public class UserInfoJSONObject {
 		this.user = user;
 	}
 
-	public List<String> getPermissions() {
-		return permissions;
+	public List<String> getRoles() {
+		return roles;
 	}
 
-	public void setPermissions(List<String> permissions) {
-		this.permissions = permissions;
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
+
 
 }

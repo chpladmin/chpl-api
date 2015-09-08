@@ -1,10 +1,11 @@
-package gov.healthit.chpl.auth.controller;
+package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
@@ -19,11 +20,17 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserManagementController {
 	
 	@Autowired UserManager userManager;
+	@Autowired CertificationBodyManager acbManager;
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
 
 	
@@ -46,14 +54,29 @@ public class UserManagementController {
 	public User createUserWithRoles(@RequestBody UserCreationWithRolesJSONObject userInfo) throws UserCreationException, UserRetrievalException {
 		
 		UserDTO newUser = userManager.create(userInfo);
+		
+		boolean isChplAdmin = false;
 		if(userInfo.getRoles() != null && userInfo.getRoles().size() > 0) {
 			for(String roleName : userInfo.getRoles()) {
 				try {
-					userManager.grantRole(newUser.getName(), roleName);
+					if(roleName.equals("ROLE_ADMIN")) {
+						userManager.grantAdmin(newUser.getName());
+						isChplAdmin = true;
+					} else {
+						userManager.grantRole(newUser.getName(), roleName);
+					}
 				} catch(UserPermissionRetrievalException ex) {
 					logger.error("Could not add role " + roleName + " for user " + newUser.getName(), ex);
 				} catch(UserManagementException mex) {
 					logger.error("Could not add role " + roleName + " for user " + newUser.getName(), mex);
+				}
+			}
+			
+			//if they are a chpladmin then they need to be given access to all of the ACBs
+			if(isChplAdmin) {
+				List<CertificationBodyDTO> acbs = acbManager.getAll();
+				for(CertificationBodyDTO acb : acbs) {
+					acbManager.addPermission(acb, newUser.getId(), BasePermission.ADMINISTRATION);
 				}
 			}
 		}
@@ -85,13 +108,19 @@ public class UserManagementController {
 	@RequestMapping(value="/delete_user/{userId}", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteUser(@PathVariable("userId") Long userId) 
-			throws UserRetrievalException {
+			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		if(userId <= 0) {
 			throw new UserRetrievalException("Cannot delete user with ID less than 0");
 		}
 		UserDTO toDelete = new UserDTO();
 		toDelete.setId(userId);
+		
+		//delete the acb permissions for that user
+		acbManager.deletePermissionsForUser(toDelete);
+		
+		//delete the user
 		userManager.delete(toDelete);
+		
 		return "{\"deletedUser\" : true }";
 	}
 	
@@ -109,12 +138,30 @@ public class UserManagementController {
 	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+	public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		String isSuccess = String.valueOf(false);
-		userManager.grantRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
-		isSuccess = String.valueOf(true);
+		UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
+		if(user == null) {
+			throw new InvalidArgumentsException("No user with name " + grantRoleObj.getSubjectName() + " exists in the system.");
+		}
 		
+		if(grantRoleObj.getRole().equals("ROLE_ADMIN")) {
+			try {
+				userManager.grantAdmin(user.getSubjectName());
+
+				List<CertificationBodyDTO> acbs = acbManager.getAll();
+				for(CertificationBodyDTO acb : acbs) {
+					acbManager.addPermission(acb, user.getId(), BasePermission.ADMINISTRATION);
+				}
+			} catch(AccessDeniedException adEx) {
+				logger.error("User " + Util.getUsername() + " does not have access to grant ROLE_ADMIN");
+			}
+		} else {
+			userManager.grantRole(user.getSubjectName(), grantRoleObj.getRole());
+		}
+
+		isSuccess = String.valueOf(true);
 		return "{\"roleAdded\" : "+isSuccess+" }";
 		
 	}
@@ -122,12 +169,45 @@ public class UserManagementController {
 	@RequestMapping(value="/revoke_user_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+	public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		String isSuccess = String.valueOf(false);
-		userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
-		isSuccess = String.valueOf(true);
+		UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
+		if(user == null) {
+			throw new InvalidArgumentsException("No user with name " + grantRoleObj.getSubjectName() + " exists in the system.");
+		}
 		
+		if(grantRoleObj.getRole().equals("ROLE_ADMIN")) {
+			try {
+				userManager.removeAdmin(user.getSubjectName());
+				
+				//if they were a chpladmin then they need to have all ACB access removed
+				List<CertificationBodyDTO> acbs = acbManager.getAll();
+				for(CertificationBodyDTO acb : acbs) {
+					acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
+				}
+			} catch(AccessDeniedException adEx) {
+				logger.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
+			}
+		} else if(grantRoleObj.getRole().equals("ROLE_ACB_ADMIN")) {
+			try {
+				userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
+				
+				//if they were an acb admin then they need to have all ACB access removed
+				List<CertificationBodyDTO> acbs = acbManager.getAll();
+				for(CertificationBodyDTO acb : acbs) {
+					acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
+				}
+			} catch(AccessDeniedException adEx) {
+				logger.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
+			}
+		} else {
+			userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
+		}
+		
+
+		
+		isSuccess = String.valueOf(true);
 		return "{\"roleRemoved\" : "+isSuccess+" }";
 		
 	}
@@ -147,7 +227,7 @@ public class UserManagementController {
 			for(UserPermissionDTO permission : permissions) {
 				permissionList.add(permission.getAuthority());
 			}
-			userInfo.setPermissions(permissionList);
+			userInfo.setRoles(permissionList);
 			userInfos.add(userInfo);
 		}
 		
