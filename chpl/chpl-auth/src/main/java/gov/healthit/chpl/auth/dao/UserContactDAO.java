@@ -10,5 +10,5 @@ public interface UserContactDAO {
 	public void update(UserContactEntity contact);
 	
 	public void delete(Long userId);
-	
+	public void delete(UserContactEntity contact);
 }

@@ -14,7 +14,7 @@ public class CertificationBodyDTO {
 	private Long lastModifiedUser;
 	private String name;
 	private String website;
-	
+	private AddressDTO address;
 	
 	public CertificationBodyDTO(){}
 	
@@ -26,6 +26,9 @@ public class CertificationBodyDTO {
 		this.name = entity.getName();
 		this.website = entity.getWebsite();
 		this.creationDate = entity.getCreationDate();
+		if(entity.getAddress() != null) {
+			this.address = new AddressDTO(entity.getAddress());			
+		}
 	}
 	
 	
@@ -70,6 +73,14 @@ public class CertificationBodyDTO {
 	}
 	public void setWebsite(String website) {
 		this.website = website;
+	}
+
+	public AddressDTO getAddress() {
+		return address;
+	}
+
+	public void setAddress(AddressDTO address) {
+		this.address = address;
 	}
 	
 }

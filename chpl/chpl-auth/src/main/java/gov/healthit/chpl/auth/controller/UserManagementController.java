@@ -6,9 +6,10 @@ import java.util.List;
 
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.json.GrantAdminJSONObject;
 import gov.healthit.chpl.auth.json.GrantRoleJSONObject;
+import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
+import gov.healthit.chpl.auth.json.UserCreationWithRolesJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.json.UserListJSONObject;
 import gov.healthit.chpl.auth.manager.UserManager;
@@ -17,8 +18,11 @@ import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,38 +34,62 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class UserManagementController {
 	
-	@Autowired
-	UserManager userManager;
+	@Autowired UserManager userManager;
+	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
+
+	
+	@RequestMapping(value="/create_user_with_roles", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public User createUserWithRoles(@RequestBody UserCreationWithRolesJSONObject userInfo) throws UserCreationException, UserRetrievalException {
+		
+		UserDTO newUser = userManager.create(userInfo);
+		if(userInfo.getRoles() != null && userInfo.getRoles().size() > 0) {
+			for(String roleName : userInfo.getRoles()) {
+				try {
+					userManager.grantRole(newUser.getName(), roleName);
+				} catch(UserPermissionRetrievalException ex) {
+					logger.error("Could not add role " + roleName + " for user " + newUser.getName(), ex);
+				} catch(UserManagementException mex) {
+					logger.error("Could not add role " + roleName + " for user " + newUser.getName(), mex);
+				}
+			}
+		}
+		return new User(newUser);
+	}
 	
 	@RequestMapping(value="/create_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String createUser(@RequestBody UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
+	public User createUser(@RequestBody UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
 		
-		userManager.create(userInfo);
-		String isSuccess = String.valueOf(true);
-		return "{\"userCreated\" : "+isSuccess+" }";
-		
+		UserDTO newUser = userManager.create(userInfo);
+		return new User(newUser);
 	}
 	
 	
 	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String updateUserDetails(@RequestBody UserInfoJSONObject userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
-		
-		userManager.update(userInfo);
-		return "{\"userUpdated\" : true }";
-		
+	public User updateUserDetails(@RequestBody User userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
+		if(userInfo.getUserId() <= 0) {
+			throw new UserRetrievalException("Cannot update user with ID less than 0");
+		}
+		UserDTO updated = userManager.update(userInfo);
+		return new User(updated);
 	}
 	
 	
-	@RequestMapping(value="/delete_user", method= RequestMethod.DELETE,
+	@RequestMapping(value="/delete_user/{userId}", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public String deleteUser(@RequestParam("userName") String userName) 
+	public String deleteUser(@PathVariable("userId") Long userId) 
 			throws UserRetrievalException {
-		
-		userManager.delete(userName);
+		if(userId <= 0) {
+			throw new UserRetrievalException("Cannot delete user with ID less than 0");
+		}
+		UserDTO toDelete = new UserDTO();
+		toDelete.setId(userId);
+		userManager.delete(toDelete);
 		return "{\"deletedUser\" : true }";
 	}
 	
@@ -89,17 +117,16 @@ public class UserManagementController {
 		
 	}
 	
-	@RequestMapping(value="/grant_user_admin", method=RequestMethod.POST, 
+	@RequestMapping(value="/revoke_user_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String grantUserAdmin(@RequestBody GrantAdminJSONObject grantAdminObj) 
-			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+	public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
 		String isSuccess = String.valueOf(false);
-		userManager.grantAdmin(grantAdminObj.getSubjectName());
+		userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
 		isSuccess = String.valueOf(true);
 		
-		return "{\"grantedAdminPrivileges\" : "+isSuccess+" }";
+		return "{\"roleRemoved\" : "+isSuccess+" }";
 		
 	}
 	

@@ -15,5 +15,7 @@ public interface CertifiedProductDAO {
 	public List<CertifiedProductDTO> findAll();
 	
 	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException;
+
+	public List<CertifiedProductDTO> getByVersionId(Long versionId);
 	
 }

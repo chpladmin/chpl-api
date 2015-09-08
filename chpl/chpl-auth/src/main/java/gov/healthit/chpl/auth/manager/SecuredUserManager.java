@@ -18,13 +18,13 @@ import org.springframework.security.acls.model.Sid;
 public interface SecuredUserManager {
 
 	
-	public void create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException;
+	public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException;
 	
-	public void update(UserDTO user) throws UserRetrievalException;
+	public UserDTO update(UserDTO user) throws UserRetrievalException;
 	
 	public void updateContactInfo(UserEntity user);
 	
-	public void delete(UserDTO user);
+	public void delete(UserDTO user)  throws UserRetrievalException;
 	
 	public List<UserDTO> getAll();
 	

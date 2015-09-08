@@ -1,6 +1,6 @@
 package gov.healthit.chpl.auth.entity;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,6 +47,11 @@ public class UserContactEntity {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
+	@Column(name = "last_modified_date")
+	private Date lastModifiedDate;
+	
+	@Column(name = "deleted")
+	private Boolean deleted;
 	
 	public String getFirstName() {
 		return firstName;
@@ -106,6 +111,22 @@ public class UserContactEntity {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 }

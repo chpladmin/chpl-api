@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dto;
 
 
+import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 
 import java.util.Date;
@@ -9,7 +10,7 @@ public class CertifiedProductDTO {
 	
 	
 	private Long id;
-	private String atcbCertificationId;
+	private String acbCertificationId;
 	private Long certificationBodyId;
 	private Long certificationEditionId;
 	private String chplProductNumber;
@@ -30,7 +31,7 @@ public class CertifiedProductDTO {
 	public CertifiedProductDTO(CertifiedProductEntity entity){
 		
 		this.id = entity.getId();
-		this.atcbCertificationId = entity.getAtcbCertificationId();
+		this.acbCertificationId = entity.getAcbCertificationId();
 		this.certificationBodyId = entity.getCertificationBodyId();
 		this.certificationEditionId = entity.getCertificationEditionId();
 		this.chplProductNumber = entity.getChplProductNumber();
@@ -43,10 +44,9 @@ public class CertifiedProductDTO {
 		this.productVersionId = entity.getProductVersionId();
 		this.qualityManagementSystemAtt = entity.getQualityManagementSystemAtt();
 		this.reportFileLocation = entity.getReportFileLocation();
-		this.testingLabId = entity.getTestingLabId();
-		
+		this.testingLabId = entity.getTestingLabId();		
 	}
-	
+
 	
 	public Long getId() {
 		return id;
@@ -54,11 +54,11 @@ public class CertifiedProductDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getAtcbCertificationId() {
-		return atcbCertificationId;
+	public String getAcbCertificationId() {
+		return acbCertificationId;
 	}
-	public void setAtcbCertificationId(String atcbCertificationId) {
-		this.atcbCertificationId = atcbCertificationId;
+	public void setAcbCertificationId(String acbCertificationId) {
+		this.acbCertificationId = acbCertificationId;
 	}
 	public Long getCertificationBodyId() {
 		return certificationBodyId;

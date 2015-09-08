@@ -19,15 +19,15 @@ $ cd chpl-api/chpl/chpl-etl
 
 Before running the ETL, please see [the Open Data CHPL data model README](../../openchpl-sql/README.md).
 
-## Installing on Linux
+## Installing on Linux / Mac
 
-If installing on a Linux machine, some modifications are needed. In the files:
+If installing on a Linux or Mac machine, some modifications are needed due to differences in EOL characters, as well as Cygwin for Windows. In the files:
  - `parse.sh`
  - `linux_deploy.sh`
 
 Remove the line: `(set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters`
 
-Next, run the script `linux_deploy.sh`. This script will modify the strings used as recordDelimiters in the CloverETL graphs from the Windows specific `\r\n` to the Linux `\n`.
+Next, run the script `linux_deploy.sh`. This script will modify the strings used as recordDelimiters in the CloverETL graphs from the Windows specific `\r\n` to the Linux\Mac `\n`.
 
 ## ETL
 

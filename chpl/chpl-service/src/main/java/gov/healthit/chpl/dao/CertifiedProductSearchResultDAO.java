@@ -1,10 +1,9 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.domain.SearchFilters;
+import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 import java.util.List;
-import java.util.Map;
 
 public interface CertifiedProductSearchResultDAO {
 	
@@ -13,10 +12,14 @@ public interface CertifiedProductSearchResultDAO {
 	public List<CertifiedProductDetailsDTO> getCertifiedProductSearchDetails(
 			Integer pageNum, Integer pageSize);
 	
-	public List<CertifiedProductDetailsDTO> getSimpleSearchResults(String searchTerm,
-			Integer pageNum, Integer pageSize);
+	public List<CertifiedProductDetailsDTO> simpleSearch(String searchTerm,
+			Integer pageNum, Integer pageSize, String orderBy);
+	
+	public Long countSimpleSearchResults(String searchTerm);
 	
 	public List<CertifiedProductDetailsDTO> multiFilterSearch(
-			SearchFilters searchFilters, Integer pageNum, Integer pageSize);
+			SearchRequest searchRequest, Integer pageNum, Integer pageSize);
+
+	public Long countMultiFilterSearchResults(SearchRequest searchRequest);
 	
 }
