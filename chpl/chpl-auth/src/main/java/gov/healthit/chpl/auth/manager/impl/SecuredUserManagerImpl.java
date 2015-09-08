@@ -191,14 +191,14 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	
 	
 	@Override
-	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")
 	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user){
 		return this.userPermissionDAO.findPermissionsForUser(user.getId());
 	}
 
 
 	@Override
-	@PostAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(returnObject, 'read') or hasPermission(returnObject, admin)")
+	@PostAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(returnObject, 'read') or hasPermission(returnObject, admin)")
 	public UserDTO getBySubjectName(String userName) throws UserRetrievalException {
 		return userDAO.getByName(userName);
 	}

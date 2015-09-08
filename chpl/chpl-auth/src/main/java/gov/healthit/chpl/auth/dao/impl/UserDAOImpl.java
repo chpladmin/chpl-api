@@ -7,8 +7,10 @@ import gov.healthit.chpl.auth.dao.UserContactDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.entity.UserContactEntity;
 import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.auth.manager.impl.SecuredUserManagerImpl;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -16,9 +18,12 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository(value="userDAO")
 public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
+	private static final Logger logger = LogManager.getLogger(UserDAOImpl.class);
 	
 	@Autowired
 	UserPermissionDAO userPermissionDAO;
@@ -272,8 +278,21 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 	public void addPermission(String uname, String authority) throws UserPermissionRetrievalException, UserRetrievalException {
 		
 		UserEntity userEntity = this.getEntityByName(uname);
-		userPermissionDAO.createMapping(userEntity, authority);
-		
+		if(userEntity != null) {
+			Set<UserPermissionDTO> permissions = userPermissionDAO.findPermissionsForUser(userEntity.getId());
+			boolean permissionExists = false;
+			for(UserPermissionDTO permission : permissions) {
+				if(permission.getAuthority().equals(authority)) {
+					permissionExists = true;
+				}
+			}
+			
+			if(!permissionExists) {
+				userPermissionDAO.createMapping(userEntity, authority);
+			} else {
+				logger.error("Permission " + authority + " already exists for " + uname + ". Not adding anything.");
+			}
+		}		
 	}
 
 	@Override
