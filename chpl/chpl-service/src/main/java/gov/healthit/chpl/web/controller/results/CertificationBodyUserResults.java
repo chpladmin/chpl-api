@@ -5,10 +5,10 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationBodyUser;
 
-public class CertificationBodyUserListResults {
+public class CertificationBodyUserResults {
 	private List<CertificationBodyUser> users;
 
-	public CertificationBodyUserListResults() {
+	public CertificationBodyUserResults() {
 		users = new ArrayList<CertificationBodyUser>();
 	}
 
@@ -19,7 +19,4 @@ public class CertificationBodyUserListResults {
 	public void setUsers(List<CertificationBodyUser> users) {
 		this.users = users;
 	}
-	
-
-	
 }

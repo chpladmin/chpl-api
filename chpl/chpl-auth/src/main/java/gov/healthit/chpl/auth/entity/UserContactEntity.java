@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth.entity;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,16 +27,20 @@ public class UserContactEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name="first_name")
+	@Basic(optional = false)
+	@Column(name="first_name", nullable=false)
 	private String firstName;
 	
-	@Column(name="last_name")
+	@Basic(optional = false)
+	@Column(name="last_name", nullable=false)
 	private String lastName;
 	
-	@Column(name="email")
+	@Basic(optional = false)
+	@Column(name="email", nullable=false)
 	private String email;
 	
-	@Column(name="phone_number")
+	@Basic(optional = false)
+	@Column(name="phone_number", nullable=false)
 	private String phoneNumber;
 	
 	@Column(name="title")

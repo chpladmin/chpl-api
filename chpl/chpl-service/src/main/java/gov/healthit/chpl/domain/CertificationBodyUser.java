@@ -1,47 +1,34 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.auth.json.User;
-
-import java.util.ArrayList;
 import java.util.List;
 
-public class CertificationBodyUser {
-	
-	private User user;
-	private Long certificationBodyId;
-	private List<CertificationBodyPermission> permissions;
-	
-	public CertificationBodyUser(){
-		this.permissions = new ArrayList<CertificationBodyPermission>();
-	}
-	
-	public CertificationBodyUser(User user, Long certificationBodyId, List<CertificationBodyPermission> permissions){
-		this.user = user;
-		this.certificationBodyId = certificationBodyId;
-		this.permissions = permissions;
-	}
+import gov.healthit.chpl.auth.json.User;
 
+public class CertificationBodyUser {
+	private User user;
+	private List<String> roles;
+	private List<String> permissions;
+	
+	public CertificationBodyUser() {
+		
+	}
+	
 	public User getUser() {
 		return user;
 	}
-
 	public void setUser(User user) {
 		this.user = user;
 	}
-
-	public Long getCertificationBodyId() {
-		return certificationBodyId;
+	public List<String> getRoles() {
+		return roles;
 	}
-
-	public void setCertificationBodyId(Long certificationBodyId) {
-		this.certificationBodyId = certificationBodyId;
+	public void setRoles(List<String> roles) {
+		this.roles = roles;
 	}
-
-	public List<CertificationBodyPermission> getPermissions() {
+	public List<String> getPermissions() {
 		return permissions;
 	}
-
-	public void setPermissions(List<CertificationBodyPermission> permissions) {
+	public void setPermissions(List<String> permissions) {
 		this.permissions = permissions;
 	}
 	

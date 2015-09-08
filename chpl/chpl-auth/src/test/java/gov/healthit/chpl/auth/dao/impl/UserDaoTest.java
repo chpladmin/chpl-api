@@ -150,4 +150,21 @@ public class UserDaoTest {
 		
 		assertTrue(caught);
 	}
+	
+	@Test
+	public  void testFindUser() {
+		UserDTO toFind = new UserDTO();
+		toFind.setSubjectName("TESTUSER");
+		toFind.setFirstName("TEST");
+		toFind.setLastName("USER");
+		toFind.setEmail("test@ainq.com");
+		toFind.setPhoneNumber("(301) 560-6999");
+		toFind.setTitle("employee");
+		
+		UserDTO found = dao.findUser(toFind);
+		assertNotNull(found);
+		assertNotNull(found.getId());
+		assertEquals(1, found.getId().longValue());
+		
+	}
 }

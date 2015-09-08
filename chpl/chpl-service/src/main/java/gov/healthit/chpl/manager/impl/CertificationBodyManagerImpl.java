@@ -1,10 +1,15 @@
 package gov.healthit.chpl.manager.impl;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 
@@ -36,6 +41,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
 	
+	@Autowired UserManager userManager;
 	@Autowired UserDAO userDAO;
 	
 	@Autowired
@@ -44,13 +50,28 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public CertificationBodyDTO create(CertificationBodyDTO acb) throws EntityCreationException, EntityRetrievalException {
+	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException {
 		// Create the ACB itself
 		CertificationBodyDTO result = certificationBodyDAO.create(acb);
 
 		// Grant the current principal administrative permission to the ACB
-		addPermission(result, new PrincipalSid(gov.healthit.chpl.auth.Util.getUsername()),
+		addPermission(result, Util.getCurrentUser().getId(),
 				BasePermission.ADMINISTRATION);
+		
+		//all existing users with ROLE_ADMIN now need access to this new ACB
+		List<UserDTO> allUsers = userManager.getAll();
+		for(UserDTO user : allUsers) {
+			Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
+			boolean isChplAdmin = false;
+			for(UserPermissionDTO permission : permissions) {
+				if(permission.getAuthority().equals("ROLE_ADMIN")) {
+					isChplAdmin = true;
+				}
+			}
+			if(isChplAdmin) {
+				addPermission(result, user.getId(), BasePermission.ADMINISTRATION);
+			}
+		}
 		
 		logger.debug("Created acb " + result
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
@@ -124,8 +145,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 	
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
-	public void addPermission(CertificationBodyDTO acb, Sid recipient, Permission permission) {
+	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
+	public void addPermission(CertificationBodyDTO acb, Long userId, Permission permission) throws UserRetrievalException {
 		MutableAcl acl;
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 
@@ -136,6 +157,42 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			acl = mutableAclService.createAcl(oid);
 		}
 
+		UserDTO user = userDAO.getById(userId);
+		if(user == null || user.getSubjectName() == null) {
+			throw new UserRetrievalException("Could not find user with id " + userId);
+		}
+		
+		Sid recipient = new PrincipalSid(user.getSubjectName());
+		if(permissionExists(acl, recipient, permission)) {
+			logger.debug("User " + recipient + " already has permission on the ACB " + acb.getName());
+		} else {
+			acl.insertAce(acl.getEntries().size(), permission, recipient, true);
+			mutableAclService.updateAcl(acl);
+			logger.debug("Added permission " + permission + " for Sid " + recipient
+					+ " acb " + acb);
+		}
+	}
+	
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
+	public void addPermission(CertificationBodyDTO acb, UserDTO user, Permission permission) {
+		MutableAcl acl;
+		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
+
+		try {
+			acl = (MutableAcl) mutableAclService.readAclById(oid);
+		}
+		catch (NotFoundException nfe) {
+			acl = mutableAclService.createAcl(oid);
+		}
+
+		UserDTO foundUser = userDAO.findUser(user);
+		if(foundUser == null || foundUser.getId() == null) {
+			//TODO: what to do about the password??
+			//foundUser = userDAO.create(user, encodedPassword);
+		}
+		
+		Sid recipient = new PrincipalSid(foundUser.getSubjectName());
 		if(permissionExists(acl, recipient, permission)) {
 			logger.debug("User " + recipient + " already has permission on the ACB " + acb.getName());
 		} else {
@@ -147,7 +204,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
 	public void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission) {
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -170,7 +227,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
 	public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -191,6 +248,28 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 		mutableAclService.updateAcl(acl);
 		logger.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
+	}
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')") 
+	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException {
+		if(userDto.getSubjectName() == null) {
+			userDto = userDAO.getById(userDto.getId());
+		}
+		
+		List<CertificationBodyDTO> acbs = certificationBodyDAO.findAll();
+		for(CertificationBodyDTO acb : acbs) {
+			ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
+			MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+			
+			List<Permission> permissions = new ArrayList<Permission>();
+			List<AccessControlEntry> entries = acl.getEntries();
+			for (int i = 0; i < entries.size(); i++) {
+				AccessControlEntry currEntry = entries.get(i);
+				if(currEntry.getSid().equals(userDto.getSubjectName())) {
+					permissions.add(currEntry.getPermission());
+				}
+			}
+		}
 	}
 	
 	private boolean permissionExists(CertificationBodyDTO acb, Sid recipient, Permission permission) {

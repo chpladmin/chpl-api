@@ -72,14 +72,14 @@ public class CertificationBodyManagerTest extends TestCase {
 
 		//add to the acb
 		CertificationBodyDTO acb = acbDao.getById(3L);
-		UserDTO user = userDao.getById(2L);
-		acbManager.addPermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.READ);
+		Long userId = 2L;
+		acbManager.addPermission(acb, userId, BasePermission.READ);
 		
 		//confirm one user is in the acb
 		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
 		boolean userIsOnAcb = false;
 		for(UserDTO foundUser : users) {
-			if(foundUser.getId() == user.getId()) {
+			if(foundUser.getId() == userId) {
 				userIsOnAcb = true;
 			}
 		}

@@ -212,7 +212,7 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	@Transactional
 	public Set<UserPermissionDTO> findPermissionsForUser(Long userId) {
 		
-		Query query = entityManager.createQuery("FROM UserPermissionUserMappingEntity pme JOIN FETCH pme.permission WHERE user_id = :userid");
+		Query query = entityManager.createQuery("FROM UserPermissionUserMappingEntity pme JOIN FETCH pme.permission WHERE pme.deleted <> true AND user_id = :userid");
 		query.setParameter("userid", userId);
 		List<UserPermissionUserMappingEntity> results = query.getResultList();
 		Set<UserPermissionDTO> userPermissions = new HashSet<UserPermissionDTO>();
