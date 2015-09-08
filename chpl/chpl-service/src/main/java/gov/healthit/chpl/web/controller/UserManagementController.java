@@ -112,8 +112,7 @@ public class UserManagementController {
 		if(userId <= 0) {
 			throw new UserRetrievalException("Cannot delete user with ID less than 0");
 		}
-		UserDTO toDelete = new UserDTO();
-		toDelete.setId(userId);
+		UserDTO toDelete = userManager.getById(userId);
 		
 		//delete the acb permissions for that user
 		acbManager.deletePermissionsForUser(toDelete);
