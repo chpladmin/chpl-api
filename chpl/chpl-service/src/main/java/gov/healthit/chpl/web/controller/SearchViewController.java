@@ -52,7 +52,8 @@ public class SearchViewController {
 			@RequestParam("searchTerm") String searchTerm, 
 			@RequestParam(value = "pageNum", required = false) Integer pageNum, 
 			@RequestParam(value = "pageSize", required = false) Integer pageSize,
-			@RequestParam(value = "orderBy", required = false) String orderBy
+			@RequestParam(value = "orderBy", required = false) String orderBy,
+			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending
 			) throws EntityRetrievalException {
 		
 		
@@ -65,10 +66,17 @@ public class SearchViewController {
 		}
 		
 		if (orderBy != null){
-			return certifiedProductSearchManager.simpleSearch(searchTerm, pageNum, pageSize, orderBy);
+			
+			if (sortDescending != null){
+				return certifiedProductSearchManager.simpleSearch(searchTerm, pageNum, pageSize, orderBy, sortDescending);
+			} else {
+				return certifiedProductSearchManager.simpleSearch(searchTerm, pageNum, pageSize, orderBy, false);
+			}
+			
 		} else {
 			return certifiedProductSearchManager.simpleSearch(searchTerm, pageNum, pageSize);
 		}
+		
 	}
 	
 	

@@ -10,7 +10,7 @@ public interface CertifiedProductSearchResultDAO {
 	public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException;
 	
 	public List<CertifiedProductDetailsDTO> simpleSearch(String searchTerm,
-			Integer pageNum, Integer pageSize, String orderBy);
+			Integer pageNum, Integer pageSize, String orderBy, Boolean sortDescending);
 	
 	public Long countSimpleSearchResults(String searchTerm);
 	

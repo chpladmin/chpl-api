@@ -44,12 +44,17 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	
 	@Override
 	public List<CertifiedProductDetailsDTO> simpleSearch(
-			String searchTerm, Integer pageNum, Integer pageSize, String orderBy) {
+			String searchTerm, Integer pageNum, Integer pageSize, String orderBy, Boolean sortDescending) {	
+		
+		String sortOrder = "ASC ";
+		if (sortDescending){
+			sortOrder = "DESC ";
+		}
 		
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity "
 				+ "where (NOT deleted = true) AND ((UPPER(vendor_name)  "
 				+ "LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) "
-				+ "ORDER BY "+columnNameRef.get(orderBy)+" "
+				+ "ORDER BY "+columnNameRef.get(orderBy)+" "+sortOrder+" "
 				, CertifiedProductDetailsEntity.class );
 		query.setParameter("vendorname", "%"+searchTerm+"%");
 		query.setParameter("productname", "%"+searchTerm+"%");
@@ -232,6 +237,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
+		String sortOrder = "ASC ";
+		if (searchRequest.getSortDescending()){
+			sortOrder = "DESC ";
+		}
+		
+		queryStr += sortOrder;
+		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
 		query.setParameter("cqms", searchRequest.getCqms());
@@ -338,6 +350,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
+		
+		String sortOrder = "ASC ";
+		if (searchRequest.getSortDescending()){
+			sortOrder = "DESC ";
+		}
+		
+		queryStr += sortOrder;
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
@@ -450,6 +469,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
+		String sortOrder = "ASC ";
+		if (searchRequest.getSortDescending()){
+			sortOrder = "DESC ";
+		}
+		
+		queryStr += sortOrder;
+		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
@@ -519,6 +545,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
+		
+		String sortOrder = "ASC ";
+		if (searchRequest.getSortDescending()){
+			sortOrder = "DESC ";
+		}
+		
+		queryStr += sortOrder;
 		
 		Query query = entityManager.createQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
