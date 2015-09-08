@@ -58,7 +58,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals((int)response.getRecordCount(), response.getResults().size());
 		assertEquals(3, response.getResults().size());
 		
-		SearchResponse responseSorted = certifiedProductSearchManager.simpleSearch("Test", 0, 10, "product");
+		SearchResponse responseSorted = certifiedProductSearchManager.simpleSearch("Test", 0, 10, "product", false);
 		assertEquals((int)responseSorted.getRecordCount(), responseSorted.getResults().size());
 		assertEquals(3, responseSorted.getResults().size());
 	}

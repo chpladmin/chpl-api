@@ -133,12 +133,12 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	@Transactional
 	@Override
 	public SearchResponse simpleSearch(String searchTerm,
-			Integer pageNum, Integer pageSize, String orderBy) {
+			Integer pageNum, Integer pageSize, String orderBy, Boolean sortDescending) {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
 		Integer countSearchResults = certifiedProductSearchResultDAO.countSimpleSearchResults(searchTerm).intValue();
 		
-		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.simpleSearch(searchTerm, pageNum, pageSize, orderBy)){
+		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.simpleSearch(searchTerm, pageNum, pageSize, orderBy, sortDescending)){
 			
 			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
 			
@@ -199,7 +199,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
 		Integer countSearchResults =  certifiedProductSearchResultDAO.countSimpleSearchResults(searchTerm).intValue();
 		
-		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.simpleSearch(searchTerm, pageNum, pageSize, "product")){
+		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.simpleSearch(searchTerm, pageNum, pageSize, "product", false)){
 			
 			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
 			

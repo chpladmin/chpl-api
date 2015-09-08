@@ -55,7 +55,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	
 	@Test
 	public void simpleSearch(){
-		List<CertifiedProductDetailsDTO> results = searchResultDAO.simpleSearch("Test", 0, 10, "product");
+		List<CertifiedProductDetailsDTO> results = searchResultDAO.simpleSearch("Test", 0, 10, "product", false);
 		assertEquals(3, results.size());
 	}
 	

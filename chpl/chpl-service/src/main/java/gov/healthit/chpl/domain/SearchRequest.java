@@ -15,7 +15,9 @@ public class SearchRequest {
 	String productClassification = null;
 	String practiceType = null;
 	String orderBy = "product";
+	Boolean sortDescending = false;
 	
+
 	public String getVendor() {
 		return vendor;
 	}
@@ -78,5 +80,11 @@ public class SearchRequest {
 	}
 	public void setCertificationBody(String certifyingBody) {
 		this.certificationBody = certifyingBody;
+	}
+	public Boolean getSortDescending() {
+		return sortDescending;
+	}
+	public void setSortDescending(Boolean sortDescending) {
+		this.sortDescending = sortDescending;
 	}
 }
