@@ -93,13 +93,13 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Transactional
-	public void delete(UserDTO user) throws UserRetrievalException{
+	public void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 		securedUserManager.delete(user);
 	}
 	
 	@Override
 	@Transactional
-	public void delete(String userName) throws UserRetrievalException{
+	public void delete(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 		
 		UserDTO user = securedUserManager.getBySubjectName(userName);
 		if (user == null){
@@ -136,14 +136,20 @@ public class UserManagerImpl implements UserManager {
 	
 	@Override
 	@Transactional
-	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException {
+	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 		securedUserManager.removeRole(user, role);
 	}
 	
 	@Override
 	@Transactional
-	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException {
+	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 		securedUserManager.removeRole(userName, role);
+	}
+	
+	@Override
+	@Transactional
+	public void removeAdmin(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+		securedUserManager.removeAdmin(userName);
 	}
 	
 	@Override

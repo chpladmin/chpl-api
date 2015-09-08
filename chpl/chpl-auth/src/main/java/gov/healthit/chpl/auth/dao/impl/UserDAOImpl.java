@@ -178,6 +178,40 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		return result;
 	}
 	
+	public UserDTO findUser(UserDTO toSearch) {
+		UserDTO foundUser = null;
+		
+		String userQuery = "from UserEntity u" 
+				+ " where (NOT u.deleted = true) "
+				+ " AND (u.subjectName = :subjectName) "
+				+ " AND (u.contact.firstName = :firstName)"
+				+ " AND (u.contact.lastName = :lastName)"
+				+ " AND (u.contact.email = :email)"
+				+ " AND (u.contact.phoneNumber = :phoneNumber)";
+		if(toSearch.getTitle() != null) {
+			userQuery += " AND (u.contact.title = :title)";
+		} else {
+			userQuery += " AND (u.contact.title IS NULL)";
+		}
+		Query query = entityManager.createQuery(userQuery, UserEntity.class );
+		query.setParameter("subjectName", toSearch.getSubjectName());
+		query.setParameter("firstName", toSearch.getFirstName());
+		query.setParameter("lastName", toSearch.getLastName());
+		query.setParameter("email", toSearch.getEmail());
+		query.setParameter("phoneNumber", toSearch.getPhoneNumber());
+		if(toSearch.getTitle() != null) {
+			query.setParameter("title", toSearch.getTitle());
+		}
+		
+		List<UserEntity> result = query.getResultList();
+		if (result.size() >= 1){
+			UserEntity entity = result.get(0);
+			foundUser = new UserDTO(entity);
+		} 
+		
+		return foundUser;
+	}
+	
 	private void create(UserEntity user) {
 		
 		entityManager.persist(user);

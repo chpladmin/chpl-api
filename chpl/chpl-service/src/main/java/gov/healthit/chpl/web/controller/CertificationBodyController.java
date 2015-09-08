@@ -4,6 +4,7 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,19 +21,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.json.User;
+import gov.healthit.chpl.auth.json.UserCreationWithRolesJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.json.UserListJSONObject;
 import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.UserCreationException;
+import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationBodyPermission;
+import gov.healthit.chpl.domain.CertificationBodyUser;
+import gov.healthit.chpl.domain.CreateUserAndAddToAcbRequest;
 import gov.healthit.chpl.domain.UpdateUserAndAcbRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
+import gov.healthit.chpl.web.controller.results.CertificationBodyUserResults;
 
 @RestController
 @RequestMapping("/acb")
@@ -60,7 +70,7 @@ public class CertificationBodyController {
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public CertificationBody createAcb(@RequestBody CertificationBody acbInfo) throws EntityRetrievalException, EntityCreationException {
+	public CertificationBody createAcb(@RequestBody CertificationBody acbInfo) throws UserRetrievalException, EntityRetrievalException, EntityCreationException {
 		CertificationBodyDTO toCreate = new CertificationBodyDTO();
 		toCreate.setName(acbInfo.getName());
 		toCreate.setWebsite(acbInfo.getWebsite());
@@ -120,6 +130,48 @@ public class CertificationBodyController {
 		return "{\"deletedAcb\" : true }";
 	}
 	
+	@RequestMapping(value="/create_and_add_user", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String addUserToAcb(@RequestBody CreateUserAndAddToAcbRequest updateRequest) 
+									throws UserRetrievalException, UserCreationException, EntityRetrievalException, InvalidArgumentsException {
+		
+		if(updateRequest.getAcbId() == null || updateRequest.getUser() == null || 
+				updateRequest.getUser().getSubjectName() == null || updateRequest.getAuthority() == null) {
+			throw new InvalidArgumentsException("ACB ID, Username ('subject name'), and Authority are required.");
+		}
+		
+		//look for the user by subjectName - if they are not found we'll add them
+		UserDTO user = userManager.getByName(updateRequest.getUser().getSubjectName());
+		CertificationBodyDTO acb = acbManager.getById(updateRequest.getAcbId());
+		
+		if(acb == null) {
+			throw new InvalidArgumentsException("Could not find either ACB or User specified");
+		}
+		
+		if(user == null) {
+			//create the user
+			user = userManager.create(updateRequest.getUser());
+		}
+		
+		//make sure the user has the role(s) provided
+		if(updateRequest.getUser().getRoles() != null && updateRequest.getUser().getRoles().size() > 0) {
+			for(String roleName : updateRequest.getUser().getRoles()) {
+				try {
+					userManager.grantRole(user.getName(), roleName);
+				} catch(UserPermissionRetrievalException ex) {
+					logger.error("Could not add role " + roleName + " for user " + user.getName(), ex);
+				} catch(UserManagementException mex) {
+					logger.error("Could not add role " + roleName + " for user " + user.getName(), mex);
+				}
+			}
+		}
+
+		Permission permission = CertificationBodyPermission.toPermission(updateRequest.getAuthority());
+		acbManager.addPermission(acb, user.getId(), permission);
+		return "{\"userAdded\" : true }";
+	}
+	
 	@RequestMapping(value="/add_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -138,7 +190,7 @@ public class CertificationBodyController {
 		}
 
 		Permission permission = CertificationBodyPermission.toPermission(updateRequest.getAuthority());
-		acbManager.addPermission(acb, new PrincipalSid(user.getSubjectName()), permission);
+		acbManager.addPermission(acb, updateRequest.getUserId(), permission);
 		return "{\"userAdded\" : true }";
 	}
 	
@@ -171,18 +223,32 @@ public class CertificationBodyController {
 	
 	@RequestMapping(value="/list_users/{acbId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody UserListJSONObject getUsers(@PathVariable("acbId") Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
+	public @ResponseBody CertificationBodyUserResults getUsers(@PathVariable("acbId") Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
 		CertificationBodyDTO acb = acbManager.getById(acbId);
 		if(acb == null) {
 			throw new InvalidArgumentsException("Could not find the ACB specified.");
 		}
 		
-		List<UserInfoJSONObject> acbUsers = new ArrayList<UserInfoJSONObject>();
+		List<CertificationBodyUser> acbUsers = new ArrayList<CertificationBodyUser>();
 		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
 		for(UserDTO user : users) {
-			if(user.getId() > 0) {
-				List<Permission> permissions = acbManager.getPermissionsForUser(acb, new PrincipalSid(user.getSubjectName()));
+			
+			//only show users that have ROLE_ACB_*
+			Set<UserPermissionDTO> systemPermissions = userManager.getGrantedPermissionsForUser(user);
+			boolean hasAcbPermission = false;
+			for(UserPermissionDTO systemPermission : systemPermissions) {
+				if(systemPermission.getAuthority().startsWith("ROLE_ACB_")) {
+					hasAcbPermission = true;
+				}
+			}
+			
+			if(hasAcbPermission) {
+				List<String> roleNames = new ArrayList<String>();
+				for(UserPermissionDTO role : systemPermissions) {
+					roleNames.add(role.getAuthority());
+				}
 				
+				List<Permission> permissions = acbManager.getPermissionsForUser(acb, new PrincipalSid(user.getSubjectName()));
 				List<String> acbPerm = new ArrayList<String>(permissions.size());
 				for(Permission permission : permissions) {
 					CertificationBodyPermission perm = CertificationBodyPermission.fromPermission(permission);
@@ -191,13 +257,15 @@ public class CertificationBodyController {
 					}
 				}
 				
-				UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
+				CertificationBodyUser userInfo = new CertificationBodyUser();
+				userInfo.setUser(new User(user));
 				userInfo.setPermissions(acbPerm);
+				userInfo.setRoles(roleNames);
 				acbUsers.add(userInfo);
 			}
 		}
 		
-		UserListJSONObject results = new UserListJSONObject();
+		CertificationBodyUserResults results = new CertificationBodyUserResults();
 		results.setUsers(acbUsers);
 		return results;
 	}

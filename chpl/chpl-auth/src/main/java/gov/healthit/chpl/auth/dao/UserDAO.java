@@ -24,6 +24,8 @@ public interface UserDAO {
 	
 	public List<UserDTO> findByNames(List<String> names);
 
+	public UserDTO findUser(UserDTO user);
+	
 	public UserDTO getById(Long userId) throws UserRetrievalException;
 	
 	public UserDTO getByName(String uname) throws UserRetrievalException;
