@@ -173,6 +173,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		}
 	}
 	
+	//TODO: DELETE THIS METHOD?? We were going to use the find user feature but abandoned it
+	// because it will be obsolete once we get the invite feature working
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
 	public void addPermission(CertificationBodyDTO acb, UserDTO user, Permission permission) {
