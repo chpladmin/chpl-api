@@ -1,7 +1,8 @@
 package gov.healthit.chpl.auth.entity;
 
-import java.sql.Date;
+import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,16 +27,20 @@ public class UserContactEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name="first_name")
+	@Basic(optional = false)
+	@Column(name="first_name", nullable=false)
 	private String firstName;
 	
-	@Column(name="last_name")
+	@Basic(optional = false)
+	@Column(name="last_name", nullable=false)
 	private String lastName;
 	
-	@Column(name="email")
+	@Basic(optional = false)
+	@Column(name="email", nullable=false)
 	private String email;
 	
-	@Column(name="phone_number")
+	@Basic(optional = false)
+	@Column(name="phone_number", nullable=false)
 	private String phoneNumber;
 	
 	@Column(name="title")
@@ -47,6 +52,11 @@ public class UserContactEntity {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
+	@Column(name = "last_modified_date")
+	private Date lastModifiedDate;
+	
+	@Column(name = "deleted")
+	private Boolean deleted;
 	
 	public String getFirstName() {
 		return firstName;
@@ -106,6 +116,22 @@ public class UserContactEntity {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 }

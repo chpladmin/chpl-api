@@ -1,22 +1,17 @@
 package gov.healthit.chpl.entity;
 
 
-import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.WeakHashMap;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.hibernate.proxy.HibernateProxy;
 
 
 /** 
@@ -33,7 +28,6 @@ public class CertifiedProductEntity {
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -2928065796550377879L;
 	
-	
     @Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certifiedProductCertified_product_idGenerator")
 	@Basic( optional = false )
@@ -41,17 +35,16 @@ public class CertifiedProductEntity {
 	@SequenceGenerator(name = "certifiedProductCertified_product_idGenerator", sequenceName = "openchpl.openchpl.certified_product_certified_product_id_seq")
 	private Long id;
     
-    
 	@Basic( optional = true )
-	@Column( name = "atcb_certification_id", length = 250  )
-	private String atcbCertificationId;
+	@Column( name = "acb_certification_id", length = 250  )
+	private String acbCertificationId;
 	
 	@Basic( optional = false )
-	@JoinColumn(name = "certification_body_id", nullable = false )
+	@Column(name = "certification_body_id", nullable = false )
 	private Long certificationBodyId;
 	
 	@Basic( optional = false )
-	@JoinColumn(name = "certification_edition_id", nullable = false )
+	@Column(name = "certification_edition_id", nullable = false )
 	private Long certificationEditionId;
 	
 	@Basic( optional = true )
@@ -79,11 +72,11 @@ public class CertifiedProductEntity {
 	private Long practiceTypeId;
 	
 	@Basic( optional = true )
-	@JoinColumn(name = "product_classification_type_id", nullable = true )
+	@Column(name = "product_classification_type_id", nullable = true )
 	private Long productClassificationTypeId;
 	
 	@Basic( optional = false )
-	@JoinColumn(name = "product_version_id", nullable = false )
+	@Column(name = "product_version_id", nullable = false )
 	private Long productVersionId;
 	
 	@Basic( optional = true )
@@ -98,6 +91,14 @@ public class CertifiedProductEntity {
 	@Column(name = "testing_lab_id", nullable = true )
 	private Long testingLabId;
 	
+	@Basic(optional = true) 
+	@Column(name = "other_acb", length=64)
+	private String otherAcb;
+	
+	@Basic(optional = false)
+	@Column(name ="certification_status_id", nullable = false)
+	private Long certificationStatusId;
+	
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -111,7 +112,6 @@ public class CertifiedProductEntity {
 	public CertifiedProductEntity(Long id) {
 		this.id = id;
 	}
-	
 	
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
@@ -129,12 +129,12 @@ public class CertifiedProductEntity {
 		this.id = id;
 	}
 
-	public String getAtcbCertificationId() {
-		return atcbCertificationId;
+	public String getAcbCertificationId() {
+		return acbCertificationId;
 	}
 
-	public void setAtcbCertificationId(String atcbCertificationId) {
-		this.atcbCertificationId = atcbCertificationId;
+	public void setAcbCertificationId(String acbCertificationId) {
+		this.acbCertificationId = acbCertificationId;
 	}
 
 	public Long getCertificationBodyId() {
@@ -239,6 +239,26 @@ public class CertifiedProductEntity {
 
 	public void setTestingLabId(Long testingLabId) {
 		this.testingLabId = testingLabId;
+	}
+
+	public String getOtherAcb() {
+		return otherAcb;
+	}
+
+	public void setOtherAcb(String otherAcb) {
+		this.otherAcb = otherAcb;
+	}
+
+	public Long getCertificationStatusId() {
+		return certificationStatusId;
+	}
+
+	public void setCertificationStatusId(Long certificationStatusId) {
+		this.certificationStatusId = certificationStatusId;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
 	}
 
 }

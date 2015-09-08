@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth.entity;
 
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -54,6 +55,12 @@ public class UserEntity {
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
 	
+	@Column(name="last_modified_date")
+	private Date lastModifiedDate;
+	
+	@Column(name="deleted")
+	private Boolean deleted;
+	
 	@OneToMany(mappedBy="user", fetch=FetchType.LAZY)
  	private Set<UserPermissionUserMappingEntity> permissionMappings;
 	
@@ -69,6 +76,8 @@ public class UserEntity {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
+		
+		this.contact = new UserContactEntity();
 	}
 	
 	
@@ -79,6 +88,8 @@ public class UserEntity {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
+		
+		this.contact = new UserContactEntity();
 	}
 	
 	public UserEntity(String subjectName, String encodedPassword) {
@@ -88,6 +99,8 @@ public class UserEntity {
 		this.accountLocked = false;
 		this.credentialsExpired = false;
 		this.accountEnabled = true;
+		
+		this.contact = new UserContactEntity();		
 	}
 	
 	public String getSubjectName() {
@@ -193,6 +206,26 @@ public class UserEntity {
 
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 	

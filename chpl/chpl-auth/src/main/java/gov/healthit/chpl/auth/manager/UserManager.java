@@ -3,6 +3,7 @@ package gov.healthit.chpl.auth.manager;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
@@ -16,16 +17,16 @@ import java.util.Set;
 public interface UserManager {
 			
 	
-	public void create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException;
+	public UserDTO create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException;
 	
 	
-	public void update(UserInfoJSONObject userInfo) throws UserRetrievalException;
+	public UserDTO update(User userInfo) throws UserRetrievalException;
 	
 	
-	public void delete(UserDTO user);
+	public void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 	
 	
-	public void delete(String userName) throws UserRetrievalException;
+	public void delete(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException ;
 	
 	
 	public List<UserDTO> getAll();
@@ -38,7 +39,7 @@ public interface UserManager {
 	
 	
 	public UserInfoJSONObject getUserInfo(String userName) throws UserRetrievalException;
-	
+
 
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException;
 
@@ -46,10 +47,9 @@ public interface UserManager {
 	public void grantAdmin(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 
 	
-	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException;
-	
-	
-	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException;
+	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
+	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
+	public void removeAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException;
 	
 	
 	public void updateUserPassword(String userName, String password) throws UserRetrievalException;

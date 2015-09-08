@@ -30,7 +30,6 @@ import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,26 +48,25 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	@Autowired
 	private MutableAclService mutableAclService;
 	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
 	
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_CREATOR')")
-	public void create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException {
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_USER_CREATOR')")
+	public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException {
 				
-		userDAO.create(user, encodedPassword);
+		user = userDAO.create(user, encodedPassword);
 		
 		// Grant the user administrative permission over itself.
 		addAclPermission(user, new PrincipalSid(user.getSubjectName()),
 				BasePermission.ADMINISTRATION);
+		
+		return user;
 	}
 	
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void update(UserDTO user) throws UserRetrievalException {
-		userDAO.update(user);
+	public UserDTO update(UserDTO user) throws UserRetrievalException {
+		return userDAO.update(user);
 	}
 	
 	
@@ -79,12 +77,20 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(UserDTO user){
+	@Transactional
+	public void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+		//find the granted permissions for this user and remove them
+		Set<UserPermissionDTO> permissions = getGrantedPermissionsForUser(user);
+		for(UserPermissionDTO permission : permissions) {
+			removeRole(user, permission.getAuthority());
+		}
 		
-		userDAO.delete(user.getId());
-		// Delete the ACL information as well
+		//remove all ACLs for the user for all users and acbs
 		ObjectIdentity oid = new ObjectIdentityImpl(UserDTO.class, user.getId());
 		mutableAclService.deleteAcl(oid, false);
+		
+		//now delete the user
+		userDAO.delete(user.getId());
 	}
 	
 	
@@ -100,7 +106,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	}
 	
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#user, admin)")
 	public void addAclPermission(UserDTO user, Sid recipient, Permission permission){
 		
 		MutableAcl acl;
@@ -117,7 +123,6 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 		mutableAclService.updateAcl(acl);
 		
 	}
-	
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void deleteAclPermission(UserDTO user, Sid recipient, Permission permission){
@@ -137,11 +142,10 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	}
 	
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')")
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
-		
-		
-		if ((role == "ROLE_ADMIN") || (role == "ROLE_ACL_ADMIN") || (role =="ROLE_ADMINISTRATOR") || (role == "ROLE_USER_AUTHENTICATOR")){
+		if (role.equals("ROLE_ADMIN") || role.equals("ROLE_ACL_ADMIN") || 
+				role.equals("ROLE_ADMINISTRATOR") || role.equals("ROLE_USER_AUTHENTICATOR")) {
 			throw new UserManagementException("This role cannot be granted using the grant role functionality");
 		}
 		
@@ -152,23 +156,33 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void grantAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
-		
 		userDAO.addPermission(userName, "ROLE_ADMIN");
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#user, admin)")
+	public void removeRole(UserDTO user, String role) throws UserManagementException, UserRetrievalException, UserPermissionRetrievalException {
+		removeRole(user.getSubjectName(), role);
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#user, admin)")
+	public void removeRole(String userName, String role) throws UserManagementException, UserRetrievalException, UserPermissionRetrievalException {
+		if (role.equals("ROLE_ADMIN") || role.equals("ROLE_ACL_ADMIN") || 
+				role.equals("ROLE_ADMINISTRATOR") || role.equals("ROLE_USER_AUTHENTICATOR")) {
+			throw new UserManagementException("This role cannot be removed using the remove role functionality");
+		}
 		
-	}
-	
-	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException {
-		userDAO.removePermission(user.getSubjectName(), role);
-	}
-	
-	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
-	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException {
 		userDAO.removePermission(userName, role);
 	}
 	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public void removeAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
+		
+		userDAO.removePermission(userName, "ROLE_ADMIN");
+		
+	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void updatePassword(UserDTO user, String encodedPassword) throws UserRetrievalException{
@@ -177,14 +191,14 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	
 	
 	@Override
-	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")
 	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user){
 		return this.userPermissionDAO.findPermissionsForUser(user.getId());
 	}
 
 
 	@Override
-	@PostAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasPermission(returnObject, 'read') or hasPermission(returnObject, admin)")
+	@PostAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(returnObject, 'read') or hasPermission(returnObject, admin)")
 	public UserDTO getBySubjectName(String userName) throws UserRetrievalException {
 		return userDAO.getByName(userName);
 	}

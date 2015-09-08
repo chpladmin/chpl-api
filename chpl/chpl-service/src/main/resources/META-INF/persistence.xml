@@ -17,7 +17,9 @@
 		<class>gov.healthit.chpl.entity.VendorEntity</class>
 		<class>gov.healthit.chpl.entity.ProductEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
+		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
+		<class>gov.healthit.chpl.entity.CQMResultEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

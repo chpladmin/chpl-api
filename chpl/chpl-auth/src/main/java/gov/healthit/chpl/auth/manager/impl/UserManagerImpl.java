@@ -6,6 +6,7 @@ import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.manager.SecuredUserManager;
@@ -45,16 +46,17 @@ public class UserManagerImpl implements UserManager {
 	
 	@Override
 	@Transactional
-	public void create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
+	public UserDTO create(UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
 		
 		UserDTO user = UserConversionHelper.createDTO(userInfo);
 		String encodedPassword = encodePassword(userInfo.getPassword());
-		securedUserManager.create(user, encodedPassword);
+		user = securedUserManager.create(user, encodedPassword);
+		return user;
 	}
 	
 	@Override
 	@Transactional
-	public void update(UserInfoJSONObject userInfo) throws UserRetrievalException{
+	public UserDTO update(User userInfo) throws UserRetrievalException{
 		
 		UserDTO userDTO = getByName(userInfo.getSubjectName());
 		
@@ -74,13 +76,10 @@ public class UserManagerImpl implements UserManager {
 			userDTO.setPhoneNumber(userInfo.getPhoneNumber());
 		}
 		
-		if (userInfo.getTitle() != null){
-			userDTO.setTitle(userInfo.getTitle());
-		}
-		
-		userDTO.setAccountLocked(userInfo.isAccountLocked());
-		userDTO.setAccountEnabled(userInfo.isAccountEnabled());
-		securedUserManager.update(userDTO);
+		userDTO.setTitle(userInfo.getTitle());		
+		userDTO.setAccountLocked(userInfo.getAccountLocked());
+		userDTO.setAccountEnabled(userInfo.getAccountEnabled());
+		return securedUserManager.update(userDTO);
 	}
 	
 	@Transactional
@@ -94,13 +93,13 @@ public class UserManagerImpl implements UserManager {
 	}
 	
 	@Transactional
-	public void delete(UserDTO user){
+	public void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 		securedUserManager.delete(user);
 	}
 	
 	@Override
 	@Transactional
-	public void delete(String userName) throws UserRetrievalException{
+	public void delete(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 		
 		UserDTO user = securedUserManager.getBySubjectName(userName);
 		if (user == null){
@@ -122,6 +121,7 @@ public class UserManagerImpl implements UserManager {
 		return securedUserManager.getById(id);
 	}
 	
+	
 	@Override
 	@Transactional
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
@@ -136,14 +136,20 @@ public class UserManagerImpl implements UserManager {
 	
 	@Override
 	@Transactional
-	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException {
+	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 		securedUserManager.removeRole(user, role);
 	}
 	
 	@Override
 	@Transactional
-	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException {
+	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 		securedUserManager.removeRole(userName, role);
+	}
+	
+	@Override
+	@Transactional
+	public void removeAdmin(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
+		securedUserManager.removeAdmin(userName);
 	}
 	
 	@Override

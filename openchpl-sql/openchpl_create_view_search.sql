@@ -1,18 +1,15 @@
-﻿
-DROP VIEW IF EXISTS openchpl.certified_product_details;
+CREATE OR REPLACE VIEW openchpl.certified_product_details AS
 
-CREATE VIEW openchpl.certified_product_details AS
+SELECT
 
-SELECT 
-
-a.certified_product_id, 
-a.certification_edition_id, 
-a.product_version_id, 
-a.testing_lab_id, 
-a.certification_body_id, 
+a.certified_product_id,
+a.certification_edition_id,
+a.product_version_id,
+a.testing_lab_id,
+a.certification_body_id,
 a.chpl_product_number,
-a.report_file_location, 
-a.quality_management_system_att, 
+a.report_file_location,
+a.quality_management_system_att,
 a.acb_certification_id,
 a.practice_type_id,
 a.product_classification_type_id,
@@ -32,9 +29,7 @@ i.certification_date,
 COALESCE(k.count_certifications, 0) as "count_certifications",
 COALESCE(m.count_cqms, 0) as "count_cqms"
 
-
-
-FROM openchpl.certified_product a 
+FROM openchpl.certified_product a
 
 LEFT JOIN (SELECT certification_edition_id, year FROM openchpl.certification_edition) b on a.certification_edition_id = b.certification_edition_id
 
@@ -44,7 +39,7 @@ LEFT JOIN (SELECT product_classification_type_id, name as "product_classificatio
 
 LEFT JOIN (SELECT practice_type_id, name as "practice_type_name" from openchpl.practice_type) e on a.practice_type_id = e.practice_type_id
 
-LEFT JOIN (SELECT product_version_id, version as "product_version", product_id from openchpl.product_version) f on a.product_version_id = f.product_version_id 
+LEFT JOIN (SELECT product_version_id, version as "product_version", product_id from openchpl.product_version) f on a.product_version_id = f.product_version_id
 
 LEFT JOIN (SELECT product_id, vendor_id, name as "product_name" FROM openchpl.product) g ON f.product_id = g.product_id
 

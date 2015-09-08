@@ -75,8 +75,9 @@ public class VendorController {
 			VendorDTO newVendor = new VendorDTO();
 			newVendor.setName(vendorInfo.getVendor().getName());
 			newVendor.setWebsite(vendorInfo.getVendor().getWebsite());
-			AddressDTO address = new AddressDTO();
+			AddressDTO address = null;
 			if(vendorInfo.getVendor().getAddress() != null) {
+				address = new AddressDTO();
 				address.setId(vendorInfo.getVendor().getAddress().getAddressId());
 				address.setStreetLineOne(vendorInfo.getVendor().getAddress().getLine1());
 				address.setStreetLineTwo(vendorInfo.getVendor().getAddress().getLine2());

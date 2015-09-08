@@ -18,13 +18,13 @@ import org.springframework.security.acls.model.Sid;
 public interface SecuredUserManager {
 
 	
-	public void create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException;
+	public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException;
 	
-	public void update(UserDTO user) throws UserRetrievalException;
+	public UserDTO update(UserDTO user) throws UserRetrievalException;
 	
 	public void updateContactInfo(UserEntity user);
 	
-	public void delete(UserDTO user);
+	public void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 	
 	public List<UserDTO> getAll();
 	
@@ -38,9 +38,9 @@ public interface SecuredUserManager {
 
 	public void grantAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException;
 	
-	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException;
-	
-	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException;
+	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
+	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
+	public void removeAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException;
 	
 	public void updatePassword(UserDTO user, String encodedPassword) throws UserRetrievalException;
 	

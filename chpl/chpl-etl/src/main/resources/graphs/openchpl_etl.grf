@@ -676,6 +676,7 @@
 <Field name="Certbody_id" type="long"/>
 <Field name="Setting_id" type="long"/>
 <Field name="Classification_id" type="long"/>
+<Field name="STG_Certification_Certification_ID" type="string"/>
 </Record>
 </Metadata>
 <Metadata id="Classification_id">
@@ -1760,7 +1761,7 @@ function integer transform() {
 	$out.0.Vendor = $in.0.Vendor;
 	$out.0.Additional_Software = $in.0.Additional_Software;
 	$out.0.Version = $in.0.Version;
-	$out.0.Certification_Date = str2date($in.0.Certification_Date, "M/dd/yyyy");
+	$out.0.Certification_Date = str2date($in.0.Certification_Date, "M/dd/yy");
 	$out.0.Certifying_ACB = $in.0.Certifying_ACB;
     $out.0.Other_ACB = $in.0.Other_ACB;
 	$out.0.Test_Report_Url = $in.0.Test_Report_Url;
@@ -2146,9 +2147,10 @@ $Edition_id != null AND $Version_id != null AND $Certbody_id != null]]></attr>
 $Edition_id != null AND $Version_id != null AND $Certbody_id != null AND $Practice_Setting_id != null AND $Product_Classification_id != null]]></attr>
 </Node>
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Get certified_product_ids" guiX="1575" guiY="680" id="GET_CERTIFIED_PRODUCT_IDS" type="DB_INPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[SELECT $CertifiedProduct_id:=certified_product.certified_product_id, $Edition_id:=certified_product.certification_edition_id, $Version_id:=certified_product.product_version_id, $Certbody_id:=certified_product.certification_body_id, $Setting_id:=certified_product.practice_type_id, $Classification_id:=certified_product.product_classification_type_id FROM openchpl.certified_product]]></attr>
+<attr name="sqlQuery"><![CDATA[SELECT $CertifiedProduct_id:=certified_product.certified_product_id, $Edition_id:=certified_product.certification_edition_id, $Version_id:=certified_product.product_version_id, $Certbody_id:=certified_product.certification_body_id, $Setting_id:=certified_product.practice_type_id, $Classification_id:=certified_product.product_classification_type_id, $STG_Certification_Certification_ID:=certified_product.chpl_product_number FROM openchpl.certified_product]]></attr>
 </Node>
-<Node enabled="enabled" guiName="Join cert_product x cert_prod_ids" guiX="1762" guiY="628" id="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS" joinKey="$Edition_id=$Edition_id;$Version_id=$Version_id;$Certbody_id=$Certbody_id;$Practice_Setting_id=$Setting_id;$Product_Classification_id=$Classification_id" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node enabled="enabled" guiName="Join cert_product x cert_prod_ids" guiX="1762" guiY="628" id="JOIN_CERT_PRODUCT_X_CERT_PROD_IDS" joinKey="$Edition_id=$Edition_id;$Version_id=$Version_id;$Certbody_id=$Certbody_id;$STG_Certification_Certification_ID=$STG_Certification_Certification_ID;$Practice_Setting_id=$Setting_id;$Product_Classification_id=$Classification_id" joinType="leftOuter" type="EXT_HASH_JOIN">
+
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.

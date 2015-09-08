@@ -11,12 +11,14 @@
 		<class>gov.healthit.chpl.auth.entity.UserContactEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserPermissionEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationBodyEntity</class>
 		<class>gov.healthit.chpl.entity.AddressEntity</class>
 		<class>gov.healthit.chpl.entity.ContactEntity</class>
 		<class>gov.healthit.chpl.entity.VendorContactMap</class>
 		<class>gov.healthit.chpl.entity.VendorEntity</class>
 		<class>gov.healthit.chpl.entity.ProductEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
+		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CQMResultDetailsEntity</class>
