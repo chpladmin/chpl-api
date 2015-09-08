@@ -1,22 +1,17 @@
 package gov.healthit.chpl.entity;
 
 
-import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.WeakHashMap;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.hibernate.proxy.HibernateProxy;
 
 
 /** 
@@ -95,6 +90,14 @@ public class CertifiedProductEntity {
 	@Basic( optional = true )
 	@Column(name = "testing_lab_id", nullable = true )
 	private Long testingLabId;
+	
+	@Basic(optional = true) 
+	@Column(name = "other_acb", length=64)
+	private String otherAcb;
+	
+	@Basic(optional = false)
+	@Column(name ="certification_status_id", nullable = false)
+	private Long certificationStatusId;
 	
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -236,6 +239,26 @@ public class CertifiedProductEntity {
 
 	public void setTestingLabId(Long testingLabId) {
 		this.testingLabId = testingLabId;
+	}
+
+	public String getOtherAcb() {
+		return otherAcb;
+	}
+
+	public void setOtherAcb(String otherAcb) {
+		this.otherAcb = otherAcb;
+	}
+
+	public Long getCertificationStatusId() {
+		return certificationStatusId;
+	}
+
+	public void setCertificationStatusId(Long certificationStatusId) {
+		this.certificationStatusId = certificationStatusId;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
 	}
 
 }

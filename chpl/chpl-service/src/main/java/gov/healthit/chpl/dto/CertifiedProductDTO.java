@@ -24,7 +24,8 @@ public class CertifiedProductDTO {
 	private String qualityManagementSystemAtt;
 	private String reportFileLocation;
 	private Long testingLabId;
-	
+	private Long certificationStatusId;
+	private String otherAcb;
 	
 	public CertifiedProductDTO(){}
 	
@@ -45,6 +46,8 @@ public class CertifiedProductDTO {
 		this.qualityManagementSystemAtt = entity.getQualityManagementSystemAtt();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.testingLabId = entity.getTestingLabId();		
+		this.certificationStatusId = entity.getCertificationStatusId();
+		this.otherAcb = entity.getOtherAcb();
 	}
 
 	
@@ -137,6 +140,22 @@ public class CertifiedProductDTO {
 	}
 	public void setTestingLabId(Long testingLabId) {
 		this.testingLabId = testingLabId;
+	}
+
+	public Long getCertificationStatusId() {
+		return certificationStatusId;
+	}
+
+	public void setCertificationStatusId(Long certificationStatusId) {
+		this.certificationStatusId = certificationStatusId;
+	}
+
+	public String getOtherAcb() {
+		return otherAcb;
+	}
+
+	public void setOtherAcb(String otherAcb) {
+		this.otherAcb = otherAcb;
 	}
 	
 }

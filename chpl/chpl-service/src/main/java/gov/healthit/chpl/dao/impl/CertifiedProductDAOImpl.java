@@ -5,11 +5,11 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -20,65 +20,132 @@ import org.springframework.stereotype.Repository;
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
 	
 	
-	public void create(CertifiedProductDTO product) throws EntityCreationException{
+	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityCreationException{
 		
-		CertifiedProductEntity productEntity = null;
+		CertifiedProductEntity entity = null;
 		try {
-			if (product.getId() != null){
-				productEntity = this.getEntityById(product.getId());
+			if (dto.getId() != null){
+				entity = this.getEntityById(dto.getId());
 			}
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 		
-		if (productEntity != null) {
+		if (entity != null) {
 			throw new EntityCreationException("A product with this ID already exists.");
 		} else {
 			
-			productEntity = new CertifiedProductEntity();
+			entity = new CertifiedProductEntity();
 			
-			productEntity.setAcbCertificationId(product.getAcbCertificationId());
-			productEntity.setCertificationBodyId(product.getCertificationBodyId());
-			productEntity.setCertificationEditionId(product.getCertificationEditionId());
-			productEntity.setChplProductNumber(product.getChplProductNumber());
-			productEntity.setCreationDate(product.getCreationDate());
-			productEntity.setDeleted(product.getDeleted());
-			//productEntity.setLastModifiedDate(product.getLastModifiedDate());
-			productEntity.setLastModifiedUser(Util.getCurrentUser().getId());
-			productEntity.setPracticeTypeId(product.getPracticeTypeId());
-			productEntity.setProductClassificationTypeId(product.getProductClassificationTypeId());
-			productEntity.setProductVersionId(product.getProductVersionId());
-			productEntity.setQualityManagementSystemAtt(product.getQualityManagementSystemAtt());
-			productEntity.setReportFileLocation(product.getReportFileLocation());
-			productEntity.setTestingLabId(product.getTestingLabId());
+			entity.setAcbCertificationId(dto.getAcbCertificationId());
+			entity.setChplProductNumber(dto.getChplProductNumber());
+			entity.setPracticeTypeId(dto.getPracticeTypeId());
+			entity.setProductClassificationTypeId(dto.getProductClassificationTypeId());
+			entity.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
+			entity.setReportFileLocation(dto.getReportFileLocation());
+			entity.setTestingLabId(dto.getTestingLabId());
+			entity.setOtherAcb(dto.getOtherAcb());
 			
-			create(productEntity);	
+			if(dto.getCertificationBodyId() != null) {
+				entity.setCertificationBodyId(dto.getCertificationBodyId());
+			}
+			
+			if(dto.getCertificationEditionId() != null) {
+				entity.setCertificationEditionId(dto.getCertificationEditionId());
+			}
+			
+			if(dto.getCertificationStatusId() != null) {
+				entity.setCertificationStatusId(dto.getCertificationStatusId());
+			}
+			
+			if(dto.getProductVersionId() != null) {
+				entity.setProductVersionId(dto.getProductVersionId());
+			}
+			
+			if(dto.getCreationDate() != null) {
+				entity.setCreationDate(dto.getCreationDate());
+			} else {
+				entity.setCreationDate(new Date());
+			}
+			
+			if(dto.getDeleted() != null) {
+				entity.setDeleted(dto.getDeleted());
+			} else {
+				entity.setDeleted(false);
+			}
+			
+			if(dto.getLastModifiedDate() != null) {
+				entity.setLastModifiedDate(dto.getLastModifiedDate());
+			} else {
+				entity.setLastModifiedDate(new Date());
+			}
+			
+			if(dto.getLastModifiedUser() != null) {
+				entity.setLastModifiedUser(dto.getLastModifiedUser());
+			} else {
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			}
+			
+			create(entity);
+			return new CertifiedProductDTO(entity);
 		}
-		
 	}
 
-	public void update(CertifiedProductDTO product) throws EntityRetrievalException{
+	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException{
 		
-		CertifiedProductEntity productEntity = getEntityById(product.getId());		
+		CertifiedProductEntity entity = getEntityById(dto.getId());		
 		
-		productEntity.setId(product.getId());
-		productEntity.setAcbCertificationId(product.getAcbCertificationId());
-		productEntity.setCertificationBodyId(product.getCertificationBodyId());
-		productEntity.setCertificationEditionId(product.getCertificationEditionId());
-		productEntity.setChplProductNumber(product.getChplProductNumber());
-		productEntity.setCreationDate(product.getCreationDate());
-		productEntity.setDeleted(product.getDeleted());
-		productEntity.setLastModifiedDate(product.getLastModifiedDate());
-		productEntity.setLastModifiedUser(product.getLastModifiedUser());
-		productEntity.setPracticeTypeId(product.getPracticeTypeId());
-		productEntity.setProductClassificationTypeId(product.getProductClassificationTypeId());
-		productEntity.setProductVersionId(product.getProductVersionId());
-		productEntity.setQualityManagementSystemAtt(product.getQualityManagementSystemAtt());
-		productEntity.setReportFileLocation(product.getReportFileLocation());
-		productEntity.setTestingLabId(product.getTestingLabId());
+		entity.setAcbCertificationId(dto.getAcbCertificationId());
+		entity.setChplProductNumber(dto.getChplProductNumber());
+		entity.setPracticeTypeId(dto.getPracticeTypeId());
+		entity.setProductClassificationTypeId(dto.getProductClassificationTypeId());
+		entity.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
+		entity.setReportFileLocation(dto.getReportFileLocation());
+		entity.setTestingLabId(dto.getTestingLabId());
+		entity.setOtherAcb(dto.getOtherAcb());
 		
-		update(productEntity);
+		if(dto.getCertificationBodyId() != null) {
+			entity.setCertificationBodyId(dto.getCertificationBodyId());
+		}
 		
+		if(dto.getCertificationEditionId() != null) {
+			entity.setCertificationEditionId(dto.getCertificationEditionId());
+		}
+		
+		if(dto.getCertificationStatusId() != null) {
+			entity.setCertificationStatusId(dto.getCertificationStatusId());
+		}
+		
+		if(dto.getProductVersionId() != null) {
+			entity.setProductVersionId(dto.getProductVersionId());
+		}
+		
+		if(dto.getCreationDate() != null) {
+			entity.setCreationDate(dto.getCreationDate());
+		} else {
+			entity.setCreationDate(new Date());
+		}
+		
+		if(dto.getDeleted() != null) {
+			entity.setDeleted(dto.getDeleted());
+		} else {
+			entity.setDeleted(false);
+		}
+		
+		if(dto.getLastModifiedDate() != null) {
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
+		} else {
+			entity.setLastModifiedDate(new Date());
+		}
+		
+		if(dto.getLastModifiedUser() != null) {
+			entity.setLastModifiedUser(dto.getLastModifiedUser());
+		} else {
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		}
+		
+		update(entity);
+		return new CertifiedProductDTO(entity);
 	}
 	
 	public void delete(Long productId){
@@ -112,11 +179,23 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	public List<CertifiedProductDTO> getByVersionId(Long versionId) {
-		Query query = entityManager.createQuery( "from CertifiedProductEntity where (product_version_id = :versionId)", CertifiedProductEntity.class );
+		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and product_version_id = :versionId)", CertifiedProductEntity.class );
 		query.setParameter("versionId", versionId);
 		List<CertifiedProductEntity> results = query.getResultList();
 		
 		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>();
+		for(CertifiedProductEntity result : results) {
+			dtoResults.add(new CertifiedProductDTO(result));
+		}
+		return dtoResults;
+	}
+	
+	public List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds) {
+		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and product_version_id IN :idList", CertifiedProductEntity.class );
+		query.setParameter("idList", versionIds);
+		List<CertifiedProductEntity> results = query.getResultList();
+		
+		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());
 		for(CertifiedProductEntity result : results) {
 			dtoResults.add(new CertifiedProductDTO(result));
 		}
