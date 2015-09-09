@@ -57,7 +57,7 @@ public class CertifiedProductController {
 	
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProduct updateCertifiedProduct(@RequestBody(required=true) UpdateCertifiedProductRequest updateRequest) 
+	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) UpdateCertifiedProductRequest updateRequest) 
 		throws EntityRetrievalException {
 		
 		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
@@ -78,6 +78,7 @@ public class CertifiedProductController {
 		
 		toUpdate = cpManager.update(toUpdate);
 		
-		return new CertifiedProduct(toUpdate);
+		//search for the product by id to get it with all the updates
+		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
 	}
 }
