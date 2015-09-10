@@ -205,7 +205,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+"FROM ( "
 				+"SELECT certified_product_id FROM openchpl.cqm_result_details "
 				+"WHERE deleted = false AND success = true AND number IN (:cqms)) a "
-				+"GROUP BY certified_product_id ORDER BY certified_product_id "
+				+"GROUP BY certified_product_id "
 				+"		) b where cqms_met = :ncqms "
 				+"		) c "
 				+"INNER JOIN openchpl.certified_product_details d "
@@ -291,7 +291,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	private Query getCertOnlyQuery(SearchRequest searchRequest){
 		
 		String queryStr = "SELECT "
-				+ "a.certified_product_id as \"certified_product_id\", " 
+				+ "c.certified_product_id as \"certified_product_id\", " 
 				+ "certification_edition_id, " 
 				+ "product_version_id, "
 				+ "certification_body_id," 
@@ -318,20 +318,23 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "count_certifications, "
 				+ "count_cqms "
  
-		+ " FROM "
+				+ "FROM ( "
 
-		+ " (SELECT DISTINCT ON (certified_product_id) certified_product_id FROM openchpl.certification_result_details "
-		+ " WHERE deleted <> true AND successful = true AND number IN (:certs)) a "
-		
-
-		+ " INNER JOIN openchpl.certified_product_details b "
-		+ " ON a.certified_product_id = b.certified_product_id "
-		+ " WHERE deleted <> true "
-		+ "";
+				+"SELECT * FROM ( "
+				+"SELECT certified_product_id, COUNT(*) as \"cqms_met\" "
+				+"FROM ( "
+				+"SELECT certified_product_id FROM openchpl.certification_result_details "
+				+"WHERE deleted = false AND successful = true AND number IN (:certs)) a "
+				+"GROUP BY certified_product_id  "
+				+"		) b where cqms_met = :ncerts "
+				+"		) c "
+				+"INNER JOIN openchpl.certified_product_details d "
+				+"ON c.certified_product_id = d.certified_product_id "
+				+"WHERE deleted <> true ";
 		
 		
 		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) ";
 		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		} else if (searchRequest.getProduct() != null){
@@ -370,6 +373,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
+		
+		// Use hashset in case list contains duplicates
+		query.setParameter("ncerts", new HashSet<String>(searchRequest.getCertificationCriteria()).size());
 		
 		if (searchRequest.getVendor() != null){
 			query.setParameter("vendorname", "%"+searchRequest.getVendor()+"%");
@@ -722,22 +728,25 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	
 	private Query getCertOnlyCountQuery(SearchRequest searchRequest){
 		
-		String queryStr = "SELECT COUNT(a.certified_product_id) " 
- 
-		+ " FROM "
+		String queryStr = "SELECT "
+				+ "COUNT(*) as \"count\" "
+				+ "FROM ( "
 
-		+ " (SELECT DISTINCT ON (certified_product_id) certified_product_id FROM openchpl.certification_result_details "
-		+ " WHERE deleted <> true AND successful = true AND number IN (:certs)) a "
-		
-
-		+ " INNER JOIN openchpl.certified_product_details b "
-		+ " ON a.certified_product_id = b.certified_product_id "
-		+ " WHERE deleted <> true "
-		+ "";
+				+"SELECT * FROM ( "
+				+"SELECT certified_product_a, COUNT(*) as \"cqms_met\" "
+				+"FROM ( "
+				+"SELECT certified_product_id as \"certified_product_a\" FROM openchpl.certification_result_details "
+				+"WHERE deleted = false AND successful = true AND number IN (:certs)) a "
+				+"GROUP BY certified_product_a "
+				+"		) b where cqms_met = :ncerts "
+				+"		) c "
+				+"INNER JOIN openchpl.certified_product_details d "
+				+"ON c.certified_product_a = d.certified_product_id "
+				+"WHERE deleted <> true ";
 		
 		
 		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
+			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) ";
 		} else if (searchRequest.getVendor() != null){
 			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		} else if (searchRequest.getProduct() != null){
@@ -753,7 +762,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification_name= :productclassification) ";
+			queryStr += " AND (product_classification_name = :productclassification) ";
 		}
 		
 		if (searchRequest.getCertificationBody() != null) {
@@ -767,6 +776,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		Query query = entityManager.createNativeQuery(queryStr);
 		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
+		
+		// Use hashset in case list contains duplicates
+		query.setParameter("ncerts", new HashSet<String>(searchRequest.getCertificationCriteria()).size());
 		
 		if (searchRequest.getVendor() != null){
 			query.setParameter("vendorname", "%"+searchRequest.getVendor()+"%");
