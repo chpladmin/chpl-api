@@ -411,12 +411,12 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	private Query getCertCQMQuery(SearchRequest searchRequest){
 		
 		String queryStr = "SELECT "
-				+ "c.certified_product_id as \"certified_product_id\", " 
+				+ "c.cpid as \"certified_product_id\", "
 				+ "certification_edition_id, " 
-				+ "product_version_id, "
-				+ "certification_body_id," 
+				+ "product_version_id, " 
 				+ "testing_lab_id, "
-				+ "chpl_product_number,"
+				+ "certification_body_id, " 
+				+ "chpl_product_number, "
 				+ "report_file_location, "
 				+ "quality_management_system_att, "
 				+ "acb_certification_id, "
@@ -437,21 +437,27 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "certification_date, "
 				+ "count_certifications, "
 				+ "count_cqms "
- 
-		+ " FROM "
-		+ " ("
-		+ " (SELECT DISTINCT ON (certified_product_id) certified_product_id FROM openchpl.cqm_result_details "
-		+ " WHERE deleted <> true AND success = true AND number IN (:cqms) ) a "
-		+ " INNER JOIN "
 
-		+ " (SELECT DISTINCT ON (certified_product_id) certified_product_id as \"cert_certified_product_id\" FROM openchpl.certification_result_details "
-		+ " WHERE deleted <> true AND successful = true AND number IN  (:certs) ) b "
-		+ " ON a.certified_product_id = b.cert_certified_product_id "
-		+ " ) c "
-		+ " INNER JOIN openchpl.certified_product_details d "
-		+ " ON c.certified_product_id = d.certified_product_id "
-		+ " WHERE deleted <> true "
-		+ "";
+				+ "FROM "
+
+				+ "(SELECT certified_product_id_certs as \"cpid\" FROM "
+
+				+ "(SELECT certified_product_id as \"certified_product_id_certs\" FROM openchpl.certification_result_details  "
+				+ "WHERE deleted = false AND successful = true AND number IN ('170.302(j)', '170.302(k)', '170.302(l)', '170.302(a)' ) "
+				+ "GROUP BY certified_product_id_certs HAVING COUNT(*) = 4) a "
+
+				+ "INNER JOIN  "
+
+				+ "(SELECT certified_product_id as \"certified_product_id_cqms\" FROM openchpl.cqm_result_details  "
+				+ "WHERE deleted = false AND success = true AND number IN ('CMS117', 'CMS122', 'CMS123')  "
+				+ "GROUP BY certified_product_id_cqms HAVING COUNT(*) = 3 ) b "
+
+				+ "on a.certified_product_id_certs = b.certified_product_id_cqms) c "
+
+				+ "INNER JOIN openchpl.certified_product_details d  "
+				+ "ON c.cpid = d.certified_product_id "
+				+ "WHERE deleted <> true "
+				+ " ";
 		
 		
 		if ((searchRequest.getVendor() != null) && (searchRequest.getProduct() != null)){
