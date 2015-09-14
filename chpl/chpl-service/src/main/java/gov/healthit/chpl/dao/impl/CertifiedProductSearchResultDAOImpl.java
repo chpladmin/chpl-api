@@ -202,7 +202,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				
 				+ "(SELECT certified_product_id_cqms FROM ( "
 				+ "SELECT DISTINCT ON(number, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
-				
 			  	+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND number IN (:cqms)) a "
 				+ "GROUP BY certified_product_id_cqms HAVING COUNT(*) = :ncqms ) b "
 
@@ -658,7 +657,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				
 				+ "(SELECT certified_product_id_cqms FROM ( "
 				+ "SELECT DISTINCT ON(number, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
-				
 			  	+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND number IN (:cqms)) a "
 				+ "GROUP BY certified_product_id_cqms HAVING COUNT(*) = :ncqms ) b "
 
