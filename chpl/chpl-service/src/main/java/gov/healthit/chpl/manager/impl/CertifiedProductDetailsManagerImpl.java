@@ -88,7 +88,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs){
 			CertificationResult result = new CertificationResult();
-				
+			
 			result.setNumber(certResult.getNumber());
 			result.setSuccess(certResult.getSuccess());
 			result.setTitle(certResult.getTitle());	
@@ -101,11 +101,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			
 		List<CQMResultDetailsDTO> cqmResultDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(dto.getId());
 		List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
-			
+		
 		for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs){
-				
+			
 			CQMResultDetails result = new CQMResultDetails();
-					
+			
 			result.setCmsId(cqmResultDTO.getCmsId());
 			result.setNqfNumber(cqmResultDTO.getNqfNumber());
 			result.setNumber(cqmResultDTO.getNumber());
@@ -113,7 +113,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			result.setTitle(cqmResultDTO.getTitle());
 			result.setVersion(cqmResultDTO.getVersion());
 			cqmResults.add(result);
-					
+			
 		}
 				
 		searchDetails.setCqmResults(cqmResults);
