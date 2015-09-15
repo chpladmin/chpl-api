@@ -1,16 +1,19 @@
 package gov.healthit.chpl.manager.impl;
 
 import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
+import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
+import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
+import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -39,7 +42,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Autowired
 	private AdditionalSoftwareDAO additionalSoftwareDAO;
+
+	private CQMCriterionDAO cqmCriterionDAO;
 	
+	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
+	
+	@Autowired
+	public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO){
+		this.cqmCriterionDAO = cqmCriterionDAO;
+		loadCQMCriteria();
+	}
 	
 	@Override
 	public CertifiedProductSearchDetails getCertifiedProductDetails(
@@ -99,8 +111,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			certificationResults.add(result);
 			
 		}
-				
-				
+		
+		
 		searchDetails.setCertificationResults(certificationResults);
 			
 		List<CQMResultDetailsDTO> cqmResultDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(dto.getId());
@@ -141,8 +153,71 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}
 		
 		searchDetails.setAdditionalSoftware(additionalSoftware);
-		 
+		
+		if (dto.getYear().startsWith("2011")){
+			searchDetails.setApplicableCqmCriteria(getAvailableNQFVersions());
+		} else {
+			searchDetails.setApplicableCqmCriteria(getAvailableCQMVersions());
+		}
 		
 		return searchDetails;
 	}
+	
+	public List<CQMCriterion> getCqmCriteria() {
+		return cqmCriteria;
+	}
+	
+	public void setCqmCriteria(List<CQMCriterion> cqmCriteria) {
+		this.cqmCriteria = cqmCriteria;
+	}
+	
+	private void loadCQMCriteria(){
+		
+		List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
+		
+		for (CQMCriterionDTO dto: dtos){
+			
+			CQMCriterion criterion = new CQMCriterion();
+			
+			criterion.setCmsId(dto.getCmsId());
+			criterion.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
+			criterion.setCqmDomain(dto.getCqmDomain());
+			criterion.setCqmVersionId(dto.getCqmVersionId());
+			criterion.setCqmVersion(dto.getCqmVersion());
+			criterion.setCriterionId(dto.getId());
+			criterion.setDescription(dto.getDescription());
+			criterion.setNqfNumber(dto.getNqfNumber());
+			criterion.setNumber(dto.getNumber());
+			criterion.setTitle(dto.getTitle());
+			cqmCriteria.add(criterion);
+			
+		}
+	}
+	
+	private List<CQMCriterion> getAvailableCQMVersions(){
+		
+		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
+		
+		for (CQMCriterion criterion : cqmCriteria){
+			
+			if (criterion.getNumber().startsWith("CMS")){
+				criteria.add(criterion);
+			}
+		}
+		return criteria;
+	}
+	
+	private List<CQMCriterion> getAvailableNQFVersions(){
+		
+		List<CQMCriterion> nqfs = new ArrayList<CQMCriterion>();
+		
+		for (CQMCriterion criterion : cqmCriteria){
+			
+			if (criterion.getNumber().startsWith("NQF")){
+				nqfs.add(criterion);
+			}
+		}
+		return nqfs;
+	}
+	
 }
