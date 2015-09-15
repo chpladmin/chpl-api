@@ -9,7 +9,7 @@ public interface AdditionalSoftwareDAO {
 	public void create(AdditionalSoftwareDTO dto) throws EntityCreationException;
 	public void delete(Long id);
 	public List<AdditionalSoftwareDTO> findAll();
-	public List<AdditionalSoftwareDTO> findByAdditionalSoftwareId(Long id);
+	public List<AdditionalSoftwareDTO> findByCertifiedProductId(Long id);
 	public AdditionalSoftwareDTO getById(Long id) throws EntityRetrievalException;
 	public void update(AdditionalSoftwareDTO dto) throws EntityRetrievalException;
 

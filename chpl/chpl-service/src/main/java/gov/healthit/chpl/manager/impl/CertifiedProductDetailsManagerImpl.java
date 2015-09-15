@@ -1,13 +1,16 @@
 package gov.healthit.chpl.manager.impl;
 
+import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -34,6 +37,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	@Autowired
 	private CertificationResultDetailsDAO certificationResultDetailsDAO;
 	
+	@Autowired
+	private AdditionalSoftwareDAO additionalSoftwareDAO;
+	
 	
 	@Override
 	public CertifiedProductSearchDetails getCertifiedProductDetails(
@@ -46,8 +52,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setId(dto.getId());
 		searchDetails.setAcbCertificationId(dto.getAcbCertificationId());
 		
-		//TODO: fetch & add additional software here. 
-		//searchDetails.setAdditionalSoftware(additionalSoftware);
 		searchDetails.setCertificationDate(dto.getCertificationDate().toString());
 			
 		searchDetails.getCertificationEdition().put("id", dto.getCertificationEditionId().toString());
@@ -117,6 +121,27 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}
 				
 		searchDetails.setCqmResults(cqmResults);
+		
+		
+		
+		List<AdditionalSoftwareDTO> additionalSoftwareDTOs = additionalSoftwareDAO.findByCertifiedProductId(dto.getId());
+		List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
+		
+		
+		for (AdditionalSoftwareDTO additionalSoftwareDTO : additionalSoftwareDTOs){
+			AdditionalSoftware software = new AdditionalSoftware();
+			
+			software.setAdditionalSoftwareid(additionalSoftwareDTO.getId());
+			software.setCertifiedProductId(additionalSoftwareDTO.getCertifiedProductId());
+			software.setJustification(additionalSoftwareDTO.getJustification());
+			software.setName(additionalSoftwareDTO.getName());
+			software.setVersion(additionalSoftwareDTO.getVersion());
+			additionalSoftware.add(software);
+			
+		}
+		
+		searchDetails.setAdditionalSoftware(additionalSoftware);
+		 
 		
 		return searchDetails;
 	}

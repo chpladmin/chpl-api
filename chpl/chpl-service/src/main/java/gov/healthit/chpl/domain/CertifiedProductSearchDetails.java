@@ -24,7 +24,7 @@ public class CertifiedProductSearchDetails {
 	private String certificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
-	// TODO: Add Additional Software Here
+	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	
@@ -149,6 +149,12 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
+	}
+	public List<AdditionalSoftware> getAdditionalSoftware() {
+		return additionalSoftware;
+	}
+	public void setAdditionalSoftware(List<AdditionalSoftware> additionalSoftware) {
+		this.additionalSoftware = additionalSoftware;
 	}
 	
 }
