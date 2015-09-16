@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dto;
 
 
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 
 import java.util.Date;

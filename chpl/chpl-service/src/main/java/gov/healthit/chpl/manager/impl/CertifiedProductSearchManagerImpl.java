@@ -91,6 +91,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
+			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
 			
 			searchResults.add(searchResult);
 		}
@@ -152,6 +153,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
+			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
 			
 			searchResults.add(searchResult);
 		}
@@ -213,6 +215,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
+			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
 			
 			searchResults.add(searchResult);
 		}

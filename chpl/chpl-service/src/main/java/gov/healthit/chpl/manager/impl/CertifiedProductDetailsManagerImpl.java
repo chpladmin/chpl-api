@@ -99,6 +99,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		
+		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
+		
 		searchDetails.setCountCerts(dto.getCountCertifications());
 		searchDetails.setCountCqms(dto.getCountCqms());
 		

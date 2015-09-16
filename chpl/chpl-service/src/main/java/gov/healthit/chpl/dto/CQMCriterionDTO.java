@@ -121,11 +121,9 @@ public class CQMCriterionDTO {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
 	public String getCqmVersion() {
 		return cqmVersion;
 	}
-
 	public void setCqmVersion(String cqmVersion) {
 		this.cqmVersion = cqmVersion;
 	}
