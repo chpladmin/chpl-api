@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.hibernate.validator.internal.util.privilegedactions.GetMethodFromPropertyName;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -91,6 +92,15 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 		return dto;
 	}
 	
+	@Override
+	public CertificationEditionDTO getByYear(String year) {
+		CertificationEditionDTO result = null;
+		CertificationEditionEntity yearEntity = getEntityByYear(year);
+		if(yearEntity != null) {
+			result = new CertificationEditionDTO(yearEntity);
+		}
+		return result;
+	}
 	
 	private void create(CertificationEditionEntity entity) {
 		
@@ -122,6 +132,21 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate criterion edition id in database.");
 		}
+		
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+			
+		return entity;
+	}
+	
+	private CertificationEditionEntity getEntityByYear(String year) {
+		
+		CertificationEditionEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from CertificationEditionEntity where (NOT deleted = true) AND (year = :year) ", CertificationEditionEntity.class );
+		query.setParameter("year", year);
+		List<CertificationEditionEntity> result = query.getResultList();
 		
 		if (result.size() > 0){
 			entity = result.get(0);

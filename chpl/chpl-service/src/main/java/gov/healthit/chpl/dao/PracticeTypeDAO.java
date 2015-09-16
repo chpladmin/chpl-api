@@ -16,4 +16,6 @@ public interface PracticeTypeDAO {
 	
 	public PracticeTypeDTO getById(Long id) throws EntityRetrievalException;
 	
+	public PracticeTypeDTO getByName(String name);
+	
 }

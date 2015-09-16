@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
+import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
+
 
 @Configuration
 @EnableWebSecurity
@@ -57,7 +59,7 @@ public class CHPLConfig {
 		bean.setPersistenceUnitName(props.getProperty("persistenceUnitName"));
 		return bean;
 	}
-	
+	 
 	@Bean
 	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
 		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();

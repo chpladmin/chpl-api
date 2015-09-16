@@ -12,15 +12,25 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductHandler;
+import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductHandlerImpl;
+import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
+import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactoryImpl;
+import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadType;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.UpdateCertifiedProductRequest;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -28,6 +38,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,6 +59,8 @@ public class CertifiedProductController {
 	
 	@Autowired
 	CertifiedProductManager cpManager;
+	
+	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	
 	@RequestMapping(value="/get_certified_product", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
@@ -101,8 +114,8 @@ public class CertifiedProductController {
 	
 	@RequestMapping(value="/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	public @ResponseBody String upload(@RequestParam("file") MultipartFile file) throws 
-		InvalidArgumentsException, MaxUploadSizeExceededException {
+	public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file) throws 
+		InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
 		if (file.isEmpty()) {
 			throw new InvalidArgumentsException("You cannot upload an empty file!");
 		}
@@ -112,6 +125,7 @@ public class CertifiedProductController {
 			throw new InvalidArgumentsException("File must be a CSV or Excel document.");
 		}
 		
+		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
 		BufferedReader reader = null;
 		CSVParser parser = null;
 		try {
@@ -123,20 +137,31 @@ public class CertifiedProductController {
 				throw new InvalidArgumentsException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
 			}
 			
+			CSVRecord heading = records.get(0);
 			for(int i = 1; i < records.size(); i++) {
 				CSVRecord record = records.get(i);
-				for(int j = 0; j < record.size(); j++) {
-					System.out.println(record.get(j));
+				
+				//some rows may be blank, we just look at the first column to see if it's empty or not
+				if(!StringUtils.isEmpty(record.get(0))) {
+					CertifiedProductHandler handler = uploadHandlerFactory.getHandler(heading, record);
+				
+					//create a certified product to pass into the handler
+					try {
+						PendingCertifiedProductDTO pendingCp = handler.parseRow();
+						results.getPendingCertifiedProducts().add(pendingCp);
+					} catch(EntityCreationException ex) {
+						logger.error("could not create entity at row " + i + ". Message is " + ex.getMessage());
+					}
 				}
 			}
 		} catch(IOException ioEx) {
 			logger.error("Could not get input stream for uploaded file " + file.getName());
-			return "{error: 'There was an error parsing your file'}";
+			throw new Exception("Could not get input stream for uploaded file " + file.getName());
 		} finally {
 			 try { parser.close(); } catch(Exception ignore) {}
 			try { reader.close(); } catch(Exception ignore) {}
 		}
 		
-		return "{success: true}";
+		return results;
 	}
 }

@@ -15,5 +15,7 @@ public interface CertificationCriterionDAO {
 	public List<CertificationCriterionDTO> findAll();
 	
 	public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
+	public CertificationCriterionDTO getByName(String criterionName);
+
 	
 }

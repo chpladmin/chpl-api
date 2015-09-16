@@ -21,4 +21,6 @@ public interface ProductVersionDAO {
 	
 	public List<ProductVersionDTO> getByProductIds(List<Long> productId);
 	
+	public ProductVersionDTO getByProductAndVersion(Long productId, String version);
+	
 }
