@@ -94,11 +94,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	@Override
 	public List<CertifiedProductDetailsDTO> multiFilterSearch(
-			SearchRequest searchRequest, Integer pageNum, Integer pageSize) {
+			SearchRequest searchRequest) {
 		
 		Query query = getQueryForSearchFilters(searchRequest);
-		query.setMaxResults(pageSize);
-	    query.setFirstResult(pageNum * pageSize);
+		query.setMaxResults(searchRequest.getPageSize());
+	    query.setFirstResult(searchRequest.getPageNumber() * searchRequest.getPageSize());
 	    
 		List<CertifiedProductDetailsEntity> result = query.getResultList();
 		
@@ -111,7 +111,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		return products;
 	}
 	
-	private List<CertifiedProductDetailsEntity> getPage(Integer pageNum, Integer pageSize) {
+	/*private List<CertifiedProductDetailsEntity> getPage(Integer pageNum, Integer pageSize) {
 		
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) ", CertifiedProductDetailsEntity.class);
 		query.setMaxResults(pageSize);
@@ -121,6 +121,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		return result;
 		
 	}
+	*/
 	
 	private CertifiedProductDetailsEntity getEntityById(Long entityId) throws EntityRetrievalException {
 		

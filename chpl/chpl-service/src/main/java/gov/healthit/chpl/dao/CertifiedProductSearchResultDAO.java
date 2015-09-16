@@ -15,8 +15,8 @@ public interface CertifiedProductSearchResultDAO {
 	public Long countSimpleSearchResults(String searchTerm);
 	
 	public List<CertifiedProductDetailsDTO> multiFilterSearch(
-			SearchRequest searchRequest, Integer pageNum, Integer pageSize);
-
+			SearchRequest searchRequest);
+	
 	public Long countMultiFilterSearchResults(SearchRequest searchRequest);
 	
 }

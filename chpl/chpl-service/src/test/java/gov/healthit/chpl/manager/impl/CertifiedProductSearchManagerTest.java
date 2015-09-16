@@ -42,12 +42,12 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVendor("Test");
-		SearchResponse response = certifiedProductSearchManager.multiFilterSearch(searchRequest, 0, 10);
+		SearchResponse response = certifiedProductSearchManager.multiFilterSearch(searchRequest);
 		assertEquals((int)response.getRecordCount(), response.getResults().size());
 		assertEquals((int)response.getResults().size(), 3);
 		
 		searchRequest.setVersion("1.0.0");
-		SearchResponse responseWithVersion = certifiedProductSearchManager.multiFilterSearch(searchRequest, 0, 10);
+		SearchResponse responseWithVersion = certifiedProductSearchManager.multiFilterSearch(searchRequest);
 		assertEquals((int) responseWithVersion.getRecordCount(),  responseWithVersion.getResults().size());
 		assertEquals((int) responseWithVersion.getResults().size(), 1);
 	}

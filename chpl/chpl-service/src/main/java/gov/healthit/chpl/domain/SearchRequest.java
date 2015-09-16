@@ -17,6 +17,8 @@ public class SearchRequest {
 	String visibleOnCHPL = "Both";
 	String orderBy = "product";
 	Boolean sortDescending = false;
+	Integer pageNumber = 0;
+	Integer pageSize = 20;
 	
 
 	public String getVendor() {
@@ -94,4 +96,17 @@ public class SearchRequest {
 	public void setVisibleOnCHPL(String visibleOnCHPL) {
 		this.visibleOnCHPL = visibleOnCHPL;
 	}
+	public Integer getPageNumber() {
+		return pageNumber;
+	}
+	public void setPageNumber(Integer pageNumber) {
+		this.pageNumber = pageNumber;
+	}
+	public Integer getPageSize() {
+		return pageSize;
+	}
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
+	}
+	
 }

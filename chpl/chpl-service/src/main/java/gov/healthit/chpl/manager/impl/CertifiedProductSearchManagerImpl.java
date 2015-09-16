@@ -159,12 +159,12 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	@Transactional
 	@Override
 	public SearchResponse multiFilterSearch(
-			SearchRequest searchRequest, Integer pageNum, Integer pageSize) {
+			SearchRequest searchRequest) {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
 		Integer countSearchResults =  certifiedProductSearchResultDAO.countMultiFilterSearchResults(searchRequest).intValue();
 		
-		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.multiFilterSearch(searchRequest, pageNum, pageSize))
+		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.multiFilterSearch(searchRequest))
 		{
 			
 			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
@@ -212,8 +212,8 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 		
 		SearchResponse response = new SearchResponse(countSearchResults,
 				searchResults,
-				pageSize,
-				pageNum
+				searchRequest.getPageSize(),
+				searchRequest.getPageNumber()
 				);
 		return response;
 	}
