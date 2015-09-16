@@ -14,6 +14,7 @@ public class SearchRequest {
 	String certificationBody = null;
 	String productClassification = null;
 	String practiceType = null;
+	String visibleOnCHPL = "Both";
 	String orderBy = "product";
 	Boolean sortDescending = false;
 	
@@ -86,5 +87,11 @@ public class SearchRequest {
 	}
 	public void setSortDescending(Boolean sortDescending) {
 		this.sortDescending = sortDescending;
+	}
+	public String getVisibleOnCHPL() {
+		return visibleOnCHPL;
+	}
+	public void setVisibleOnCHPL(String visibleOnCHPL) {
+		this.visibleOnCHPL = visibleOnCHPL;
 	}
 }
