@@ -12,6 +12,7 @@ import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
@@ -37,12 +38,15 @@ public class SearchViewController {
 	@Autowired
 	private CertifiedProductSearchManager certifiedProductSearchManager;
 	
+	@Autowired
+	private CertifiedProductDetailsManager certifiedProductDetailsManager;
+	
 	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws EntityRetrievalException{
 		
-		CertifiedProductSearchDetails product = certifiedProductSearchManager.getCertifiedProductDetails(id);
+		CertifiedProductSearchDetails product = certifiedProductDetailsManager.getCertifiedProductDetails(id);
 		return product;
 	}
 	

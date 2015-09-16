@@ -58,8 +58,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	public void update(CertificationCriterionDTO dto) throws EntityRetrievalException, EntityCreationException {
 		
 		CertificationCriterionEntity entity = this.getEntityById(dto.getId());;
-			
-		entity = new CertificationCriterionEntity();
+		
 		entity.setAutomatedMeasureCapable(dto.getAutomatedMeasureCapable());
 		entity.setAutomatedNumeratorCapable(dto.getAutomatedNumeratorCapable());
 		entity.setCertificationEdition(dto.getCertificationEditionId());

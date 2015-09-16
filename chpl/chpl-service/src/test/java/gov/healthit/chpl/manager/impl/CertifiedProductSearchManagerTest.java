@@ -62,14 +62,4 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals((int)responseSorted.getRecordCount(), responseSorted.getResults().size());
 		assertEquals(3, responseSorted.getResults().size());
 	}
-	
-	@Test
-	public void TestGetCertifiedProductDetails() throws EntityRetrievalException{
-		
-		CertifiedProductSearchDetails details = certifiedProductSearchManager.getCertifiedProductDetails(1L);
-		
-		
-	}
-	
-	
 }

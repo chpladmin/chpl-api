@@ -20,6 +20,9 @@
 		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CQMResultEntity</class>
+		<class>gov.healthit.chpl.entity.CQMCriterionEntity</class>
+		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
+		<class>gov.healthit.chpl.entity.AdditionalSoftwareEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />
