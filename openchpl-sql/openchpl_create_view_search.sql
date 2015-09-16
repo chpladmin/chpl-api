@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW openchpl.certified_product_details AS
+﻿CREATE OR REPLACE VIEW openchpl.certified_product_details AS
 
 SELECT
 
@@ -16,6 +16,7 @@ a.product_classification_type_id,
 a.other_acb,
 a.certification_status_id,
 a.deleted,
+a.visible_on_chpl,
 b.year,
 c.certification_body_name,
 d.product_classification_name,
@@ -49,7 +50,7 @@ LEFT JOIN (SELECT DISTINCT ON (certified_product_id) certified_product_id, event
 
 LEFT JOIN (SELECT certified_product_id, count(*) as "count_certifications" FROM (SELECT * FROM openchpl.certification_result WHERE successful = true) j GROUP BY certified_product_id) k ON a.certified_product_id = k.certified_product_id
 
-LEFT JOIN (SELECT certified_product_id, count(*) as "count_cqms" FROM (SELECT * FROM openchpl.cqm_result WHERE success = true) l GROUP BY certified_product_id) m ON a.certified_product_id = m.certified_product_id
+LEFT JOIN (SELECT certified_product_id, count(*) as "count_cqms" FROM (SELECT DISTINCT ON (number, certified_product_id) * FROM openchpl.cqm_result_details WHERE success = true AND deleted <> true) l GROUP BY certified_product_id ORDER BY certified_product_id) m ON a.certified_product_id = m.certified_product_id
 ;
 
 ALTER VIEW openchpl.certified_product_details OWNER TO openchpl;

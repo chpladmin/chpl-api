@@ -80,11 +80,11 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVendor("Test");
-		List<CertifiedProductDetailsDTO> products = searchResultDAO.multiFilterSearch(searchRequest, 0, 20);
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.multiFilterSearch(searchRequest);
 		assertEquals(3, products.size());
 		
 		searchRequest.setVersion("1.0.0");
-		List<CertifiedProductDetailsDTO> versionSpecificProducts = searchResultDAO.multiFilterSearch(searchRequest, 0, 20);
+		List<CertifiedProductDetailsDTO> versionSpecificProducts = searchResultDAO.multiFilterSearch(searchRequest);
 		assertEquals(1, versionSpecificProducts.size());
 		
 	}
