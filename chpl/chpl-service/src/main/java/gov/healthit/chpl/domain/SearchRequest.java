@@ -5,6 +5,8 @@ import java.util.List;
 
 public class SearchRequest {
 	
+	
+	String searchTerm = null;
 	String vendor = null;
 	String product = null;
 	String version = null;
@@ -20,7 +22,13 @@ public class SearchRequest {
 	Integer pageNumber = 0;
 	Integer pageSize = 20;
 	
-
+	
+	public String getSearchTerm() {
+		return searchTerm;
+	}
+	public void setSearchTerm(String searchTerm) {
+		this.searchTerm = searchTerm;
+	}
 	public String getVendor() {
 		return vendor;
 	}
