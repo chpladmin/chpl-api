@@ -13,6 +13,6 @@ public interface CertifiedProductSearchManager {
 			Integer pageNum, Integer pageSize, String orderBy, Boolean orderDescending);
 
 	public SearchResponse multiFilterSearch(
-			SearchRequest searchRequest, Integer pageNum, Integer pageSize);
+			SearchRequest searchRequest);
 	
 }

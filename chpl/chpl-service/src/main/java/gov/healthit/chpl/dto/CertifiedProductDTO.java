@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dto;
 
 
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 
 import java.util.Date;
@@ -26,6 +25,7 @@ public class CertifiedProductDTO {
 	private Long testingLabId;
 	private Long certificationStatusId;
 	private String otherAcb;
+	private Boolean visibleOnChpl;
 	
 	public CertifiedProductDTO(){}
 	
@@ -48,6 +48,8 @@ public class CertifiedProductDTO {
 		this.testingLabId = entity.getTestingLabId();		
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
+		this.setVisibleOnChpl(entity.getVisibleOnChpl());
+		
 	}
 
 	
@@ -156,6 +158,14 @@ public class CertifiedProductDTO {
 
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
+	}
+
+	public Boolean getVisibleOnChpl() {
+		return visibleOnChpl;
+	}
+
+	public void setVisibleOnChpl(Boolean visibleOnChpl) {
+		this.visibleOnChpl = visibleOnChpl;
 	}
 	
 }

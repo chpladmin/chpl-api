@@ -2,7 +2,6 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,20 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
@@ -91,6 +81,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
+			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
 			
 			searchResults.add(searchResult);
 		}
@@ -152,6 +143,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
+			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
 			
 			searchResults.add(searchResult);
 		}
@@ -167,12 +159,12 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	@Transactional
 	@Override
 	public SearchResponse multiFilterSearch(
-			SearchRequest searchRequest, Integer pageNum, Integer pageSize) {
+			SearchRequest searchRequest) {
 		
 		List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();
 		Integer countSearchResults =  certifiedProductSearchResultDAO.countMultiFilterSearchResults(searchRequest).intValue();
 		
-		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.multiFilterSearch(searchRequest, pageNum, pageSize))
+		for (CertifiedProductDetailsDTO dto : certifiedProductSearchResultDAO.multiFilterSearch(searchRequest))
 		{
 			
 			CertifiedProductSearchResult searchResult = new CertifiedProductSearchResult();
@@ -213,14 +205,15 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
+			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
 			
 			searchResults.add(searchResult);
 		}
 		
 		SearchResponse response = new SearchResponse(countSearchResults,
 				searchResults,
-				pageSize,
-				pageNum
+				searchRequest.getPageSize(),
+				searchRequest.getPageNumber()
 				);
 		return response;
 	}

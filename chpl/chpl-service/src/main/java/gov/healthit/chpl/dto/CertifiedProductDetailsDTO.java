@@ -31,6 +31,7 @@ public class CertifiedProductDetailsDTO {
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
+    private Boolean visibleOnChpl;
     
     public CertifiedProductDetailsDTO(){}
     
@@ -57,6 +58,7 @@ public class CertifiedProductDetailsDTO {
     	this.testingLabId = entity.getTestingLabId();
     	this.vendorId = entity.getVendorId();
     	this.vendorName = entity.getVendorName();
+    	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
@@ -221,5 +223,11 @@ public class CertifiedProductDetailsDTO {
 	public void setCountCqms(Integer countCqms) {
 		this.countCqms = countCqms;
 	}
-    
+	public Boolean getVisibleOnChpl() {
+		return visibleOnChpl;
+	}
+	public void setVisibleOnChpl(Boolean visibleOnChpl) {
+		this.visibleOnChpl = visibleOnChpl;
+	}
+	
 }

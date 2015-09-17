@@ -45,6 +45,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			entity.setReportFileLocation(dto.getReportFileLocation());
 			entity.setTestingLabId(dto.getTestingLabId());
 			entity.setOtherAcb(dto.getOtherAcb());
+			entity.setVisibleOnChpl(dto.getVisibleOnChpl());
 			
 			if(dto.getCertificationBodyId() != null) {
 				entity.setCertificationBodyId(dto.getCertificationBodyId());

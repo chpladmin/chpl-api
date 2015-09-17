@@ -94,6 +94,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "count_cqms")
     private Integer countCqms;
     
+    @Column(name = "visible_on_chpl")
+    private Boolean visibleOnChpl;
+    
 
 	public Long getId() {
 		return id;
@@ -293,6 +296,14 @@ public class CertifiedProductDetailsEntity {
 
 	public void setCountCqms(Integer countCqms) {
 		this.countCqms = countCqms;
+	}
+	
+	public Boolean getVisibleOnChpl() {
+		return visibleOnChpl;
+	}
+
+	public void setVisibleOnChpl(Boolean visibleOnChpl) {
+		this.visibleOnChpl = visibleOnChpl;
 	}
 	
 }

@@ -88,10 +88,8 @@ public class SearchViewController {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SearchResponse advancedSearch(
-			@RequestBody SearchRequest searchFilters, 
-			@RequestParam("pageNum") Integer pageNum, 
-			@RequestParam("pageSize") Integer pageSize) {
-		return certifiedProductSearchManager.multiFilterSearch(searchFilters, pageNum, pageSize);
+			@RequestBody SearchRequest searchFilters) {
+		return certifiedProductSearchManager.multiFilterSearch(searchFilters);
 	}
 	
 	
@@ -99,7 +97,7 @@ public class SearchViewController {
 	@RequestMapping(value="/advanced_search", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SearchResponse advancedSearch(
-			@RequestParam(value = "pageNum") Integer pageNum, 
+			@RequestParam(value = "pageNumber") Integer pageNumber, 
 			@RequestParam(value = "pageSize") Integer pageSize,
 			@RequestParam(value = "vendor", required = false) String vendor,
 			@RequestParam(value = "product", required = false) String product,
@@ -113,6 +111,8 @@ public class SearchViewController {
 			) throws EntityRetrievalException {
 		
 		SearchRequest searchFilters = new SearchRequest();
+		searchFilters.setPageNumber(pageNumber);
+		searchFilters.setPageSize(pageSize);
 		searchFilters.setVendor(vendor);
 		searchFilters.setProduct(product);
 		searchFilters.setVersion(version);
@@ -122,7 +122,7 @@ public class SearchViewController {
 		searchFilters.setProductClassification(productClassification);
 		searchFilters.setPracticeType(practiceType);
 		
-		return certifiedProductSearchManager.multiFilterSearch(searchFilters, pageNum, pageSize);
+		return certifiedProductSearchManager.multiFilterSearch(searchFilters);
 	}
 	
 	

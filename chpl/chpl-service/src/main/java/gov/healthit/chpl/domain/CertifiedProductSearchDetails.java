@@ -24,6 +24,7 @@ public class CertifiedProductSearchDetails {
 	private String certificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
+	private Boolean visibleOnChpl;
 	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
@@ -162,6 +163,12 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setApplicableCqmCriteria(List<CQMCriterion> applicableCqmCriteria) {
 		this.applicableCqmCriteria = applicableCqmCriteria;
+	}
+	public Boolean getVisibleOnChpl() {
+		return visibleOnChpl;
+	}
+	public void setVisibleOnChpl(Boolean visibleOnChpl) {
+		this.visibleOnChpl = visibleOnChpl;
 	}
 	
 }
