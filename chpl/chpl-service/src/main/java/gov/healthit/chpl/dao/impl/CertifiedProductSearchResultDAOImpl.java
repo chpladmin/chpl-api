@@ -65,7 +65,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	
 	private CertifiedProductDetailsEntity getEntityById(Long entityId) throws EntityRetrievalException {
 		
-		
 		CertifiedProductDetailsEntity entity = null;
 		
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (certified_product_id = :entityid) ", CertifiedProductDetailsEntity.class );
