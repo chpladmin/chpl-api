@@ -57,9 +57,9 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	public void testSearchVendor(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setVendor("Test Vendor 2");
+		searchRequest.setVendor("Test Vendor 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(1, products.size());
+		assertEquals(2, products.size());
 	}
 	
 	@Test
@@ -68,9 +68,9 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		
-		searchRequest.setProduct("Test Product 2");
+		searchRequest.setProduct("Test Product 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(1, products.size());
+		assertEquals(2, products.size());
 		
 	}
 	
