@@ -45,19 +45,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		authUser.setId(-2L);
 		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
-
-	@Test
-	public void countSimpleSearchResults() {
-		Long countProducts = searchResultDAO.countSimpleSearchResults("Test");
-		assertNotNull(countProducts);
-		assertEquals(2, countProducts.intValue());
-	}
-	
-	@Test
-	public void simpleSearch(){
-		List<CertifiedProductDetailsDTO> results = searchResultDAO.simpleSearch("Test", 0, 10, "product", false);
-		assertEquals(2, results.size());
-	}
 	
 	@Test
 	@Transactional
@@ -82,11 +69,11 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVendor("Test");
 		searchRequest.setVisibleOnCHPL("YES");
-		List<CertifiedProductDetailsDTO> products = searchResultDAO.multiFilterSearch(searchRequest);
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(2, products.size());
 		
 		searchRequest.setVersion("1.0.0");
-		List<CertifiedProductDetailsDTO> versionSpecificProducts = searchResultDAO.multiFilterSearch(searchRequest);
+		List<CertifiedProductDetailsDTO> versionSpecificProducts = searchResultDAO.search(searchRequest);
 		assertEquals(1, versionSpecificProducts.size());
 		
 	}

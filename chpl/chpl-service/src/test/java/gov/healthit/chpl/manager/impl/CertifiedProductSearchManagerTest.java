@@ -38,28 +38,18 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	private CertifiedProductSearchManager certifiedProductSearchManager;
 	
 	@Test
-	public void testMultiFilterSearch(){
+	public void testSearch(){
 		
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVendor("Test");
-		SearchResponse response = certifiedProductSearchManager.multiFilterSearch(searchRequest);
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
 		assertEquals((int)response.getRecordCount(), response.getResults().size());
 		assertEquals((int)response.getResults().size(), 2);
 		
 		searchRequest.setVersion("1.0.0");
-		SearchResponse responseWithVersion = certifiedProductSearchManager.multiFilterSearch(searchRequest);
+		SearchResponse responseWithVersion = certifiedProductSearchManager.search(searchRequest);
 		assertEquals((int) responseWithVersion.getRecordCount(),  responseWithVersion.getResults().size());
 		assertEquals((int) responseWithVersion.getResults().size(), 1);
 	}
 	
-	@Test
-	public void testSimpleSearch(){
-		SearchResponse response = certifiedProductSearchManager.simpleSearch("Test", 0, 10);
-		assertEquals((int)response.getRecordCount(), response.getResults().size());
-		assertEquals(2, response.getResults().size());
-		
-		SearchResponse responseSorted = certifiedProductSearchManager.simpleSearch("Test", 0, 10, "product", false);
-		assertEquals((int)responseSorted.getRecordCount(), responseSorted.getResults().size());
-		assertEquals(2, responseSorted.getResults().size());
-	}
 }

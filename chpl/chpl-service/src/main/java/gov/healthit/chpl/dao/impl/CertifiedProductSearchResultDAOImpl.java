@@ -42,58 +42,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		return dto;
 		
 	}
-	
-	@Override
-	public List<CertifiedProductDetailsDTO> simpleSearch(
-			String searchTerm, Integer pageNum, Integer pageSize, String orderBy, Boolean sortDescending) {	
-		
-		String sortOrder = "ASC ";
-		if (sortDescending){
-			sortOrder = "DESC ";
-		}
-		
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity "
-				+ "where (NOT deleted = true) AND (visible_on_chpl = true) AND ((UPPER(vendor_name)  "
-				+ "LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) "
-				+ "ORDER BY "+columnNameRef.get(orderBy)+" "+sortOrder+" "
-				, CertifiedProductDetailsEntity.class );
-		query.setParameter("vendorname", "%"+searchTerm+"%");
-		query.setParameter("productname", "%"+searchTerm+"%");
-		
-		query.setMaxResults(pageSize);
-	    query.setFirstResult(pageNum * pageSize);
-		
-		List<CertifiedProductDetailsEntity> result = query.getResultList();
-		
-		List<CertifiedProductDetailsDTO> products = new ArrayList<>();
-		
-		for (CertifiedProductDetailsEntity entity : result) {
-			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
-			products.add(product);
-		}
-		return products;	
-		
-	}
-	
-	
-	@Override
-	public Long countSimpleSearchResults(String searchTerm) {
-		
-		Query query = entityManager.createQuery( "Select count(e.id) from CertifiedProductDetailsEntity e "
-				+ "where (NOT deleted = true) AND (visible_on_chpl = true) AND ((UPPER(vendor_name)  "
-				+ "LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) "
-				+ " "
-				 );
-		query.setParameter("vendorname", "%"+searchTerm+"%");
-		query.setParameter("productname", "%"+searchTerm+"%");
-		
-		Long count = (Long) query.getSingleResult();
-		return count;
-	}
-	
 
 	@Override
-	public List<CertifiedProductDetailsDTO> multiFilterSearch(
+	public List<CertifiedProductDetailsDTO> search(
 			SearchRequest searchRequest) {
 		
 		Query query = getQueryForSearchFilters(searchRequest);
