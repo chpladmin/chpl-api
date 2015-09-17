@@ -100,8 +100,8 @@ public class CertifiedProductEntity {
 	private Long certificationStatusId;
 	
 	@Column(name = "visible_on_chpl")
-	private Boolean isChplVisible;
-	
+	private Boolean visibleOnChpl;
+
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -264,12 +264,12 @@ public class CertifiedProductEntity {
 		return deleted;
 	}
 
-	public Boolean getIsChplVisible() {
-		return isChplVisible;
+	public Boolean getVisibleOnChpl() {
+		return visibleOnChpl;
 	}
 
-	public void setIsChplVisible(Boolean isChplVisible) {
-		this.isChplVisible = isChplVisible;
+	public void setVisibleOnChpl(Boolean visibleOnChpl) {
+		this.visibleOnChpl = visibleOnChpl;
 	}
 
 }

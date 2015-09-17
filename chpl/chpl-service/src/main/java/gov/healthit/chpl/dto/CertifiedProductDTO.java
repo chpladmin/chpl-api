@@ -25,7 +25,7 @@ public class CertifiedProductDTO {
 	private Long testingLabId;
 	private Long certificationStatusId;
 	private String otherAcb;
-	private Boolean isChplVisible;
+	private Boolean visibleOnChpl;
 	
 	public CertifiedProductDTO(){}
 	
@@ -48,7 +48,7 @@ public class CertifiedProductDTO {
 		this.testingLabId = entity.getTestingLabId();		
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
-		this.isChplVisible = entity.getIsChplVisible();
+		this.setVisibleOnChpl(entity.getVisibleOnChpl());
 	}
 
 	
@@ -159,12 +159,12 @@ public class CertifiedProductDTO {
 		this.otherAcb = otherAcb;
 	}
 
-	public Boolean getIsChplVisible() {
-		return isChplVisible;
+	public Boolean getVisibleOnChpl() {
+		return visibleOnChpl;
 	}
 
-	public void setIsChplVisible(Boolean isChplVisible) {
-		this.isChplVisible = isChplVisible;
+	public void setVisibleOnChpl(Boolean visibleOnChpl) {
+		this.visibleOnChpl = visibleOnChpl;
 	}
 	
 }

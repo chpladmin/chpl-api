@@ -82,7 +82,7 @@ public class CertifiedProductController {
 		toUpdate.setQualityManagementSystemAtt(updateRequest.getQualityManagementSystemAtt());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
-		toUpdate.setIsChplVisible(updateRequest.getIsChplVisible());
+		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
 		
 		toUpdate = cpManager.update(toUpdate);
 		

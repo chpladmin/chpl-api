@@ -1,4 +1,4 @@
-﻿CREATE OR REPLACE VIEW openchpl.certified_product_details AS
+CREATE OR REPLACE VIEW openchpl.certified_product_details AS
 
 SELECT
 
