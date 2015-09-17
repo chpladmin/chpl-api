@@ -1,6 +1,6 @@
 
 -- object: openchpl.pending_certified_product | type: TABLE --
-DROP TABLE IF EXISTS openchpl.pending_certified_product CASCADE;
+--DROP TABLE IF EXISTS openchpl.pending_certified_product CASCADE;
 CREATE TABLE openchpl.pending_certified_product(
 	pending_certified_product_id bigserial NOT NULL,
 	
@@ -46,7 +46,7 @@ ALTER TABLE openchpl.pending_certified_product OWNER TO openchpl;
 -- ddl-end --
 
 -- object: openchpl.pending_certification_criterion | type: TABLE --
-DROP TABLE IF EXISTS openchpl.pending_certification_criterion CASCADE;
+--DROP TABLE IF EXISTS openchpl.pending_certification_criterion CASCADE;
 CREATE TABLE openchpl.pending_certification_criterion(
 	pending_certification_criterion_id bigserial NOT NULL,
 	certification_criterion_id bigint NOT NULL,
@@ -54,10 +54,10 @@ CREATE TABLE openchpl.pending_certification_criterion(
 	meets_criteria boolean NOT NULL,
 	CONSTRAINT pending_certification_criterion_pk PRIMARY KEY (pending_certification_criterion_id),
 	CONSTRAINT certification_criterion_fk FOREIGN KEY (certification_criterion_id)
-      REFERENCES certification_criterion (certification_criterion_id) MATCH FULL
+      REFERENCES openchpl.certification_criterion (certification_criterion_id) MATCH FULL
       ON UPDATE CASCADE ON DELETE SET NULL,
 	CONSTRAINT pending_certified_product_fk FOREIGN KEY (pending_certified_product_id)
-      REFERENCES pending_certified_product (pending_certified_product_id) MATCH FULL
+      REFERENCES openchpl.pending_certified_product (pending_certified_product_id) MATCH FULL
       ON UPDATE CASCADE ON DELETE SET NULL
 );
 
@@ -69,7 +69,7 @@ ALTER TABLE openchpl.pending_certification_criterion OWNER TO openchpl;
 -- ddl-end --
 
 -- object: openchpl.pending_cqm_criterion | type: TABLE --
-DROP TABLE IF EXISTS openchpl.pending_cqm_criterion CASCADE;
+--DROP TABLE IF EXISTS openchpl.pending_cqm_criterion CASCADE;
 CREATE TABLE openchpl.pending_cqm_criterion(
 	pending_cqm_criterion_id bigserial NOT NULL,
 	cqm_criterion_id bigint NOT NULL,
@@ -77,10 +77,10 @@ CREATE TABLE openchpl.pending_cqm_criterion(
 	meets_criteria boolean NOT NULL,
 	CONSTRAINT pending_cqm_criterion_pk PRIMARY KEY (pending_cqm_criterion_id),
 	CONSTRAINT cqm_criterion_fk FOREIGN KEY (cqm_criterion_id)
-      REFERENCES cqm_criterion (cqm_criterion_id) MATCH FULL
+      REFERENCES openchpl.cqm_criterion (cqm_criterion_id) MATCH FULL
       ON UPDATE CASCADE ON DELETE SET NULL,
 	CONSTRAINT pending_certified_product_fk FOREIGN KEY (pending_certified_product_id)
-      REFERENCES pending_certified_product (pending_certified_product_id) MATCH FULL
+      REFERENCES openchpl.pending_certified_product (pending_certified_product_id) MATCH FULL
       ON UPDATE CASCADE ON DELETE SET NULL
 );
 -- ddl-end --
