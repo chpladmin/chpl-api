@@ -22,6 +22,8 @@
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CQMResultDetailsEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationEditionEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
 		<class>gov.healthit.chpl.entity.AdditionalSoftwareEntity</class>

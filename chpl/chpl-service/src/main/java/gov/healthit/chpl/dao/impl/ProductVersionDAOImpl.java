@@ -166,6 +166,20 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 		return dtoResults;
 	}
 	
+	
+	public ProductVersionDTO getByProductAndVersion(Long productId, String version) {
+		Query query = entityManager.createQuery( "from ProductVersionEntity where (NOT deleted = true) AND (product_id = :productId) AND (version = :version) ", ProductVersionEntity.class );
+		query.setParameter("productId", productId);
+		query.setParameter("version", version);
+		List<ProductVersionEntity> results = query.getResultList();
+
+		ProductVersionDTO result = null;
+		if(results != null && results.size() > 0) {
+			result = new ProductVersionDTO(results.get(0));
+		}
+		return result;
+	}
+	
 	private void create(ProductVersionEntity entity) {
 		
 		entityManager.persist(entity);

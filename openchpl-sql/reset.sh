@@ -20,3 +20,5 @@ psql -Upostgres -f openchpl_create_view_cqm.sql openchpl
 psql -Upostgres -f openchpl_create_view_cqm.sql openchpl_test
 psql -Upostgres -f openchpl_create_view_search.sql openchpl
 psql -Upostgres -f openchpl_create_view_search.sql openchpl_test
+psql -Upostgres -f openchpl_certified_product_pending.sql openchpl
+psql -Upostgres -f openchpl_certified_product_pending.sql openchpl_test

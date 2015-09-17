@@ -17,7 +17,7 @@ public class UpdateCertifiedProductRequest {
 	private String qualityManagementSystemAtt;
 	private String acbCertificationId;
 	private String otherAcb;
-	private Boolean isChplVisible;
+	private Boolean visibleOnChpl;
 	public Long getId() {
 		return id;
 	}
@@ -84,10 +84,10 @@ public class UpdateCertifiedProductRequest {
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
 	}
-	public Boolean getIsChplVisible() {
-		return isChplVisible;
+	public Boolean getVisibleOnChpl() {
+		return visibleOnChpl;
 	}
-	public void setIsChplVisible(Boolean isChplVisible) {
-		this.isChplVisible = isChplVisible;
+	public void setVisibleOnChpl(Boolean visibleOnChpl) {
+		this.visibleOnChpl = visibleOnChpl;
 	}
 }

@@ -4,16 +4,10 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.domain.UpdateCertifiedProductRequest;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
+import javax.servlet.annotation.MultipartConfig;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,16 +15,32 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartFile;
+
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.domain.UpdateCertifiedProductRequest;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 @RestController
 @RequestMapping("/certified_product")
 public class CertifiedProductController {
 	
-	@Autowired
-	CertifiedProductDetailsManager cpdManager;
-	
-	@Autowired
-	CertifiedProductManager cpManager;
+	private static final Logger logger = LogManager.getLogger(CertifiedProductController.class);
+
+	@Autowired CertifiedProductDetailsManager cpdManager;
+	@Autowired CertifiedProductManager cpManager;
+	@Autowired PendingCertifiedProductManager pcpManager;
+	@Autowired CertificationBodyManager acbManager;
 	
 	@RequestMapping(value="/get_certified_product", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
@@ -72,13 +82,37 @@ public class CertifiedProductController {
 		toUpdate.setQualityManagementSystemAtt(updateRequest.getQualityManagementSystemAtt());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
-		
-		//TODO
-		//toUpdate.setIsChplVisible(updateRequest.getIsChplVisible());
+		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
 		
 		toUpdate = cpManager.update(toUpdate);
 		
 		//search for the product by id to get it with all the updates
 		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
+	}
+	
+	@RequestMapping(value="/upload", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8") 
+	public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("acbId") Long acbId,
+			@RequestParam("file") MultipartFile file) throws 
+			InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
+		if (file.isEmpty()) {
+			throw new InvalidArgumentsException("You cannot upload an empty file!");
+		}
+		
+		if(acbId == null || acbId < 0) {
+			throw new InvalidArgumentsException("ACB ID must be provided");
+		}
+		
+		if(!file.getContentType().equalsIgnoreCase("text/csv") &&
+				!file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
+			throw new InvalidArgumentsException("File must be a CSV or Excel document.");
+		}
+		
+		CertificationBodyDTO acb = acbManager.getById(acbId);
+		List<PendingCertifiedProductDetails> uploadedProducts = pcpManager.upload(acb, file);
+		
+		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
+		results.getPendingCertifiedProducts().addAll(uploadedProducts);
+		return results;
 	}
 }

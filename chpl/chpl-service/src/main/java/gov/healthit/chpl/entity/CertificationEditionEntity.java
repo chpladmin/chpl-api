@@ -29,7 +29,7 @@ import org.hibernate.proxy.HibernateProxy;
  */
 
 @Entity
-@Table(name = "certification_edition", catalog = "openchpl", schema = "openchpl")
+@Table(name = "certification_edition")
 public class CertificationEditionEntity implements Serializable {
 
 	/** Serial Version UID. */
@@ -40,10 +40,10 @@ public class CertificationEditionEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificationEditionCertification_edition_idGenerator")
 	@Basic( optional = false )
 	@Column( name = "certification_edition_id", nullable = false  )
-	@SequenceGenerator(name = "certificationEditionCertification_edition_idGenerator", sequenceName = "openchpl.openchpl.certification_edition_certification_edition_id_seq", schema = "openchpl", catalog = "openchpl")
+	@SequenceGenerator(name = "certificationEditionCertification_edition_idGenerator", sequenceName = "certification_edition_certification_edition_id_seq")
 	private Long id;
     
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "certificationEditionId"  )
+ 	@OneToMany( fetch = FetchType.EAGER, mappedBy = "certificationEditionId"  )
 	@Basic( optional = false )
 	@Column( name = "certification_edition_id", nullable = false  )
 	private Set<CertificationCriterionEntity> certificationCriterions = new HashSet<CertificationCriterionEntity>();

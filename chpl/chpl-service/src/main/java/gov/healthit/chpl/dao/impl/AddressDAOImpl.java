@@ -166,7 +166,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		return query.getResultList();
 	}
 	
-	private AddressEntity getEntityById(Long id) throws EntityRetrievalException {
+	public AddressEntity getEntityById(Long id) throws EntityRetrievalException {
 		AddressEntity entity = null;
 		
 		Query query = entityManager.createQuery( "from AddressEntity a where (NOT deleted = true) AND (address_id = :entityid) ", AddressEntity.class );
