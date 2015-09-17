@@ -36,6 +36,7 @@ CREATE TABLE openchpl.pending_certified_product(
 	certification_edition_id bigint, -- should never be null
 	certification_body_id bigint, --should never be null
 	product_classification_id bigint, -- should never be null
+	additional_software_id bigint, -- may be null
 	CONSTRAINT pending_certified_product_pk PRIMARY KEY (pending_certified_product_id)
 );
 -- ddl-end --
