@@ -16,8 +16,8 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
 	private CertifiedProductUploadHandlerFactoryImpl() {}
 	
 	@Override
-	public CertifiedProductHandlerImpl getHandler(CSVRecord heading, CSVRecord cpRecord) throws InvalidArgumentsException {
-		CertifiedProductHandlerImpl handler = null;
+	public CertifiedProductUploadHandlerImpl getHandler(CSVRecord heading, CSVRecord cpRecord) throws InvalidArgumentsException {
+		CertifiedProductUploadHandlerImpl handler = null;
 		
 		//what type of handler do we need?
 		CertifiedProductUploadType uploadType = CertifiedProductUploadType.valueOf(cpRecord.get(1).toUpperCase());

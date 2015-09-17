@@ -3,20 +3,21 @@ package gov.healthit.chpl.web.controller.results;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 public class PendingCertifiedProductResults {
-	private List<PendingCertifiedProductDTO> pendingCertifiedProducts;
+	private List<PendingCertifiedProductDetails> pendingCertifiedProducts;
 
 	public PendingCertifiedProductResults() {
-		pendingCertifiedProducts = new ArrayList<PendingCertifiedProductDTO>();
+		pendingCertifiedProducts = new ArrayList<PendingCertifiedProductDetails>();
 	}
 
-	public List<PendingCertifiedProductDTO> getPendingCertifiedProducts() {
+	public List<PendingCertifiedProductDetails> getPendingCertifiedProducts() {
 		return pendingCertifiedProducts;
 	}
 
-	public void setPendingCertifiedProducts(List<PendingCertifiedProductDTO> pendingCertifiedProducts) {
+	public void setPendingCertifiedProducts(List<PendingCertifiedProductDetails> pendingCertifiedProducts) {
 		this.pendingCertifiedProducts = pendingCertifiedProducts;
 	}
 	

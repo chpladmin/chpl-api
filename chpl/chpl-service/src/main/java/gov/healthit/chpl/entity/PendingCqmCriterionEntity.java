@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="pending_cqm_criterion")
@@ -28,6 +29,12 @@ public class PendingCqmCriterionEntity {
 	@Column(name = "meets_criteria")
 	private Boolean meetsCriteria;
 
+	@Transient private String cqmNumber;
+	@Transient private String cmsId;
+	@Transient private String title;
+	@Transient private String nqfNumber;
+	@Transient private String version;
+	
 	public Long getId() {
 		return id;
 	}
@@ -58,5 +65,45 @@ public class PendingCqmCriterionEntity {
 
 	public void setMeetsCriteria(Boolean meetsCriteria) {
 		this.meetsCriteria = meetsCriteria;
+	}
+
+	public String getCqmNumber() {
+		return cqmNumber;
+	}
+
+	public void setCqmNumber(String cqmNumber) {
+		this.cqmNumber = cqmNumber;
+	}
+
+	public String getCmsId() {
+		return cmsId;
+	}
+
+	public void setCmsId(String cmsId) {
+		this.cmsId = cmsId;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getNqfNumber() {
+		return nqfNumber;
+	}
+
+	public void setNqfNumber(String nqfNumber) {
+		this.nqfNumber = nqfNumber;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 }

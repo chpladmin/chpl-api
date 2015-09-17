@@ -70,6 +70,8 @@ public class PendingCertifiedProductEntity {
     @Column(name = "product_classification_id")
     private Long productClassificationId;
     
+    @Column(name = "additional_software_id")
+    private Long additionalSoftwareId;
     
     /**
     * fields directly from the spreadsheet
@@ -420,5 +422,13 @@ public class PendingCertifiedProductEntity {
 
 	public void setVendorAddress(AddressEntity vendorAddress) {
 		this.vendorAddress = vendorAddress;
+	}
+
+	public Long getAdditionalSoftwareId() {
+		return additionalSoftwareId;
+	}
+
+	public void setAdditionalSoftwareId(Long additionalSoftwareId) {
+		this.additionalSoftwareId = additionalSoftwareId;
 	}
 }

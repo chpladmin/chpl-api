@@ -21,7 +21,8 @@ public class PendingCertifiedProductDTO {
     private Long certificationEditionId;    
     private Long certificationBodyId;    
     private Long productClassificationId;
-   
+    private Long additionalSoftwareId;
+    
     /**
     * fields directly from the spreadsheet
     **/
@@ -48,7 +49,6 @@ public class PendingCertifiedProductDTO {
     private String reportFileLocation;
 	private List<PendingCertificationCriterionDTO> certificationCriterion;
 	private List<PendingCqmCriterionDTO> cqmCriterion;
-    
 	
 	public PendingCertifiedProductDTO(){
 		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
@@ -65,6 +65,7 @@ public class PendingCertifiedProductDTO {
 		this.certificationEditionId = entity.getCertificationEditionId();
 		this.certificationBodyId = entity.getCertificationBodyId();
 		this.productClassificationId = entity.getProductClassificationId();
+		this.additionalSoftwareId = entity.getAdditionalSoftwareId();
 		
 		this.uniqueId = entity.getUniqueId();
 		this.recordStatus = entity.getRecordStatus();
@@ -354,5 +355,13 @@ public class PendingCertifiedProductDTO {
 
 	public void setCqmCriterion(List<PendingCqmCriterionDTO> cqmCriterion) {
 		this.cqmCriterion = cqmCriterion;
+	}
+
+	public Long getAdditionalSoftwareId() {
+		return additionalSoftwareId;
+	}
+
+	public void setAdditionalSoftwareId(Long additionalSoftwareId) {
+		this.additionalSoftwareId = additionalSoftwareId;
 	}
 }

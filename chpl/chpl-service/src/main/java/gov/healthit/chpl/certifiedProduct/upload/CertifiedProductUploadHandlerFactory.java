@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 public interface CertifiedProductUploadHandlerFactory {
-	public CertifiedProductHandlerImpl getHandler(CSVRecord heading, CSVRecord cpRecord) throws InvalidArgumentsException;
+	public CertifiedProductUploadHandlerImpl getHandler(CSVRecord heading, CSVRecord cpRecord) throws InvalidArgumentsException;
 }

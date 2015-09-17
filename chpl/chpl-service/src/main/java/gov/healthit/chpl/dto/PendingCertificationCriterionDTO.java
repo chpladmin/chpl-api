@@ -4,6 +4,8 @@ import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 
 public class PendingCertificationCriterionDTO {
 	private Long id;
+	private String number;
+	private String title;
 	private Long certificationCriterionId;
 	private Long pendingCertifiedProductId;
 	private boolean meetsCriteria;
@@ -12,6 +14,8 @@ public class PendingCertificationCriterionDTO {
 	
 	public PendingCertificationCriterionDTO(PendingCertificationCriterionEntity entity) {
 		this.setId(entity.getId());
+		this.setNumber(entity.getNumber());
+		this.setTitle(entity.getTitle());
 		this.setCertificationCriterionId(entity.getCertificationCriterionId());
 		this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
 		this.setMeetsCriteria(entity.getMeetsCriteria().booleanValue());
@@ -40,6 +44,22 @@ public class PendingCertificationCriterionDTO {
 	}
 	public void setMeetsCriteria(boolean meetsCriteria) {
 		this.meetsCriteria = meetsCriteria;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	
 	

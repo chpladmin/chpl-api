@@ -1,12 +1,12 @@
 package gov.healthit.chpl.certifiedProduct.upload;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -19,16 +19,19 @@ import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.VendorDAO;
+import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 
-public abstract class CertifiedProductHandlerImpl implements CertifiedProductHandler {
+public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProductUploadHandler {
 	@Autowired protected PracticeTypeDAO practiceTypeDao;
 	@Autowired protected VendorDAO vendorDao;
 	@Autowired protected AddressDAO addressDao;
 	@Autowired protected ProductDAO productDao;
 	@Autowired protected ProductVersionDAO versionDao;
 	@Autowired protected CertificationEditionDAO editionDao;
+	@Autowired protected AdditionalSoftwareDAO additionalSoftwareDao;
 	@Autowired protected CertificationBodyDAO acbDao;
 	@Autowired protected ProductClassificationTypeDAO classificationDao;
 	@Autowired protected CertificationCriterionDAO certDao;;
@@ -42,12 +45,13 @@ public abstract class CertifiedProductHandlerImpl implements CertifiedProductHan
 	private CSVRecord record;
 	private CSVRecord heading;
 	
-	public CertifiedProductHandlerImpl() {
+	public CertifiedProductUploadHandlerImpl() {
 		dateFormatter = new SimpleDateFormat(CERTIFICATION_DATE_FORMAT);
 	}
 	
 	protected abstract PendingCertifiedProductEntity handle();
-
+	public abstract List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
+	
 	@Override
 	public PendingCertifiedProductDTO parseRow() throws EntityCreationException {
 		PendingCertifiedProductEntity entity = handle();

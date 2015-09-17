@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="pending_certification_criterion")
@@ -30,6 +31,11 @@ public class PendingCertificationCriterionEntity {
 	@Column(name = "meets_criteria")
 	private Boolean meetsCriteria;
 
+	@Transient
+	private String number;
+	@Transient
+	private String title;
+	
 	public Long getId() {
 		return id;
 	}
@@ -60,6 +66,22 @@ public class PendingCertificationCriterionEntity {
 
 	public void setMeetsCriteria(Boolean meetsCriteria) {
 		this.meetsCriteria = meetsCriteria;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 }

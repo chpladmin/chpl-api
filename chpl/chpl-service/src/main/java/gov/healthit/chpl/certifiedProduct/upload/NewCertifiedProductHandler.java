@@ -2,6 +2,7 @@ package gov.healthit.chpl.certifiedProduct.upload;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -26,9 +29,9 @@ import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("newCertifiedProductHandler")
-public class NewCertifiedProductHandler extends CertifiedProductHandlerImpl {
+public abstract class NewCertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
 	private static final Logger logger = LogManager.getLogger(NewCertifiedProductHandler.class);
-
+	
 	protected PendingCertifiedProductEntity handle() {
 		PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
 		
@@ -148,7 +151,12 @@ public class NewCertifiedProductHandler extends CertifiedProductHandlerImpl {
 		}
 		
 		//additional software
-		pendingCertifiedProduct.setAdditionalSoftware(getRecord().get(colIndex++));
+		String additionalSoftware = getRecord().get(colIndex++);
+		AdditionalSoftwareDTO foundAdditionalSoftware = additionalSoftwareDao.getByName(additionalSoftware);
+		if(foundAdditionalSoftware != null) {
+			pendingCertifiedProduct.setAdditionalSoftwareId(foundAdditionalSoftware.getId());
+		}
+		pendingCertifiedProduct.setAdditionalSoftware(additionalSoftware);
 		
 		//notes (field 19) - only for record status of update or delete
 		String notes = getRecord().get(colIndex++);
@@ -1403,6 +1411,8 @@ public class NewCertifiedProductHandler extends CertifiedProductHandlerImpl {
 		
 		PendingCertificationCriterionEntity result = new PendingCertificationCriterionEntity();
 		result.setCertificationCriterionId(certDto.getId());
+		result.setNumber(certDto.getTitle());
+		result.setTitle(certDto.getTitle());
 		
 		boolean meetsCriteria = false;
 		if(!StringUtils.isEmpty(getRecord().get(column))) {
@@ -1430,6 +1440,11 @@ public class NewCertifiedProductHandler extends CertifiedProductHandlerImpl {
 		
 		PendingCqmCriterionEntity result = new PendingCqmCriterionEntity();
 		result.setCqmCriterionId(cqmDto.getId());
+		result.setCqmNumber(cqmDto.getNumber());
+		result.setCmsId(cqmDto.getCmsId());
+		result.setNqfNumber(cqmDto.getNqfNumber());
+		result.setTitle(cqmDto.getTitle());
+		result.setVersion(cqmDto.getCqmVersion());
 		
 		boolean meetsCriteria = false;
 		if(!StringUtils.isEmpty(getRecord().get(column))) {
@@ -1464,6 +1479,11 @@ public class NewCertifiedProductHandler extends CertifiedProductHandlerImpl {
 				throw new InvalidArgumentsException("Could not find a CQM CMS criterion matching " + criterionNum + " and " + version);
 			} 
 			result.setCqmCriterionId(cqmDto.getId());
+			result.setCqmNumber(cqmDto.getNumber());
+			result.setCmsId(cqmDto.getCmsId());
+			result.setNqfNumber(cqmDto.getNqfNumber());
+			result.setTitle(cqmDto.getTitle());
+			result.setVersion(cqmDto.getCqmVersion());
 			result.setMeetsCriteria(true);	
 		}
 		return result;
