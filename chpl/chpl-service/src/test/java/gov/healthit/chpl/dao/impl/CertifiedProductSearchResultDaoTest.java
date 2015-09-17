@@ -50,13 +50,13 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	public void countSimpleSearchResults() {
 		Long countProducts = searchResultDAO.countSimpleSearchResults("Test");
 		assertNotNull(countProducts);
-		assertEquals(3, countProducts.intValue());
+		assertEquals(2, countProducts.intValue());
 	}
 	
 	@Test
 	public void simpleSearch(){
 		List<CertifiedProductDetailsDTO> results = searchResultDAO.simpleSearch("Test", 0, 10, "product", false);
-		assertEquals(3, results.size());
+		assertEquals(2, results.size());
 	}
 	
 	@Test
@@ -65,8 +65,9 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVendor("Test");
+		searchRequest.setVisibleOnCHPL("YES");
 		Long countProducts = searchResultDAO.countMultiFilterSearchResults(searchRequest);
-		assertEquals(3, countProducts.intValue());
+		assertEquals(2, countProducts.intValue());
 		
 		searchRequest.setVersion("1.0.0");
 		Long countProductsVersionSpecific = searchResultDAO.countMultiFilterSearchResults(searchRequest);
@@ -80,8 +81,9 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVendor("Test");
+		searchRequest.setVisibleOnCHPL("YES");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.multiFilterSearch(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(2, products.size());
 		
 		searchRequest.setVersion("1.0.0");
 		List<CertifiedProductDetailsDTO> versionSpecificProducts = searchResultDAO.multiFilterSearch(searchRequest);

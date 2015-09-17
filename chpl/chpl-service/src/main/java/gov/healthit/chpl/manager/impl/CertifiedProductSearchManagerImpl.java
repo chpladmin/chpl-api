@@ -217,4 +217,5 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 				);
 		return response;
 	}
+	
 }

@@ -44,7 +44,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		searchRequest.setVendor("Test");
 		SearchResponse response = certifiedProductSearchManager.multiFilterSearch(searchRequest);
 		assertEquals((int)response.getRecordCount(), response.getResults().size());
-		assertEquals((int)response.getResults().size(), 3);
+		assertEquals((int)response.getResults().size(), 2);
 		
 		searchRequest.setVersion("1.0.0");
 		SearchResponse responseWithVersion = certifiedProductSearchManager.multiFilterSearch(searchRequest);
@@ -56,10 +56,10 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	public void testSimpleSearch(){
 		SearchResponse response = certifiedProductSearchManager.simpleSearch("Test", 0, 10);
 		assertEquals((int)response.getRecordCount(), response.getResults().size());
-		assertEquals(3, response.getResults().size());
+		assertEquals(2, response.getResults().size());
 		
 		SearchResponse responseSorted = certifiedProductSearchManager.simpleSearch("Test", 0, 10, "product", false);
 		assertEquals((int)responseSorted.getRecordCount(), responseSorted.getResults().size());
-		assertEquals(3, responseSorted.getResults().size());
+		assertEquals(2, responseSorted.getResults().size());
 	}
 }

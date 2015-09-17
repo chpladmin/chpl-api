@@ -80,7 +80,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	public Long countSimpleSearchResults(String searchTerm) {
 		
 		Query query = entityManager.createQuery( "Select count(e.id) from CertifiedProductDetailsEntity e "
-				+ "where (NOT deleted = true) AND ((UPPER(vendor_name)  "
+				+ "where (NOT deleted = true) AND (visible_on_chpl = true) AND ((UPPER(vendor_name)  "
 				+ "LIKE UPPER(:vendorname)) OR (UPPER(product_name) LIKE UPPER(:productname))) "
 				+ " "
 				 );
