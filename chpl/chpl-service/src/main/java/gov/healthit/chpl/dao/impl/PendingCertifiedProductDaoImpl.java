@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -9,10 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDao;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
+import gov.healthit.chpl.entity.VendorEntity;
 
 @Repository(value="pendingCertifiedProductDAO")
 public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements PendingCertifiedProductDao {
@@ -35,6 +39,21 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 		return new PendingCertifiedProductDTO(toCreate);
 	}
 
+	public List<PendingCertifiedProductDTO> findAll() {
+		List<PendingCertifiedProductEntity> entities = getAllEntities();
+		List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
+		
+		for (PendingCertifiedProductEntity entity : entities) {
+			PendingCertifiedProductDTO dto = new PendingCertifiedProductDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	public PendingCertifiedProductDTO findById(Long pcpId) throws EntityRetrievalException {
+		PendingCertifiedProductEntity entity = getEntityById(pcpId);
+		return new PendingCertifiedProductDTO(entity);
+	}
 	
 	private void update(PendingCertifiedProductEntity product) {
 		
@@ -44,7 +63,9 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 	
 	private List<PendingCertifiedProductEntity> getAllEntities() {
 		
-		List<PendingCertifiedProductEntity> result = entityManager.createQuery( "from PendingCertifiedProductEntity where (NOT deleted = true) ", PendingCertifiedProductEntity.class).getResultList();
+		List<PendingCertifiedProductEntity> result = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
+				+ " LEFT OUTER JOIN FETCH pcp.certificationCriterion"
+				+ " LEFT OUTER JOIN FETCH pcp.cqmCriterion", PendingCertifiedProductEntity.class).getResultList();
 		return result;
 		
 	}
@@ -53,7 +74,10 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 		
 		PendingCertifiedProductEntity entity = null;
 		
-		Query query = entityManager.createQuery( "from PendingCertifiedProductEntity where (pending_certified_product_id = :entityid) ", PendingCertifiedProductEntity.class );
+		Query query = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
+				+ " LEFT OUTER JOIN FETCH pcp.certificationCriterion"
+				+ " LEFT OUTER JOIN FETCH pcp.cqmCriterion"
+				+ " where (pending_certified_product_id = :entityid) ", PendingCertifiedProductEntity.class );
 		query.setParameter("entityid", entityId);
 		List<PendingCertifiedProductEntity> result = query.getResultList();
 		

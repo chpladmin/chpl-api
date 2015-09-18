@@ -92,15 +92,10 @@ public class CertifiedProductController {
 	
 	@RequestMapping(value="/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("acbId") Long acbId,
-			@RequestParam("file") MultipartFile file) throws 
+	public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file) throws 
 			InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
 		if (file.isEmpty()) {
 			throw new InvalidArgumentsException("You cannot upload an empty file!");
-		}
-		
-		if(acbId == null || acbId < 0) {
-			throw new InvalidArgumentsException("ACB ID must be provided");
 		}
 		
 		if(!file.getContentType().equalsIgnoreCase("text/csv") &&
@@ -108,8 +103,7 @@ public class CertifiedProductController {
 			throw new InvalidArgumentsException("File must be a CSV or Excel document.");
 		}
 		
-		CertificationBodyDTO acb = acbManager.getById(acbId);
-		List<PendingCertifiedProductDetails> uploadedProducts = pcpManager.upload(acb, file);
+		List<PendingCertifiedProductDetails> uploadedProducts = pcpManager.upload(file);
 		
 		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
 		results.getPendingCertifiedProducts().addAll(uploadedProducts);

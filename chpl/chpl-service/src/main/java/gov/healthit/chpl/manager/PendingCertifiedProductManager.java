@@ -17,9 +17,9 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 
 public interface PendingCertifiedProductManager {
-	public List<PendingCertifiedProductDetails> upload(CertificationBodyDTO acb, MultipartFile file) throws InvalidArgumentsException, IOException;
+	public List<PendingCertifiedProductDetails> upload( MultipartFile file) 
+			throws InvalidArgumentsException, EntityRetrievalException, IOException;
 	public void delete(PendingCertifiedProductDTO product);
 	public List<PendingCertifiedProductDTO> getAll();
 	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException;
-	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb);
 }
