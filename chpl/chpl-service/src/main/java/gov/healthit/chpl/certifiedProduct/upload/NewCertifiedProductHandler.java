@@ -32,7 +32,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 public abstract class NewCertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
 	private static final Logger logger = LogManager.getLogger(NewCertifiedProductHandler.class);
 	
-	protected PendingCertifiedProductEntity handle() {
+	public PendingCertifiedProductEntity handle() {
 		PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
 		
 		int colIndex = 0;

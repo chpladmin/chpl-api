@@ -43,6 +43,7 @@ import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
@@ -59,7 +60,10 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Autowired private MutableAclService mutableAclService;
 	
 	@Transactional
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) and hasPermission(#acb, admin)")
+	
+	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
+	//this also is restricted to users with permissions on the acb, but the acb is buried inside the file
+	//so we have to check that manually before inserting rather than out here
 	@Override
 	public List<PendingCertifiedProductDetails> upload(MultipartFile file) 
 		throws InvalidArgumentsException, EntityRetrievalException, IOException {
@@ -87,25 +91,29 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 				
 					//create a certified product to pass into the handler
 					try {
-						PendingCertifiedProductDTO pendingCp = handler.parseRow();
+						PendingCertifiedProductEntity pendingCp = handler.handle();
 						if(pendingCp.getCertificationBodyId() == null) {
-							throw new IllegalArgumentException("Cannot upload record for ACB " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
+							throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
 						}
-						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCp);
-						
-						//set applicable criteria
-						List<CQMCriterion> cqmCriteria = loadCQMCriteria();
-						details.setApplicableCqmCriteria(handler.getApplicableCqmCriterion(cqmCriteria));
-						
-						//add appropriate ACLs
 						CertificationBodyDTO acb = acbManager.getById(pendingCp.getCertificationBodyId());
+						if(acb == null || acb.getId() == null || acb.getId() < 0) {
+							throw new IllegalArgumentException("No certifying body " + pendingCp.getCertificationBodyName() + " found for current user.");
+						}
+
+						//insert the record
+						PendingCertifiedProductDTO pendingCpDto = pcpDao.create(pendingCp);
+						//add appropriate ACLs
 						//who already has access to this ACB?
 						List<UserDTO> usersOnAcb = acbManager.getAllUsersOnAcb(acb);
 						//give each of those people access to this PendingCertifiedProduct
 						for(UserDTO user : usersOnAcb) {
-							addPermission(acb, pendingCp, user, BasePermission.ADMINISTRATION);
+							addPermission(acb, pendingCpDto, user, BasePermission.ADMINISTRATION);
 						}
 						
+						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
+						//set applicable criteria
+						List<CQMCriterion> cqmCriteria = loadCQMCriteria();
+						details.setApplicableCqmCriteria(handler.getApplicableCqmCriterion(cqmCriteria));
 						results.add(details);
 					} catch(EntityCreationException ex) {
 						logger.error("could not create entity at row " + i + ". Message is " + ex.getMessage());

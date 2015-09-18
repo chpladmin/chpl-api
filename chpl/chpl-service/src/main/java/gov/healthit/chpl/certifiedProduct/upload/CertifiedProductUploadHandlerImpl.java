@@ -49,15 +49,8 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 		dateFormatter = new SimpleDateFormat(CERTIFICATION_DATE_FORMAT);
 	}
 	
-	protected abstract PendingCertifiedProductEntity handle();
+	public abstract PendingCertifiedProductEntity handle();
 	public abstract List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
-	
-	@Override
-	public PendingCertifiedProductDTO parseRow() throws EntityCreationException {
-		PendingCertifiedProductEntity entity = handle();
-		PendingCertifiedProductDTO dto = pendingCpDao.create(entity);
-		return dto;
-	}
 	
 	@Override
 	public CSVRecord getRecord() {
