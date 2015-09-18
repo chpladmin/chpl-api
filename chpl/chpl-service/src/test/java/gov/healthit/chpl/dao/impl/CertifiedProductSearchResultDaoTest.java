@@ -33,8 +33,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 
 	@Autowired
 	private CertifiedProductSearchResultDAO searchResultDAO;
-
-	private static JWTAuthenticatedUser authUser;
 	
 	@Test
 	@Transactional
@@ -49,7 +47,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setVersion("1.0.0");
 		Long countProductsVersionSpecific = searchResultDAO.countMultiFilterSearchResults(searchRequest);
 		assertEquals(1, countProductsVersionSpecific.intValue());
-		
 	}
 	
 	@Test
@@ -60,6 +57,10 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setVendor("Test Vendor 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(2, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getVendorName().startsWith("Test Vendor 1"));
+		}
 	}
 	
 	@Test
@@ -72,6 +73,10 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(2, products.size());
 		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getProductName().startsWith("Test Product 1"));
+		}
+		
 	}
 	
 	@Test
@@ -82,6 +87,10 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setVersion("1.0.1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getProductVersion().startsWith("1.0.1"));
+		}
 		
 	}
 	
@@ -94,6 +103,9 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(2, products.size());
 		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getYear().startsWith("2014"));
+		}
 	}
 	
 	@Test
@@ -106,6 +118,10 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(3, products.size());
 		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getCertificationBodyName().startsWith("InfoGard"));
+		}
+		
 	}
 	
 	
@@ -114,11 +130,13 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	public void testSearchProductClassificationType(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		
 		searchRequest.setProductClassification("Complete EHR");
-		
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getProductClassificationName().startsWith("Complete EHR"));
+		}
 		
 	}
 	
@@ -132,6 +150,10 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(3, products.size());
 		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getPracticeTypeName().startsWith("Ambulatory"));
+		}
+		
 	}
 	
 	
@@ -143,6 +165,10 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setVisibleOnCHPL("YES");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(2, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getVisibleOnChpl());
+		}
 		
 	}
 	

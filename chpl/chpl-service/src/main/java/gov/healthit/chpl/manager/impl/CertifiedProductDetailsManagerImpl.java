@@ -77,7 +77,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setChplProductNumber(dto.getChplProductNumber());
 		
 		searchDetails.getClassificationType().put("id", dto.getProductClassificationTypeId().toString());
-		searchDetails.getClassificationType().put("name", dto.getProductclassificationName());
+		searchDetails.getClassificationType().put("name", dto.getProductClassificationName());
 		
 		searchDetails.setOtherAcb(dto.getOtherAcb());
 		

@@ -61,7 +61,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setChplProductNumber(dto.getChplProductNumber());
 			
 			searchResult.getClassificationType().put("id", dto.getProductClassificationTypeId().toString());
-			searchResult.getClassificationType().put("name", dto.getProductclassificationName());
+			searchResult.getClassificationType().put("name", dto.getProductClassificationName());
 			
 			searchResult.setOtherAcb(dto.getOtherAcb());
 			
