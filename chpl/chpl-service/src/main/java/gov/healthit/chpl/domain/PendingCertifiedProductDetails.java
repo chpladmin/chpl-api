@@ -71,6 +71,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		productMap.put("name", dto.getProductName());
 		if(dto.getProductVersionId() == null) {
 			productMap.put("versionId", null);
+		} else {
+			productMap.put("versionId", dto.getProductVersionId()+"");
 		}
 		productMap.put("version", dto.getProductVersion());
 		this.setProduct(productMap);

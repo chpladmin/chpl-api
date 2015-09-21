@@ -90,6 +90,27 @@ public class CertifiedProductController {
 		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
 	}
 	
+	
+	//TODO: need another call to update 2011 cqms, 2014 cmqs, and certifications
+	
+	@RequestMapping(value="/get_pending", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts(@RequestParam(required=false) Long certifiedProductId) throws EntityRetrievalException {
+		List<PendingCertifiedProductDetails> products = null;
+		
+		if(certifiedProductId == null || certifiedProductId < 0) {
+			products = pcpManager.getAllDetails();
+		} else {
+			PendingCertifiedProductDetails product = pcpManager.getDetailsById(certifiedProductId);
+			products = new ArrayList<PendingCertifiedProductDetails>();
+			products.add(product);
+		}
+		
+		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
+		results.getPendingCertifiedProducts().addAll(products);
+		return results;
+	}
+	
 	@RequestMapping(value="/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
 	public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file) throws 

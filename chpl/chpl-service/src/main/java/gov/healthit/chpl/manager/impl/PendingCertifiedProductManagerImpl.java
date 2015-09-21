@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -53,17 +55,20 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired PendingCertifiedProductDao pcpDao;
-	@Autowired CQMCriterionDAO cqmCriterionDAO;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired UserManager userManager;
 	@Autowired UserDAO userDAO;
 	@Autowired private MutableAclService mutableAclService;
+	@Autowired private CQMCriterionDAO cqmCriterionDAO;
+	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
+	
+	@PostConstruct
+	public void setup() {
+		loadCQMCriteria();
+	}
 	
 	@Transactional
-	
 	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
-	//this also is restricted to users with permissions on the acb, but the acb is buried inside the file
-	//so we have to check that manually before inserting rather than out here
 	@Override
 	public List<PendingCertifiedProductDetails> upload(MultipartFile file) 
 		throws InvalidArgumentsException, EntityRetrievalException, IOException {
@@ -95,24 +100,10 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 						if(pendingCp.getCertificationBodyId() == null) {
 							throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
 						}
-						CertificationBodyDTO acb = acbManager.getById(pendingCp.getCertificationBodyId());
-						if(acb == null || acb.getId() == null || acb.getId() < 0) {
-							throw new IllegalArgumentException("No certifying body " + pendingCp.getCertificationBodyName() + " found for current user.");
-						}
-
-						//insert the record
-						PendingCertifiedProductDTO pendingCpDto = pcpDao.create(pendingCp);
-						//add appropriate ACLs
-						//who already has access to this ACB?
-						List<UserDTO> usersOnAcb = acbManager.getAllUsersOnAcb(acb);
-						//give each of those people access to this PendingCertifiedProduct
-						for(UserDTO user : usersOnAcb) {
-							addPermission(acb, pendingCpDto, user, BasePermission.ADMINISTRATION);
-						}
 						
+						PendingCertifiedProductDTO pendingCpDto = create(pendingCp.getCertificationBodyId(), pendingCp);
 						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
 						//set applicable criteria
-						List<CQMCriterion> cqmCriteria = loadCQMCriteria();
 						details.setApplicableCqmCriteria(handler.getApplicableCqmCriterion(cqmCriteria));
 						results.add(details);
 					} catch(EntityCreationException ex) {
@@ -131,56 +122,124 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	}
 
 	@Override
-	public void delete(PendingCertifiedProductDTO product) {
-		// TODO Auto-generated method stub
-		
-	}
+	@Transactional(readOnly = true)
+	public List<PendingCertifiedProductDetails> getAllDetails() {
+		List<PendingCertifiedProductDetails> results = new ArrayList<PendingCertifiedProductDetails>();
 
+		List<PendingCertifiedProductDTO> products = getAll();
+		for(PendingCertifiedProductDTO pendingCpDto : products) {
+			PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
+			
+			//set applicable criteria
+			if (pendingCpDto.getCertificationEdition().startsWith("2011")){
+				details.setApplicableCqmCriteria(getAvailableNQFVersions());
+			} else {
+				details.setApplicableCqmCriteria(getAvailableCQMVersions());
+			}
+			results.add(details);
+		}
+		return results;
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
-	@PostFilter("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and (hasPermission(filterObject, 'read') or hasPermission(filterObject, admin))")
+	public PendingCertifiedProductDetails getDetailsById(Long id) throws EntityRetrievalException {
+		PendingCertifiedProductDTO product = getById(id);
+		PendingCertifiedProductDetails result = new PendingCertifiedProductDetails(product);
+			
+		//set applicable criteria
+		if (product.getCertificationEdition().startsWith("2011")){
+			result.setApplicableCqmCriteria(getAvailableNQFVersions());
+		} else {
+			result.setApplicableCqmCriteria(getAvailableCQMVersions());
+		}
+		return result;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<PendingCertifiedProductDetails> getDetailsByAcb(CertificationBodyDTO acb) {
+		List<PendingCertifiedProductDetails> results = new ArrayList<PendingCertifiedProductDetails>();
+
+		List<PendingCertifiedProductDTO> products = getByAcb(acb);
+		for(PendingCertifiedProductDTO pendingCpDto : products) {
+			PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
+			
+			//set applicable criteria
+			if (pendingCpDto.getCertificationEdition().startsWith("2011")){
+				details.setApplicableCqmCriteria(getAvailableNQFVersions());
+			} else {
+				details.setApplicableCqmCriteria(getAvailableCQMVersions());
+			}
+			results.add(details);
+		}
+		return results;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	@PostFilter("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ " (hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)))")
 	public List<PendingCertifiedProductDTO> getAll() {
 		return pcpDao.findAll();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	@PostFilter("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and (hasPermission(filterObject, 'read') or hasPermission(filterObject, admin))")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or ((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDto', 'admin'))")	
 	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		return pcpDao.findById(id);
 	}
 
+	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
-	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, Long userId, Permission permission) throws UserRetrievalException {
-		MutableAcl acl;
-		ObjectIdentity oid = new ObjectIdentityImpl(PendingCertifiedProductDTO.class, pcpDto.getId());
-
-		try {
-			acl = (MutableAcl) mutableAclService.readAclById(oid);
-		}
-		catch (NotFoundException nfe) {
-			acl = mutableAclService.createAcl(oid);
-		}
-
-		UserDTO user = userDAO.getById(userId);
-		if(user == null || user.getSubjectName() == null) {
-			throw new UserRetrievalException("Could not find user with id " + userId);
-		}
-		
-		Sid recipient = new PrincipalSid(user.getSubjectName());
-		if(permissionExists(acl, recipient, permission)) {
-			logger.debug("User " + recipient + " already has permission on the pending certified product " + pcpDto.getId());
-		} else {
-			acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-			mutableAclService.updateAcl(acl);
-			logger.debug("Added permission " + permission + " for Sid " + recipient
-					+ " pending certified product " + pcpDto.getId());
-		}
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
+	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb) {
+		return pcpDao.findByAcbId(acb.getId());
 	}
 	
+	@Override
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProduct', admin)")
+	public PendingCertifiedProductDTO create(Long acbId, PendingCertifiedProductEntity toCreate) 
+		throws EntityRetrievalException, EntityCreationException {
+		
+		CertificationBodyDTO acb = acbManager.getById(toCreate.getCertificationBodyId());
+
+		//insert the record
+		PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
+		//add appropriate ACLs
+		//who already has access to this ACB?
+		List<UserDTO> usersOnAcb = acbManager.getAllUsersOnAcb(acb);
+		//give each of those people access to this PendingCertifiedProduct
+		for(UserDTO user : usersOnAcb) {
+			addPermission(acb, pendingCpDto, user, BasePermission.ADMINISTRATION);
+		}
+		return pendingCpDto;
+	}
+	
+	@Override
+	public void delete(PendingCertifiedProductDTO product) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
+	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, Long userId, Permission permission) throws UserRetrievalException {
+		UserDTO user = userDAO.getById(userId);
+		addPermission(acb, pcpDto, user, permission);
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, UserDTO user, Permission permission) {
 		MutableAcl acl;
 		ObjectIdentity oid = new ObjectIdentityImpl(PendingCertifiedProductDTO.class, pcpDto.getId());
@@ -191,14 +250,8 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		catch (NotFoundException nfe) {
 			acl = mutableAclService.createAcl(oid);
 		}
-
-		UserDTO foundUser = userDAO.findUser(user);
-		if(foundUser == null || foundUser.getId() == null) {
-			//TODO: what to do about the password??
-			//foundUser = userDAO.create(user, encodedPassword);
-		}
 		
-		Sid recipient = new PrincipalSid(foundUser.getSubjectName());
+		Sid recipient = new PrincipalSid(user.getSubjectName());
 		if(permissionExists(acl, recipient, permission)) {
 			logger.debug("User " + recipient + " already has permission on the pending certified product " + pcpDto.getId());
 		} else {
@@ -209,8 +262,21 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		}
 	}
 	
+	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#pcpDto, admin))")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
+	public void addPermissionToAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, UserDTO user, Permission permission) {
+		List<PendingCertifiedProductDTO> pcps = getAll();
+		for(PendingCertifiedProductDTO pcp : pcps) {
+			addPermission(acb, pcp, user, permission);
+		}
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#pcpDto, admin))")
 	public void deletePermission(PendingCertifiedProductDTO pcpDto, Sid recipient, Permission permission) {
 		ObjectIdentity oid = new ObjectIdentityImpl(PendingCertifiedProductDTO.class, pcpDto.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -230,10 +296,12 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		}
 		logger.debug("Deleted pcp " + pcpDto.getId() + " ACL permission " + permission + " for recipient " + recipient);
 	}
-
+	
+	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#pcpDto, admin))")
-	public void deleteAllPermissionsOnPendingCertifiedProduct(PendingCertifiedProductDTO pcpDto, Sid recipient) {
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#pcpDto, 'admin'))")
+	public void deleteUserPermissionsOnPendingCertifiedProduct(PendingCertifiedProductDTO pcpDto, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(PendingCertifiedProductDTO.class, pcpDto.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
 		
@@ -255,7 +323,21 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		logger.debug("Deleted all pcp " + pcpDto.getId() + " ACL permissions for recipient " + recipient);
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')") 
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, 'admin'))")
+	public void deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, Sid user) {
+		List<PendingCertifiedProductDTO> pcps = getByAcb(acb);
+		if(pcps != null && pcps.size() > 0) {
+			for(PendingCertifiedProductDTO pcp : pcps) {
+				deleteUserPermissionsOnPendingCertifiedProduct(pcp, user);
+			}
+		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')") 
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException {
 		if(userDto.getSubjectName() == null) {
 			userDto = userDAO.getById(userDto.getId());
@@ -291,9 +373,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		return permissionExists;
 	}
 	
-	private List<CQMCriterion> loadCQMCriteria() {
-		List<CQMCriterion> result = new ArrayList<CQMCriterion>();
-		
+	private void loadCQMCriteria() {		
 		List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
 		for (CQMCriterionDTO dto: dtos) {
 			CQMCriterion criterion = new CQMCriterion();
@@ -307,9 +387,31 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 			criterion.setNqfNumber(dto.getNqfNumber());
 			criterion.setNumber(dto.getNumber());
 			criterion.setTitle(dto.getTitle());
-			result.add(criterion);
+			cqmCriteria.add(criterion);
 		}
+	}
+	
+	private List<CQMCriterion> getAvailableCQMVersions(){
+		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 		
-		return result;
+		for (CQMCriterion criterion : cqmCriteria){
+			
+			if (criterion.getNumber().startsWith("CMS")){
+				criteria.add(criterion);
+			}
+		}
+		return criteria;
+	}
+	
+	private List<CQMCriterion> getAvailableNQFVersions(){
+		List<CQMCriterion> nqfs = new ArrayList<CQMCriterion>();
+		
+		for (CQMCriterion criterion : cqmCriteria){
+			
+			if (criterion.getNumber().startsWith("NQF")){
+				nqfs.add(criterion);
+			}
+		}
+		return nqfs;
 	}
 }

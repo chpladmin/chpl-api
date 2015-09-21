@@ -37,6 +37,13 @@ CREATE TABLE openchpl.pending_certified_product(
 	certification_body_id bigint, --should never be null
 	product_classification_id bigint, -- should never be null
 	additional_software_id bigint, -- may be null
+	
+	-- fields we need for auditing/tracking
+	creation_date timestamp without time zone NOT NULL DEFAULT now(),
+	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
+	last_modified_user bigint NOT NULL,
+	deleted boolean NOT NULL DEFAULT false,
+	status varchar(250) NOT NULL, -- pending, rejected, active
 	CONSTRAINT pending_certified_product_pk PRIMARY KEY (pending_certified_product_id)
 );
 -- ddl-end --
@@ -52,6 +59,12 @@ CREATE TABLE openchpl.pending_certification_criterion(
 	certification_criterion_id bigint NOT NULL,
 	pending_certified_product_id bigint NOT NULL,
 	meets_criteria boolean NOT NULL,
+	
+	-- fields we need for auditing/tracking
+	creation_date timestamp without time zone NOT NULL DEFAULT now(),
+	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
+	last_modified_user bigint NOT NULL,
+	deleted boolean NOT NULL DEFAULT false,
 	CONSTRAINT pending_certification_criterion_pk PRIMARY KEY (pending_certification_criterion_id),
 	CONSTRAINT certification_criterion_fk FOREIGN KEY (certification_criterion_id)
       REFERENCES openchpl.certification_criterion (certification_criterion_id) MATCH FULL
@@ -75,6 +88,12 @@ CREATE TABLE openchpl.pending_cqm_criterion(
 	cqm_criterion_id bigint NOT NULL,
 	pending_certified_product_id bigint NOT NULL,
 	meets_criteria boolean NOT NULL,
+	
+	-- fields we need for auditing/tracking
+	creation_date timestamp without time zone NOT NULL DEFAULT now(),
+	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
+	last_modified_user bigint NOT NULL,
+	deleted boolean NOT NULL DEFAULT false,
 	CONSTRAINT pending_cqm_criterion_pk PRIMARY KEY (pending_cqm_criterion_id),
 	CONSTRAINT cqm_criterion_fk FOREIGN KEY (cqm_criterion_id)
       REFERENCES openchpl.cqm_criterion (cqm_criterion_id) MATCH FULL
