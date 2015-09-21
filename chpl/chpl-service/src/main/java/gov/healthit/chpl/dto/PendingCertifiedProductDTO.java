@@ -4,6 +4,7 @@ package gov.healthit.chpl.dto;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
@@ -92,11 +93,11 @@ public class PendingCertifiedProductDTO {
 		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
 		
-		List<PendingCertificationCriterionEntity> criterionEntities = entity.getCertificationCriterion();
+		Set<PendingCertificationCriterionEntity> criterionEntities = entity.getCertificationCriterion();
 		for(PendingCertificationCriterionEntity crEntity : criterionEntities) {
 			this.certificationCriterion.add(new PendingCertificationCriterionDTO(crEntity));
 		}
-		List<PendingCqmCriterionEntity> cqmEntities = entity.getCqmCriterion();
+		Set<PendingCqmCriterionEntity> cqmEntities = entity.getCqmCriterion();
 		for(PendingCqmCriterionEntity cqmEntity : cqmEntities) {
 			this.cqmCriterion.add(new PendingCqmCriterionDTO(cqmEntity));
 		}	}

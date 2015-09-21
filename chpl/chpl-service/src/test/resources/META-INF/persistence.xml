@@ -27,6 +27,9 @@
 		<class>gov.healthit.chpl.entity.CQMCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
 		<class>gov.healthit.chpl.entity.AdditionalSoftwareEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCertifiedProductEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCqmCriterionEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCertificationCriterionEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

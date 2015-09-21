@@ -3,7 +3,9 @@ package gov.healthit.chpl.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -146,21 +148,41 @@ public class PendingCertifiedProductEntity {
     
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pending_certified_product_id", unique=true, nullable = true)
-	private List<PendingCertificationCriterionEntity> certificationCriterion;
+	private Set<PendingCertificationCriterionEntity> certificationCriterion;
     
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pending_certified_product_id", unique=true, nullable = true)
-	private List<PendingCqmCriterionEntity> cqmCriterion;
+	private Set<PendingCqmCriterionEntity> cqmCriterion;
     
+	@Basic( optional = false )
+	@Column( name = "last_modified_date", nullable = false  )
+	private Date lastModifiedDate;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_user", nullable = false  )
+	private Long lastModifiedUser;
+	
+	@Basic( optional = false )
+	@Column( name = "creation_date", nullable = false  )
+	private Date creationDate;
+	
+	@Basic( optional = false )
+	@Column(name = "deleted", nullable = false  )
+	private Boolean deleted;
+	
+	@Basic(optional = false) 
+	@Column( name = "status" , nullable = false)
+	private String status;
+	
 	public PendingCertifiedProductEntity() {
-		certificationCriterion = new ArrayList<PendingCertificationCriterionEntity>();
-		cqmCriterion = new ArrayList<PendingCqmCriterionEntity>();
+		certificationCriterion = new HashSet<PendingCertificationCriterionEntity>();
+		cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
 	} 
 
 	public PendingCertifiedProductEntity(Long id) {
 		this.id = id;
-		certificationCriterion = new ArrayList<PendingCertificationCriterionEntity>();
-		cqmCriterion = new ArrayList<PendingCqmCriterionEntity>();
+		certificationCriterion = new HashSet<PendingCertificationCriterionEntity>();
+		cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
 	}
 	
 	@Transient
@@ -400,19 +422,19 @@ public class PendingCertifiedProductEntity {
 		this.reportFileLocation = reportFileLocation;
 	}
 
-	public List<PendingCertificationCriterionEntity> getCertificationCriterion() {
+	public Set<PendingCertificationCriterionEntity> getCertificationCriterion() {
 		return certificationCriterion;
 	}
 
-	public void setCertificationCriterion(List<PendingCertificationCriterionEntity> certificationCriterion) {
+	public void setCertificationCriterion(Set<PendingCertificationCriterionEntity> certificationCriterion) {
 		this.certificationCriterion = certificationCriterion;
 	}
 
-	public List<PendingCqmCriterionEntity> getCqmCriterion() {
+	public Set<PendingCqmCriterionEntity> getCqmCriterion() {
 		return cqmCriterion;
 	}
 
-	public void setCqmCriterion(List<PendingCqmCriterionEntity> cqmCriterion) {
+	public void setCqmCriterion(Set<PendingCqmCriterionEntity> cqmCriterion) {
 		this.cqmCriterion = cqmCriterion;
 	}
 
@@ -430,5 +452,45 @@ public class PendingCertifiedProductEntity {
 
 	public void setAdditionalSoftwareId(Long additionalSoftwareId) {
 		this.additionalSoftwareId = additionalSoftwareId;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
+	}
+
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

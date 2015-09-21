@@ -11,6 +11,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProductUploadHandlerFactory {
 	private static int NUM_FIELDS_2014 = 276;
 	
+	@Autowired private NewCertifiedProductHandler2011 handler2011;
 	@Autowired private NewCertifiedProductHandler2014 handler2014;
 	
 	private CertifiedProductUploadHandlerFactoryImpl() {}
