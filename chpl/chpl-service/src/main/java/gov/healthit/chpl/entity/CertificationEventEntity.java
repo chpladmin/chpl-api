@@ -60,9 +60,13 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY )
 	@Basic( optional = false )
-	@JoinColumn(name = "event_type_id", nullable = false )
+	@JoinColumn( name = "event_type_id", nullable = false )
 	private EventTypeEntity eventType;
 	
+	@Basic( optional = false )
+	@Column( name = "event_type_id", nullable = false )
+	private Long eventTypeId;
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -120,10 +124,6 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 		return eventType;
 	}
 
-	public void setEventType(EventTypeEntity eventType) {
-		this.eventType = eventType;
-	}
-
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}
@@ -146,6 +146,14 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+	
+	public Long getEventTypeId() {
+		return eventTypeId;
+	}
+
+	public void setEventTypeId(Long eventTypeId) {
+		this.eventTypeId = eventTypeId;
 	}
 	
 }

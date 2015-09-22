@@ -14,7 +14,10 @@ public class CertificationEventDTO {
 	private Date eventDate;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
+	private String state;
+	private Long eventTypeId;
 	private EventTypeDTO eventTypeDTO;
+	
 	
 	public CertificationEventDTO(){}
 	
@@ -27,7 +30,8 @@ public class CertificationEventDTO {
 		this.eventDate = entity.getEventDate();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
-		
+		this.state = entity.getState();
+		this.eventTypeId = entity.getEventTypeId();
 		this.eventTypeDTO = new EventTypeDTO(entity.getEventType());
 		
 	}
@@ -79,6 +83,18 @@ public class CertificationEventDTO {
 	}
 	public void setEventTypeDTO(EventTypeDTO eventTypeDTO) {
 		this.eventTypeDTO = eventTypeDTO;
+	}
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public Long getEventTypeId() {
+		return eventTypeId;
+	}
+	public void setEventTypeId(Long eventTypeId) {
+		this.eventTypeId = eventTypeId;
 	}
 	
 }

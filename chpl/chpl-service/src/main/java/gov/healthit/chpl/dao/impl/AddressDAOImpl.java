@@ -25,6 +25,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 
 	@Override
 	public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException {
+		
 		AddressEntity toInsert = new AddressEntity();
 		toInsert.setStreetLineOne(dto.getStreetLineOne());
 		toInsert.setStreetLineTwo(dto.getStreetLineTwo());
