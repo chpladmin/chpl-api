@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -13,7 +15,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.entity.CertificationEventEntity;
 
-
+@Repository("certificationEventDAO")
 public class CertificationEventDAOImpl extends BaseDAOImpl implements CertificationEventDAO {
 	
 
@@ -225,7 +227,7 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 	
 	private List<CertificationEventEntity> getEntitiesByCertifiedProductId(Long id) {
 		
-		Query query = entityManager.createQuery( "from CertificationEventEntity where (NOT deleted = true) AND (certification_product_id = :certified_product_id) ", CertificationEventEntity.class );
+		Query query = entityManager.createQuery( "from CertificationEventEntity where (NOT deleted = true) AND (certified_product_id = :certified_product_id) ", CertificationEventEntity.class );
 		query.setParameter("certified_product_id", id);
 		List<CertificationEventEntity> result = query.getResultList();
 		

@@ -29,6 +29,7 @@ public class CertifiedProductSearchDetails {
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CQMCriterion> applicableCqmCriteria = new ArrayList<CQMCriterion>();
+	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
 	
 	
 	public Long getId() {
@@ -170,5 +171,11 @@ public class CertifiedProductSearchDetails {
 	public void setVisibleOnChpl(Boolean visibleOnChpl) {
 		this.visibleOnChpl = visibleOnChpl;
 	}
-	
+	public List<CertificationEvent> getCertificationEvents(){
+		return certificationEvents;
+	}
+	public void setCertificationEvents(
+			List<CertificationEvent> certificationEvents) {
+		this.certificationEvents = certificationEvents;
+	}
 }

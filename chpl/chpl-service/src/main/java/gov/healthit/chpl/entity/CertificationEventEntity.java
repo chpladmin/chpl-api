@@ -60,7 +60,7 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY )
 	@Basic( optional = false )
-	@JoinColumn( name = "event_type_id", nullable = false )
+	@JoinColumn( name = "event_type_id", nullable = false, insertable=false, updatable=false)
 	private EventTypeEntity eventType;
 	
 	@Basic( optional = false )
