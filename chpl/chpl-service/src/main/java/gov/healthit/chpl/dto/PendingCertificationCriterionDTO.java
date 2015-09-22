@@ -1,5 +1,8 @@
 package gov.healthit.chpl.dto;
 
+import org.springframework.util.StringUtils;
+
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 
 public class PendingCertificationCriterionDTO {
@@ -14,11 +17,16 @@ public class PendingCertificationCriterionDTO {
 	
 	public PendingCertificationCriterionDTO(PendingCertificationCriterionEntity entity) {
 		this.setId(entity.getId());
-		this.setNumber(entity.getNumber());
-		this.setTitle(entity.getTitle());
-		this.setCertificationCriterionId(entity.getCertificationCriterionId());
+				
+		if(entity.getMappedCriterion() != null) {
+			this.setCertificationCriterionId(entity.getMappedCriterion().getId());
+			this.setNumber(entity.getMappedCriterion().getNumber());
+			this.setTitle(entity.getMappedCriterion().getTitle());
+		}
+		
 		this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
 		this.setMeetsCriteria(entity.getMeetsCriteria().booleanValue());
+		
 	}
 	
 	public Long getId() {

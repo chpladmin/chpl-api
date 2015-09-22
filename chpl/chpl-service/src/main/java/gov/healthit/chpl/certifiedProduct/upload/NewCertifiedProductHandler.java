@@ -17,12 +17,15 @@ import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.VendorDTO;
 import gov.healthit.chpl.entity.AddressEntity;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.CertificationStatusEntity;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
@@ -34,6 +37,7 @@ public abstract class NewCertifiedProductHandler extends CertifiedProductUploadH
 	
 	public PendingCertifiedProductEntity handle() {
 		PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
+		pendingCertifiedProduct.setStatus(getDefaultStatusId());
 		
 		int colIndex = 0;
 		//blank row
@@ -1396,6 +1400,14 @@ public abstract class NewCertifiedProductHandler extends CertifiedProductUploadH
 		return pendingCertifiedProduct;
 	}
 	
+	public Long getDefaultStatusId() {
+		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
+		if(statusDto != null) {
+			return statusDto.getId();
+		}
+		return null;
+	}
+	
 	/**
 	 * look up the certification criteria by name and throw an error if we can't find it
 	 * @param criterionName
@@ -1404,15 +1416,16 @@ public abstract class NewCertifiedProductHandler extends CertifiedProductUploadH
 	 * @throws InvalidArgumentsException
 	 */
 	private PendingCertificationCriterionEntity handleCertificationCriterion(String criterionName, int column) throws InvalidArgumentsException {
-		CertificationCriterionDTO certDto = certDao.getByName(criterionName);
-		if(certDto == null) {
+		CertificationCriterionEntity certEntity = certDao.getEntityByName(criterionName);
+		if(certEntity == null) {
 			throw new InvalidArgumentsException("Could not find a certification criterion matching " + criterionName);
 		}
 		
-		PendingCertificationCriterionEntity result = new PendingCertificationCriterionEntity();
-		result.setCertificationCriterionId(certDto.getId());
-		result.setNumber(certDto.getTitle());
-		result.setTitle(certDto.getTitle());
+		PendingCertificationCriterionEntity result = new PendingCertificationCriterionEntity();		
+		result.setMappedCriterion(certEntity);
+//		result.setCertificationCriterionId(certDto.getId());
+//		result.setNumber(certDto.getTitle());
+//		result.setTitle(certDto.getTitle());
 		
 		boolean meetsCriteria = false;
 		if(!StringUtils.isEmpty(getRecord().get(column))) {

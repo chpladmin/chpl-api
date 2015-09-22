@@ -43,7 +43,8 @@ CREATE TABLE openchpl.pending_certified_product(
 	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
 	last_modified_user bigint NOT NULL,
 	deleted boolean NOT NULL DEFAULT false,
-	status varchar(250) NOT NULL, -- pending, rejected, active
+	--status varchar(250) not null,
+	certification_status_id bigint NOT NULL, -- pending, rejected, active
 	CONSTRAINT pending_certified_product_pk PRIMARY KEY (pending_certified_product_id)
 );
 -- ddl-end --

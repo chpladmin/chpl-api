@@ -9,7 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -25,10 +26,8 @@ public class PendingCertificationCriterionEntity {
 		sequenceName = "pending_certification_criteri_pending_certification_criteri_seq")
 	private Long id;
 	
-	@Column(name="certification_criterion_id")
-	private Long certificationCriterionId;
-	
-	@Column(name="pending_certified_product_id")
+	@Basic( optional = false )
+	@Column(name = "pending_certified_product_id", nullable = false )	
 	private Long pendingCertifiedProductId;
 
 	@Column(name = "meets_criteria")
@@ -50,6 +49,11 @@ public class PendingCertificationCriterionEntity {
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
 	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
+	private CertificationCriterionEntity mappedCriterion;
+	
 	@Transient
 	private String number;
 	@Transient
@@ -61,14 +65,6 @@ public class PendingCertificationCriterionEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getCertificationCriterionId() {
-		return certificationCriterionId;
-	}
-
-	public void setCertificationCriterionId(Long certificationCriterionId) {
-		this.certificationCriterionId = certificationCriterionId;
 	}
 
 	public Long getPendingCertifiedProductId() {
@@ -135,4 +131,11 @@ public class PendingCertificationCriterionEntity {
 		this.deleted = deleted;
 	}
 
+	public CertificationCriterionEntity getMappedCriterion() {
+		return mappedCriterion;
+	}
+
+	public void setMappedCriterion(CertificationCriterionEntity mappedCriterion) {
+		this.mappedCriterion = mappedCriterion;
+	}
 }

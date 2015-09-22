@@ -27,7 +27,7 @@ public class PendingCqmCriterionEntity {
 	private Long cqmCriterionId;
 	
 	@Column(name="pending_certified_product_id")
-	private Long pendingCertifiedProductId;;
+	private Long pendingCertifiedProductId;
 
 	@Column(name = "meets_criteria")
 	private Boolean meetsCriteria;

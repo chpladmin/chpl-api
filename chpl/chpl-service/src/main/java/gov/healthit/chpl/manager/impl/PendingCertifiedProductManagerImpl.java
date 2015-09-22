@@ -1,16 +1,10 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PostFilter;
@@ -27,34 +21,32 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDao;
 import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Service
 public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport implements PendingCertifiedProductManager {
 
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired PendingCertifiedProductDao pcpDao;
+	@Autowired CertificationStatusDAO statusDao;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired UserManager userManager;
 	@Autowired UserDAO userDAO;
@@ -67,120 +59,20 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		loadCQMCriteria();
 	}
 	
-	@Transactional
-	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
-	@Override
-	public List<PendingCertifiedProductDetails> upload(MultipartFile file) 
-		throws InvalidArgumentsException, EntityRetrievalException, IOException {
+	public void confirmUpload() {
+		//convert to certified product
 		
-		List<PendingCertifiedProductDetails> results = new ArrayList<PendingCertifiedProductDetails>();
+		//add row to certification_event (add event type of Pending, Uploaded)
 		
-		BufferedReader reader = null;
-		CSVParser parser = null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-			parser = new CSVParser(reader, CSVFormat.EXCEL);
-			
-			List<CSVRecord> records = parser.getRecords();
-			if(records.size() <= 1) {
-				throw new InvalidArgumentsException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
-			}
-			
-			CSVRecord heading = records.get(0);
-			for(int i = 1; i < records.size(); i++) {
-				CSVRecord record = records.get(i);
-				
-				//some rows may be blank, we just look at the first column to see if it's empty or not
-				if(!StringUtils.isEmpty(record.get(0))) {
-					CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, record);
-				
-					//create a certified product to pass into the handler
-					try {
-						PendingCertifiedProductEntity pendingCp = handler.handle();
-						if(pendingCp.getCertificationBodyId() == null) {
-							throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
-						}
-						
-						PendingCertifiedProductDTO pendingCpDto = create(pendingCp.getCertificationBodyId(), pendingCp);
-						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-						//set applicable criteria
-						details.setApplicableCqmCriteria(handler.getApplicableCqmCriterion(cqmCriteria));
-						results.add(details);
-					} catch(EntityCreationException ex) {
-						logger.error("could not create entity at row " + i + ". Message is " + ex.getMessage());
-					}
-				}
-			}
-		} catch(IOException ioEx) {
-			logger.error("Could not get input stream for uploaded file " + file.getName());
-			throw new IOException("Could not get input stream for uploaded file " + file.getName());
-		} finally {
-			 try { parser.close(); } catch(Exception ignore) {}
-			try { reader.close(); } catch(Exception ignore) {}
-		}
-		return results;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<PendingCertifiedProductDetails> getAllDetails() {
-		List<PendingCertifiedProductDetails> results = new ArrayList<PendingCertifiedProductDetails>();
-
-		List<PendingCertifiedProductDTO> products = getAll();
-		for(PendingCertifiedProductDTO pendingCpDto : products) {
-			PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-			
-			//set applicable criteria
-			if (pendingCpDto.getCertificationEdition().startsWith("2011")){
-				details.setApplicableCqmCriteria(getAvailableNQFVersions());
-			} else {
-				details.setApplicableCqmCriteria(getAvailableCQMVersions());
-			}
-			results.add(details);
-		}
-		return results;
-	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	public PendingCertifiedProductDetails getDetailsById(Long id) throws EntityRetrievalException {
-		PendingCertifiedProductDTO product = getById(id);
-		PendingCertifiedProductDetails result = new PendingCertifiedProductDetails(product);
-			
-		//set applicable criteria
-		if (product.getCertificationEdition().startsWith("2011")){
-			result.setApplicableCqmCriteria(getAvailableNQFVersions());
-		} else {
-			result.setApplicableCqmCriteria(getAvailableCQMVersions());
-		}
-		return result;
-	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	public List<PendingCertifiedProductDetails> getDetailsByAcb(CertificationBodyDTO acb) {
-		List<PendingCertifiedProductDetails> results = new ArrayList<PendingCertifiedProductDetails>();
-
-		List<PendingCertifiedProductDTO> products = getByAcb(acb);
-		for(PendingCertifiedProductDTO pendingCpDto : products) {
-			PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-			
-			//set applicable criteria
-			if (pendingCpDto.getCertificationEdition().startsWith("2011")){
-				details.setApplicableCqmCriteria(getAvailableNQFVersions());
-			} else {
-				details.setApplicableCqmCriteria(getAvailableCQMVersions());
-			}
-			results.add(details);
-		}
-		return results;
+		//insert record in certification_event to say that it was uploaded and the date it was uploaded on
+		//add another record to certification_event to say that it was Active on the current date
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
-			+ " (hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)))")
+			+ "(hasPermission(filterObject, read) or hasPermission(filterObject, admin)))")
 	public List<PendingCertifiedProductDTO> getAll() {
 		return pcpDao.findAll();
 	}
@@ -188,31 +80,30 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or ((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
-			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDto', 'admin'))")	
+			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', 'admin'))")	
 	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		return pcpDao.findById(id);
 	}
 
 	@Override
-	@Transactional
+	@Transactional (readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "(hasPermission(#acb, read) or hasPermission(#acb, admin)))")
 	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb) {
 		return pcpDao.findByAcbId(acb.getId());
 	}
 	
 	@Override
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProduct', admin)")
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	public PendingCertifiedProductDTO create(Long acbId, PendingCertifiedProductEntity toCreate) 
 		throws EntityRetrievalException, EntityCreationException {
-		
-		CertificationBodyDTO acb = acbManager.getById(toCreate.getCertificationBodyId());
-
 		//insert the record
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
 		//add appropriate ACLs
 		//who already has access to this ACB?
+		CertificationBodyDTO acb = acbManager.getById(acbId);
 		List<UserDTO> usersOnAcb = acbManager.getAllUsersOnAcb(acb);
 		//give each of those people access to this PendingCertifiedProduct
 		for(UserDTO user : usersOnAcb) {
@@ -222,9 +113,13 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	}
 	
 	@Override
-	public void delete(PendingCertifiedProductDTO product) {
+	@Transactional
+	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
+	public void reject(Long pendingProductId) throws EntityRetrievalException {
 		// TODO Auto-generated method stub
-		
+		CertificationStatusDTO newStatus = statusDao.getByStatusName("Withdrawn");
+		pcpDao.delete(pendingProductId, newStatus);
 	}
 	
 	@Override
@@ -267,7 +162,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
 	public void addPermissionToAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, UserDTO user, Permission permission) {
-		List<PendingCertifiedProductDTO> pcps = getAll();
+		List<PendingCertifiedProductDTO> pcps = getByAcb(acb);
 		for(PendingCertifiedProductDTO pcp : pcps) {
 			addPermission(acb, pcp, user, permission);
 		}
@@ -357,6 +252,16 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 				}
 			}
 		}
+	}
+	
+	@Override
+	public List<CQMCriterion> getApplicableCriteria(PendingCertifiedProductDTO pendingCpDto) {
+		if (pendingCpDto.getCertificationEdition().startsWith("2011")){
+		 	return getAvailableNQFVersions();
+		} else if(pendingCpDto.getCertificationEdition().startsWith("2014")){
+			return getAvailableCQMVersions();
+		}
+		return cqmCriteria;
 	}
 	
 	private boolean permissionExists(MutableAcl acl, Sid recipient, Permission permission) {

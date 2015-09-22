@@ -134,7 +134,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		
 	}
 	
-	private CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException {
+	public CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException {
 		
 		CertificationCriterionEntity entity = null;
 			
@@ -153,7 +153,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		return entity;
 	}
 	
-	private CertificationCriterionEntity getEntityByName(String name) {
+	public CertificationCriterionEntity getEntityByName(String name) {
 		
 		CertificationCriterionEntity entity = null;
 			

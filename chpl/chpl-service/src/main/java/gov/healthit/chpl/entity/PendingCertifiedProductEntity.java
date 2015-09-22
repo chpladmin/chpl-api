@@ -75,6 +75,10 @@ public class PendingCertifiedProductEntity {
     @Column(name = "additional_software_id")
     private Long additionalSoftwareId;
     
+	@Basic(optional = false) 
+	@Column( name = "certification_status_id" , nullable = false)
+	private Long status;
+	
     /**
     * fields directly from the spreadsheet
     **/
@@ -146,14 +150,16 @@ public class PendingCertifiedProductEntity {
     @Column(name = "test_report_url")
     private String reportFileLocation;
     
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_certified_product_id", unique=true, nullable = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
+	@Basic( optional = false )
+	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCertificationCriterionEntity> certificationCriterion;
     
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_certified_product_id", unique=true, nullable = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
+	@Basic( optional = false )
+	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCqmCriterionEntity> cqmCriterion;
-    
+	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -169,10 +175,6 @@ public class PendingCertifiedProductEntity {
 	@Basic( optional = false )
 	@Column(name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
-	@Basic(optional = false) 
-	@Column( name = "status" , nullable = false)
-	private String status;
 	
 	public PendingCertifiedProductEntity() {
 		certificationCriterion = new HashSet<PendingCertificationCriterionEntity>();
@@ -486,11 +488,11 @@ public class PendingCertifiedProductEntity {
 		this.deleted = deleted;
 	}
 
-	public String getStatus() {
+	public Long getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Long status) {
 		this.status = status;
 	}
 }

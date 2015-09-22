@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDao;
-import gov.healthit.chpl.domain.PendingCertifiedProductStatus;
+import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -32,7 +32,6 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 		}
 		toCreate.setCreationDate(new Date());
 		toCreate.setDeleted(false);
-		toCreate.setStatus(PendingCertifiedProductStatus.PENDING.name());
 		
 		entityManager.persist(toCreate);
 		
@@ -65,6 +64,21 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 		return new PendingCertifiedProductDTO(toCreate);
 	}
 
+	@Override
+	@Transactional
+	public void delete(Long pendingProductId, CertificationStatusDTO reason) throws EntityRetrievalException {
+		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
+		if(entity == null) {
+			throw new EntityRetrievalException("No pending certified product exists with id " + pendingProductId);
+		}
+		entity.setStatus(reason.getId());
+		entity.setDeleted(true);
+		entity.setLastModifiedDate(new Date());
+		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		
+		entityManager.persist(entity);
+	}
+	
 	public List<PendingCertifiedProductDTO> findAll() {
 		List<PendingCertifiedProductEntity> entities = getAllEntities();
 		List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
@@ -101,8 +115,6 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 	private List<PendingCertifiedProductEntity> getAllEntities() {
 		
 		List<PendingCertifiedProductEntity> result = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
-				+ " LEFT OUTER JOIN FETCH pcp.certificationCriterion"
-				+ " LEFT OUTER JOIN FETCH pcp.cqmCriterion"
 				+ " WHERE (not pcp.deleted = true)", PendingCertifiedProductEntity.class).getResultList();
 		return result;
 		
@@ -113,8 +125,6 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 		PendingCertifiedProductEntity entity = null;
 		
 		Query query = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
-				+ " LEFT OUTER JOIN FETCH pcp.certificationCriterion"
-				+ " LEFT OUTER JOIN FETCH pcp.cqmCriterion"
 				+ " where (pending_certified_product_id = :entityid) "
 				+ " and (not pcp.deleted = true)", PendingCertifiedProductEntity.class );
 		query.setParameter("entityid", entityId);
@@ -134,8 +144,6 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 	private List<PendingCertifiedProductEntity> getEntityByAcbId(Long acbId) {
 				
 		Query query = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
-				+ " LEFT OUTER JOIN FETCH pcp.certificationCriterion"
-				+ " LEFT OUTER JOIN FETCH pcp.cqmCriterion"
 				+ " where (certification_body_id = :acbId) "
 				+ " and not (pcp.deleted = true)", PendingCertifiedProductEntity.class );
 		query.setParameter("acbId", acbId);
