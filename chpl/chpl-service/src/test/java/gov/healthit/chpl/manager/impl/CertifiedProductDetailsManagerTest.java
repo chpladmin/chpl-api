@@ -173,11 +173,6 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		assertEquals("Ambulatory", detail.getPracticeType().get("name"));
 		assertEquals("1", detail.getPracticeType().get("id"));
 		
-		System.out.println(detail.getProduct());
-		System.out.println(detail.getTestingLabId());
-		System.out.println(detail.getVendor());
-		System.out.println(detail.getVisibleOnChpl());
-		
 	}
 	
 	@Test
@@ -190,8 +185,6 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		assertEquals("1.0.0", detail.getProduct().get("version"));
 		assertEquals("1", detail.getProduct().get("versionId"));
 		
-		System.out.println(detail.getVendor());
-		System.out.println(detail.getVisibleOnChpl());
 	}
 
 	@Test
@@ -202,7 +195,6 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		assertEquals("Test Vendor 1", detail.getVendor().get("name"));
 		assertEquals("1", detail.getProduct().get("id"));
 	}
-	
 	
 	@Test
 	@Transactional

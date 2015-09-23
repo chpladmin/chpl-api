@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
 
 	@Autowired
-	CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+	private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 	
 	@Autowired
 	private CertificationCriterionDAO certificationCriterionDAO;

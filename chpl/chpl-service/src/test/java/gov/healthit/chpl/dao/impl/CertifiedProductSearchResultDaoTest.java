@@ -17,6 +17,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import junit.framework.TestCase;
@@ -32,6 +33,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 
 	@Autowired
 	private CertifiedProductSearchResultDAO searchResultDAO;
+	
 	
 	@Test
 	@Transactional
@@ -195,5 +197,28 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		assertEquals(1, products.size());
 		
 	}
+	
+	@Test
+	@Transactional
+	public void testFetchSingleItem(){
+		
+		try {
+			CertifiedProductDetailsDTO product = searchResultDAO.getById(1L);
+			
+			assertEquals(1, product.getCertificationBodyId().intValue());
+			assertEquals("InfoGard", product.getCertificationBodyName());
+			assertEquals("CHP-024050",product.getChplProductNumber());
+			assertEquals(1, product.getCertificationEditionId().intValue());
+			assertEquals("Test Vendor 1", product.getVendorName());
+			assertEquals(4, product.getCountCertifications().intValue());
+			assertEquals(0, product.getCountCqms().intValue());
+			assertTrue(product.getVisibleOnChpl());
+			
+		} catch (EntityRetrievalException e) {
+			fail("EntityRetrievalException");
+		}
+		
+	}
+	
 	
 }
