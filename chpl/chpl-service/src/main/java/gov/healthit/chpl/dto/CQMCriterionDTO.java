@@ -10,6 +10,7 @@ public class CQMCriterionDTO {
 	private Long cqmCriterionTypeId;
 	private String cqmDomain;
 	private Long cqmVersionId;
+	private String cqmVersion;
 	private Date creationDate;
 	private Boolean deleted;
 	private String description;
@@ -28,6 +29,7 @@ public class CQMCriterionDTO {
 		this.cqmCriterionTypeId = entity.getCqmCriterionTypeId();
 		this.cqmDomain = entity.getCqmDomain();
 		this.cqmVersionId = entity.getCqmVersionId();
+		this.cqmVersion = entity.getCqmVersion();
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.getDeleted();
 		this.description = entity.getDescription();
@@ -118,6 +120,12 @@ public class CQMCriterionDTO {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	public String getCqmVersion() {
+		return cqmVersion;
+	}
+	public void setCqmVersion(String cqmVersion) {
+		this.cqmVersion = cqmVersion;
 	}
 	
 }

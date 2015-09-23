@@ -20,4 +20,6 @@ public interface ProductDAO {
 	public List<ProductDTO> getByVendor(Long vendorId);
 	
 	public List<ProductDTO> getByVendors(List<Long> vendorIds);
+	
+	public ProductDTO getByVendorAndName(Long vendorId, String name);
 }

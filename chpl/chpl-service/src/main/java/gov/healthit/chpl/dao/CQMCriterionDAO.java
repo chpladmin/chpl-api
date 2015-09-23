@@ -15,5 +15,6 @@ public interface CQMCriterionDAO {
 	public List<CQMCriterionDTO> findAll();
 	
 	public CQMCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
-
+	public CQMCriterionDTO getByNumber(String number);
+	public CQMCriterionDTO getByNumberAndVersion(String number, String version);
 }

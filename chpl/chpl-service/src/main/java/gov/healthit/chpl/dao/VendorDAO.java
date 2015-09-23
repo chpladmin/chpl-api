@@ -16,5 +16,6 @@ public interface VendorDAO {
 	public List<VendorDTO> findAll();
 	
 	public VendorDTO getById(Long id) throws EntityRetrievalException;
+	public VendorDTO getByName(String name);
 	
 }

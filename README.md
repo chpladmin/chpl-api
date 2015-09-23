@@ -18,17 +18,16 @@ See the instructions in [the Open Data CHPL data model README](openchpl-sql/READ
 
 See the instructions in [the Open Data CHPL ETL README](chpl/chpl-etl/README.md).
 
-## Authentication tokens
+## Authentication token & testing databases
 
-Modify three files that define the location of the JWT authentication tokens to point at a 'local to the webapp server' location
+The JSON token definition needs to be set in a file named `chpl/chpl-auth/src/main/resources/environment.auth.properties`. There is a file named `chpl/chpl-auth/src/main/resources/environment.auth.properties.template` that has the format. Copy that file and change the `keyLocation` key to something local.
+
+Two files are used for testing purposes. There are template files for each of them that will need to be copied and renamed, with valid local data inserted:
 
 ```
-chpl/chpl-auth/src/main/resources/environment.auth.properties
-chpl/chpl-auth/src/test/resources/environment.auth.properties
-chpl/chpl-service/src/main/resources/environment.auth.properties
+chpl/chpl-auth/src/test/resources/environment.auth.test.properties
+chpl/chpl-service/src/test/resources/environment.test.properties
 ```
-
-Change the `keyLocation` key to something local
 
 ## Tomcat server
 

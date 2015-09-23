@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed Aug 26 07:32:41 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.330" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed Sep 09 09:31:32 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.331" showComponentDetails="true">
 <Global>
 <Metadata id="CertificationBody_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CertificationBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
@@ -1167,8 +1167,8 @@ $Edition_id != null AND $Version_id != null AND $Certbody_id != null]]></attr>
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.certified_product IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.certified_product 
-	(certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, acb_certification_id, certification_status_id, report_file_location, other_acb, deleted, last_modified_user)
-       SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ACB_Certification_ID, $Certification_Status_Id, $Test_Report_Url, $Other_ACB, not($CHPL_Display), -1
+	(certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, acb_certification_id, certification_status_id, report_file_location, other_acb, visible_on_chpl, last_modified_user)
+       SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ACB_Certification_ID, $Certification_Status_Id, $Test_Report_Url, $Other_ACB, $CHPL_Display, -1
        WHERE NOT EXISTS (
              SELECT 1 FROM openchpl.certified_product WHERE
                     certification_edition_id = $Edition_id AND
@@ -2353,6 +2353,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0001_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0001(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0001_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2360,6 +2361,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0002_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0002(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0002_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2367,6 +2369,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0004_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0004(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0004_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2374,6 +2377,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0012_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0012(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0012_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2381,6 +2385,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0013_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0013(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0013_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2388,6 +2393,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0014_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0014(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0014_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2395,6 +2401,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0018_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0018(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0018_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2402,6 +2409,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0024_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0024(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0024_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2409,6 +2417,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0027_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0027(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0027_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2416,6 +2425,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0028_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0028(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0028_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2423,6 +2433,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0031_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0031(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0031_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2430,6 +2441,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0032_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0032(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0032_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2437,6 +2449,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0033_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0033(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0033_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2444,6 +2457,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0034_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0034(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0034_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2451,6 +2465,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0036_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0036(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0036_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2458,6 +2473,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0038_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0038(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0038_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2465,6 +2481,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0041_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0041(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0041_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2472,6 +2489,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0043_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0043(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0043_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2479,6 +2497,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0047_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0047(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0047_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2486,6 +2505,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0052_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0052(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0052_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2493,6 +2513,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0055_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0055(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0055_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2500,6 +2521,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0056_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0056(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0056_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2507,6 +2529,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0059_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0059(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0059_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2514,6 +2537,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0061_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0061(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0061_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2521,6 +2545,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0062_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0062(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0062_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2528,6 +2553,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0064_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0064(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0064_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2535,6 +2561,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0067_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0067(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0067_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2542,6 +2569,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0068_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0068(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0068_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2549,6 +2577,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0070_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0070(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0070_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2556,6 +2585,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0073_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0073(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0073_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2563,6 +2593,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0074_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0074(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0074_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2570,6 +2601,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0075_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0075(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0075_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2577,6 +2609,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0081_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0081(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0081_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2584,6 +2617,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0083_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0083(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0083_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2591,6 +2625,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0084_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0084(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0084_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2598,6 +2633,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0086_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0086(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0086_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2605,6 +2641,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0088_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0088(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0088_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2612,6 +2649,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0089_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0089(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0089_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2619,6 +2657,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0105_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0105(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0105_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2626,6 +2665,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0371_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0371(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0371_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2633,6 +2673,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0372_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0372(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0372_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2640,6 +2681,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0373_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0373(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0373_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2647,6 +2689,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0374_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0374(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0374_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2654,6 +2697,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0375_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0375(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0375_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2661,6 +2705,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0376_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0376(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0376_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2668,6 +2713,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0385_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0385(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0385_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2675,6 +2721,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0387_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0387(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0387_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2682,6 +2729,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0389_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0389(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0389_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2689,6 +2737,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0421_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0421(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0421_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2696,6 +2745,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0435_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0435(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0435_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2703,6 +2753,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0436_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0436(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0436_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2710,6 +2761,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0437_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0437(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0437_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2717,6 +2769,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0438_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0438(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0438_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2724,6 +2777,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0439_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0439(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0439_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2731,6 +2785,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0440_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0440(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0440_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2738,6 +2793,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0441_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0441(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0441_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2745,6 +2801,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0495_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0495(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0495_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2752,6 +2809,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0497_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0497(I)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0497_I_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
@@ -2759,6 +2817,7 @@ INSERT INTO openchpl.cqm_result
        SELECT cqm_criterion_id, $NQF_0575_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
        WHERE openchpl.cqm_criterion.number = 'NQF 0575(A)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0575_A_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result

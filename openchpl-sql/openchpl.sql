@@ -143,6 +143,7 @@ CREATE TABLE openchpl.certified_product(
 	product_classification_type_id bigint,
 	other_acb character varying(64),
 	certification_status_id bigint NOT NULL,
+    visible_on_chpl bool NOT NULL DEFAULT true,
 	CONSTRAINT certified_product_pk PRIMARY KEY (certified_product_id)
 
 );
