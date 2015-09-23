@@ -25,6 +25,8 @@
 		<class>gov.healthit.chpl.entity.CQMCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
 		<class>gov.healthit.chpl.entity.AdditionalSoftwareEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationEventEntity</class>
+		<class>gov.healthit.chpl.entity.EventTypeEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />
