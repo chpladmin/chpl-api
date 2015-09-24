@@ -5,7 +5,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.annotation.MultipartConfig;
 
@@ -29,11 +31,19 @@ import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.AdditionalSoftware;
+import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.UpdateCertifiedProductRequest;
+import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
+import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -80,31 +90,60 @@ public class CertifiedProductController {
 	
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) UpdateCertifiedProductRequest updateRequest) 
-		throws EntityRetrievalException {
+	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
+		throws EntityCreationException, EntityRetrievalException {
 		
 		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
 		toUpdate.setId(updateRequest.getId());
 		toUpdate.setTestingLabId(updateRequest.getTestingLabId());
-		toUpdate.setCertificationBodyId(updateRequest.getCertificationBodyId());
-		toUpdate.setPracticeTypeId(updateRequest.getPracticeTypeId());
-		toUpdate.setProductClassificationTypeId(updateRequest.getProductClassificationTypeId());
-		toUpdate.setCertificationStatusId(updateRequest.getCertificationStatusId());
+		toUpdate.setCertificationBodyId(new Long(updateRequest.getCertifyingBody().get("id")));
+		toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id")));
+		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id")));
+		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatusId()));
 		toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
 		toUpdate.setQualityManagementSystemAtt(updateRequest.getQualityManagementSystemAtt());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
-		
 		toUpdate = cpManager.update(toUpdate);
+		
+		//update additional software
+		List<AdditionalSoftwareDTO> softwareDtos = new ArrayList<AdditionalSoftwareDTO>();
+		for(AdditionalSoftware software : updateRequest.getAdditionalSoftware()) {
+			AdditionalSoftwareDTO softwareDto = new AdditionalSoftwareDTO();
+			softwareDto.setCertifiedProductId(toUpdate.getId());
+			softwareDto.setJustification(software.getJustification());
+			softwareDto.setName(software.getName());
+			softwareDto.setVersion(software.getVersion());
+			softwareDtos.add(softwareDto);
+		}
+		cpManager.replaceAdditionalSoftware(toUpdate, softwareDtos);
+		
+		//update product certifications
+		Map<CertificationCriterionDTO, Boolean> newCerts = new HashMap<CertificationCriterionDTO, Boolean>();
+		for(CertificationResult certResult : updateRequest.getCertificationResults()) {
+			CertificationCriterionDTO newCert = new CertificationCriterionDTO();
+			newCert.setNumber(certResult.getNumber());
+			newCert.setTitle(certResult.getTitle());
+			newCerts.put(newCert, certResult.isSuccess());
+		}
+		cpManager.replaceCertifications(toUpdate, newCerts);
+		
+		//update product cqms
+		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();
+		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
+			CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+			cqmDto.setCqmVersion(cqm.getVersion());
+			cqmDto.setNumber(cqm.getNumber());
+			cqmDto.setTitle(cqm.getTitle());
+			cqmDtos.put(cqmDto, cqm.isSuccess());
+		}
+		cpManager.replaceCqms(toUpdate, cqmDtos);
 		
 		//search for the product by id to get it with all the updates
 		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
 	}
-	
-	
-	//TODO: need another call to update 2011 cqms, 2014 cmqs, and certifications
 	
 	@RequestMapping(value="/get_pending", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")

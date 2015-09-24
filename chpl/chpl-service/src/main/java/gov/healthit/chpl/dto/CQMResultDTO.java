@@ -8,7 +8,7 @@ public class CQMResultDTO {
 	
 	private Long id;
 	private Long cqmCriterionId;
-	private Long cqmVersionId;
+	private Long certifiedProductId;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
@@ -21,7 +21,7 @@ public class CQMResultDTO {
 		
 		this.id = entity.getId();
 		this.cqmCriterionId = entity.getCqmCriterionId();
-		this.cqmVersionId = entity.getCqmVersionId();
+		this.certifiedProductId = entity.getCertifiedProductId();
 		this.creationDate = entity.getCreationDate();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
@@ -34,12 +34,6 @@ public class CQMResultDTO {
 	}
 	public void setCqmCriterionId(Long cqmCriterionId) {
 		this.cqmCriterionId = cqmCriterionId;
-	}
-	public Long getCqmVersionId() {
-		return cqmVersionId;
-	}
-	public void setCqmVersionId(Long cqmVersionId) {
-		this.cqmVersionId = cqmVersionId;
 	}
 	public Date getCreationDate() {
 		return creationDate;
@@ -76,6 +70,14 @@ public class CQMResultDTO {
 	}
 	public void setSuccess(Boolean success) {
 		this.success = success;
+	}
+
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
 	}
 
 }

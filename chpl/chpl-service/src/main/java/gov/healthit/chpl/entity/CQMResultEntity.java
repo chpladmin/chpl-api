@@ -28,17 +28,6 @@ import org.hibernate.proxy.HibernateProxy;
 @Entity
 @Table(name = "cqm_result", schema = "openchpl")
 public class CQMResultEntity implements Serializable {
-
-	/** Serial Version UID. */
-	private static final long serialVersionUID = -4125711786498917959L;
-
-	/** Use a WeakHashMap so entries will be garbage collected once all entities 
-		referring to a saved hash are garbage collected themselves. */
-	private static final Map<Serializable, Long> SAVED_HASHES =
-		Collections.synchronizedMap(new WeakHashMap<Serializable, Long>());
-	
-	/** hashCode temporary storage. */
-	private volatile Long hashCode;
 	
     @Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cqmResultCqm_result_idGenerator")
@@ -51,9 +40,9 @@ public class CQMResultEntity implements Serializable {
 	@Column( name = "cqm_criterion_id", nullable = false )
 	private Long cqmCriterionId;
 	
-	@Basic( optional = true )
-	@Column(name = "cqm_version_id", nullable = true )
-	private Long cqmVersionId;
+	@Basic(optional = false)
+	@Column(name = "certified_product_id", nullable = false)
+	private Long certifiedProductId;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -112,23 +101,6 @@ public class CQMResultEntity implements Serializable {
 	}
 
 	 /**
-	 * Return the value associated with the column: cqmVersion.
-	 * @return A CqmVersion object (this.cqmVersion)
-	 */
-	public Long getCqmVersionId() {
-		return this.cqmVersionId;
-		
-	}
-	
-	 /**  
-	 * Set the value related to the column: cqmVersion.
-	 * @param cqmVersion the cqmVersion value you wish to set
-	 */
-	public void setCqmVersionId(final Long cqmVersion) {
-		this.cqmVersionId = cqmVersion;
-	}
-
-	 /**
 	 * Return the value associated with the column: creationDate.
 	 * @return A Date object (this.creationDate)
 	 */
@@ -175,21 +147,12 @@ public class CQMResultEntity implements Serializable {
 		
 	}
 	
-
   
 	 /**  
 	 * Set the value related to the column: id.
 	 * @param id the id value you wish to set
 	 */
 	public void setId(final Long id) {
-		// If we've just been persisted and hashCode has been
-		// returned then make sure other entities with this
-		// ID return the already returned hash code
-		if ( (this.id == null || this.id == 0L) &&
-				(id != null) &&
-				(this.hashCode != null) ) {
-		SAVED_HASHES.put( id, this.hashCode );
-		}
 		this.id = id;
 	}
 
@@ -249,105 +212,17 @@ public class CQMResultEntity implements Serializable {
 	public void setSuccess(final Boolean success) {
 		this.success = success;
 	}
-
-	/** Provides toString implementation.
-	 * @see java.lang.Object#toString()
-	 * @return String representation of this class.
-	 */
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		
-		sb.append("creationDate: " + this.getCreationDate() + ", ");
-		sb.append("deleted: " + this.isDeleted() + ", ");
-		sb.append("id: " + this.getId() + ", ");
-		sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
-		sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
-		sb.append("success: " + this.isSuccess());
-		return sb.toString();
-	}
-
-
-	/** Equals implementation. 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @param aThat Object to compare with
-	 * @return true/false
-	 */
-	@Override
-	public boolean equals(final Object aThat) {
-		Object proxyThat = aThat;
-		
-		if ( this == aThat ) {
-			 return true;
-		}
-
-		
-		if (aThat instanceof HibernateProxy) {
- 			// narrow down the proxy to the class we are dealing with.
- 			try {
-				proxyThat = ((HibernateProxy) aThat).getHibernateLazyInitializer().getImplementation(); 
-			} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		   	}
-		}
-		if (aThat == null)  {
-			 return false;
-		}
-		
-		final CQMResultEntity that; 
-		try {
-			that = (CQMResultEntity) proxyThat;
-			if ( !(that.getClassType().equals(this.getClassType()))){
-				return false;
-			}
-		} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		} catch (ClassCastException e) {
-				return false;
-		}
-		
-		
-		boolean result = true;
-		result = result && (((this.getId() == null) && ( that.getId() == null)) || (this.getId() != null  && this.getId().equals(that.getId())));
-		result = result && (((getCqmCriterionId() == null) && (that.getCqmCriterionId() == null)) || (getCqmCriterionId() != null && getCqmCriterionId().equals(that.getCqmCriterionId())));	
-		result = result && (((getCqmVersionId() == null) && (that.getCqmVersionId() == null)) || (getCqmVersionId() != null && getCqmVersionId().equals(that.getCqmVersionId())));	
-		result = result && (((getCreationDate() == null) && (that.getCreationDate() == null)) || (getCreationDate() != null && getCreationDate().equals(that.getCreationDate())));
-		result = result && (((isDeleted() == null) && (that.isDeleted() == null)) || (isDeleted() != null && isDeleted().equals(that.isDeleted())));
-		result = result && (((getLastModifiedDate() == null) && (that.getLastModifiedDate() == null)) || (getLastModifiedDate() != null && getLastModifiedDate().equals(that.getLastModifiedDate())));
-		result = result && (((getLastModifiedUser() == null) && (that.getLastModifiedUser() == null)) || (getLastModifiedUser() != null && getLastModifiedUser().equals(that.getLastModifiedUser())));
-		result = result && (((isSuccess() == null) && (that.isSuccess() == null)) || (isSuccess() != null && isSuccess().equals(that.isSuccess())));
-		return result;
-	}
 	
-	/** Calculate the hashcode.
-	 * @see java.lang.Object#hashCode()
-	 * @return a calculated number
-	 */
-	@Override
-	public int hashCode() {
-		if ( this.hashCode == null ) {
-			synchronized ( this ) {
-				if ( this.hashCode == null ) {
-					Long newHashCode = null;
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
 
-					if ( getId() != null ) {
-					newHashCode = SAVED_HASHES.get( getId() );
-					}
-					
-					if ( newHashCode == null ) {
-						if ( getId() != null && getId() != 0L) {
-							newHashCode = getId();
-						} else {
-							newHashCode = (long) super.hashCode();
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
+	}
 
-						}
-					}
-					
-					this.hashCode = newHashCode;
-				}
-			}
-		}
-		return (int) (this.hashCode & 0xffffff);
+	public Boolean getDeleted() {
+		return deleted;
 	}
 	
 }
