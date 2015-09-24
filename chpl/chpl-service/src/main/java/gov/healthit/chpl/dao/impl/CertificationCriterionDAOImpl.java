@@ -10,6 +10,7 @@ import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.CertificationResultEntity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Repository;
 public class CertificationCriterionDAOImpl extends BaseDAOImpl implements CertificationCriterionDAO {
 	
 	@Override
-	public void create(CertificationCriterionDTO dto) throws EntityCreationException, EntityRetrievalException {
+	public CertificationCriterionDTO create(CertificationCriterionDTO dto) throws EntityCreationException, EntityRetrievalException {
 		
 		CertificationCriterionEntity entity = null;
 		try {
@@ -43,7 +44,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 			entity.setDeleted(dto.getDeleted());
 			entity.setDescription(dto.getDescription());
 			//entity.setId(dto.getId());
-			//entity.setLastModifiedDate(result.getLastModifiedDate());
+			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setNumber(dto.getNumber());
 			entity.setParentCriterion(this.getEntityById(dto.getParentCriterionId()));
@@ -52,10 +53,11 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 			
 			create(entity);	
 		}
+		return new CertificationCriterionDTO(entity);
 	}
 
 	@Override
-	public void update(CertificationCriterionDTO dto) throws EntityRetrievalException, EntityCreationException {
+	public CertificationCriterionDTO update(CertificationCriterionDTO dto) throws EntityRetrievalException, EntityCreationException {
 		
 		CertificationCriterionEntity entity = this.getEntityById(dto.getId());;
 		
@@ -72,14 +74,15 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		entity.setParentCriterion(this.getEntityById(dto.getParentCriterionId()));
 		entity.setRequiresSed(dto.getRequiresSed());
 		entity.setTitle(dto.getTitle());
-		
 		update(entity);
+		
+		return new CertificationCriterionDTO(entity);
+		
 	}
 	
 	@Override
 	public void delete(Long criterionId) {
 		
-		// TODO: How to delete this without leaving orphans
 		Query query = entityManager.createQuery("UPDATE CertificationCriterionEntity SET deleted = true WHERE certification_criterion_id = :entityid");
 		query.setParameter("entityid", criterionId);
 		query.executeUpdate();
@@ -127,20 +130,24 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	
 	private CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException {
 		
+		
 		CertificationCriterionEntity entity = null;
-			
-		Query query = entityManager.createQuery( "from CertificationCriterionEntity where (NOT deleted = true) AND (certification_criterion_id = :entityid) ", CertificationCriterionEntity.class );
-		query.setParameter("entityid", id);
-		List<CertificationCriterionEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate criterion id in database.");
+		if (id != null){
+		
+			Query query = entityManager.createQuery( "from CertificationCriterionEntity where (deleted <> true) AND (certification_criterion_id = :entityid) ", CertificationCriterionEntity.class );
+			query.setParameter("entityid", id);
+			List<CertificationCriterionEntity> result = query.getResultList();
+			
+			if (result.size() > 1){
+				throw new EntityRetrievalException("Data error. Duplicate criterion id in database.");
+			}
+			
+			if (result.size() > 0){
+				entity = result.get(0);
+			}
 		}
 		
-		if (result.size() > 0){
-			entity = result.get(0);
-		}
-			
 		return entity;
 	}
 	

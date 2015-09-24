@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager.impl;
 
-
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
