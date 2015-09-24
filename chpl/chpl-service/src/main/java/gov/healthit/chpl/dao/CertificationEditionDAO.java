@@ -15,5 +15,6 @@ public interface CertificationEditionDAO {
 	public List<CertificationEditionDTO> findAll();
 	
 	public CertificationEditionDTO getById(Long id) throws EntityRetrievalException;
+	public CertificationEditionDTO getByYear(String year);
 	
 }

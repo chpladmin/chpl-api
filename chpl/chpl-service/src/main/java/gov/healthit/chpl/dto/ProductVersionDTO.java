@@ -17,15 +17,15 @@ public class ProductVersionDTO {
 	public ProductVersionDTO(){}
 	
 	public ProductVersionDTO(ProductVersionEntity entity){
-		
-		this.id = entity.getId();
-		this.creationDate = entity.getCreationDate();
-		this.deleted = entity.isDeleted();
-		this.lastModifiedDate = entity.getLastModifiedDate();
-		this.lastModifiedUser = entity.getLastModifiedUser();
-		this.productId = entity.getProductId();
-		this.version = entity.getVersion();
-		
+		if(entity != null) {
+			this.id = entity.getId();
+			this.creationDate = entity.getCreationDate();
+			this.deleted = entity.isDeleted();
+			this.lastModifiedDate = entity.getLastModifiedDate();
+			this.lastModifiedUser = entity.getLastModifiedUser();
+			this.productId = entity.getProductId();
+			this.version = entity.getVersion();
+		}
 	}
 	
 	

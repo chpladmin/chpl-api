@@ -5,9 +5,12 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -27,10 +30,13 @@ public class CQMCriterionEntity {
 	@Column( name = "cqm_domain", length = 250  )
 	private String cqmDomain;
 	
-	
 	@Basic( optional = true )
-	@Column( name = "cqm_version_id", length = 10  )
+	@Column( name = "cqm_version_id", length = 10, insertable=false, updatable=false )
 	private Long cqmVersionId;
+	
+	@ManyToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="cqm_version_id", insertable=false, updatable=false )
+	private CQMVersionEntity cqmVersion;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -175,6 +181,20 @@ public class CQMCriterionEntity {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	
+	public CQMVersionEntity getCqmVersionEntity() {
+		return cqmVersion;
+	}
+	
+	public String getCqmVersion(){
+		
+		if (this.cqmVersion != null){
+			return this.cqmVersion.getVersion();
+		} else {
+			return null;
+		}
+		
 	}
 	
 }

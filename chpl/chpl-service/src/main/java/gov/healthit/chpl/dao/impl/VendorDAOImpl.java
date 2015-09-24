@@ -166,6 +166,15 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		return dto;
 	}
 	
+	@Override
+	public VendorDTO getByName(String name) {
+		VendorEntity entity = getEntityByName(name);
+		VendorDTO dto = null;
+		if(entity != null) {
+			dto = new VendorDTO(entity);
+		}
+		return dto;
+	}
 	
 	private void create(VendorEntity entity) {
 		
@@ -195,6 +204,21 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate vendor id in database.");
 		} else if(result.size() == 1) {
+			entity = result.get(0);
+		}
+
+		return entity;
+	}
+	
+	private VendorEntity getEntityByName(String name) {
+		
+		VendorEntity entity = null;
+			
+		Query query = entityManager.createQuery( "SELECT v from VendorEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true) AND (v.name = :name) ", VendorEntity.class );
+		query.setParameter("name", name);
+		List<VendorEntity> result = query.getResultList();
+		
+		if(result.size() > 0) {
 			entity = result.get(0);
 		}
 

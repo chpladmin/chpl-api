@@ -16,7 +16,6 @@ import org.springframework.security.acls.model.Sid;
 public interface CertificationBodyManager {
 	
 	public void addPermission(CertificationBodyDTO acb, Long userId, Permission permission) throws UserRetrievalException;
-	public void addPermission(CertificationBodyDTO acb, UserDTO user, Permission permission);
 	
 	public void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission);
 	public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient);

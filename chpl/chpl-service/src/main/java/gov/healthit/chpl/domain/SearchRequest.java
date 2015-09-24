@@ -5,6 +5,8 @@ import java.util.List;
 
 public class SearchRequest {
 	
+	
+	String searchTerm = null;
 	String vendor = null;
 	String product = null;
 	String version = null;
@@ -14,10 +16,19 @@ public class SearchRequest {
 	String certificationBody = null;
 	String productClassification = null;
 	String practiceType = null;
+	String visibleOnCHPL = "Both";
 	String orderBy = "product";
 	Boolean sortDescending = false;
+	Integer pageNumber = 0;
+	Integer pageSize = 20;
 	
-
+	
+	public String getSearchTerm() {
+		return searchTerm;
+	}
+	public void setSearchTerm(String searchTerm) {
+		this.searchTerm = searchTerm;
+	}
 	public String getVendor() {
 		return vendor;
 	}
@@ -87,4 +98,23 @@ public class SearchRequest {
 	public void setSortDescending(Boolean sortDescending) {
 		this.sortDescending = sortDescending;
 	}
+	public String getVisibleOnCHPL() {
+		return visibleOnCHPL;
+	}
+	public void setVisibleOnCHPL(String visibleOnCHPL) {
+		this.visibleOnCHPL = visibleOnCHPL;
+	}
+	public Integer getPageNumber() {
+		return pageNumber;
+	}
+	public void setPageNumber(Integer pageNumber) {
+		this.pageNumber = pageNumber;
+	}
+	public Integer getPageSize() {
+		return pageSize;
+	}
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
+	}
+	
 }

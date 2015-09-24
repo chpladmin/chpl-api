@@ -5,11 +5,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.servlet.MultipartConfigElement;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+
+import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
 
 
 @Configuration
@@ -52,7 +59,7 @@ public class CHPLConfig {
 		bean.setPersistenceUnitName(props.getProperty("persistenceUnitName"));
 		return bean;
 	}
-	
+	 
 	@Bean
 	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
 		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
@@ -65,4 +72,15 @@ public class CHPLConfig {
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 	
+	 @Bean(name="multipartResolver") 
+	    public CommonsMultipartResolver getResolver() throws IOException{
+	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+	         
+	        //Set the maximum allowed size (in bytes) for each individual file.
+	        resolver.setMaxUploadSize(5242880);//5MB
+	         
+	        //You may also set other available properties.
+	         
+	        return resolver;
+	    }
 }

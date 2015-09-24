@@ -15,5 +15,6 @@ public interface ProductClassificationTypeDAO {
 	public List<ProductClassificationTypeDTO> findAll();
 	
 	public ProductClassificationTypeDTO getById(Long id) throws EntityRetrievalException;
+	public ProductClassificationTypeDTO getByName(String name);
 	
 }

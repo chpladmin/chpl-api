@@ -23,6 +23,7 @@ public class CertifiedProductSearchResult {
 	private Map<String, String> practiceType = new HashMap<String, String>();
 	private Map<String, String> certifyingBody = new HashMap<String, String>();
 	private String certificationDate;
+	private Boolean visibleOnChpl;
 	private Integer countCerts;
 	private Integer countCqms;
 	
@@ -127,6 +128,12 @@ public class CertifiedProductSearchResult {
 	}
 	public void setCountCqms(Integer countCqms) {
 		this.countCqms = countCqms;
+	}
+	public Boolean getVisibleOnChpl() {
+		return visibleOnChpl;
+	}
+	public void setVisibleOnChpl(Boolean visibleOnChpl) {
+		this.visibleOnChpl = visibleOnChpl;
 	}
 	
 }
