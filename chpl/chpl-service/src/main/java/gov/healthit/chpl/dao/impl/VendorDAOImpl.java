@@ -179,12 +179,13 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	private void create(VendorEntity entity) {
 		
 		entityManager.persist(entity);
+		entityManager.flush();
 	}
 	
 	private void update(VendorEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<VendorEntity> getAllEntities() {

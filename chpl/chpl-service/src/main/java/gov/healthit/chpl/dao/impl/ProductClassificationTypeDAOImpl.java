@@ -100,13 +100,13 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 	private void create(ProductClassificationTypeEntity entity) {
 		
 		entityManager.persist(entity);
-		
+		entityManager.flush();
 	}
 	
 	private void update(ProductClassificationTypeEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<ProductClassificationTypeEntity> getAllEntities() {

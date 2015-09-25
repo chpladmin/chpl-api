@@ -117,13 +117,13 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 	private void create(CQMResultEntity entity) {
 		
 		entityManager.persist(entity);
-		
+		entityManager.flush();
 	}
 	
 	private void update(CQMResultEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private CQMResultEntity getEntityById(Long id) throws EntityRetrievalException {

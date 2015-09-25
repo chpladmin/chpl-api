@@ -16,7 +16,7 @@ public class SearchRequest {
 	String certificationBody = null;
 	String productClassification = null;
 	String practiceType = null;
-	String visibleOnCHPL = "Both";
+	String visibleOnCHPL = "YES";
 	String orderBy = "product";
 	Boolean sortDescending = false;
 	Integer pageNumber = 0;

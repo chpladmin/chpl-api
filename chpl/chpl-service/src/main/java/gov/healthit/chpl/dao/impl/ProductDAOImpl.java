@@ -191,13 +191,13 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	private void create(ProductEntity entity) {
 		
 		entityManager.persist(entity);
-		
+		entityManager.flush();
 	}
 	
 	private void update(ProductEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<ProductEntity> getAllEntities() {

@@ -6,66 +6,154 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
-import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.CertificationEventEntity;
-import gov.healthit.chpl.entity.EventTypeEntity;
-import gov.healthit.chpl.entity.VendorEntity;
 
-@Repository("certificationEventDao")
+@Repository("certificationEventDAO")
 public class CertificationEventDAOImpl extends BaseDAOImpl implements CertificationEventDAO {
-	private static final Logger logger = LogManager.getLogger(CertificationEventDAOImpl.class);
 
 	@Override
-	public CertificationEventDTO create(CertificationEventDTO dto) throws EntityCreationException {
-		CertificationEventEntity toCreate = new CertificationEventEntity();
-		toCreate.setCertifiedProductId(dto.getCertifiedProductId());
-		toCreate.setCity(dto.getCity());
-		toCreate.setEventDate(dto.getEventDate());
-		toCreate.setState(dto.getState());
-		toCreate.setLastModifiedDate(new Date());
-		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-		toCreate.setDeleted(false);
-		toCreate.setCreationDate(new Date());
+	public CertificationEventDTO create(CertificationEventDTO dto)
+			throws EntityCreationException, EntityRetrievalException {
 		
-		EventTypeEntity eventType = new EventTypeEntity();
-		eventType.setId(dto.getEventTypeId());
-		eventType.setName(dto.getEventTypeName());
-		eventType.setCreationDate(new Date());
-		eventType.setLastModifiedDate(new Date());
-		eventType.setDeleted(false);
-		eventType.setLastModifiedUser(Util.getCurrentUser().getId());
-		toCreate.setEventType(eventType);
-		
-		entityManager.persist(toCreate);
-		return new CertificationEventDTO(toCreate);
-	}
-
-	@Override
-	public List<CertificationEventDTO> findAll() {
-		List<CertificationEventEntity> result = this.findAllEntities();
-		List<CertificationEventDTO> dtos = new ArrayList<CertificationEventDTO>(result.size());
-		for(CertificationEventEntity entity : result) {
-			dtos.add(new CertificationEventDTO(entity));
+		CertificationEventEntity entity = null;
+		try {
+			if (dto.getId() != null){
+				entity = this.getEntityById(dto.getId());
+			}
+		} catch (EntityRetrievalException e) {
+			throw new EntityCreationException(e);
 		}
-		return dtos;
+		
+		if (entity != null) {
+			throw new EntityCreationException("An entity with this ID already exists.");
+		} else {
+			entity = new CertificationEventEntity();
+			
+			if (dto.getCity() != null ){
+				entity.setCity(dto.getCity());
+			}
+			
+			if (dto.getState() != null){
+				entity.setState(dto.getState());
+			}
+			
+			if (dto.getEventDate() != null){
+				entity.setEventDate(dto.getEventDate());
+			}
+			
+			if(dto.getEventTypeDTO() != null){
+				entity.setEventTypeId(dto.getEventTypeDTO().getId());
+			}
+			
+			if(dto.getLastModifiedUser() != null) {
+				entity.setLastModifiedUser(dto.getLastModifiedUser());
+			} else {
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			}		
+			
+			if(dto.getLastModifiedDate() != null) {
+				entity.setLastModifiedDate(dto.getLastModifiedDate());
+			} else {
+				entity.setLastModifiedDate(new Date());
+			}
+			
+			if(dto.getCreationDate() != null) {
+				entity.setCreationDate(dto.getCreationDate());
+			} else {
+				entity.setCreationDate(new Date());
+			}
+			
+			if(dto.getDeleted() != null) {
+				entity.setDeleted(dto.getDeleted());
+			} else {
+				entity.setDeleted(false);
+			}
+			create(entity);
+			return new CertificationEventDTO(entity);
+		}		
 	}
-	
+
 	@Override
-	public CertificationEventDTO findById(Long eventId) {
-		// TODO Auto-generated method stub
-		return null;
+	public CertificationEventDTO update(CertificationEventDTO dto)
+			throws EntityRetrievalException {
+		CertificationEventEntity entity = this.getEntityById(dto.getId());
+		
+		if(entity == null) {
+			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+		}
+		
+		if (dto.getCity() != null ){
+			entity.setCity(dto.getCity());
+		}
+		
+		if (dto.getState() != null){
+			entity.setState(dto.getState());
+		}
+		
+		if (dto.getEventDate() != null){
+			entity.setEventDate(dto.getEventDate());
+		}
+		
+		if(dto.getEventTypeDTO() != null){
+			entity.setEventTypeId(dto.getEventTypeDTO().getId());
+		}
+		
+		if(dto.getLastModifiedUser() != null) {
+			entity.setLastModifiedUser(dto.getLastModifiedUser());
+		} else {
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		}		
+		
+		if(dto.getLastModifiedDate() != null) {
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
+		} else {
+			entity.setLastModifiedDate(new Date());
+		}
+		
+		if(dto.getCreationDate() != null) {
+			entity.setCreationDate(dto.getCreationDate());
+		} else {
+			entity.setCreationDate(new Date());
+		}
+		
+		if(dto.getDeleted() != null) {
+			entity.setDeleted(dto.getDeleted());
+		} else {
+			entity.setDeleted(false);
+		}
+		
+		update(entity);
+		return new CertificationEventDTO(entity);
+	}
+
+	@Override
+	public void delete(Long id) throws EntityRetrievalException {
+		
+		CertificationEventEntity toDelete = getEntityById(id);
+		
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			update(toDelete);
+		}
+	}
+
+	@Override
+	public CertificationEventDTO getById(Long id)
+			throws EntityRetrievalException {
+		
+		CertificationEventEntity entity = getEntityById(id);
+		CertificationEventDTO dto = new CertificationEventDTO(entity);
+		return dto;
+		
 	}
 
 	@Override
@@ -74,41 +162,82 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 		return null;
 	}
 	
-	private List<CertificationEventEntity> findAllEntities() {
-		Query query = entityManager.createQuery("SELECT ce from CertificationEventEntity ce where (NOT ce.deleted = true)");
-		return query.getResultList();
+	@Override
+	public List<CertificationEventDTO> findAll() {
+		
+		List<CertificationEventEntity> entities = getAllEntities();
+		List<CertificationEventDTO> dtos = new ArrayList<>();
+		
+		for (CertificationEventEntity entity : entities) {
+			CertificationEventDTO dto = new CertificationEventDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+		
+	}
+
+	@Override
+	public List<CertificationEventDTO> findByCertifiedProductId(
+			Long certifiedProductId) {
+		
+		List<CertificationEventEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
+		List<CertificationEventDTO> dtos = new ArrayList<>();
+		
+		for (CertificationEventEntity entity : entities) {
+			CertificationEventDTO dto = new CertificationEventDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+
+
+	private void create(CertificationEventEntity entity) {
+		
+		entityManager.persist(entity);
+		entityManager.flush();
+		
 	}
 	
-	public CertificationEventEntity getEntityById(Long id) throws EntityRetrievalException {
-		CertificationEventEntity entity = null;
+	private void update(CertificationEventEntity entity) {
 		
-		Query query = entityManager.createQuery( "from CertificationEventEntity ce where (NOT deleted = true) AND (certification_event_id = :entityid) ", CertificationEventEntity.class );
+		entityManager.merge(entity);	
+		entityManager.flush();
+	}
+	
+	private List<CertificationEventEntity> getAllEntities() {
+		
+		List<CertificationEventEntity> result = entityManager.createQuery( "from CertificationEventEntity where (NOT deleted = true) ", CertificationEventEntity.class).getResultList();
+		return result;
+		
+	}
+	
+	private CertificationEventEntity getEntityById(Long id) throws EntityRetrievalException {
+		
+		CertificationEventEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from CertificationEventEntity where (NOT deleted = true) AND (certification_event_id = :entityid) ", CertificationEventEntity.class );
 		query.setParameter("entityid", id);
 		List<CertificationEventEntity> result = query.getResultList();
 		
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate certification event id in database.");
-		} else if(result.size() == 1) {
+		}
+		
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 		
 		return entity;
 	}
 	
-	public CertificationEventEntity getEntityByEventTypeName(String eventTypeName) throws EntityRetrievalException {
-		CertificationEventEntity entity = null;
+	
+	private List<CertificationEventEntity> getEntitiesByCertifiedProductId(Long id) {
 		
-		Query query = entityManager.createQuery( "from CertificationEventEntity ce FETCH JOIN EventTypeEntity e "
-				+ "where (NOT ce.deleted = true) AND (e.name = :eventTypeName) ", CertificationEventEntity.class );
-		query.setParameter("eventTypeName", eventTypeName);
+		Query query = entityManager.createQuery( "from CertificationEventEntity where (NOT deleted = true) AND (certified_product_id = :certified_product_id) ", CertificationEventEntity.class );
+		query.setParameter("certified_product_id", id);
 		List<CertificationEventEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate certification event id in database.");
-		} else if(result.size() == 1) {
-			entity = result.get(0);
-		}
-		
-		return entity;
+		return result;
 	}
+	
 }

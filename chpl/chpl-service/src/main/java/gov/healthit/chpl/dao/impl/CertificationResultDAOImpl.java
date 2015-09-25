@@ -124,12 +124,14 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	private void create(CertificationResultEntity entity) {
 		
 		entityManager.persist(entity);
+		entityManager.flush();
 		
 	}
 	
 	private void update(CertificationResultEntity entity) {
 		
 		entityManager.merge(entity);	
+		entityManager.flush();
 	
 	}
 	

@@ -87,7 +87,7 @@ public class VendorDaoTest extends TestCase {
 	}
 	
 	@Test
-	public void createVendorWithoutAddress() {
+	public void createVendorWithoutAddress() throws EntityRetrievalException {
 		VendorDTO vendor = new VendorDTO();
 		vendor.setCreationDate(new Date());
 		vendor.setDeleted(false);
@@ -108,6 +108,7 @@ public class VendorDaoTest extends TestCase {
 		assertNotNull(result.getId());
 		assertTrue(result.getId() > 0L);
 		assertNull(vendor.getAddress());
+		assertNotNull(vendorDao.getById(result.getId()));
 	}
 	
 	@Test

@@ -17,7 +17,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.entity.AddressEntity;
-import gov.healthit.chpl.entity.VendorEntity;
+
 
 @Repository("addressDao")
 public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
@@ -25,6 +25,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 
 	@Override
 	public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException {
+		
 		AddressEntity toInsert = new AddressEntity();
 		toInsert.setStreetLineOne(dto.getStreetLineOne());
 		toInsert.setStreetLineTwo(dto.getStreetLineTwo());

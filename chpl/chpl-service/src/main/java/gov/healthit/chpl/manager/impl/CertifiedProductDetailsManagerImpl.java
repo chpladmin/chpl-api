@@ -4,17 +4,20 @@ import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationEvent;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -24,12 +27,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
 
 	@Autowired
-	CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+	private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 	
 	@Autowired
 	private CertificationCriterionDAO certificationCriterionDAO;
@@ -42,6 +46,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Autowired
 	private AdditionalSoftwareDAO additionalSoftwareDAO;
+	
+	@Autowired
+	private CertificationEventDAO certificationEventDAO;
 
 	private CQMCriterionDAO cqmCriterionDAO;
 	
@@ -54,6 +61,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	}
 	
 	@Override
+	@Transactional
 	public CertifiedProductSearchDetails getCertifiedProductDetails(
 			Long certifiedProductId) throws EntityRetrievalException {
 		
@@ -64,7 +72,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setId(dto.getId());
 		searchDetails.setAcbCertificationId(dto.getAcbCertificationId());
 		
-		searchDetails.setCertificationDate(dto.getCertificationDate().toString());
+		searchDetails.setCertificationDate(dto.getCertificationDate().getTime() + "");
 			
 		searchDetails.getCertificationEdition().put("id", dto.getCertificationEditionId().toString());
 		searchDetails.getCertificationEdition().put("name", dto.getYear());
@@ -77,7 +85,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setChplProductNumber(dto.getChplProductNumber());
 		
 		searchDetails.getClassificationType().put("id", dto.getProductClassificationTypeId().toString());
-		searchDetails.getClassificationType().put("name", dto.getProductclassificationName());
+		searchDetails.getClassificationType().put("name", dto.getProductClassificationName());
 		
 		searchDetails.setOtherAcb(dto.getOtherAcb());
 		
@@ -162,6 +170,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			searchDetails.setApplicableCqmCriteria(getAvailableCQMVersions());
 		}
 		
+		
+		searchDetails.setCertificationEvents(getCertificationEvents(dto.getId()));
+		
 		return searchDetails;
 	}
 	
@@ -171,6 +182,20 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	public void setCqmCriteria(List<CQMCriterion> cqmCriteria) {
 		this.cqmCriteria = cqmCriteria;
+	}
+	
+	private List<CertificationEvent> getCertificationEvents(Long certifiedProductId){
+		
+		List<CertificationEvent> certEvents = new ArrayList<CertificationEvent>();
+		List<CertificationEventDTO> eventDTOs = certificationEventDAO.findByCertifiedProductId(certifiedProductId);	
+		
+		for (CertificationEventDTO event : eventDTOs){
+			
+			certEvents.add(new CertificationEvent(event));
+			
+		}
+		
+		return certEvents;
 	}
 	
 	private void loadCQMCriteria(){
