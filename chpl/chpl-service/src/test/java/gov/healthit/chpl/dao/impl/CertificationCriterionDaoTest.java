@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.impl;
 
 
 import java.util.Date;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -53,6 +55,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 	
 	
 	@Test
+	@Transactional
 	public void testCreate() throws EntityCreationException, EntityRetrievalException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -72,7 +75,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setRequiresSed(false);
 		dto.setTitle("Test Cert Criterion");
 		
-		CertificationCriterionDTO result = certificationCriterionDAO.create(dto);
+		CertificationCriterionDTO result = create(dto);
 		CertificationCriterionDTO check = certificationCriterionDAO.getById(result.getId());
 		
 		assertEquals(result.getAutomatedMeasureCapable(), check.getAutomatedMeasureCapable());
@@ -88,7 +91,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		assertEquals(result.getRequiresSed(), result.getRequiresSed());
 		assertEquals(result.getTitle(), result.getTitle());
 		
-		certificationCriterionDAO.delete(result.getId());
+		delete(result.getId());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
 		
@@ -247,5 +250,23 @@ public class CertificationCriterionDaoTest extends TestCase {
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
+	
+	@Transactional
+	public CertificationCriterionDTO create(CertificationCriterionDTO dto) throws EntityCreationException, EntityRetrievalException{
+		CertificationCriterionDTO result = certificationCriterionDAO.create(dto);
+		return result;
+	}
+	
+	@Transactional
+	public CertificationCriterionDTO update(CertificationCriterionDTO dto) throws EntityRetrievalException, EntityCreationException{
+		CertificationCriterionDTO result = certificationCriterionDAO.update(dto);
+		return result;
+	}
+	
+	@Transactional
+	public void delete(Long id) throws EntityRetrievalException, EntityCreationException{
+		certificationCriterionDAO.delete(id);
+	}
+	
 
 }

@@ -120,12 +120,14 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 	private void create(AdditionalSoftwareEntity entity) {
 		
 		entityManager.persist(entity);
+		entityManager.flush();
 		
 	}
 	
 	private void update(AdditionalSoftwareEntity entity) {
 		
-		entityManager.merge(entity);	
+		entityManager.merge(entity);
+		entityManager.flush();
 	
 	}
 	

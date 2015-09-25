@@ -5,9 +5,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.CertificationResultEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,20 +103,26 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	@Override
 	public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException {
 		CertificationCriterionEntity entity = getEntityById(criterionId);
-		CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
+		
+		CertificationCriterionDTO dto = null;
+		if (entity != null){
+			dto = new CertificationCriterionDTO(entity);
+		}
 		return dto;
 	}
 	
 	private void create(CertificationCriterionEntity entity) {
 		
 		entityManager.persist(entity);
+		entityManager.flush();
 		
 	}
 	
 	private void update(CertificationCriterionEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
+		
 	}
 	
 	private List<CertificationCriterionEntity> getAllEntities() {

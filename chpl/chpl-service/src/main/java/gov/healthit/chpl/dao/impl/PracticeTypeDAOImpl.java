@@ -96,13 +96,13 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 	private void create(PracticeTypeEntity entity) {
 		
 		entityManager.persist(entity);
-		
+		entityManager.flush();
 	}
 	
 	private void update(PracticeTypeEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<PracticeTypeEntity> getAllEntities() {

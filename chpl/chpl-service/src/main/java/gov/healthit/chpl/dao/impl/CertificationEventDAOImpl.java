@@ -189,13 +189,14 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 	private void create(CertificationEventEntity entity) {
 		
 		entityManager.persist(entity);
+		entityManager.flush();
 		
 	}
 	
 	private void update(CertificationEventEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<CertificationEventEntity> getAllEntities() {

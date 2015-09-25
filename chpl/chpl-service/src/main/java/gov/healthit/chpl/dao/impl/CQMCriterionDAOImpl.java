@@ -113,13 +113,13 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	private void create(CQMCriterionEntity entity) {
 		
 		entityManager.persist(entity);
-		
+		entityManager.flush();
 	}
 	
 	private void update(CQMCriterionEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<CQMCriterionEntity> getAllEntities() {

@@ -95,12 +95,14 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 	private void create(CertificationEditionEntity entity) {
 		
 		entityManager.persist(entity);
+		entityManager.flush();
 		
 	}
 	
 	private void update(CertificationEditionEntity entity) {
 		
 		entityManager.merge(entity);	
+		entityManager.flush();
 	
 	}
 	
