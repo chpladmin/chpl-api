@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProductVersionDAO {
 	
-	public ProductVersionEntity create(ProductVersionDTO dto) throws EntityCreationException, EntityRetrievalException;
+	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException, EntityRetrievalException;
 
 	public ProductVersionEntity update(ProductVersionDTO dto) throws EntityRetrievalException;
 	

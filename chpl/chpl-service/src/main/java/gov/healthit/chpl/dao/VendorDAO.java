@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface VendorDAO {
 	
-	public VendorEntity create(VendorDTO dto) throws EntityCreationException, EntityRetrievalException;
+	public VendorDTO create(VendorDTO dto) throws EntityCreationException, EntityRetrievalException;
 
 	public VendorEntity update(VendorDTO dto) throws EntityRetrievalException;
 	

@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,25 +28,13 @@ import gov.healthit.chpl.manager.VendorManager;
 import gov.healthit.chpl.web.controller.results.VendorResults;
 
 @RestController
-@RequestMapping("/vendor")
+@RequestMapping("/vendors")
 public class VendorController {
 	
 	@Autowired VendorManager vendorManager;
 	@Autowired ProductManager productManager;
 	
-	@RequestMapping(value="/get_vendor", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody Vendor getVendorById(@RequestParam(required=true) Long vendorId) throws EntityRetrievalException {
-		VendorDTO vendor = vendorManager.getById(vendorId);
-		
-		Vendor result = null;
-		if(vendor != null) {
-			result = new Vendor(vendor);
-		}
-		return result;
-	}
-	
-	@RequestMapping(value="/list_vendors", method=RequestMethod.GET,
+	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody VendorResults getVendors(){
 		List<VendorDTO> vendorList = vendorManager.getAll();		
@@ -63,7 +52,19 @@ public class VendorController {
 		return results;
 	}
 	
-	@RequestMapping(value="/update_vendor", method= RequestMethod.POST, 
+	@RequestMapping(value="/{vendorId}", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody Vendor getVendorById(@PathVariable("vendorId") Long vendorId) throws EntityRetrievalException {
+		VendorDTO vendor = vendorManager.getById(vendorId);
+		
+		Vendor result = null;
+		if(vendor != null) {
+			result = new Vendor(vendor);
+		}
+		return result;
+	}
+	
+	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public Vendor updateVendor(@RequestBody(required=true) UpdateVendorsRequest vendorInfo) throws EntityCreationException, EntityRetrievalException {

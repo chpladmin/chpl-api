@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 public interface CertifiedProductManager {
 
+	public List<CertifiedProductDTO> getAll();
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
 	public List<CertifiedProductDTO> getByVersion(Long versionId);
 	public List<CertifiedProductDTO> getByVersions(List<Long> versionIds);
@@ -24,6 +26,8 @@ public interface CertifiedProductManager {
 //	public void delete(CertifiedProductDTO dto) throws EntityRetrievalException;
 //	public void delete(Long certifiedProductId) throws EntityRetrievalException;
 	
+	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDetails pendingCp) 
+			throws EntityRetrievalException, EntityCreationException;
 	public void replaceCertifications(CertifiedProductDTO dto, Map<CertificationCriterionDTO, Boolean> certResults)
 			throws EntityCreationException, EntityRetrievalException;
 	public void replaceCqms(CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)

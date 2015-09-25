@@ -23,9 +23,6 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
-import gov.healthit.chpl.auth.json.UserCreationWithRolesJSONObject;
-import gov.healthit.chpl.auth.json.UserInfoJSONObject;
-import gov.healthit.chpl.auth.json.UserListJSONObject;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
@@ -45,7 +42,7 @@ import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.CertificationBodyUserResults;
 
 @RestController
-@RequestMapping("/acb")
+@RequestMapping("/acbs")
 public class CertificationBodyController {
 	
 	@Autowired CertificationBodyManager acbManager;
@@ -53,7 +50,7 @@ public class CertificationBodyController {
 	
 	private static final Logger logger = LogManager.getLogger(CertificationBodyController.class);
 	
-	@RequestMapping(value="/list_acbs", method=RequestMethod.GET,
+	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertificationBodyResults getAcbs() {
 		List<CertificationBodyDTO> acbs = acbManager.getAll();
@@ -65,6 +62,15 @@ public class CertificationBodyController {
 			}
 		}
 		return results;
+	}
+	
+	@RequestMapping(value="/{acbId}", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") Long acbId)
+		throws EntityRetrievalException {
+		CertificationBodyDTO acb = acbManager.getById(acbId);
+		
+		return new CertificationBody(acb);
 	}
 	
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
@@ -121,7 +127,7 @@ public class CertificationBodyController {
 	}
 	
 	
-	@RequestMapping(value="/delete/{acbId}", method= RequestMethod.POST,
+	@RequestMapping(value="/{acbId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteAcb(@PathVariable("acbId") Long acbId) {
 		CertificationBodyDTO toDelete = new CertificationBodyDTO();
@@ -221,7 +227,7 @@ public class CertificationBodyController {
 		return "{\"userDeleted\" : true }";
 	}
 	
-	@RequestMapping(value="/list_users/{acbId}", method=RequestMethod.GET,
+	@RequestMapping(value="/{acbId}/users", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertificationBodyUserResults getUsers(@PathVariable("acbId") Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
 		CertificationBodyDTO acb = acbManager.getById(acbId);

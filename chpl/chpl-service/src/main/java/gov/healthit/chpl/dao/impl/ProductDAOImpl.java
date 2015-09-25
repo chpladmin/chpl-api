@@ -22,7 +22,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 
 	@Override
 	@Transactional
-	public ProductEntity create(ProductDTO dto) throws EntityCreationException,
+	public ProductDTO create(ProductDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
 		
 		ProductEntity entity = null;
@@ -68,7 +68,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			}
 			
 			create(entity);	
-			return entity;
+			return new ProductDTO(entity);
 		}
 		
 	}

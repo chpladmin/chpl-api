@@ -96,7 +96,7 @@ public class VendorDaoTest extends TestCase {
 		vendor.setName("Unit Test Vendor!");
 		vendor.setWebsite("http://www.google.com");
 		
-		VendorEntity result = null;
+		VendorDTO result = null;
 		try {
 			result = vendorDao.create(vendor);
 		} catch(Exception ex) {
@@ -131,7 +131,7 @@ public class VendorDaoTest extends TestCase {
 		newAddress.setDeleted(false);
 		vendor.setAddress(newAddress);
 		
-		VendorEntity result = null;
+		VendorDTO result = null;
 		try {
 			result = vendorDao.create(vendor);
 		} catch(Exception ex) {
@@ -166,7 +166,7 @@ public class VendorDaoTest extends TestCase {
 			fail("could not find existing address to set on vendor");
 		}
 		
-		VendorEntity result = null;
+		VendorDTO result = null;
 		try {
 			result = vendorDao.create(vendor);
 		} catch(Exception ex) {
