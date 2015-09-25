@@ -13,3 +13,6 @@ CREATE DATABASE openchpl_test
        ENCODING = 'UTF8'
        TABLESPACE = pg_default
        CONNECTION LIMIT = -1;
+
+alter database openchpl owner to openchpl;
+alter database openchpl_test owner to openchpl;

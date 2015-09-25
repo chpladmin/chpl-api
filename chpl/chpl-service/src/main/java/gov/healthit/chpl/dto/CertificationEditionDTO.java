@@ -27,11 +27,12 @@ public class CertificationEditionDTO {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.year = entity.getYear();
 		Set<CertificationCriterionEntity> certCriterionEntities = entity.getCertificationCriterions();
-		for (CertificationCriterionEntity certCriterion : certCriterionEntities){
-			CertificationCriterionDTO ccDto = new CertificationCriterionDTO(certCriterion);
-			this.certificationCriterions.add(ccDto);
+		if(certCriterionEntities != null && certCriterionEntities.size() > 0) {
+			for (CertificationCriterionEntity certCriterion : certCriterionEntities){
+				CertificationCriterionDTO ccDto = new CertificationCriterionDTO(certCriterion);
+				this.certificationCriterions.add(ccDto);
+			}
 		}
-		
 	}
 	
 	public Long getId() {

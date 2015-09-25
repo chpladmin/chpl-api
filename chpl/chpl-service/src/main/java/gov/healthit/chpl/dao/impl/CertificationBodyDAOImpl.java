@@ -159,6 +159,16 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		
 	}
 	
+	public CertificationBodyDTO getByName(String name) {
+		CertificationBodyEntity entity = getEntityByName(name);
+		
+		CertificationBodyDTO dto = null;
+		if(entity != null) {
+			dto = new CertificationBodyDTO(entity);
+		}
+		return dto;
+	}
+	
 	private void create(CertificationBodyEntity acb) {
 		
 		entityManager.persist(acb);
@@ -191,6 +201,20 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 			entity = result.get(0);
 		}
 
+		return entity;
+	}
+	
+	private CertificationBodyEntity getEntityByName(String name) {
+		
+		CertificationBodyEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true) AND (name = :name) ", CertificationBodyEntity.class );
+		query.setParameter("name", name);
+		List<CertificationBodyEntity> result = query.getResultList();
+		
+		if(result != null && result.size() > 0) {
+			entity = result.get(0);
+		}
 		return entity;
 	}
 	

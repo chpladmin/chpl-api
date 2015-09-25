@@ -243,5 +243,11 @@ public class UserManagementController {
 		
 	}
 	
+	@RequestMapping(value="/invite", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8") 
+	public @ResponseBody String inviteUser(@RequestParam("email") String userEmail) {
+		
+		return "{succcess: true}";
+	}
 	
 }

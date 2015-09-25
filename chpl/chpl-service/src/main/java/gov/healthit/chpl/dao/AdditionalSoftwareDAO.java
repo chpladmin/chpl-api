@@ -11,6 +11,7 @@ public interface AdditionalSoftwareDAO {
 	public List<AdditionalSoftwareDTO> findAll();
 	public List<AdditionalSoftwareDTO> findByCertifiedProductId(Long id);
 	public AdditionalSoftwareDTO getById(Long id) throws EntityRetrievalException;
+	public AdditionalSoftwareDTO getByName(String name);
 	public void update(AdditionalSoftwareDTO dto) throws EntityRetrievalException;
 
 }

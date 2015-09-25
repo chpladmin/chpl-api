@@ -1,0 +1,36 @@
+package gov.healthit.chpl.manager;
+
+
+import java.util.List;
+
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.acls.model.Sid;
+
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+
+
+public interface PendingCertifiedProductManager {
+	public List<PendingCertifiedProductDTO> getAll();
+	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException;
+	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb);
+	public List<CQMCriterion> getApplicableCriteria(PendingCertifiedProductDTO pendingCpDto);
+	
+	public PendingCertifiedProductDTO create(Long acbId, PendingCertifiedProductEntity toCreate) 
+			throws EntityRetrievalException, EntityCreationException;
+			
+	public void reject(Long pendingProductId) throws EntityRetrievalException;
+	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, Long userId, Permission permission) throws UserRetrievalException;
+	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, UserDTO user, Permission permission);
+	public void addPermissionToAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, UserDTO user, Permission permission);
+	public void deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, Sid user);
+	public void deletePermission(PendingCertifiedProductDTO pcpDto, Sid recipient, Permission permission);
+	public void deleteUserPermissionsOnPendingCertifiedProduct(PendingCertifiedProductDTO pcpDto, Sid recipient);
+	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
+}

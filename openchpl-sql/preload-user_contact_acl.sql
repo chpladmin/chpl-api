@@ -6,8 +6,10 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET search_path = openchpl, pg_catalog;
 
-INSERT INTO acl_class VALUES (1, 'gov.healthit.chpl.auth.dto.UserDTO'), (2, 'gov.healthit.chpl.dto.CertificationBodyDTO');
-SELECT pg_catalog.setval('acl_class_id_seq', 2, true);
+INSERT INTO acl_class VALUES (1, 'gov.healthit.chpl.auth.dto.UserDTO'), (2, 'gov.healthit.chpl.dto.CertificationBodyDTO'),
+							 (3, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO');
+							 
+SELECT pg_catalog.setval('acl_class_id_seq', 3, true);
 
 INSERT INTO acl_sid VALUES (-2, true, 'admin');
 

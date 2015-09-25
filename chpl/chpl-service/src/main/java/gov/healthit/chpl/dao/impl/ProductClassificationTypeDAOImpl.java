@@ -90,6 +90,12 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 		
 	}
 	
+	@Override
+	public ProductClassificationTypeDTO getByName(String name) {
+		ProductClassificationTypeEntity entity = getEntityByName(name);
+		ProductClassificationTypeDTO dto = new ProductClassificationTypeDTO(entity);
+		return dto;
+	}
 	
 	private void create(ProductClassificationTypeEntity entity) {
 		
@@ -121,6 +127,21 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate product version id in database.");
 		}
+		
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		
+		return entity;
+	}
+	
+	private ProductClassificationTypeEntity getEntityByName(String name) {
+		
+		ProductClassificationTypeEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from ProductClassificationTypeEntity where (NOT deleted = true) AND (name = :name) ", ProductClassificationTypeEntity.class );
+		query.setParameter("name", name);
+		List<ProductClassificationTypeEntity> result = query.getResultList();
 		
 		if (result.size() > 0){
 			entity = result.get(0);

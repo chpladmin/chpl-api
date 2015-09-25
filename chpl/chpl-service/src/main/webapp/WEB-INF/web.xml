@@ -43,6 +43,11 @@
     	<jsp-file>/WEB-INF/jsp/about.jsp</jsp-file>
 	</servlet>
 
+	<servlet>
+    	<servlet-name>FileUploadPage</servlet-name>
+    	<jsp-file>/WEB-INF/jsp/fileUpload.jsp</jsp-file>
+	</servlet>
+	
 	<servlet-mapping>
 		<servlet-name>rest</servlet-name>
 		<url-pattern>/</url-pattern>
@@ -53,6 +58,10 @@
     	<url-pattern>/About</url-pattern>
 	</servlet-mapping>
 	
+	<servlet-mapping>
+    	<servlet-name>FileUploadPage</servlet-name>
+    	<url-pattern>/FileUpload</url-pattern>
+	</servlet-mapping>
 	
 	<context-param>
 	    <param-name>contextClass</param-name>

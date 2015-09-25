@@ -97,6 +97,16 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 	}
 
 	@Override
+	public AdditionalSoftwareDTO getByName(String name) {
+		AdditionalSoftwareEntity entity = getEntityByName(name);
+		if(entity == null || entity.getId() == null) {
+			return null;
+		}
+		AdditionalSoftwareDTO dto = new AdditionalSoftwareDTO(entity);
+		return dto;
+	}
+	
+	@Override
 	public void update(AdditionalSoftwareDTO dto)
 			throws EntityRetrievalException {
 		
@@ -150,6 +160,19 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		return entity;
 	}
 	
+	private AdditionalSoftwareEntity getEntityByName(String name) {
+		AdditionalSoftwareEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from AdditionalSoftwareEntity where (NOT deleted = true) AND (name = :name) ", AdditionalSoftwareEntity.class );
+		query.setParameter("name", name);
+		List<AdditionalSoftwareEntity> result = query.getResultList();
+		
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		return entity;
+	}
+
 	private List<AdditionalSoftwareEntity> getEntitiesByCertifiedProductId(Long certifiedProductId) {
 		
 		Query query = entityManager.createQuery( "from AdditionalSoftwareEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ", AdditionalSoftwareEntity.class );

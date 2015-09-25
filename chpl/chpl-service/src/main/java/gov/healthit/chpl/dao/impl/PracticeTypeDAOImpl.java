@@ -92,6 +92,14 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 		
 	}
 	
+	@Override
+	public PracticeTypeDTO getByName(String name) {
+		
+		PracticeTypeEntity entity = getEntityByName(name);
+		PracticeTypeDTO dto = new PracticeTypeDTO(entity);
+		return dto;
+		
+	}
 	
 	private void create(PracticeTypeEntity entity) {
 		
@@ -131,4 +139,15 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 		return entity;
 	}
 	
+	private PracticeTypeEntity getEntityByName(String name) {			
+		Query query = entityManager.createQuery( "from PracticeTypeEntity where (NOT deleted = true) AND (name = :name) ", PracticeTypeEntity.class );
+		query.setParameter("name", name);
+		List<PracticeTypeEntity> result = query.getResultList();
+		
+		if(result.size() == 0) {
+			return null;
+		}
+		
+		return result.get(0);
+	}
 }

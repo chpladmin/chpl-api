@@ -13,6 +13,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
+import gov.healthit.chpl.entity.CQMVersionEntity;
 
 
 @Repository(value="cqmCriterionDAO")
@@ -110,6 +111,24 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		return dto;
 	}
 	
+	@Override
+	public CQMCriterionDTO getByNumber(String number) {
+		CQMCriterionEntity entity = getEntityByNumber(number);
+		if(entity == null) {
+			return null;
+		}
+		return new CQMCriterionDTO(entity);
+	}
+	
+	@Override
+	public CQMCriterionDTO getByNumberAndVersion(String number, String version) {
+		CQMCriterionEntity entity = getEntityByNumberAndVersion(number, version);
+		if(entity == null) {
+			return null;
+		}
+		return new CQMCriterionDTO(entity);
+	}
+	
 	private void create(CQMCriterionEntity entity) {
 		
 		entityManager.persist(entity);
@@ -148,4 +167,43 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		return entity;
 	}
 	
+	private CQMCriterionEntity getEntityByNumber(String number) {
+		
+		CQMCriterionEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from CQMCriterionEntity where (NOT deleted = true) AND (number = :number) ", CQMCriterionEntity.class );
+		query.setParameter("number", number);
+		List<CQMCriterionEntity> result = query.getResultList();
+		
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+			
+		return entity;
+	}
+	
+	private CQMCriterionEntity getEntityByNumberAndVersion(String number, String version) {
+		//first find the version id
+		CQMVersionEntity versionEntity = null;
+		Query versionQuery = entityManager.createQuery("from CQMVersionEntity where (NOT deleted = true) AND (version = :version)", CQMVersionEntity.class);
+		versionQuery.setParameter("version", version);
+		List<CQMVersionEntity> versionResult = versionQuery.getResultList();
+		if(versionResult.size() > 0) {
+			versionEntity = versionResult.get(0);
+		}
+		
+		CQMCriterionEntity entity = null;
+		if(versionEntity != null && versionEntity.getId() != null ) {
+				
+			Query query = entityManager.createQuery( "from CQMCriterionEntity where (NOT deleted = true) AND (number = :number) AND (cqm_version_id = :versionId) ", CQMCriterionEntity.class );
+			query.setParameter("number", number);
+			query.setParameter("versionId", versionEntity.getId());
+			
+			List<CQMCriterionEntity> result = query.getResultList();
+			if (result.size() > 0){
+				entity = result.get(0);
+			}
+		}
+		return entity;
+	}
 }

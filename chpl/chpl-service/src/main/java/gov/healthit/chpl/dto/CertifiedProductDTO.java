@@ -49,7 +49,6 @@ public class CertifiedProductDTO {
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
 		this.setVisibleOnChpl(entity.getVisibleOnChpl());
-		
 	}
 
 	

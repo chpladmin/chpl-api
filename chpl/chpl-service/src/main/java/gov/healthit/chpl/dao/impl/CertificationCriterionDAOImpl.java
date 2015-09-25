@@ -111,6 +111,15 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		return dto;
 	}
 	
+	@Override
+	public CertificationCriterionDTO getByName(String criterionName) {
+		CertificationCriterionEntity entity = getEntityByName(criterionName);
+		if(entity == null) {
+			return null;
+		}
+		return new CertificationCriterionDTO(entity);
+	}
+	
 	private void create(CertificationCriterionEntity entity) {
 		
 		entityManager.persist(entity);
@@ -132,7 +141,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		
 	}
 	
-	private CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException {
+	public CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException {
 		
 		
 		CertificationCriterionEntity entity = null;
@@ -155,4 +164,18 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		return entity;
 	}
 	
+	public CertificationCriterionEntity getEntityByName(String name) {
+		
+		CertificationCriterionEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from CertificationCriterionEntity where (NOT deleted = true) AND (number = :name) ", CertificationCriterionEntity.class );
+		query.setParameter("name", name);
+		List<CertificationCriterionEntity> result = query.getResultList();
+		
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+			
+		return entity;
+	}
 }

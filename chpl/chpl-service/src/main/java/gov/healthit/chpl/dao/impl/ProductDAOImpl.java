@@ -175,6 +175,19 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return dtoResults;
 	}
 	
+	public ProductDTO getByVendorAndName(Long vendorId, String name) {
+		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND (vendor_id = :vendorId) and (name = :name)", ProductEntity.class );
+		query.setParameter("vendorId", vendorId);
+		query.setParameter("name", name);
+		List<ProductEntity> results = query.getResultList();
+		
+		ProductDTO result = null;
+		if(results != null && results.size() > 0) {
+			result = new ProductDTO(results.get(0));
+		}
+		return result;
+	}
+	
 	private void create(ProductEntity entity) {
 		
 		entityManager.persist(entity);

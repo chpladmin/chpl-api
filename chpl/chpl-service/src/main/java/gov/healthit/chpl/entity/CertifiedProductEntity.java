@@ -99,10 +99,9 @@ public class CertifiedProductEntity {
 	@Column(name ="certification_status_id", nullable = false)
 	private Long certificationStatusId;
 	
-	@Basic(optional = false)
-	@Column(name ="visible_on_chpl")
+	@Column(name = "visible_on_chpl")
 	private Boolean visibleOnChpl;
-	
+
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -272,5 +271,5 @@ public class CertifiedProductEntity {
 	public void setVisibleOnChpl(Boolean visibleOnChpl) {
 		this.visibleOnChpl = visibleOnChpl;
 	}
-	
+
 }

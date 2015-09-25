@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao;
 
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 import java.util.List;
 
@@ -15,5 +16,8 @@ public interface CertificationCriterionDAO {
 	public List<CertificationCriterionDTO> findAll();
 	
 	public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
+	public CertificationCriterionDTO getByName(String criterionName);
+	public CertificationCriterionEntity getEntityByName(String name);
+	public CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException;
 	
 }

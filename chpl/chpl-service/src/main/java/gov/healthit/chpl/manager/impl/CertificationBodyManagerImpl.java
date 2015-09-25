@@ -12,6 +12,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Autowired UserManager userManager;
 	@Autowired UserDAO userDAO;
+	@Autowired PendingCertifiedProductManager pendingCpManager;
 	
 	@Autowired
 	private MutableAclService mutableAclService;
@@ -170,38 +172,9 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			mutableAclService.updateAcl(acl);
 			logger.debug("Added permission " + permission + " for Sid " + recipient
 					+ " acb " + acb);
-		}
-	}
-	
-	//TODO: DELETE THIS METHOD?? We were going to use the find user feature but abandoned it
-	// because it will be obsolete once we get the invite feature working
-	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
-	public void addPermission(CertificationBodyDTO acb, UserDTO user, Permission permission) {
-		MutableAcl acl;
-		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-
-		try {
-			acl = (MutableAcl) mutableAclService.readAclById(oid);
-		}
-		catch (NotFoundException nfe) {
-			acl = mutableAclService.createAcl(oid);
-		}
-
-		UserDTO foundUser = userDAO.findUser(user);
-		if(foundUser == null || foundUser.getId() == null) {
-			//TODO: what to do about the password??
-			//foundUser = userDAO.create(user, encodedPassword);
-		}
-		
-		Sid recipient = new PrincipalSid(foundUser.getSubjectName());
-		if(permissionExists(acl, recipient, permission)) {
-			logger.debug("User " + recipient + " already has permission on the ACB " + acb.getName());
-		} else {
-			acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-			mutableAclService.updateAcl(acl);
-			logger.debug("Added permission " + permission + " for Sid " + recipient
-					+ " acb " + acb);
+			
+			//now give them permission on all of the pending certified products for this ACB
+			pendingCpManager.addPermissionToAllPendingCertifiedProductsOnAcb(acb, user, permission);
 		}
 	}
 
@@ -226,6 +199,9 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			mutableAclService.updateAcl(acl);
 		}
 		logger.debug("Deleted acb " + acb + " ACL permission " + permission + " for recipient " + recipient);
+		
+		//now delete permission from all of the pending certified products for this ACB
+		pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, recipient);
 	}
 
 	@Transactional
@@ -250,6 +226,9 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 		mutableAclService.updateAcl(acl);
 		logger.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
+		
+		//now delete permission from all of the pending certified products for this ACB
+		pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, recipient);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')") 
@@ -268,9 +247,12 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			for (int i = 0; i < entries.size(); i++) {
 				AccessControlEntry currEntry = entries.get(i);
 				if(currEntry.getSid().equals(userDto.getSubjectName())) {
-					permissions.add(currEntry.getPermission());
+					permissions.remove(currEntry.getPermission());
 				}
 			}
+			
+			//now delete permission from all of the pending certified products for this ACB
+			pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, new PrincipalSid(userDto.getSubjectName()));
 		}
 	}
 	
