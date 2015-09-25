@@ -98,6 +98,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 	}
 
 	@Test
+	@Transactional
 	public void testUpdate() throws EntityRetrievalException, EntityCreationException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -158,6 +159,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testDelete() throws EntityCreationException, EntityRetrievalException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -201,6 +203,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testFindAll() {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -211,6 +214,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		
 	}
 	
+	@Transactional
 	public void testGetById() throws EntityRetrievalException, EntityCreationException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
