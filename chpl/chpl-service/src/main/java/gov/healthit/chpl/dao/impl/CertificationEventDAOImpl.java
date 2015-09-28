@@ -104,8 +104,8 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 			entity.setEventDate(dto.getEventDate());
 		}
 		
-		if(dto.getEventTypeDTO() != null){
-			entity.setEventTypeId(dto.getEventTypeDTO().getId());
+		if(dto.getEventTypeId() != null){
+			entity.setEventTypeId(dto.getEventTypeId());
 		}
 		
 		if(dto.getLastModifiedUser() != null) {

@@ -52,10 +52,12 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	@Column( name = "event_date", nullable = false  )
 	private Date eventDate;
 	
+	/*
 	@ManyToOne(fetch = FetchType.LAZY )
 	@Basic( optional = false )
 	@JoinColumn( name = "event_type_id", nullable = false, insertable=false, updatable=false)
 	private EventTypeEntity eventType;
+	*/
 	
 	@Basic( optional = false )
 	@Column( name = "event_type_id", nullable = false )
@@ -121,11 +123,11 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	public void setEventDate(Date eventDate) {
 		this.eventDate = eventDate;
 	}
-
+	/*
 	public EventTypeEntity getEventType() {
 		return eventType;
 	}
-
+	*/
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}

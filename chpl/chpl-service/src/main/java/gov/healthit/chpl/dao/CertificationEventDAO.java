@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 
 import gov.healthit.chpl.dto.CertificationEventDTO;
-import gov.healthit.chpl.entity.CertificationEventEntity;
 
 
 public interface CertificationEventDAO {
