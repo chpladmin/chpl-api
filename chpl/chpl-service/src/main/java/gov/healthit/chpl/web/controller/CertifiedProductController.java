@@ -151,7 +151,7 @@ public class CertifiedProductController {
 	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {
 		List<PendingCertifiedProductDetails> products = new ArrayList<PendingCertifiedProductDetails>();
 		
-		List<PendingCertifiedProductDTO> productDtos = pcpManager.getAll();
+		List<PendingCertifiedProductDTO> productDtos = pcpManager.getPending();
 		for(PendingCertifiedProductDTO dto : productDtos) {
 			PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(dto);
 			details.setApplicableCqmCriteria(pcpManager.getApplicableCriteria(dto));
@@ -192,6 +192,7 @@ public class CertifiedProductController {
 		}
 		Long acbId = new Long(acbIdStr);
 		CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pendingCp);
+		pcpManager.confirm(pendingCp.getId());
 		
 		CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
 		return result;
