@@ -18,7 +18,7 @@ import gov.healthit.chpl.entity.AdditionalSoftwareEntity;
 public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements AdditionalSoftwareDAO {
 
 	@Override
-	public void create(AdditionalSoftwareDTO dto)
+	public AdditionalSoftwareDTO create(AdditionalSoftwareDTO dto)
 			throws EntityCreationException {
 		
 		AdditionalSoftwareEntity entity = null;
@@ -41,7 +41,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 			entity.setDeleted(dto.getDeleted());
 			entity.setId(dto.getId());
 			entity.setJustification(dto.getJustification());
-			//entity.setLastModifiedDate(dto.getLastModifiedDate());
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
 			entity.setVersion(dto.getVersion());
@@ -49,12 +49,17 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 			create(entity);
 			
 		}
+		AdditionalSoftwareDTO result = null;
+		if (entity != null){
+			result = new AdditionalSoftwareDTO(entity);
+		}
+		return result;
 	}
 
 	@Override
 	public void delete(Long id) {
 		// TODO: How to delete this without leaving orphans
-		Query query = entityManager.createQuery("UPDATE AdditionalSoftwareEntity SET deleted = true WHERE certification_result_id = :resultid");
+		Query query = entityManager.createQuery("UPDATE AdditionalSoftwareEntity SET deleted = true WHERE additional_software_id = :resultid");
 		query.setParameter("resultid", id);
 		query.executeUpdate();
 	}
@@ -119,12 +124,12 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		entity.setDeleted(dto.getDeleted());
 		entity.setId(dto.getId());
 		entity.setJustification(dto.getJustification());
-		//entity.setLastModifiedDate(dto.getLastModifiedDate());
+		entity.setLastModifiedDate(dto.getLastModifiedDate());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setName(dto.getName());
 		entity.setVersion(dto.getVersion());
 		
-		create(entity);
+		update(entity);
 		
 	}
 	
@@ -148,7 +153,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		
 		AdditionalSoftwareEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from AdditionalSoftwareEntity where (NOT deleted = true) AND (certification_criterion_id = :entityid) ", AdditionalSoftwareEntity.class );
+		Query query = entityManager.createQuery( "from AdditionalSoftwareEntity where (NOT deleted = true) AND (additional_software_id = :entityid) ", AdditionalSoftwareEntity.class );
 		query.setParameter("entityid", id);
 		List<AdditionalSoftwareEntity> result = query.getResultList();
 		

@@ -11,6 +11,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CQMVersionEntity;
@@ -20,7 +21,7 @@ import gov.healthit.chpl.entity.CQMVersionEntity;
 public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO {
 
 	@Override
-	public void create(CQMCriterionDTO dto)
+	public CQMCriterionDTO create(CQMCriterionDTO dto)
 			throws EntityCreationException, EntityRetrievalException {
 		CQMCriterionEntity entity = null;
 		try {
@@ -44,7 +45,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 			entity.setDeleted(dto.getDeleted());
 			entity.setDescription(dto.getDescription());
 			//entity.setId(dto.getId());
-			//entity.setLastModifiedDate(dto.getLastModifiedDate());
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setNqfNumber(dto.getNqfNumber());
 			entity.setNumber(dto.getNumber());
@@ -52,7 +53,12 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 						
 			create(entity);	
 		}
-
+		
+		CQMCriterionDTO result = null;
+		if (entity != null){
+			result = new CQMCriterionDTO(entity);
+		}
+		return result;
 	}
 
 	@Override
@@ -71,7 +77,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		entity.setDeleted(dto.getDeleted());
 		entity.setDescription(dto.getDescription());
 		//entity.setId(dto.getId());
-		//entity.setLastModifiedDate(dto.getLastModifiedDate());
+		entity.setLastModifiedDate(dto.getLastModifiedDate());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setNqfNumber(dto.getNqfNumber());
 		entity.setNumber(dto.getNumber());
@@ -84,7 +90,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	@Override
 	public void delete(Long criterionId) {
 		
-		Query query = entityManager.createQuery("UPDATE CQMCriterion SET deleted = true WHERE cqm_criterion_id = :entityid");
+		Query query = entityManager.createQuery("UPDATE CQMCriterionEntity SET deleted = true WHERE cqm_criterion_id = :entityid");
 		query.setParameter("entityid", criterionId);
 		query.executeUpdate();
 

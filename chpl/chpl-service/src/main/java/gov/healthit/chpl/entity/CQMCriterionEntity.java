@@ -31,7 +31,7 @@ public class CQMCriterionEntity {
 	private String cqmDomain;
 	
 	@Basic( optional = true )
-	@Column( name = "cqm_version_id", length = 10, insertable=false, updatable=false )
+	@Column( name = "cqm_version_id", length = 10)
 	private Long cqmVersionId;
 	
 	@ManyToOne(fetch=FetchType.EAGER)
