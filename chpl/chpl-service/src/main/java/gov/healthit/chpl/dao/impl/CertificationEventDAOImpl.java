@@ -36,6 +36,8 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 		} else {
 			entity = new CertificationEventEntity();
 			
+			entity.setCertifiedProductId(dto.getCertifiedProductId());
+			
 			if (dto.getCity() != null ){
 				entity.setCity(dto.getCity());
 			}
@@ -48,7 +50,9 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 				entity.setEventDate(dto.getEventDate());
 			}
 			
-			if(dto.getEventTypeDTO() != null){
+			if(dto.getEventTypeId() != null) {
+				entity.setEventTypeId(dto.getEventTypeId());
+			} else if(dto.getEventTypeDTO() != null){
 				entity.setEventTypeId(dto.getEventTypeDTO().getId());
 			}
 			

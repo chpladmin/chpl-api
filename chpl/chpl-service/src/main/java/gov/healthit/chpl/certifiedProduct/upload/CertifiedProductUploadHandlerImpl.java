@@ -14,7 +14,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.PendingCertifiedProductDao;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -40,7 +40,7 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 	@Autowired protected CQMCriterionDAO cqmDao;
 	@Autowired protected CertificationStatusDAO statusDao;
 	
-	@Autowired private PendingCertifiedProductDao pendingCpDao;
+	@Autowired private PendingCertifiedProductDAO pendingCpDao;
 	
 	private static final String CERTIFICATION_DATE_FORMAT = "M/d/yyyy";
 	protected SimpleDateFormat dateFormatter;

@@ -145,4 +145,12 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	public void setEventTypeId(Long eventTypeId) {
 		this.eventTypeId = eventTypeId;
 	}
+
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
+	}
 }

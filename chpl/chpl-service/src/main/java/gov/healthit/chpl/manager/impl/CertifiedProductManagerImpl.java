@@ -1,5 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +18,13 @@ import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.VendorDAO;
@@ -34,9 +38,11 @@ import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.VendorDTO;
@@ -55,6 +61,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired VendorDAO vendorDao;
 	@Autowired ProductDAO productDao;
 	@Autowired ProductVersionDAO versionDao;
+	@Autowired CertificationEventDAO eventDao;
+	@Autowired EventTypeDAO eventTypeDao;
+		
+	public CertifiedProductManagerImpl() {
+	}
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -251,7 +262,29 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		
 		
 		//if all this was successful, insert a certification_event for the certification date, and the date it went active in CHPL (right now)
-		
+		EventTypeDTO certificationEventType = eventTypeDao.getByName("Certification");
+		CertificationEventDTO certEvent = new CertificationEventDTO();
+		certEvent.setCreationDate(new Date());
+		certEvent.setDeleted(false);
+		Date certificationDate = new Date(new Long(pendingCp.getCertificationDate()));
+		certEvent.setEventDate(certificationDate);
+		certEvent.setEventTypeId(certificationEventType.getId());
+		certEvent.setLastModifiedDate(new Date());
+		certEvent.setLastModifiedUser(Util.getCurrentUser().getId());
+		certEvent.setCertifiedProductId(newCertifiedProduct.getId());
+		eventDao.create(certEvent);
+
+		//active event
+		EventTypeDTO activeEventType = eventTypeDao.getByName("Active");
+		CertificationEventDTO activeEvent = new CertificationEventDTO();
+		activeEvent.setCreationDate(new Date());
+		activeEvent.setDeleted(false);
+		activeEvent.setEventDate(new Date());
+		activeEvent.setEventTypeId(activeEventType.getId());
+		activeEvent.setLastModifiedDate(new Date());
+		activeEvent.setLastModifiedUser(Util.getCurrentUser().getId());
+		activeEvent.setCertifiedProductId(newCertifiedProduct.getId());
+		eventDao.create(activeEvent);
 		
 		return newCertifiedProduct;
 	}

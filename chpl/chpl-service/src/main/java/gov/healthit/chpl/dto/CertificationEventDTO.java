@@ -16,7 +16,7 @@ public class CertificationEventDTO {
 	private String state;
 	private Long eventTypeId;
 	private EventTypeDTO eventTypeDTO;
-	
+	private Long certifiedProductId;
 	
 	public CertificationEventDTO(){}
 	
@@ -31,8 +31,8 @@ public class CertificationEventDTO {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.state = entity.getState();
 		this.eventTypeId = entity.getEventTypeId();
+		this.certifiedProductId = entity.getCertifiedProductId();
 		this.eventTypeDTO = new EventTypeDTO(entity.getEventType());
-		
 	}
 	
 	public Long getId() {
@@ -94,5 +94,13 @@ public class CertificationEventDTO {
 	}
 	public void setEventTypeId(Long eventTypeId) {
 		this.eventTypeId = eventTypeId;
+	}
+
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
 	}
 }

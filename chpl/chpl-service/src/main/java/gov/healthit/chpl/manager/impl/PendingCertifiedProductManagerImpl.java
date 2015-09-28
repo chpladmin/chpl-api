@@ -31,7 +31,7 @@ import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.PendingCertifiedProductDao;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -45,7 +45,7 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport implements PendingCertifiedProductManager {
 
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-	@Autowired PendingCertifiedProductDao pcpDao;
+	@Autowired PendingCertifiedProductDAO pcpDao;
 	@Autowired CertificationStatusDAO statusDao;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired UserManager userManager;
@@ -80,7 +80,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or ((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
-			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', 'admin'))")	
+			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin))")	
 	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		return pcpDao.findById(id);
 	}
@@ -195,7 +195,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#pcpDto, 'admin'))")
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#pcpDto, admin))")
 	public void deleteUserPermissionsOnPendingCertifiedProduct(PendingCertifiedProductDTO pcpDto, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(PendingCertifiedProductDTO.class, pcpDto.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -221,7 +221,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, 'admin'))")
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
 	public void deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, Sid user) {
 		List<PendingCertifiedProductDTO> pcps = getByAcb(acb);
 		if(pcps != null && pcps.size() > 0) {
