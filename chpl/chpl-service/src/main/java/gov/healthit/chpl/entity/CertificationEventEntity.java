@@ -30,11 +30,12 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	@SequenceGenerator(name = "certificationEventCertification_event_idGenerator", sequenceName = "certification_event_certification_event_id_seq")
 	private Long id;
 	
-	/*@ManyToOne( fetch = FetchType.LAZY )
-	@Basic( optional = false )
-	@JoinColumn(name = "certified_product_id", nullable = false )
-	private CertifiedProduct certifiedProduct;*/
 	
+	@Basic( optional = false )
+	@Column(name = "certified_product_id", nullable = false )
+	private Long certifiedProductId;
+    
+
 	@Basic( optional = true )
 	@Column( length = 250  )
 	private String city;
@@ -79,6 +80,14 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
 	}
 
 	public String getCity() {

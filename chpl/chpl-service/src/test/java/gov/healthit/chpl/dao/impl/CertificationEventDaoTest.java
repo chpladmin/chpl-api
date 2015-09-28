@@ -62,6 +62,7 @@ public class CertificationEventDaoTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		CertificationEventDTO dto = new CertificationEventDTO();
+		dto.setCertifiedProductId(1L);
 		dto.setCity("NYC");
 		dto.setCreationDate(new Date());
 		dto.setDeleted(false);
@@ -98,6 +99,7 @@ public class CertificationEventDaoTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		CertificationEventDTO dto = new CertificationEventDTO();
+		dto.setCertifiedProductId(1L);
 		dto.setCity("NYC");
 		dto.setCreationDate(new Date());
 		dto.setDeleted(false);
@@ -147,6 +149,7 @@ public class CertificationEventDaoTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		CertificationEventDTO dto = new CertificationEventDTO();
+		dto.setCertifiedProductId(1L);
 		dto.setCity("NYC");
 		dto.setCreationDate(new Date());
 		dto.setDeleted(false);
@@ -198,6 +201,7 @@ public class CertificationEventDaoTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		CertificationEventDTO dto = new CertificationEventDTO();
+		dto.setCertifiedProductId(1L);
 		dto.setCity("NYC");
 		dto.setCreationDate(new Date());
 		dto.setDeleted(false);

@@ -8,6 +8,7 @@ import java.util.Date;
 public class CertificationEventDTO {
 	
 	private Long id;
+	private Long certifiedProductId;
 	private String city;
 	private Date creationDate;
 	private Boolean deleted;
@@ -24,6 +25,7 @@ public class CertificationEventDTO {
 	public CertificationEventDTO(CertificationEventEntity entity){
 		
 		this.id = entity.getId();
+		this.certifiedProductId = entity.getCertifiedProductId();
 		this.city = entity.getCity();
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.getDeleted();
@@ -95,6 +97,14 @@ public class CertificationEventDTO {
 	}
 	public void setEventTypeId(Long eventTypeId) {
 		this.eventTypeId = eventTypeId;
+	}
+
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
 	}
 	
 }
