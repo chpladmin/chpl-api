@@ -17,6 +17,7 @@ import gov.healthit.chpl.entity.CertificationEventEntity;
 
 @Repository("certificationEventDAO")
 public class CertificationEventDAOImpl extends BaseDAOImpl implements CertificationEventDAO {
+	
 
 	@Override
 	public CertificationEventDTO create(CertificationEventDTO dto)
@@ -50,10 +51,8 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 				entity.setEventDate(dto.getEventDate());
 			}
 			
-			if(dto.getEventTypeId() != null) {
+			if(dto.getEventTypeId() != null){
 				entity.setEventTypeId(dto.getEventTypeId());
-			} else if(dto.getEventTypeDTO() != null){
-				entity.setEventTypeId(dto.getEventTypeDTO().getId());
 			}
 			
 			if(dto.getLastModifiedUser() != null) {
@@ -105,8 +104,8 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 			entity.setEventDate(dto.getEventDate());
 		}
 		
-		if(dto.getEventTypeDTO() != null){
-			entity.setEventTypeId(dto.getEventTypeDTO().getId());
+		if(dto.getEventTypeId() != null){
+			entity.setEventTypeId(dto.getEventTypeId());
 		}
 		
 		if(dto.getLastModifiedUser() != null) {
@@ -154,18 +153,15 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 	public CertificationEventDTO getById(Long id)
 			throws EntityRetrievalException {
 		
+		CertificationEventDTO dto = null;
 		CertificationEventEntity entity = getEntityById(id);
-		CertificationEventDTO dto = new CertificationEventDTO(entity);
-		return dto;
 		
+		if (entity != null){
+			dto = new CertificationEventDTO(entity);
+		}
+		return dto;
 	}
 
-	@Override
-	public CertificationEventDTO findByEventTypeName(String eventTypeName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	@Override
 	public List<CertificationEventDTO> findAll() {
 		
@@ -243,5 +239,6 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 		
 		return result;
 	}
+	
 	
 }

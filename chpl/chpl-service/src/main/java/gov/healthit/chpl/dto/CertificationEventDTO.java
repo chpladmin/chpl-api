@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dto;
 
+
 import gov.healthit.chpl.entity.CertificationEventEntity;
 
 import java.util.Date;
@@ -7,6 +8,7 @@ import java.util.Date;
 public class CertificationEventDTO {
 	
 	private Long id;
+	private Long certifiedProductId;
 	private String city;
 	private Date creationDate;
 	private Boolean deleted;
@@ -15,14 +17,14 @@ public class CertificationEventDTO {
 	private Long lastModifiedUser;
 	private String state;
 	private Long eventTypeId;
-	private EventTypeDTO eventTypeDTO;
-	private Long certifiedProductId;
+	
 	
 	public CertificationEventDTO(){}
 	
 	public CertificationEventDTO(CertificationEventEntity entity){
 		
 		this.id = entity.getId();
+		this.certifiedProductId = entity.getCertifiedProductId();
 		this.city = entity.getCity();
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.getDeleted();
@@ -31,8 +33,7 @@ public class CertificationEventDTO {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.state = entity.getState();
 		this.eventTypeId = entity.getEventTypeId();
-		this.certifiedProductId = entity.getCertifiedProductId();
-		this.eventTypeDTO = new EventTypeDTO(entity.getEventType());
+		
 	}
 	
 	public Long getId() {
@@ -77,12 +78,6 @@ public class CertificationEventDTO {
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
-	public EventTypeDTO getEventTypeDTO() {
-		return eventTypeDTO;
-	}
-	public void setEventTypeDTO(EventTypeDTO eventTypeDTO) {
-		this.eventTypeDTO = eventTypeDTO;
-	}
 	public String getState() {
 		return state;
 	}
@@ -103,4 +98,5 @@ public class CertificationEventDTO {
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
 	}
+	
 }

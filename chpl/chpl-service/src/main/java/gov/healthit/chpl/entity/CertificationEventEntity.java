@@ -6,14 +6,12 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
 
 @Entity
 @Table(name = "certification_event")
@@ -29,17 +27,15 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	@SequenceGenerator(name = "certificationEventCertification_event_idGenerator", sequenceName = "certification_event_certification_event_id_seq")
 	private Long id;
 	
-    @Basic (optional = false)
-    @Column(name = "certified_product_id", nullable = false)
-    private Long certifiedProductId;
 	
+	@Basic( optional = false )
+	@Column(name = "certified_product_id", nullable = false )
+	private Long certifiedProductId;
+    
+
 	@Basic( optional = true )
 	@Column( length = 250  )
 	private String city;
-	
-	@Basic( optional = true )
-	@Column( length = 25  )
-	private String state;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -53,10 +49,12 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	@Column( name = "event_date", nullable = false  )
 	private Date eventDate;
 	
+	/*
 	@ManyToOne(fetch = FetchType.LAZY )
 	@Basic( optional = false )
 	@JoinColumn( name = "event_type_id", nullable = false, insertable=false, updatable=false)
 	private EventTypeEntity eventType;
+	*/
 	
 	@Basic( optional = false )
 	@Column( name = "event_type_id", nullable = false )
@@ -70,12 +68,25 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
 	
+	@Basic( optional = true )
+	@Column( length = 25  )
+	private String state;
+
+	
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
 	}
 
 	public String getCity() {
@@ -109,11 +120,11 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	public void setEventDate(Date eventDate) {
 		this.eventDate = eventDate;
 	}
-
+	/*
 	public EventTypeEntity getEventType() {
 		return eventType;
 	}
-
+	*/
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}
@@ -145,12 +156,5 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	public void setEventTypeId(Long eventTypeId) {
 		this.eventTypeId = eventTypeId;
 	}
-
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
-	}
-
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
-	}
+	
 }

@@ -8,6 +8,7 @@ import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -20,6 +21,7 @@ import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 import java.util.ArrayList;
@@ -49,6 +51,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Autowired
 	private CertificationEventDAO certificationEventDAO;
+	
+	@Autowired
+	private EventTypeDAO eventTypeDAO;
+	
 
 	private CQMCriterionDAO cqmCriterionDAO;
 	
@@ -184,15 +190,29 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		this.cqmCriteria = cqmCriteria;
 	}
 	
-	private List<CertificationEvent> getCertificationEvents(Long certifiedProductId){
+	private List<CertificationEvent> getCertificationEvents(Long certifiedProductId) throws EntityRetrievalException{
 		
 		List<CertificationEvent> certEvents = new ArrayList<CertificationEvent>();
 		List<CertificationEventDTO> eventDTOs = certificationEventDAO.findByCertifiedProductId(certifiedProductId);	
 		
 		for (CertificationEventDTO event : eventDTOs){
 			
-			certEvents.add(new CertificationEvent(event));
+			CertificationEvent ce = new CertificationEvent();
 			
+			ce.setId(event.getId());
+			ce.setCity(event.getCity());
+								
+			ce.setEventDate(event.getEventDate().getTime() + "");
+			ce.setLastModifiedUser(event.getLastModifiedUser());
+			ce.setLastModifiedDate(event.getLastModifiedDate().getTime() + "");
+			ce.setState(event.getState());
+			ce.setEventTypeId(event.getEventTypeId());
+			
+			EventTypeDTO eventTypeDTO = eventTypeDAO.getById(event.getEventTypeId());
+			ce.setEventTypeDescription(eventTypeDTO.getDescription());
+			ce.setEventTypeName(eventTypeDTO.getName());
+			
+			certEvents.add(ce);
 		}
 		
 		return certEvents;

@@ -17,21 +17,6 @@ public class CertificationEvent {
 	
 	public CertificationEvent(){}
 	
-	public CertificationEvent(CertificationEventDTO dto){
-		
-		this.id = dto.getId();
-		this.city = dto.getCity();
-		this.eventDate = dto.getEventDate().getTime() + "";
-		this.lastModifiedUser = dto.getLastModifiedUser();
-		this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
-		this.state = dto.getState();
-		this.eventTypeId = dto.getEventTypeId();
-		this.eventTypeDescription = dto.getEventTypeDTO().getDescription();
-		this.eventTypeName = dto.getEventTypeDTO().getName();
-		
-	}
-	
-	
 	public Long getId() {
 		return id;
 	}

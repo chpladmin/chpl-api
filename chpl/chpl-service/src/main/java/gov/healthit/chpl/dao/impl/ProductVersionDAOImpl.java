@@ -135,10 +135,13 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 	@Override
 	public ProductVersionDTO getById(Long id) throws EntityRetrievalException {
 		
+		ProductVersionDTO dto = null;
 		ProductVersionEntity entity = getEntityById(id);
-		ProductVersionDTO dto = new ProductVersionDTO(entity);
-		return dto;
 		
+		if (entity != null){
+			dto = new ProductVersionDTO(entity);
+		}
+		return dto;
 	}
 	
 	@Override

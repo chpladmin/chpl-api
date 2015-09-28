@@ -41,21 +41,37 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 			chain.doFilter(req, res); //continue
 			SecurityContextHolder.getContext().setAuthentication(null);
 		} else {
+			
 			User authenticatedUser;
-			String jwt = authorizationHeader.split(" ")[1];
-			try {
-				authenticatedUser = userConverter.getAuthenticatedUser(jwt);
-				SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-				chain.doFilter(req, res); //continue
-				SecurityContextHolder.getContext().setAuthentication(null);
+			String jwt = null;
+			
+			try { 
+				jwt = authorizationHeader.split(" ")[1];
+			} catch (java.lang.ArrayIndexOutOfBoundsException e){
 				
-			} catch (JWTValidationException e) {
-				
-				ErrorJSONObject errorObj = new ErrorJSONObject(e.getMessage());
+				ErrorJSONObject errorObj = new ErrorJSONObject("Token must be presented in the form: Bearer token");
 				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 				String json = ow.writeValueAsString(errorObj);
 				res.getOutputStream().write(json.getBytes());
 				
+			}
+			
+			if (jwt != null){
+				
+				try {
+					authenticatedUser = userConverter.getAuthenticatedUser(jwt);
+					SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
+					chain.doFilter(req, res); //continue
+					SecurityContextHolder.getContext().setAuthentication(null);
+					
+				} catch (JWTValidationException e) {
+					
+					ErrorJSONObject errorObj = new ErrorJSONObject(e.getMessage());
+					ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+					String json = ow.writeValueAsString(errorObj);
+					res.getOutputStream().write(json.getBytes());
+					
+				}
 			}
 		}
 	}

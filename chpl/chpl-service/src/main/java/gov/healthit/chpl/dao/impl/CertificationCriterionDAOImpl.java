@@ -102,9 +102,10 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	
 	@Override
 	public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException {
-		CertificationCriterionEntity entity = getEntityById(criterionId);
 		
 		CertificationCriterionDTO dto = null;
+		CertificationCriterionEntity entity = getEntityById(criterionId);
+		
 		if (entity != null){
 			dto = new CertificationCriterionDTO(entity);
 		}

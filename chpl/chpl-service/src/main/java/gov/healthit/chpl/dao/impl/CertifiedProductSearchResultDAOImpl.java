@@ -37,10 +37,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	@Override
 	public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException {
 		
+		CertifiedProductDetailsDTO dto = null;
 		CertifiedProductDetailsEntity entity = getEntityById(productId);
-		CertifiedProductDetailsDTO dto = new CertifiedProductDetailsDTO(entity);
-		return dto;
 		
+		if (entity != null){
+			dto = new CertifiedProductDetailsDTO(entity);
+		}
+		return dto;
 	}
 
 	@Override
