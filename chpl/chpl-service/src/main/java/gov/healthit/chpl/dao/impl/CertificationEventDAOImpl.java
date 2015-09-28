@@ -153,10 +153,13 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 	public CertificationEventDTO getById(Long id)
 			throws EntityRetrievalException {
 		
+		CertificationEventDTO dto = null;
 		CertificationEventEntity entity = getEntityById(id);
-		CertificationEventDTO dto = new CertificationEventDTO(entity);
-		return dto;
 		
+		if (entity != null){
+			dto = new CertificationEventDTO(entity);
+		}
+		return dto;
 	}
 
 	@Override

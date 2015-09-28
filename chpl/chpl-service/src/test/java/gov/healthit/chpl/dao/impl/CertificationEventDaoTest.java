@@ -155,7 +155,6 @@ public class CertificationEventDaoTest extends TestCase {
 		dto.setDeleted(false);
 		dto.setEventDate(new Date());
 		dto.setEventTypeId(1L);
-		dto.setId(1L);
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(Util.getCurrentUser().getId());
 		dto.setState("NY");
@@ -173,10 +172,9 @@ public class CertificationEventDaoTest extends TestCase {
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
 		
+		assertNotNull(certificationEventDAO.getById(result.getId()));
 		
 		delete(result.getId());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 		
 		assertNull(certificationEventDAO.getById(result.getId()));
 		
