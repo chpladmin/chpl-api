@@ -56,6 +56,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		}		
 		
 		entityManager.persist(toInsert);
+		entityManager.flush();
 		return toInsert;
 	}
 
