@@ -125,8 +125,14 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 	
 	@Override
 	public AddressDTO getById(Long id) throws EntityRetrievalException {
+		
+		AddressDTO dto = null;
 		AddressEntity ae = this.getEntityById(id);
-		return new AddressDTO(ae);
+		
+		if (ae != null){
+			dto = new AddressDTO(ae); 
+		}
+		return dto;
 	}
 
 	@Override

@@ -91,9 +91,11 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 			throws EntityRetrievalException {
 		
 		AdditionalSoftwareEntity entity = getEntityById(id);
-		AdditionalSoftwareDTO dto = new AdditionalSoftwareDTO(entity);
+		AdditionalSoftwareDTO dto = null;
+		if (entity != null){
+			dto = new AdditionalSoftwareDTO(entity);
+		}
 		return dto;
-		
 	}
 
 	@Override

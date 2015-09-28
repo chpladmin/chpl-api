@@ -102,8 +102,14 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 
 	@Override
 	public CQMResultDTO getById(Long cqmResultId) throws EntityRetrievalException {
+		
+		CQMResultDTO dto = null;
 		CQMResultEntity entity = getEntityById(cqmResultId);
-		CQMResultDTO dto = new CQMResultDTO(entity);
+		
+		if (entity != null){
+			dto = new CQMResultDTO(entity);
+		}
+		
 		return dto;
 	}
 	

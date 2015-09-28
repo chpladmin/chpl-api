@@ -86,10 +86,12 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 	@Override
 	public PracticeTypeDTO getById(Long id) throws EntityRetrievalException {
 		
+		PracticeTypeDTO dto = null;
 		PracticeTypeEntity entity = getEntityById(id);
-		PracticeTypeDTO dto = new PracticeTypeDTO(entity);
-		return dto;
-		
+		if (entity != null){
+			dto = new PracticeTypeDTO(entity);
+		}
+		return dto;	
 	}
 	
 	@Override

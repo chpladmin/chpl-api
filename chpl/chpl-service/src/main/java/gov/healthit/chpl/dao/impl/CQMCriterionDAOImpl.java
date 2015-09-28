@@ -106,8 +106,13 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	@Override
 	public CQMCriterionDTO getById(Long criterionId)
 			throws EntityRetrievalException {
+		
+		CQMCriterionDTO dto = null;
 		CQMCriterionEntity entity = getEntityById(criterionId);
-		CQMCriterionDTO dto = new CQMCriterionDTO(entity);
+		
+		if (entity != null){
+			dto = new CQMCriterionDTO(entity);
+		}
 		return dto;
 	}
 	

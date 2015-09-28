@@ -19,10 +19,13 @@ public class EventTypeDAOImpl extends BaseDAOImpl implements EventTypeDAO {
 	public EventTypeDTO getById(Long id)
 			throws EntityRetrievalException {
 		
+		EventTypeDTO dto = null;
 		EventTypeEntity entity = getEntityById(id);
-		EventTypeDTO dto = new EventTypeDTO(entity);
-		return dto;
 		
+		if (entity != null){
+			dto = new EventTypeDTO(entity);
+		}
+		return dto;
 	}
 	
 	@Override
