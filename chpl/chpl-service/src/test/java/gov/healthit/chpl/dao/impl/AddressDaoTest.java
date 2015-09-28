@@ -31,7 +31,6 @@ import junit.framework.TestCase;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-
 public class AddressDaoTest extends TestCase {
 
 	@Autowired private AddressDAO addressDao;

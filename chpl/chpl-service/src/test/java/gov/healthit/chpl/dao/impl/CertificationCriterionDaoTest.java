@@ -34,7 +34,6 @@ import junit.framework.TestCase;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-
 public class CertificationCriterionDaoTest extends TestCase {
 
 	
