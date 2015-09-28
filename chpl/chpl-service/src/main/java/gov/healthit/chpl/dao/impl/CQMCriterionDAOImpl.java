@@ -67,8 +67,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		
 		
 		CQMCriterionEntity entity = this.getEntityById(dto.getId());
-			
-		entity = new CQMCriterionEntity();
+		
 		entity.setCmsId(dto.getCmsId());
 		entity.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
 		entity.setCqmDomain(dto.getCqmDomain());
@@ -82,6 +81,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		entity.setNqfNumber(dto.getNqfNumber());
 		entity.setNumber(dto.getNumber());
 		entity.setTitle(dto.getTitle());
+					
 						
 		update(entity);	
 		

@@ -148,9 +148,9 @@ public class CQMCriterionDaoTest {
 		assertEquals(result.getDeleted(), check.getDeleted());
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
+		assertEquals(result.getCqmDomain(), check.getCqmDomain());
 		assertEquals(result.getCmsId(), check.getCmsId());
 		assertEquals(result.getCqmCriterionTypeId(), check.getCqmCriterionTypeId());
-		assertEquals(result.getCqmDomain(), check.getCqmDomain());
 		assertEquals(result.getCqmVersion(), check.getCqmVersion());
 		assertEquals(result.getCqmVersionId(), check.getCqmVersionId());
 		assertEquals(result.getCreationDate(), check.getCreationDate());

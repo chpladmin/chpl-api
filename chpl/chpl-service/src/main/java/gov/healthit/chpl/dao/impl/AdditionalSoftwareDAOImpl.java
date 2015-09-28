@@ -117,7 +117,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 	public void update(AdditionalSoftwareDTO dto)
 			throws EntityRetrievalException {
 		
-		AdditionalSoftwareEntity entity = new AdditionalSoftwareEntity();
+		AdditionalSoftwareEntity entity =  this.getEntityById(dto.getId());
 		
 		entity.setCertifiedProductId(dto.getCertifiedProductId());
 		entity.setCreationDate(dto.getCreationDate());
