@@ -5,9 +5,12 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -23,8 +26,10 @@ public class PendingCqmCriterionEntity {
 		sequenceName = "pending_cqm_criterion_pending_cqm_criterion_id_seq")
 	private Long id;
 	
-	@Column(name="cqm_criterion_id")
-	private Long cqmCriterionId;
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "cqm_criterion_id", unique=true, nullable = true)
+	private CQMCriterionEntity mappedCriterion;
 	
 	@Column(name="pending_certified_product_id")
 	private Long pendingCertifiedProductId;
@@ -48,11 +53,11 @@ public class PendingCqmCriterionEntity {
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
 	
-	@Transient private String cqmNumber;
-	@Transient private String cmsId;
-	@Transient private String title;
-	@Transient private String nqfNumber;
-	@Transient private String version;
+//	@Transient private String cqmNumber;
+//	@Transient private String cmsId;
+//	@Transient private String title;
+//	@Transient private String nqfNumber;
+//	@Transient private String version;
 	
 	public Long getId() {
 		return id;
@@ -60,14 +65,6 @@ public class PendingCqmCriterionEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getCqmCriterionId() {
-		return cqmCriterionId;
-	}
-
-	public void setCqmCriterionId(Long cqmCriterionId) {
-		this.cqmCriterionId = cqmCriterionId;
 	}
 
 	public Long getPendingCertifiedProductId() {
@@ -86,45 +83,45 @@ public class PendingCqmCriterionEntity {
 		this.meetsCriteria = meetsCriteria;
 	}
 
-	public String getCqmNumber() {
-		return cqmNumber;
-	}
-
-	public void setCqmNumber(String cqmNumber) {
-		this.cqmNumber = cqmNumber;
-	}
-
-	public String getCmsId() {
-		return cmsId;
-	}
-
-	public void setCmsId(String cmsId) {
-		this.cmsId = cmsId;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getNqfNumber() {
-		return nqfNumber;
-	}
-
-	public void setNqfNumber(String nqfNumber) {
-		this.nqfNumber = nqfNumber;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
+//	public String getCqmNumber() {
+//		return cqmNumber;
+//	}
+//
+//	public void setCqmNumber(String cqmNumber) {
+//		this.cqmNumber = cqmNumber;
+//	}
+//
+//	public String getCmsId() {
+//		return cmsId;
+//	}
+//
+//	public void setCmsId(String cmsId) {
+//		this.cmsId = cmsId;
+//	}
+//
+//	public String getTitle() {
+//		return title;
+//	}
+//
+//	public void setTitle(String title) {
+//		this.title = title;
+//	}
+//
+//	public String getNqfNumber() {
+//		return nqfNumber;
+//	}
+//
+//	public void setNqfNumber(String nqfNumber) {
+//		this.nqfNumber = nqfNumber;
+//	}
+//
+//	public String getVersion() {
+//		return version;
+//	}
+//
+//	public void setVersion(String version) {
+//		this.version = version;
+//	}
 
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
@@ -156,5 +153,13 @@ public class PendingCqmCriterionEntity {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public CQMCriterionEntity getMappedCriterion() {
+		return mappedCriterion;
+	}
+
+	public void setMappedCriterion(CQMCriterionEntity mappedCriterion) {
+		this.mappedCriterion = mappedCriterion;
 	}
 }

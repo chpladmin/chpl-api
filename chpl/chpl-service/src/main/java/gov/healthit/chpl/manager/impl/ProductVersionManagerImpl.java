@@ -45,14 +45,14 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	
 	@Override
 	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException {
 		return dao.create(dto);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public ProductVersionDTO update(ProductVersionDTO dto) throws EntityRetrievalException {
 		ProductVersionEntity result = dao.update(dto);
 		return new ProductVersionDTO(result);
@@ -60,14 +60,14 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 
 	@Override
 	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void delete(ProductVersionDTO dto) throws EntityRetrievalException {
 		delete(dto.getId());
 	}
 
 	@Override
 	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void delete(Long id) throws EntityRetrievalException {
 		dao.delete(id);
 	}
