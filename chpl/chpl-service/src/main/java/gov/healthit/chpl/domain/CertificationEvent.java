@@ -1,7 +1,7 @@
 package gov.healthit.chpl.domain;
 
 
-import gov.healthit.chpl.dto.CertificationEventDTO;
+
 
 public class CertificationEvent {
 

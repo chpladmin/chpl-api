@@ -125,7 +125,6 @@ public class CQMCriterionDaoTest {
 		
 		CQMCriterionDTO result = cqmCriterionDAO.create(dto);
 		
-		
 		result.setCmsId("CMS123_V2");
 		result.setCqmCriterionTypeId(1L);
 		result.setCqmDomain("1234");
