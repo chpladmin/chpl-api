@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,15 +27,40 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.results.ProductResults;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/products")
 public class ProductController {
 	
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
 	
-	@RequestMapping(value="/get_product", method=RequestMethod.GET,
+	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Product getProductById(@RequestParam(required=true) Long productId) throws EntityRetrievalException {
+	public @ResponseBody ProductResults getAllProducts(@RequestParam(required=false) Long vendorId) {
+		
+		List<ProductDTO> productList = null;
+		
+		if(vendorId != null && vendorId > 0) {
+			productList = productManager.getByVendor(vendorId);	
+		} else {
+			productList = productManager.getAll();
+		}
+		
+		List<Product> products = new ArrayList<Product>();
+		if(productList != null && productList.size() > 0) {
+			for(ProductDTO dto : productList) {
+				Product result = new Product(dto);
+				products.add(result);
+			}
+		}
+		
+		ProductResults results = new ProductResults();
+		results.setProducts(products);
+		return results;
+	}
+	
+	@RequestMapping(value="/{productId}", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody Product getProductById(@PathVariable("productId") Long productId) throws EntityRetrievalException {
 		ProductDTO product = productManager.getById(productId);
 		
 		Product result = null;
@@ -44,43 +70,7 @@ public class ProductController {
 		return result;
 	}
 	
-	@RequestMapping(value="/list_products", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody ProductResults getAllProducts() {
-		List<ProductDTO> productList = productManager.getAll();
-		
-		List<Product> products = new ArrayList<Product>();
-		if(productList != null && productList.size() > 0) {
-			for(ProductDTO dto : productList) {
-				Product result = new Product(dto);
-				products.add(result);
-			}
-		}
-		
-		ProductResults results = new ProductResults();
-		results.setProducts(products);
-		return results;
-	}
-	
-	@RequestMapping(value="/list_products_by_vendor", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody ProductResults getProductsByVendor(@RequestParam(required=true) Long vendorId) {
-		List<ProductDTO> productList = productManager.getByVendor(vendorId);		
-		
-		List<Product> products = new ArrayList<Product>();
-		if(productList != null && productList.size() > 0) {
-			for(ProductDTO dto : productList) {
-				Product result = new Product(dto);
-				products.add(result);
-			}
-		}
-		
-		ProductResults results = new ProductResults();
-		results.setProducts(products);
-		return results;
-	}
-	
-	@RequestMapping(value="/update_product", method= RequestMethod.POST, 
+	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public Product updateProduct(@RequestBody(required=true) UpdateProductsRequest productInfo) throws EntityCreationException, 

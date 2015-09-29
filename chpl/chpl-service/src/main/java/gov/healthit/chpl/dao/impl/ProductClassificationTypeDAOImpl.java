@@ -84,8 +84,11 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 	@Override
 	public ProductClassificationTypeDTO getById(Long id) throws EntityRetrievalException {
 		
+		ProductClassificationTypeDTO dto = null;
 		ProductClassificationTypeEntity entity = getEntityById(id);
-		ProductClassificationTypeDTO dto = new ProductClassificationTypeDTO(entity);
+		if (entity != null){
+			dto = new ProductClassificationTypeDTO(entity);
+		}
 		return dto;
 		
 	}
@@ -100,13 +103,13 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 	private void create(ProductClassificationTypeEntity entity) {
 		
 		entityManager.persist(entity);
-		
+		entityManager.flush();
 	}
 	
 	private void update(ProductClassificationTypeEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<ProductClassificationTypeEntity> getAllEntities() {

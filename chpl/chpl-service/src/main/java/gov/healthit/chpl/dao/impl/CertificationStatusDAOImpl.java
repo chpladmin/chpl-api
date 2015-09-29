@@ -34,8 +34,13 @@ public class CertificationStatusDAOImpl extends BaseDAOImpl implements Certifica
 
 	@Override
 	public CertificationStatusDTO getById(Long id) throws EntityRetrievalException {
+		
+		CertificationStatusDTO dto = null;
 		CertificationStatusEntity entity = getEntityById(id);
-		return new CertificationStatusDTO(entity);
+		if (entity != null){
+			dto = new CertificationStatusDTO(entity);
+		}
+		return dto;
 	}
 
 	@Override

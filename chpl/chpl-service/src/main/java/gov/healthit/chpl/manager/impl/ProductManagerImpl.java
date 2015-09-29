@@ -48,8 +48,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
-		ProductEntity result = productDao.create(dto);
-		return new ProductDTO(result);
+		return productDao.create(dto);
 	}
 
 	@Override

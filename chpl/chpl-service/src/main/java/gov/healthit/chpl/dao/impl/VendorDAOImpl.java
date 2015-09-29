@@ -30,7 +30,7 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	
 	@Override
 	@Transactional
-	public VendorEntity create(VendorDTO dto) throws EntityCreationException, EntityRetrievalException {
+	public VendorDTO create(VendorDTO dto) throws EntityCreationException, EntityRetrievalException {
 		
 		VendorEntity entity = null;
 		try {
@@ -79,7 +79,7 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 			}
 			
 			create(entity);
-			return entity;
+			return new VendorDTO(entity);
 		}	
 	}
 
@@ -179,12 +179,13 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	private void create(VendorEntity entity) {
 		
 		entityManager.persist(entity);
+		entityManager.flush();
 	}
 	
 	private void update(VendorEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<VendorEntity> getAllEntities() {

@@ -27,6 +27,12 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 
 	@Override
 	@Transactional(readOnly = true)
+	public List<ProductVersionDTO> getAll() {
+		return dao.findAll();
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
 	public List<ProductVersionDTO> getByProduct(Long productId) {
 		return dao.getByProductId(productId);
 	}
@@ -41,8 +47,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException {
-		ProductVersionEntity result = dao.create(dto);
-		return new ProductVersionDTO(result);
+		return dao.create(dto);
 	}
 
 	@Override

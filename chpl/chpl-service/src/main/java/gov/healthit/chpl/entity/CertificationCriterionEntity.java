@@ -2,10 +2,7 @@ package gov.healthit.chpl.entity;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.WeakHashMap;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.hibernate.proxy.HibernateProxy;
 
 
 /** 
@@ -29,7 +25,7 @@ import org.hibernate.proxy.HibernateProxy;
  */
 
 @Entity
-@Table(name = "certification_criterion")
+@Table(name = "certification_criterion", schema = "openchpl")
 public class CertificationCriterionEntity implements Serializable {
 
 	/** Serial Version UID. */
@@ -39,7 +35,7 @@ public class CertificationCriterionEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificationCriterionCertification_criterion_idGenerator")
 	@Basic( optional = false )
 	@Column( name = "certification_criterion_id", nullable = false  )
-	@SequenceGenerator(name = "certificationCriterionCertification_criterion_idGenerator", sequenceName = "certification_criterion_certification_criterion_id_seq")
+	@SequenceGenerator(name = "certificationCriterionCertification_criterion_idGenerator", sequenceName = "openchpl.certification_criterion_certification_criterion_id_seq", schema = "openchpl")
 	private Long id;
 
 	@Basic( optional = true )
