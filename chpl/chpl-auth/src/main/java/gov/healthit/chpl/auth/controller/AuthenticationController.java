@@ -7,6 +7,7 @@ import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,6 +45,17 @@ public class AuthenticationController {
 		String jwt = null;
 		jwt = authenticator.getJWT(credentials);
 		String jwtJSON = "{\"token\" : \""+jwt+"\"}";
+		return jwtJSON;
+	}
+	
+	@RequestMapping(value="/keep_alive", method= RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public String keepAlive() throws JWTCreationException {
+		
+		String jwt = authenticator.refreshJWT();
+		
+		String jwtJSON = "{\"token\": \""+jwt+"\"}";
+		
 		return jwtJSON;
 	}
 	

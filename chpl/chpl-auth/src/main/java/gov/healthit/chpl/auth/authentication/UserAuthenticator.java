@@ -18,12 +18,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Service
@@ -69,7 +71,6 @@ public class UserAuthenticator implements Authenticator {
 		return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
 	}
 	
-	
 	public String getJWT(UserDTO user) throws JWTCreationException {
 		
 		String jwt = null;
@@ -96,6 +97,41 @@ public class UserAuthenticator implements Authenticator {
 		return jwt;
 		
 	}
+	
+	@Override
+	public String refreshJWT() throws JWTCreationException {
+		
+		User user = Util.getCurrentUser();
+		String jwt = null;
+		
+		if (user != null){
+			
+			Map<String, List<String>> claims = new HashMap<String, List<String>>();
+			List<String> claimStrings = new ArrayList<String>();
+			
+			Set<GrantedPermission> permissions = user.getPermissions();
+			
+			for (GrantedPermission claim : permissions){
+				claimStrings.add(claim.getAuthority());
+			}
+			claims.put("Authorities", claimStrings);
+			
+			List<String> identity = new ArrayList<String>();
+			
+			identity.add(user.getId().toString());
+			identity.add(user.getName());
+			identity.add(user.getFirstName());
+			identity.add(user.getLastName());
+			
+			claims.put("Identity", identity);
+			
+			jwt = jwtAuthor.createJWT(user.getSubjectName(), claims);
+		} else {
+			throw new JWTCreationException("Cannot generate token for Anonymous user.");
+		}
+		return jwt;
+	}
+	
 	
 	@Transactional
 	public String getJWT(LoginCredentials credentials) throws JWTCreationException {

@@ -151,12 +151,6 @@ public class CertifiedProductDetailsDTO {
 	public void setCertificationBodyName(String certificationBodyName) {
 		this.certificationBodyName = certificationBodyName;
 	}
-	public String getProductclassificationName() {
-		return productClassificationName;
-	}
-	public void setProductclassificationName(String productclassificationName) {
-		this.productClassificationName = productclassificationName;
-	}
 	public Long getProductVersionId() {
 		return productVersionId;
 	}

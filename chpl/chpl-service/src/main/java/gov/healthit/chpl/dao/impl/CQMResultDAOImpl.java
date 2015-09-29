@@ -102,21 +102,27 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 
 	@Override
 	public CQMResultDTO getById(Long cqmResultId) throws EntityRetrievalException {
+		
+		CQMResultDTO dto = null;
 		CQMResultEntity entity = getEntityById(cqmResultId);
-		CQMResultDTO dto = new CQMResultDTO(entity);
+		
+		if (entity != null){
+			dto = new CQMResultDTO(entity);
+		}
+		
 		return dto;
 	}
 	
 	private void create(CQMResultEntity entity) {
 		
 		entityManager.persist(entity);
-		
+		entityManager.flush();
 	}
 	
 	private void update(CQMResultEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private CQMResultEntity getEntityById(Long id) throws EntityRetrievalException {

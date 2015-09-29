@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CQMCriterionDAO {
 	
-	public void create(CQMCriterionDTO criterion) throws EntityCreationException, EntityRetrievalException;
+	public CQMCriterionDTO create(CQMCriterionDTO criterion) throws EntityCreationException, EntityRetrievalException;
 	
 	public void update(CQMCriterionDTO criterion) throws EntityRetrievalException, EntityCreationException;
 	

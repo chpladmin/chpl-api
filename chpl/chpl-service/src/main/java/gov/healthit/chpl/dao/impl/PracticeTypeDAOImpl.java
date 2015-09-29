@@ -86,10 +86,12 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 	@Override
 	public PracticeTypeDTO getById(Long id) throws EntityRetrievalException {
 		
+		PracticeTypeDTO dto = null;
 		PracticeTypeEntity entity = getEntityById(id);
-		PracticeTypeDTO dto = new PracticeTypeDTO(entity);
-		return dto;
-		
+		if (entity != null){
+			dto = new PracticeTypeDTO(entity);
+		}
+		return dto;	
 	}
 	
 	@Override
@@ -104,13 +106,13 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 	private void create(PracticeTypeEntity entity) {
 		
 		entityManager.persist(entity);
-		
+		entityManager.flush();
 	}
 	
 	private void update(PracticeTypeEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<PracticeTypeEntity> getAllEntities() {

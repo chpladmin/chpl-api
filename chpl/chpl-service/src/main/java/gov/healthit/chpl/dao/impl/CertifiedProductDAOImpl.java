@@ -173,10 +173,13 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	
 	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException{
 		
+		CertifiedProductDTO dto = null;
 		CertifiedProductEntity entity = getEntityById(productId);
-		CertifiedProductDTO dto = new CertifiedProductDTO(entity);
-		return dto;
 		
+		if (entity != null){
+			dto = new CertifiedProductDTO(entity);
+		}
+		return dto;
 	}
 	
 	public List<CertifiedProductDTO> getByVersionId(Long versionId) {

@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -31,7 +32,6 @@ import junit.framework.TestCase;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-
 public class AddressDaoTest extends TestCase {
 
 	@Autowired private AddressDAO addressDao;
@@ -94,6 +94,7 @@ public class AddressDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void createAddress() {
 		AddressDTO newAddress = new AddressDTO();
 		newAddress.setStreetLineOne("800 Frederick Road");

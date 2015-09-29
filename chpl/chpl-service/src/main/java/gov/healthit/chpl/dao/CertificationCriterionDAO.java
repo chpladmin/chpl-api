@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface CertificationCriterionDAO {
 	
-	public void create(CertificationCriterionDTO result) throws EntityCreationException, EntityRetrievalException;
+	public CertificationCriterionDTO create(CertificationCriterionDTO result) throws EntityCreationException, EntityRetrievalException;
 
-	public void update(CertificationCriterionDTO result) throws EntityRetrievalException, EntityCreationException;
+	public CertificationCriterionDTO update(CertificationCriterionDTO result) throws EntityRetrievalException, EntityCreationException;
 	
 	public void delete(Long criterionId);
 	
