@@ -1,8 +1,5 @@
 package gov.healthit.chpl.dto;
 
-import org.springframework.util.StringUtils;
-
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 
 public class PendingCertificationCriterionDTO {
