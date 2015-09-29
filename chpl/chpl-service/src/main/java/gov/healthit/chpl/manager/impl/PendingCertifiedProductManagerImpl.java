@@ -31,7 +31,7 @@ import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.PendingCertifiedProductDao;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -45,7 +45,7 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport implements PendingCertifiedProductManager {
 
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-	@Autowired PendingCertifiedProductDao pcpDao;
+	@Autowired PendingCertifiedProductDAO pcpDao;
 	@Autowired CertificationStatusDAO statusDao;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired UserManager userManager;
@@ -79,8 +79,18 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional(readOnly = true)
+	@PostFilter("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "(hasPermission(filterObject, read) or hasPermission(filterObject, admin)))")
+	public List<PendingCertifiedProductDTO> getPending() {
+		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
+		return pcpDao.findByStatus(statusDto.getId());
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or ((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
-			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', 'admin'))")	
+			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin))")	
 	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		return pcpDao.findById(id);
 	}
@@ -117,9 +127,17 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
 	public void reject(Long pendingProductId) throws EntityRetrievalException {
-		// TODO Auto-generated method stub
 		CertificationStatusDTO newStatus = statusDao.getByStatusName("Withdrawn");
 		pcpDao.delete(pendingProductId, newStatus);
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
+	public void confirm(Long pendingProductId) throws EntityRetrievalException {
+		CertificationStatusDTO newStatus = statusDao.getByStatusName("Active");
+		pcpDao.updateStatus(pendingProductId, newStatus);
 	}
 	
 	@Override
@@ -195,7 +213,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#pcpDto, 'admin'))")
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#pcpDto, admin))")
 	public void deleteUserPermissionsOnPendingCertifiedProduct(PendingCertifiedProductDTO pcpDto, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(PendingCertifiedProductDTO.class, pcpDto.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -221,7 +239,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, 'admin'))")
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
 	public void deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, Sid user) {
 		List<PendingCertifiedProductDTO> pcps = getByAcb(acb);
 		if(pcps != null && pcps.size() > 0) {

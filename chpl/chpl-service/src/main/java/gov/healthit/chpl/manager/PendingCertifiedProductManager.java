@@ -20,12 +20,14 @@ public interface PendingCertifiedProductManager {
 	public List<PendingCertifiedProductDTO> getAll();
 	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException;
 	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb);
+	public List<PendingCertifiedProductDTO> getPending();
 	public List<CQMCriterion> getApplicableCriteria(PendingCertifiedProductDTO pendingCpDto);
 	
 	public PendingCertifiedProductDTO create(Long acbId, PendingCertifiedProductEntity toCreate) 
 			throws EntityRetrievalException, EntityCreationException;
 			
 	public void reject(Long pendingProductId) throws EntityRetrievalException;
+	public void confirm(Long pendingProductId) throws EntityRetrievalException;
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, Long userId, Permission permission) throws UserRetrievalException;
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, UserDTO user, Permission permission);
 	public void addPermissionToAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, UserDTO user, Permission permission);

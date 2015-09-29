@@ -19,7 +19,7 @@ import gov.healthit.chpl.entity.ProductVersionEntity;
 public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersionDAO {
 
 	@Override
-	public ProductVersionEntity create(ProductVersionDTO dto) throws EntityCreationException,
+	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
 		
 		ProductVersionEntity entity = null;
@@ -65,7 +65,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 			create(entity);
 		}
 		
-		return entity;
+		return new ProductVersionDTO(entity);
 	}
 
 	@Override
@@ -135,10 +135,13 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 	@Override
 	public ProductVersionDTO getById(Long id) throws EntityRetrievalException {
 		
+		ProductVersionDTO dto = null;
 		ProductVersionEntity entity = getEntityById(id);
-		ProductVersionDTO dto = new ProductVersionDTO(entity);
-		return dto;
 		
+		if (entity != null){
+			dto = new ProductVersionDTO(entity);
+		}
+		return dto;
 	}
 	
 	@Override
@@ -183,13 +186,13 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 	private void create(ProductVersionEntity entity) {
 		
 		entityManager.persist(entity);
-		
+		entityManager.flush();
 	}
 	
 	private void update(ProductVersionEntity entity) {
 		
 		entityManager.merge(entity);	
-	
+		entityManager.flush();
 	}
 	
 	private List<ProductVersionEntity> getAllEntities() {

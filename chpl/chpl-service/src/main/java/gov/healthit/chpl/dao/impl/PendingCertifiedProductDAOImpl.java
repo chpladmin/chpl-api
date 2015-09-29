@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.PendingCertifiedProductDao;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
@@ -19,7 +19,7 @@ import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
 @Repository(value="pendingCertifiedProductDAO")
-public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements PendingCertifiedProductDao {
+public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements PendingCertifiedProductDAO {
 	
 	@Override
 	@Transactional
@@ -79,8 +79,34 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 		entityManager.persist(entity);
 	}
 	
+
+	@Override
+	public void updateStatus(Long pendingProductId, CertificationStatusDTO status) throws EntityRetrievalException {
+		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
+		if(entity == null) {
+			throw new EntityRetrievalException("No pending certified product exists with id " + pendingProductId);
+		}
+		entity.setStatus(status.getId());
+		entity.setLastModifiedDate(new Date());
+		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		
+		entityManager.persist(entity);
+	}
+
+	
 	public List<PendingCertifiedProductDTO> findAll() {
 		List<PendingCertifiedProductEntity> entities = getAllEntities();
+		List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
+		
+		for (PendingCertifiedProductEntity entity : entities) {
+			PendingCertifiedProductDTO dto = new PendingCertifiedProductDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	public List<PendingCertifiedProductDTO> findByStatus(Long statusId) {
+		List<PendingCertifiedProductEntity> entities = getEntitiesByStatus(statusId);
 		List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
 		
 		for (PendingCertifiedProductEntity entity : entities) {
@@ -151,4 +177,13 @@ public class PendingCertifiedProductDaoImpl extends BaseDAOImpl implements Pendi
 		return result;
 	}
 	
+	private List<PendingCertifiedProductEntity> getEntitiesByStatus(Long statusId) {
+		
+		Query query = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
+				+ " where (certification_status_id = :statusId) "
+				+ " and not (pcp.deleted = true)", PendingCertifiedProductEntity.class );
+		query.setParameter("statusId", statusId);
+		List<PendingCertifiedProductEntity> result = query.getResultList();
+		return result;
+	}
 }

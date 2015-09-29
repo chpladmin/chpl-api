@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface AdditionalSoftwareDAO {
 	
-	public void create(AdditionalSoftwareDTO dto) throws EntityCreationException;
+	public AdditionalSoftwareDTO create(AdditionalSoftwareDTO dto) throws EntityCreationException;
 	public void delete(Long id);
 	public void deleteByCertifiedProduct(Long productId);
 	public List<AdditionalSoftwareDTO> findAll();

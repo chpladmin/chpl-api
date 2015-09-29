@@ -43,8 +43,7 @@ public class VendorManagerImpl implements VendorManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
 	public VendorDTO create(VendorDTO dto) throws EntityRetrievalException, EntityCreationException {
-		VendorEntity result = vendorDao.create(dto);
-		return new VendorDTO(result);
+		return vendorDao.create(dto);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")

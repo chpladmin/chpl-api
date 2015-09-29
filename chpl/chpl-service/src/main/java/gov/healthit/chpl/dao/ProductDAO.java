@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProductDAO {
 	
-	public ProductEntity create(ProductDTO dto) throws EntityCreationException, EntityRetrievalException;
+	public ProductDTO create(ProductDTO dto) throws EntityCreationException, EntityRetrievalException;
 
 	public ProductEntity update(ProductDTO dto) throws EntityRetrievalException;
 	

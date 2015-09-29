@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.annotation.MultipartConfig;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -18,6 +16,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,13 +36,9 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.domain.UpdateCertifiedProductRequest;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CQMResultDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -54,7 +49,7 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 @RestController
-@RequestMapping("/certified_product")
+@RequestMapping("/certified_products")
 public class CertifiedProductController {
 	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductController.class);
@@ -65,18 +60,16 @@ public class CertifiedProductController {
 	@Autowired PendingCertifiedProductManager pcpManager;
 	@Autowired CertificationBodyManager acbManager;
 	
-	@RequestMapping(value="/get_certified_product", method=RequestMethod.GET,
+	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@RequestParam(required=true) Long certifiedProductId) throws EntityRetrievalException {
-		CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(@RequestParam(required=false) Long versionId) {
+		List<CertifiedProductDTO> certifiedProductList = null;
 		
-		return certifiedProduct;
-	}
-
-	@RequestMapping(value="/list_certified_products_by_version", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersions(@RequestParam(required=true) Long versionId) {
-		List<CertifiedProductDTO> certifiedProductList = cpManager.getByVersion(versionId);		
+		if(versionId != null && versionId > 0) {
+			certifiedProductList = cpManager.getByVersion(versionId);
+		} else {
+			certifiedProductList = cpManager.getAll();
+		}
 		
 		List<CertifiedProduct> products= new ArrayList<CertifiedProduct>();
 		if(certifiedProductList != null && certifiedProductList.size() > 0) {
@@ -86,6 +79,14 @@ public class CertifiedProductController {
 			}
 		}
 		return products;
+	}
+	
+	@RequestMapping(value="/{certifiedProductId}/details", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
+		CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+		
+		return certifiedProduct;
 	}
 	
 	@RequestMapping(value="/update", method=RequestMethod.POST,
@@ -145,35 +146,56 @@ public class CertifiedProductController {
 		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
 	}
 	
-	@RequestMapping(value="/get_pending", method=RequestMethod.GET,
+	@RequestMapping(value="/pending", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts(@RequestParam(required=false) Long certifiedProductId) throws EntityRetrievalException {
+	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {
 		List<PendingCertifiedProductDetails> products = new ArrayList<PendingCertifiedProductDetails>();
 		
-		if(certifiedProductId == null || certifiedProductId < 0) {
-			List<PendingCertifiedProductDTO> productDtos = pcpManager.getAll();
-			for(PendingCertifiedProductDTO dto : productDtos) {
-				PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(dto);
-				details.setApplicableCqmCriteria(pcpManager.getApplicableCriteria(dto));
-				products.add(details);
-			}
-		} else {
-			PendingCertifiedProductDTO dto = pcpManager.getById(certifiedProductId);
+		List<PendingCertifiedProductDTO> productDtos = pcpManager.getPending();
+		for(PendingCertifiedProductDTO dto : productDtos) {
 			PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(dto);
 			details.setApplicableCqmCriteria(pcpManager.getApplicableCriteria(dto));
 			products.add(details);
-		}
+		}		
 		
 		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
 		results.getPendingCertifiedProducts().addAll(products);
 		return results;
 	}
 	
-	@RequestMapping(value="/reject_pending", method=RequestMethod.GET,
+	@RequestMapping(value="/pending/{pcpId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody String rejectPendingCertifiedProducts(@RequestParam(required=true) Long id) throws EntityRetrievalException {
+	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId) throws EntityRetrievalException {
+		List<PendingCertifiedProductDetails> products = new ArrayList<PendingCertifiedProductDetails>();
+
+		PendingCertifiedProductDTO dto = pcpManager.getById(pcpId);
+		PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(dto);
+		details.setApplicableCqmCriteria(pcpManager.getApplicableCriteria(dto));
+		
+		return details;
+	}
+	
+	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException {
 		pcpManager.reject(id);
 		return "{\"success\" : true }";
+	}
+	
+	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
+		throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException {
+		String acbIdStr = pendingCp.getCertifyingBody().get("id");
+		if(StringUtils.isEmpty(acbIdStr)) {
+			throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
+		}
+		Long acbId = new Long(acbIdStr);
+		CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pendingCp);
+		pcpManager.confirm(pendingCp.getId());
+		
+		CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
+		return result;
 	}
 	
 	@RequestMapping(value="/upload", method=RequestMethod.POST,

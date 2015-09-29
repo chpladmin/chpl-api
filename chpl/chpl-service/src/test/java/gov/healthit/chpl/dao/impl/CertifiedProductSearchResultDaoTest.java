@@ -2,7 +2,6 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.List;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import junit.framework.TestCase;
@@ -35,60 +33,192 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 
 	@Autowired
 	private CertifiedProductSearchResultDAO searchResultDAO;
-
-	private static JWTAuthenticatedUser authUser;
-
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		authUser = new JWTAuthenticatedUser();
-		authUser.setFirstName("Admin");
-		authUser.setId(-2L);
-		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-
-	@Test
-	public void countSimpleSearchResults() {
-		Long countProducts = searchResultDAO.countSimpleSearchResults("Test");
-		assertNotNull(countProducts);
-		assertEquals(3, countProducts.intValue());
-	}
 	
-	@Test
-	public void simpleSearch(){
-		List<CertifiedProductDetailsDTO> results = searchResultDAO.simpleSearch("Test", 0, 10, "product", false);
-		assertEquals(3, results.size());
-	}
 	
 	@Test
 	@Transactional
-	public void countMultiFilterSearchResults(){
+	public void testCountSearchResults(){
 		
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVendor("Test");
+		searchRequest.setVisibleOnCHPL("YES");
 		Long countProducts = searchResultDAO.countMultiFilterSearchResults(searchRequest);
-		assertEquals(3, countProducts.intValue());
+		assertEquals(2, countProducts.intValue());
 		
 		searchRequest.setVersion("1.0.0");
 		Long countProductsVersionSpecific = searchResultDAO.countMultiFilterSearchResults(searchRequest);
 		assertEquals(1, countProductsVersionSpecific.intValue());
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchVendor(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setVendor("Test Vendor 1");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(2, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getVendorName().startsWith("Test Vendor 1"));
+		}
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchProduct(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		
+		searchRequest.setProduct("Test Product 1");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(2, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getProductName().startsWith("Test Product 1"));
+		}
 		
 	}
 	
 	@Test
 	@Transactional
-	public void multiFilterSearchResults(){
+	public void testSearchVersion(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setVendor("Test");
-		List<CertifiedProductDetailsDTO> products = searchResultDAO.multiFilterSearch(searchRequest);
-		assertEquals(3, products.size());
+		searchRequest.setVersion("1.0.1");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
 		
-		searchRequest.setVersion("1.0.0");
-		List<CertifiedProductDetailsDTO> versionSpecificProducts = searchResultDAO.multiFilterSearch(searchRequest);
-		assertEquals(1, versionSpecificProducts.size());
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getProductVersion().startsWith("1.0.1"));
+		}
 		
 	}
 	
+	@Test
+	@Transactional
+	public void testSearchCertificationEdition(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationEdition("2014");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(2, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getYear().startsWith("2014"));
+		}
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchCertificationBody(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationBody("InfoGard");
+		searchRequest.setVisibleOnCHPL("BOTH");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(3, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getCertificationBodyName().startsWith("InfoGard"));
+		}
+		
+	}
+	
+	
+	@Test
+	@Transactional
+	public void testSearchProductClassificationType(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setProductClassification("Complete EHR");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getProductClassificationName().startsWith("Complete EHR"));
+		}
+		
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchPracticeType(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setPracticeType("Ambulatory");
+		searchRequest.setVisibleOnCHPL("BOTH");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(3, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getPracticeTypeName().startsWith("Ambulatory"));
+		}
+		
+	}
+	
+	
+	@Test
+	@Transactional
+	public void testSearchVisibleOnCHPL(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setVisibleOnCHPL("YES");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(2, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getVisibleOnChpl());
+		}
+		
+	}
+	
+	@Test
+	@Transactional
+	public void testSearch(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		
+		searchRequest.setSearchTerm("Test");
+		searchRequest.setVendor("Test Vendor");
+		searchRequest.setProduct("Test");
+		searchRequest.setVersion("1.0.1");
+		searchRequest.setCertificationEdition("2014");
+		searchRequest.setCertificationBody("InfoGard");
+		searchRequest.setProductClassification("Complete EHR");
+		searchRequest.setPracticeType("Ambulatory");
+		searchRequest.setVisibleOnCHPL("YES");
+		searchRequest.setOrderBy("product");
+		searchRequest.setSortDescending(true);
+		searchRequest.setPageNumber(0);
+		
+		
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
+		
+	}
+	
+	@Test
+	@Transactional
+	public void testFetchSingleItem(){
+		
+		try {
+			CertifiedProductDetailsDTO product = searchResultDAO.getById(1L);
+			
+			assertEquals(1, product.getCertificationBodyId().intValue());
+			assertEquals("InfoGard", product.getCertificationBodyName());
+			assertEquals("CHP-024050",product.getChplProductNumber());
+			assertEquals(1, product.getCertificationEditionId().intValue());
+			assertEquals("Test Vendor 1", product.getVendorName());
+			assertEquals(4, product.getCountCertifications().intValue());
+			assertEquals(0, product.getCountCqms().intValue());
+			assertTrue(product.getVisibleOnChpl());
+			
+		} catch (EntityRetrievalException e) {
+			fail("EntityRetrievalException");
+		}
+		
+	}
 	
 	
 }
