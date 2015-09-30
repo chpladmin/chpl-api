@@ -33,3 +33,5 @@ WITH (
 ALTER TABLE openchpl.activity_class
   OWNER TO openchpl;
 
+  
+ALTER TABLE openchpl.activity ADD CONSTRAINT activity_object_class_fk FOREIGN KEY (activity_object_class_id) REFERENCES openchpl.activity_class (activity_class_id);
