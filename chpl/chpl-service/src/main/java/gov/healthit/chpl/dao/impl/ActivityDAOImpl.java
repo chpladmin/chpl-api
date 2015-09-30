@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -81,20 +82,35 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
 	@Override
 	public void delete(Long id) throws EntityRetrievalException {
-		// TODO Auto-generated method stub
+		
+		Query query = entityManager.createQuery("UPDATE ActivityEntity SET deleted = true WHERE activity_id = :resultid");
+		query.setParameter("resultid", id);
+		query.executeUpdate();
 
 	}
 
 	@Override
 	public ActivityDTO getById(Long id) throws EntityRetrievalException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		ActivityEntity entity = getEntityById(id);
+		ActivityDTO dto = null;
+		if (entity != null){
+			dto = new ActivityDTO(entity);
+		}
+		return dto;
 	}
 
 	@Override
 	public List<ActivityDTO> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<ActivityEntity> entities = getAllEntities();
+		List<ActivityDTO> activities = new ArrayList<>();
+		
+		for (ActivityEntity entity : entities) {
+			ActivityDTO result = new ActivityDTO(entity);
+			activities.add(result);
+		}
+		return activities;
 	}
 	
 	

@@ -1,5 +1,7 @@
 package gov.healthit.chpl.entity;
 
+import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,6 +26,23 @@ public class ActivityClassEntity {
 	@Basic( optional = false )
 	@Column( name = "class", nullable = false)
 	private String className;
+	
+	@Basic ( optional = false )
+	@Column( name = "creation_date", nullable = false)
+	private Date creationDate;
+	
+	@Basic ( optional = false )
+	@Column( name = "last_modified_date", nullable = false)
+	private Date lastModifiedDate;
+	
+	@Basic ( optional = false )
+	@Column( name = "last_modified_user", nullable = false)
+	private Long lastModifiedUser;
+	
+	@Basic ( optional = false )
+	@Column( name = "deleted", nullable = false )
+	private Boolean deleted;
+	
 
 	public Long getId() {
 		return id;
@@ -39,6 +58,38 @@ public class ActivityClassEntity {
 
 	public void setClassName(String className) {
 		this.className = className;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
+	}
+
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 }
