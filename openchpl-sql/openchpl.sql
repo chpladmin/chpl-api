@@ -622,7 +622,7 @@ CREATE TABLE openchpl.certification_event(
 	certification_event_id bigserial NOT NULL,
 	certified_product_id bigint NOT NULL,
 	event_type_id bigint NOT NULL,
-	event_date date NOT NULL,
+	event_date timestamp NOT NULL,
 	city varchar(250),
 	state varchar(25),
 	creation_date timestamp NOT NULL DEFAULT NOW(),

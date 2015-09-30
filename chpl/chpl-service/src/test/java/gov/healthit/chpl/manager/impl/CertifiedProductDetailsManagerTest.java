@@ -80,7 +80,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCertificationDate() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals("1440043200000", detail.getCertificationDate());
+		assertEquals("1440090840000", detail.getCertificationDate());
 	
 	}
 	
