@@ -7,6 +7,8 @@ psql -Upostgres -f openchpl.sql openchpl
 psql -Upostgres -f openchpl.sql openchpl_test
 psql -Upostgres -f openchpl_certified_product_pending.sql openchpl
 psql -Upostgres -f openchpl_certified_product_pending.sql openchpl_test
+psql -Upostgres -f openchpl_invite_users.sql openchpl
+psql -Upostgres -f openchpl_invite_users.sql openchpl_test
 psql -Upostgres -f audit-openchpl.sql openchpl
 psql -Upostgres -f audit-openchpl.sql openchpl_test
 psql -Upostgres -f preload-openchpl.sql openchpl
@@ -19,3 +21,4 @@ psql -Upostgres -f openchpl_create_view_cqm.sql openchpl
 psql -Upostgres -f openchpl_create_view_cqm.sql openchpl_test
 psql -Upostgres -f openchpl_create_view_search.sql openchpl
 psql -Upostgres -f openchpl_create_view_search.sql openchpl_test
+
