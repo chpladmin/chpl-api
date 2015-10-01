@@ -7,6 +7,7 @@ import java.util.Set;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
+import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.GrantRoleJSONObject;
@@ -14,15 +15,19 @@ import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 import gov.healthit.chpl.auth.json.UserCreationWithRolesJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
+import gov.healthit.chpl.auth.json.UserInvitation;
 import gov.healthit.chpl.auth.json.UserListJSONObject;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertificationBodyPermission;
+import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.InvitationManager;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -31,69 +36,69 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.model.Permission;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/users")
 public class UserManagementController {
 	
 	@Autowired UserManager userManager;
 	@Autowired CertificationBodyManager acbManager;
-	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
-
+	@Autowired InvitationManager invitationManager;
 	
-	@RequestMapping(value="/create_user_with_roles", method= RequestMethod.POST, 
+	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
+	
+	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public User createUserWithRoles(@RequestBody UserCreationWithRolesJSONObject userInfo) throws UserCreationException, UserRetrievalException {
+	public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) 
+			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException {
+		boolean validHash = invitationManager.isHashValid(userInfo.getHash());
+		if(!validHash) {
+			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
+		}
 		
-		UserDTO newUser = userManager.create(userInfo);
+		if(userInfo.getUser() == null || userInfo.getUser().getSubjectName() == null) {
+			throw new InvalidArgumentsException("Username ('subject name') is required.");
+		}
 		
+		InvitationDTO invitation = invitationManager.getByHash(userInfo.getHash());
+		UserDTO createdUser = invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
+		return new User(createdUser);
+	}
+	
+	@RequestMapping(value="/invite", method=RequestMethod.POST,
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public UserInvitation inviteUser(@RequestBody UserInvitation invitation) 
+			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, UserPermissionRetrievalException{
 		boolean isChplAdmin = false;
-		if(userInfo.getRoles() != null && userInfo.getRoles().size() > 0) {
-			for(String roleName : userInfo.getRoles()) {
-				try {
-					if(roleName.equals("ROLE_ADMIN")) {
-						userManager.grantAdmin(newUser.getName());
-						isChplAdmin = true;
-					} else {
-						userManager.grantRole(newUser.getName(), roleName);
-					}
-				} catch(UserPermissionRetrievalException ex) {
-					logger.error("Could not add role " + roleName + " for user " + newUser.getName(), ex);
-				} catch(UserManagementException mex) {
-					logger.error("Could not add role " + roleName + " for user " + newUser.getName(), mex);
-				}
-			}
-			
-			//if they are a chpladmin then they need to be given access to all of the ACBs
-			if(isChplAdmin) {
-				List<CertificationBodyDTO> acbs = acbManager.getAll();
-				for(CertificationBodyDTO acb : acbs) {
-					acbManager.addPermission(acb, newUser.getId(), BasePermission.ADMINISTRATION);
-				}
+		for(String permission : invitation.getPermissions()) {
+			if(permission.equals("ADMIN") || permission.equals("ROLE_ADMIN")) {
+				isChplAdmin = true;
 			}
 		}
-		return new User(newUser);
-	}
-	
-	@RequestMapping(value="/create_user", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_JSON_VALUE,
-			produces="application/json; charset=utf-8")
-	public User createUser(@RequestBody UserCreationJSONObject userInfo) throws UserCreationException, UserRetrievalException {
 		
-		UserDTO newUser = userManager.create(userInfo);
-		return new User(newUser);
+		InvitationDTO createdInvite = null;
+		if(isChplAdmin) {
+			createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress(), invitation.getPermissions());
+		} else {
+			if(invitation.getAcbId() == null || invitation.getAcbId() < 0) {
+				throw new InvalidArgumentsException("An ACB ID is required.");
+			}
+			createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
+		}
+		UserInvitation result = new UserInvitation(createdInvite);
+		return result;
 	}
 	
-	
-	@RequestMapping(value="/update_user", method= RequestMethod.POST, 
+	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public User updateUserDetails(@RequestBody User userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
@@ -105,7 +110,7 @@ public class UserManagementController {
 	}
 	
 	
-	@RequestMapping(value="/delete_user/{userId}", method= RequestMethod.POST,
+	@RequestMapping(value="/{userId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteUser(@PathVariable("userId") Long userId) 
 			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
@@ -134,7 +139,7 @@ public class UserManagementController {
 	
 	}	
 	
-	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
+	@RequestMapping(value="/grant_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
@@ -165,7 +170,7 @@ public class UserManagementController {
 		
 	}
 	
-	@RequestMapping(value="/revoke_user_role", method= RequestMethod.POST, 
+	@RequestMapping(value="/revoke_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
@@ -211,7 +216,7 @@ public class UserManagementController {
 		
 	}
 	
-	@RequestMapping(value="/list_users", method=RequestMethod.GET,
+	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody UserListJSONObject getUsers(){
 		
@@ -235,19 +240,11 @@ public class UserManagementController {
 		return ulist;
 	}
 	
-	@RequestMapping(value="/user_details", method=RequestMethod.GET,
+	@RequestMapping(value="/{userName}/details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody UserInfoJSONObject getUser(@RequestParam("userName") String userName) throws UserRetrievalException {
+	public @ResponseBody UserInfoJSONObject getUser(@PathVariable("userName") String userName) throws UserRetrievalException {
 		
 		return userManager.getUserInfo(userName);
 		
 	}
-	
-	@RequestMapping(value="/invite", method=RequestMethod.POST,
-			produces="application/json; charset=utf-8") 
-	public @ResponseBody String inviteUser(@RequestParam("email") String userEmail) {
-		
-		return "{succcess: true}";
-	}
-	
 }

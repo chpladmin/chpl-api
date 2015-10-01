@@ -6,6 +6,8 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ApiExceptionControllerAdvice {
+	private static final Logger logger = LogManager.getLogger(ApiExceptionControllerAdvice.class);
 
 	@ExceptionHandler(EntityRetrievalException.class)
 	public ResponseEntity<ErrorJSONObject> exception(EntityRetrievalException e) {
@@ -32,6 +35,8 @@ public class ApiExceptionControllerAdvice {
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorJSONObject> exception(Exception e) {
+		e.printStackTrace();
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+	
 }

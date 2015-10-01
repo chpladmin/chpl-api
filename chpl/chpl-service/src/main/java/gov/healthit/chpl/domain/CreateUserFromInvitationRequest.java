@@ -1,30 +1,21 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.auth.json.UserCreationWithRolesJSONObject;
+import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 
-public class CreateUserAndAddToAcbRequest {
-	private Long acbId;
-	private UserCreationWithRolesJSONObject user;
-	private CertificationBodyPermission authority;
+public class CreateUserFromInvitationRequest {
+	private String hash;
+	private UserCreationJSONObject user;
 	
-	public Long getAcbId() {
-		return acbId;
-	}
-	public void setAcbId(Long acbId) {
-		this.acbId = acbId;
-	}
-
-	public CertificationBodyPermission getAuthority() {
-		return authority;
-	}
-	public void setAuthority(CertificationBodyPermission authority) {
-		this.authority = authority;
-	}
-	public UserCreationWithRolesJSONObject getUser() {
+	public UserCreationJSONObject getUser() {
 		return user;
 	}
-	public void setUser(UserCreationWithRolesJSONObject user) {
+	public void setUser(UserCreationJSONObject user) {
 		this.user = user;
 	}
-	
+	public String getHash() {
+		return hash;
+	}
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
 }
