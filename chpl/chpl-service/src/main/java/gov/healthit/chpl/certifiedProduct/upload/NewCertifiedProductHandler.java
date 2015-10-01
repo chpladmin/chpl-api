@@ -19,7 +19,6 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.VendorDTO;
 import gov.healthit.chpl.entity.AddressEntity;
-import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -1428,54 +1427,6 @@ public abstract class NewCertifiedProductHandler extends CertifiedProductUploadH
 		return result;
 	}
 	
-	/**
-	 * look up an NQF type of CQM by name/number. throw an error if we can't find it
-	 * @param criterionNum
-	 * @param column
-	 * @return
-	 * @throws InvalidArgumentsException
-	 */
-	private PendingCqmCriterionEntity handleCqmNqfCriterion(String criterionNum, int column) throws InvalidArgumentsException {
-		CQMCriterionEntity cqmEntity = cqmDao.getEntityByNumber(criterionNum);
-		if(cqmEntity == null) {
-			throw new InvalidArgumentsException("Could not find a CQM NQF criterion matching " + criterionNum);
-		}
-		
-		PendingCqmCriterionEntity result = new PendingCqmCriterionEntity();
-		result.setMappedCriterion(cqmEntity);
-		boolean meetsCriteria = false;
-		if(!StringUtils.isEmpty(getRecord().get(column))) {
-			int value = new Integer(getRecord().get(column)).intValue();
-			if(value > 0) {
-				meetsCriteria = true;
-			}
-		} 
-		result.setMeetsCriteria(meetsCriteria);		
-		return result;
-	}
-	
-	/**
-	 * look up a CQM CMS criteria by number and version. throw an error if we can't find it
-	 * @param criterionNum
-	 * @param column
-	 * @return
-	 * @throws InvalidArgumentsException
-	 */
-	private PendingCqmCriterionEntity handleCqmCmsCriterion(String criterionNum, int column) throws InvalidArgumentsException {
-		String version = getRecord().get(column);
-		if(version != null) {
-			version = version.trim();
-		}
-		
-		CQMCriterionEntity cqmEntity = cqmDao.getEntityByNumberAndVersion(criterionNum, version);
-		if(cqmEntity == null) {
-			throw new InvalidArgumentsException("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + version);
-		}
-		
-		PendingCqmCriterionEntity result = new PendingCqmCriterionEntity();
-		result.setMappedCriterion(cqmEntity);
-		result.setMeetsCriteria(true);	
-
-		return result;
-	}
+	public abstract PendingCqmCriterionEntity handleCqmNqfCriterion(String criterionNum, int column) throws InvalidArgumentsException;
+	public abstract PendingCqmCriterionEntity handleCqmCmsCriterion(String criterionNum, int column) throws InvalidArgumentsException;
 }
