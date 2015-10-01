@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface ActivityManager {
 	
-	public void addActivity(String className, Long id, String activityDescription);
-	public void addActivity(String className, Long id, String activityDescription, Date timestamp);
+	public void addActivity(String conceptName, Long id, String activityDescription);
+	public void addActivity(String conceptName, Long id, String activityDescription, Date timestamp);
 	public List<ActivityEvent> getAllActivity();
 	public List<ActivityEvent> getActivityForObject(ActivityEventEmitter eventEmitter);
 	public List<ActivityEvent> getActivityForObject(String className, Long id);

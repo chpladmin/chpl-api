@@ -13,7 +13,5 @@ public abstract class BaseManagerImpl implements ActivityEventEmitter {
 	protected String className;
 	
 	
-	
-	
 
 }

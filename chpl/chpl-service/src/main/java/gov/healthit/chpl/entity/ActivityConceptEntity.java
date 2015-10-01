@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="activity_class")
-public class ActivityClassEntity {
+public class ActivityConceptEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "activity_class_activity_class_idGenerator")

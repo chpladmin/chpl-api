@@ -2,9 +2,9 @@ package gov.healthit.chpl.dto;
 
 import java.util.Date;
 
-import gov.healthit.chpl.entity.ActivityClassEntity;
+import gov.healthit.chpl.entity.ActivityConceptEntity;
 
-public class ActivityClassDTO {
+public class ActivityConceptDTO {
 	
 	private Long id;
 	private String className;
@@ -13,9 +13,9 @@ public class ActivityClassDTO {
 	private Long lastModifiedUser;
 	private Boolean deleted;
 	
-	public ActivityClassDTO(){}
+	public ActivityConceptDTO(){}
 	
-	public ActivityClassDTO(ActivityClassEntity entity){
+	public ActivityConceptDTO(ActivityConceptEntity entity){
 		this.id = entity.getId();
 		this.className = entity.getClassName();
 		this.creationDate = entity.getCreationDate();
