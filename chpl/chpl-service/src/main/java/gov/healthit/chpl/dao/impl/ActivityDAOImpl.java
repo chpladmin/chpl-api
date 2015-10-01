@@ -40,7 +40,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			entity.setId(dto.getId());
 			entity.setDescription(dto.getDescription());
 			entity.setActivityDate(dto.getActivityDate());
-			entity.setActivityObjectClassId(dto.getActivityObjectClassId());
+			entity.setActivityObjectConceptId(dto.getConcept().getId());
 			entity.setActivityObjectId(dto.getActivityObjectId());
 			entity.setCreationDate(new Date());
 			entity.setLastModifiedDate(new Date());
@@ -65,7 +65,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		entity.setId(dto.getId());
 		entity.setDescription(dto.getDescription());
 		entity.setActivityDate(dto.getActivityDate());
-		entity.setActivityObjectClassId(dto.getActivityObjectClassId());
+		entity.setActivityObjectConceptId(dto.getConcept().getId());
 		entity.setActivityObjectId(dto.getActivityObjectId());
 		entity.setCreationDate(new Date());
 		entity.setLastModifiedDate(new Date());

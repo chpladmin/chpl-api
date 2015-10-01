@@ -1,5 +1,7 @@
 package gov.healthit.chpl.entity;
 
+import gov.healthit.chpl.activity.ActivityConcept;
+
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -36,8 +38,8 @@ public class ActivityEntity {
 	private Long activityObjectId;
 	
 	@Basic( optional = false )
-	@Column( name = "activity_object_class_id", nullable = false)
-	private Long activityObjectClassId;
+	@Column( name = "activity_object_concept_id", nullable = false)
+	private Long activityObjectConceptId;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false )
@@ -54,6 +56,8 @@ public class ActivityEntity {
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false )
 	private Long deleted;
+	
+	transient ActivityConcept concept;
 
 	public Long getId() {
 		return id;
@@ -87,13 +91,30 @@ public class ActivityEntity {
 		this.activityObjectId = activityObjectId;
 	}
 
-	public Long getActivityObjectClassId() {
-		return activityObjectClassId;
+	public Long getActivityObjectConceptId() {
+		return activityObjectConceptId;
 	}
 
-	public void setActivityObjectClassId(Long activityObjectClassId) {
-		this.activityObjectClassId = activityObjectClassId;
+	public void setActivityObjectConceptId(Long activityObjectClassId) {
+		
+		for (ActivityConcept concept : ActivityConcept.values()) {
+			if(concept.getId().equals(activityObjectClassId)){
+				this.concept = concept;
+				break;
+			}
+		}
+		this.activityObjectConceptId = activityObjectClassId;
 	}
+	
+	public ActivityConcept getConcept() {
+		return this.concept;
+	}
+
+	public void setConcept(ActivityConcept concept) {
+		this.activityObjectConceptId = concept.getId();
+		this.concept = concept;
+	}
+	
 
 	public Date getCreationDate() {
 		return creationDate;
