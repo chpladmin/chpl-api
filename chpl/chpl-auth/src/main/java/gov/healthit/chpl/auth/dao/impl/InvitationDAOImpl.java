@@ -3,7 +3,6 @@ package gov.healthit.chpl.auth.dao.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -15,10 +14,7 @@ import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.InvitationDAO;
 import gov.healthit.chpl.auth.dto.InvitationDTO;
-import gov.healthit.chpl.auth.dto.InvitationPermissionDTO;
 import gov.healthit.chpl.auth.entity.InvitationEntity;
-import gov.healthit.chpl.auth.entity.InvitationPermissionEntity;
-import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 

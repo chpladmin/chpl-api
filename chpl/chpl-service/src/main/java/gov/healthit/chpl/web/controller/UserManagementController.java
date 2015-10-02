@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.UserDTO;
@@ -17,12 +18,14 @@ import gov.healthit.chpl.auth.json.UserCreationWithRolesJSONObject;
 import gov.healthit.chpl.auth.json.UserInfoJSONObject;
 import gov.healthit.chpl.auth.json.UserInvitation;
 import gov.healthit.chpl.auth.json.UserListJSONObject;
+import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.AuthorizeCredentials;
 import gov.healthit.chpl.domain.CertificationBodyPermission;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -37,6 +40,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +55,7 @@ public class UserManagementController {
 	@Autowired UserManager userManager;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired InvitationManager invitationManager;
+	@Autowired private Authenticator authenticator;
 	
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
 	
@@ -71,6 +76,37 @@ public class UserManagementController {
 		InvitationDTO invitation = invitationManager.getByHash(userInfo.getHash());
 		UserDTO createdUser = invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
 		return new User(createdUser);
+	}
+	
+	/*
+	 * update a user's permissions with new ones issued in an invitation
+	 */
+	@RequestMapping(value="/authorize", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String authorizeUser(@RequestBody AuthorizeCredentials credentials) 
+			throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
+		if(StringUtils.isEmpty(credentials.getHash()) || StringUtils.isEmpty(credentials.getUserName()) ||
+				StringUtils.isEmpty(credentials.getPassword())) {
+			throw new InvalidArgumentsException("Username, Password, and Token are all required.");
+		}
+		
+		boolean validHash = invitationManager.isHashValid(credentials.getHash());
+		if(!validHash) {
+			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
+		}
+		
+		UserDTO userToUpdate = authenticator.getUser(credentials);		
+		if(userToUpdate == null) {
+			throw new UserRetrievalException("The user " + credentials.getUserName() + " could not be authenticated.");
+		}
+		
+		InvitationDTO invitation = invitationManager.getByHash(credentials.getHash());
+		invitationManager.updateUserFromInvitation(invitation, userToUpdate);
+		
+		String jwt = authenticator.getJWT(credentials);
+		String jwtJSON = "{\"token\": \""+jwt+"\"}";
+		return jwtJSON;
 	}
 	
 	@RequestMapping(value="/invite", method=RequestMethod.POST,

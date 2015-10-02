@@ -172,14 +172,6 @@ public class InvitationManagerImpl implements InvitationManager {
 		throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException, UserCreationException {
 		Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
 		SecurityContextHolder.getContext().setAuthentication(authenticator);
-
-		CertificationBodyDTO userAcb = null;
-		if(invitation.getAcbId() != null) {
-			userAcb = acbManager.getById(invitation.getAcbId());
-			if(userAcb == null) {
-				throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getAcbId());
-			}
-		}
 		
 		//create the user
 		UserDTO newUser = userManager.getByName(user.getSubjectName());
@@ -189,22 +181,60 @@ public class InvitationManagerImpl implements InvitationManager {
 			throw new InvalidArgumentsException("A user with the name " + user.getSubjectName() + " already exists.");
 		}
 		
+		handleInvitation(invitation, newUser);
+
+		return newUser;
+	}
+	
+	@Override
+	@Transactional
+	public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO toUpdate) 
+		throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
+		Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
+		SecurityContextHolder.getContext().setAuthentication(authenticator);
+		
+		handleInvitation(invitation, toUpdate);
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
+		return toUpdate;
+	}
+	
+	/**
+	 * gives the user the permissions listed in the invitation
+	 * also adds the user to any ACBs in the invitation
+	 * the securitycontext must have a valid authentication specified when this is called
+	 * @param invitation
+	 * @param user
+	 * @throws EntityRetrievalException
+	 * @throws InvalidArgumentsException
+	 * @throws UserRetrievalException
+	 */
+	private void handleInvitation(InvitationDTO invitation, UserDTO user) 
+			throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
+		CertificationBodyDTO userAcb = null;
+		if(invitation.getAcbId() != null) {
+			userAcb = acbManager.getById(invitation.getAcbId());
+			if(userAcb == null) {
+				throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getAcbId());
+			}
+		}
+		
 		//give them permissions
 		boolean isChplAdmin = false;
 		if(invitation.getPermissions() != null && invitation.getPermissions().size() > 0) {
 			for(InvitationPermissionDTO permission : invitation.getPermissions()) {
 				UserPermissionDTO userPermission = userPermissionDao.findById(permission.getPermissionId());
 				try {
-					if(userPermission.getName().equals("ROLE_ADMIN")) {
-						userManager.grantAdmin(newUser.getName());
+					if(userPermission.getAuthority().equals("ROLE_ADMIN")) {
+						userManager.grantAdmin(user.getName());
 						isChplAdmin = true;
 					} else {
-						userManager.grantRole(newUser.getName(), userPermission.getAuthority());
+						userManager.grantRole(user.getName(), userPermission.getAuthority());
 					}
 				} catch(UserPermissionRetrievalException ex) {
-					logger.error("Could not add role " + userPermission.getName() + " for user " + newUser.getName(), ex);
+					logger.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(), ex);
 				} catch(UserManagementException mex) {
-					logger.error("Could not add role " + userPermission.getName() + " for user " + newUser.getName(), mex);
+					logger.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(), mex);
 				}
 			}
 		}
@@ -214,10 +244,10 @@ public class InvitationManagerImpl implements InvitationManager {
 		if(isChplAdmin) {
 			List<CertificationBodyDTO> acbs = acbManager.getAll();
 			for(CertificationBodyDTO acb : acbs) {
-				acbManager.addPermission(acb, newUser.getId(), BasePermission.ADMINISTRATION);
+				acbManager.addPermission(acb, user.getId(), BasePermission.ADMINISTRATION);
 			}
 		} else if(userAcb != null) {
-			acbManager.addPermission(userAcb, newUser.getId(), BasePermission.ADMINISTRATION);
+			acbManager.addPermission(userAcb, user.getId(), BasePermission.ADMINISTRATION);
 		}
 		
 		//delete the permissions
@@ -226,10 +256,6 @@ public class InvitationManagerImpl implements InvitationManager {
 		}
 		//delete the invitation
 		invitationDao.delete(invitation.getId());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
-
-		return newUser;
 	}
 	
 	private Authentication getInvitedUserAuthenticator(Long id) {

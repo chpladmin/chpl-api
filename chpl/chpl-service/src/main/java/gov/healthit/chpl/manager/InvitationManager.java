@@ -31,4 +31,6 @@ public interface InvitationManager {
 	public UserDTO createUserFromInvitation(InvitationDTO invitation, UserCreationJSONObject user) 
 			throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
 			UserCreationException;
+	public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO user) 
+			throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException;
 }
