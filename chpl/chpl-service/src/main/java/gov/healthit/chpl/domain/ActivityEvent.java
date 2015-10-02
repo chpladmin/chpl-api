@@ -1,5 +1,8 @@
 package gov.healthit.chpl.domain;
 
+import gov.healthit.chpl.activity.ActivityConcept;
+import gov.healthit.chpl.dto.ActivityDTO;
+
 import java.util.Date;
 
 public class ActivityEvent {
@@ -8,10 +11,17 @@ public class ActivityEvent {
 	private String description;
 	private Date activityDate;
 	private Long activityObjectId;
-	private Long activityObjectClassId;
-	private String activityClass;
+	private ActivityConcept concept;
 	
 	public ActivityEvent(){}
+	public ActivityEvent(ActivityDTO dto){
+		
+		this.id = dto.getId();
+		this.description = dto.getDescription();
+		this.activityDate = dto.getActivityDate();
+		this.activityObjectId = dto.getActivityObjectId();
+		this.concept = dto.getConcept();
+	}
 	
 	public Long getId() {
 		return id;
@@ -37,16 +47,11 @@ public class ActivityEvent {
 	public void setActivityObjectId(Long activityObjectId) {
 		this.activityObjectId = activityObjectId;
 	}
-	public Long getActivityObjectClassId() {
-		return activityObjectClassId;
+	public ActivityConcept getConcept() {
+		return concept;
 	}
-	public void setActivityObjectClassId(Long activityObjectClassId) {
-		this.activityObjectClassId = activityObjectClassId;
+	public void setConcept(ActivityConcept concept) {
+		this.concept = concept;
 	}
-	public String getActivityClass() {
-		return activityClass;
-	}
-	public void setActivityClass(String activityClass) {
-		this.activityClass = activityClass;
-	}
+	
 }

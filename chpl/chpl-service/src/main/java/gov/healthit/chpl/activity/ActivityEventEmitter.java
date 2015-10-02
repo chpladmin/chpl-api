@@ -1,9 +1,12 @@
 package gov.healthit.chpl.activity;
 
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+
 public interface ActivityEventEmitter {
 	
-	public String getConceptName();
+	public ActivityConcept getConcept();
 	public Long getObjectId();
-	public void emitActivityEvent(String eventDescription);
+	public void emitActivityEvent(String eventDescription) throws EntityCreationException, EntityRetrievalException;
 	
 }

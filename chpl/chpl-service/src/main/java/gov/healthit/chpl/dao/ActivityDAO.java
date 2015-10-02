@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao;
 
 
+import gov.healthit.chpl.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 import java.util.List;
@@ -12,5 +13,7 @@ public interface ActivityDAO {
 	public void delete(Long id) throws EntityRetrievalException;
 	public ActivityDTO getById(Long id) throws EntityRetrievalException;
 	public List<ActivityDTO> findAll();
+	public List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept);
+	List<ActivityDTO> findByConcept(ActivityConcept concept);
 
 }

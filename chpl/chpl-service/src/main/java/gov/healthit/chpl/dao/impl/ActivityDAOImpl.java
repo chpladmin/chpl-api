@@ -8,6 +8,7 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.activity.ActivityConcept;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -40,7 +41,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			entity.setId(dto.getId());
 			entity.setDescription(dto.getDescription());
 			entity.setActivityDate(dto.getActivityDate());
-			entity.setActivityObjectConceptId(dto.getConcept().getId());
+			entity.setConcept(dto.getConcept());
 			entity.setActivityObjectId(dto.getActivityObjectId());
 			entity.setCreationDate(new Date());
 			entity.setLastModifiedDate(new Date());
@@ -115,7 +116,32 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		return activities;
 	}
 	
+	@Override
+	public List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept) {
+		
+		List<ActivityEntity> entities = this.getEntitiesByObjectId(objectId, concept);
+		List<ActivityDTO> activities = new ArrayList<>();
+		
+		for (ActivityEntity entity : entities) {
+			ActivityDTO result = new ActivityDTO(entity);
+			activities.add(result);
+		}
+		return activities;
+	}
 	
+	@Override
+	public List<ActivityDTO> findByConcept(ActivityConcept concept) {
+		
+		List<ActivityEntity> entities = this.getEntitiesByConcept(concept);
+		List<ActivityDTO> activities = new ArrayList<>();
+		
+		for (ActivityEntity entity : entities) {
+			ActivityDTO result = new ActivityDTO(entity);
+			activities.add(result);
+		}
+		return activities;
+		
+	}
 	
 	private void create(ActivityEntity entity) {
 		
@@ -136,7 +162,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		
 		ActivityEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) AND (additional_software_id = :entityid) ", ActivityEntity.class );
+		Query query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) AND (activity_id = :entityid) ", ActivityEntity.class );
 		query.setParameter("entityid", id);
 		List<ActivityEntity> result = query.getResultList();
 		
@@ -150,23 +176,20 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		return entity;
 	}
 	
-	private ActivityEntity getEntityByName(String name) {
-		ActivityEntity entity = null;
-			
-		Query query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) AND (name = :name) ", ActivityEntity.class );
-		query.setParameter("name", name);
-		List<ActivityEntity> result = query.getResultList();
-		
-		if (result.size() > 0){
-			entity = result.get(0);
-		}
-		return entity;
-	}
 
-	private List<ActivityEntity> getEntitiesByCertifiedProductId(Long certifiedProductId) {
+	private List<ActivityEntity> getEntitiesByObjectId(Long objectId, ActivityConcept concept) {
 		
-		Query query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ", ActivityEntity.class );
-		query.setParameter("entityid", certifiedProductId);
+		Query query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) AND (activity_object_id = :objectid)  AND (activity_object_concept_id = :conceptid) ", ActivityEntity.class );
+		query.setParameter("objectid", objectId);
+		query.setParameter("conceptid", concept.getId());
+		List<ActivityEntity> result = query.getResultList();
+		return result;
+	}
+	
+	private List<ActivityEntity> getEntitiesByConcept(ActivityConcept concept) {
+		
+		Query query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) AND (activity_object_concept_id = :conceptid) ", ActivityEntity.class );
+		query.setParameter("conceptid", concept.getId());
 		List<ActivityEntity> result = query.getResultList();
 		return result;
 	}
