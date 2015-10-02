@@ -55,7 +55,6 @@ public class ProductManagerImpl implements ProductManager {
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
 		
 		ProductEntity result = productDao.create(dto);
-		
 		String msg = "Product "+dto.getName()+" was created with ID "+result.getId();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), msg);
 		return new ProductDTO(result);
@@ -70,6 +69,7 @@ public class ProductManagerImpl implements ProductManager {
 		String msg = "Product "+dto.getName()+" was updated.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), msg);
 		return new ProductDTO(result);
+		
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class ProductManagerImpl implements ProductManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
 		delete(dto.getId());
-		String msg = "Product "+dto.getName()+" was delete.";
+		String msg = "Product "+dto.getName()+" was deleted.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), msg);
 	}
 
@@ -86,7 +86,7 @@ public class ProductManagerImpl implements ProductManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException {
 		productDao.delete(productId);
-		String msg = "Product "+productId.toString()+" was delete.";
+		String msg = "Product "+productId.toString()+" was deleted.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, msg);
 	}
 	
