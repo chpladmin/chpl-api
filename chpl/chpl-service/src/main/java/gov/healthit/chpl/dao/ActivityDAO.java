@@ -14,6 +14,6 @@ public interface ActivityDAO {
 	public ActivityDTO getById(Long id) throws EntityRetrievalException;
 	public List<ActivityDTO> findAll();
 	public List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept);
-	List<ActivityDTO> findByConcept(ActivityConcept concept);
+	public List<ActivityDTO> findByConcept(ActivityConcept concept);
 
 }
