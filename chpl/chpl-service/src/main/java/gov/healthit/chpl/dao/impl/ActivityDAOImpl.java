@@ -140,7 +140,6 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			activities.add(result);
 		}
 		return activities;
-		
 	}
 	
 	private void create(ActivityEntity entity) {

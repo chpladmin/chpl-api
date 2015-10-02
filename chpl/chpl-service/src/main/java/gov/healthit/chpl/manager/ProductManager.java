@@ -12,7 +12,7 @@ public interface ProductManager {
 	public List<ProductDTO> getByVendor(Long vendorId);
 	public List<ProductDTO> getByVendors(List<Long> vendorIds);
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException;
-	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException;
-	public void delete(ProductDTO dto) throws EntityRetrievalException;
-	public void delete(Long productId) throws EntityRetrievalException;
+	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException;
+	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException;
+	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException;
 }

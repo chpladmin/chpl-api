@@ -15,4 +15,5 @@ public interface ActivityManager {
 	public List<ActivityEvent> getAllActivity();
 	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId);
 	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept);
+	
 }
