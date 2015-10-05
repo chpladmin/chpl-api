@@ -59,15 +59,6 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		loadCQMCriteria();
 	}
 	
-	public void confirmUpload() {
-		//convert to certified product
-		
-		//add row to certification_event (add event type of Pending, Uploaded)
-		
-		//insert record in certification_event to say that it was uploaded and the date it was uploaded on
-		//add another record to certification_event to say that it was Active on the current date
-	}
-	
 	@Override
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or "
@@ -142,7 +133,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+	@PreAuthorize("hasRole('ROLE_ADMIN') or  hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, Long userId, Permission permission) throws UserRetrievalException {
 		UserDTO user = userDAO.getById(userId);
@@ -151,7 +142,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+	@PreAuthorize("hasRole('ROLE_ADMIN') or  hasRole('ROLE_INVITED_USER_CREATOR')  or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, UserDTO user, Permission permission) {
 		MutableAcl acl;
@@ -177,7 +168,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+	@PreAuthorize("hasRole('ROLE_ADMIN') or  hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
 	public void addPermissionToAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, UserDTO user, Permission permission) {
 		List<PendingCertifiedProductDTO> pcps = getByAcb(acb);
