@@ -11,6 +11,7 @@ public class UserInvitation {
 	private String emailAddress;
 	private Long acbId;
 	private List<String> permissions;
+	private String hash;
 	
 	public UserInvitation() {
 		this.permissions = new ArrayList<String>();
@@ -19,6 +20,7 @@ public class UserInvitation {
 	public UserInvitation(InvitationDTO dto) {
 		this.emailAddress = dto.getEmail();
 		this.acbId = dto.getAcbId();
+		this.hash = dto.getToken();
 		this.permissions = new ArrayList<String>();
 		for(InvitationPermissionDTO permission : dto.getPermissions()) {
 			this.permissions.add(permission.getPermissionName());
@@ -42,6 +44,14 @@ public class UserInvitation {
 	}
 	public void setPermissions(List<String> permissions) {
 		this.permissions = permissions;
+	}
+
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
 	}
 	
 }

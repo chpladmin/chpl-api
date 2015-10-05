@@ -2,8 +2,19 @@ package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
@@ -113,7 +124,8 @@ public class UserManagementController {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public UserInvitation inviteUser(@RequestBody UserInvitation invitation) 
-			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, UserPermissionRetrievalException{
+			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
+			UserPermissionRetrievalException, AddressException, MessagingException {
 		boolean isChplAdmin = false;
 		for(String permission : invitation.getPermissions()) {
 			if(permission.equals("ADMIN") || permission.equals("ROLE_ADMIN")) {
@@ -130,6 +142,10 @@ public class UserManagementController {
 			}
 			createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
 		}
+		
+		//send email
+		//sendEmail(createdInvite);
+		
 		UserInvitation result = new UserInvitation(createdInvite);
 		return result;
 	}
@@ -282,5 +298,46 @@ public class UserManagementController {
 		
 		return userManager.getUserInfo(userName);
 		
+	}
+	
+	/**
+	 * create and send the email to invite the user
+	 * @param invitation
+	 */
+	private void sendEmail(InvitationDTO invitation) throws AddressException, MessagingException {
+		 // sets SMTP server properties
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", "144.202.233.67");
+        properties.put("mail.smtp.port", "25");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+ 
+        // creates a new session with an authenticator
+        javax.mail.Authenticator auth = new javax.mail.Authenticator() {
+            public PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("chpl-etl", "Audac1ous");
+            }
+        };
+ 
+        Session session = Session.getInstance(properties, auth);
+ 
+        // creates a new e-mail message
+        Message msg = new MimeMessage(session);
+ 
+        msg.setFrom(new InternetAddress("chpl-etl@ainq.com"));
+        InternetAddress[] toAddresses = { new InternetAddress(invitation.getEmail()) };
+        msg.setRecipients(Message.RecipientType.TO, toAddresses);
+        msg.setSubject("OpenCHPL Invitation");
+        msg.setSentDate(new Date());
+        // set plain text message
+        msg.setContent(
+        			"<h3>Join OpenCHPL</h3>"
+        			+ "<p>You've been invited to access the CHPL.</p>"
+        			+ "<p>Click the link below to create your account."
+        			+ "<br/>http://localhost:8000/app?hash=" + invitation.getToken() + 
+        			"</p>", "text/html");
+
+        // sends the e-mail
+        Transport.send(msg);
 	}
 }

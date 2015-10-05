@@ -6,6 +6,9 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,16 @@ public class ApiExceptionControllerAdvice {
 	@ExceptionHandler(InvalidArgumentsException.class)
 	public ResponseEntity<ErrorJSONObject> exception(InvalidArgumentsException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(AddressException.class)
+	public ResponseEntity<ErrorJSONObject> exception(AddressException e) {
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Could not send email. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(MessagingException.class)
+	public ResponseEntity<ErrorJSONObject> exception(MessagingException e) {
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Could not send email. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@ExceptionHandler(Exception.class)
