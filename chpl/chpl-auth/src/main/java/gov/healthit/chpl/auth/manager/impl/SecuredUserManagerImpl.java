@@ -51,7 +51,8 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_USER_CREATOR')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
+			+ "hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_USER_CREATOR')")
 	public UserDTO create(UserDTO user, String encodedPassword) throws UserCreationException, UserRetrievalException {
 				
 		user = userDAO.create(user, encodedPassword);
@@ -142,7 +143,8 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	}
 	
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or "
+			+ "hasRole('ROLE_INVITED_USER_CREATOR')")
 	public void grantRole(String userName, String role) throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		if (role.equals("ROLE_ADMIN") || role.equals("ROLE_ACL_ADMIN") || 
 				role.equals("ROLE_ADMINISTRATOR") || role.equals("ROLE_USER_AUTHENTICATOR")) {
@@ -154,7 +156,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	}
 	
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR')")
 	public void grantAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException {
 		userDAO.addPermission(userName, "ROLE_ADMIN");
 	}
@@ -198,7 +200,8 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 
 
 	@Override
-	@PostAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(returnObject, 'read') or hasPermission(returnObject, admin)")
+	@PostAuthorize("hasRole('ROLE_INVITED_USER_CREATOR') or hasRole('ROLE_USER_AUTHENTICATOR') or "
+			+ "hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(returnObject, 'read') or hasPermission(returnObject, admin)")
 	public UserDTO getBySubjectName(String userName) throws UserRetrievalException {
 		return userDAO.getByName(userName);
 	}
