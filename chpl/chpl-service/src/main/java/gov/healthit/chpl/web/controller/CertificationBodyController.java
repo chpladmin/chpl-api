@@ -33,7 +33,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationBodyPermission;
 import gov.healthit.chpl.domain.CertificationBodyUser;
-import gov.healthit.chpl.domain.CreateUserAndAddToAcbRequest;
+import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.UpdateUserAndAcbRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -134,48 +134,6 @@ public class CertificationBodyController {
 		toDelete.setId(acbId);
 		acbManager.delete(toDelete);
 		return "{\"deletedAcb\" : true }";
-	}
-	
-	@RequestMapping(value="/create_and_add_user", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_JSON_VALUE,
-			produces="application/json; charset=utf-8")
-	public String addUserToAcb(@RequestBody CreateUserAndAddToAcbRequest updateRequest) 
-									throws UserRetrievalException, UserCreationException, EntityRetrievalException, InvalidArgumentsException {
-		
-		if(updateRequest.getAcbId() == null || updateRequest.getUser() == null || 
-				updateRequest.getUser().getSubjectName() == null || updateRequest.getAuthority() == null) {
-			throw new InvalidArgumentsException("ACB ID, Username ('subject name'), and Authority are required.");
-		}
-		
-		//look for the user by subjectName - if they are not found we'll add them
-		UserDTO user = userManager.getByName(updateRequest.getUser().getSubjectName());
-		CertificationBodyDTO acb = acbManager.getById(updateRequest.getAcbId());
-		
-		if(acb == null) {
-			throw new InvalidArgumentsException("Could not find either ACB or User specified");
-		}
-		
-		if(user == null) {
-			//create the user
-			user = userManager.create(updateRequest.getUser());
-		}
-		
-		//make sure the user has the role(s) provided
-		if(updateRequest.getUser().getRoles() != null && updateRequest.getUser().getRoles().size() > 0) {
-			for(String roleName : updateRequest.getUser().getRoles()) {
-				try {
-					userManager.grantRole(user.getName(), roleName);
-				} catch(UserPermissionRetrievalException ex) {
-					logger.error("Could not add role " + roleName + " for user " + user.getName(), ex);
-				} catch(UserManagementException mex) {
-					logger.error("Could not add role " + roleName + " for user " + user.getName(), mex);
-				}
-			}
-		}
-
-		Permission permission = CertificationBodyPermission.toPermission(updateRequest.getAuthority());
-		acbManager.addPermission(acb, user.getId(), permission);
-		return "{\"userAdded\" : true }";
 	}
 	
 	@RequestMapping(value="/add_user", method= RequestMethod.POST, 
