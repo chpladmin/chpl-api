@@ -105,6 +105,15 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 	}
 	
 	@Override
+	public UserPermissionDTO findById(Long id) {
+		UserPermissionEntity result = this.getById(id);
+		if(result != null) {
+			return new UserPermissionDTO(result);
+		}
+		return null;
+	}
+	
+	@Override
 	public UserPermissionDTO getPermissionFromAuthority(String authority) throws UserPermissionRetrievalException {			
 			
 		UserPermissionEntity permissionEntity = null;
@@ -258,6 +267,19 @@ public class UserPermissionDAOImpl extends BaseDAOImpl implements UserPermission
 		entityManager.persist(permission);
 	}
 	
+	
+	private UserPermissionEntity getById(Long permissionId){
+		
+		Query query = entityManager.createQuery("SELECT e FROM UserPermissionEntity e "
+				+ "WHERE user_permission_id = :permissionId", UserPermissionEntity.class);
+		query.setParameter("permissionId", permissionId);
+		
+		List<UserPermissionEntity> results = query.getResultList();
+		if(results == null || results.size() == 0) {
+			return null;
+		}
+		return results.get(0);
+	}
 	
 	private UserPermissionUserMappingEntity getMapping(Long userId, Long permissionId){
 		

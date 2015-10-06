@@ -19,7 +19,7 @@ import gov.healthit.chpl.entity.ProductVersionEntity;
 public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersionDAO {
 
 	@Override
-	public ProductVersionEntity create(ProductVersionDTO dto) throws EntityCreationException,
+	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
 		
 		ProductVersionEntity entity = null;
@@ -65,7 +65,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 			create(entity);
 		}
 		
-		return entity;
+		return new ProductVersionDTO(entity);
 	}
 
 	@Override

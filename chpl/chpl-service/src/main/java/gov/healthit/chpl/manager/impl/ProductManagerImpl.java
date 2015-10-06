@@ -46,15 +46,14 @@ public class ProductManagerImpl implements ProductManager {
 	
 	@Override
 	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
-		ProductEntity result = productDao.create(dto);
-		return new ProductDTO(result);
+		return productDao.create(dto);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException {
 		ProductEntity result = productDao.update(dto);
 		return new ProductDTO(result);
@@ -62,14 +61,14 @@ public class ProductManagerImpl implements ProductManager {
 
 	@Override
 	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void delete(ProductDTO dto) throws EntityRetrievalException {
 		delete(dto.getId());
 	}
 
 	@Override
 	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void delete(Long productId) throws EntityRetrievalException {
 		productDao.delete(productId);
 	}

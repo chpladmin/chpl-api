@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -36,15 +37,18 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 			
 			entity = new AdditionalSoftwareEntity();
 			
-			entity.setCertifiedProductId(dto.getCertifiedProductId());
-			entity.setCreationDate(dto.getCreationDate());
-			entity.setDeleted(dto.getDeleted());
-			entity.setId(dto.getId());
-			entity.setJustification(dto.getJustification());
-			entity.setLastModifiedDate(dto.getLastModifiedDate());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
 			entity.setVersion(dto.getVersion());
+			entity.setCertifiedProductId(dto.getCertifiedProductId());
+			entity.setJustification(dto.getJustification());
+			entity.setCreationDate(new Date());
+			entity.setDeleted(false);
+			if(dto.getLastModifiedDate() != null) {
+				entity.setLastModifiedDate(dto.getLastModifiedDate());
+			} else {
+				entity.setLastModifiedDate(new Date());
+			}
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			
 			create(entity);
 			
@@ -61,6 +65,14 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		// TODO: How to delete this without leaving orphans
 		Query query = entityManager.createQuery("UPDATE AdditionalSoftwareEntity SET deleted = true WHERE additional_software_id = :resultid");
 		query.setParameter("resultid", id);
+		query.executeUpdate();
+	}
+	
+	@Override
+	public void deleteByCertifiedProduct(Long productId) {
+		// TODO: How to delete this without leaving orphans
+		Query query = entityManager.createQuery("UPDATE AdditionalSoftwareEntity SET deleted = true WHERE certified_product_id = :productId");
+		query.setParameter("productId", productId);
 		query.executeUpdate();
 	}
 

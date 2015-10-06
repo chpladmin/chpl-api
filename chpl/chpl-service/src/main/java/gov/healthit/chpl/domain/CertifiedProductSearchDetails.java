@@ -116,12 +116,6 @@ public class CertifiedProductSearchDetails {
 	public void setCertifyingBody(Map<String, String> certifyingBody) {
 		this.certifyingBody = certifyingBody;
 	}
-	//public List<String> getAdditionalSoftware() {
-	//	return additionalSoftware;
-	//}
-	//public void setAdditionalSoftware(List<String> additionalSoftware) {
-	//	this.additionalSoftware = additionalSoftware;
-	//}
 	public String getCertificationDate() {
 		return certificationDate;
 	}

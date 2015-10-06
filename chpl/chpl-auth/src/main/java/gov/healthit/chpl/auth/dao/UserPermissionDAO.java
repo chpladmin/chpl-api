@@ -24,6 +24,7 @@ public interface UserPermissionDAO {
 	public Long getIdFromAuthority(String authority) throws UserPermissionRetrievalException;
 	
 	public List<UserPermissionDTO> findAll();
+	public UserPermissionDTO findById(Long id);
 	
 	public void createMapping(UserEntity user, String authority) throws UserPermissionRetrievalException;
 	

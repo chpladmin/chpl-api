@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -35,13 +36,13 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 			
 			entity = new CQMResultEntity();
 			entity.setCqmCriterionId(cqmResult.getCqmCriterionId());
-			entity.setCqmVersionId(cqmResult.getCqmVersionId());
-			entity.setCreationDate(cqmResult.getCreationDate());
-			entity.setDeleted(cqmResult.getDeleted());
-			entity.setId(cqmResult.getId());
-			//entity.setLastModifiedDate(cqmResult.getLastModifiedDate());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			entity.setCertifiedProductId(cqmResult.getCertifiedProductId());
 			entity.setSuccess(cqmResult.getSuccess());
+			
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			entity.setLastModifiedDate(new Date());
+			entity.setCreationDate(cqmResult.getCreationDate());
+			entity.setDeleted(false);
 			
 			create(entity);	
 		}
@@ -53,7 +54,6 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		
 		CQMResultEntity entity = this.getEntityById(cqmResult.getId());
 		entity.setCqmCriterionId(cqmResult.getCqmCriterionId());
-		entity.setCqmVersionId(cqmResult.getCqmVersionId());
 		entity.setCreationDate(cqmResult.getCreationDate());
 		entity.setDeleted(cqmResult.getDeleted());
 		entity.setId(cqmResult.getId());
@@ -70,6 +70,13 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		// TODO: How to delete this without leaving orphans
 		Query query = entityManager.createQuery("UPDATE CQMResultEntity SET deleted = true WHERE cqm_result_id = :resultid");
 		query.setParameter("resultid", cqmResultId);
+		query.executeUpdate();
+	}
+	
+	@Override
+	public void deleteByCertifiedProductId(Long productId) {
+		Query query = entityManager.createQuery("UPDATE CQMResultEntity SET deleted = true WHERE certified_product_id = :productId");
+		query.setParameter("productId", productId);
 		query.executeUpdate();
 	}
 
