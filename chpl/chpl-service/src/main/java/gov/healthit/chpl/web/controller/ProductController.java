@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -84,7 +86,7 @@ public class ProductController {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public Product updateProduct(@RequestBody(required=true) UpdateProductsRequest productInfo) throws EntityCreationException, 
-		EntityRetrievalException, InvalidArgumentsException {
+		EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
 		
 		ProductDTO result = null;
 		

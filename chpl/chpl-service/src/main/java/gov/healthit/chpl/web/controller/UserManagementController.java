@@ -132,7 +132,7 @@ public class UserManagementController {
 		userManager.updateUserPassword(newCredentials.getUserName(), newCredentials.getPassword());
 		return "{\"passwordUpdated\" : true }";
 	
-	}	
+	}
 	
 	@RequestMapping(value="/grant_user_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,

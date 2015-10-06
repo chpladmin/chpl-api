@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -66,7 +68,7 @@ public class VendorController {
 	@RequestMapping(value="/update_vendor", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public Vendor updateVendor(@RequestBody(required=true) UpdateVendorsRequest vendorInfo) throws EntityCreationException, EntityRetrievalException {
+	public Vendor updateVendor(@RequestBody(required=true) UpdateVendorsRequest vendorInfo) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		VendorDTO result = null;
 		
 		if(vendorInfo.getVendorIds().size() > 1) {

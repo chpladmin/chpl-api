@@ -7,6 +7,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import gov.healthit.chpl.JSONUtils;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -52,22 +55,27 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
+	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductEntity result = productDao.create(dto);
 		String msg = "Product "+dto.getName()+" was created with ID "+result.getId();
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), msg);
+		
+		String afterJSON = JSONUtils.getWriter().writeValueAsString(dto);
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), msg, null, afterJSON);
 		return new ProductDTO(result);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
+	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
+		String beforeJSON = JSONUtils.getWriter().writeValueAsString(dto);
 		ProductEntity result = productDao.update(dto);
 		String msg = "Product "+dto.getName()+" was updated.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), msg);
+		String afterJSON = JSONUtils.getWriter().writeValueAsString(dto);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), msg, beforeJSON, afterJSON);
 		return new ProductDTO(result);
 		
 	}
@@ -75,19 +83,25 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
+	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		
+		String beforeJSON = JSONUtils.getWriter().writeValueAsString(dto);
+		
 		delete(dto.getId());
 		String msg = "Product "+dto.getName()+" was deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), msg);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), msg, beforeJSON, null);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException {
+	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		
+		String beforeJSON = JSONUtils.getWriter().writeValueAsString(productDao.getById(productId));
+		
 		productDao.delete(productId);
 		String msg = "Product "+productId.toString()+" was deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, msg);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, msg, beforeJSON, null);
 	}
 	
 }
