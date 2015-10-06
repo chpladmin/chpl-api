@@ -1,4 +1,4 @@
-package gov.healthit.chpl.activity;
+package gov.healthit.chpl.domain;
 
 public enum ActivityConcept {
 	

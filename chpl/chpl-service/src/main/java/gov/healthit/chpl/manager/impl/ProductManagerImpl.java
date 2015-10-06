@@ -7,10 +7,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.activity.ActivityConcept;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;

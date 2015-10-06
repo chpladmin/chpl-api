@@ -1,12 +1,15 @@
 package gov.healthit.chpl.manager.impl;
 
-import gov.healthit.chpl.activity.ActivityConcept;
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.manager.ActivityManager;
+
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,15 +25,21 @@ public class ActivityManagerImpl implements ActivityManager {
 	ActivityDAO activityDAO;
 	
 	@Override
-	public void addActivity(ActivityConcept concept, Long objectId,
+	public void addActivity(ActivityConcept concept, Long objectId, String originalData, String newData,
 			String activityDescription) throws EntityCreationException, EntityRetrievalException {
 		
 		ActivityDTO dto = new ActivityDTO();
 		dto.setConcept(concept);
 		dto.setId(null);
 		dto.setDescription(activityDescription);
+		dto.setOriginalData(originalData);
+		dto.setNewData(newData);
 		dto.setActivityDate(new Date());
 		dto.setActivityObjectId(objectId);
+		dto.setCreationDate(new Date());
+		dto.setLastModifiedDate(new Date());
+		dto.setLastModifiedUser(Util.getCurrentUser().getId());
+		dto.setDeleted(false);
 		
 		activityDAO.create(dto);
 		
@@ -38,17 +47,22 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	public void addActivity(ActivityConcept concept, Long objectId,
-			String activityDescription, Date timestamp) throws EntityCreationException, EntityRetrievalException {
+			String activityDescription, String originalData, String newData, Date timestamp) throws EntityCreationException, EntityRetrievalException {
 		
 		ActivityDTO dto = new ActivityDTO();
 		dto.setConcept(concept);
 		dto.setId(null);
 		dto.setDescription(activityDescription);
+		dto.setOriginalData(originalData);
+		dto.setNewData(newData);
 		dto.setActivityDate(timestamp);
 		dto.setActivityObjectId(objectId);
+		dto.setCreationDate(new Date());
+		dto.setLastModifiedDate(new Date());
+		dto.setLastModifiedUser(Util.getCurrentUser().getId());
+		dto.setDeleted(false);
 		
 		activityDAO.create(dto);
-		
 	}
 
 	@Override
@@ -89,5 +103,4 @@ public class ActivityManagerImpl implements ActivityManager {
 		}
 		return events;
 	}
-	
 }

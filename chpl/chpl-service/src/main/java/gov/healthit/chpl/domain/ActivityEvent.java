@@ -1,7 +1,9 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.activity.ActivityConcept;
+
+
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.domain.ActivityConcept;
 
 import java.util.Date;
 
@@ -9,6 +11,8 @@ public class ActivityEvent {
 	
 	private Long id;
 	private String description;
+	private String originalData;
+	private String newData;
 	private Date activityDate;
 	private Long activityObjectId;
 	private ActivityConcept concept;

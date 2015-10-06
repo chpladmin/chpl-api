@@ -1,7 +1,7 @@
 package gov.healthit.chpl.dao;
 
 
-import gov.healthit.chpl.activity.ActivityConcept;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 import java.util.List;

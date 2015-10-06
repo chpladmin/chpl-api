@@ -1,21 +1,24 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.activity.ActivityConcept;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.entity.ActivityEntity;
 
 import java.util.Date;
+
 
 public class ActivityDTO {
 
 	private Long id;
 	private String description;
+	private String originalData;
+	private String newData;
 	private Date activityDate;
 	private Long activityObjectId;
 	private ActivityConcept concept;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	private Long deleted;
+	private Boolean deleted;
 	
 	public ActivityDTO(){}
 	
@@ -23,6 +26,8 @@ public class ActivityDTO {
 		
 		this.id = entity.getId();
 		this.description = entity.getDescription();
+		this.originalData = entity.getOriginalData();
+		this.newData = entity.getNewData();
 		this.activityDate = entity.getActivityDate();
 		this.activityObjectId = entity.getActivityObjectId();
 		this.concept = entity.getConcept();
@@ -75,10 +80,10 @@ public class ActivityDTO {
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
-	public Long getDeleted() {
+	public Boolean getDeleted() {
 		return deleted;
 	}
-	public void setDeleted(Long deleted) {
+	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
 	public ActivityConcept getConcept() {
@@ -86,5 +91,21 @@ public class ActivityDTO {
 	}
 	public void setConcept(ActivityConcept concept) {
 		this.concept = concept;
+	}
+
+	public String getOriginalData() {
+		return originalData;
+	}
+
+	public void setOriginalData(String originalData) {
+		this.originalData = originalData;
+	}
+
+	public String getNewData() {
+		return newData;
+	}
+
+	public void setNewData(String newData) {
+		this.newData = newData;
 	}
 }

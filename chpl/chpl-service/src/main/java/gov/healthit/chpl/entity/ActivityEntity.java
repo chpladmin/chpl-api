@@ -1,6 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.activity.ActivityConcept;
+import gov.healthit.chpl.domain.ActivityConcept;
 
 import java.util.Date;
 
@@ -29,6 +29,14 @@ public class ActivityEntity {
 	@Column( name = "description", nullable = true )
 	private String description;
 	
+	@Basic( optional = true )
+	@Column( name = "original_data", nullable = true )
+	private String originalData;
+	
+	@Basic( optional = true )
+	@Column( name = "new_data", nullable = true )
+	private String newData;
+	
 	@Basic( optional = false )
 	@Column( name = "activity_date", nullable = false )
 	private Date activityDate;
@@ -55,7 +63,7 @@ public class ActivityEntity {
 	
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false )
-	private Long deleted;
+	private Boolean deleted;
 	
 	transient ActivityConcept concept;
 
@@ -140,12 +148,29 @@ public class ActivityEntity {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
-	public Long getDeleted() {
+	public Boolean getDeleted() {
 		return deleted;
 	}
 
-	public void setDeleted(Long deleted) {
+	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
+	
+	public String getOriginalData() {
+		return originalData;
+	}
+
+	public void setOriginalData(String originalData) {
+		this.originalData = originalData;
+	}
+
+	public String getNewData() {
+		return newData;
+	}
+
+	public void setNewData(String newData) {
+		this.newData = newData;
+	}
+
 	
 }

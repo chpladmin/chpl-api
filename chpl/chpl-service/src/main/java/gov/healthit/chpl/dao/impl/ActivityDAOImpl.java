@@ -8,11 +8,11 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.activity.ActivityConcept;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.entity.ActivityEntity;
 
@@ -40,6 +40,8 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			
 			entity.setId(dto.getId());
 			entity.setDescription(dto.getDescription());
+			entity.setOriginalData(dto.getOriginalData());
+			entity.setNewData(dto.getNewData());
 			entity.setActivityDate(dto.getActivityDate());
 			entity.setConcept(dto.getConcept());
 			entity.setActivityObjectId(dto.getActivityObjectId());
@@ -65,6 +67,8 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		
 		entity.setId(dto.getId());
 		entity.setDescription(dto.getDescription());
+		entity.setOriginalData(dto.getOriginalData());
+		entity.setNewData(dto.getNewData());
 		entity.setActivityDate(dto.getActivityDate());
 		entity.setActivityObjectConceptId(dto.getConcept().getId());
 		entity.setActivityObjectId(dto.getActivityObjectId());
