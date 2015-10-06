@@ -20,17 +20,17 @@ public interface CertifiedProductManager {
 	public List<CertifiedProductDTO> getByVersions(List<Long> versionIds);
 	
 //	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityRetrievalException, EntityCreationException;
-	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException;
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException;
 //	public void delete(CertifiedProductDTO dto) throws EntityRetrievalException;
 //	public void delete(Long certifiedProductId) throws EntityRetrievalException;
 	
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDetails pendingCp) 
 			throws EntityRetrievalException, EntityCreationException;
-	public void replaceCertifications(CertifiedProductDTO dto, Map<CertificationCriterionDTO, Boolean> certResults)
+	public void replaceCertifications(Long acbId, CertifiedProductDTO dto, Map<CertificationCriterionDTO, Boolean> certResults)
 			throws EntityCreationException, EntityRetrievalException;
-	public void replaceCqms(CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
+	public void replaceCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
 			throws EntityRetrievalException, EntityCreationException;
-	public void replaceAdditionalSoftware(CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
+	public void replaceAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
 			throws EntityCreationException;
 	
 }

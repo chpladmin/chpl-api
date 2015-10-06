@@ -1,25 +1,24 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.dao.InvitationDAO;
 import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
@@ -27,10 +26,7 @@ import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.InvitationPermissionDTO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.entity.InvitationPermissionEntity;
-import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
-import gov.healthit.chpl.auth.json.UserInvitation;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
@@ -39,13 +35,10 @@ import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertificationBodyPermission;
-import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-import gov.healthit.chpl.web.controller.UserManagementController;
 
 @Service
 public class InvitationManagerImpl implements InvitationManager {
@@ -59,9 +52,6 @@ public class InvitationManagerImpl implements InvitationManager {
 	@Autowired
 	private InvitationPermissionDAO invitationPermissionDao;
 	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
 	@Autowired private UserManager userManager;
 	@Autowired private CertificationBodyManager acbManager;
 	
@@ -73,54 +63,48 @@ public class InvitationManagerImpl implements InvitationManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public InvitationDTO inviteAdmin(String emailAddress, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
 	{
-		InvitationDTO createdInvitation = null;
-		
 		InvitationDTO dto = new InvitationDTO();
 		dto.setEmail(emailAddress);
-		dto.setToken(bCryptPasswordEncoder.encode(emailAddress));
+		Date now = new Date();
+		dto.setToken(md5(emailAddress + now.getTime()));
 	
-		createdInvitation = invitationDao.create(dto);
-		
-		if(permissions != null && permissions.size() > 0) {
-			for(String permission : permissions) {
-				if(!permission.startsWith("ROLE_")) {
-					permission = "ROLE_ " + permission.trim();
-				}
-				Long permissionId = userPermissionDao.getIdFromAuthority(permission);
-				if(permissionId == null) {
-					throw new UserPermissionRetrievalException("Cannot find permission " + permission + ".");
-				}
-				
-				InvitationPermissionDTO permissionToCreate = new InvitationPermissionDTO();
-				permissionToCreate.setPermissionId(permissionId);
-				permissionToCreate.setPermissionName(permission);
-				permissionToCreate.setUserId(createdInvitation.getId());
-				InvitationPermissionDTO createdPermission = invitationPermissionDao.create(permissionToCreate);
-				//the name does not get saved with the entity so we don't have it anymore
-				createdPermission.setPermissionName(permission);
-				
-				createdInvitation.getPermissions().add(createdPermission);
-			}
-		}
-		return createdInvitation;
+		return createInvitation(dto, permissions);
 	}
 
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')")
+	public InvitationDTO inviteWithAcbRole(String emailAddress, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
+	{
+		InvitationDTO dto = new InvitationDTO();
+		dto.setEmail(emailAddress);
+		Date now = new Date();
+		dto.setToken(md5(emailAddress + now.getTime()));
+		
+		return createInvitation(dto, permissions);
+	}
+	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
 	{
-		InvitationDTO createdInvitation = null;
-		
 		InvitationDTO dto = new InvitationDTO();
 		dto.setEmail(emailAddress);
 		dto.setAcbId(acbId);
 		//could be multiple invitations for the same email so add the time to make it unique
 		Date currTime = new Date();
-		dto.setToken(bCryptPasswordEncoder.encode(emailAddress + currTime.getTime()));
+		dto.setToken(md5(emailAddress + currTime.getTime()));
 	
-		createdInvitation = invitationDao.create(dto);
+		return createInvitation(dto, permissions);
+	}
+
+	private InvitationDTO createInvitation(InvitationDTO toCreate, List<String> permissions)  
+			throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
+	{
+		InvitationDTO createdInvitation = null;
+		createdInvitation = invitationDao.create(toCreate);
 		
 		if(permissions != null && permissions.size() > 0) {
 			for(String permission : permissions) {
@@ -145,7 +129,7 @@ public class InvitationManagerImpl implements InvitationManager {
 		}
 		return createdInvitation;
 	}
-
+	
 	@Override
 	@Transactional
 	public boolean isHashValid(String hash) {
@@ -309,4 +293,26 @@ public class InvitationManagerImpl implements InvitationManager {
 		};
 		return authenticator;
 	}
+	
+    private String md5(String input) {
+        String md5 = null;
+        if(null == input) {
+        	return null;
+        }
+         
+        try { 
+        	//Create MessageDigest object for MD5
+        	MessageDigest digest = MessageDigest.getInstance("MD5");
+         
+	        //Update input string in message digest
+	        digest.update(input.getBytes(), 0, input.length());
+ 
+	        //Converts message digest value in base 16 (hex) 
+	        md5 = new BigInteger(1, digest.digest()).toString(16);
+ 
+        } catch (NoSuchAlgorithmException e) {
+	       	e.printStackTrace();
+	    }
+        return md5;
+    }
 }
