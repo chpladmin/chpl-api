@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
@@ -41,20 +42,36 @@ public class NewCertifiedProductHandler2014 extends NewCertifiedProductHandler {
 	 * @return
 	 * @throws InvalidArgumentsException
 	 */
-	public PendingCqmCriterionEntity handleCqmCmsCriterion(String criterionNum, int column) throws InvalidArgumentsException {
+	public List<PendingCqmCriterionEntity> handleCqmCmsCriterion(String criterionNum, int column) throws InvalidArgumentsException {
 		String version = getRecord().get(column);
 		if(version != null) {
 			version = version.trim();
 		}
 		
-		CQMCriterionEntity cqmEntity = cqmDao.getEntityByNumberAndVersion(criterionNum, version);
-		if(cqmEntity == null) {
-			throw new InvalidArgumentsException("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + version);
+		List<PendingCqmCriterionEntity> result = new ArrayList<PendingCqmCriterionEntity>();
+
+		if(!StringUtils.isEmpty(version) && !"0".equals(version)) {
+			//split on ;
+			String[] versionList = version.split(";");
+			if(versionList.length == 1) {
+				//also try splitting on ,
+				versionList= version.split(",");
+			}
+			
+			for(int i = 0; i < versionList.length; i++) {
+				String currVersion = versionList[i];
+				
+				CQMCriterionEntity cqmEntity = cqmDao.getEntityByNumberAndVersion(criterionNum, currVersion);
+				if(cqmEntity == null) {
+					throw new InvalidArgumentsException("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + currVersion);
+				}
+				
+				PendingCqmCriterionEntity currResult = new PendingCqmCriterionEntity();
+				currResult.setMappedCriterion(cqmEntity);
+				currResult.setMeetsCriteria(true);	
+				result.add(currResult);
+			}
 		}
-		
-		PendingCqmCriterionEntity result = new PendingCqmCriterionEntity();
-		result.setMappedCriterion(cqmEntity);
-		result.setMeetsCriteria(true);	
 
 		return result;
 	}
