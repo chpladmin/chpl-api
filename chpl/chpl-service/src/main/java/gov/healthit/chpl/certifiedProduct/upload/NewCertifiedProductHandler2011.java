@@ -39,14 +39,7 @@ public class NewCertifiedProductHandler2011 extends NewCertifiedProductHandler {
 		
 		PendingCqmCriterionEntity result = new PendingCqmCriterionEntity();
 		result.setMappedCriterion(cqmEntity);
-		boolean meetsCriteria = false;
-		if(!StringUtils.isEmpty(getRecord().get(column))) {
-			int value = new Integer(getRecord().get(column)).intValue();
-			if(value > 0) {
-				meetsCriteria = true;
-			}
-		} 
-		result.setMeetsCriteria(meetsCriteria);		
+		result.setMeetsCriteria(asBoolean(getRecord().get(column)));		
 		return result;
 	}
 	
@@ -57,7 +50,7 @@ public class NewCertifiedProductHandler2011 extends NewCertifiedProductHandler {
 	 * @return
 	 * @throws InvalidArgumentsException
 	 */
-	public PendingCqmCriterionEntity handleCqmCmsCriterion(String criterionNum, int column) throws InvalidArgumentsException {
-		return null;
+	public  List<PendingCqmCriterionEntity> handleCqmCmsCriterion(String criterionNum, int column) throws InvalidArgumentsException {
+		return new ArrayList<PendingCqmCriterionEntity>();
 	}
 }
