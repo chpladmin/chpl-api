@@ -288,8 +288,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	
 	@Override
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@Transactional(readOnly = false) 
+	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException {
+		CertifiedProductDTO toUpdate = dao.getById(certifiedProductId);
+		toUpdate.setCertificationBodyId(acbId);
+		return dao.update(toUpdate);
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
 	@Transactional(readOnly = false)
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException {
 		return dao.update(dto);
@@ -299,8 +310,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	 * both successes and failures are passed in
 	 */
 	@Override
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
 	@Transactional(readOnly = false)
 	public void replaceCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
 		throws EntityCreationException, EntityRetrievalException {
@@ -340,8 +353,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	 * for CMS's it is only those which were successful
 	 */
 	@Override
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
 	@Transactional(readOnly = false)
 	public void replaceCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults) 
 			throws EntityRetrievalException, EntityCreationException {
@@ -372,8 +387,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	
 	@Override
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
 	@Transactional(readOnly = false)
 	public void replaceAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
 		throws EntityCreationException {

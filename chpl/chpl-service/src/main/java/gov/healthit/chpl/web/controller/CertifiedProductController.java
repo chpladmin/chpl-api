@@ -96,11 +96,16 @@ public class CertifiedProductController {
 		
 		CertifiedProductDTO existingProduct = cpManager.getById(updateRequest.getId());
 		Long acbId = existingProduct.getCertificationBodyId();
+		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id"));
+		
+		if(acbId != newAcbId) {
+			cpManager.changeOwnership(updateRequest.getId(), newAcbId);
+		}
 		
 		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
 		toUpdate.setId(updateRequest.getId());
 		toUpdate.setTestingLabId(updateRequest.getTestingLabId());
-		toUpdate.setCertificationBodyId(new Long(updateRequest.getCertifyingBody().get("id")));
+		toUpdate.setCertificationBodyId(newAcbId);
 		toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id")));
 		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id")));
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatusId()));
