@@ -288,8 +288,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	
 	@Override
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
-	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException {
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException {
 		return dao.update(dto);
 	}
 	
@@ -297,8 +299,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	 * both successes and failures are passed in
 	 */
 	@Override
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
-	public void replaceCertifications(CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
+	public void replaceCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
 		throws EntityCreationException, EntityRetrievalException {
 		//delete existing certifiations for the product
 		certDao.deleteByCertifiedProductId(productDto.getId());
@@ -336,8 +340,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	 * for CMS's it is only those which were successful
 	 */
 	@Override
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
-	public void replaceCqms(CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults) 
+	public void replaceCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults) 
 			throws EntityRetrievalException, EntityCreationException {
 		cqmResultDAO.deleteByCertifiedProductId(productDto.getId());
 		
@@ -366,8 +372,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	
 	@Override
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
-	public void replaceAdditionalSoftware(CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
+	public void replaceAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
 		throws EntityCreationException {
 		softwareDao.deleteByCertifiedProduct(productDto.getId());
 		

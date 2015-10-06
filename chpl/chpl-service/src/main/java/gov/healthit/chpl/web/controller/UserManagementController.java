@@ -136,10 +136,9 @@ public class UserManagementController {
 		InvitationDTO createdInvite = null;
 		if(isChplAdmin) {
 			createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress(), invitation.getPermissions());
+		} else if(invitation.getAcbId() == null) {
+			createdInvite = invitationManager.inviteWithAcbRole(invitation.getEmailAddress(), invitation.getPermissions());
 		} else {
-			if(invitation.getAcbId() == null || invitation.getAcbId() < 0) {
-				throw new InvalidArgumentsException("An ACB ID is required.");
-			}
 			createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
 		}
 		
