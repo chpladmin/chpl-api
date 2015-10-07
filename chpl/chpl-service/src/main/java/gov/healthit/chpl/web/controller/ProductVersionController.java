@@ -102,7 +102,6 @@ public class ProductVersionController {
 				
 				ProductVersionDTO newVersion = new ProductVersionDTO();
 				newVersion.setVersion(versionInfo.getVersion().getVersion());
-				newVersion.setLastModifiedUser(Util.getCurrentUser().getId());
 				newVersion.setProductId(versionInfo.getNewProductId());				
 				result = pvManager.create(newVersion);
 				
@@ -123,9 +122,6 @@ public class ProductVersionController {
 				//update the given version id with new data
 				ProductVersionDTO toUpdate = new ProductVersionDTO();
 				toUpdate.setId(versionInfo.getVersionIds().get(0));
-				toUpdate.setLastModifiedDate(new Date());
-				toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
-				toUpdate.setDeleted(false);
 				toUpdate.setVersion(versionInfo.getVersion().getVersion());
 				if(versionInfo.getNewProductId() != null) {
 					toUpdate.setProductId(versionInfo.getNewProductId());

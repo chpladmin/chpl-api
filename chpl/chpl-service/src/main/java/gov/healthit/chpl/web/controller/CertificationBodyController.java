@@ -89,9 +89,6 @@ public class CertificationBodyController {
 			address.setCity(acbInfo.getAddress().getCity());
 			address.setRegion(acbInfo.getAddress().getRegion());
 			address.setCountry(acbInfo.getAddress().getCountry());
-			address.setDeleted(false);
-			address.setLastModifiedDate(new Date());
-			address.setLastModifiedUser(Util.getCurrentUser().getId());
 		}
 		toCreate.setAddress(address);
 		toCreate = acbManager.create(toCreate);
@@ -116,9 +113,6 @@ public class CertificationBodyController {
 			address.setCity(acbInfo.getAddress().getCity());
 			address.setRegion(acbInfo.getAddress().getRegion());
 			address.setCountry(acbInfo.getAddress().getCountry());
-			address.setDeleted(false);
-			address.setLastModifiedDate(new Date());
-			address.setLastModifiedUser(Util.getCurrentUser().getId());
 		}
 		toUpdate.setAddress(address);
 		
