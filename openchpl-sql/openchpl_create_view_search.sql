@@ -16,7 +16,6 @@ a.product_classification_type_id,
 a.other_acb,
 a.certification_status_id,
 a.deleted,
-a.last_modified_date,
 a.visible_on_chpl,
 b.year,
 c.certification_body_name,
@@ -29,7 +28,8 @@ g.vendor_id,
 h.vendor_name,
 i.certification_date,
 COALESCE(k.count_certifications, 0) as "count_certifications",
-COALESCE(m.count_cqms, 0) as "count_cqms"
+COALESCE(m.count_cqms, 0) as "count_cqms",
+a.last_modified_date
 
 FROM openchpl.certified_product a
 
