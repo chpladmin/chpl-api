@@ -71,11 +71,11 @@ public class ProductManagerImpl implements ProductManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
-		String beforeJSON = JSONUtils.getWriter().writeValueAsString(dto);
 		ProductEntity result = productDao.update(dto);
-		String msg = "Product "+dto.getName()+" was updated.";
-		String afterJSON = JSONUtils.getWriter().writeValueAsString(dto);
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), msg, beforeJSON, afterJSON);
+		String msg = "Product "+dto.getName()+" was updated.";	
+		ProductDTO afterDto = new ProductDTO(result);
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), msg, dto, afterDto);
 		return new ProductDTO(result);
 		
 	}
@@ -84,12 +84,11 @@ public class ProductManagerImpl implements ProductManager {
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
-		String beforeJSON = JSONUtils.getWriter().writeValueAsString(dto);
-		
+				
 		delete(dto.getId());
 		String msg = "Product "+dto.getName()+" was deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), msg, beforeJSON, null);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), msg, dto, null);
+	
 	}
 
 	@Override
@@ -97,11 +96,12 @@ public class ProductManagerImpl implements ProductManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
-		String beforeJSON = JSONUtils.getWriter().writeValueAsString(productDao.getById(productId));
-		
+		ProductDTO toDelete = productDao.getById(productId);
 		productDao.delete(productId);
+		
 		String msg = "Product "+productId.toString()+" was deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, msg, beforeJSON, null);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, msg, toDelete , null);
+		
 	}
 	
 }

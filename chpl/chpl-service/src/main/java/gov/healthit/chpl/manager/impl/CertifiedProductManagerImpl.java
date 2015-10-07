@@ -7,13 +7,17 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductVersionDAO;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 
@@ -21,6 +25,9 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
 	@Autowired CertifiedProductDAO dao;
+	
+	@Autowired
+	private ActivityManager activityManager;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -48,7 +55,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 //	
 	@Override
 	@Transactional(readOnly = true)
-	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException {
+	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		CertifiedProductDTO original = dao.getById(dto.getId());
+		
+		CertifiedProductDTO updated = dao.update(dto);
+		
+		String activityMsg = "Certified Product "+original.getId()+" was updated.";
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, updated.getId(), activityMsg, original, updated);
+		
 		return dao.update(dto);
 	}
 //	

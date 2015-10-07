@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -81,7 +83,7 @@ public class CertifiedProductController {
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) UpdateCertifiedProductRequest updateRequest) 
-		throws EntityRetrievalException {
+		throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
 		toUpdate.setId(updateRequest.getId());
