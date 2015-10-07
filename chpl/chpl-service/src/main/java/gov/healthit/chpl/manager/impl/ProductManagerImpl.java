@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.JSONUtils;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -26,7 +25,6 @@ public class ProductManagerImpl implements ProductManager {
 	
 	@Autowired
 	ActivityManager activityManager;
-	
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -57,7 +55,11 @@ public class ProductManagerImpl implements ProductManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
-		return productDao.create(dto);
+		ProductDTO result = productDao.create(dto);
+		
+		String activityMsg = "Product "+dto.getName()+" was created.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, null, result);
+		return result;
 	}
 
 	@Override
@@ -66,10 +68,10 @@ public class ProductManagerImpl implements ProductManager {
 	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductEntity result = productDao.update(dto);
-		String msg = "Product "+dto.getName()+" was updated.";	
 		ProductDTO afterDto = new ProductDTO(result);
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), msg, dto, afterDto);
+		String activityMsg = "Product "+dto.getName()+" was updated.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, dto, afterDto);
 		return new ProductDTO(result);
 		
 	}
@@ -80,8 +82,8 @@ public class ProductManagerImpl implements ProductManager {
 	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 				
 		delete(dto.getId());
-		String msg = "Product "+dto.getName()+" was deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), msg, dto, null);
+		String activityMsg = "Product "+dto.getName()+" was deleted.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), activityMsg, dto, null);
 	
 	}
 
@@ -93,8 +95,8 @@ public class ProductManagerImpl implements ProductManager {
 		ProductDTO toDelete = productDao.getById(productId);
 		productDao.delete(productId);
 		
-		String msg = "Product "+productId.toString()+" was deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, msg, toDelete , null);
+		String activityMsg = "Product "+productId.toString()+" was deleted.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, activityMsg, toDelete , null);
 		
 	}
 	

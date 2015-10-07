@@ -20,7 +20,7 @@ public interface CertifiedProductManager {
 	public List<CertifiedProductDTO> getByVersions(List<Long> versionIds);
 	
 //	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityRetrievalException, EntityCreationException;
-	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+//	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException;
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException;
 //	public void delete(CertifiedProductDTO dto) throws EntityRetrievalException;

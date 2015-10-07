@@ -26,6 +26,7 @@ import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.VendorDAO;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -44,6 +45,7 @@ import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
 @Service
@@ -61,6 +63,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired ProductVersionDAO versionDao;
 	@Autowired CertificationEventDAO eventDao;
 	@Autowired EventTypeDAO eventTypeDao;
+	
+	@Autowired
+	public ActivityManager activityManager;
 		
 	public CertifiedProductManagerImpl() {
 	}
@@ -96,6 +101,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = false)
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDetails pendingCp) 
 			throws EntityRetrievalException, EntityCreationException {
+		
 		CertifiedProductDTO toCreate = new CertifiedProductDTO();
 		toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
 		
@@ -284,6 +290,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		activeEvent.setCertifiedProductId(newCertifiedProduct.getId());
 		eventDao.create(activeEvent);
 		
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, newCertifiedProduct.getId(), "Certified Product "+newCertifiedProduct.getId()+" was Created." , newCertifiedProduct , null);
+		
 		return newCertifiedProduct;
 	}
 	
@@ -400,7 +409,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			software.setCertifiedProductId(productDto.getId());
 			softwareDao.create(software);
 		}
-	}
+	}	
+}
 //	
 //	@Override
 //	@Transactional(readOnly = true)
@@ -413,4 +423,3 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 //	public void delete(Long certifiedProductId) throws EntityRetrievalException {
 //		
 //	}
-}
