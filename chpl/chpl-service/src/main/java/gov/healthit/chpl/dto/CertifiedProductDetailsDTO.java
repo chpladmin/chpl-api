@@ -32,6 +32,7 @@ public class CertifiedProductDetailsDTO {
     private Integer countCertifications;
     private Integer countCqms;
     private Boolean visibleOnChpl;
+    private Date lastModifiedDate;
     
     public CertifiedProductDetailsDTO(){}
     
@@ -63,7 +64,7 @@ public class CertifiedProductDetailsDTO {
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
-    	
+    	this.lastModifiedDate = entity.getLastModifiedDate();
     }
     
     
@@ -222,6 +223,14 @@ public class CertifiedProductDetailsDTO {
 	}
 	public void setVisibleOnChpl(Boolean visibleOnChpl) {
 		this.visibleOnChpl = visibleOnChpl;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
 	
 }
