@@ -8,6 +8,7 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 
 public interface ProductVersionManager {
 	public ProductVersionDTO getById(Long id) throws EntityRetrievalException;
+	public List<ProductVersionDTO> getAll();
 	public List<ProductVersionDTO> getByProduct(Long productId);
 	public List<ProductVersionDTO> getByProducts(List<Long> productIds);
 	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException;

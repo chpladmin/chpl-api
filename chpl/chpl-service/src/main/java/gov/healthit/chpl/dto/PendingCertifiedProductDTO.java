@@ -50,6 +50,7 @@ public class PendingCertifiedProductDTO {
     private String reportFileLocation;
 	private List<PendingCertificationCriterionDTO> certificationCriterion;
 	private List<PendingCqmCriterionDTO> cqmCriterion;
+	private Date uploadDate;
 	
 	public PendingCertifiedProductDTO(){
 		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
@@ -89,6 +90,7 @@ public class PendingCertifiedProductDTO {
 		this.additionalSoftware = entity.getAdditionalSoftware();
 		this.uploadNotes = entity.getUploadNotes();
 		this.reportFileLocation = entity.getReportFileLocation();
+		this.uploadDate = entity.getCreationDate();
 		
 		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
@@ -364,5 +366,13 @@ public class PendingCertifiedProductDTO {
 
 	public void setAdditionalSoftwareId(Long additionalSoftwareId) {
 		this.additionalSoftwareId = additionalSoftwareId;
+	}
+
+	public Date getUploadDate() {
+		return uploadDate;
+	}
+
+	public void setUploadDate(Date uploadDate) {
+		this.uploadDate = uploadDate;
 	}
 }

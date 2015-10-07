@@ -33,27 +33,26 @@ public class VendorManagerImpl implements VendorManager {
 		return vendorDao.getById(id);
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
 	public VendorDTO update(VendorDTO vendor) throws EntityRetrievalException {
 		VendorEntity result = vendorDao.update(vendor);
 		return new VendorDTO(result);
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
 	public VendorDTO create(VendorDTO dto) throws EntityRetrievalException, EntityCreationException {
-		VendorEntity result = vendorDao.create(dto);
-		return new VendorDTO(result);
+		return vendorDao.create(dto);
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
 	public void delete(VendorDTO dto) throws EntityRetrievalException {
 		vendorDao.delete(dto.getId());
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
 	public void delete(Long vendorId) throws EntityRetrievalException {
 		vendorDao.delete(vendorId);

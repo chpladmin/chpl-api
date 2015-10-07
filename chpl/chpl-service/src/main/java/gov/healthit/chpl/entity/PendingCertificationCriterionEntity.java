@@ -54,10 +54,10 @@ public class PendingCertificationCriterionEntity {
 	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
 	private CertificationCriterionEntity mappedCriterion;
 	
-	@Transient
-	private String number;
-	@Transient
-	private String title;
+//	@Transient
+//	private String number;
+//	@Transient
+//	private String title;
 	
 	public Long getId() {
 		return id;
@@ -83,21 +83,21 @@ public class PendingCertificationCriterionEntity {
 		this.meetsCriteria = meetsCriteria;
 	}
 
-	public String getNumber() {
-		return number;
-	}
-
-	public void setNumber(String number) {
-		this.number = number;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
+//	public String getNumber() {
+//		return number;
+//	}
+//
+//	public void setNumber(String number) {
+//		this.number = number;
+//	}
+//
+//	public String getTitle() {
+//		return title;
+//	}
+//
+//	public void setTitle(String title) {
+//		this.title = title;
+//	}
 
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;

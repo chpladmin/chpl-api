@@ -3,8 +3,6 @@ package gov.healthit.chpl.domain;
 
 
 
-import java.util.Date;
-
 public class CertificationEvent {
 
 	private Long id;
@@ -36,9 +34,6 @@ public class CertificationEvent {
 	}
 	public void setEventDate(String eventDate) {
 		this.eventDate = eventDate;
-	}
-	public void setEventDate(Date eventDate) {
-		this.eventDate = eventDate.toString();
 	}
 	public Long getLastModifiedUser() {
 		return lastModifiedUser;

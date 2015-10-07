@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -11,9 +12,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.entity.CQMResultEntity;
 import gov.healthit.chpl.entity.CertificationResultEntity;
 
 @Repository(value="certificationResultDAO")
@@ -40,18 +39,18 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			entity.setAutomatedNumerator(result.getAutomatedNumerator());
 			entity.setCertificationCriterionId(result.getCertificationCriterionId());
 			entity.setCertifiedProductId(result.getCertifiedProductId());
-			entity.setCreationDate(result.getCreationDate());
-			entity.setDeleted(result.getDeleted());
 			entity.setGap(result.getGap());
-			entity.setId(result.getId());
 			entity.setInherited(result.getInherited());
-			//entity.setLastModifiedDate(result.getLastModifiedDate());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setSedInherited(result.getSedInherited());
 			entity.setSedSuccessful(result.getSedSuccessful());
 			entity.setSuccessful(result.getSuccessful());
 			entity.setTestDataVersionId(result.getTestDataVersionId());
 			entity.setTestProcedureVersionId(result.getTestProcedureVersionId());
+			
+			entity.setLastModifiedDate(new Date());
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			entity.setCreationDate(result.getCreationDate());
+			entity.setDeleted(false);
 			
 			create(entity);	
 		}
@@ -91,6 +90,16 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		
 	}
 
+	@Override
+	public void deleteByCertifiedProductId(Long certifiedProductId) {
+		
+		// TODO: How to delete this without leaving orphans
+		Query query = entityManager.createQuery("UPDATE CertificationResultEntity SET deleted = true WHERE certified_product_id = :certifiedProductId");
+		query.setParameter("certifiedProductId", certifiedProductId);
+		query.executeUpdate();
+		
+	}
+	
 	@Override
 	public List<CertificationResultDTO> findAll() {
 			

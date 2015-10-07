@@ -7,14 +7,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -30,7 +29,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 
 @RestController
-@RequestMapping("/product/version")
+@RequestMapping("/versions")
 public class ProductVersionController {
 	
 	@Autowired
@@ -39,22 +38,16 @@ public class ProductVersionController {
 	@Autowired 
 	CertifiedProductManager cpManager;
 	
-	@RequestMapping(value="/get_version", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody ProductVersion getProductVersionById(@RequestParam(required=true) Long versionId) throws EntityRetrievalException {
-		ProductVersionDTO version = pvManager.getById(versionId);
-		
-		ProductVersion result = null;
-		if(version != null) {
-			result = new ProductVersion(version);
-		}
-		return result;
-	}
-	
-	@RequestMapping(value="/list_versions_by_product", method=RequestMethod.GET,
+	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required=true) Long productId) {
-		List<ProductVersionDTO> versionList = pvManager.getByProduct(productId);		
+		List<ProductVersionDTO> versionList = null;
+		
+		if(productId != null && productId > 0) {
+			versionList = pvManager.getByProduct(productId);	
+		} else {
+			versionList = pvManager.getAll();
+		}
 		
 		List<ProductVersion> versions = new ArrayList<ProductVersion>();
 		if(versionList != null && versionList.size() > 0) {
@@ -66,11 +59,23 @@ public class ProductVersionController {
 		return versions;
 	}
 	
-	@RequestMapping(value="/update_version", method= RequestMethod.POST, 
+	@RequestMapping(value="/{versionId}", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") Long versionId) throws EntityRetrievalException {
+		ProductVersionDTO version = pvManager.getById(versionId);
+		
+		ProductVersion result = null;
+		if(version != null) {
+			result = new ProductVersion(version);
+		}
+		return result;
+	}
+	
+	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public ProductVersion updateVersion(@RequestBody(required=true) UpdateVersionsRequest versionInfo) throws 
-		EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
+		EntityCreationException, EntityRetrievalException, InvalidArgumentsException {
 		
 		ProductVersionDTO result = null;
 		
@@ -107,7 +112,7 @@ public class ProductVersionController {
 				//reassign those certified products to the new version
 				for(CertifiedProductDTO certifiedProduct : assignedCps) {
 					certifiedProduct.setProductVersionId(result.getId());
-					cpManager.update(certifiedProduct);
+					cpManager.update(certifiedProduct.getCertificationBodyId(), certifiedProduct);
 				}
 				
 				// - mark the passed in versions as deleted

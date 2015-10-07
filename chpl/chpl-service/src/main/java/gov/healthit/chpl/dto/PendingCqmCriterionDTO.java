@@ -18,15 +18,15 @@ public class PendingCqmCriterionDTO {
 	
 	public PendingCqmCriterionDTO(PendingCqmCriterionEntity entity) {
 		this.setId(entity.getId());
-		this.setCqmCriterionId(entity.getCqmCriterionId());
+		this.setCqmCriterionId(entity.getMappedCriterion().getId());
 		this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
 		this.setMeetsCriteria(entity.getMeetsCriteria().booleanValue());
 		
-		this.setCqmNumber(entity.getCqmNumber());
-		this.setTitle(entity.getTitle());
-		this.setCmsId(entity.getCmsId());
-		this.setNqfNumber(entity.getNqfNumber());
-		this.setVersion(entity.getVersion());
+		this.setCqmNumber(entity.getMappedCriterion().getNumber());
+		this.setTitle(entity.getMappedCriterion().getTitle());
+		this.setCmsId(entity.getMappedCriterion().getCmsId());
+		this.setNqfNumber(entity.getMappedCriterion().getNqfNumber());
+		this.setVersion(entity.getMappedCriterion().getCqmVersion());
 	}
 
 	public Long getId() {

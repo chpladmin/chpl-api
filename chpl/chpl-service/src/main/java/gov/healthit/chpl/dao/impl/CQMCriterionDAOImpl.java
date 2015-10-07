@@ -178,7 +178,8 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		return entity;
 	}
 	
-	private CQMCriterionEntity getEntityByNumber(String number) {
+	@Override
+	public CQMCriterionEntity getEntityByNumber(String number) {
 		
 		CQMCriterionEntity entity = null;
 			
@@ -193,7 +194,8 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		return entity;
 	}
 	
-	private CQMCriterionEntity getEntityByNumberAndVersion(String number, String version) {
+	@Override
+	public CQMCriterionEntity getEntityByNumberAndVersion(String number, String version) {
 		//first find the version id
 		CQMVersionEntity versionEntity = null;
 		Query versionQuery = entityManager.createQuery("from CQMVersionEntity where (NOT deleted = true) AND (version = :version)", CQMVersionEntity.class);
