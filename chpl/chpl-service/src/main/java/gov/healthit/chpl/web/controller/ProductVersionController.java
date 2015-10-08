@@ -110,8 +110,7 @@ public class ProductVersionController {
 					
 				//reassign those certified products to the new version
 				for(CertifiedProductDTO certifiedProduct : assignedCps) {
-					certifiedProduct.setProductVersionId(result.getId());
-					cpManager.update(certifiedProduct.getCertificationBodyId(), certifiedProduct);
+					cpManager.updateCertifiedProductVersion(certifiedProduct.getId(), result.getId());
 				}
 				
 				// - mark the passed in versions as deleted
