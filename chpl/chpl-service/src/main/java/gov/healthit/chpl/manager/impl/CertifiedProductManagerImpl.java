@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -30,6 +32,7 @@ import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -46,6 +49,7 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.VendorDTO;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
 @Service
@@ -66,6 +70,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	
 	@Autowired
 	public ActivityManager activityManager;
+	
+	@Autowired
+	public CertifiedProductDetailsManager detailsManager;
 		
 	public CertifiedProductManagerImpl() {
 	}
@@ -100,7 +107,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDetails pendingCp) 
-			throws EntityRetrievalException, EntityCreationException {
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CertifiedProductDTO toCreate = new CertifiedProductDTO();
 		toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
@@ -290,8 +297,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		activeEvent.setCertifiedProductId(newCertifiedProduct.getId());
 		eventDao.create(activeEvent);
 		
-		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, newCertifiedProduct.getId(), "Certified Product "+newCertifiedProduct.getId()+" was Created." , newCertifiedProduct , null);
+		CertifiedProductSearchDetails details = detailsManager.getCertifiedProductDetails(newCertifiedProduct.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(), "Certified Product "+newCertifiedProduct.getId()+" was created.", null, details);
 		
 		return newCertifiedProduct;
 	}
@@ -299,10 +306,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false) 
-	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException {
+	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
 		CertifiedProductDTO toUpdate = dao.getById(certifiedProductId);
 		toUpdate.setCertificationBodyId(acbId);
-		return dao.update(toUpdate);
+		return update(acbId, toUpdate);
 	}
 	
 	@Override
@@ -311,12 +319,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException {
-		return dao.update(dto);
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(dto.getId());
+		CertifiedProductDTO result = dao.update(dto);
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(result.getId());
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), "Certified Product "+result.getId()+" was updated." , before , after);
+		return result;
 	}
 	
 	/**
 	 * both successes and failures are passed in
+	 * @throws JsonProcessingException 
 	 */
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -325,7 +340,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ ")")
 	@Transactional(readOnly = false)
 	public void replaceCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
-		throws EntityCreationException, EntityRetrievalException {
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
 		//delete existing certifiations for the product
 		certDao.deleteByCertifiedProductId(productDto.getId());
 		
@@ -355,11 +372,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			toCreate.setInherited(criterion.getParentCriterionId() != null ? true : false);
 			certDao.create(toCreate);
 		}
+		
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certified Product "+productDto.getId()+" was updated." , before , after);
 	}
 	
 	/**
 	 * for NQF's, both successes and failures are passed in.
 	 * for CMS's it is only those which were successful
+	 * @throws JsonProcessingException 
 	 */
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -368,7 +389,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ ")")
 	@Transactional(readOnly = false)
 	public void replaceCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults) 
-			throws EntityRetrievalException, EntityCreationException {
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
 		cqmResultDAO.deleteByCertifiedProductId(productDto.getId());
 		
 		for(CQMCriterionDTO cqmDto : cqmResults.keySet()) {		
@@ -393,6 +417,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			toCreate.setSuccess(cqmResults.get(cqmDto));
 			cqmResultDAO.create(toCreate);
 		}
+		
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certified Product "+productDto.getId()+" was updated." , before , after);
 	}
 	
 	@Override
@@ -402,13 +429,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ ")")
 	@Transactional(readOnly = false)
 	public void replaceAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
-		throws EntityCreationException {
-		softwareDao.deleteByCertifiedProduct(productDto.getId());
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
+		softwareDao.deleteByCertifiedProduct(productDto.getId());
 		for(AdditionalSoftwareDTO software : newSoftware) {
 			software.setCertifiedProductId(productDto.getId());
 			softwareDao.create(software);
 		}
+		
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certified Product "+productDto.getId()+" was updated." , before , after);
+		
 	}	
 }
 //	
