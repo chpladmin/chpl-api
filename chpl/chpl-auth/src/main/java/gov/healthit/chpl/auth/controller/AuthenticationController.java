@@ -35,19 +35,6 @@ public class AuthenticationController {
 		return jwtJSON;
 	}
 	
-	@RequestMapping(value="/authenticate_form", method= RequestMethod.POST, 
-			headers = {"content-type=application/x-www-form-urlencoded"},
-			produces="application/json; charset=utf-8")
-	public String authenticate(@RequestParam("userName") String userName, @RequestParam("password") String password) throws JWTCreationException {
-		
-		LoginCredentials credentials = new LoginCredentials(userName, password);
-		
-		String jwt = null;
-		jwt = authenticator.getJWT(credentials);
-		String jwtJSON = "{\"token\" : \""+jwt+"\"}";
-		return jwtJSON;
-	}
-	
 	@RequestMapping(value="/keep_alive", method= RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public String keepAlive() throws JWTCreationException {

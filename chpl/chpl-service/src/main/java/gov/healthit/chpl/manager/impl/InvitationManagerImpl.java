@@ -226,7 +226,7 @@ public class InvitationManagerImpl implements InvitationManager {
 		//give them roles on the appropriate ACBs
 		//if they are a chpladmin then they need to be given access to all of the ACBs
 		if(isChplAdmin) {
-			List<CertificationBodyDTO> acbs = acbManager.getAll();
+			List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
 			for(CertificationBodyDTO acb : acbs) {
 				acbManager.addPermission(acb, user.getId(), BasePermission.ADMINISTRATION);
 			}
