@@ -67,6 +67,7 @@ public class SearchViewController {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		
+		searchRequest.setSearchTerm(searchTerm);
 		searchRequest.setPageNumber(pageNumber);
 		searchRequest.setPageSize(pageSize);
 		
