@@ -80,7 +80,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-				
+		
 		delete(dto.getId());
 		String activityMsg = "Product "+dto.getName()+" was deleted.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), activityMsg, dto, null);
@@ -94,7 +94,6 @@ public class ProductManagerImpl implements ProductManager {
 		
 		ProductDTO toDelete = productDao.getById(productId);
 		productDao.delete(productId);
-		
 		String activityMsg = "Product "+productId.toString()+" was deleted.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, activityMsg, toDelete , null);
 		
