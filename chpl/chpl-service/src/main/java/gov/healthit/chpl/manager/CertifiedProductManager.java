@@ -21,6 +21,7 @@ public interface CertifiedProductManager {
 	
 //	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityRetrievalException, EntityCreationException;
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException;
+	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) throws EntityRetrievalException;
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException;
 //	public void delete(CertifiedProductDTO dto) throws EntityRetrievalException;
 //	public void delete(Long certifiedProductId) throws EntityRetrievalException;

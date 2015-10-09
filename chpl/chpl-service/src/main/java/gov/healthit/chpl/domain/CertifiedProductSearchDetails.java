@@ -25,6 +25,7 @@ public class CertifiedProductSearchDetails {
 	private Integer countCerts;
 	private Integer countCqms;
 	private Boolean visibleOnChpl;
+	private Long lastModifiedDate;
 	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
@@ -171,5 +172,11 @@ public class CertifiedProductSearchDetails {
 	public void setCertificationEvents(
 			List<CertificationEvent> certificationEvents) {
 		this.certificationEvents = certificationEvents;
+	}
+	public Long getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+	public void setLastModifiedDate(Long lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
 }
