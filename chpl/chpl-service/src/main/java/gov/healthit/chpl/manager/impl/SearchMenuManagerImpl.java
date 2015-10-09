@@ -20,7 +20,8 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
-import gov.healthit.chpl.domain.SimpleModel;
+import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -71,13 +72,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<SimpleModel> getClassificationNames() {
+	public Set<KeyValueModel> getClassificationNames() {
 		
 		List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDAO.findAll();
-		Set<SimpleModel> classificationTypeNames = new HashSet<SimpleModel>();
+		Set<KeyValueModel> classificationTypeNames = new HashSet<KeyValueModel>();
 		
 		for (ProductClassificationTypeDTO dto : classificationTypes) {
-			classificationTypeNames.add(new SimpleModel(dto.getId(), dto.getName()));
+			classificationTypeNames.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
 		
 		return classificationTypeNames;
@@ -85,13 +86,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<SimpleModel> getEditionNames() {
+	public Set<KeyValueModel> getEditionNames() {
 		
 		List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
-		Set<SimpleModel> editionNames = new HashSet<SimpleModel>();
+		Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
 		
 		for (CertificationEditionDTO dto : certificationEditions) {
-			editionNames.add(new SimpleModel(dto.getId(), dto.getYear()));
+			editionNames.add(new KeyValueModel(dto.getId(), dto.getYear()));
 		}
 		
 		return editionNames;
@@ -99,12 +100,12 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<SimpleModel> getCertificationStatuses() {
+	public Set<KeyValueModel> getCertificationStatuses() {
 		List<CertificationStatusDTO> certificationStatuses = certificationStatusDao.findAll();
-		Set<SimpleModel> results = new HashSet<SimpleModel>();
+		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 		
 		for(CertificationStatusDTO dto : certificationStatuses) {
-			results.add(new SimpleModel(dto.getId(), dto.getStatus()));
+			results.add(new KeyValueModel(dto.getId(), dto.getStatus()));
 		}
 		
 		return results;
@@ -112,13 +113,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<SimpleModel> getPracticeTypeNames() {
+	public Set<KeyValueModel> getPracticeTypeNames() {
 		
 		List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDAO.findAll();
-		Set<SimpleModel> practiceTypeNames = new HashSet<SimpleModel>();
+		Set<KeyValueModel> practiceTypeNames = new HashSet<KeyValueModel>();
 		
 		for (PracticeTypeDTO dto : practiceTypeDTOs) {
-			practiceTypeNames.add(new SimpleModel(dto.getId(), dto.getName()));
+			practiceTypeNames.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
 		
 		return practiceTypeNames;
@@ -126,13 +127,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<SimpleModel> getProductNames() {
+	public Set<KeyValueModel> getProductNames() {
 		
 		List<ProductDTO> productDTOs = this.productDAO.findAll();
-		Set<SimpleModel> productNames = new HashSet<SimpleModel>();
+		Set<KeyValueModel> productNames = new HashSet<KeyValueModel>();
 		
 		for (ProductDTO dto : productDTOs) {
-			productNames.add(new SimpleModel(dto.getId(), dto.getName()));
+			productNames.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
 		
 		return productNames;
@@ -140,13 +141,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<SimpleModel> getVendorNames() {
+	public Set<KeyValueModel> getVendorNames() {
 		
 		List<VendorDTO> vendorDTOs = this.vendorDAO.findAll();
-		Set<SimpleModel> vendorNames = new HashSet<SimpleModel>();
+		Set<KeyValueModel> vendorNames = new HashSet<KeyValueModel>();
 		
 		for (VendorDTO dto : vendorDTOs) {
-			vendorNames.add(new SimpleModel(dto.getId(), dto.getName()));
+			vendorNames.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
 		
 		return vendorNames;
@@ -154,13 +155,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<SimpleModel> getCertBodyNames() {
+	public Set<KeyValueModel> getCertBodyNames() {
 		
 		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
-		Set<SimpleModel> acbNames = new HashSet<SimpleModel>();
+		Set<KeyValueModel> acbNames = new HashSet<KeyValueModel>();
 		
 		for (CertificationBodyDTO dto : dtos) {
-			acbNames.add(new SimpleModel(dto.getId(), dto.getName()));
+			acbNames.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
 		
 		return acbNames;
@@ -168,13 +169,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<SimpleModel> getCertificationCriterionNumbers(){
+	public Set<DescriptiveModel> getCertificationCriterionNumbers(){
 
 		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
-		Set<SimpleModel> criterionNames = new HashSet<SimpleModel>();
+		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
 		
 		for (CertificationCriterionDTO dto : dtos) {
-			criterionNames.add(new SimpleModel(dto.getId(), dto.getNumber()));
+			criterionNames.add( new DescriptiveModel(dto.getId(), dto.getNumber(), dto.getTitle()));
 		}
 		
 		return criterionNames;
@@ -183,13 +184,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<SimpleModel> getCQMCriterionNumbers(){
+	public Set<DescriptiveModel> getCQMCriterionNumbers(){
 
 		List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
-		Set<SimpleModel> criterionNames = new HashSet<SimpleModel>();
+		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
 		
 		for (CQMCriterionDTO dto : dtos) {
-			criterionNames.add(new SimpleModel(dto.getId(), dto.getNumber()));
+			criterionNames.add( new DescriptiveModel(dto.getId(), dto.getNumber(), dto.getTitle()));
 		}
 		return criterionNames;
 	}
