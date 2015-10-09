@@ -297,6 +297,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	
 	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@Transactional(readOnly = false)
+	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) 
+		throws EntityRetrievalException {
+		CertifiedProductDTO toUpdate = dao.getById(certifiedProductId);
+		toUpdate.setProductVersionId(newVersionId);
+		return dao.update(toUpdate);
+	}
+	
+	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"

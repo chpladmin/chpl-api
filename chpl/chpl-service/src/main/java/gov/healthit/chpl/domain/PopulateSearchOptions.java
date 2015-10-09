@@ -4,65 +4,69 @@ import java.util.Set;
 
 public class PopulateSearchOptions {
 
-	private Set<String> productClassifications;
-	private Set<String> editions;
-	private Set<String> practiceTypeNames;
-	private Set<String> productNames;
-	private Set<String> vendorNames;
-	private Set<String> certBodyNames;
-	private Set<String> certificationCriterionNumbers;
-	private Set<String> cqmCriterionNumbers;
-	
-	
-	
-	public Set<String> getProductClassifications() {
+	private Set<SimpleModel> productClassifications;
+	private Set<SimpleModel> editions;
+	private Set<SimpleModel> certificationStatuses;
+	private Set<SimpleModel> practiceTypeNames;
+	private Set<SimpleModel> productNames;
+	private Set<SimpleModel> vendorNames;
+	private Set<SimpleModel> certBodyNames;
+	private Set<SimpleModel> certificationCriterionNumbers;
+	private Set<SimpleModel> cqmCriterionNumbers;
+	public Set<SimpleModel> getProductClassifications() {
 		return productClassifications;
 	}
-	public void setProductClassifications(Set<String> productClassifications) {
+	public void setProductClassifications(Set<SimpleModel> productClassifications) {
 		this.productClassifications = productClassifications;
 	}
-	public Set<String> getEditions() {
+	public Set<SimpleModel> getEditions() {
 		return editions;
 	}
-	public void setEditions(Set<String> editions) {
+	public void setEditions(Set<SimpleModel> editions) {
 		this.editions = editions;
 	}
-	public Set<String> getPracticeTypeNames() {
+	public Set<SimpleModel> getPracticeTypeNames() {
 		return practiceTypeNames;
 	}
-	public void setPracticeTypeNames(Set<String> practiceTypeNames) {
+	public void setPracticeTypeNames(Set<SimpleModel> practiceTypeNames) {
 		this.practiceTypeNames = practiceTypeNames;
 	}
-	public Set<String> getProductNames() {
+	public Set<SimpleModel> getProductNames() {
 		return productNames;
 	}
-	public void setProductNames(Set<String> productNames) {
+	public void setProductNames(Set<SimpleModel> productNames) {
 		this.productNames = productNames;
 	}
-	public Set<String> getVendorNames() {
+	public Set<SimpleModel> getVendorNames() {
 		return vendorNames;
 	}
-	public void setVendorNames(Set<String> vendorNames) {
+	public void setVendorNames(Set<SimpleModel> vendorNames) {
 		this.vendorNames = vendorNames;
 	}
-	public Set<String> getCertBodyNames() {
+	public Set<SimpleModel> getCertBodyNames() {
 		return certBodyNames;
 	}
-	public void setCertBodyNames(Set<String> certBodyNames) {
+	public void setCertBodyNames(Set<SimpleModel> certBodyNames) {
 		this.certBodyNames = certBodyNames;
 	}
-	public Set<String> getCertificationCriterionNumbers() {
+	public Set<SimpleModel> getCertificationCriterionNumbers() {
 		return certificationCriterionNumbers;
 	}
-	public void setCertificationCriterionNumbers(
-			Set<String> certificationCriterionNumbers) {
+	public void setCertificationCriterionNumbers(Set<SimpleModel> certificationCriterionNumbers) {
 		this.certificationCriterionNumbers = certificationCriterionNumbers;
 	}
-	public Set<String> getCqmCriterionNumbers() {
+	public Set<SimpleModel> getCqmCriterionNumbers() {
 		return cqmCriterionNumbers;
 	}
-	public void setCQMCriterionNumbers(Set<String> cqmCriterionNumbers) {
+	public void setCqmCriterionNumbers(Set<SimpleModel> cqmCriterionNumbers) {
 		this.cqmCriterionNumbers = cqmCriterionNumbers;
 	}
+	public Set<SimpleModel> getCertificationStatuses() {
+		return certificationStatuses;
+	}
+	public void setCertificationStatuses(Set<SimpleModel> certificationStatuses) {
+		this.certificationStatuses = certificationStatuses;
+	}
 	
+
 }
