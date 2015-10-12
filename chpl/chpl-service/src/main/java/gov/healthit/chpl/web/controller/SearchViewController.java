@@ -7,7 +7,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.domain.SimpleModel;
+import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -93,43 +93,43 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/data/classification_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<SimpleModel> getClassificationNames() {
+	public @ResponseBody Set<KeyValueModel> getClassificationNames() {
 		return searchMenuManager.getClassificationNames();
 	}
 	
 	@RequestMapping(value="/data/certification_editions", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<SimpleModel> getEditionNames() {
+	public @ResponseBody Set<KeyValueModel> getEditionNames() {
 		return searchMenuManager.getEditionNames();
 	}
 	
 	@RequestMapping(value="/data/certification_statuses", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<SimpleModel> getCertificationStatuses() {
+	public @ResponseBody Set<KeyValueModel> getCertificationStatuses() {
 		return searchMenuManager.getCertificationStatuses();
 	}
 	
 	@RequestMapping(value="/data/practice_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<SimpleModel> getPracticeTypeNames() {
+	public @ResponseBody Set<KeyValueModel> getPracticeTypeNames() {
 		return searchMenuManager.getPracticeTypeNames();
 	}
 	
 	@RequestMapping(value="/data/products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<SimpleModel> getProductNames() {
+	public @ResponseBody Set<KeyValueModel> getProductNames() {
 		return searchMenuManager.getProductNames();
 	}
 	
 	@RequestMapping(value="/data/vendors", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<SimpleModel> getVendorNames() {
+	public @ResponseBody Set<KeyValueModel> getVendorNames() {
 		return searchMenuManager.getVendorNames();
 	}
 	
 	@RequestMapping(value="/data/certification_bodies", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<SimpleModel> getCertBodyNames() {
+	public @ResponseBody Set<KeyValueModel> getCertBodyNames() {
 		return searchMenuManager.getCertBodyNames();
 	}
 	
