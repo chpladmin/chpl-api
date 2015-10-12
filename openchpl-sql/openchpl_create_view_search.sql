@@ -28,7 +28,8 @@ g.vendor_id,
 h.vendor_name,
 i.certification_date,
 COALESCE(k.count_certifications, 0) as "count_certifications",
-COALESCE(m.count_cqms, 0) as "count_cqms"
+COALESCE(m.count_cqms, 0) as "count_cqms",
+a.last_modified_date
 
 FROM openchpl.certified_product a
 

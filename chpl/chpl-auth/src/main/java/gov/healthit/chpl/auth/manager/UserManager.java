@@ -53,7 +53,7 @@ public interface UserManager {
 	
 	
 	public void updateUserPassword(String userName, String password) throws UserRetrievalException;
-	
+	public String resetUserPassword(String username, String email) throws UserRetrievalException;
 	
 	public String getEncodedPassword(UserDTO user) throws UserRetrievalException;
 

@@ -215,9 +215,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		query.setParameter("entityid", id);
 		List<ProductEntity> result = query.getResultList();
 		
-		if(result == null || result.size() == 0) {
-			throw new EntityRetrievalException("No active product with id " + id + " was found in the database.");
-		} else if (result.size() > 1){
+		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate product id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);

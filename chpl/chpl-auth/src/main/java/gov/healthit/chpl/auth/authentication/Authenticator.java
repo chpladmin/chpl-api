@@ -15,6 +15,6 @@ public interface Authenticator {
 	public String getJWT(UserDTO user) throws JWTCreationException;
 	public String getJWT(LoginCredentials credentials) throws JWTCreationException;
 	public String refreshJWT() throws JWTCreationException;
-	
+	public String createPassword(String seed);
 	
 }
