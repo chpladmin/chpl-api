@@ -75,8 +75,8 @@ public class AuthenticationController {
        			+ "<p>Click the link below to login to your account."
        			+ "<br/>http://localhost:8000/app" + 
        			"</p>";
-		//SendMailUtil emailUtils = new SendMailUtil();
-		//emailUtils.sendEmail(userInfo.getEmail(), htmlMessage);
+		SendMailUtil emailUtils = new SendMailUtil();
+		emailUtils.sendEmail(userInfo.getEmail(), htmlMessage);
 		
 		return "{\"passwordReset\" : true }";
 	

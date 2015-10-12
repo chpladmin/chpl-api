@@ -136,8 +136,8 @@ public class UserManagementController {
     			+ "<p>Click the link below to create your account."
     			+ "<br/>http://localhost:8000/app?hash=" + createdInvite.getToken() + 
     			"</p>";
-		//SendMailUtil emailUtils = new SendMailUtil();
-		//emailUtils.sendEmail(createdInvite.getEmail(), htmlMessage);
+		SendMailUtil emailUtils = new SendMailUtil();
+		emailUtils.sendEmail(createdInvite.getEmail(), htmlMessage);
 		
 		UserInvitation result = new UserInvitation(createdInvite);
 		return result;
