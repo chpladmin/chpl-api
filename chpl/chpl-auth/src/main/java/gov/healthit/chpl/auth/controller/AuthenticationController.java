@@ -76,7 +76,7 @@ public class AuthenticationController {
        			+ "<br/>http://localhost:8000/app" + 
        			"</p>";
 		SendMailUtil emailUtils = new SendMailUtil();
-		emailUtils.sendEmail(userInfo.getEmail(), htmlMessage);
+		emailUtils.sendEmail(userInfo.getEmail(), "CHPL Password Reset", htmlMessage);
 		
 		return "{\"passwordReset\" : true }";
 	

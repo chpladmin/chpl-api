@@ -137,7 +137,7 @@ public class UserManagementController {
     			+ "<br/>http://localhost:8000/app?hash=" + createdInvite.getToken() + 
     			"</p>";
 		SendMailUtil emailUtils = new SendMailUtil();
-		emailUtils.sendEmail(createdInvite.getEmail(), htmlMessage);
+		emailUtils.sendEmail(createdInvite.getEmail(), "CHPL Invitation", htmlMessage);
 		
 		UserInvitation result = new UserInvitation(createdInvite);
 		return result;
