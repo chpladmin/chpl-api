@@ -25,20 +25,18 @@ public class SendMailUtil extends AuthPropertiesConsumer {
 	 * create and send the email to invite the user
 	 * @param invitation
 	 */
-	public void sendEmail(String toEmail, String htmlMessage) throws AddressException, MessagingException {
+	public void sendEmail(String toEmail, String subject, String htmlMessage) throws AddressException, MessagingException {
 		 // sets SMTP server properties
         Properties properties = new Properties();
         properties.put("mail.smtp.host", getProps().getProperty("smtpHost"));
         properties.put("mail.smtp.port", getProps().getProperty("smtpPort"));
         properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
+        //properties.put("mail.smtp.starttls.enable", "true");
  
-        logger.error(properties.getProperty("mail.smtp.host"));
-        logger.error(properties.getProperty("mail.smtp.port"));
-        logger.error(properties.getProperty("mail.smtp.auth"));
-
-        logger.error(getProps().getProperty("smtpUsername"));
-        logger.error(getProps().getProperty("smtpPassword"));
+        logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
+        logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
+        logger.debug("Mail Username :" + getProps().getProperty("smtpUsername"));
+        logger.debug("Mail Password: " + getProps().getProperty("smtpPassword"));
         
         // creates a new session with an authenticator
         javax.mail.Authenticator auth = new javax.mail.Authenticator() {
@@ -54,23 +52,30 @@ public class SendMailUtil extends AuthPropertiesConsumer {
  
         try 
         {
-	        msg.setFrom(new InternetAddress(getProps().getProperty("smtpUsername") + "@ainq.com"));
-	        InternetAddress[] toAddresses = { new InternetAddress(toEmail) };
-	        msg.setRecipients(Message.RecipientType.TO, toAddresses);
-	        msg.setSubject("CHPL Invitation");
-	        msg.setSentDate(new Date());
-	        // set plain text message
-	        msg.setContent(htmlMessage, "text/html");
-	
-	        // sends the e-mail
-	        Transport.send(msg);
-        }
-        catch(SMTPAddressFailedException ex) {
-        	logger.fatal("SMTP Address Failed!", ex);
-        }
-        catch(MessagingException ex) {
-        	logger.fatal("Messaging Exception!", ex);
+        	InternetAddress fromEmail = new InternetAddress(getProps().getProperty("smtpFrom"));
+	        msg.setFrom(fromEmail);
+	        logger.debug("Sending email from " + getProps().getProperty("smtpFrom"));
+        } catch(MessagingException ex) {
+        	logger.fatal("Invalid Email Address: " + getProps().getProperty("smtpFrom"), ex);
         	throw ex;
         }
+        
+        try {
+        	InternetAddress toEmailaddress = new InternetAddress(toEmail);
+	        InternetAddress[] toAddresses = { toEmailaddress };
+	        msg.setRecipients(Message.RecipientType.TO, toAddresses);
+	        logger.debug("Sending email to " + toEmail);
+        } catch (MessagingException ex) {
+        	logger.fatal("Invalid Email Address: " + toEmail, ex);
+        	throw ex;
+        }
+	      
+        msg.setSubject(subject);
+	    msg.setSentDate(new Date());
+	    // set plain text message
+	    msg.setContent(htmlMessage, "text/html");
+	
+	    // sends the e-mail
+	    Transport.send(msg);
 	}
 }

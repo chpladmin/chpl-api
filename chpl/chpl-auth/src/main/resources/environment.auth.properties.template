@@ -10,5 +10,6 @@ jwtNotBeforeMinutesInThePast=4
 
 smtpHost=mailIpOrHost
 smtpPort=25
+smtpFrom=fromEmailAddress
 smtpUsername=yourUsername
 smtpPassword=yourPassword
