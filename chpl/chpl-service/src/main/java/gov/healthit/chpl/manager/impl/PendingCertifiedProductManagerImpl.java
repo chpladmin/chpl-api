@@ -22,6 +22,8 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
@@ -32,12 +34,14 @@ import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 
@@ -53,6 +57,9 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Autowired private MutableAclService mutableAclService;
 	@Autowired private CQMCriterionDAO cqmCriterionDAO;
 	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
+	
+	@Autowired
+	private ActivityManager activityManager;
 	
 	@PostConstruct
 	public void setup() {
@@ -99,7 +106,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	public PendingCertifiedProductDTO create(Long acbId, PendingCertifiedProductEntity toCreate) 
-		throws EntityRetrievalException, EntityCreationException {
+		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		//insert the record
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
 		//add appropriate ACLs
@@ -110,6 +117,9 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		for(UserDTO user : usersOnAcb) {
 			addPermission(acb, pendingCpDto, user, BasePermission.ADMINISTRATION);
 		}
+		String activityMsg = "Certified product "+pendingCpDto.getProductName()+" is pending.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, null, pendingCpDto);
+		
 		return pendingCpDto;
 	}
 	
@@ -117,18 +127,33 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
-	public void reject(Long pendingProductId) throws EntityRetrievalException {
+	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
+		
 		CertificationStatusDTO newStatus = statusDao.getByStatusName("Withdrawn");
 		pcpDao.delete(pendingProductId, newStatus);
+		
+		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been rejected.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, null);
+
+		
 	}
 	
 	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
-	public void confirm(Long pendingProductId) throws EntityRetrievalException {
+	public void confirm(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
+		
 		CertificationStatusDTO newStatus = statusDao.getByStatusName("Active");
 		pcpDao.updateStatus(pendingProductId, newStatus);
+		
+		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been confirmed.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, pendingCpDto);
+		
 	}
 	
 	@Override

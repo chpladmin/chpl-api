@@ -1,7 +1,8 @@
 CREATE TABLE openchpl.activity
 (
    activity_id bigserial NOT NULL, 
-   description character varying(1000), 
+   description character varying(1000),
+   certification_body bigint DEFAULT null,
    original_data text,
    new_data text,
    activity_date timestamp without time zone NOT NULL DEFAULT now(), 

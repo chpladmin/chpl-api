@@ -187,7 +187,7 @@ public class CertifiedProductController {
 	
 	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException {
+	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		pcpManager.reject(id);
 		return "{\"success\" : true }";
 	}
