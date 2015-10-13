@@ -15,8 +15,6 @@ import javax.mail.internet.MimeMessage;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.sun.mail.smtp.SMTPAddressFailedException;
-
 public class SendMailUtil extends AuthPropertiesConsumer {
 	
 	private static final Logger logger = LogManager.getLogger(SendMailUtil.class);
