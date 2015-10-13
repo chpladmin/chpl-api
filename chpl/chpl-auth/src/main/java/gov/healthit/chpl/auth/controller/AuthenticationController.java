@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
@@ -19,7 +20,7 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthenticationController {
+public class AuthenticationController extends AuthPropertiesConsumer {
 	
 	@Autowired
 	private Authenticator authenticator;
@@ -68,15 +69,18 @@ public class AuthenticationController {
 			throws UserRetrievalException, MessagingException {		
 
 		String newPassword = userManager.resetUserPassword(userInfo.getUserName(), userInfo.getEmail());
-		
-		String htmlMessage = "<h3>Your CHPL Password Has Been Reset</h3>"
-       			+ "<p>Your new password is</p>" 
-       			+ "<pre>" + newPassword + "</pre></br>" 
+
+		String htmlMessage = "<p>Hi, <br/>"
+       			+ "Your CHPL account password has been reset. Your new password is</p>" 
+       			+ "<pre>" + newPassword + "</pre>" 
        			+ "<p>Click the link below to login to your account."
-       			+ "<br/>http://localhost:8000/app" + 
-       			"</p>";
-		//SendMailUtil emailUtils = new SendMailUtil();
-		//emailUtils.sendEmail(userInfo.getEmail(), htmlMessage);
+       			+ "<br/>" +
+    			"http://" + getProps().getProperty("chplServer") + "/#/admin" +
+       			"</p>"
+       			+ "<p>Take care,<br/> " +
+				 "The Open Data CHPL Team</p>";
+		SendMailUtil emailUtils = new SendMailUtil();
+		emailUtils.sendEmail(userInfo.getEmail(), "Open Data CHPL Password Reset", htmlMessage);
 		
 		return "{\"passwordReset\" : true }";
 	

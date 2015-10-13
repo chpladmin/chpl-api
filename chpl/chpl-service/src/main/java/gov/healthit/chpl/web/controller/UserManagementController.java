@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
@@ -49,7 +50,7 @@ import gov.healthit.chpl.manager.InvitationManager;
 
 @RestController
 @RequestMapping("/users")
-public class UserManagementController {
+public class UserManagementController extends AuthPropertiesConsumer {
 	
 	@Autowired UserManager userManager;
 	@Autowired CertificationBodyManager acbManager;
@@ -130,14 +131,19 @@ public class UserManagementController {
 			createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
 		}
 		
-		//send email
-		String htmlMessage = "<h3>Join the CHPL</h3>"
-    			+ "<p>You've been invited to access the CHPL.</p>"
-    			+ "<p>Click the link below to create your account."
-    			+ "<br/>http://localhost:8000/app?hash=" + createdInvite.getToken() + 
-    			"</p>";
-		//SendMailUtil emailUtils = new SendMailUtil();
-		//emailUtils.sendEmail(createdInvite.getEmail(), htmlMessage);
+		//send email		
+		String htmlMessage = "<p>Hi,</p>" +
+				"<p>You've been invited to be an Administrator on the ONC's Open Data CHPL, " +
+					"which will allow you to manage certified product listings on the CHPL. " +
+					"Please click the link below to create your account: <br/>" +
+					"http://" + getProps().getProperty("chplServer") + "/#/userRegistration/"+ createdInvite.getToken() +
+				"</p>" +
+				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
+				"<p>Take care,<br/> " +
+				 "The Open Data CHPL Team</p>";
+
+		SendMailUtil emailUtils = new SendMailUtil();
+		emailUtils.sendEmail(createdInvite.getEmail(), "Open Data CHPL Administrator Invitation", htmlMessage);
 		
 		UserInvitation result = new UserInvitation(createdInvite);
 		return result;
