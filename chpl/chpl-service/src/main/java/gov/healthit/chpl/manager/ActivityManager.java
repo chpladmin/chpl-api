@@ -19,5 +19,8 @@ public interface ActivityManager {
 	public List<ActivityEvent> getAllActivity();
 	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId);
 	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept);
+	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays);
+	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays);
+	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays);
 	
 }

@@ -15,6 +15,9 @@ import gov.healthit.chpl.manager.ActivityManager;
 
 
 
+
+
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -146,6 +149,45 @@ public class ActivityManagerImpl implements ActivityManager {
 	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept) {
 		
 		List<ActivityDTO> dtos = activityDAO.findByConcept(concept);
+		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
+		
+		for (ActivityDTO dto : dtos){
+			ActivityEvent event = new ActivityEvent(dto);
+			events.add(event);
+		}
+		return events;
+	}
+	
+	@Override
+	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays) {
+		List<ActivityDTO> dtos = activityDAO.findAllInLastNDays(lastNDays);
+		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
+		
+		for (ActivityDTO dto : dtos){
+			ActivityEvent event = new ActivityEvent(dto);
+			events.add(event);
+		}
+		return events;
+	}
+
+	@Override
+	public List<ActivityEvent> getActivityForObject(
+			ActivityConcept concept, Long objectId, Integer lastNDays) {
+		
+		List<ActivityDTO> dtos = activityDAO.findByObjectId(objectId, concept, lastNDays);
+		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
+		
+		for (ActivityDTO dto : dtos){
+			ActivityEvent event = new ActivityEvent(dto);
+			events.add(event);
+		}
+		return events;
+	}
+
+	@Override
+	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) {
+		
+		List<ActivityDTO> dtos = activityDAO.findByConcept(concept, lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){

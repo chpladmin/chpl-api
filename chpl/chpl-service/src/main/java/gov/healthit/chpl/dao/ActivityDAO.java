@@ -15,5 +15,8 @@ public interface ActivityDAO {
 	public List<ActivityDTO> findAll();
 	public List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept);
 	public List<ActivityDTO> findByConcept(ActivityConcept concept);
+	public List<ActivityDTO> findAllInLastNDays(Integer lastNDays);
+	public List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept, Integer lastNDays);
+	public List<ActivityDTO> findByConcept(ActivityConcept concept, Integer lastNDays);
 
 }
