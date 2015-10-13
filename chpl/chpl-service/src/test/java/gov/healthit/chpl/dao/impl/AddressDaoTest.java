@@ -99,7 +99,8 @@ public class AddressDaoTest extends TestCase {
 		AddressDTO newAddress = new AddressDTO();
 		newAddress.setStreetLineOne("800 Frederick Road");
 		newAddress.setCity("Catonsville");
-		newAddress.setRegion("MD");
+		newAddress.setState("MD");
+		newAddress.setZipcode("21228");
 		newAddress.setCountry("USA");
 		newAddress.setLastModifiedUser(-2L);
 		newAddress.setCreationDate(new Date());

@@ -25,7 +25,7 @@ public class CertificationResultDetailsEntity {
     @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
     
-    @Column(name = "successful")
+    @Column(name = "success")
     private Boolean success;
     
     @Column(name = "number")
