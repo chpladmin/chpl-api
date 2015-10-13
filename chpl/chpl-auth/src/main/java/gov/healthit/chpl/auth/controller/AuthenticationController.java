@@ -72,11 +72,13 @@ public class AuthenticationController extends AuthPropertiesConsumer {
 
 		String htmlMessage = "<p>Hi, <br/>"
        			+ "Your CHPL account password has been reset. Your new password is</p>" 
-       			+ "<pre>" + newPassword + "</pre></br>" 
+       			+ "<pre>" + newPassword + "</pre>" 
        			+ "<p>Click the link below to login to your account."
        			+ "<br/>" +
     			"http://" + getProps().getProperty("chplServer") + "/#/admin" +
-       			"</p>";
+       			"</p>"
+       			+ "<p>Take care,<br/> " +
+				 "The Open Data CHPL Team</p>";
 		SendMailUtil emailUtils = new SendMailUtil();
 		emailUtils.sendEmail(userInfo.getEmail(), "Open Data CHPL Password Reset", htmlMessage);
 		

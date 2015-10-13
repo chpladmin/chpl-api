@@ -132,8 +132,8 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		}
 		
 		//send email		
-		String htmlMessage = "<p>Hi,<br/>" +
-				"You’ve been invited to be an Administrator on the ONC's Open Data CHPL, " +
+		String htmlMessage = "<p>Hi,</p>" +
+				"<p>You've been invited to be an Administrator on the ONC's Open Data CHPL, " +
 					"which will allow you to manage certified product listings on the CHPL. " +
 					"Please click the link below to create your account: <br/>" +
 					"http://" + getProps().getProperty("chplServer") + "/#/userRegistration/"+ createdInvite.getToken() +
