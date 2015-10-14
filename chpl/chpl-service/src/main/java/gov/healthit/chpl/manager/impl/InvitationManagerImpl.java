@@ -16,11 +16,13 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.dao.InvitationDAO;
 import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
+import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.InvitationPermissionDTO;
@@ -48,6 +50,9 @@ public class InvitationManagerImpl implements InvitationManager {
 	
 	@Autowired
 	private InvitationDAO invitationDao;
+	
+	@Autowired
+	private UserDAO userDao;
 	
 	@Autowired
 	private InvitationPermissionDAO invitationPermissionDao;

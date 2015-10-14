@@ -2,19 +2,11 @@ package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -31,9 +23,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.auth.AuthPropertiesConsumer;
+import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
-import gov.healthit.chpl.auth.authentication.LoginCredentials;
 import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
@@ -57,7 +50,7 @@ import gov.healthit.chpl.manager.InvitationManager;
 
 @RestController
 @RequestMapping("/users")
-public class UserManagementController {
+public class UserManagementController extends AuthPropertiesConsumer {
 	
 	@Autowired UserManager userManager;
 	@Autowired CertificationBodyManager acbManager;
@@ -65,7 +58,7 @@ public class UserManagementController {
 	@Autowired private Authenticator authenticator;
 	
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
-	
+    
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -138,12 +131,23 @@ public class UserManagementController {
 			createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
 		}
 		
-		//send email
-		//sendEmail(createdInvite);
+		//send email		
+		String htmlMessage = "<p>Hi,</p>" +
+				"<p>You've been invited to be an Administrator on the ONC's Open Data CHPL, " +
+					"which will allow you to manage certified product listings on the CHPL. " +
+					"Please click the link below to create your account: <br/>" +
+					"http://" + getProps().getProperty("chplServer") + "/#/userRegistration/"+ createdInvite.getToken() +
+				"</p>" +
+				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
+				"<p>Take care,<br/> " +
+				 "The Open Data CHPL Team</p>";
+
+		SendMailUtil emailUtils = new SendMailUtil();
+		emailUtils.sendEmail(createdInvite.getEmail(), "Open Data CHPL Administrator Invitation", htmlMessage);
 		
 		UserInvitation result = new UserInvitation(createdInvite);
 		return result;
-	}
+	}	
 	
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
@@ -174,17 +178,6 @@ public class UserManagementController {
 		
 		return "{\"deletedUser\" : true }";
 	}
-	
-	
-	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_JSON_VALUE,
-			produces="application/json; charset=utf-8")
-	public String resetPassword(@RequestBody LoginCredentials newCredentials) throws UserRetrievalException {
-		
-		userManager.updateUserPassword(newCredentials.getUserName(), newCredentials.getPassword());
-		return "{\"passwordUpdated\" : true }";
-	
-	}	
 	
 	@RequestMapping(value="/grant_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
@@ -293,46 +286,5 @@ public class UserManagementController {
 		
 		return userManager.getUserInfo(userName);
 		
-	}
-	
-	/**
-	 * create and send the email to invite the user
-	 * @param invitation
-	 */
-	private void sendEmail(InvitationDTO invitation) throws AddressException, MessagingException {
-		 // sets SMTP server properties
-        Properties properties = new Properties();
-        properties.put("mail.smtp.host", "144.202.233.67");
-        properties.put("mail.smtp.port", "25");
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
- 
-        // creates a new session with an authenticator
-        javax.mail.Authenticator auth = new javax.mail.Authenticator() {
-            public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("chpl-etl", "Audac1ous");
-            }
-        };
- 
-        Session session = Session.getInstance(properties, auth);
- 
-        // creates a new e-mail message
-        Message msg = new MimeMessage(session);
- 
-        msg.setFrom(new InternetAddress("chpl-etl@ainq.com"));
-        InternetAddress[] toAddresses = { new InternetAddress(invitation.getEmail()) };
-        msg.setRecipients(Message.RecipientType.TO, toAddresses);
-        msg.setSubject("OpenCHPL Invitation");
-        msg.setSentDate(new Date());
-        // set plain text message
-        msg.setContent(
-        			"<h3>Join OpenCHPL</h3>"
-        			+ "<p>You've been invited to access the CHPL.</p>"
-        			+ "<p>Click the link below to create your account."
-        			+ "<br/>http://localhost:8000/app?hash=" + invitation.getToken() + 
-        			"</p>", "text/html");
-
-        // sends the e-mail
-        Transport.send(msg);
 	}
 }
