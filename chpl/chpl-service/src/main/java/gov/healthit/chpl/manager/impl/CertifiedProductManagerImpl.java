@@ -154,7 +154,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			Map<String, String> vendorAddress = pendingCp.getVendorAddress();
 			if(vendorAddress != null) {
 				AddressDTO address = new AddressDTO();
-				address.setStreetLineOne(vendorAddress.get("streetLine1"));
+				address.setStreetLineOne(vendorAddress.get("line1"));
 				address.setCity(vendorAddress.get("city"));
 				address.setState(vendorAddress.get("state"));
 				address.setZipcode(vendorAddress.get("zipcode"));
