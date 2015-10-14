@@ -20,7 +20,8 @@ public class ActivityController {
 	@Autowired
 	private ActivityManager activityManager;
 	
-	@RequestMapping(value="/acb", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	
+	@RequestMapping(value="/acbs", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForACBs(@RequestParam(required=false) Integer lastNDays){
 		
 		if (lastNDays == null){
@@ -30,7 +31,7 @@ public class ActivityController {
 		}
 	}
 	
-	@RequestMapping(value="/acb/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	@RequestMapping(value="/acbs/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForACBById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
 		
 		if (lastNDays == null){
@@ -40,42 +41,130 @@ public class ActivityController {
 		}
 	}
 	
-	/*
-	 * 	@RequestMapping(value="/", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required=true) Long productId) {
-		List<ProductVersionDTO> versionList = null;
+	
+	@RequestMapping(value="/certified_products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForCertifiedProducts(@RequestParam(required=false) Integer lastNDays){
 		
-		if(productId != null && productId > 0) {
-			versionList = pvManager.getByProduct(productId);	
+		if (lastNDays == null){
+			return getActivityEventsForCertifiedProducts();
 		} else {
-			versionList = pvManager.getAll();
+			return getActivityEventsForCertifiedProducts(lastNDays);
 		}
-		
-		List<ProductVersion> versions = new ArrayList<ProductVersion>();
-		if(versionList != null && versionList.size() > 0) {
-			for(ProductVersionDTO dto : versionList) {
-				ProductVersion result = new ProductVersion(dto);
-				versions.add(result);
-			}
-		}
-		return versions;
 	}
 	
-	@RequestMapping(value="/{versionId}", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") Long versionId) throws EntityRetrievalException {
-		ProductVersionDTO version = pvManager.getById(versionId);
+	@RequestMapping(value="/certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
 		
-		ProductVersion result = null;
-		if(version != null) {
-			result = new ProductVersion(version);
+		if (lastNDays == null){
+			return getActivityEventsForCertifiedProducts(id);
+		} else {
+			return getActivityEventsForCertifiedProducts(id, lastNDays);
 		}
-		return result;
 	}
 	
-	 */
 	
+	@RequestMapping(value="/certifications", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForCertifications(@RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForCertifications();
+		} else {
+			return getActivityEventsForCertifications(lastNDays);
+		}
+	}
+	
+	@RequestMapping(value="/certifications/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForCertifications(id);
+		} else {
+			return getActivityEventsForCertifications(id, lastNDays);
+		}
+	}
+	
+	
+	@RequestMapping(value="/pending_certified_products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForPendingCertifiedProducts();
+		} else {
+			return getActivityEventsForPendingCertifiedProducts(lastNDays);
+		}
+	}
+	
+	@RequestMapping(value="/pending_certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForPendingCertifiedProducts(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForPendingCertifiedProducts(id);
+		} else {
+			return getActivityEventsForPendingCertifiedProducts(id, lastNDays);
+		}
+	}
+	
+	@RequestMapping(value="/products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForProducts(@RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForProducts();
+		} else {
+			return getActivityEventsForProducts(lastNDays);
+		}
+	}
+	
+	@RequestMapping(value="/products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForProducts(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForProducts(id);
+		} else {
+			return getActivityEventsForProducts(id, lastNDays);
+		}
+	}
+	
+	@RequestMapping(value="/users", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForUsers(@RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForUsers();
+		} else {
+			return getActivityEventsForUsers(lastNDays);
+		}
+	}
+	
+	@RequestMapping(value="/users/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForUsers(id);
+		} else {
+			return getActivityEventsForUsers(id, lastNDays);
+		}
+	}
+	
+	
+	@RequestMapping(value="/vendors", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForVendors(@RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForUsers();
+		} else {
+			return getActivityEventsForUsers(lastNDays);
+		}
+	}
+	
+	
+	@RequestMapping(value="/vendors/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForVendors(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+		
+		if (lastNDays == null){
+			return getActivityEventsForUsers(id);
+		} else {
+			return getActivityEventsForUsers(id, lastNDays);
+		}
+	}
 	
 	
 	
