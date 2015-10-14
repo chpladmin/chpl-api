@@ -55,6 +55,17 @@ public class AddressDaoTest extends TestCase {
 	}
 	
 	@Test
+	public void getAddressByValues() {
+		AddressDTO search = new AddressDTO();
+		search.setStreetLineOne("1 Test Road");
+		search.setCity("Baltimore");
+		search.setState("MD");
+		search.setZipcode("21220");
+		search.setCountry("USA");
+		AddressDTO found = addressDao.getByValues(search);
+		assertNotNull(found);
+	}
+	@Test
 	public void getAddressByVendorId() {
 		Long vendorId = 1L;
 		AddressDTO result = null;

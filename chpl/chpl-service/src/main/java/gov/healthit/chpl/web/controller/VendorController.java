@@ -113,6 +113,7 @@ public class VendorController {
 				address.setStreetLineTwo(vendorInfo.getVendor().getAddress().getLine2());
 				address.setCity(vendorInfo.getVendor().getAddress().getCity());
 				address.setState(vendorInfo.getVendor().getAddress().getState());
+				address.setZipcode(vendorInfo.getVendor().getAddress().getZipcode());
 				address.setCountry(vendorInfo.getVendor().getAddress().getCountry());
 				toUpdate.setAddress(address);
 			}
