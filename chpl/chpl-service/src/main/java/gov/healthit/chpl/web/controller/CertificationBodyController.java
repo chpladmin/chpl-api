@@ -81,7 +81,8 @@ public class CertificationBodyController {
 			address.setStreetLineOne(acbInfo.getAddress().getLine1());
 			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
 			address.setCity(acbInfo.getAddress().getCity());
-			address.setRegion(acbInfo.getAddress().getRegion());
+			address.setState(acbInfo.getAddress().getState());
+			address.setZipcode(acbInfo.getAddress().getZipcode());
 			address.setCountry(acbInfo.getAddress().getCountry());
 		}
 		toCreate.setAddress(address);
@@ -105,7 +106,8 @@ public class CertificationBodyController {
 			address.setStreetLineOne(acbInfo.getAddress().getLine1());
 			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
 			address.setCity(acbInfo.getAddress().getCity());
-			address.setRegion(acbInfo.getAddress().getRegion());
+			address.setState(acbInfo.getAddress().getState());
+			address.setZipcode(acbInfo.getAddress().getZipcode());
 			address.setCountry(acbInfo.getAddress().getCountry());
 		}
 		toUpdate.setAddress(address);
