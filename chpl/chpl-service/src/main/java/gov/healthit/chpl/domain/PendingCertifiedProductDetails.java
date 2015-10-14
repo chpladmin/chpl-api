@@ -57,7 +57,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		} else {
 			vendorAddress.put("id", dto.getVendorAddress().getId()+"");
 		}
-		vendorAddress.put("streetLine1", dto.getVendorStreetAddress());
+		vendorAddress.put("line1", dto.getVendorStreetAddress());
 		vendorAddress.put("city", dto.getVendorCity());
 		vendorAddress.put("state", dto.getVendorState());
 		vendorAddress.put("zipcode", dto.getVendorZipCode());
