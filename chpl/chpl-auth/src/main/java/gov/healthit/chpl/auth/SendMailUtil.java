@@ -14,6 +14,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 public class SendMailUtil extends AuthPropertiesConsumer {
 	
@@ -24,6 +25,12 @@ public class SendMailUtil extends AuthPropertiesConsumer {
 	 * @param invitation
 	 */
 	public void sendEmail(String toEmail, String subject, String htmlMessage) throws AddressException, MessagingException {
+		//do not attempt to send email if we are in a dev environment
+		String mailHost = getProps().getProperty("smtpHost");
+		if(StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost) || "dev".equalsIgnoreCase(mailHost)) {
+			return;
+		}
+		
 		 // sets SMTP server properties
         Properties properties = new Properties();
         properties.put("mail.smtp.host", getProps().getProperty("smtpHost"));
