@@ -156,7 +156,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				AddressDTO address = new AddressDTO();
 				address.setStreetLineOne(vendorAddress.get("streetLine1"));
 				address.setCity(vendorAddress.get("city"));
-				address.setRegion(vendorAddress.get("state"));
+				address.setState(vendorAddress.get("state"));
+				address.setZipcode(vendorAddress.get("zipcode"));
 				address.setCountry("USA");
 				newVendor.setAddress(address);
 			}

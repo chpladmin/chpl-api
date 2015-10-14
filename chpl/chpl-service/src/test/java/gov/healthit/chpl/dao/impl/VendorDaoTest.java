@@ -124,7 +124,8 @@ public class VendorDaoTest extends TestCase {
 		AddressDTO newAddress = new AddressDTO();
 		newAddress.setStreetLineOne("11 Holmehurst Ave");
 		newAddress.setCity("Catonsville");
-		newAddress.setRegion("MD");
+		newAddress.setState("MD");
+		newAddress.setZipcode("21228");
 		newAddress.setCountry("USA");
 		newAddress.setLastModifiedUser(-2L);
 		newAddress.setCreationDate(new Date());

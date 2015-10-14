@@ -125,11 +125,9 @@ public class PendingCertifiedProductEntity {
     @Column(name = "vendor_city")
     private String vendorCity;
     
-    //TODO: maps to our region?
     @Column(name = "vendor_state")
     private String vendorState;
     
-    //TODO: maps to nothing
     @Column(name = "vendor_zip_code")
     private String vendorZipCode;
     

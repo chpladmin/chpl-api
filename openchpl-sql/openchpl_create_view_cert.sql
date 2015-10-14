@@ -5,7 +5,7 @@ SELECT
 a.certification_result_id,
 a.certified_product_id,
 a.certification_criterion_id,
-a.successful,
+a.success,
 a.deleted,
 b.number,
 b.title

@@ -104,8 +104,9 @@ public class CertificationBodyDaoTest extends TestCase {
 		AddressDTO address = new AddressDTO();
 		address.setStreetLineOne("Some Street");
 		address.setCity("Baltimore");
-		address.setRegion("MD");
-		address.setCountry("21228");
+		address.setState("MD");
+		address.setZipcode("21228");
+		address.setCountry("USA");
 		address.setDeleted(false);
 		address.setLastModifiedDate(new Date());
 		address.setLastModifiedUser(Util.getCurrentUser().getId());
