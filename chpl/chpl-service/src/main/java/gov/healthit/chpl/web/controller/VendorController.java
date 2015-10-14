@@ -85,9 +85,6 @@ public class VendorController {
 				address.setCity(vendorInfo.getVendor().getAddress().getCity());
 				address.setRegion(vendorInfo.getVendor().getAddress().getRegion());
 				address.setCountry(vendorInfo.getVendor().getAddress().getCountry());
-				address.setDeleted(false);
-				address.setLastModifiedDate(new Date());
-				address.setLastModifiedUser(Util.getCurrentUser().getId());
 			}
 			newVendor.setAddress(address);
 			result = vendorManager.create(newVendor);
@@ -116,9 +113,6 @@ public class VendorController {
 				address.setCity(vendorInfo.getVendor().getAddress().getCity());
 				address.setRegion(vendorInfo.getVendor().getAddress().getRegion());
 				address.setCountry(vendorInfo.getVendor().getAddress().getCountry());
-				address.setDeleted(false);
-				address.setLastModifiedDate(new Date());
-				address.setLastModifiedUser(Util.getCurrentUser().getId());
 				toUpdate.setAddress(address);
 			}
 			result = vendorManager.update(toUpdate);

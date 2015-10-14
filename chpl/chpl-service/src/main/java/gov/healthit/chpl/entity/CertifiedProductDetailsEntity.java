@@ -97,6 +97,8 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "visible_on_chpl")
     private Boolean visibleOnChpl;
     
+    @Column(name = "last_modified_date")
+    private Date lastModifiedDate;
 
 	public Long getId() {
 		return id;
@@ -304,6 +306,14 @@ public class CertifiedProductDetailsEntity {
 
 	public void setVisibleOnChpl(Boolean visibleOnChpl) {
 		this.visibleOnChpl = visibleOnChpl;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
 	}
 	
 }

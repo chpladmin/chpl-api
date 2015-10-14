@@ -30,7 +30,7 @@ public interface CertificationBodyManager {
 	public void delete(CertificationBodyDTO acb);
 	
 	
-	public List<CertificationBodyDTO> getAll();
+	public List<CertificationBodyDTO> getAllForUser();
 	
 
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;

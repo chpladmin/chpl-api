@@ -12,6 +12,7 @@ import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
@@ -19,10 +20,12 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.domain.SimpleModel;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -48,6 +51,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	private CertificationEditionDAO certificationEditionDAO;
 	
 	@Autowired
+	private CertificationStatusDAO certificationStatusDao;
+	
+	@Autowired
 	private ProductClassificationTypeDAO productClassificationTypeDAO;
 	
 	@Autowired
@@ -65,13 +71,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<String> getClassificationNames() {
+	public Set<SimpleModel> getClassificationNames() {
 		
 		List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDAO.findAll();
-		Set<String> classificationTypeNames = new HashSet<String>();
+		Set<SimpleModel> classificationTypeNames = new HashSet<SimpleModel>();
 		
 		for (ProductClassificationTypeDTO dto : classificationTypes) {
-			classificationTypeNames.add(dto.getName());
+			classificationTypeNames.add(new SimpleModel(dto.getId(), dto.getName()));
 		}
 		
 		return classificationTypeNames;
@@ -79,13 +85,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<String> getEditionNames() {
+	public Set<SimpleModel> getEditionNames() {
 		
 		List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
-		Set<String> editionNames = new HashSet<String>();
+		Set<SimpleModel> editionNames = new HashSet<SimpleModel>();
 		
 		for (CertificationEditionDTO dto : certificationEditions) {
-			editionNames.add(dto.getYear());
+			editionNames.add(new SimpleModel(dto.getId(), dto.getYear()));
 		}
 		
 		return editionNames;
@@ -93,13 +99,26 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<String> getPracticeTypeNames() {
+	public Set<SimpleModel> getCertificationStatuses() {
+		List<CertificationStatusDTO> certificationStatuses = certificationStatusDao.findAll();
+		Set<SimpleModel> results = new HashSet<SimpleModel>();
+		
+		for(CertificationStatusDTO dto : certificationStatuses) {
+			results.add(new SimpleModel(dto.getId(), dto.getStatus()));
+		}
+		
+		return results;
+	}
+	
+	@Transactional
+	@Override
+	public Set<SimpleModel> getPracticeTypeNames() {
 		
 		List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDAO.findAll();
-		Set<String> practiceTypeNames = new HashSet<String>();
+		Set<SimpleModel> practiceTypeNames = new HashSet<SimpleModel>();
 		
 		for (PracticeTypeDTO dto : practiceTypeDTOs) {
-			practiceTypeNames.add(dto.getName());
+			practiceTypeNames.add(new SimpleModel(dto.getId(), dto.getName()));
 		}
 		
 		return practiceTypeNames;
@@ -107,13 +126,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<String> getProductNames() {
+	public Set<SimpleModel> getProductNames() {
 		
 		List<ProductDTO> productDTOs = this.productDAO.findAll();
-		Set<String> productNames = new HashSet<String>();
+		Set<SimpleModel> productNames = new HashSet<SimpleModel>();
 		
 		for (ProductDTO dto : productDTOs) {
-			productNames.add(dto.getName());
+			productNames.add(new SimpleModel(dto.getId(), dto.getName()));
 		}
 		
 		return productNames;
@@ -121,13 +140,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<String> getVendorNames() {
+	public Set<SimpleModel> getVendorNames() {
 		
 		List<VendorDTO> vendorDTOs = this.vendorDAO.findAll();
-		Set<String> vendorNames = new HashSet<String>();
+		Set<SimpleModel> vendorNames = new HashSet<SimpleModel>();
 		
 		for (VendorDTO dto : vendorDTOs) {
-			vendorNames.add(dto.getName());
+			vendorNames.add(new SimpleModel(dto.getId(), dto.getName()));
 		}
 		
 		return vendorNames;
@@ -135,13 +154,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<String> getCertBodyNames() {
+	public Set<SimpleModel> getCertBodyNames() {
 		
 		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
-		Set<String> acbNames = new HashSet<String>();
+		Set<SimpleModel> acbNames = new HashSet<SimpleModel>();
 		
 		for (CertificationBodyDTO dto : dtos) {
-			acbNames.add(dto.getName());
+			acbNames.add(new SimpleModel(dto.getId(), dto.getName()));
 		}
 		
 		return acbNames;
@@ -149,13 +168,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<String> getCertificationCriterionNumbers(){
+	public Set<SimpleModel> getCertificationCriterionNumbers(){
 
 		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
-		Set<String> criterionNames = new HashSet<String>();
+		Set<SimpleModel> criterionNames = new HashSet<SimpleModel>();
 		
 		for (CertificationCriterionDTO dto : dtos) {
-			criterionNames.add(dto.getNumber());
+			criterionNames.add(new SimpleModel(dto.getId(), dto.getNumber()));
 		}
 		
 		return criterionNames;
@@ -164,13 +183,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<String> getCQMCriterionNumbers(){
+	public Set<SimpleModel> getCQMCriterionNumbers(){
 
 		List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
-		Set<String> criterionNames = new HashSet<String>();
+		Set<SimpleModel> criterionNames = new HashSet<SimpleModel>();
 		
 		for (CQMCriterionDTO dto : dtos) {
-			criterionNames.add(dto.getNumber());
+			criterionNames.add(new SimpleModel(dto.getId(), dto.getNumber()));
 		}
 		return criterionNames;
 	}
@@ -183,11 +202,12 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		PopulateSearchOptions searchOptions = new PopulateSearchOptions();
 		searchOptions.setCertBodyNames(this.getCertBodyNames());
 		searchOptions.setEditions(this.getEditionNames());
+		searchOptions.setCertificationStatuses(this.getCertificationStatuses());
 		searchOptions.setPracticeTypeNames(this.getPracticeTypeNames());
 		searchOptions.setProductClassifications(this.getClassificationNames());
 		searchOptions.setProductNames(this.getProductNames());
 		searchOptions.setVendorNames(this.getVendorNames());
-		searchOptions.setCQMCriterionNumbers(this.getCQMCriterionNumbers());
+		searchOptions.setCqmCriterionNumbers(this.getCQMCriterionNumbers());
 		searchOptions.setCertificationCriterionNumbers(this.getCertificationCriterionNumbers());
 		
 		return searchOptions;
