@@ -254,7 +254,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 				+ "AND (activity_object_id = :objectid)  "
 				+ "AND (activity_object_concept_id = :conceptid) "
 				+ "AND (activity_date >= :startdate) "
-				+ "AND (activity_date <= CURRENT_DATE) ", ActivityEntity.class );
+				+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class );
 		query.setParameter("objectid", objectId);
 		query.setParameter("conceptid", concept.getId());
 		query.setParameter("startdate", nDaysAgo);
@@ -272,7 +272,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		Query query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) "
 				+ "AND (activity_object_concept_id = :conceptid) "
 				+ "AND (activity_date >= :startdate) "
-				+ "AND (activity_date <= CURRENT_DATE) ", ActivityEntity.class );
+				+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class );
 		query.setParameter("conceptid", concept.getId());
 		query.setParameter("startdate", nDaysAgo);
 		List<ActivityEntity> result = query.getResultList();
@@ -287,7 +287,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		
 		Query query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) "
 				+ "AND (activity_date >= :startdate) "
-				+ "AND (activity_date <= CURRENT_DATE) ", ActivityEntity.class);
+				+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class);
 		query.setParameter("startdate", nDaysAgo);
 		
 		List<ActivityEntity> result = query.getResultList();

@@ -208,5 +208,15 @@ public class ActivityManagerImpl implements ActivityManager {
 		}
 		return events;
 	}
+	
+	@Override
+	@Transactional
+	public void deleteActivity(Long toDelete) throws EntityRetrievalException{
+		
+		ActivityDTO dto = activityDAO.getById(toDelete);
+		dto.setDeleted(true);
+		activityDAO.update(dto);
+		
+	}
 
 }

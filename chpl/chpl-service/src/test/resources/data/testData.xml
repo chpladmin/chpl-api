@@ -105,4 +105,10 @@
 	<additional_software additional_software_id="1" certified_product_id="1" name="Additional Software 1" version="1" justification="Justification" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	<additional_software additional_software_id="2" certified_product_id="1" name="Additional Software 2" version="1.2" justification="Justification" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	
+	<activity activity_id="1" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test1":"test1"}' activity_date="2015-01-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<activity activity_id="2" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test2":"test2"}' activity_date="2015-10-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<activity activity_id="3" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test3":"test3"}' activity_date="2015-10-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<activity activity_id="4" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test4":"test4"}' activity_date="2015-10-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	
+	
 </dataset>

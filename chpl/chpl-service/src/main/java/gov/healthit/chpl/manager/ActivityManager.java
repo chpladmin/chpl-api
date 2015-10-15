@@ -22,5 +22,6 @@ public interface ActivityManager {
 	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays);
 	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays);
 	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays);
+	public void deleteActivity(Long toDelete) throws EntityRetrievalException;
 	
 }

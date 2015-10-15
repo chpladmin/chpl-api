@@ -84,6 +84,7 @@ public class ActivityManagerTest extends TestCase {
 		assertEquals(event.getNewData(), JSONUtils.toJSON(vendor));
 		assertEquals(event.getActivityObjectId(), vendor.getId());
 		
+		activityManager.deleteActivity(event.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -119,6 +120,7 @@ public class ActivityManagerTest extends TestCase {
 		assertEquals(event.getActivityObjectId(), vendor.getId());
 		assertEquals(event.getActivityDate(), timestamp);
 		
+		activityManager.deleteActivity(event.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -151,6 +153,7 @@ public class ActivityManagerTest extends TestCase {
 		assertEquals(event.getNewData(), "Test");
 		assertEquals(event.getActivityObjectId(), vendor.getId());
 		
+		activityManager.deleteActivity(event.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -178,6 +181,8 @@ public class ActivityManagerTest extends TestCase {
 				timestamp
 				);
 		
+		
+		
 		List<ActivityEvent> events = activityManager.getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, -1L);	
 		
 		ActivityEvent event = events.get(events.size()-1);
@@ -186,13 +191,96 @@ public class ActivityManagerTest extends TestCase {
 		assertEquals(event.getOriginalData(), "Before");
 		assertEquals(event.getNewData(), "Test");
 		assertEquals(event.getActivityObjectId(), vendor.getId());
+		assertTrue(timestamp.compareTo(event.getActivityDate()) == 0);
 		assertEquals(event.getActivityDate(), timestamp);
 		
+		activityManager.deleteActivity(event.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	
+	@Test
+	public void testGetAllActivity(){
+		
+		List<ActivityEvent> events = activityManager.getAllActivity();
+		assertEquals(4, events.size());
+		
+	}
 	
+	
+	@Test
+	public void testGetAllActivityInLastNDays() throws EntityCreationException, EntityRetrievalException{
+		
+		Integer lastNDays = 5;
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		VendorDTO vendor = new VendorDTO();
+		vendor.setCreationDate(new Date());
+		vendor.setId(1L);
+		vendor.setName("Test");
+		vendor.setWebsite("www.zombo.com");
+		
+		Date timestamp = new Date();
+		
+		
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
+				vendor.getId(),
+				"Test Activity",
+				"Before",
+				"Test",
+				timestamp
+				);
+		List<ActivityEvent> events = activityManager.getAllActivityInLastNDays(lastNDays);
+		List<ActivityEvent> allEvents = activityManager.getAllActivity();
+		System.out.println(allEvents);
+		
+		activityManager.deleteActivity(events.get(0).getId());
+		assertEquals(1, events.size());
+		
+	}
+	
+	@Test
+	public void testGetActivityForObject(){
+		
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
+		Long objectId = 1L;
+		
+		List<ActivityEvent> events = activityManager.getActivityForObject(concept, objectId);
+		assertEquals(4, events.size());
+		
+		for (ActivityEvent event : events){
+			assertEquals(concept, event.getConcept());
+			assertEquals(objectId, event.getActivityObjectId());
+		}
+		
+	}
+	/*
+	@Test
+	void testGetActivityForObjectLastNDays(){
+		
+		List<ActivityEvent> events = activityManager.getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays);
+		
+	}
+	
+	@Test
+	void testGetActivityForConcept(){
+		
+		List<ActivityEvent> events = activityManager.getActivityForConcept(ActivityConcept concept)
+		
+	}
+	
+	@Test
+	void testGetActivityForConceptLastNDays(){
+		
+		ActivityConcept concept;
+		Integer lastNDays = 5;
+		
+		List<ActivityEvent> events = activityManager.getActivityForConcept(concept, lastNDays);
+		
+	}
+	*/
 	/*
 	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, String originalData, String newData) throws EntityCreationException, EntityRetrievalException;
 	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, String originalData, String newData, Date timestamp) throws EntityCreationException, EntityRetrievalException;
