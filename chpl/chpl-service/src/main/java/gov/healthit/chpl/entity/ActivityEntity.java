@@ -115,6 +115,16 @@ public class ActivityEntity {
 	}
 	
 	public ActivityConcept getConcept() {
+		
+		if (this.concept == null){
+			
+			for (ActivityConcept concept : ActivityConcept.values()) {
+				if(concept.getId().equals(this.getActivityObjectConceptId())){
+					this.concept = concept;
+					break;
+				}
+			}
+		}
 		return this.concept;
 	}
 

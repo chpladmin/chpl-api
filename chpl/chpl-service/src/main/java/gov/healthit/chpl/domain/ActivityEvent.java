@@ -22,8 +22,10 @@ public class ActivityEvent {
 		
 		this.id = dto.getId();
 		this.description = dto.getDescription();
+		this.originalData = dto.getOriginalData();
+		this.newData = dto.getNewData();
 		this.activityDate = dto.getActivityDate();
-		this.activityObjectId = dto.getActivityObjectId();
+		this.activityObjectId = dto.getActivityObjectId();		
 		this.concept = dto.getConcept();
 	}
 	
@@ -56,6 +58,18 @@ public class ActivityEvent {
 	}
 	public void setConcept(ActivityConcept concept) {
 		this.concept = concept;
+	}
+	public String getOriginalData() {
+		return originalData;
+	}
+	public void setOriginalData(String originalData) {
+		this.originalData = originalData;
+	}
+	public String getNewData() {
+		return newData;
+	}
+	public void setNewData(String newData) {
+		this.newData = newData;
 	}
 	
 }

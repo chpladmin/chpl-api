@@ -18,12 +18,14 @@ import gov.healthit.chpl.manager.ActivityManager;
 
 
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -34,8 +36,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	ActivityDAO activityDAO;
 	
 	@Override
-	public void addActivity(ActivityConcept concept, Long objectId, String originalData, String newData,
-			String activityDescription) throws EntityCreationException, EntityRetrievalException {
+	@Transactional
+	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, String originalData, String newData
+			) throws EntityCreationException, EntityRetrievalException {
 		
 		ActivityDTO dto = new ActivityDTO();
 		dto.setConcept(concept);
@@ -55,6 +58,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	}
 
 	@Override
+	@Transactional
 	public void addActivity(ActivityConcept concept, Long objectId,
 			String activityDescription, String originalData, String newData, Date timestamp) throws EntityCreationException, EntityRetrievalException {
 		
@@ -75,6 +79,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	}
 
 	@Override
+	@Transactional
 	public void addActivity(ActivityConcept concept, Long objectId,
 			String activityDescription, Object originalData, Object newData)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -97,6 +102,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	}
 
 	@Override
+	@Transactional
 	public void addActivity(ActivityConcept concept, Long objectId,
 			String activityDescription, Object originalData, Object newData,
 			Date timestamp) throws EntityCreationException,
@@ -120,6 +126,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	}
 	
 	@Override
+	@Transactional
 	public List<ActivityEvent> getAllActivity() {
 		List<ActivityDTO> dtos = activityDAO.findAll();
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
@@ -132,6 +139,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	}
 
 	@Override
+	@Transactional
 	public List<ActivityEvent> getActivityForObject(
 			ActivityConcept concept, Long objectId) {
 		
@@ -146,6 +154,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	}
 
 	@Override
+	@Transactional
 	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept) {
 		
 		List<ActivityDTO> dtos = activityDAO.findByConcept(concept);
@@ -159,6 +168,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	}
 	
 	@Override
+	@Transactional
 	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays) {
 		List<ActivityDTO> dtos = activityDAO.findAllInLastNDays(lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
@@ -171,6 +181,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	}
 
 	@Override
+	@Transactional
 	public List<ActivityEvent> getActivityForObject(
 			ActivityConcept concept, Long objectId, Integer lastNDays) {
 		
@@ -185,6 +196,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	}
 
 	@Override
+	@Transactional
 	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) {
 		
 		List<ActivityDTO> dtos = activityDAO.findByConcept(concept, lastNDays);
