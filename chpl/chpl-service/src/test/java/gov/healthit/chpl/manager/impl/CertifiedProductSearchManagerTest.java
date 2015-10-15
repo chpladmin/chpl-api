@@ -46,7 +46,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals(2, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getVendor().get("name").startsWith("Test Vendor 1"));
+			assertTrue(result.getVendor().get("name").toString().startsWith("Test Vendor 1"));
 		}
 	}
 	
@@ -60,7 +60,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals(2, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getProduct().get("name").startsWith("Test Product 1"));
+			assertTrue(result.getProduct().get("name").toString().startsWith("Test Product 1"));
 		}
 	}
 	
@@ -74,7 +74,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals(1, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getProduct().get("version").startsWith("1.0.1"));
+			assertTrue(result.getProduct().get("version").toString().startsWith("1.0.1"));
 		}
 	}
 	
@@ -88,7 +88,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals(2, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getCertificationEdition().get("name").startsWith("2014"));
+			assertTrue(result.getCertificationEdition().get("name").toString().startsWith("2014"));
 		}
 	}
 	
@@ -103,7 +103,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals(3, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getCertifyingBody().get("name").startsWith("InfoGard"));
+			assertTrue(result.getCertifyingBody().get("name").toString().startsWith("InfoGard"));
 		}
 	}
 	
@@ -117,7 +117,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals(1, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getClassificationType().get("name").startsWith("Complete EHR"));
+			assertTrue(result.getClassificationType().get("name").toString().startsWith("Complete EHR"));
 		}
 		
 	}
@@ -133,7 +133,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals(3, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getPracticeType().get("name").startsWith("Ambulatory"));
+			assertTrue(result.getPracticeType().get("name").toString().startsWith("Ambulatory"));
 		}
 	}
 	
