@@ -203,7 +203,7 @@ public class ActivityManagerTest extends TestCase {
 	public void testGetAllActivity(){
 		
 		List<ActivityEvent> events = activityManager.getAllActivity();
-		assertEquals(4, events.size());
+		assertEquals(5, events.size());
 		
 	}
 	
@@ -290,8 +290,12 @@ public class ActivityManagerTest extends TestCase {
 		
 		List<ActivityEvent> events = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
 		assertEquals(4, events.size());
-		List<ActivityEvent> events2 = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
-		assertEquals(0, events2.size());
+		
+		List<ActivityEvent> events2 = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
+		assertEquals(1, events2.size());
+		
+		List<ActivityEvent> events3 = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
+		assertEquals(0, events3.size());
 		
 	}
 	

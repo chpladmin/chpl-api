@@ -50,7 +50,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			entity.setCreationDate(new Date());
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			entity.setDeleted(dto.getDeleted());
+			entity.setDeleted(false);
 			
 			create(entity);
 			
