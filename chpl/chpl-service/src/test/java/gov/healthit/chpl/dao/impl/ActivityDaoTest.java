@@ -243,7 +243,6 @@ public class ActivityDaoTest extends TestCase {
 	@Test
 	@Transactional
 	public void testFindByObjectIdInLastNDays() throws EntityCreationException, EntityRetrievalException{
-		//List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept, Integer lastNDays);
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
