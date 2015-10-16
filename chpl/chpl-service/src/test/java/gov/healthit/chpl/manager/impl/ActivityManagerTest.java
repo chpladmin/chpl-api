@@ -233,11 +233,10 @@ public class ActivityManagerTest extends TestCase {
 				timestamp
 				);
 		List<ActivityEvent> events = activityManager.getAllActivityInLastNDays(lastNDays);
-		List<ActivityEvent> allEvents = activityManager.getAllActivity();
-		System.out.println(allEvents);
 		
 		activityManager.deleteActivity(events.get(0).getId());
 		assertEquals(1, events.size());
+		SecurityContextHolder.getContext().setAuthentication(null);
 		
 	}
 	
@@ -256,41 +255,91 @@ public class ActivityManagerTest extends TestCase {
 		}
 		
 	}
-	/*
-	@Test
-	void testGetActivityForObjectLastNDays(){
-		
-		List<ActivityEvent> events = activityManager.getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays);
-		
-	}
 	
 	@Test
-	void testGetActivityForConcept(){
+	public void testGetActivityForObjectLastNDays() throws EntityCreationException, EntityRetrievalException{
 		
-		List<ActivityEvent> events = activityManager.getActivityForConcept(ActivityConcept concept)
-		
-	}
-	
-	@Test
-	void testGetActivityForConceptLastNDays(){
-		
-		ActivityConcept concept;
 		Integer lastNDays = 5;
 		
-		List<ActivityEvent> events = activityManager.getActivityForConcept(concept, lastNDays);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		VendorDTO vendor = new VendorDTO();
+		vendor.setCreationDate(new Date());
+		vendor.setId(1L);
+		vendor.setName("Test");
+		vendor.setWebsite("www.zombo.com");
+		
+		Date timestamp = new Date();
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
+				vendor.getId(),
+				"Test Activity",
+				"Before",
+				"Test",
+				timestamp
+				);
+		List<ActivityEvent> events = activityManager.getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, vendor.getId() , lastNDays);
+		
+		activityManager.deleteActivity(events.get(0).getId());
+		assertEquals(1, events.size());
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	public void testGetActivityForConcept(){
+		
+		List<ActivityEvent> events = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
+		assertEquals(4, events.size());
+		List<ActivityEvent> events2 = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
+		assertEquals(0, events2.size());
 		
 	}
-	*/
-	/*
-	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, String originalData, String newData) throws EntityCreationException, EntityRetrievalException;
-	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, String originalData, String newData, Date timestamp) throws EntityCreationException, EntityRetrievalException;
-	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData, Date timestamp) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	public List<ActivityEvent> getAllActivity();
-	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId);
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept);
-	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays);
-	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays);
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays);
-	*/
+	
+	@Test
+	public void testGetActivityForConceptLastNDays() throws EntityCreationException, EntityRetrievalException{
+		
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
+		Integer lastNDays = 5;
+		List<ActivityEvent> events = activityManager.getActivityForConcept(concept, lastNDays);
+		assertEquals(0, events.size());
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		VendorDTO vendor = new VendorDTO();
+		vendor.setCreationDate(new Date());
+		vendor.setId(1L);
+		vendor.setName("Test");
+		vendor.setWebsite("www.zombo.com");
+		
+		Date timestamp = new Date();
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
+				vendor.getId(),
+				"Test Activity",
+				"Before",
+				"Test",
+				timestamp
+				);
+		
+		VendorDTO vendor2 = new VendorDTO();
+		vendor2.setCreationDate(new Date());
+		vendor2.setId(2L);
+		vendor2.setName("Test");
+		vendor2.setWebsite("www.zombo.com");
+		
+		Date timestamp2 = new Date(100);
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
+				vendor.getId(),
+				"Test Activity",
+				"Before",
+				"Test",
+				timestamp2
+				);
+		
+		List<ActivityEvent> events2 = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, lastNDays);
+		
+		assertEquals(1, events2.size());
+	}
+	
 }
