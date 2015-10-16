@@ -50,7 +50,10 @@ public class CertifiedProductDetailsEntity {
     private String otherAcb;
     
     @Column(name = "certification_status_id")
-    private String certificationStatusId;
+    private Long certificationStatusId;
+    
+    @Column(name = "certification_status_name")
+    private String certificationStatusName;
     
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
@@ -172,11 +175,11 @@ public class CertifiedProductDetailsEntity {
 		this.otherAcb = otherAcb;
 	}
 
-	public String getCertificationStatusId() {
+	public Long getCertificationStatusId() {
 		return certificationStatusId;
 	}
 
-	public void setCertificationStatusId(String certificationStatusId) {
+	public void setCertificationStatusId(Long certificationStatusId) {
 		this.certificationStatusId = certificationStatusId;
 	}
 
@@ -314,6 +317,14 @@ public class CertifiedProductDetailsEntity {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getCertificationStatusName() {
+		return certificationStatusName;
+	}
+
+	public void setCertificationStatusName(String certificationStatusName) {
+		this.certificationStatusName = certificationStatusName;
 	}
 	
 }

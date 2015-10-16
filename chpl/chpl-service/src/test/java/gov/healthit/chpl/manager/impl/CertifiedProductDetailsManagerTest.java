@@ -51,7 +51,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		System.out.println(detail);
 		System.out.println(detail.getAcbCertificationId());
 		System.out.println(detail.getCertificationDate());
-		System.out.println(detail.getCertificationStatusId());
+		System.out.println(detail.getCertificationStatus());
 		System.out.println(detail.getChplProductNumber());
 		System.out.println(detail.getOtherAcb());
 		System.out.println(detail.getQualityManagementSystemAtt());
@@ -80,7 +80,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCertificationDate() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals("1440090840000", detail.getCertificationDate());
+		assertEquals(new Long(1440090840000L).longValue(), detail.getCertificationDate().longValue());
 	
 	}
 	
@@ -170,7 +170,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
 		assertEquals("Ambulatory", detail.getPracticeType().get("name"));
-		assertEquals("1", detail.getPracticeType().get("id"));
+		assertEquals(1, new Long(detail.getPracticeType().get("id").toString()).longValue());
 		
 	}
 	
@@ -180,9 +180,9 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
 		assertEquals("Test Product 1", detail.getProduct().get("name"));
-		assertEquals("1", detail.getProduct().get("id"));
+		assertEquals(1, new Long(detail.getProduct().get("id").toString()).longValue());
 		assertEquals("1.0.0", detail.getProduct().get("version"));
-		assertEquals("1", detail.getProduct().get("versionId"));
+		assertEquals(1, new Long(detail.getProduct().get("versionId").toString()).longValue());
 		
 	}
 
@@ -192,7 +192,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
 		assertEquals("Test Vendor 1", detail.getVendor().get("name"));
-		assertEquals("1", detail.getProduct().get("id"));
+		assertEquals(1, new Long(detail.getProduct().get("id").toString()).longValue());
 	}
 	
 	@Test
