@@ -379,7 +379,7 @@ SELECT pg_catalog.setval('contact_contact_id_seq', 2, true);
 
 INSERT INTO "user" (user_id, user_name, password, account_expired, account_locked, credentials_expired, account_enabled, last_modified_user, contact_id) VALUES 
 (-2, 'admin', '$2a$10$vVXOupd9DckGsQPtZ5h9seYCGzqYb3A35r/GNuP/rRbK2eq2KxtA2', false, false, false, true, -1, -2),
-(1, 'scott', '$2a$10$vVXOupd9DckGsQPtZ5h9seYCGzqYb3A35r/GNuP/rRbK2eq2KxtA2', false, false, false, true, -1, 1),
+(1, 'scott', '$2a$10$cdKTeuhg3xpsysEtHkOV3eXQIfZpi13E.bm3aaGghwo/mLZhDPlpm', false, false, false, true, -1, 1),
 (-4, 'cchit', '$2a$10$LLS3sT.jIr5jhSK4b28eHe9dwFuQvlkpnM5qSRfPrTgbrlH02GqWq', false, false, false, true, -1, -4),
 (-5, 'drummond', '$2a$10$eYFuQl9CX7dwTnvKc2vfOOip336IW/RPtZNNWYDf0kmjuN7s80yJS', false, false, false, true, -1, -5),
 (-8, 'icsa', '$2a$10$a5RkoNfVZCuOfGTIGTXeS.bIlPR82XyopXUweWX83kgAHPtiAge4m', false, false, false, true, -1, -8),
