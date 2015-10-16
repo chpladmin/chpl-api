@@ -96,7 +96,7 @@ public class CertifiedProductController {
 		
 		CertifiedProductDTO existingProduct = cpManager.getById(updateRequest.getId());
 		Long acbId = existingProduct.getCertificationBodyId();
-		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id"));
+		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id").toString());
 		
 		if(acbId != newAcbId) {
 			cpManager.changeOwnership(updateRequest.getId(), newAcbId);
@@ -106,9 +106,9 @@ public class CertifiedProductController {
 		toUpdate.setId(updateRequest.getId());
 		toUpdate.setTestingLabId(updateRequest.getTestingLabId());
 		toUpdate.setCertificationBodyId(newAcbId);
-		toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id")));
-		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id")));
-		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatusId()));
+		toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id").toString()));
+		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
+		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
 		toUpdate.setQualityManagementSystemAtt(updateRequest.getQualityManagementSystemAtt());
@@ -194,7 +194,7 @@ public class CertifiedProductController {
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
 		throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException {
-		String acbIdStr = pendingCp.getCertifyingBody().get("id");
+		String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
 		if(StringUtils.isEmpty(acbIdStr)) {
 			throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
 		}
