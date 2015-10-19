@@ -2,10 +2,8 @@ package gov.healthit.chpl.entity;
 
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.WeakHashMap;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -82,8 +80,8 @@ public class CertificationResultEntity implements Serializable {
 	private Boolean sedSuccessful;
 	
 	@Basic( optional = false )
-	@Column( nullable = false  )
-	private Boolean successful;
+	@Column(name = "success", nullable = false  )
+	private Boolean success;
 	
 	@Column(name = "test_data_version_id")
 	private Long testDataVersionId;
@@ -344,8 +342,8 @@ public class CertificationResultEntity implements Serializable {
 	 * Return the value associated with the column: successful.
 	 * @return A Boolean object (this.successful)
 	 */
-	public Boolean isSuccessful() {
-		return this.successful;		
+	public Boolean isSuccess() {
+		return this.success;		
 	}
 	
 
@@ -354,8 +352,8 @@ public class CertificationResultEntity implements Serializable {
 	 * Set the value related to the column: successful.
 	 * @param successful the successful value you wish to set
 	 */
-	public void setSuccessful(final Boolean successful) {
-		this.successful = successful;
+	public void setSuccess(final Boolean success) {
+		this.success = success;
 	}
 
 	 /**

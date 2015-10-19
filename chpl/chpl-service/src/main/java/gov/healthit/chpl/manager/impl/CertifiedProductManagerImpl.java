@@ -112,10 +112,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		CertifiedProductDTO toCreate = new CertifiedProductDTO();
 		toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
 		
-		String certifyingBodyId = pendingCp.getCertifyingBody().get("id");
+		String certifyingBodyId = pendingCp.getCertifyingBody().get("id").toString();
 		if(StringUtils.isEmpty(certifyingBodyId)) {
 			CertificationBodyDTO acbDto = new CertificationBodyDTO();
-			acbDto.setName(pendingCp.getCertifyingBody().get("name"));
+			acbDto.setName(pendingCp.getCertifyingBody().get("name").toString());
 			if(StringUtils.isEmpty(acbDto.getName())) {
 				throw new EntityCreationException("Cannot create a certifying body without a name.");
 			}
@@ -124,7 +124,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		toCreate.setCertificationBodyId(new Long(certifyingBodyId));
 		
-		String certificationEditionId = pendingCp.getCertificationEdition().get("id");
+		String certificationEditionId = pendingCp.getCertificationEdition().get("id").toString();
 		if(StringUtils.isEmpty(certificationEditionId)) {
 			throw new EntityCreationException("The ID of an existing certification edition (year) must be provided. A new certification edition cannot be created via this process.");
 		}
@@ -144,32 +144,33 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setLastModifiedDate(new Date());
 		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
 		
-		String practiceTypeId = pendingCp.getPracticeType().get("id");
+		String practiceTypeId = pendingCp.getPracticeType().get("id").toString();
 		//can be null
 		if(!StringUtils.isEmpty(practiceTypeId)) {
 			toCreate.setPracticeTypeId(new Long(practiceTypeId));
 		}
 		
-		String classificationTypeId = pendingCp.getClassificationType().get("id");
+		String classificationTypeId = pendingCp.getClassificationType().get("id").toString();
 		//can be null
 		if(!StringUtils.isEmpty(classificationTypeId)) {
 			toCreate.setProductClassificationTypeId(new Long(classificationTypeId));
 		}
 		
-		String vendorId = pendingCp.getVendor().get("id");
+		String vendorId = pendingCp.getVendor().get("id").toString();
 		if(StringUtils.isEmpty(vendorId)) {
 			VendorDTO newVendor = new VendorDTO();
-			String vendorName = pendingCp.getVendor().get("name");
+			String vendorName = pendingCp.getVendor().get("name").toString();
 			if(StringUtils.isEmpty(vendorName)) {
 				throw new EntityCreationException("You must provide a vendor name to create a new vendor.");
 			}
 			newVendor.setName(vendorName);
-			Map<String, String> vendorAddress = pendingCp.getVendorAddress();
+			Map<String, Object> vendorAddress = pendingCp.getVendorAddress();
 			if(vendorAddress != null) {
 				AddressDTO address = new AddressDTO();
-				address.setStreetLineOne(vendorAddress.get("streetLine1"));
-				address.setCity(vendorAddress.get("city"));
-				address.setRegion(vendorAddress.get("state"));
+				address.setStreetLineOne(vendorAddress.get("line1").toString());
+				address.setCity(vendorAddress.get("city").toString());
+				address.setState(vendorAddress.get("state").toString());
+				address.setZipcode(vendorAddress.get("zipcode").toString());
 				address.setCountry("USA");
 				newVendor.setAddress(address);
 			}
@@ -178,10 +179,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			vendorId = newVendor.getId().toString();
 		}
 		
-		String productId = pendingCp.getProduct().get("id");
+		String productId = pendingCp.getProduct().get("id").toString();
 		if(StringUtils.isEmpty(productId)) {
 			ProductDTO newProduct = new ProductDTO();
-			String productName = pendingCp.getProduct().get("name");
+			String productName = pendingCp.getProduct().get("name").toString();
 			if(StringUtils.isEmpty(productName)) {
 				throw new EntityCreationException("Either product name or ID must be provided.");
 			}
@@ -192,10 +193,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			productId = newProduct.getId().toString();
 		}
 		
-		String productVersionId = pendingCp.getProduct().get("versionId");
+		String productVersionId = pendingCp.getProduct().get("versionId").toString();
 		if(StringUtils.isEmpty(productVersionId)) {
 			ProductVersionDTO newVersion = new ProductVersionDTO();
-			String version = pendingCp.getProduct().get("version");
+			String version = pendingCp.getProduct().get("version").toString();
 			if(StringUtils.isEmpty(version)) {
 				throw new EntityCreationException("Either version id or version must be provided.");
 			}
@@ -311,6 +312,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		CertifiedProductDTO toUpdate = dao.getById(certifiedProductId);
 		toUpdate.setCertificationBodyId(acbId);
 		return update(acbId, toUpdate);
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@Transactional(readOnly = false)
+	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) 
+		throws EntityRetrievalException {
+		CertifiedProductDTO toUpdate = dao.getById(certifiedProductId);
+		toUpdate.setProductVersionId(newVersionId);
+		return dao.update(toUpdate);
 	}
 	
 	@Override

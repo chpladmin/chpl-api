@@ -97,7 +97,6 @@ public class ProductController {
 				//create a new product with the rest of the passed in information
 				ProductDTO newProduct = new ProductDTO();
 				newProduct.setName(productInfo.getProduct().getName());
-				newProduct.setLastModifiedUser(Util.getCurrentUser().getId());
 				newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
 				if(productInfo.getNewVendorId() != null) {
 					newProduct.setVendorId(productInfo.getNewVendorId());
@@ -120,9 +119,6 @@ public class ProductController {
 				//update the given product id with new data
 				ProductDTO toUpdate = new ProductDTO();
 				toUpdate.setId(productInfo.getProductIds().get(0));
-				toUpdate.setLastModifiedDate(new Date());
-				toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
-				toUpdate.setDeleted(false);
 				toUpdate.setName(productInfo.getProduct().getName());
 				toUpdate.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
 				//update the vendor if an id is supplied

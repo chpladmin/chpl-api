@@ -1618,734 +1618,839 @@ INSERT INTO openchpl.certification_result
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_a_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(a)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_a_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_b_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(b)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_b_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_c_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(c)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_c_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_d_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(d)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_d_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_e_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(e)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_e_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_f_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(f)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_f_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_f__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(f)(1)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_f__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_f__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(f)(2)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_f__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_f__3_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(f)(3)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_f__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_g_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(g)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_g_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_h_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(h)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_h_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_i_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(i)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_i_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_j_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(j)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_j_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_k_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(k)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_k_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_l_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(l)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_l_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_m_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(m)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_m_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_n_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(n)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_n_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_o_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(o)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_o_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_p_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(p)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_p_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_q_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(q)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_q_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_r_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(r)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_r_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_s_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(s)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_s_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_t_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(t)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_t_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_u_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(u)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_u_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_v_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(v)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_v_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_w_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.302(w)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_w_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_a_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(a)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_a_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_b_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(b)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_b_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_c_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(c)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_c_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_d_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(d)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_d_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_e_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(e)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_e_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_f_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(f)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_f_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_g_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(g)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_g_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_h_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(h)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_h_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_i_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(i)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_i_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_j_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.304(j)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_j_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_a_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(a)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_a_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_b_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(b)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_b_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_c_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(c)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_c_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_d_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(d)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_d_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_d__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(d)(1)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_d__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_d__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(d)(2)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_d__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_e_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(e)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_e_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_f_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(f)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_f_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_g_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(g)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_g_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_h_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(h)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_h_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_i_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.306(i)'
+       AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_i_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(1)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(2)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__3_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(3)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__4_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(4)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__4_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__5_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(5)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__5_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__6_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(6)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__6_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__7_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(7)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__7_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__8_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(8)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__8_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__9_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(9)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__9_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__10_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(10)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__10_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__11_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(11)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__11_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__12_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(12)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__12_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__13_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(13)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__13_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__14_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(14)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__14_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__15_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(15)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__15_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__16_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(16)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__16_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__17_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(17)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__17_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__18_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(18)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__18_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__19_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(19)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__19_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__20_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(a)(20)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__20_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(1)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(2)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__3_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(3)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__4_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(4)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__4_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__5_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(5)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__6_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(6)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__6_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__7_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(7)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__7_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__8_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(8)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__8_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__9_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(b)(9)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__9_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_c__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(c)(1)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_c__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_c__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(c)(2)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_c__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_c__3_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(c)(3)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_c__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(d)(1)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(d)(2)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__3_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(d)(3)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__4_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(d)(4)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__4_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__5_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(d)(5)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__5_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__6_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(d)(6)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__6_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__7_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(d)(7)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__7_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__8_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(d)(8)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__8_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__9_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(d)(9)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__9_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_e__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(e)(1)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_e__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_e__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(e)(2)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_e__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_e__3_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(e)(3)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_e__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(f)(1)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(f)(2)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__3_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(f)(3)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__4_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(f)(4)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__4_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__5_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(f)(5)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__5_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__6_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(f)(6)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__6_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__7_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(f)(7)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__7_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(g)(1)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_g__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(g)(2)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_g__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__3_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(g)(3)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_g__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__4_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(g)(4)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_g__4_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__1_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(h)(1)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_h__1_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__2_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(h)(2)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_h__2_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.certification_result
-       (certification_criterion_id, certified_product_id, successful, last_modified_user)
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__3_, -1
        FROM openchpl.certification_criterion
        WHERE openchpl.certification_criterion.number = '170.314(h)(3)'
+       AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_h__3_ as boolean) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result

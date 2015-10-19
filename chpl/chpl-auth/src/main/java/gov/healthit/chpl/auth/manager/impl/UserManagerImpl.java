@@ -17,10 +17,14 @@ import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
+import java.security.SecureRandom;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +32,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserManagerImpl implements UserManager {
 
+    private final Random random = new SecureRandom();
+	private static final char[] symbols;
+    static {
+      StringBuilder tmp = new StringBuilder();
+      for (char ch = '0'; ch <= '9'; ++ch)
+        tmp.append(ch);
+      for (char ch = 'a'; ch <= 'z'; ++ch)
+        tmp.append(ch);
+      symbols = tmp.toString().toCharArray();
+    } 
+    
 	@Autowired
 	private SecuredUserManager securedUserManager;
 	
@@ -160,6 +175,32 @@ public class UserManagerImpl implements UserManager {
 		UserDTO userToUpdate = securedUserManager.getBySubjectName(userName);
 		securedUserManager.updatePassword(userToUpdate, encodedPassword);
 		
+	}
+	
+	//no auth needed. create a random string and assign it to the user
+	@Override
+	@Transactional
+	public String resetUserPassword(String username, String email) throws UserRetrievalException {
+		UserDTO foundUser = userDAO.findUserByNameAndEmail(username, email);
+		if(foundUser == null) {
+			throw new UserRetrievalException("Cannot find user with name " + username + " and email address " + email);
+		}
+		
+		//create new password
+		char[] buf = new char[15];
+    	
+    	for (int idx = 0; idx < buf.length; ++idx) {
+            buf[idx] = symbols[random.nextInt(symbols.length)];
+    	}
+    	String password = new String(buf);
+    	
+		//encode new password
+		String encodedPassword = encodePassword(password);
+			
+		//update the userDTO with the new password
+		userDAO.updatePassword(foundUser.getSubjectName(), encodedPassword);
+		
+		return password;
 	}
 	
 	@Override

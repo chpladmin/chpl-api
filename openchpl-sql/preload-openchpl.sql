@@ -298,42 +298,129 @@ INSERT INTO acl_class VALUES (1, 'gov.healthit.chpl.auth.dto.UserDTO'), (2, 'gov
 							 
 SELECT pg_catalog.setval('acl_class_id_seq', 3, true);
 
-INSERT INTO acl_sid VALUES (-2, true, 'admin');
+--inserts users that can have acls
+INSERT INTO acl_sid VALUES
+(-2, true, 'admin'),
+(-3, true, 'infogard'),
+(-4, true, 'cchit'),
+(-5, true, 'drummond'),
+(-6, true, 'sli'),
+(-7, true, 'surescripts'),
+(-8, true, 'icsa'),
+(-9, true, 'pending'),
+(1, true, 'scott'); 
 
-INSERT INTO acl_object_identity VALUES (-2, 1, -2, NULL, -2, true);
-INSERT INTO acl_object_identity VALUES (1, 2, 1, NULL, -2, true);
-INSERT INTO acl_object_identity VALUES (2, 2, 2, NULL, -2, true);
-INSERT INTO acl_object_identity VALUES (3, 2, 3, NULL, -2, true);
-INSERT INTO acl_object_identity VALUES (4, 2, 4, NULL, -2, true);
-INSERT INTO acl_object_identity VALUES (5, 2, 5, NULL, -2, true);
-INSERT INTO acl_object_identity VALUES (6, 2, 6, NULL, -2, true);
-INSERT INTO acl_object_identity VALUES (7, 2, 7, NULL, -2, true);
+--insert user objects
+INSERT INTO acl_object_identity VALUES 
+(-2, 1, -2, NULL, -2, true),
+(-3, 1, -3, NULL, -3, true),
+(-4, 1, -4, NULL, -4, true),
+(-5, 1, -5, NULL, -5, true),
+(-6, 1, -6, NULL, -6, true),
+(-7, 1, -7, NULL, -7, true),
+(-8, 1, -8, NULL, -8, true),
+(-9, 1, -9, NULL, -9, true),
+(1, 1, 1, NULL, 1, true);
 
-INSERT INTO acl_entry VALUES (1, -2, 0, -2, 16, true, false, false);
-INSERT INTO acl_entry VALUES (2, 1, 0, -2, 16, true, false, false);
-INSERT INTO acl_entry VALUES (3, 2, 0, -2, 16, true, false, false);
-INSERT INTO acl_entry VALUES (4, 3, 0, -2, 16, true, false, false);
-INSERT INTO acl_entry VALUES (5, 4, 0, -2, 16, true, false, false);
-INSERT INTO acl_entry VALUES (6, 5, 0, -2, 16, true, false, false);
-INSERT INTO acl_entry VALUES (7, 6, 0, -2, 16, true, false, false);
-INSERT INTO acl_entry VALUES (8, 7, 0, -2, 16, true, false, false);
+--insert acb objects
+INSERT INTO acl_object_identity VALUES 
+(2, 2, 1, NULL, -2, true),
+(3, 2, 2, NULL, -2, true),
+(4, 2, 3, NULL, -2, true),
+(5, 2, 4, NULL, -2, true),
+(6, 2, 5, NULL, -2, true),
+(7, 2, 6, NULL, -2, true),
+(8, 2, 7, NULL, -2, true);
 
-SELECT pg_catalog.setval('acl_entry_id_seq', 12, true);
-SELECT pg_catalog.setval('acl_object_identity_id_seq', 7, true);
-SELECT pg_catalog.setval('acl_sid_id_seq', 1, true);
-INSERT INTO contact (contact_id, first_name, last_name, email, phone_number, signature_date, last_modified_user) VALUES (-2, 'Administrator', 'Administrator', 'info@ainq.com', '(301) 560-6999', '2015-09-13', -1);
+--insert acls for users
+INSERT INTO acl_entry VALUES
+(1, -2, 0, -2, 16, true, false, false),
+(2, -3, 0, -3, 16, true, false, false),
+(3, -4, 0, -4, 16, true, false, false),
+(4, -5, 0, -5, 16, true, false, false),
+(5, -6, 0, -6, 16, true, false, false),
+(6, -7, 0, -7, 16, true, false, false),
+(7, -8, 0, -8, 16, true, false, false),
+(8, -9, 0, -9, 16, true, false, false),
+(9, 1, 0, 1, 16, true, false, false);
 
-SELECT pg_catalog.setval('contact_contact_id_seq', 1, true);
-INSERT INTO "user" (user_id, user_name, password, account_expired, account_locked, credentials_expired, account_enabled, last_modified_user, contact_id) VALUES (-2, 'admin', '$2a$10$vVXOupd9DckGsQPtZ5h9seYCGzqYb3A35r/GNuP/rRbK2eq2KxtA2', false, false, false, true, -1, -2);
-INSERT INTO user_permission (user_permission_id, "name", description, authority, last_modified_user) VALUES (-2, 'ADMIN', 'This permission confers administrative privileges to its owner.', 'ROLE_ADMIN', -1);
+--insert acls for acbs
+INSERT INTO acl_entry VALUES 
+(10, 2, 0, -2, 16, true, false, false),
+(11, 2, 1, 1, 16, true, false, false),
+(12, 2, 2, -3, 16, true, false, false),
 
-SELECT pg_catalog.setval('user_permission_user_permission_id_seq', 1, true);
-INSERT INTO user_permission ("name", description, authority, last_modified_user) VALUES
-('USER_CREATOR' ,'This permission allows a user to create other users',	'ROLE_USER_CREATOR' , -1),
-('ACB_ADMIN' ,'This permission gives a user write access to their ACBs.',	'ROLE_ACB_ADMIN' , -1),
-('ACB_STAFF' ,'This permission gives a user read access to their ACBs',	'ROLE_ACB_STAFF' , -1);
-INSERT INTO global_user_permission_map (user_id, user_permission_id_user_permission, last_modified_user) VALUES (-2, -2, -1);
+(13, 3, 0, -2, 16, true, false, false),
+(14, 3, 1, 1, 16, true, false, false),
+(15, 3, 2, -4, 16, true, false, false),
 
-SELECT pg_catalog.setval('global_user_permission_map_global_user_permission_id_seq', 1, true);
+(16, 4, 0, -2, 16, true, false, false),
+(17, 4, 1, 1, 16, true, false, false),
+(18, 4, 2, -5, 16, true, false, false),
 
-SELECT pg_catalog.setval('user_user_id_seq', 4, true);
+(19, 5, 0, -2, 16, true, false, false),
+(20, 5, 1, 1, 16, true, false, false),
+(21, 5, 2, -6, 16, true, false, false),
+
+(22, 6, 0, -2, 16, true, false, false),
+(23, 6, 1, 1, 16, true, false, false),
+(24, 6, 2, -7, 16, true, false, false),
+
+(25, 7, 0, -2, 16, true, false, false),
+(26, 7, 1, 1, 16, true, false, false),
+(27, 7, 2, -8, 16, true, false, false),
+
+(28, 8, 0, -2, 16, true, false, false),
+(29, 8, 1, 1, 16, true, false, false),
+(30, 8, 2, -9, 16, true, false, false);
+
+SELECT pg_catalog.setval('acl_entry_id_seq', 31, true);
+SELECT pg_catalog.setval('acl_object_identity_id_seq', 9, true);
+SELECT pg_catalog.setval('acl_sid_id_seq', 2, true);
+
+--user contacts. 
+-- one contact for each user that's getting pre-loaded. there are 2 chpl admins and 7 acb admins
+INSERT INTO contact (contact_id, first_name, last_name, email, phone_number, signature_date, last_modified_user) VALUES 
+(-2, 'Administrator', 'Administrator', 'info@ainq.com', '(301) 560-6999', CURRENT_DATE, -1),
+(-3, 'InfoGard', 'Administrator', 'noreply@ainq.com', '(xxx) xxx-xxxx', CURRENT_DATE, -1),
+(-4, 'CCHIT', 'Administrator', 'noreply@ainq.com', '(xxx) xxx-xxxx', CURRENT_DATE, -1),
+(-5, 'Drummond Group', 'Administrator', 'noreply@ainq.com', '(xxx) xxx-xxxx', CURRENT_DATE, -1),
+(-6, 'SLI Global', 'Administrator', 'noreply@ainq.com', '(xxx) xxx-xxxx', CURRENT_DATE, -1),
+(-7, 'Surescripts', 'Administrator', 'noreply@ainq.com', '(xxx) xxx-xxxx', CURRENT_DATE, -1),
+(-8, 'ICSA', 'Administrator', 'noreply@ainq.com', '(xxx) xxx-xxxx', CURRENT_DATE, -1),
+(-9, 'Pending', 'Administrator', 'noreply@ainq.com', '(xxx) xxx-xxxx', CURRENT_DATE, -1),
+(1, 'Scott', 'Purnell-Saunders', 'Scott.Purnell-Saunders@hhs.gov', '(xxx) xxx-xxxx', CURRENT_DATE, -1);
+SELECT pg_catalog.setval('contact_contact_id_seq', 2, true);
+
+INSERT INTO "user" (user_id, user_name, password, account_expired, account_locked, credentials_expired, account_enabled, last_modified_user, contact_id) VALUES 
+(-2, 'admin', '$2a$10$vVXOupd9DckGsQPtZ5h9seYCGzqYb3A35r/GNuP/rRbK2eq2KxtA2', false, false, false, true, -1, -2),
+(1, 'scott', '$2a$10$cdKTeuhg3xpsysEtHkOV3eXQIfZpi13E.bm3aaGghwo/mLZhDPlpm', false, false, false, true, -1, 1),
+(-4, 'cchit', '$2a$10$LLS3sT.jIr5jhSK4b28eHe9dwFuQvlkpnM5qSRfPrTgbrlH02GqWq', false, false, false, true, -1, -4),
+(-5, 'drummond', '$2a$10$eYFuQl9CX7dwTnvKc2vfOOip336IW/RPtZNNWYDf0kmjuN7s80yJS', false, false, false, true, -1, -5),
+(-8, 'icsa', '$2a$10$a5RkoNfVZCuOfGTIGTXeS.bIlPR82XyopXUweWX83kgAHPtiAge4m', false, false, false, true, -1, -8),
+(-3, 'infogard', '$2a$10$lKafl5W1.Dv1cyqKEaMBsedRJPLqTT7BLJ5WA14xAOXoeZOmT5dtW', false, false, false, true, -1, -3),
+(-9, 'pending', '$2a$10$rF7/BrC.7vKAmWREF0IYMuH3b696/uFS9zjVoQ3MsZte9CpSMYVdi', false, false, false, true, -1, -9),
+(-6, 'sli', '$2a$10$cHEFAUGhMdzEmBy4Xn2HUeuLST.ZgOc39X6kU8bwH3qD4YCqaa2Na', false, false, false, true, -1, -6),
+(-7, 'surescripts', '$2a$10$mso5r1dD.oWw5FID0Ke5k.ORqUmgSVJacca3vuf0Nf7.mIxbjAubS', false, false, false, true, -1, -7);
+SELECT pg_catalog.setval('user_user_id_seq', 2, true);
+
+
+INSERT INTO user_permission (user_permission_id, "name", description, authority, last_modified_user) VALUES 
+(-2, 'ADMIN', 'This permission confers administrative privileges to its owner.', 'ROLE_ADMIN', -1),
+(1, 'USER_CREATOR' ,'This permission allows a user to create other users',	'ROLE_USER_CREATOR' , -1),
+(2, 'ACB_ADMIN' ,'This permission gives a user write access to their ACBs.',	'ROLE_ACB_ADMIN' , -1),
+(3, 'ACB_STAFF' ,'This permission gives a user read access to their ACBs',	'ROLE_ACB_STAFF' , -1);
+SELECT pg_catalog.setval('user_permission_user_permission_id_seq', 4, true);
+
+INSERT INTO global_user_permission_map (user_id, user_permission_id_user_permission, last_modified_user) VALUES 
+(-2, -2, -1),
+(-3, 2, -1),
+(-4, 2, -1),
+(-5, 2, -1),
+(-6, 2, -1),
+(-7, 2, -1),
+(-8, 2, -1),
+(-9, 2, -1),
+(1, -2, -1);
+SELECT pg_catalog.setval('global_user_permission_map_global_user_permission_id_seq', 10, true);
+

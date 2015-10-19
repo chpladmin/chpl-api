@@ -7,7 +7,8 @@ public class Address {
 	private String line1;
 	private String line2;
 	private String city;
-	private String region;
+	private String state;
+	private String zipcode;
 	private String country;
 	
 	public Address() {}
@@ -16,7 +17,8 @@ public class Address {
 		this.line1 = dto.getStreetLineOne();
 		this.line2 = dto.getStreetLineTwo();
 		this.city = dto.getCity();
-		this.region = dto.getRegion();
+		this.state = dto.getState();
+		this.zipcode = dto.getZipcode();
 		this.country = dto.getCountry();
 	}
 	
@@ -44,17 +46,23 @@ public class Address {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	public String getRegion() {
-		return region;
+	public String getState() {
+		return state;
 	}
-	public void setRegion(String region) {
-		this.region = region;
+	public void setState(String state) {
+		this.state = state;
 	}
 	public String getCountry() {
 		return country;
 	}
 	public void setCountry(String country) {
 		this.country = country;
+	}
+	public String getZipcode() {
+		return zipcode;
+	}
+	public void setZipcode(String zipcode) {
+		this.zipcode = zipcode;
 	}
 	
 	

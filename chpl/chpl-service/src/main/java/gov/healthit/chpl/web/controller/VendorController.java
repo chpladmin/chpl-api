@@ -85,11 +85,9 @@ public class VendorController {
 				address.setStreetLineOne(vendorInfo.getVendor().getAddress().getLine1());
 				address.setStreetLineTwo(vendorInfo.getVendor().getAddress().getLine2());
 				address.setCity(vendorInfo.getVendor().getAddress().getCity());
-				address.setRegion(vendorInfo.getVendor().getAddress().getRegion());
+				address.setState(vendorInfo.getVendor().getAddress().getState());
+				address.setZipcode(vendorInfo.getVendor().getAddress().getZipcode());
 				address.setCountry(vendorInfo.getVendor().getAddress().getCountry());
-				address.setDeleted(false);
-				address.setLastModifiedDate(new Date());
-				address.setLastModifiedUser(Util.getCurrentUser().getId());
 			}
 			newVendor.setAddress(address);
 			result = vendorManager.create(newVendor);
@@ -116,11 +114,9 @@ public class VendorController {
 				address.setStreetLineOne(vendorInfo.getVendor().getAddress().getLine1());
 				address.setStreetLineTwo(vendorInfo.getVendor().getAddress().getLine2());
 				address.setCity(vendorInfo.getVendor().getAddress().getCity());
-				address.setRegion(vendorInfo.getVendor().getAddress().getRegion());
+				address.setState(vendorInfo.getVendor().getAddress().getState());
+				address.setZipcode(vendorInfo.getVendor().getAddress().getZipcode());
 				address.setCountry(vendorInfo.getVendor().getAddress().getCountry());
-				address.setDeleted(false);
-				address.setLastModifiedDate(new Date());
-				address.setLastModifiedUser(Util.getCurrentUser().getId());
 				toUpdate.setAddress(address);
 			}
 			result = vendorManager.update(toUpdate);
