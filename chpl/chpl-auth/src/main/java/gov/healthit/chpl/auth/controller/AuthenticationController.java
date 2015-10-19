@@ -71,8 +71,7 @@ public class AuthenticationController extends AuthPropertiesConsumer {
 		String newPassword = userManager.resetUserPassword(userInfo.getUserName(), userInfo.getEmail());
 
 		String htmlMessage = "<p>Hi, <br/>"
-       			+ "Your CHPL account password has been reset. Your new password is</p>" 
-       			+ "<pre>" + newPassword + "</pre>" 
+       			+ "Your CHPL account password has been reset.</p>" 
        			+ "<p>Click the link below to login to your account."
        			+ "<br/>" +
     			"http://" + getProps().getProperty("chplServer") + "/#/admin" +

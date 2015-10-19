@@ -7,7 +7,6 @@ import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.jwt.JWTValidationException;
 import gov.healthit.chpl.auth.user.User;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,28 +26,21 @@ public class JWTUserConverterImplTest {
 	private Authenticator authenticator;
 	
 	
-	private static UserDTO testUser;
+	@Test
+	public void converterConvertsJWTToUser() throws JWTCreationException, JWTValidationException{
 	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		
-		testUser = new UserDTO();
+		UserDTO testUser = new UserDTO();
+		testUser.setId(-2L);
 		testUser.setAccountEnabled(true);
 		testUser.setAccountExpired(false);
 		testUser.setAccountLocked(false);
 		testUser.setCredentialsExpired(false);
 		testUser.setEmail("test@test.com");
-		testUser.setFirstName("test");
-		testUser.setLastName("test");
+		testUser.setFirstName("admin");
+		testUser.setLastName("admin");
 		testUser.setPhoneNumber("123-456-7890");
 		testUser.setSubjectName("testUser");
 		testUser.setTitle("Dr.");
-		
-	}
-	
-	
-	@Test
-	public void converterConvertsJWTToUser() throws JWTCreationException, JWTValidationException{
 		
 		String jwt = authenticator.getJWT(testUser);
 		User user = converter.getAuthenticatedUser(jwt);
@@ -73,5 +65,7 @@ public class JWTUserConverterImplTest {
 		}
 		assertEquals(true, throwsException);
 	}
+	
+	
 
 }
