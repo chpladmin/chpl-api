@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 
 @Entity
@@ -39,6 +41,7 @@ public class ActivityEntity {
 	
 	@Basic( optional = false )
 	@Column( name = "activity_date", nullable = false )
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date activityDate;
 	
 	@Basic( optional = false )
