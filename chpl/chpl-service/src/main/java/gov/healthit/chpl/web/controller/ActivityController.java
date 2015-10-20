@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
+
 @RestController
 @RequestMapping("/activity")
 public class ActivityController {
@@ -21,8 +24,18 @@ public class ActivityController {
 	private ActivityManager activityManager;
 	
 	
+	@RequestMapping(value="/", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activity(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		
+		if (lastNDays == null){
+			return getActivityEvents();
+		} else {
+			return getActivityEvents(lastNDays);
+		}
+	}
+	
 	@RequestMapping(value="/acbs", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForACBs(@RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForACBs(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForACBs();
@@ -32,7 +45,7 @@ public class ActivityController {
 	}
 	
 	@RequestMapping(value="/acbs/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForACBById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForACBById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForACBs(id);
@@ -43,7 +56,7 @@ public class ActivityController {
 	
 	
 	@RequestMapping(value="/certified_products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForCertifiedProducts(@RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForCertifiedProducts(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForCertifiedProducts();
@@ -53,7 +66,7 @@ public class ActivityController {
 	}
 	
 	@RequestMapping(value="/certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForCertifiedProducts(id);
@@ -64,7 +77,7 @@ public class ActivityController {
 	
 	
 	@RequestMapping(value="/certifications", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForCertifications(@RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForCertifications(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForCertifications();
@@ -74,7 +87,7 @@ public class ActivityController {
 	}
 	
 	@RequestMapping(value="/certifications/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForCertifications(id);
@@ -85,7 +98,7 @@ public class ActivityController {
 	
 	
 	@RequestMapping(value="/pending_certified_products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForPendingCertifiedProducts();
@@ -95,7 +108,7 @@ public class ActivityController {
 	}
 	
 	@RequestMapping(value="/pending_certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForPendingCertifiedProducts(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForPendingCertifiedProducts(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForPendingCertifiedProducts(id);
@@ -105,7 +118,7 @@ public class ActivityController {
 	}
 	
 	@RequestMapping(value="/products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForProducts(@RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForProducts(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForProducts();
@@ -115,7 +128,7 @@ public class ActivityController {
 	}
 	
 	@RequestMapping(value="/products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForProducts(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForProducts(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForProducts(id);
@@ -125,7 +138,7 @@ public class ActivityController {
 	}
 	
 	@RequestMapping(value="/users", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForUsers(@RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForUsers(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForUsers();
@@ -135,7 +148,7 @@ public class ActivityController {
 	}
 	
 	@RequestMapping(value="/users/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
 			return getActivityEventsForUsers(id);
@@ -146,29 +159,29 @@ public class ActivityController {
 	
 	
 	@RequestMapping(value="/vendors", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForVendors(@RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForVendors(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
-			return getActivityEventsForUsers();
+			return getActivityEventsForVendors();
 		} else {
-			return getActivityEventsForUsers(lastNDays);
+			return getActivityEventsForVendors(lastNDays);
 		}
 	}
 	
 	
 	@RequestMapping(value="/vendors/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForVendors(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays){
+	public List<ActivityEvent> activityForVendors(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
-			return getActivityEventsForUsers(id);
+			return getActivityEventsForVendors(id);
 		} else {
-			return getActivityEventsForUsers(id, lastNDays);
+			return getActivityEventsForVendors(id, lastNDays);
 		}
 	}
 	
 	
 	
-	private List<ActivityEvent> getActivityEventsForACBs(Long id){
+	private List<ActivityEvent> getActivityEventsForACBs(Long id) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY;
@@ -177,7 +190,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForCertifications(Long id){
+	private List<ActivityEvent> getActivityEventsForCertifications(Long id) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION;
@@ -186,7 +199,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForCertifiedProducts(Long id){
+	private List<ActivityEvent> getActivityEventsForCertifiedProducts(Long id) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -195,7 +208,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Long id){
+	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Long id) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT;
@@ -204,7 +217,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForProducts(Long id){
+	private List<ActivityEvent> getActivityEventsForProducts(Long id) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PRODUCT;
@@ -213,7 +226,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForUsers(Long id){
+	private List<ActivityEvent> getActivityEventsForUsers(Long id) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_USER;
@@ -222,7 +235,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForVendors(Long id){
+	private List<ActivityEvent> getActivityEventsForVendors(Long id) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VENDOR;
@@ -231,7 +244,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForVersions(Long id){
+	private List<ActivityEvent> getActivityEventsForVersions(Long id) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VERSION;
@@ -245,7 +258,7 @@ public class ActivityController {
 	
 	
 	
-	private List<ActivityEvent> getActivityEventsForACBs(Long id, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForACBs(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY;
@@ -254,7 +267,7 @@ public class ActivityController {
 	}
 	
 	
-	private List<ActivityEvent> getActivityEventsForCertifications(Long id, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForCertifications(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION;
@@ -263,7 +276,7 @@ public class ActivityController {
 	}
 	
 	
-	private List<ActivityEvent> getActivityEventsForCertifiedProducts(Long id, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForCertifiedProducts(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -271,7 +284,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Long id, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT;
@@ -279,7 +292,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForProducts(Long id, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForProducts(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PRODUCT;
@@ -287,7 +300,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForUsers(Long id, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForUsers(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_USER;
@@ -295,7 +308,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForVendors(Long id, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForVendors(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VENDOR;
@@ -303,7 +316,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForVersions(Long id, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForVersions(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VERSION;
@@ -319,7 +332,7 @@ public class ActivityController {
 	
 	
 	
-	private List<ActivityEvent> getActivityEventsForACBs(Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForACBs(Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY;
@@ -329,7 +342,7 @@ public class ActivityController {
 	}
 	
 	
-	private List<ActivityEvent> getActivityEventsForCertifications(Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForCertifications(Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION;
@@ -339,7 +352,7 @@ public class ActivityController {
 	}
 	
 	
-	private List<ActivityEvent> getActivityEventsForCertifiedProducts(Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForCertifiedProducts(Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -348,7 +361,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT;
@@ -357,7 +370,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForProducts(Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForProducts(Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PRODUCT;
@@ -366,7 +379,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForUsers(Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForUsers(Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_USER;
@@ -375,7 +388,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForVendors(Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForVendors(Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VENDOR;
@@ -384,7 +397,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForVersions(Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForVersions(Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VERSION;
@@ -399,7 +412,7 @@ public class ActivityController {
 	
 	
 	
-	private List<ActivityEvent> getActivityEventsForACBs(){
+	private List<ActivityEvent> getActivityEventsForACBs() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY;
@@ -409,7 +422,7 @@ public class ActivityController {
 	}
 	
 	
-	private List<ActivityEvent> getActivityEventsForCertifications(){
+	private List<ActivityEvent> getActivityEventsForCertifications() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION;
@@ -419,7 +432,7 @@ public class ActivityController {
 	}
 	
 	
-	private List<ActivityEvent> getActivityEventsForCertifiedProducts(){
+	private List<ActivityEvent> getActivityEventsForCertifiedProducts() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -428,7 +441,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(){
+	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT;
@@ -437,7 +450,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForProducts(){
+	private List<ActivityEvent> getActivityEventsForProducts() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PRODUCT;
@@ -446,7 +459,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForUsers(){
+	private List<ActivityEvent> getActivityEventsForUsers() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_USER;
@@ -455,7 +468,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForVendors(){
+	private List<ActivityEvent> getActivityEventsForVendors() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VENDOR;
@@ -464,7 +477,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForVersions(){
+	private List<ActivityEvent> getActivityEventsForVersions() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VERSION;
@@ -475,32 +488,32 @@ public class ActivityController {
 	
 	
 	
-	private List<ActivityEvent> getActivityEventsForConcept(ActivityConcept concept){
+	private List<ActivityEvent> getActivityEventsForConcept(ActivityConcept concept) throws JsonParseException, IOException{
 		return activityManager.getActivityForConcept(concept);
 	}
 	
-	private List<ActivityEvent> getActivityEventsForConcept(ActivityConcept concept, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForConcept(ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException{
 		return activityManager.getActivityForConcept(concept);
 	}
 	
-	private List<ActivityEvent> getActivityEventsForObject(ActivityConcept concept, Long objectId){
+	private List<ActivityEvent> getActivityEventsForObject(ActivityConcept concept, Long objectId) throws JsonParseException, IOException{
 		return activityManager.getActivityForObject(concept, objectId);
 	}
 	
-	private List<ActivityEvent> getActivityEventsForObject(ActivityConcept concept, Long objectId, Integer lastNDays){
+	private List<ActivityEvent> getActivityEventsForObject(ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException{
 		return activityManager.getActivityForObject(concept, objectId, lastNDays);
 	}
 	
-	private List<ActivityEvent> getActivityEvents(Integer lastNDays){
+	private List<ActivityEvent> getActivityEvents(Integer lastNDays) throws JsonParseException, IOException{
 		return activityManager.getAllActivityInLastNDays(lastNDays);
 	}
 	
-	private List<ActivityEvent> getActivityEvents(){
+	private List<ActivityEvent> getActivityEvents() throws JsonParseException, IOException{
 		return activityManager.getAllActivity();
 	}
 	
 	
-	private List<ActivityEvent> getActivityEventsForConcept(Long conceptId){
+	private List<ActivityEvent> getActivityEventsForConcept(Long conceptId) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		
@@ -513,7 +526,7 @@ public class ActivityController {
 		return events;
 	}
 	
-	private List<ActivityEvent> getActivityEventsForConcept(String conceptName){
+	private List<ActivityEvent> getActivityEventsForConcept(String conceptName) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
 		

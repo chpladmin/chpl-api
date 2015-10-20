@@ -48,49 +48,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	private ObjectMapper jsonMapper = new ObjectMapper();
 	
-	@Override
-	@Transactional
-	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, String originalData, String newData
-			) throws EntityCreationException, EntityRetrievalException {
-		
-		ActivityDTO dto = new ActivityDTO();
-		dto.setConcept(concept);
-		dto.setId(null);
-		dto.setDescription(activityDescription);
-		dto.setOriginalData(originalData);
-		dto.setNewData(newData);
-		dto.setActivityDate(new Date());
-		dto.setActivityObjectId(objectId);
-		dto.setCreationDate(new Date());
-		dto.setLastModifiedDate(new Date());
-		dto.setLastModifiedUser(Util.getCurrentUser().getId());
-		dto.setDeleted(false);
-		
-		activityDAO.create(dto);
-		
-	}
-
-	@Override
-	@Transactional
-	public void addActivity(ActivityConcept concept, Long objectId,
-			String activityDescription, String originalData, String newData, Date timestamp) throws EntityCreationException, EntityRetrievalException {
-		
-		ActivityDTO dto = new ActivityDTO();
-		dto.setConcept(concept);
-		dto.setId(null);
-		dto.setDescription(activityDescription);
-		dto.setOriginalData(originalData);
-		dto.setNewData(newData);
-		dto.setActivityDate(timestamp);
-		dto.setActivityObjectId(objectId);
-		dto.setCreationDate(new Date());
-		dto.setLastModifiedDate(new Date());
-		dto.setLastModifiedUser(Util.getCurrentUser().getId());
-		dto.setDeleted(false);
-		
-		activityDAO.create(dto);
-	}
-
+	
 	@Override
 	@Transactional
 	public void addActivity(ActivityConcept concept, Long objectId,
