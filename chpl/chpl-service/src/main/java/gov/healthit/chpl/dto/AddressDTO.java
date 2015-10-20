@@ -10,7 +10,8 @@ public class AddressDTO {
 	private String streetLineOne;
 	private String streetLineTwo;
 	private String city;
-	private String region;
+	private String state;
+	private String zipcode;
 	private String country;
 	private Date creationDate;
 	private Boolean deleted;
@@ -26,7 +27,8 @@ public class AddressDTO {
 			this.streetLineOne = entity.getStreetLineOne();
 			this.streetLineTwo = entity.getStreetLineTwo();
 			this.city = entity.getCity();
-			this.region = entity.getRegion();
+			this.state = entity.getState();
+			this.zipcode = entity.getZipcode();
 			this.country = entity.getCountry();
 			this.creationDate = entity.getCreationDate();
 			this.deleted = entity.getDeleted();
@@ -65,12 +67,12 @@ public class AddressDTO {
 		this.city = city;
 	}
 
-	public String getRegion() {
-		return region;
+	public String getState() {
+		return state;
 	}
 
-	public void setRegion(String region) {
-		this.region = region;
+	public void setState(String state) {
+		this.state = state;
 	}
 
 	public String getCountry() {
@@ -104,5 +106,13 @@ public class AddressDTO {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getZipcode() {
+		return zipcode;
+	}
+
+	public void setZipcode(String zipcode) {
+		this.zipcode = zipcode;
 	}
 }

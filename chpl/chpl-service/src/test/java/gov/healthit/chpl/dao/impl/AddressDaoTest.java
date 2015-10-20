@@ -55,6 +55,17 @@ public class AddressDaoTest extends TestCase {
 	}
 	
 	@Test
+	public void getAddressByValues() {
+		AddressDTO search = new AddressDTO();
+		search.setStreetLineOne("1 Test Road");
+		search.setCity("Baltimore");
+		search.setState("MD");
+		search.setZipcode("21220");
+		search.setCountry("USA");
+		AddressDTO found = addressDao.getByValues(search);
+		assertNotNull(found);
+	}
+	@Test
 	public void getAddressByVendorId() {
 		Long vendorId = 1L;
 		AddressDTO result = null;
@@ -99,7 +110,8 @@ public class AddressDaoTest extends TestCase {
 		AddressDTO newAddress = new AddressDTO();
 		newAddress.setStreetLineOne("800 Frederick Road");
 		newAddress.setCity("Catonsville");
-		newAddress.setRegion("MD");
+		newAddress.setState("MD");
+		newAddress.setZipcode("21228");
 		newAddress.setCountry("USA");
 		newAddress.setLastModifiedUser(-2L);
 		newAddress.setCreationDate(new Date());

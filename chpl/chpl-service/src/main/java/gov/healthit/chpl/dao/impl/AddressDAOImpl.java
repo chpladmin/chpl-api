@@ -30,7 +30,8 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		toInsert.setStreetLineOne(dto.getStreetLineOne());
 		toInsert.setStreetLineTwo(dto.getStreetLineTwo());
 		toInsert.setCity(dto.getCity());
-		toInsert.setRegion(dto.getRegion());
+		toInsert.setState(dto.getState());
+		toInsert.setZipcode(dto.getZipcode());
 		toInsert.setCountry(dto.getCountry());
 
 		if(dto.getDeleted() != null) {
@@ -74,8 +75,12 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 			address.setCity(addressDto.getCity());
 		}
 		
-		if(addressDto.getRegion() != null) {
-			address.setRegion(addressDto.getRegion());
+		if(addressDto.getState() != null) {
+			address.setState(addressDto.getState());
+		}
+		
+		if(addressDto.getZipcode() != null) {
+			address.setZipcode(addressDto.getZipcode());
 		}
 		
 		if(addressDto.getCountry() != null) {
@@ -154,7 +159,8 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 			toUpdate.setStreetLineOne(addressDto.getStreetLineOne());
 			toUpdate.setStreetLineTwo(addressDto.getStreetLineTwo());
 			toUpdate.setCity(addressDto.getCity());
-			toUpdate.setRegion(addressDto.getRegion());
+			toUpdate.setState(addressDto.getState());
+			toUpdate.setZipcode(addressDto.getZipcode());
 			toUpdate.setCountry(addressDto.getCountry());
 			address = update(toUpdate);
 		} else {
@@ -200,7 +206,8 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		String addressQuery = "from AddressEntity a where (NOT deleted = true) "
 				+ " AND (street_line_1 = :line1) "
 				+ " AND (city = :city)"
-				+ " AND (region = :region)"
+				+ " AND (state = :state)"
+				+ " AND (zipcode = :zipcode)"
 				+ " AND (country = :country)";
 		if(toSearch.getStreetLineTwo() != null) {
 			addressQuery += " AND (street_line_2 = :line2)";
@@ -210,7 +217,8 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		Query query = entityManager.createQuery(addressQuery, AddressEntity.class );
 		query.setParameter("line1", toSearch.getStreetLineOne());
 		query.setParameter("city", toSearch.getCity());
-		query.setParameter("region", toSearch.getRegion());
+		query.setParameter("state", toSearch.getState());
+		query.setParameter("zipcode", toSearch.getZipcode());
 		query.setParameter("country", toSearch.getCountry());
 		if(toSearch.getStreetLineTwo() != null) {
 			query.setParameter("line2", toSearch.getStreetLineTwo());

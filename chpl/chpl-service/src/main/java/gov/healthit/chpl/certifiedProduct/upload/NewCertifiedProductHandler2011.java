@@ -137,9 +137,8 @@ public class NewCertifiedProductHandler2011 extends NewCertifiedProductHandler {
 		AddressDTO toFind = new AddressDTO();
 		toFind.setStreetLineOne(vendorStreetAddress);
 		toFind.setCity(vendorCity);
-		toFind.setRegion(vendorState);
-		//TODO: what about zip code? ... it's pretty unlikely we'll match any existing addresses
-		//since the columns are different
+		toFind.setState(vendorState);
+		toFind.setZipcode(vendorZipcode);
 		AddressDTO foundAddress = addressDao.getByValues(toFind);
 		if(foundAddress != null) {
 			AddressEntity addressEntity = null;

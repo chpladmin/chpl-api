@@ -21,10 +21,9 @@ import javax.persistence.Table;
 public class InvitationEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "invitedUserInvitedUser_idGenerator")
 	@Basic( optional = false )
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "invited_user_id", nullable = false  )
-	@SequenceGenerator(name = "invitedUserInvitedUser_idGenerator", sequenceName = "invited_user_invited_user_id_seq")	
 	private Long id;
 
 	@Column(name="email", unique=true)

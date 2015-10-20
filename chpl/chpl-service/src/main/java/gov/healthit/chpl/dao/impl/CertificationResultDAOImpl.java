@@ -43,7 +43,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			entity.setInherited(result.getInherited());
 			entity.setSedInherited(result.getSedInherited());
 			entity.setSedSuccessful(result.getSedSuccessful());
-			entity.setSuccessful(result.getSuccessful());
+			entity.setSuccess(result.getSuccessful());
 			entity.setTestDataVersionId(result.getTestDataVersionId());
 			entity.setTestProcedureVersionId(result.getTestProcedureVersionId());
 			
@@ -73,7 +73,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setSedInherited(result.getSedInherited());
 		entity.setSedSuccessful(result.getSedSuccessful());
-		entity.setSuccessful(result.getSuccessful());
+		entity.setSuccess(result.getSuccessful());
 		entity.setTestDataVersionId(result.getTestDataVersionId());
 		entity.setTestProcedureVersionId(result.getTestProcedureVersionId());
 		

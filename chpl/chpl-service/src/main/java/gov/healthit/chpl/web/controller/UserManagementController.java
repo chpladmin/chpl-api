@@ -132,8 +132,8 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		}
 		
 		//send email		
-		String htmlMessage = "<p>Hi,<br/>" +
-				"You’ve been invited to be an Administrator on the ONC's Open Data CHPL, " +
+		String htmlMessage = "<p>Hi,</p>" +
+				"<p>You've been invited to be an Administrator on the ONC's Open Data CHPL, " +
 					"which will allow you to manage certified product listings on the CHPL. " +
 					"Please click the link below to create your account: <br/>" +
 					"http://" + getProps().getProperty("chplServer") + "/#/userRegistration/"+ createdInvite.getToken() +
@@ -169,6 +169,10 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			throw new UserRetrievalException("Cannot delete user with ID less than 0");
 		}
 		UserDTO toDelete = userManager.getById(userId);
+		
+		if(toDelete == null) {
+			throw new UserRetrievalException("Could not find user with id " + userId);
+		}
 		
 		//delete the acb permissions for that user
 		acbManager.deletePermissionsForUser(toDelete);
