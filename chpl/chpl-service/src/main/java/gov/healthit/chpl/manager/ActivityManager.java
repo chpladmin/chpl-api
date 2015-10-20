@@ -5,9 +5,11 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface ActivityManager {
@@ -16,12 +18,12 @@ public interface ActivityManager {
 	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, String originalData, String newData, Date timestamp) throws EntityCreationException, EntityRetrievalException;
 	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData, Date timestamp) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	public List<ActivityEvent> getAllActivity();
-	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId);
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept);
-	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays);
-	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays);
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays);
+	public List<ActivityEvent> getAllActivity() throws JsonParseException, IOException;
+	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId) throws JsonParseException, IOException;
+	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept) throws JsonParseException, IOException;
+	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays) throws JsonParseException, IOException;
+	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException;
+	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException;
 	public void deleteActivity(Long toDelete) throws EntityRetrievalException;
 	
 }

@@ -7,27 +7,29 @@ import gov.healthit.chpl.domain.ActivityConcept;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class ActivityEvent {
 	
 	private Long id;
 	private String description;
-	private String originalData;
-	private String newData;
+	private JsonNode originalData;
+	private JsonNode newData;
 	private Date activityDate;
 	private Long activityObjectId;
 	private ActivityConcept concept;
 	
 	public ActivityEvent(){}
-	public ActivityEvent(ActivityDTO dto){
-		
-		this.id = dto.getId();
-		this.description = dto.getDescription();
-		this.originalData = dto.getOriginalData();
-		this.newData = dto.getNewData();
-		this.activityDate = dto.getActivityDate();
-		this.activityObjectId = dto.getActivityObjectId();		
-		this.concept = dto.getConcept();
-	}
+//	public ActivityEvent(ActivityDTO dto){
+//		
+//		this.id = dto.getId();
+//		this.description = dto.getDescription();
+//		this.originalData = dto.getOriginalData();
+//		this.newData = dto.getNewData();
+//		this.activityDate = dto.getActivityDate();
+//		this.activityObjectId = dto.getActivityObjectId();		
+//		this.concept = dto.getConcept();
+//	}
 	
 	public Long getId() {
 		return id;
@@ -59,17 +61,16 @@ public class ActivityEvent {
 	public void setConcept(ActivityConcept concept) {
 		this.concept = concept;
 	}
-	public String getOriginalData() {
+	public JsonNode getOriginalData() {
 		return originalData;
 	}
-	public void setOriginalData(String originalData) {
+	public void setOriginalData(JsonNode originalData) {
 		this.originalData = originalData;
 	}
-	public String getNewData() {
+	public JsonNode getNewData() {
 		return newData;
 	}
-	public void setNewData(String newData) {
+	public void setNewData(JsonNode newData) {
 		this.newData = newData;
 	}
-	
 }

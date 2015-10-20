@@ -19,6 +19,12 @@ import gov.healthit.chpl.manager.ActivityManager;
 
 
 
+
+
+
+
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,13 +33,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ActivityManagerImpl implements ActivityManager {
 
 	@Autowired
 	ActivityDAO activityDAO;
+	
+	private ObjectMapper jsonMapper = new ObjectMapper();
 	
 	@Override
 	@Transactional
@@ -127,12 +140,30 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
-	public List<ActivityEvent> getAllActivity() {
+	public List<ActivityEvent> getAllActivity() throws JsonParseException, IOException {
 		List<ActivityDTO> dtos = activityDAO.findAll();
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
+		JsonFactory factory = jsonMapper.getFactory();
+		
 		for (ActivityDTO dto : dtos){
-			ActivityEvent event = new ActivityEvent(dto);
+			ActivityEvent event = new ActivityEvent();
+			
+			event.setId(dto.getId());
+			event.setDescription(dto.getDescription());
+			event.setActivityDate(dto.getActivityDate());
+			event.setActivityObjectId(dto.getActivityObjectId());
+			event.setConcept(dto.getConcept());			
+			
+			JsonParser origData = factory.createParser(dto.getOriginalData());
+			JsonNode originalJSON = jsonMapper.readTree(origData);
+			
+			JsonParser newData = factory.createParser(dto.getOriginalData());
+			JsonNode newJSON = jsonMapper.readTree(newData);
+			
+			event.setOriginalData(originalJSON);
+			event.setNewData(newJSON);
+			
 			events.add(event);
 		}
 		return events;
@@ -141,13 +172,31 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	@Transactional
 	public List<ActivityEvent> getActivityForObject(
-			ActivityConcept concept, Long objectId) {
+			ActivityConcept concept, Long objectId) throws JsonParseException, IOException {
 		
 		List<ActivityDTO> dtos = activityDAO.findByObjectId(objectId, concept);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
+		JsonFactory factory = jsonMapper.getFactory();
+		
 		for (ActivityDTO dto : dtos){
-			ActivityEvent event = new ActivityEvent(dto);
+			ActivityEvent event = new ActivityEvent();
+			
+			event.setId(dto.getId());
+			event.setDescription(dto.getDescription());
+			event.setActivityDate(dto.getActivityDate());
+			event.setActivityObjectId(dto.getActivityObjectId());
+			event.setConcept(dto.getConcept());			
+			
+			JsonParser origData = factory.createParser(dto.getOriginalData());
+			JsonNode originalJSON = jsonMapper.readTree(origData);
+			
+			JsonParser newData = factory.createParser(dto.getOriginalData());
+			JsonNode newJSON = jsonMapper.readTree(newData);
+			
+			event.setOriginalData(originalJSON);
+			event.setNewData(newJSON);
+			
 			events.add(event);
 		}
 		return events;
@@ -155,13 +204,31 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept) {
+	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept) throws JsonParseException, IOException {
 		
 		List<ActivityDTO> dtos = activityDAO.findByConcept(concept);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
+		JsonFactory factory = jsonMapper.getFactory();
+		
 		for (ActivityDTO dto : dtos){
-			ActivityEvent event = new ActivityEvent(dto);
+			ActivityEvent event = new ActivityEvent();
+			
+			event.setId(dto.getId());
+			event.setDescription(dto.getDescription());
+			event.setActivityDate(dto.getActivityDate());
+			event.setActivityObjectId(dto.getActivityObjectId());
+			event.setConcept(dto.getConcept());			
+			
+			JsonParser origData = factory.createParser(dto.getOriginalData());
+			JsonNode originalJSON = jsonMapper.readTree(origData);
+			
+			JsonParser newData = factory.createParser(dto.getOriginalData());
+			JsonNode newJSON = jsonMapper.readTree(newData);
+			
+			event.setOriginalData(originalJSON);
+			event.setNewData(newJSON);
+			
 			events.add(event);
 		}
 		return events;
@@ -169,12 +236,29 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
-	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays) {
+	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays) throws JsonParseException, IOException {
 		List<ActivityDTO> dtos = activityDAO.findAllInLastNDays(lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
+		JsonFactory factory = jsonMapper.getFactory();
 		
 		for (ActivityDTO dto : dtos){
-			ActivityEvent event = new ActivityEvent(dto);
+			ActivityEvent event = new ActivityEvent();
+			
+			event.setId(dto.getId());
+			event.setDescription(dto.getDescription());
+			event.setActivityDate(dto.getActivityDate());
+			event.setActivityObjectId(dto.getActivityObjectId());
+			event.setConcept(dto.getConcept());			
+			
+			JsonParser origData = factory.createParser(dto.getOriginalData());
+			JsonNode originalJSON = jsonMapper.readTree(origData);
+			
+			JsonParser newData = factory.createParser(dto.getOriginalData());
+			JsonNode newJSON = jsonMapper.readTree(newData);
+			
+			event.setOriginalData(originalJSON);
+			event.setNewData(newJSON);
+			
 			events.add(event);
 		}
 		return events;
@@ -183,13 +267,29 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	@Transactional
 	public List<ActivityEvent> getActivityForObject(
-			ActivityConcept concept, Long objectId, Integer lastNDays) {
-		
+			ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException {
+		JsonFactory factory = jsonMapper.getFactory();
 		List<ActivityDTO> dtos = activityDAO.findByObjectId(objectId, concept, lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
-			ActivityEvent event = new ActivityEvent(dto);
+			ActivityEvent event = new ActivityEvent();
+			
+			event.setId(dto.getId());
+			event.setDescription(dto.getDescription());
+			event.setActivityDate(dto.getActivityDate());
+			event.setActivityObjectId(dto.getActivityObjectId());
+			event.setConcept(dto.getConcept());			
+			
+			JsonParser origData = factory.createParser(dto.getOriginalData());
+			JsonNode originalJSON = jsonMapper.readTree(origData);
+			
+			JsonParser newData = factory.createParser(dto.getOriginalData());
+			JsonNode newJSON = jsonMapper.readTree(newData);
+			
+			event.setOriginalData(originalJSON);
+			event.setNewData(newJSON);
+			
 			events.add(event);
 		}
 		return events;
@@ -197,13 +297,30 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) {
+	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException {
 		
 		List<ActivityDTO> dtos = activityDAO.findByConcept(concept, lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
+		JsonFactory factory = jsonMapper.getFactory();
 		
 		for (ActivityDTO dto : dtos){
-			ActivityEvent event = new ActivityEvent(dto);
+			ActivityEvent event = new ActivityEvent();
+			
+			event.setId(dto.getId());
+			event.setDescription(dto.getDescription());
+			event.setActivityDate(dto.getActivityDate());
+			event.setActivityObjectId(dto.getActivityObjectId());
+			event.setConcept(dto.getConcept());			
+			
+			JsonParser origData = factory.createParser(dto.getOriginalData());
+			JsonNode originalJSON = jsonMapper.readTree(origData);
+			
+			JsonParser newData = factory.createParser(dto.getOriginalData());
+			JsonNode newJSON = jsonMapper.readTree(newData);
+			
+			event.setOriginalData(originalJSON);
+			event.setNewData(newJSON);
+			
 			events.add(event);
 		}
 		return events;
