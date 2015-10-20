@@ -142,6 +142,7 @@
 			<version>5.2.1.Final</version>
 		</dependency>
 		
+		
 		<!-- for unit/integration testing of the dao calls -->
 
 		<dependency>

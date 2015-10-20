@@ -71,10 +71,6 @@ public class UserAuthenticator implements Authenticator {
 		return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
 	}
 	
-	public String createPassword(String seed) {
-		return bCryptPasswordEncoder.encode(seed);
-	}
-	
 	public String getJWT(UserDTO user) throws JWTCreationException {
 		
 		String jwt = null;

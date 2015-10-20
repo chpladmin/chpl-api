@@ -270,6 +270,21 @@ INSERT INTO openchpl.cqm_criterion (cqm_criterion_type_id, cqm_version_id, numbe
 (1, 1, 'CMS91', 'Stroke-4 Ischemic stroke - Throm', -1), (1, 2, 'CMS91', 'Stroke-4 Ischemic stroke - Throm', -1), (1, 3, 'CMS91', 'Stroke-4 Ischemic stroke - Throm', -1), (1, 4, 'CMS91', 'Stroke-4 Ischemic stroke - Throm', -1), (1, 5, 'CMS91', 'Stroke-4 Ischemic stroke - Throm', -1),
 (1, 1, 'CMS9V1', 'Exclusive Breast Milk Feeding', -1), (1, 2, 'CMS9V1', 'Exclusive Breast Milk Feeding', -1), (1, 3, 'CMS9V1', 'Exclusive Breast Milk Feeding', -1), (1, 4, 'CMS9V1', 'Exclusive Breast Milk Feeding', -1), (1, 5, 'CMS9V1', 'Exclusive Breast Milk Feeding', -1);
 
+
+
+INSERT INTO openchpl.activity_concept (activity_concept_id, concept, last_modified_user) VALUES
+(1, 'CERTIFIED_PRODUCT', -1),
+(2, 'PRODUCT', -1),
+(3, 'VENDOR', -1),
+(4, 'CERTIFICATION', -1),
+(5, 'CQM', -1),
+(6, 'CERTIFICATION_BODY', -1),
+(7, 'VERSION', -1),
+(8, 'USER', -1),
+(9, 'ATL', -1);
+(10, 'PENDING_CERTIFIED_PRODUCT', -1);
+
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';

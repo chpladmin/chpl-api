@@ -172,12 +172,13 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	private void create(CertificationBodyEntity acb) {
 		
 		entityManager.persist(acb);
-		
+		entityManager.flush();
 	}
 	
 	private void update(CertificationBodyEntity acb) {
 		
-		entityManager.merge(acb);	
+		entityManager.merge(acb);
+		entityManager.flush();
 	
 	}
 	
