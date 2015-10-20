@@ -23,7 +23,7 @@ public interface UserDAO {
 	public List<UserDTO> findAll();
 	
 	public List<UserDTO> findByNames(List<String> names);
-
+	public UserDTO findUserByNameAndEmail(String username, String email);
 	public UserDTO findUser(UserDTO user);
 	
 	public UserDTO getById(Long userId) throws UserRetrievalException;

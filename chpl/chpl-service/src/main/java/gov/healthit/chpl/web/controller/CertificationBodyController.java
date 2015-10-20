@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -19,21 +18,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationBodyPermission;
 import gov.healthit.chpl.domain.CertificationBodyUser;
-import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.UpdateUserAndAcbRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -53,7 +47,7 @@ public class CertificationBodyController {
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertificationBodyResults getAcbs() {
-		List<CertificationBodyDTO> acbs = acbManager.getAll();
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
 		
 		CertificationBodyResults results = new CertificationBodyResults();
 		if(acbs != null) {
@@ -87,11 +81,9 @@ public class CertificationBodyController {
 			address.setStreetLineOne(acbInfo.getAddress().getLine1());
 			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
 			address.setCity(acbInfo.getAddress().getCity());
-			address.setRegion(acbInfo.getAddress().getRegion());
+			address.setState(acbInfo.getAddress().getState());
+			address.setZipcode(acbInfo.getAddress().getZipcode());
 			address.setCountry(acbInfo.getAddress().getCountry());
-			address.setDeleted(false);
-			address.setLastModifiedDate(new Date());
-			address.setLastModifiedUser(Util.getCurrentUser().getId());
 		}
 		toCreate.setAddress(address);
 		toCreate = acbManager.create(toCreate);
@@ -114,11 +106,9 @@ public class CertificationBodyController {
 			address.setStreetLineOne(acbInfo.getAddress().getLine1());
 			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
 			address.setCity(acbInfo.getAddress().getCity());
-			address.setRegion(acbInfo.getAddress().getRegion());
+			address.setState(acbInfo.getAddress().getState());
+			address.setZipcode(acbInfo.getAddress().getZipcode());
 			address.setCountry(acbInfo.getAddress().getCountry());
-			address.setDeleted(false);
-			address.setLastModifiedDate(new Date());
-			address.setLastModifiedUser(Util.getCurrentUser().getId());
 		}
 		toUpdate.setAddress(address);
 		
@@ -158,30 +148,22 @@ public class CertificationBodyController {
 		return "{\"userAdded\" : true }";
 	}
 	
-	@RequestMapping(value="/delete_user", method= RequestMethod.POST, 
+	@RequestMapping(value="{acbId}/remove_user/{userId}", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String deleteUserFromAcb(@RequestBody UpdateUserAndAcbRequest updateRequest) 
+	public String deleteUserFromAcb(@PathVariable Long acbId, @PathVariable Long userId) 
 								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException{
 		
-		if(updateRequest.getAcbId() == null || updateRequest.getUserId() == null || updateRequest.getUserId() <= 0) {
-			throw new InvalidArgumentsException("ACB ID and User ID (greater than 0) are required.");
-		}
-		
-		UserDTO user = userManager.getById(updateRequest.getUserId());
-		CertificationBodyDTO acb = acbManager.getById(updateRequest.getAcbId());
+		UserDTO user = userManager.getById(userId);
+		CertificationBodyDTO acb = acbManager.getById(acbId);
 		
 		if(user == null || acb == null) {
 			throw new InvalidArgumentsException("Could not find either ACB or User specified");
 		}
 		
-		if(updateRequest.getAuthority() == null) {
-			//delete all permissions on that acb
-			acbManager.deleteAllPermissionsOnAcb(acb, new PrincipalSid(user.getSubjectName()));
-		} else {
-			Permission permission = CertificationBodyPermission.toPermission(updateRequest.getAuthority());
-			acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), permission);
-		}
+		//delete all permissions on that acb
+		acbManager.deleteAllPermissionsOnAcb(acb, new PrincipalSid(user.getSubjectName()));
+		
 		return "{\"userDeleted\" : true }";
 	}
 	

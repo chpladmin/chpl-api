@@ -16,7 +16,8 @@ public class CertifiedProductDetailsDTO {
     private String practiceTypeName;
     private Long productClassificationTypeId;
     private String otherAcb;
-    private String certificationStatusId;
+    private Long certificationStatusId;
+    private String certificationStatusName;
     private Long certificationEditionId;
     private String year;
     private Long certificationBodyId;
@@ -32,6 +33,7 @@ public class CertifiedProductDetailsDTO {
     private Integer countCertifications;
     private Integer countCqms;
     private Boolean visibleOnChpl;
+    private Date lastModifiedDate;
     
     public CertifiedProductDetailsDTO(){}
     
@@ -43,6 +45,7 @@ public class CertifiedProductDetailsDTO {
     	this.certificationBodyName = entity.getCertificationBodyName();
     	this.certificationEditionId = entity.getCertificationBodyId();
     	this.certificationStatusId = entity.getCertificationStatusId();
+    	this.certificationStatusName = entity.getCertificationStatusName();
     	this.chplProductNumber = entity.getChplProductNumber();
     	this.otherAcb = entity.getOtherAcb();
     	this.practiceTypeId = entity.getPracticeTypeId();
@@ -63,7 +66,7 @@ public class CertifiedProductDetailsDTO {
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
-    	
+    	this.lastModifiedDate = entity.getLastModifiedDate();
     }
     
     
@@ -121,10 +124,10 @@ public class CertifiedProductDetailsDTO {
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
 	}
-	public String getCertificationStatusId() {
+	public Long getCertificationStatusId() {
 		return certificationStatusId;
 	}
-	public void setCertificationStatusId(String certificationStatusId) {
+	public void setCertificationStatusId(Long certificationStatusId) {
 		this.certificationStatusId = certificationStatusId;
 	}
 	public Long getCertificationEditionId() {
@@ -222,6 +225,22 @@ public class CertifiedProductDetailsDTO {
 	}
 	public void setVisibleOnChpl(Boolean visibleOnChpl) {
 		this.visibleOnChpl = visibleOnChpl;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getCertificationStatusName() {
+		return certificationStatusName;
+	}
+
+	public void setCertificationStatusName(String certificationStatusName) {
+		this.certificationStatusName = certificationStatusName;
 	}
 	
 }

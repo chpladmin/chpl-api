@@ -10,9 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -41,8 +39,13 @@ public class AddressEntity {
 	
 	@Basic( optional = false )
 	@Size(min=1)
-	@Column(name = "region")
-	private String region;
+	@Column(name = "state")
+	private String state;
+	
+	@Basic( optional = false )
+	@Size(min=1)
+	@Column(name = "zipcode")
+	private String zipcode;
 	
 	@Basic( optional = false )
 	@Size(min=1)
@@ -100,14 +103,22 @@ public class AddressEntity {
 		this.city = city;
 	}
 
-	public String getRegion() {
-		return region;
+	public String getState() {
+		return state;
 	}
 
-	public void setRegion(String region) {
-		this.region = region;
+	public void setState(String state) {
+		this.state = state;
 	}
 
+	public String getZipcode() {
+		return zipcode;
+	}
+
+	public void setZipcode(String zipcode) {
+		this.zipcode = zipcode;
+	}
+	
 	public String getCountry() {
 		return country;
 	}
