@@ -170,6 +170,10 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		}
 		UserDTO toDelete = userManager.getById(userId);
 		
+		if(toDelete == null) {
+			throw new UserRetrievalException("Could not find user with id " + userId);
+		}
+		
 		//delete the acb permissions for that user
 		acbManager.deletePermissionsForUser(toDelete);
 		
