@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -92,7 +94,7 @@ public class CertifiedProductController {
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
-		throws EntityCreationException, EntityRetrievalException {
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		CertifiedProductDTO existingProduct = cpManager.getById(updateRequest.getId());
 		Long acbId = existingProduct.getCertificationBodyId();
@@ -185,7 +187,7 @@ public class CertifiedProductController {
 	
 	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException {
+	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		pcpManager.reject(id);
 		return "{\"success\" : true }";
 	}
@@ -193,7 +195,7 @@ public class CertifiedProductController {
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
-		throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException {
+		throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
 		if(StringUtils.isEmpty(acbIdStr)) {
 			throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");

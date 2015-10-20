@@ -9,8 +9,10 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 
@@ -36,6 +38,8 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 @Service
 public class CertificationBodyManagerImpl extends ApplicationObjectSupport implements CertificationBodyManager {
 
@@ -49,10 +53,13 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Autowired
 	private MutableAclService mutableAclService;
 
+	@Autowired
+	private ActivityManager activityManager;
+	
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException {
+	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		// Create the ACB itself
 		CertificationBodyDTO result = certificationBodyDAO.create(acb);
 
@@ -77,14 +84,28 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		
 		logger.debug("Created acb " + result
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
+		
+		String activityMsg = "Created Certification Body "+result.getName();
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, null, result);
+		
 		return result;
 	}
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
-	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException {
+	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acb.getId());
+		
 		CertificationBodyDTO result = certificationBodyDAO.update(acb);
+		
 		logger.debug("Updated acb " + acb);
+		
+		String activityMsg = "Updated acb " + acb.getName();
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, toUpdate, result);
+		
 		return result;
 	}
 	

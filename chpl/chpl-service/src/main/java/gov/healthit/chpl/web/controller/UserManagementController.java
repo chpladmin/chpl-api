@@ -183,6 +183,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		return "{\"deletedUser\" : true }";
 	}
 	
+
 	@RequestMapping(value="/grant_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
