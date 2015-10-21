@@ -15,4 +15,5 @@ public interface VendorManager {
 	public VendorDTO create(VendorDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public void delete(VendorDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void delete(Long vendorId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	public VendorDTO merge(List<Long> vendorIdsToMerge, VendorDTO vendorToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 }

@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.results.ProductResults;
@@ -101,20 +98,8 @@ public class ProductController {
 				if(productInfo.getNewVendorId() != null) {
 					newProduct.setVendorId(productInfo.getNewVendorId());
 				}
-				result = productManager.create(newProduct);
+				result = productManager.merge(productInfo.getProductIds(), newProduct);
 				
-				//search for any versions assigned to the list of products passed in
-				List<ProductVersionDTO> assignedVersions = versionManager.getByProducts(productInfo.getProductIds());
-				//reassign those versions to the new product
-				for(ProductVersionDTO version : assignedVersions) {
-					version.setProductId(result.getId());
-					versionManager.update(version);
-				}
-				
-				// - mark the passed in products as deleted
-				for(Long productId : productInfo.getProductIds()) {
-					productManager.delete(productId);
-				}
 			} else if(productInfo.getProductIds().size() == 1) {
 				//update the given product id with new data
 				ProductDTO toUpdate = new ProductDTO();
