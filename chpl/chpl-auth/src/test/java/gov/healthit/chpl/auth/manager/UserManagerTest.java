@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.dto.UserDTO;
@@ -239,17 +240,116 @@ public class UserManagerTest {
 		
 	}
 	
+	@Test
+	public void testRemoveRole() throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		userManager.grantRole("testUser2", "ROLE_ACB_ADMIN");
+		
+		UserDTO after = userManager.getByName("testUser2");
+		
+		Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		assertEquals(afterRoles.size(),2);
+		
+		userManager.removeRole("testUser2", "ROLE_ACB_ADMIN");
+		Set<UserPermissionDTO> afterRemovedRoles = getUserPermissions(after);
+		
+		assertEquals(afterRemovedRoles.size(),1);
+		SecurityContextHolder.getContext().setAuthentication(null);
+		
+	}
+	
+	@Test
+	public void testRemoveRoleDTO() throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
+		
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		userManager.grantRole("testUser2", "ROLE_ACB_ADMIN");
+		
+		UserDTO after = userManager.getByName("testUser2");
+		
+		Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		assertEquals(afterRoles.size(),2);
+		
+		userManager.removeRole(after, "ROLE_ACB_ADMIN");
+		Set<UserPermissionDTO> afterRemovedRoles = getUserPermissions(after);
+		
+		assertEquals(afterRemovedRoles.size(),1);
+		SecurityContextHolder.getContext().setAuthentication(null);
+		
+	}
+	
+	@Test
+	public void testRemoveAdmin() throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException, JWTCreationException, JWTValidationException{
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		UserDTO before = userManager.getByName("testUser2");
+		Set<UserPermissionDTO> beforeRoles = getUserPermissions(before);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		userManager.grantAdmin("testUser2");
+		
+		UserDTO after = userManager.getByName("testUser2");
+		
+		Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		assertEquals(afterRoles.size(),2);
+		assertEquals(beforeRoles.size(),1);
+		
+		String jwt = userAuthenticator.getJWT(after);
+		User newAdmin = jwtUserConverter.getAuthenticatedUser(jwt);
+		
+		UserDTO testUser = userManager.getByName("TESTUSER");
+		Set<UserPermissionDTO> testUserRolesBefore = getUserPermissions(testUser);
+		
+		SecurityContextHolder.getContext().setAuthentication(newAdmin); // set the new admin user as the current Authentication
+		
+		userManager.grantAdmin("TESTUSER");// If we can do this, we have Admin privileges.
+		
+		Set<UserPermissionDTO> testUserRolesAfter = getUserPermissions(testUser);
+		SecurityContextHolder.getContext().setAuthentication(newAdmin);
+		
+		assertTrue(testUserRolesAfter.size() > testUserRolesBefore.size());
+		
+		userManager.removeAdmin("TESTUSER");
+		userManager.removeAdmin("testUser2");
+		
+		
+		UserDTO unPrivileged = userManager.getByName("testUser2");
+		
+		String unPrivilegedJwt = userAuthenticator.getJWT(unPrivileged);
+		User nonAdmin = jwtUserConverter.getAuthenticatedUser(unPrivilegedJwt);
+		SecurityContextHolder.getContext().setAuthentication(nonAdmin);
+		
+		User currentUser = Util.getCurrentUser();
+		System.out.println(currentUser);
+		
+		userManager.grantAdmin("TESTUSER");
+		Boolean grantFailed = false;
+		
+		
+		
+		try {
+			userManager.grantAdmin("TESTUSER");
+		} catch (Exception e){
+			grantFailed = true;
+		}
+		SecurityContextHolder.getContext().setAuthentication(null);
+		
+		assertTrue(grantFailed);
+		
+	}
+	
+	
 	
 	/*
-	 *
-	 *
-	public void removeRole(UserDTO user, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
-	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
-	public void removeAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException;
-	
-	
-	public void updateUserPassword(String userName, String password) throws UserRetrievalException;
-	public String resetUserPassword(String username, String email) throws UserRetrievalException;
+	 * 
+	public oid updateUserPassword(String userName, String password) throws UserRetrievalException;
+	public String resetUserPassword(String username, String email) throws UserRetrievalException;v
 	
 	public String getEncodedPassword(UserDTO user) throws UserRetrievalException;
 
