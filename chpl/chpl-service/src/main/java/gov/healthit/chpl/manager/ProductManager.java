@@ -17,4 +17,5 @@ public interface ProductManager {
 	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+	public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 }

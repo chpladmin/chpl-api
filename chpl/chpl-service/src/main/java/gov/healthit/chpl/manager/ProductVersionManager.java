@@ -17,4 +17,5 @@ public interface ProductVersionManager {
 	public ProductVersionDTO update(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void delete(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void delete(Long productVersionId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 }

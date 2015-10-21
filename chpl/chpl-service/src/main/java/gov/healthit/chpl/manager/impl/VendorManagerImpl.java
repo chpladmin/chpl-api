@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.Vendor;
+import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.VendorDTO;
 import gov.healthit.chpl.entity.VendorEntity;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -24,6 +29,8 @@ public class VendorManagerImpl implements VendorManager {
 
 	@Autowired
 	VendorDAO vendorDao;
+	
+	@Autowired ProductDAO productDao;
 	
 	@Autowired
 	ActivityManager activityManager;
@@ -79,5 +86,33 @@ public class VendorManagerImpl implements VendorManager {
 		VendorDTO toDelete = vendorDao.getById(vendorId);
 		vendorDao.delete(vendorId);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, toDelete.getId(), "Vendor "+toDelete.getName()+" has been deleted.", toDelete, null);
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@Transactional(readOnly = false)
+	public VendorDTO merge(List<Long> vendorIdsToMerge, VendorDTO vendorToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		List<VendorDTO> beforeVendors = new ArrayList<VendorDTO>();
+		for(Long vendorId : vendorIdsToMerge) {
+			beforeVendors.add(vendorDao.getById(vendorId));
+		}
+		
+		VendorDTO createdVendor = vendorDao.create(vendorToCreate);
+		// - search for any products assigned to the list of vendors passed in
+		List<ProductDTO> vendorProducts = productDao.getByVendors(vendorIdsToMerge);
+		// - reassign those products to the new vendor
+		for(ProductDTO product : vendorProducts) {
+			product.setVendorId(createdVendor.getId());
+			productDao.update(product);
+		}
+		// - mark the passed in vendors as deleted
+		for(Long vendorId : vendorIdsToMerge) {
+			vendorDao.delete(vendorId);
+		}
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, createdVendor.getId(), "Merged "+ vendorIdsToMerge.size() + " vendors into new vendor '" + createdVendor.getName() + "'.", beforeVendors, createdVendor);
+		
+		return createdVendor;
 	}
 }
