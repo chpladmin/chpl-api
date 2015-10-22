@@ -50,6 +50,10 @@ public class UserAuthenticator implements Authenticator {
 		UserDTO user = getUserByName(credentials.getUserName());
 		
 		if (user != null){
+			if(user.getSignatureDate() == null) {
+				throw new BadCredentialsException("Account for user " + user.getSubjectName() + " has not been confirmed.");
+			}
+			
 			if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))){
 				
 				try {
