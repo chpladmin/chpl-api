@@ -76,6 +76,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			contact.setLastModifiedUser(Util.getCurrentUser().getId());
 			contact.setLastModifiedDate(new Date());
 			contact.setDeleted(false);
+			contact.setSignatureDate(null); //null for new user, must confirm email to get it filled in
 			
 			userContactDAO.create(contact);
 			userEntity.setContact(contact);
@@ -96,6 +97,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		userEntity.setLastName(user.getLastName());
 		userEntity.getContact().setEmail(user.getEmail());
 		userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
+		userEntity.getContact().setSignatureDate(user.getSignatureDate());
 		userEntity.getContact().setTitle(user.getTitle());
 		userEntity.setAccountEnabled(user.isAccountEnabled());
 		userEntity.setAccountExpired(user.isAccountExpired());
