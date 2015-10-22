@@ -13,31 +13,32 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
 	
 	@Autowired private NewCertifiedProductHandler2011 handler2011;
 	@Autowired private NewCertifiedProductHandler2014 handler2014;
+	@Autowired private UpdateOrDeleteCertifiedProductHandler updateHandler;
 	
 	private CertifiedProductUploadHandlerFactoryImpl() {}
 	
 	@Override
-	public CertifiedProductUploadHandlerImpl getHandler(CSVRecord heading, CSVRecord cpRecord) throws InvalidArgumentsException {
-		CertifiedProductUploadHandlerImpl handler = null;
+	public CertifiedProductUploadHandler getHandler(CSVRecord heading, CSVRecord cpRecord) throws InvalidArgumentsException {
+		CertifiedProductUploadHandler handler = null;
 		
 		//what type of handler do we need?
 		CertifiedProductUploadType uploadType = CertifiedProductUploadType.valueOf(cpRecord.get(1).toUpperCase());
 
-		int year = -1;
-		if(heading.size() == NUM_FIELDS_2014) {
-			//2014
-			if(uploadType == CertifiedProductUploadType.NEW) {
+		if(uploadType == CertifiedProductUploadType.UPDATE ||
+				uploadType == CertifiedProductUploadType.DELETE) {
+			handler = updateHandler;
+		} else if(uploadType == CertifiedProductUploadType.NEW) {
+			if(heading.size() == NUM_FIELDS_2014) {
 				handler = handler2014;
+			} else {
+				throw new InvalidArgumentsException("Expected " + NUM_FIELDS_2014 + " fields in the record but found " + cpRecord.size());
 			}
 		} else {
-			//TODO: we will check other sizes (or whatever distinguishes between upload files for years 2014 and 2015)
-			throw new InvalidArgumentsException("Expected " + NUM_FIELDS_2014 + " fields in the record but found " + cpRecord.size());
+			throw new InvalidArgumentsException("Cannot handle '" + uploadType + "' upload type.");
 		}
-		
-		if(handler != null) {
-			handler.setRecord(cpRecord);
-			handler.setHeading(heading);
-		}
+			
+		handler.setRecord(cpRecord);
+		handler.setHeading(heading);
 		return handler;
 	}
 }

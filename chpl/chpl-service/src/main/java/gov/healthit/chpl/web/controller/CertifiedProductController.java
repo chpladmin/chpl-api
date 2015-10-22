@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
+import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadType;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
@@ -245,11 +246,18 @@ public class CertifiedProductController {
 					//create a certified product to pass into the handler
 					try {
 						PendingCertifiedProductEntity pendingCp = handler.handle();
-						if(pendingCp.getCertificationBodyId() == null) {
-							throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
+						PendingCertifiedProductDTO pendingCpDto = null;
+						
+						CertifiedProductUploadType uploadType = CertifiedProductUploadType.valueOf(pendingCp.getRecordStatus().toUpperCase());
+						if(uploadType == CertifiedProductUploadType.NEW) { 
+							if(pendingCp.getCertificationBodyId() == null) {
+								throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
+							}
+							pendingCpDto = pcpManager.create(pendingCp.getCertificationBodyId(), pendingCp);
+						} else {
+							pendingCpDto = new PendingCertifiedProductDTO(pendingCp);
 						}
 						
-						PendingCertifiedProductDTO pendingCpDto = pcpManager.create(pendingCp.getCertificationBodyId(), pendingCp);
 						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
 						//set applicable criteria
 						details.setApplicableCqmCriteria(pcpManager.getApplicableCriteria(pendingCpDto));
