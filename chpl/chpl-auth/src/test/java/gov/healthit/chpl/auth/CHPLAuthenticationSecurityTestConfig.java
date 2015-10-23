@@ -45,7 +45,7 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 @ComponentScan(basePackages = {"gov.healthit.chpl.auth**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLAuthenticationSecurityTestConfig implements EnvironmentAware {
 	
-private Environment env;
+	private Environment env;
 	
 	@Override
 	public void setEnvironment(final Environment e) {

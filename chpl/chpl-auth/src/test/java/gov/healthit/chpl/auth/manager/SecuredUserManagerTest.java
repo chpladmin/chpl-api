@@ -1,5 +1,6 @@
 package gov.healthit.chpl.auth.manager;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -20,5 +21,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class SecuredUserManagerTest {
+	
+	@Test
+	public void placeholder(){}
 
 }
