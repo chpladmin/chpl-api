@@ -323,7 +323,8 @@ public class UserManagerTest {
 		
 		String unPrivilegedJwt = userAuthenticator.getJWT(unPrivileged);
 		User nonAdmin = jwtUserConverter.getAuthenticatedUser(unPrivilegedJwt);
-		SecurityContextHolder.getContext().setAuthentication(nonAdmin);
+		SecurityContextHolder.getContext().setAuthentication(null);
+		//SecurityContextHolder.getContext().setAuthentication(nonAdmin);
 		
 		User currentUser = Util.getCurrentUser();
 		System.out.println(currentUser);
@@ -331,7 +332,7 @@ public class UserManagerTest {
 		userManager.grantAdmin("TESTUSER");
 		Boolean grantFailed = false;
 		
-		
+		// TODO: Above should be failing...
 		
 		try {
 			userManager.grantAdmin("TESTUSER");
