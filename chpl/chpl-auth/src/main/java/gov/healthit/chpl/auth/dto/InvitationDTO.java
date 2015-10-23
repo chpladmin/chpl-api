@@ -13,7 +13,9 @@ public class InvitationDTO {
 	private Long id;
 	private String email;
 	private Long acbId;
-	private String token;
+	private String inviteToken;
+	private String confirmToken;
+	private Long createdUserId;
 	private boolean deleted;
 	private Date creationDate;
 	private Long lastModifiedUserId;
@@ -28,7 +30,9 @@ public class InvitationDTO {
 		this.id = entity.getId();
 		this.email = entity.getEmailAddress();
 		this.acbId = entity.getAcbId();
-		this.token = entity.getToken();
+		this.inviteToken = entity.getInviteToken();
+		this.confirmToken = entity.getConfirmToken();
+		this.createdUserId = entity.getCreatedUserId();
 		this.deleted = entity.getDeleted();
 		this.creationDate = entity.getCreationDate();
 		this.lastModifiedUserId = entity.getLastModifiedUser();
@@ -44,12 +48,12 @@ public class InvitationDTO {
 	}
 	
 	public boolean isExpired() {
-		if(this.creationDate == null) {
+		if(this.creationDate == null || this.lastModifiedDate == null) {
 			return true;
 		}
 		
 		Date now = new Date();
-		if((now.getTime() - this.creationDate.getTime()) > VALID_INVITATION_LENGTH) {
+		if((now.getTime() - this.lastModifiedDate.getTime()) > VALID_INVITATION_LENGTH) {
 			return true;
 		}
 		return false;
@@ -71,12 +75,12 @@ public class InvitationDTO {
 		this.email = email;
 	}
 
-	public String getToken() {
-		return token;
+	public String getInviteToken() {
+		return inviteToken;
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public void setInviteToken(String token) {
+		this.inviteToken = token;
 	}
 
 	public boolean isDeleted() {
@@ -125,5 +129,21 @@ public class InvitationDTO {
 
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getConfirmToken() {
+		return confirmToken;
+	}
+
+	public void setConfirmToken(String confirmToken) {
+		this.confirmToken = confirmToken;
+	}
+
+	public Long getCreatedUserId() {
+		return createdUserId;
+	}
+
+	public void setCreatedUserId(Long createdUserId) {
+		this.createdUserId = createdUserId;
 	}
 }

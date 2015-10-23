@@ -83,7 +83,11 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 		//find the granted permissions for this user and remove them
 		Set<UserPermissionDTO> permissions = getGrantedPermissionsForUser(user);
 		for(UserPermissionDTO permission : permissions) {
-			removeRole(user, permission.getAuthority());
+			if(permission.getAuthority().equals("ROLE_ADMIN")) {
+				removeAdmin(user.getSubjectName());
+			} else {
+				removeRole(user, permission.getAuthority());
+			}
 		}
 		
 		//remove all ACLs for the user for all users and acbs

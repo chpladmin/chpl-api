@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
-import gov.healthit.chpl.domain.UpdateVersionRequest;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
@@ -105,20 +99,8 @@ public class ProductVersionController {
 				ProductVersionDTO newVersion = new ProductVersionDTO();
 				newVersion.setVersion(versionInfo.getVersion().getVersion());
 				newVersion.setProductId(versionInfo.getNewProductId());				
-				result = pvManager.create(newVersion);
+				result = pvManager.merge(versionInfo.getVersionIds(), newVersion);
 				
-				//search for any certified products assigned to the list of versions passed in
-				List<CertifiedProductDTO> assignedCps = cpManager.getByVersions(versionInfo.getVersionIds());
-					
-				//reassign those certified products to the new version
-				for(CertifiedProductDTO certifiedProduct : assignedCps) {
-					cpManager.updateCertifiedProductVersion(certifiedProduct.getId(), result.getId());
-				}
-				
-				// - mark the passed in versions as deleted
-				for(Long versionId : versionInfo.getVersionIds()) {
-					pvManager.delete(versionId);
-				}
 			} else if(versionInfo.getVersionIds().size() == 1) {
 				//update the given version id with new data
 				ProductVersionDTO toUpdate = new ProductVersionDTO();

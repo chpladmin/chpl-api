@@ -3,6 +3,7 @@ package gov.healthit.chpl.auth.dto;
 import gov.healthit.chpl.auth.entity.UserEntity;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,7 @@ public class UserDTO implements UserDetails {
 	private String email;
 	private String phoneNumber;
 	private String title;
+	private Date signatureDate;
 	private boolean accountExpired;
 	private boolean accountLocked;
 	private boolean credentialsExpired;
@@ -35,6 +37,7 @@ public class UserDTO implements UserDetails {
 			this.email = entity.getContact().getEmail();
 			this.phoneNumber = entity.getContact().getPhoneNumber();
 			this.title = entity.getContact().getTitle();
+			this.signatureDate = entity.getContact().getSignatureDate();
 			this.accountExpired = !entity.isAccountNonExpired();
 			this.accountLocked = !entity.isAccountNonLocked();
 			this.accountEnabled = entity.isEnabled();
@@ -164,6 +167,14 @@ public class UserDTO implements UserDetails {
 
 	public void setAccountEnabled(boolean accountEnabled) {
 		this.accountEnabled = accountEnabled;
+	}
+
+	public Date getSignatureDate() {
+		return signatureDate;
+	}
+
+	public void setSignatureDate(Date signatureDate) {
+		this.signatureDate = signatureDate;
 	}
 		
 }

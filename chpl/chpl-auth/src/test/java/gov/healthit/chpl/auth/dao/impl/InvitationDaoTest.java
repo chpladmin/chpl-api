@@ -73,7 +73,7 @@ public class InvitationDaoTest {
 		testDto.setCreationDate(new Date());
 		testDto.setDeleted(false);
 		testDto.setEmail(emailAddress);
-		testDto.setToken(token);
+		testDto.setInviteToken(token);
 		InvitationPermissionDTO permissionDto = new InvitationPermissionDTO();
 		permissionDto.setPermissionName(ROLE_CHPL_ADMIN);
 		permissionDto.setPermissionId(-2L);

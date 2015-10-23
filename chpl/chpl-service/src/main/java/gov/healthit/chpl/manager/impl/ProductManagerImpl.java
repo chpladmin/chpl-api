@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -22,6 +25,7 @@ import gov.healthit.chpl.manager.ProductManager;
 public class ProductManagerImpl implements ProductManager {
 
 	@Autowired ProductDAO productDao;
+	@Autowired ProductVersionDAO versionDao;
 	
 	@Autowired
 	ActivityManager activityManager;
@@ -99,6 +103,37 @@ public class ProductManagerImpl implements ProductManager {
 		String activityMsg = "Product "+productId.toString()+" was deleted.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, activityMsg, toDelete , null);
 		
+	}
+	
+	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		
+		List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();
+		for(Long productId : productIdsToMerge) {
+			beforeProducts.add(productDao.getById(productId));
+		}
+		
+		ProductDTO createdProduct = productDao.create(toCreate);
+
+		//search for any versions assigned to the list of products passed in
+		List<ProductVersionDTO> assignedVersions = versionDao.getByProductIds(productIdsToMerge);
+		//reassign those versions to the new product
+		for(ProductVersionDTO version : assignedVersions) {
+			version.setProductId(createdProduct.getId());
+			versionDao.update(version);
+		}
+		
+		// - mark the passed in products as deleted
+		for(Long productId : productIdsToMerge) {
+			productDao.delete(productId);
+		}
+
+		String activityMsg = "Merged "+ productIdsToMerge.size() + " products into new product '" + createdProduct.getName() + "'.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, createdProduct.getId(), activityMsg, beforeProducts , createdProduct);
+		
+		return createdProduct;
 	}
 	
 }

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -22,6 +25,7 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 public class ProductVersionManagerImpl implements ProductVersionManager {
 
 	@Autowired ProductVersionDAO dao;
+	@Autowired CertifiedProductDAO cpDao;
 	
 	@Autowired
 	ActivityManager activityManager;
@@ -86,5 +90,37 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		ProductVersionDTO toDelete = dao.getById(id);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, toDelete.getId(), "Product Version "+toDelete.getVersion()+" deleted for product "+toDelete.getProductId(), toDelete, null);
 		dao.delete(id);
+	}
+	
+	
+	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
+		for(Long versionId : versionIdsToMerge) {
+			beforeVersions.add(dao.getById(versionId));
+		}
+		
+		ProductVersionDTO createdVersion = dao.create(toCreate);
+		
+		//search for any certified products assigned to the list of versions passed in
+		List<CertifiedProductDTO> assignedCps = cpDao.getByVersionIds(versionIdsToMerge);
+			
+		//reassign those certified products to the new version
+		for(CertifiedProductDTO certifiedProduct : assignedCps) {
+			certifiedProduct.setProductVersionId(createdVersion.getId());
+			cpDao.update(certifiedProduct);
+		}
+		
+		// - mark the passed in versions as deleted
+		for(Long versionId : versionIdsToMerge) {
+			dao.delete(versionId);
+		}
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, createdVersion.getId(), "Merged " + versionIdsToMerge.size() + " versions into '" + createdVersion.getVersion() + "'.", beforeVersions, createdVersion);
+
+		return createdVersion;
 	}
 }
