@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -37,19 +38,30 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
+@ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class, 
+		gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class  })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
+@WebAppConfiguration
 public class UserManagerTest {
+	
+	private MockMvc mockMvc;
+	
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 	
 	@Autowired
 	private UserManager userManager;
@@ -64,14 +76,20 @@ public class UserManagerTest {
 	
 	
 	@BeforeClass
-	public static void setUpClass() throws Exception {
+	public static void setUpAdminUser() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
 		adminUser.setFirstName("Administrator");
 		adminUser.setId(-2L);
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));		
 	}
+	
+	@BeforeClass
+	public void setUpClass(){
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+	}
+	
 	
 	@Test
 	public void testCreateDeleteUser() throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
@@ -264,7 +282,6 @@ public class UserManagerTest {
 	@Test
 	public void testRemoveRoleDTO() throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
 		
-		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		userManager.grantRole("testUser2", "ROLE_ACB_ADMIN");
 		
@@ -323,7 +340,13 @@ public class UserManagerTest {
 		
 		String unPrivilegedJwt = userAuthenticator.getJWT(unPrivileged);
 		User nonAdmin = jwtUserConverter.getAuthenticatedUser(unPrivilegedJwt);
-		//SecurityContextHolder.getContext().setAuthentication(null);
+		
+		
+		SecurityContext old = SecurityContextHolder.getContext();
+		
+		System.out.println(old);
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
 		SecurityContextHolder.getContext().setAuthentication(nonAdmin);
 		
 		User currentUser = Util.getCurrentUser();
@@ -341,7 +364,7 @@ public class UserManagerTest {
 		}
 		SecurityContextHolder.getContext().setAuthentication(null);
 		
-		//assertTrue(grantFailed);
+		assertTrue(grantFailed);
 		
 	}
 	

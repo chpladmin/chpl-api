@@ -1,22 +1,28 @@
 package gov.healthit.chpl.auth;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.postgresql.ds.PGSimpleDataSource;
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.jndi.JndiObjectFactoryBean;
+import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
 import org.springframework.security.acls.AclPermissionEvaluator;
@@ -27,77 +33,95 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import com.github.springtestdbunit.bean.DatabaseConfigBean;
-import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 
 @Configuration
 @EnableWebSecurity
-@PropertySource("classpath:environment.auth.test.properties")
-@EnableTransactionManagement
 @ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
-public class CHPLAuthenticationSecurityTestConfig implements EnvironmentAware {
+public class CHPLAuthenticationSecurityTestSecurityConfig extends
+		WebSecurityConfigurerAdapter {
 	
-	private Environment env;
+	
+	@Autowired
+	private JWTUserConverter userConverter;
+	
+	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "environment.auth.test.properties";
+	
+	protected Properties props;
+	
+	
+	public CHPLAuthenticationSecurityTestSecurityConfig() {
+		super(true);
+	}
+	
+	protected void loadProperties() throws IOException {
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_AUTH_PROPERTIES_FILE);
+		
+		if (in == null)
+		{
+			props = null;
+			throw new FileNotFoundException("Auth Environment Properties File not found in class path.");
+		}
+		else
+		{
+			props = new Properties();
+			props.load(in);
+		}
+	}
 	
 	@Override
-	public void setEnvironment(final Environment e) {
-		this.env = e;
+	protected void configure(HttpSecurity http) throws Exception {
+
+		http
+        		.sessionManagement()
+        			.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+		
+				.exceptionHandling().and()
+				.anonymous().and()
+				.servletApi().and()
+				//.headers().cacheControl().and()
+				.authorizeRequests()
+				.antMatchers("/favicon.ico").permitAll()
+				.antMatchers("/resources/**").permitAll()
+				
+				//allow anonymous resource requests
+				.antMatchers("/").permitAll().and()
+				// custom Token based authentication based on the header previously given to the client
+				.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
+			.headers().cacheControl();
+		
 	}
 	
-	@Bean
-	public DataSource dataSource() {
-        PGSimpleDataSource ds = new PGSimpleDataSource();
-    	ds.setServerName(env.getRequiredProperty("testDbServer"));
-        ds.setUser(env.getRequiredProperty("testDbUser"));
-        ds.setPassword(env.getRequiredProperty("testDbPassword"));
-		return ds;
-	}
 	
-	//we need this because dbunit deletes everything from the db to start with
-	//and the table "user" is declared as "user" and not user (since user is a reserved word
-	//and perhaps not the best choice of table name). The syntax "delete from user" is invalid
-	//but "delete from "user"" is valid. we need the table names escaped.
 	@Bean
-	public DatabaseConfigBean databaseConfig() {
-		DatabaseConfigBean bean = new DatabaseConfigBean();
-		bean.setEscapePattern("\"?\"");
+	public LocalEntityManagerFactoryBean entityManagerFactory(){
+		
+		LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+		
+		if (this.props == null){
+			try {
+				this.loadProperties();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		Properties jpaProps = new Properties();
+		jpaProps.put("persistenceUnitName", this.props.getProperty("authPersistenceUnitName"));
+		
+		bean.setJpaProperties(jpaProps);
+		
 		return bean;
-	}
-	
-	@Bean
-	public DatabaseDataSourceConnectionFactoryBean dbUnitDatabaseConnection() {
-		DatabaseDataSourceConnectionFactoryBean bean = new DatabaseDataSourceConnectionFactoryBean();
-		bean.setDataSource(dataSource());
-		bean.setDatabaseConfig(databaseConfig());
-		return bean;
-	}
-	
-	@Bean
-	public org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean entityManagerFactory(){
-		org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
-		bean.setDataSource(dataSource());
-		bean.setPersistenceUnitName(env.getProperty("persistenceUnitName"));
-		return bean;
-	}
-	
-	@Bean
-	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
-		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
-		bean.setEntityManagerFactory(entityManagerFactory().getObject());
-		return bean;
-	}
-	
-	@Bean
-	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
-		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 	
 	@Bean
@@ -126,6 +150,23 @@ public class CHPLAuthenticationSecurityTestConfig implements EnvironmentAware {
 	}
 	
 	@Bean
+	public JndiObjectFactoryBean aclDataSource(){
+		
+		JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
+		
+		if (this.props == null){
+			try {
+				this.loadProperties();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		bean.setJndiName(this.props.getProperty("authJndiName"));
+		return bean;
+	}
+	
+	@Bean
 	public EhCacheManagerFactoryBean ehCacheManagerFactoryBean(){
 		EhCacheManagerFactoryBean bean = new EhCacheManagerFactoryBean();
 		bean.setShared(true);
@@ -134,10 +175,20 @@ public class CHPLAuthenticationSecurityTestConfig implements EnvironmentAware {
 	
 	@Bean
 	public EhCacheFactoryBean ehCacheFactoryBean(){
+		
+		
+		if (this.props == null){
+			try {
+				this.loadProperties();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		EhCacheFactoryBean bean = new EhCacheFactoryBean();
 		bean.setCacheManager(ehCacheManagerFactoryBean().getObject());
 		//bean.setCacheName("aclCache");
-		bean.setCacheName(env.getProperty("authAclCacheName"));
+		bean.setCacheName(this.props.getProperty("authAclCacheName"));
 		
 		return bean;
 	}
@@ -192,9 +243,9 @@ public class CHPLAuthenticationSecurityTestConfig implements EnvironmentAware {
 	
 	
 	@Bean
-	public BasicLookupStrategy lookupStrategy() throws Exception {
+	public BasicLookupStrategy lookupStrategy(){
 		
-		DataSource datasource = (DataSource) dataSource();//.getObject();
+		DataSource datasource = (DataSource) aclDataSource().getObject();
 		
 		BasicLookupStrategy bean = new BasicLookupStrategy(
 				datasource,
@@ -206,39 +257,41 @@ public class CHPLAuthenticationSecurityTestConfig implements EnvironmentAware {
 	
 	
 	@Bean
-	public JdbcMutableAclService mutableAclService() throws Exception{
+	public JdbcMutableAclService mutableAclService(){
 		
-		DataSource datasource = (DataSource) dataSource();
+		DataSource datasource = (DataSource) aclDataSource().getObject();
 		
 		JdbcMutableAclService bean = new JdbcMutableAclService(datasource, 
 				lookupStrategy(), 
 				aclCache());
-		//set these because the default spring-provided query is invalid in postgres
+		
 		bean.setClassIdentityQuery("select currval('acl_class_id_seq')");
 		bean.setSidIdentityQuery("select currval('acl_sid_id_seq')");
+		
 		return bean;
 	}
 	
 	
 	@Bean
-	public AclPermissionEvaluator permissionEvaluator() throws Exception{
+	public AclPermissionEvaluator permissionEvaluator(){
 		AclPermissionEvaluator bean = new AclPermissionEvaluator(mutableAclService());
 		return bean;
 	}
 	
 	@Bean
-	public AclPermissionCacheOptimizer aclPermissionCacheOptimizer() throws Exception{
+	public AclPermissionCacheOptimizer aclPermissionCacheOptimizer(){
 		AclPermissionCacheOptimizer bean = new AclPermissionCacheOptimizer(mutableAclService());
 		return bean;
 	}
 	
 	
 	@Bean
-	public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception {
+	public DefaultMethodSecurityExpressionHandler expressionHandler(){
 		
 		DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
 		bean.setPermissionEvaluator(permissionEvaluator());
 		bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
 		return bean;
 	}
+	
 }
