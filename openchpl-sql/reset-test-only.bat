@@ -1,5 +1,6 @@
 psql -Upostgres -f drop-openchpl.sql openchpl_test
 psql -Upostgres -f openchpl.sql openchpl_test
+psql -Upostgres -f openchpl_activity.sql openchpl_test
 psql -Upostgres -f openchpl_invite_users.sql openchpl_test
 psql -Upostgres -f audit-openchpl.sql openchpl_test
 psql -Upostgres -f preload-openchpl.sql openchpl_test

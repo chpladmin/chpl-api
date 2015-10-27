@@ -4,15 +4,18 @@ CREATE TABLE openchpl.invited_user(
 	invited_user_id bigserial NOT NULL,
 	email varchar(300) NOT NULL,
 	certification_body_id bigint,
-	token varchar(500) NOT NULL,
-
+	invite_token varchar(500),
+	confirm_token varchar(500),
+	created_user_id bigint DEFAULT NULL,
+	
 	-- fields we need for auditing/tracking
 	creation_date timestamp without time zone NOT NULL DEFAULT now(),
 	last_modified_date timestamp without time zone NOT NULL DEFAULT now(),
 	last_modified_user bigint NOT NULL,
 	deleted boolean NOT NULL DEFAULT false,
 	CONSTRAINT invited_user_pk PRIMARY KEY (invited_user_id),
-	CONSTRAINT token_unique UNIQUE (token)
+	CONSTRAINT invite_token_unique UNIQUE (invite_token),
+	CONSTRAINT confirm_token_unique UNIQUE (confirm_token)
 );
 -- ddl-end --
 COMMENT ON TABLE openchpl.invited_user IS 'A user that has been invited to use the CHPL system.';

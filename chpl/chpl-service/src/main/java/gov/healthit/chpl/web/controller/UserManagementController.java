@@ -63,18 +63,50 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) 
-			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException {
-		boolean validHash = invitationManager.isHashValid(userInfo.getHash());
-		if(!validHash) {
-			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
-		}
+			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
+			EntityRetrievalException, MessagingException {
 		
 		if(userInfo.getUser() == null || userInfo.getUser().getSubjectName() == null) {
 			throw new InvalidArgumentsException("Username ('subject name') is required.");
 		}
 		
-		InvitationDTO invitation = invitationManager.getByHash(userInfo.getHash());
+		InvitationDTO invitation = invitationManager.getByInvitationHash(userInfo.getHash());
+		if(invitation == null || invitation.isExpired()) {
+			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
+		}
+		
 		UserDTO createdUser = invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
+		
+		//get the invitation again to get the new hash
+		invitation = invitationManager.getById(invitation.getId());
+		
+		//send email for user to confirm email address	
+		String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Open Data CHPL. " +
+					"Please click the link below to activate your account: <br/>" +
+					"http://" + getProps().getProperty("chplServer") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
+				"</p>" +
+				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
+				"<p>The Open Data CHPL Team</p>";
+
+		SendMailUtil emailUtils = new SendMailUtil();
+		emailUtils.sendEmail(createdUser.getEmail(), "Confirm CHPL Administrator Account", htmlMessage);
+		
+		return new User(createdUser);
+	}
+	
+	@RequestMapping(value="/confirm", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public User createUser(@RequestBody String hash) 
+			throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, MessagingException {
+		InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
+
+		if(invitation == null || invitation.isExpired())
+		{
+			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
+		}
+		
+		UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
 		return new User(createdUser);
 	}
 	
@@ -90,9 +122,8 @@ public class UserManagementController extends AuthPropertiesConsumer {
 				StringUtils.isEmpty(credentials.getPassword())) {
 			throw new InvalidArgumentsException("Username, Password, and Token are all required.");
 		}
-		
-		boolean validHash = invitationManager.isHashValid(credentials.getHash());
-		if(!validHash) {
+		InvitationDTO invitation = invitationManager.getByInvitationHash(credentials.getHash());
+		if(invitation == null || invitation.isExpired()) {
 			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
 		}
 		
@@ -101,7 +132,6 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			throw new UserRetrievalException("The user " + credentials.getUserName() + " could not be authenticated.");
 		}
 		
-		InvitationDTO invitation = invitationManager.getByHash(credentials.getHash());
 		invitationManager.updateUserFromInvitation(invitation, userToUpdate);
 		
 		String jwt = authenticator.getJWT(credentials);
@@ -136,7 +166,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 				"<p>You've been invited to be an Administrator on the ONC's Open Data CHPL, " +
 					"which will allow you to manage certified product listings on the CHPL. " +
 					"Please click the link below to create your account: <br/>" +
-					"http://" + getProps().getProperty("chplServer") + "/#/userRegistration/"+ createdInvite.getToken() +
+					"http://" + getProps().getProperty("chplServer") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>Take care,<br/> " +
@@ -183,6 +213,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		return "{\"deletedUser\" : true }";
 	}
 	
+
 	@RequestMapping(value="/grant_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")

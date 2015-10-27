@@ -8,6 +8,8 @@ psql -Upostgres -f openchpl-role.sql
 psql -Upostgres -f create-databases.sql
 psql -Upostgres -f openchpl.sql openchpl
 psql -Upostgres -f openchpl.sql openchpl_test
+psql -Upostgres -f openchpl_activity.sql openchpl
+psql -Upostgres -f openchpl_activity.sql openchpl_test
 psql -Upostgres -f openchpl_invite_users.sql openchpl
 psql -Upostgres -f openchpl_invite_users.sql openchpl_test
 psql -Upostgres -f audit-openchpl.sql openchpl
