@@ -21,6 +21,7 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -290,12 +291,14 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	
 	@Override
 	public List<CQMCriterion> getApplicableCriteria(PendingCertifiedProductDTO pendingCpDto) {
-		if (pendingCpDto.getCertificationEdition().startsWith("2011")){
-		 	return getAvailableNQFVersions();
-		} else if(pendingCpDto.getCertificationEdition().startsWith("2014")){
-			return getAvailableCQMVersions();
+		if(!StringUtils.isEmpty(pendingCpDto.getCertificationEdition())) {
+			if (pendingCpDto.getCertificationEdition().startsWith("2011")){
+			 	return getAvailableNQFVersions();
+			} else if(pendingCpDto.getCertificationEdition().startsWith("2014")){
+				return getAvailableCQMVersions();
+			}
 		}
-		return cqmCriteria;
+		return new ArrayList<CQMCriterion>();
 	}
 	
 	private boolean permissionExists(MutableAcl acl, Sid recipient, Permission permission) {

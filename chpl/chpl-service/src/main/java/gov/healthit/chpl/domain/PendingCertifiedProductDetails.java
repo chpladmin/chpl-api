@@ -13,6 +13,7 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
 	
+	private String oncId;
 	private String uploadNotes;
 	private String recordStatus;
 	private Map<String, Object> vendorAddress;
@@ -21,6 +22,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 	
 	public PendingCertifiedProductDetails(PendingCertifiedProductDTO dto) {
 		this.setId(dto.getId());
+		this.setOncId(dto.getUniqueId());
 		this.setRecordStatus(dto.getRecordStatus());
 		this.setTestingLabId(null);
 		this.setChplProductNumber(null);
@@ -181,5 +183,13 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
 	public void setRecordStatus(String recordStatus) {
 		this.recordStatus = recordStatus;
+	}
+
+	public String getOncId() {
+		return oncId;
+	}
+
+	public void setOncId(String oncId) {
+		this.oncId = oncId;
 	}
 }
