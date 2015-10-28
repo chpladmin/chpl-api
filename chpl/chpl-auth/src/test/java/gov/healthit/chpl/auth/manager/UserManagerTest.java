@@ -38,30 +38,19 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class, 
-		gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class  })
+@ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-@WebAppConfiguration
 public class UserManagerTest {
-	
-	private MockMvc mockMvc;
-	
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 	
 	@Autowired
 	private UserManager userManager;
@@ -76,20 +65,14 @@ public class UserManagerTest {
 	
 	
 	@BeforeClass
-	public static void setUpAdminUser() throws Exception {
+	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
 		adminUser.setFirstName("Administrator");
 		adminUser.setId(-2L);
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));		
+		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
-	
-	@BeforeClass
-	public void setUpClass(){
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-	}
-	
 	
 	@Test
 	public void testCreateDeleteUser() throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
@@ -197,10 +180,12 @@ public class UserManagerTest {
 	@Test
 	public void testGetUserInfo() throws UserRetrievalException{
 		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		UserInfoJSONObject userInfo = userManager.getUserInfo("admin");
 		assertEquals(userInfo.getUser().getSubjectName(), "admin");
 		assertEquals(userInfo.getUser().getFirstName(), "Administrator");
 		assertEquals(userInfo.getUser().getEmail(), "info@ainq.com");
+		
 	}
 	
 	@Test
@@ -242,6 +227,7 @@ public class UserManagerTest {
 		
 		String jwt = userAuthenticator.getJWT(after);
 		User newAdmin = jwtUserConverter.getAuthenticatedUser(jwt);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		UserDTO testUser = userManager.getByName("TESTUSER");
 		Set<UserPermissionDTO> testUserRolesBefore = getUserPermissions(testUser);
@@ -282,6 +268,7 @@ public class UserManagerTest {
 	@Test
 	public void testRemoveRoleDTO() throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
 		
+		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		userManager.grantRole("testUser2", "ROLE_ACB_ADMIN");
 		
@@ -319,6 +306,7 @@ public class UserManagerTest {
 		
 		String jwt = userAuthenticator.getJWT(after);
 		User newAdmin = jwtUserConverter.getAuthenticatedUser(jwt);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		UserDTO testUser = userManager.getByName("TESTUSER");
 		Set<UserPermissionDTO> testUserRolesBefore = getUserPermissions(testUser);
@@ -341,21 +329,9 @@ public class UserManagerTest {
 		String unPrivilegedJwt = userAuthenticator.getJWT(unPrivileged);
 		User nonAdmin = jwtUserConverter.getAuthenticatedUser(unPrivilegedJwt);
 		
-		
-		SecurityContext old = SecurityContextHolder.getContext();
-		
-		System.out.println(old);
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 		SecurityContextHolder.getContext().setAuthentication(nonAdmin);
 		
-		User currentUser = Util.getCurrentUser();
-		System.out.println(currentUser);
-		
-		userManager.grantAdmin("TESTUSER");
 		Boolean grantFailed = false;
-		
-		// TODO: Above should be failing...
 		
 		try {
 			userManager.grantAdmin("TESTUSER");

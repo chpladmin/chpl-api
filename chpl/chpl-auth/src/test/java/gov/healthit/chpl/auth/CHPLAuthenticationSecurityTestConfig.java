@@ -1,11 +1,15 @@
 package gov.healthit.chpl.auth;
 
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.postgresql.ds.PGSimpleDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.EnvironmentAware;
@@ -27,10 +31,18 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.github.springtestdbunit.bean.DatabaseConfigBean;
@@ -39,19 +51,69 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 @PropertySource("classpath:environment.auth.test.properties")
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
-public class CHPLAuthenticationSecurityTestConfig implements EnvironmentAware {
+public class CHPLAuthenticationSecurityTestConfig extends WebSecurityConfigurerAdapter 
+implements EnvironmentAware {
 	
 	private Environment env;
+	
+	@Autowired
+	private JWTUserConverter userConverter;
 	
 	@Override
 	public void setEnvironment(final Environment e) {
 		this.env = e;
 	}
 	
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		auth
+			.inMemoryAuthentication()
+				.withUser("user").password("password").roles("USER");
+	}
+	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+
+		http
+        		.sessionManagement()
+        			.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+		
+				.exceptionHandling().and()
+				.anonymous().and()
+				.servletApi().and()
+				//.headers().cacheControl().and()
+				.authorizeRequests()
+				.antMatchers("/favicon.ico").permitAll()
+				.antMatchers("/resources/**").permitAll()
+				
+				//allow anonymous resource requests
+				.antMatchers("/").permitAll().and()
+				// custom Token based authentication based on the header previously given to the client
+				.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
+			.headers().cacheControl();
+		
+	}
+	
+	
+    @Override
+    @Autowired
+    public void setObjectPostProcessor(
+            ObjectPostProcessor<Object> objectPostProcessor) {
+        super.setObjectPostProcessor(objectPostProcessor);
+    }
+	
+	@Bean
+	@Autowired
+	public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception{
+		return auth.getOrBuild();
+	}
+	
+    
 	@Bean
 	public DataSource dataSource() {
         PGSimpleDataSource ds = new PGSimpleDataSource();
