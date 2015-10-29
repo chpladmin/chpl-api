@@ -13,6 +13,8 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
+import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -112,8 +114,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		CertifiedProductDTO toCreate = new CertifiedProductDTO();
 		toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
 		
-		String certifyingBodyId = pendingCp.getCertifyingBody().get("id").toString();
-		if(StringUtils.isEmpty(certifyingBodyId)) {
+		String certifyingBodyId = null;
+		if(pendingCp.getCertifyingBody().get("id") == null) {
 			CertificationBodyDTO acbDto = new CertificationBodyDTO();
 			acbDto.setName(pendingCp.getCertifyingBody().get("name").toString());
 			if(StringUtils.isEmpty(acbDto.getName())) {
@@ -121,13 +123,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 			acbDto = acbDao.create(acbDto);
 			certifyingBodyId = acbDto.getId().toString();
+		} else {
+			certifyingBodyId = pendingCp.getCertifyingBody().get("id").toString();
 		}
 		toCreate.setCertificationBodyId(new Long(certifyingBodyId));
 		
-		String certificationEditionId = pendingCp.getCertificationEdition().get("id").toString();
-		if(StringUtils.isEmpty(certificationEditionId)) {
+		if(pendingCp.getCertificationEdition().get("id") == null) {
 			throw new EntityCreationException("The ID of an existing certification edition (year) must be provided. A new certification edition cannot be created via this process.");
 		}
+		String certificationEditionId = pendingCp.getCertificationEdition().get("id").toString();
 		toCreate.setCertificationEditionId(new Long(certificationEditionId));
 		
 		String status = pendingCp.getRecordStatus();
@@ -144,66 +148,77 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setLastModifiedDate(new Date());
 		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
 		
-		String practiceTypeId = pendingCp.getPracticeType().get("id").toString();
 		//can be null
-		if(!StringUtils.isEmpty(practiceTypeId)) {
+		if(pendingCp.getPracticeType().get("id") != null) {
+			String practiceTypeId = pendingCp.getPracticeType().get("id").toString();
 			toCreate.setPracticeTypeId(new Long(practiceTypeId));
 		}
 		
-		String classificationTypeId = pendingCp.getClassificationType().get("id").toString();
 		//can be null
-		if(!StringUtils.isEmpty(classificationTypeId)) {
-			toCreate.setProductClassificationTypeId(new Long(classificationTypeId));
+		if(pendingCp.getClassificationType().get("id") != null) {
+			String productClassificationTypeId = pendingCp.getClassificationType().get("id").toString();
+			toCreate.setProductClassificationTypeId(new Long(productClassificationTypeId));
 		}
 		
-		String vendorId = pendingCp.getVendor().get("id").toString();
-		if(StringUtils.isEmpty(vendorId)) {
+		String vendorId = null; 
+		if(pendingCp.getVendor().get("id") == null) {
 			VendorDTO newVendor = new VendorDTO();
-			String vendorName = pendingCp.getVendor().get("name").toString();
-			if(StringUtils.isEmpty(vendorName)) {
+			if(pendingCp.getVendor().get("name") == null) {
 				throw new EntityCreationException("You must provide a vendor name to create a new vendor.");
 			}
-			newVendor.setName(vendorName);
+			newVendor.setName(pendingCp.getVendor().get("name").toString());
 			Map<String, Object> vendorAddress = pendingCp.getVendorAddress();
 			if(vendorAddress != null) {
 				AddressDTO address = new AddressDTO();
-				address.setStreetLineOne(vendorAddress.get("line1").toString());
-				address.setCity(vendorAddress.get("city").toString());
-				address.setState(vendorAddress.get("state").toString());
-				address.setZipcode(vendorAddress.get("zipcode").toString());
+				if(vendorAddress.get("line1") != null) {
+					address.setStreetLineOne(vendorAddress.get("line1").toString());
+				}
+				if(vendorAddress.get("city") != null) {
+					address.setCity(vendorAddress.get("city").toString());
+				}
+				if(vendorAddress.get("state") != null) {
+					address.setState(vendorAddress.get("state").toString());
+				}
+				if(vendorAddress.get("zipcode") != null) {
+					address.setZipcode(vendorAddress.get("zipcode").toString());
+				}
 				address.setCountry("USA");
 				newVendor.setAddress(address);
 			}
 			
 			newVendor = vendorDao.create(newVendor);
 			vendorId = newVendor.getId().toString();
+		} else {
+			vendorId = pendingCp.getVendor().get("id").toString();
 		}
 		
-		String productId = pendingCp.getProduct().get("id").toString();
-		if(StringUtils.isEmpty(productId)) {
+		String productId = null;
+		if(pendingCp.getProduct().get("id") == null) {
 			ProductDTO newProduct = new ProductDTO();
-			String productName = pendingCp.getProduct().get("name").toString();
-			if(StringUtils.isEmpty(productName)) {
+			if(pendingCp.getProduct().get("name") == null) {
 				throw new EntityCreationException("Either product name or ID must be provided.");
 			}
-			newProduct.setName(productName);
+			newProduct.setName(pendingCp.getProduct().get("name").toString());
 			newProduct.setVendorId(new Long(vendorId));
 			newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
 			newProduct = productDao.create(newProduct);
 			productId = newProduct.getId().toString();
+		} else {
+			productId = pendingCp.getProduct().get("id").toString();
 		}
 		
-		String productVersionId = pendingCp.getProduct().get("versionId").toString();
-		if(StringUtils.isEmpty(productVersionId)) {
+		String productVersionId = null;
+		if(pendingCp.getProduct().get("versionId") == null) {
 			ProductVersionDTO newVersion = new ProductVersionDTO();
-			String version = pendingCp.getProduct().get("version").toString();
-			if(StringUtils.isEmpty(version)) {
+			if(pendingCp.getProduct().get("version") == null) {
 				throw new EntityCreationException("Either version id or version must be provided.");
 			}
-			newVersion.setVersion(version);
+			newVersion.setVersion(pendingCp.getProduct().get("version").toString());
 			newVersion.setProductId(new Long(productId));
 			newVersion = versionDao.create(newVersion);
 			productVersionId = newVersion.getId().toString();
+		} else {
+			productVersionId = pendingCp.getProduct().get("versionId").toString();
 		}
 		
 		toCreate.setProductVersionId(new Long(productVersionId));

@@ -25,7 +25,7 @@ public interface PendingCertifiedProductManager {
 	public List<PendingCertifiedProductDTO> getPending();
 	public List<CQMCriterion> getApplicableCriteria(PendingCertifiedProductDTO pendingCpDto);
 	
-	public PendingCertifiedProductDTO create(Long acbId, PendingCertifiedProductEntity toCreate) 
+	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 			
 	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
