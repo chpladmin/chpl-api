@@ -236,13 +236,13 @@ public class UserManagementController extends AuthPropertiesConsumer {
 				isSuccess = String.valueOf(true);
 			} catch(AccessDeniedException adEx) {
 				logger.error("User " + Util.getUsername() + " does not have access to grant ROLE_ADMIN");
+				throw adEx;
 			}
 		} else {
 			userManager.grantRole(user.getSubjectName(), grantRoleObj.getRole());
 		}
 
-		
-		return "{\"roleAdded\" : "+isSuccess+" }";
+		return "{\"roleAdded\" : true }";
 		
 	}
 	

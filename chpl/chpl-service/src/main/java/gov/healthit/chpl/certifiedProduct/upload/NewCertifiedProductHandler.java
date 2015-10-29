@@ -1,29 +1,14 @@
 package gov.healthit.chpl.certifiedProduct.upload;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
-import gov.healthit.chpl.dto.PracticeTypeDTO;
-import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.VendorDTO;
-import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
-import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("newCertifiedProductHandler")

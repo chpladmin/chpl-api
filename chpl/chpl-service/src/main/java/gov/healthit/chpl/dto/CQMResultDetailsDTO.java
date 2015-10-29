@@ -11,7 +11,7 @@ public class CQMResultDetailsDTO {
 	private String cmsId;
 	private String title;
 	private String nqfNumber;
-	private String cqmCriterionTypeId;
+	private Long cqmCriterionTypeId;
 	private Long cqmVersionId;
 	private String version;
 	
@@ -74,10 +74,10 @@ public class CQMResultDetailsDTO {
 	public void setNqfNumber(String nqfNumber) {
 		this.nqfNumber = nqfNumber;
 	}
-	public String getCqmCriterionTypeId() {
+	public Long getCqmCriterionTypeId() {
 		return cqmCriterionTypeId;
 	}
-	public void setCqmCriterionTypeId(String cqmCriterionTypeId) {
+	public void setCqmCriterionTypeId(Long cqmCriterionTypeId) {
 		this.cqmCriterionTypeId = cqmCriterionTypeId;
 	}
 	public Long getCqmVersionId() {

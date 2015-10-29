@@ -175,16 +175,20 @@ public class UserManagementSecurityTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		
-		MvcResult result3 = mockMvc.perform(post("/users/grant_role").header("Authorization", "Bearer "+unPrivilegedJwt ).contentType(MediaType.APPLICATION_JSON)
-	            .content("{\"subjectName\":\"testUser2\",\"role\":\"ROLE_ADMIN\"}"))
-	            .andExpect(status().is(200))
-	            .andReturn();
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Boolean grantFailed = false;
 		
-		String content3 = result3.getResponse().getContentAsString();
+		try {
+			
+			MvcResult result3 = mockMvc.perform(post("/users/grant_role").header("Authorization", "Bearer "+unPrivilegedJwt ).contentType(MediaType.APPLICATION_JSON)
+		            .content("{\"subjectName\":\"testUser2\",\"role\":\"ROLE_ADMIN\"}"))
+		            .andExpect(status().is(200))
+		            .andReturn();
+			System.out.println(result3.getResponse().getContentAsString());
+		} catch (Exception adX){
+			grantFailed = true;
+		}
 		
-		assertTrue(content3.contains("roleAdded"));
-		assertTrue(content3.contains("false"));
+		assertTrue(grantFailed);
 		
 	}
 	

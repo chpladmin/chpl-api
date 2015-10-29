@@ -30,6 +30,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
+import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadType;
+import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
+import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
+import gov.healthit.chpl.certifiedProduct.validation.ValidationStatus;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
@@ -61,7 +65,8 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired PendingCertifiedProductManager pcpManager;
 	@Autowired CertificationBodyManager acbManager;
-	
+	@Autowired PendingCertifiedProductValidatorFactory validatorFactory;
+
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(@RequestParam(required=false) Long versionId) {
@@ -195,11 +200,20 @@ public class CertifiedProductController {
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
-		throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
 		String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
 		if(StringUtils.isEmpty(acbIdStr)) {
 			throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
 		}
+		
+		PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
+		PendingCertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
+		validator.validate(pcpDto);
+		if(pcpDto.getValidationStatus() != ValidationStatus.OK) {
+			throw new ValidationException(pcpDto.getValidationMessages());
+		}
+		
 		Long acbId = new Long(acbIdStr);
 		CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pendingCp);
 		pcpManager.confirm(pendingCp.getId());
@@ -245,11 +259,18 @@ public class CertifiedProductController {
 					//create a certified product to pass into the handler
 					try {
 						PendingCertifiedProductEntity pendingCp = handler.handle();
-						if(pendingCp.getCertificationBodyId() == null) {
-							throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
+						PendingCertifiedProductDTO pendingCpDto = null;
+						
+						CertifiedProductUploadType uploadType = CertifiedProductUploadType.valueOf(pendingCp.getRecordStatus().toUpperCase());
+						if(uploadType == CertifiedProductUploadType.NEW) { 
+							if(pendingCp.getCertificationBodyId() == null) {
+								throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
+							}
+							pendingCpDto = pcpManager.createOrReplace(pendingCp.getCertificationBodyId(), pendingCp);
+						} else {
+							pendingCpDto = new PendingCertifiedProductDTO(pendingCp);
 						}
 						
-						PendingCertifiedProductDTO pendingCpDto = pcpManager.create(pendingCp.getCertificationBodyId(), pendingCp);
 						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
 						//set applicable criteria
 						details.setApplicableCqmCriteria(pcpManager.getApplicableCriteria(pendingCpDto));
