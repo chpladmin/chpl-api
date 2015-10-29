@@ -1617,7 +1617,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, successful, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_a_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(a)'
+       WHERE openchpl.certification_criterion.number = '170.302 (a)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_a_ as boolean) IS NOT NULL;
 
@@ -1625,7 +1625,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_b_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(b)'
+       WHERE openchpl.certification_criterion.number = '170.302 (b)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_b_ as boolean) IS NOT NULL;
 
@@ -1633,7 +1633,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_c_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(c)'
+       WHERE openchpl.certification_criterion.number = '170.302 (c)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_c_ as boolean) IS NOT NULL;
 
@@ -1641,7 +1641,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_d_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(d)'
+       WHERE openchpl.certification_criterion.number = '170.302 (d)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_d_ as boolean) IS NOT NULL;
 
@@ -1649,7 +1649,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_e_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(e)'
+       WHERE openchpl.certification_criterion.number = '170.302 (e)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_e_ as boolean) IS NOT NULL;
 
@@ -1657,7 +1657,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_f_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(f)'
+       WHERE openchpl.certification_criterion.number = '170.302 (f)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_f_ as boolean) IS NOT NULL;
 
@@ -1665,7 +1665,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_f__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(f)(1)'
+       WHERE openchpl.certification_criterion.number = '170.302 (f)(1)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_f__1_ as boolean) IS NOT NULL;
 
@@ -1673,7 +1673,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_f__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(f)(2)'
+       WHERE openchpl.certification_criterion.number = '170.302 (f)(2)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_f__2_ as boolean) IS NOT NULL;
 
@@ -1681,7 +1681,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_f__3_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(f)(3)'
+       WHERE openchpl.certification_criterion.number = '170.302 (f)(3)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_f__3_ as boolean) IS NOT NULL;
 
@@ -1689,7 +1689,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_g_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(g)'
+       WHERE openchpl.certification_criterion.number = '170.302 (g)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_g_ as boolean) IS NOT NULL;
 
@@ -1697,7 +1697,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_h_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(h)'
+       WHERE openchpl.certification_criterion.number = '170.302 (h)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_h_ as boolean) IS NOT NULL;
 
@@ -1705,7 +1705,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_i_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(i)'
+       WHERE openchpl.certification_criterion.number = '170.302 (i)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_i_ as boolean) IS NOT NULL;
 
@@ -1713,7 +1713,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_j_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(j)'
+       WHERE openchpl.certification_criterion.number = '170.302 (j)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_j_ as boolean) IS NOT NULL;
 
@@ -1721,7 +1721,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_k_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(k)'
+       WHERE openchpl.certification_criterion.number = '170.302 (k)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_k_ as boolean) IS NOT NULL;
 
@@ -1729,7 +1729,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_l_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(l)'
+       WHERE openchpl.certification_criterion.number = '170.302 (l)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_l_ as boolean) IS NOT NULL;
 
@@ -1737,7 +1737,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_m_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(m)'
+       WHERE openchpl.certification_criterion.number = '170.302 (m)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_m_ as boolean) IS NOT NULL;
 
@@ -1745,7 +1745,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_n_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(n)'
+       WHERE openchpl.certification_criterion.number = '170.302 (n)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_n_ as boolean) IS NOT NULL;
 
@@ -1753,7 +1753,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_o_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(o)'
+       WHERE openchpl.certification_criterion.number = '170.302 (o)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_o_ as boolean) IS NOT NULL;
 
@@ -1761,7 +1761,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_p_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(p)'
+       WHERE openchpl.certification_criterion.number = '170.302 (p)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_p_ as boolean) IS NOT NULL;
 
@@ -1769,7 +1769,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_q_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(q)'
+       WHERE openchpl.certification_criterion.number = '170.302 (q)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_q_ as boolean) IS NOT NULL;
 
@@ -1777,7 +1777,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_r_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(r)'
+       WHERE openchpl.certification_criterion.number = '170.302 (r)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_r_ as boolean) IS NOT NULL;
 
@@ -1785,7 +1785,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_s_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(s)'
+       WHERE openchpl.certification_criterion.number = '170.302 (s)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_s_ as boolean) IS NOT NULL;
 
@@ -1793,7 +1793,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_t_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(t)'
+       WHERE openchpl.certification_criterion.number = '170.302 (t)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_t_ as boolean) IS NOT NULL;
 
@@ -1801,7 +1801,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_u_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(u)'
+       WHERE openchpl.certification_criterion.number = '170.302 (u)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_u_ as boolean) IS NOT NULL;
 
@@ -1809,7 +1809,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_v_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(v)'
+       WHERE openchpl.certification_criterion.number = '170.302 (v)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_v_ as boolean) IS NOT NULL;
 
@@ -1817,7 +1817,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_302_w_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.302(w)'
+       WHERE openchpl.certification_criterion.number = '170.302 (w)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_302_w_ as boolean) IS NOT NULL;
 
@@ -1825,7 +1825,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_a_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(a)'
+       WHERE openchpl.certification_criterion.number = '170.304 (a)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_a_ as boolean) IS NOT NULL;
 
@@ -1833,7 +1833,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_b_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(b)'
+       WHERE openchpl.certification_criterion.number = '170.304 (b)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_b_ as boolean) IS NOT NULL;
 
@@ -1841,7 +1841,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_c_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(c)'
+       WHERE openchpl.certification_criterion.number = '170.304 (c)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_c_ as boolean) IS NOT NULL;
 
@@ -1849,7 +1849,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_d_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(d)'
+       WHERE openchpl.certification_criterion.number = '170.304 (d)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_d_ as boolean) IS NOT NULL;
 
@@ -1857,7 +1857,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_e_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(e)'
+       WHERE openchpl.certification_criterion.number = '170.304 (e)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_e_ as boolean) IS NOT NULL;
 
@@ -1865,7 +1865,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_f_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(f)'
+       WHERE openchpl.certification_criterion.number = '170.304 (f)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_f_ as boolean) IS NOT NULL;
 
@@ -1873,7 +1873,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_g_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(g)'
+       WHERE openchpl.certification_criterion.number = '170.304 (g)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_g_ as boolean) IS NOT NULL;
 
@@ -1881,7 +1881,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_h_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(h)'
+       WHERE openchpl.certification_criterion.number = '170.304 (h)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_h_ as boolean) IS NOT NULL;
 
@@ -1889,7 +1889,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_i_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(i)'
+       WHERE openchpl.certification_criterion.number = '170.304 (i)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_i_ as boolean) IS NOT NULL;
 
@@ -1897,7 +1897,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_304_j_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.304(j)'
+       WHERE openchpl.certification_criterion.number = '170.304 (j)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_304_j_ as boolean) IS NOT NULL;
 
@@ -1905,7 +1905,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_a_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(a)'
+       WHERE openchpl.certification_criterion.number = '170.306 (a)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_a_ as boolean) IS NOT NULL;
 
@@ -1913,7 +1913,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_b_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(b)'
+       WHERE openchpl.certification_criterion.number = '170.306 (b)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_b_ as boolean) IS NOT NULL;
 
@@ -1921,7 +1921,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_c_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(c)'
+       WHERE openchpl.certification_criterion.number = '170.306 (c)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_c_ as boolean) IS NOT NULL;
 
@@ -1929,7 +1929,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_d_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(d)'
+       WHERE openchpl.certification_criterion.number = '170.306 (d)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_d_ as boolean) IS NOT NULL;
 
@@ -1937,7 +1937,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_d__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(d)(1)'
+       WHERE openchpl.certification_criterion.number = '170.306 (d)(1)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_d__1_ as boolean) IS NOT NULL;
 
@@ -1945,7 +1945,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_d__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(d)(2)'
+       WHERE openchpl.certification_criterion.number = '170.306 (d)(2)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_d__2_ as boolean) IS NOT NULL;
 
@@ -1953,7 +1953,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_e_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(e)'
+       WHERE openchpl.certification_criterion.number = '170.306 (e)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_e_ as boolean) IS NOT NULL;
 
@@ -1961,7 +1961,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_f_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(f)'
+       WHERE openchpl.certification_criterion.number = '170.306 (f)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_f_ as boolean) IS NOT NULL;
 
@@ -1969,7 +1969,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_g_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(g)'
+       WHERE openchpl.certification_criterion.number = '170.306 (g)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_g_ as boolean) IS NOT NULL;
 
@@ -1977,7 +1977,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_h_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(h)'
+       WHERE openchpl.certification_criterion.number = '170.306 (h)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_h_ as boolean) IS NOT NULL;
 
@@ -1985,7 +1985,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_306_i_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.306(i)'
+       WHERE openchpl.certification_criterion.number = '170.306 (i)'
        AND $Certification_Edition_Year = '2011'
        AND cast ($Criteria170_306_i_ as boolean) IS NOT NULL;
 
@@ -1993,7 +1993,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(1)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(1)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__1_ as boolean) IS NOT NULL;
 
@@ -2001,7 +2001,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(2)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(2)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__2_ as boolean) IS NOT NULL;
 
@@ -2009,7 +2009,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__3_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(3)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(3)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__3_ as boolean) IS NOT NULL;
 
@@ -2017,7 +2017,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__4_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(4)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(4)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__4_ as boolean) IS NOT NULL;
 
@@ -2025,7 +2025,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__5_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(5)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(5)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__5_ as boolean) IS NOT NULL;
 
@@ -2033,7 +2033,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__6_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(6)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(6)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__6_ as boolean) IS NOT NULL;
 
@@ -2041,7 +2041,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__7_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(7)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(7)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__7_ as boolean) IS NOT NULL;
 
@@ -2049,7 +2049,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__8_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(8)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(8)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__8_ as boolean) IS NOT NULL;
 
@@ -2057,7 +2057,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__9_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(9)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(9)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__9_ as boolean) IS NOT NULL;
 
@@ -2065,7 +2065,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__10_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(10)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(10)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__10_ as boolean) IS NOT NULL;
 
@@ -2073,7 +2073,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__11_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(11)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(11)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__11_ as boolean) IS NOT NULL;
 
@@ -2081,7 +2081,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__12_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(12)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(12)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__12_ as boolean) IS NOT NULL;
 
@@ -2089,7 +2089,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__13_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(13)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(13)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__13_ as boolean) IS NOT NULL;
 
@@ -2097,7 +2097,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__14_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(14)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(14)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__14_ as boolean) IS NOT NULL;
 
@@ -2105,7 +2105,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__15_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(15)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(15)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__15_ as boolean) IS NOT NULL;
 
@@ -2113,7 +2113,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__16_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(16)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(16)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__16_ as boolean) IS NOT NULL;
 
@@ -2121,7 +2121,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__17_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(17)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(17)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__17_ as boolean) IS NOT NULL;
 
@@ -2129,7 +2129,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__18_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(18)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(18)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__18_ as boolean) IS NOT NULL;
 
@@ -2137,7 +2137,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__19_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(19)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(19)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__19_ as boolean) IS NOT NULL;
 
@@ -2145,7 +2145,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_a__20_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(a)(20)'
+       WHERE openchpl.certification_criterion.number = '170.314 (a)(20)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_a__20_ as boolean) IS NOT NULL;
 
@@ -2153,7 +2153,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(b)(1)'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(1)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__1_ as boolean) IS NOT NULL;
 
@@ -2161,7 +2161,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(b)(2)'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(2)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__2_ as boolean) IS NOT NULL;
 
@@ -2169,7 +2169,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__3_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(b)(3)'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(3)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__3_ as boolean) IS NOT NULL;
 
@@ -2177,7 +2177,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__4_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(b)(4)'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(4)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__4_ as boolean) IS NOT NULL;
 
@@ -2185,7 +2185,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__5_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(b)(5)'
+       WHERE openchpl.certification_criterion.number LIKE '170.314 (b)(5)%'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
 
@@ -2193,7 +2193,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__6_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(b)(6)'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(6)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__6_ as boolean) IS NOT NULL;
 
@@ -2201,7 +2201,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__7_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(b)(7)'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(7)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__7_ as boolean) IS NOT NULL;
 
@@ -2209,7 +2209,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__8_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(b)(8)'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(8)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__8_ as boolean) IS NOT NULL;
 
@@ -2217,7 +2217,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__9_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(b)(9)'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(9)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__9_ as boolean) IS NOT NULL;
 
@@ -2225,7 +2225,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_c__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(c)(1)'
+       WHERE openchpl.certification_criterion.number = '170.314 (c)(1)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_c__1_ as boolean) IS NOT NULL;
 
@@ -2233,7 +2233,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_c__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(c)(2)'
+       WHERE openchpl.certification_criterion.number = '170.314 (c)(2)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_c__2_ as boolean) IS NOT NULL;
 
@@ -2241,7 +2241,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_c__3_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(c)(3)'
+       WHERE openchpl.certification_criterion.number = '170.314 (c)(3)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_c__3_ as boolean) IS NOT NULL;
 
@@ -2249,7 +2249,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(d)(1)'
+       WHERE openchpl.certification_criterion.number = '170.314 (d)(1)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__1_ as boolean) IS NOT NULL;
 
@@ -2257,7 +2257,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(d)(2)'
+       WHERE openchpl.certification_criterion.number = '170.314 (d)(2)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__2_ as boolean) IS NOT NULL;
 
@@ -2265,7 +2265,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__3_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(d)(3)'
+       WHERE openchpl.certification_criterion.number = '170.314 (d)(3)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__3_ as boolean) IS NOT NULL;
 
@@ -2273,7 +2273,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__4_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(d)(4)'
+       WHERE openchpl.certification_criterion.number = '170.314 (d)(4)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__4_ as boolean) IS NOT NULL;
 
@@ -2281,7 +2281,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__5_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(d)(5)'
+       WHERE openchpl.certification_criterion.number = '170.314 (d)(5)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__5_ as boolean) IS NOT NULL;
 
@@ -2289,7 +2289,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__6_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(d)(6)'
+       WHERE openchpl.certification_criterion.number = '170.314 (d)(6)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__6_ as boolean) IS NOT NULL;
 
@@ -2297,7 +2297,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__7_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(d)(7)'
+       WHERE openchpl.certification_criterion.number = '170.314 (d)(7)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__7_ as boolean) IS NOT NULL;
 
@@ -2305,7 +2305,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__8_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(d)(8)'
+       WHERE openchpl.certification_criterion.number = '170.314 (d)(8)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__8_ as boolean) IS NOT NULL;
 
@@ -2313,7 +2313,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_d__9_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(d)(9)'
+       WHERE openchpl.certification_criterion.number = '170.314 (d)(9)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_d__9_ as boolean) IS NOT NULL;
 
@@ -2321,7 +2321,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_e__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(e)(1)'
+       WHERE openchpl.certification_criterion.number = '170.314 (e)(1)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_e__1_ as boolean) IS NOT NULL;
 
@@ -2329,7 +2329,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_e__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(e)(2)'
+       WHERE openchpl.certification_criterion.number = '170.314 (e)(2)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_e__2_ as boolean) IS NOT NULL;
 
@@ -2337,7 +2337,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_e__3_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(e)(3)'
+       WHERE openchpl.certification_criterion.number = '170.314 (e)(3)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_e__3_ as boolean) IS NOT NULL;
 
@@ -2345,7 +2345,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(f)(1)'
+       WHERE openchpl.certification_criterion.number = '170.314 (f)(1)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__1_ as boolean) IS NOT NULL;
 
@@ -2353,7 +2353,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(f)(2)'
+       WHERE openchpl.certification_criterion.number = '170.314 (f)(2)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__2_ as boolean) IS NOT NULL;
 
@@ -2361,7 +2361,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__3_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(f)(3)'
+       WHERE openchpl.certification_criterion.number = '170.314 (f)(3)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__3_ as boolean) IS NOT NULL;
 
@@ -2369,7 +2369,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__4_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(f)(4)'
+       WHERE openchpl.certification_criterion.number = '170.314 (f)(4)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__4_ as boolean) IS NOT NULL;
 
@@ -2377,7 +2377,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__5_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(f)(5)'
+       WHERE openchpl.certification_criterion.number = '170.314 (f)(5)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__5_ as boolean) IS NOT NULL;
 
@@ -2385,7 +2385,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__6_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(f)(6)'
+       WHERE openchpl.certification_criterion.number = '170.314 (f)(6)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__6_ as boolean) IS NOT NULL;
 
@@ -2393,7 +2393,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_f__7_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(f)(7)'
+       WHERE openchpl.certification_criterion.number = '170.314 (f)(7)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_f__7_ as boolean) IS NOT NULL;
 
@@ -2401,7 +2401,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(g)(1)'
+       WHERE openchpl.certification_criterion.number = '170.314 (g)(1)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_g__1_ as boolean) IS NOT NULL;
 
@@ -2409,7 +2409,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(g)(2)'
+       WHERE openchpl.certification_criterion.number = '170.314 (g)(2)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_g__2_ as boolean) IS NOT NULL;
 
@@ -2417,7 +2417,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__3_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(g)(3)'
+       WHERE openchpl.certification_criterion.number = '170.314 (g)(3)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_g__3_ as boolean) IS NOT NULL;
 
@@ -2425,7 +2425,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_g__4_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(g)(4)'
+       WHERE openchpl.certification_criterion.number = '170.314 (g)(4)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_g__4_ as boolean) IS NOT NULL;
 
@@ -2433,7 +2433,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__1_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(h)(1)'
+       WHERE openchpl.certification_criterion.number = '170.314 (h)(1)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_h__1_ as boolean) IS NOT NULL;
 
@@ -2441,7 +2441,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__2_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(h)(2)'
+       WHERE openchpl.certification_criterion.number = '170.314 (h)(2)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_h__2_ as boolean) IS NOT NULL;
 
@@ -2449,7 +2449,7 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_h__3_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number = '170.314(h)(3)'
+       WHERE openchpl.certification_criterion.number = '170.314 (h)(3)'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_h__3_ as boolean) IS NOT NULL;
 
@@ -2457,7 +2457,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0001_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0001(A)'
+       WHERE openchpl.cqm_criterion.number = '0001'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0001_A_ as boolean) IS NOT NULL;
 
@@ -2465,7 +2465,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0002_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0002(A)'
+       WHERE openchpl.cqm_criterion.number = '0002'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0002_A_ as boolean) IS NOT NULL;
 
@@ -2473,7 +2473,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0004_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0004(A)'
+       WHERE openchpl.cqm_criterion.number = '0004'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0004_A_ as boolean) IS NOT NULL;
 
@@ -2481,7 +2481,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0012_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0012(A)'
+       WHERE openchpl.cqm_criterion.number = '0012'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0012_A_ as boolean) IS NOT NULL;
 
@@ -2489,7 +2489,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0013_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0013(A)'
+       WHERE openchpl.cqm_criterion.number = '0013'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0013_A_ as boolean) IS NOT NULL;
 
@@ -2497,7 +2497,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0014_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0014(A)'
+       WHERE openchpl.cqm_criterion.number = '0014'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0014_A_ as boolean) IS NOT NULL;
 
@@ -2505,7 +2505,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0018_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0018(A)'
+       WHERE openchpl.cqm_criterion.number = '0018'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0018_A_ as boolean) IS NOT NULL;
 
@@ -2513,7 +2513,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0024_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0024(A)'
+       WHERE openchpl.cqm_criterion.number = '0024'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0024_A_ as boolean) IS NOT NULL;
 
@@ -2521,7 +2521,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0027_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0027(A)'
+       WHERE openchpl.cqm_criterion.number = '0027'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0027_A_ as boolean) IS NOT NULL;
 
@@ -2529,7 +2529,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0028_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0028(A)'
+       WHERE openchpl.cqm_criterion.number = '0028'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0028_A_ as boolean) IS NOT NULL;
 
@@ -2537,7 +2537,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0031_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0031(A)'
+       WHERE openchpl.cqm_criterion.number = '0031'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0031_A_ as boolean) IS NOT NULL;
 
@@ -2545,7 +2545,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0032_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0032(A)'
+       WHERE openchpl.cqm_criterion.number = '0032'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0032_A_ as boolean) IS NOT NULL;
 
@@ -2553,7 +2553,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0033_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0033(A)'
+       WHERE openchpl.cqm_criterion.number = '0033'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0033_A_ as boolean) IS NOT NULL;
 
@@ -2561,7 +2561,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0034_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0034(A)'
+       WHERE openchpl.cqm_criterion.number = '0034'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0034_A_ as boolean) IS NOT NULL;
 
@@ -2569,7 +2569,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0036_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0036(A)'
+       WHERE openchpl.cqm_criterion.number = '0036'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0036_A_ as boolean) IS NOT NULL;
 
@@ -2577,7 +2577,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0038_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0038(A)'
+       WHERE openchpl.cqm_criterion.number = '0038'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0038_A_ as boolean) IS NOT NULL;
 
@@ -2585,7 +2585,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0041_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0041(A)'
+       WHERE openchpl.cqm_criterion.number = '0041'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0041_A_ as boolean) IS NOT NULL;
 
@@ -2593,7 +2593,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0043_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0043(A)'
+       WHERE openchpl.cqm_criterion.number = '0043'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0043_A_ as boolean) IS NOT NULL;
 
@@ -2601,7 +2601,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0047_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0047(A)'
+       WHERE openchpl.cqm_criterion.number = '0047'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0047_A_ as boolean) IS NOT NULL;
 
@@ -2609,7 +2609,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0052_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0052(A)'
+       WHERE openchpl.cqm_criterion.number = '0052'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0052_A_ as boolean) IS NOT NULL;
 
@@ -2617,7 +2617,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0055_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0055(A)'
+       WHERE openchpl.cqm_criterion.number = '0055'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0055_A_ as boolean) IS NOT NULL;
 
@@ -2625,7 +2625,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0056_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0056(A)'
+       WHERE openchpl.cqm_criterion.number = '0056'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0056_A_ as boolean) IS NOT NULL;
 
@@ -2633,7 +2633,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0059_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0059(A)'
+       WHERE openchpl.cqm_criterion.number = '0059'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0059_A_ as boolean) IS NOT NULL;
 
@@ -2641,7 +2641,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0061_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0061(A)'
+       WHERE openchpl.cqm_criterion.number = '0061'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0061_A_ as boolean) IS NOT NULL;
 
@@ -2649,7 +2649,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0062_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0062(A)'
+       WHERE openchpl.cqm_criterion.number = '0062'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0062_A_ as boolean) IS NOT NULL;
 
@@ -2657,7 +2657,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0064_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0064(A)'
+       WHERE openchpl.cqm_criterion.number = '0064'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0064_A_ as boolean) IS NOT NULL;
 
@@ -2665,7 +2665,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0067_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0067(A)'
+       WHERE openchpl.cqm_criterion.number = '0067'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0067_A_ as boolean) IS NOT NULL;
 
@@ -2673,7 +2673,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0068_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0068(A)'
+       WHERE openchpl.cqm_criterion.number = '0068'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0068_A_ as boolean) IS NOT NULL;
 
@@ -2681,7 +2681,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0070_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0070(A)'
+       WHERE openchpl.cqm_criterion.number = '0070'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0070_A_ as boolean) IS NOT NULL;
 
@@ -2689,7 +2689,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0073_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0073(A)'
+       WHERE openchpl.cqm_criterion.number = '0073'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0073_A_ as boolean) IS NOT NULL;
 
@@ -2697,7 +2697,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0074_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0074(A)'
+       WHERE openchpl.cqm_criterion.number = '0074'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0074_A_ as boolean) IS NOT NULL;
 
@@ -2705,7 +2705,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0075_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0075(A)'
+       WHERE openchpl.cqm_criterion.number = '0075'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0075_A_ as boolean) IS NOT NULL;
 
@@ -2713,7 +2713,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0081_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0081(A)'
+       WHERE openchpl.cqm_criterion.number = '0081'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0081_A_ as boolean) IS NOT NULL;
 
@@ -2721,7 +2721,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0083_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0083(A)'
+       WHERE openchpl.cqm_criterion.number = '0083'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0083_A_ as boolean) IS NOT NULL;
 
@@ -2729,7 +2729,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0084_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0084(A)'
+       WHERE openchpl.cqm_criterion.number = '0084'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0084_A_ as boolean) IS NOT NULL;
 
@@ -2737,7 +2737,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0086_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0086(A)'
+       WHERE openchpl.cqm_criterion.number = '0086'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0086_A_ as boolean) IS NOT NULL;
 
@@ -2745,7 +2745,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0088_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0088(A)'
+       WHERE openchpl.cqm_criterion.number = '0088'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0088_A_ as boolean) IS NOT NULL;
 
@@ -2753,7 +2753,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0089_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0089(A)'
+       WHERE openchpl.cqm_criterion.number = '0089'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0089_A_ as boolean) IS NOT NULL;
 
@@ -2761,7 +2761,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0105_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0105(A)'
+       WHERE openchpl.cqm_criterion.number = '0105'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0105_A_ as boolean) IS NOT NULL;
 
@@ -2769,7 +2769,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0371_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0371(I)'
+       WHERE openchpl.cqm_criterion.number = '0371'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0371_I_ as boolean) IS NOT NULL;
 
@@ -2777,7 +2777,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0372_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0372(I)'
+       WHERE openchpl.cqm_criterion.number = '0372'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0372_I_ as boolean) IS NOT NULL;
 
@@ -2785,7 +2785,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0373_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0373(I)'
+       WHERE openchpl.cqm_criterion.number = '0373'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0373_I_ as boolean) IS NOT NULL;
 
@@ -2793,7 +2793,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0374_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0374(I)'
+       WHERE openchpl.cqm_criterion.number = '0374'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0374_I_ as boolean) IS NOT NULL;
 
@@ -2801,7 +2801,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0375_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0375(I)'
+       WHERE openchpl.cqm_criterion.number = '0375'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0375_I_ as boolean) IS NOT NULL;
 
@@ -2809,7 +2809,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0376_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0376(I)'
+       WHERE openchpl.cqm_criterion.number = '0376'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0376_I_ as boolean) IS NOT NULL;
 
@@ -2817,7 +2817,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0385_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0385(A)'
+       WHERE openchpl.cqm_criterion.number = '0385'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0385_A_ as boolean) IS NOT NULL;
 
@@ -2825,7 +2825,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0387_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0387(A)'
+       WHERE openchpl.cqm_criterion.number = '0387'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0387_A_ as boolean) IS NOT NULL;
 
@@ -2833,7 +2833,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0389_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0389(A)'
+       WHERE openchpl.cqm_criterion.number = '0389'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0389_A_ as boolean) IS NOT NULL;
 
@@ -2841,7 +2841,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0421_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0421(A)'
+       WHERE openchpl.cqm_criterion.number = '0421'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0421_A_ as boolean) IS NOT NULL;
 
@@ -2849,7 +2849,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0435_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0435(I)'
+       WHERE openchpl.cqm_criterion.number = '0435'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0435_I_ as boolean) IS NOT NULL;
 
@@ -2857,7 +2857,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0436_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0436(I)'
+       WHERE openchpl.cqm_criterion.number = '0436'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0436_I_ as boolean) IS NOT NULL;
 
@@ -2865,7 +2865,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0437_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0437(I)'
+       WHERE openchpl.cqm_criterion.number = '0437'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0437_I_ as boolean) IS NOT NULL;
 
@@ -2873,7 +2873,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0438_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0438(I)'
+       WHERE openchpl.cqm_criterion.number = '0438'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0438_I_ as boolean) IS NOT NULL;
 
@@ -2881,7 +2881,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0439_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0439(I)'
+       WHERE openchpl.cqm_criterion.number = '0439'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0439_I_ as boolean) IS NOT NULL;
 
@@ -2889,7 +2889,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0440_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0440(I)'
+       WHERE openchpl.cqm_criterion.number = '0440'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0440_I_ as boolean) IS NOT NULL;
 
@@ -2897,7 +2897,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0441_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0441(I)'
+       WHERE openchpl.cqm_criterion.number = '0441'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0441_I_ as boolean) IS NOT NULL;
 
@@ -2905,7 +2905,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0495_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0495(I)'
+       WHERE openchpl.cqm_criterion.number = '0495'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0495_I_ as boolean) IS NOT NULL;
 
@@ -2913,7 +2913,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0497_I_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0497(I)'
+       WHERE openchpl.cqm_criterion.number = '0497'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0497_I_ as boolean) IS NOT NULL;
 
@@ -2921,7 +2921,7 @@ INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT cqm_criterion_id, $NQF_0575_A_, $CertifiedProduct_id, -1
        FROM openchpl.cqm_criterion
-       WHERE openchpl.cqm_criterion.number = 'NQF 0575(A)'
+       WHERE openchpl.cqm_criterion.number = '0575'
        AND $Certification_Edition_Year = '2011'
        AND cast ($NQF_0575_A_ as boolean) IS NOT NULL;
 
@@ -2930,7 +2930,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS100' AND
+       openchpl.cqm_criterion.cms_id = 'CMS100' AND
        cqm_version.version = $CMS100 AND
        cast ($CMS100 as varchar(25)) IS NOT NULL;
 
@@ -2939,7 +2939,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS100' AND
+       openchpl.cqm_criterion.cms_id = 'CMS100' AND
        cqm_version.version = $CMS100_2 AND
        cast ($CMS100_2 as varchar(25)) IS NOT NULL;
 
@@ -2948,7 +2948,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS102' AND
+       openchpl.cqm_criterion.cms_id = 'CMS102' AND
        cqm_version.version = $CMS102 AND
        cast ($CMS102 as varchar(25)) IS NOT NULL;
 
@@ -2957,7 +2957,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS102' AND
+       openchpl.cqm_criterion.cms_id = 'CMS102' AND
        cqm_version.version = $CMS102_2 AND
        cast ($CMS102_2 as varchar(25)) IS NOT NULL;
 
@@ -2966,7 +2966,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS104' AND
+       openchpl.cqm_criterion.cms_id = 'CMS104' AND
        cqm_version.version = $CMS104 AND
        cast ($CMS104 as varchar(25)) IS NOT NULL;
 
@@ -2975,7 +2975,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS104' AND
+       openchpl.cqm_criterion.cms_id = 'CMS104' AND
        cqm_version.version = $CMS104_2 AND
        cast ($CMS104_2 as varchar(25)) IS NOT NULL;
 
@@ -2984,7 +2984,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS105' AND
+       openchpl.cqm_criterion.cms_id = 'CMS105' AND
        cqm_version.version = $CMS105 AND
        cast ($CMS105 as varchar(25)) IS NOT NULL;
 
@@ -2993,7 +2993,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS105' AND
+       openchpl.cqm_criterion.cms_id = 'CMS105' AND
        cqm_version.version = $CMS105_2 AND
        cast ($CMS105_2 as varchar(25)) IS NOT NULL;
 
@@ -3002,7 +3002,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS107' AND
+       openchpl.cqm_criterion.cms_id = 'CMS107' AND
        cqm_version.version = $CMS107 AND
        cast ($CMS107 as varchar(25)) IS NOT NULL;
 
@@ -3011,7 +3011,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS107' AND
+       openchpl.cqm_criterion.cms_id = 'CMS107' AND
        cqm_version.version = $CMS107_2 AND
        cast ($CMS107_2 as varchar(25)) IS NOT NULL;
 
@@ -3020,7 +3020,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS108' AND
+       openchpl.cqm_criterion.cms_id = 'CMS108' AND
        cqm_version.version = $CMS108 AND
        cast ($CMS108 as varchar(25)) IS NOT NULL;
 
@@ -3029,7 +3029,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS108' AND
+       openchpl.cqm_criterion.cms_id = 'CMS108' AND
        cqm_version.version = $CMS108_2 AND
        cast ($CMS108_2 as varchar(25)) IS NOT NULL;
 
@@ -3038,7 +3038,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS109' AND
+       openchpl.cqm_criterion.cms_id = 'CMS109' AND
        cqm_version.version = $CMS109 AND
        cast ($CMS109 as varchar(25)) IS NOT NULL;
 
@@ -3047,7 +3047,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS109' AND
+       openchpl.cqm_criterion.cms_id = 'CMS109' AND
        cqm_version.version = $CMS109_2 AND
        cast ($CMS109_2 as varchar(25)) IS NOT NULL;
 
@@ -3056,7 +3056,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS110' AND
+       openchpl.cqm_criterion.cms_id = 'CMS110' AND
        cqm_version.version = $CMS110 AND
        cast ($CMS110 as varchar(25)) IS NOT NULL;
 
@@ -3065,7 +3065,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS110' AND
+       openchpl.cqm_criterion.cms_id = 'CMS110' AND
        cqm_version.version = $CMS110_2 AND
        cast ($CMS110_2 as varchar(25)) IS NOT NULL;
 
@@ -3074,7 +3074,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS111' AND
+       openchpl.cqm_criterion.cms_id = 'CMS111' AND
        cqm_version.version = $CMS111 AND
        cast ($CMS111 as varchar(25)) IS NOT NULL;
 
@@ -3083,7 +3083,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS111' AND
+       openchpl.cqm_criterion.cms_id = 'CMS111' AND
        cqm_version.version = $CMS111_2 AND
        cast ($CMS111_2 as varchar(25)) IS NOT NULL;
 
@@ -3092,7 +3092,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS113' AND
+       openchpl.cqm_criterion.cms_id = 'CMS113' AND
        cqm_version.version = $CMS113 AND
        cast ($CMS113 as varchar(25)) IS NOT NULL;
 
@@ -3101,7 +3101,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS113' AND
+       openchpl.cqm_criterion.cms_id = 'CMS113' AND
        cqm_version.version = $CMS113_2 AND
        cast ($CMS113_2 as varchar(25)) IS NOT NULL;
 
@@ -3110,7 +3110,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS114' AND
+       openchpl.cqm_criterion.cms_id = 'CMS114' AND
        cqm_version.version = $CMS114 AND
        cast ($CMS114 as varchar(25)) IS NOT NULL;
 
@@ -3119,7 +3119,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS114' AND
+       openchpl.cqm_criterion.cms_id = 'CMS114' AND
        cqm_version.version = $CMS114_2 AND
        cast ($CMS114_2 as varchar(25)) IS NOT NULL;
 
@@ -3128,7 +3128,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS117' AND
+       openchpl.cqm_criterion.cms_id = 'CMS117' AND
        cqm_version.version = $CMS117 AND
        cast ($CMS117 as varchar(25)) IS NOT NULL;
 
@@ -3137,7 +3137,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS117' AND
+       openchpl.cqm_criterion.cms_id = 'CMS117' AND
        cqm_version.version = $CMS117_2 AND
        cast ($CMS117_2 as varchar(25)) IS NOT NULL;
 
@@ -3146,7 +3146,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS122' AND
+       openchpl.cqm_criterion.cms_id = 'CMS122' AND
        cqm_version.version = $CMS122 AND
        cast ($CMS122 as varchar(25)) IS NOT NULL;
 
@@ -3155,7 +3155,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS122' AND
+       openchpl.cqm_criterion.cms_id = 'CMS122' AND
        cqm_version.version = $CMS122_2 AND
        cast ($CMS122_2 as varchar(25)) IS NOT NULL;
 
@@ -3164,7 +3164,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS123' AND
+       openchpl.cqm_criterion.cms_id = 'CMS123' AND
        cqm_version.version = $CMS123 AND
        cast ($CMS123 as varchar(25)) IS NOT NULL;
 
@@ -3173,7 +3173,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS123' AND
+       openchpl.cqm_criterion.cms_id = 'CMS123' AND
        cqm_version.version = $CMS123_2 AND
        cast ($CMS123_2 as varchar(25)) IS NOT NULL;
 
@@ -3182,7 +3182,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS124' AND
+       openchpl.cqm_criterion.cms_id = 'CMS124' AND
        cqm_version.version = $CMS124 AND
        cast ($CMS124 as varchar(25)) IS NOT NULL;
 
@@ -3191,7 +3191,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS124' AND
+       openchpl.cqm_criterion.cms_id = 'CMS124' AND
        cqm_version.version = $CMS124_2 AND
        cast ($CMS124_2 as varchar(25)) IS NOT NULL;
 
@@ -3200,7 +3200,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS125' AND
+       openchpl.cqm_criterion.cms_id = 'CMS125' AND
        cqm_version.version = $CMS125 AND
        cast ($CMS125 as varchar(25)) IS NOT NULL;
 
@@ -3209,7 +3209,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS125' AND
+       openchpl.cqm_criterion.cms_id = 'CMS125' AND
        cqm_version.version = $CMS125_2 AND
        cast ($CMS125_2 as varchar(25)) IS NOT NULL;
 
@@ -3218,7 +3218,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS126' AND
+       openchpl.cqm_criterion.cms_id = 'CMS126' AND
        cqm_version.version = $CMS126 AND
        cast ($CMS126 as varchar(25)) IS NOT NULL;
 
@@ -3227,7 +3227,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS126' AND
+       openchpl.cqm_criterion.cms_id = 'CMS126' AND
        cqm_version.version = $CMS126_2 AND
        cast ($CMS126_2 as varchar(25)) IS NOT NULL;
 
@@ -3236,7 +3236,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS127' AND
+       openchpl.cqm_criterion.cms_id = 'CMS127' AND
        cqm_version.version = $CMS127 AND
        cast ($CMS127 as varchar(25)) IS NOT NULL;
 
@@ -3245,7 +3245,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS127' AND
+       openchpl.cqm_criterion.cms_id = 'CMS127' AND
        cqm_version.version = $CMS127_2 AND
        cast ($CMS127_2 as varchar(25)) IS NOT NULL;
 
@@ -3254,7 +3254,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS128' AND
+       openchpl.cqm_criterion.cms_id = 'CMS128' AND
        cqm_version.version = $CMS128 AND
        cast ($CMS128 as varchar(25)) IS NOT NULL;
 
@@ -3263,7 +3263,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS128' AND
+       openchpl.cqm_criterion.cms_id = 'CMS128' AND
        cqm_version.version = $CMS128_2 AND
        cast ($CMS128_2 as varchar(25)) IS NOT NULL;
 
@@ -3272,7 +3272,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS129' AND
+       openchpl.cqm_criterion.cms_id = 'CMS129' AND
        cqm_version.version = $CMS129 AND
        cast ($CMS129 as varchar(25)) IS NOT NULL;
 
@@ -3281,7 +3281,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS129' AND
+       openchpl.cqm_criterion.cms_id = 'CMS129' AND
        cqm_version.version = $CMS129_2 AND
        cast ($CMS129_2 as varchar(25)) IS NOT NULL;
 
@@ -3290,7 +3290,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS130' AND
+       openchpl.cqm_criterion.cms_id = 'CMS130' AND
        cqm_version.version = $CMS130 AND
        cast ($CMS130 as varchar(25)) IS NOT NULL;
 
@@ -3299,7 +3299,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS130' AND
+       openchpl.cqm_criterion.cms_id = 'CMS130' AND
        cqm_version.version = $CMS130_2 AND
        cast ($CMS130_2 as varchar(25)) IS NOT NULL;
 
@@ -3308,7 +3308,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS131' AND
+       openchpl.cqm_criterion.cms_id = 'CMS131' AND
        cqm_version.version = $CMS131 AND
        cast ($CMS131 as varchar(25)) IS NOT NULL;
 
@@ -3317,7 +3317,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS131' AND
+       openchpl.cqm_criterion.cms_id = 'CMS131' AND
        cqm_version.version = $CMS131_2 AND
        cast ($CMS131_2 as varchar(25)) IS NOT NULL;
 
@@ -3326,7 +3326,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS132' AND
+       openchpl.cqm_criterion.cms_id = 'CMS132' AND
        cqm_version.version = $CMS132 AND
        cast ($CMS132 as varchar(25)) IS NOT NULL;
 
@@ -3335,7 +3335,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS132' AND
+       openchpl.cqm_criterion.cms_id = 'CMS132' AND
        cqm_version.version = $CMS132_2 AND
        cast ($CMS132_2 as varchar(25)) IS NOT NULL;
 
@@ -3344,7 +3344,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS133' AND
+       openchpl.cqm_criterion.cms_id = 'CMS133' AND
        cqm_version.version = $CMS133 AND
        cast ($CMS133 as varchar(25)) IS NOT NULL;
 
@@ -3353,7 +3353,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS133' AND
+       openchpl.cqm_criterion.cms_id = 'CMS133' AND
        cqm_version.version = $CMS133_2 AND
        cast ($CMS133_2 as varchar(25)) IS NOT NULL;
 
@@ -3362,7 +3362,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS134' AND
+       openchpl.cqm_criterion.cms_id = 'CMS134' AND
        cqm_version.version = $CMS134 AND
        cast ($CMS134 as varchar(25)) IS NOT NULL;
 
@@ -3371,7 +3371,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS134' AND
+       openchpl.cqm_criterion.cms_id = 'CMS134' AND
        cqm_version.version = $CMS134_2 AND
        cast ($CMS134_2 as varchar(25)) IS NOT NULL;
 
@@ -3380,7 +3380,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS135' AND
+       openchpl.cqm_criterion.cms_id = 'CMS135' AND
        cqm_version.version = $CMS135 AND
        cast ($CMS135 as varchar(25)) IS NOT NULL;
 
@@ -3389,7 +3389,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS135' AND
+       openchpl.cqm_criterion.cms_id = 'CMS135' AND
        cqm_version.version = $CMS135_2 AND
        cast ($CMS135_2 as varchar(25)) IS NOT NULL;
 
@@ -3398,7 +3398,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS136' AND
+       openchpl.cqm_criterion.cms_id = 'CMS136' AND
        cqm_version.version = $CMS136 AND
        cast ($CMS136 as varchar(25)) IS NOT NULL;
 
@@ -3407,7 +3407,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS136' AND
+       openchpl.cqm_criterion.cms_id = 'CMS136' AND
        cqm_version.version = $CMS136_2 AND
        cast ($CMS136_2 as varchar(25)) IS NOT NULL;
 
@@ -3416,7 +3416,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS137' AND
+       openchpl.cqm_criterion.cms_id = 'CMS137' AND
        cqm_version.version = $CMS137 AND
        cast ($CMS137 as varchar(25)) IS NOT NULL;
 
@@ -3425,7 +3425,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS137' AND
+       openchpl.cqm_criterion.cms_id = 'CMS137' AND
        cqm_version.version = $CMS137_2 AND
        cast ($CMS137_2 as varchar(25)) IS NOT NULL;
 
@@ -3434,7 +3434,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS138' AND
+       openchpl.cqm_criterion.cms_id = 'CMS138' AND
        cqm_version.version = $CMS138 AND
        cast ($CMS138 as varchar(25)) IS NOT NULL;
 
@@ -3443,7 +3443,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS138' AND
+       openchpl.cqm_criterion.cms_id = 'CMS138' AND
        cqm_version.version = $CMS138_2 AND
        cast ($CMS138_2 as varchar(25)) IS NOT NULL;
 
@@ -3452,7 +3452,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS139' AND
+       openchpl.cqm_criterion.cms_id = 'CMS139' AND
        cqm_version.version = $CMS139 AND
        cast ($CMS139 as varchar(25)) IS NOT NULL;
 
@@ -3461,7 +3461,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS139' AND
+       openchpl.cqm_criterion.cms_id = 'CMS139' AND
        cqm_version.version = $CMS139_2 AND
        cast ($CMS139_2 as varchar(25)) IS NOT NULL;
 
@@ -3470,7 +3470,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS140' AND
+       openchpl.cqm_criterion.cms_id = 'CMS140' AND
        cqm_version.version = $CMS140 AND
        cast ($CMS140 as varchar(25)) IS NOT NULL;
 
@@ -3479,7 +3479,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS140' AND
+       openchpl.cqm_criterion.cms_id = 'CMS140' AND
        cqm_version.version = $CMS140_2 AND
        cast ($CMS140_2 as varchar(25)) IS NOT NULL;
 
@@ -3488,7 +3488,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS141' AND
+       openchpl.cqm_criterion.cms_id = 'CMS141' AND
        cqm_version.version = $CMS141 AND
        cast ($CMS141 as varchar(25)) IS NOT NULL;
 
@@ -3497,7 +3497,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS141' AND
+       openchpl.cqm_criterion.cms_id = 'CMS141' AND
        cqm_version.version = $CMS141_2 AND
        cast ($CMS141_2 as varchar(25)) IS NOT NULL;
 
@@ -3506,7 +3506,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS142' AND
+       openchpl.cqm_criterion.cms_id = 'CMS142' AND
        cqm_version.version = $CMS142 AND
        cast ($CMS142 as varchar(25)) IS NOT NULL;
 
@@ -3515,7 +3515,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS142' AND
+       openchpl.cqm_criterion.cms_id = 'CMS142' AND
        cqm_version.version = $CMS142_2 AND
        cast ($CMS142_2 as varchar(25)) IS NOT NULL;
 
@@ -3524,7 +3524,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS143' AND
+       openchpl.cqm_criterion.cms_id = 'CMS143' AND
        cqm_version.version = $CMS143 AND
        cast ($CMS143 as varchar(25)) IS NOT NULL;
 
@@ -3533,7 +3533,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS143' AND
+       openchpl.cqm_criterion.cms_id = 'CMS143' AND
        cqm_version.version = $CMS143_2 AND
        cast ($CMS143_2 as varchar(25)) IS NOT NULL;
 
@@ -3542,7 +3542,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS144' AND
+       openchpl.cqm_criterion.cms_id = 'CMS144' AND
        cqm_version.version = $CMS144 AND
        cast ($CMS144 as varchar(25)) IS NOT NULL;
 
@@ -3551,7 +3551,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS144' AND
+       openchpl.cqm_criterion.cms_id = 'CMS144' AND
        cqm_version.version = $CMS144_2 AND
        cast ($CMS144_2 as varchar(25)) IS NOT NULL;
 
@@ -3560,7 +3560,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS145' AND
+       openchpl.cqm_criterion.cms_id = 'CMS145' AND
        cqm_version.version = $CMS145 AND
        cast ($CMS145 as varchar(25)) IS NOT NULL;
 
@@ -3569,7 +3569,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS145' AND
+       openchpl.cqm_criterion.cms_id = 'CMS145' AND
        cqm_version.version = $CMS145_2 AND
        cast ($CMS145_2 as varchar(25)) IS NOT NULL;
 
@@ -3578,7 +3578,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS146' AND
+       openchpl.cqm_criterion.cms_id = 'CMS146' AND
        cqm_version.version = $CMS146 AND
        cast ($CMS146 as varchar(25)) IS NOT NULL;
 
@@ -3587,7 +3587,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS146' AND
+       openchpl.cqm_criterion.cms_id = 'CMS146' AND
        cqm_version.version = $CMS146_2 AND
        cast ($CMS146_2 as varchar(25)) IS NOT NULL;
 
@@ -3596,7 +3596,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS147' AND
+       openchpl.cqm_criterion.cms_id = 'CMS147' AND
        cqm_version.version = $CMS147 AND
        cast ($CMS147 as varchar(25)) IS NOT NULL;
 
@@ -3605,7 +3605,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS147' AND
+       openchpl.cqm_criterion.cms_id = 'CMS147' AND
        cqm_version.version = $CMS147_2 AND
        cast ($CMS147_2 as varchar(25)) IS NOT NULL;
 
@@ -3614,7 +3614,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS148' AND
+       openchpl.cqm_criterion.cms_id = 'CMS148' AND
        cqm_version.version = $CMS148 AND
        cast ($CMS148 as varchar(25)) IS NOT NULL;
 
@@ -3623,7 +3623,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS148' AND
+       openchpl.cqm_criterion.cms_id = 'CMS148' AND
        cqm_version.version = $CMS148_2 AND
        cast ($CMS148_2 as varchar(25)) IS NOT NULL;
 
@@ -3632,7 +3632,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS149' AND
+       openchpl.cqm_criterion.cms_id = 'CMS149' AND
        cqm_version.version = $CMS149 AND
        cast ($CMS149 as varchar(25)) IS NOT NULL;
 
@@ -3641,7 +3641,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS149' AND
+       openchpl.cqm_criterion.cms_id = 'CMS149' AND
        cqm_version.version = $CMS149_2 AND
        cast ($CMS149_2 as varchar(25)) IS NOT NULL;
 
@@ -3650,7 +3650,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS153' AND
+       openchpl.cqm_criterion.cms_id = 'CMS153' AND
        cqm_version.version = $CMS153 AND
        cast ($CMS153 as varchar(25)) IS NOT NULL;
 
@@ -3659,7 +3659,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS153' AND
+       openchpl.cqm_criterion.cms_id = 'CMS153' AND
        cqm_version.version = $CMS153_2 AND
        cast ($CMS153_2 as varchar(25)) IS NOT NULL;
 
@@ -3668,7 +3668,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS154' AND
+       openchpl.cqm_criterion.cms_id = 'CMS154' AND
        cqm_version.version = $CMS154 AND
        cast ($CMS154 as varchar(25)) IS NOT NULL;
 
@@ -3677,7 +3677,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS154' AND
+       openchpl.cqm_criterion.cms_id = 'CMS154' AND
        cqm_version.version = $CMS154_2 AND
        cast ($CMS154_2 as varchar(25)) IS NOT NULL;
 
@@ -3686,7 +3686,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS155' AND
+       openchpl.cqm_criterion.cms_id = 'CMS155' AND
        cqm_version.version = $CMS155 AND
        cast ($CMS155 as varchar(25)) IS NOT NULL;
 
@@ -3695,7 +3695,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS155' AND
+       openchpl.cqm_criterion.cms_id = 'CMS155' AND
        cqm_version.version = $CMS155_2 AND
        cast ($CMS155_2 as varchar(25)) IS NOT NULL;
 
@@ -3704,7 +3704,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS156' AND
+       openchpl.cqm_criterion.cms_id = 'CMS156' AND
        cqm_version.version = $CMS156 AND
        cast ($CMS156 as varchar(25)) IS NOT NULL;
 
@@ -3713,7 +3713,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS156' AND
+       openchpl.cqm_criterion.cms_id = 'CMS156' AND
        cqm_version.version = $CMS156_2 AND
        cast ($CMS156_2 as varchar(25)) IS NOT NULL;
 
@@ -3722,7 +3722,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS157' AND
+       openchpl.cqm_criterion.cms_id = 'CMS157' AND
        cqm_version.version = $CMS157 AND
        cast ($CMS157 as varchar(25)) IS NOT NULL;
 
@@ -3731,7 +3731,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS157' AND
+       openchpl.cqm_criterion.cms_id = 'CMS157' AND
        cqm_version.version = $CMS157_2 AND
        cast ($CMS157_2 as varchar(25)) IS NOT NULL;
 
@@ -3740,7 +3740,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS158' AND
+       openchpl.cqm_criterion.cms_id = 'CMS158' AND
        cqm_version.version = $CMS158 AND
        cast ($CMS158 as varchar(25)) IS NOT NULL;
 
@@ -3749,7 +3749,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS158' AND
+       openchpl.cqm_criterion.cms_id = 'CMS158' AND
        cqm_version.version = $CMS158_2 AND
        cast ($CMS158_2 as varchar(25)) IS NOT NULL;
 
@@ -3758,7 +3758,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS159' AND
+       openchpl.cqm_criterion.cms_id = 'CMS159' AND
        cqm_version.version = $CMS159 AND
        cast ($CMS159 as varchar(25)) IS NOT NULL;
 
@@ -3767,7 +3767,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS159' AND
+       openchpl.cqm_criterion.cms_id = 'CMS159' AND
        cqm_version.version = $CMS159_2 AND
        cast ($CMS159_2 as varchar(25)) IS NOT NULL;
 
@@ -3776,7 +3776,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS160' AND
+       openchpl.cqm_criterion.cms_id = 'CMS160' AND
        cqm_version.version = $CMS160 AND
        cast ($CMS160 as varchar(25)) IS NOT NULL;
 
@@ -3785,7 +3785,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS160' AND
+       openchpl.cqm_criterion.cms_id = 'CMS160' AND
        cqm_version.version = $CMS160_2 AND
        cast ($CMS160_2 as varchar(25)) IS NOT NULL;
 
@@ -3794,7 +3794,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS161' AND
+       openchpl.cqm_criterion.cms_id = 'CMS161' AND
        cqm_version.version = $CMS161 AND
        cast ($CMS161 as varchar(25)) IS NOT NULL;
 
@@ -3803,7 +3803,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS161' AND
+       openchpl.cqm_criterion.cms_id = 'CMS161' AND
        cqm_version.version = $CMS161_2 AND
        cast ($CMS161_2 as varchar(25)) IS NOT NULL;
 
@@ -3812,7 +3812,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS163' AND
+       openchpl.cqm_criterion.cms_id = 'CMS163' AND
        cqm_version.version = $CMS163 AND
        cast ($CMS163 as varchar(25)) IS NOT NULL;
 
@@ -3821,7 +3821,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS163' AND
+       openchpl.cqm_criterion.cms_id = 'CMS163' AND
        cqm_version.version = $CMS163_2 AND
        cast ($CMS163_2 as varchar(25)) IS NOT NULL;
 
@@ -3830,7 +3830,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS164' AND
+       openchpl.cqm_criterion.cms_id = 'CMS164' AND
        cqm_version.version = $CMS164 AND
        cast ($CMS164 as varchar(25)) IS NOT NULL;
 
@@ -3839,7 +3839,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS164' AND
+       openchpl.cqm_criterion.cms_id = 'CMS164' AND
        cqm_version.version = $CMS164_2 AND
        cast ($CMS164_2 as varchar(25)) IS NOT NULL;
 
@@ -3848,7 +3848,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS165' AND
+       openchpl.cqm_criterion.cms_id = 'CMS165' AND
        cqm_version.version = $CMS165 AND
        cast ($CMS165 as varchar(25)) IS NOT NULL;
 
@@ -3857,7 +3857,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS165' AND
+       openchpl.cqm_criterion.cms_id = 'CMS165' AND
        cqm_version.version = $CMS165_2 AND
        cast ($CMS165_2 as varchar(25)) IS NOT NULL;
 
@@ -3866,7 +3866,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS166' AND
+       openchpl.cqm_criterion.cms_id = 'CMS166' AND
        cqm_version.version = $CMS166 AND
        cast ($CMS166 as varchar(25)) IS NOT NULL;
 
@@ -3875,7 +3875,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS166' AND
+       openchpl.cqm_criterion.cms_id = 'CMS166' AND
        cqm_version.version = $CMS166_2 AND
        cast ($CMS166_2 as varchar(25)) IS NOT NULL;
 
@@ -3884,7 +3884,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS167' AND
+       openchpl.cqm_criterion.cms_id = 'CMS167' AND
        cqm_version.version = $CMS167 AND
        cast ($CMS167 as varchar(25)) IS NOT NULL;
 
@@ -3893,7 +3893,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS167' AND
+       openchpl.cqm_criterion.cms_id = 'CMS167' AND
        cqm_version.version = $CMS167_2 AND
        cast ($CMS167_2 as varchar(25)) IS NOT NULL;
 
@@ -3902,7 +3902,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS169' AND
+       openchpl.cqm_criterion.cms_id = 'CMS169' AND
        cqm_version.version = $CMS169 AND
        cast ($CMS169 as varchar(25)) IS NOT NULL;
 
@@ -3911,7 +3911,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS169' AND
+       openchpl.cqm_criterion.cms_id = 'CMS169' AND
        cqm_version.version = $CMS169_2 AND
        cast ($CMS169_2 as varchar(25)) IS NOT NULL;
 
@@ -3920,7 +3920,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS171' AND
+       openchpl.cqm_criterion.cms_id = 'CMS171' AND
        cqm_version.version = $CMS171 AND
        cast ($CMS171 as varchar(25)) IS NOT NULL;
 
@@ -3929,7 +3929,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS171' AND
+       openchpl.cqm_criterion.cms_id = 'CMS171' AND
        cqm_version.version = $CMS171_2 AND
        cast ($CMS171_2 as varchar(25)) IS NOT NULL;
 
@@ -3938,7 +3938,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS172' AND
+       openchpl.cqm_criterion.cms_id = 'CMS172' AND
        cqm_version.version = $CMS172 AND
        cast ($CMS172 as varchar(25)) IS NOT NULL;
 
@@ -3947,7 +3947,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS172' AND
+       openchpl.cqm_criterion.cms_id = 'CMS172' AND
        cqm_version.version = $CMS172_2 AND
        cast ($CMS172_2 as varchar(25)) IS NOT NULL;
 
@@ -3956,7 +3956,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS177' AND
+       openchpl.cqm_criterion.cms_id = 'CMS177' AND
        cqm_version.version = $CMS177 AND
        cast ($CMS177 as varchar(25)) IS NOT NULL;
 
@@ -3965,7 +3965,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS177' AND
+       openchpl.cqm_criterion.cms_id = 'CMS177' AND
        cqm_version.version = $CMS177_2 AND
        cast ($CMS177_2 as varchar(25)) IS NOT NULL;
 
@@ -3974,7 +3974,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS178' AND
+       openchpl.cqm_criterion.cms_id = 'CMS178' AND
        cqm_version.version = $CMS178 AND
        cast ($CMS178 as varchar(25)) IS NOT NULL;
 
@@ -3983,7 +3983,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS178' AND
+       openchpl.cqm_criterion.cms_id = 'CMS178' AND
        cqm_version.version = $CMS178_2 AND
        cast ($CMS178_2 as varchar(25)) IS NOT NULL;
 
@@ -3992,7 +3992,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS179' AND
+       openchpl.cqm_criterion.cms_id = 'CMS179' AND
        cqm_version.version = $CMS179 AND
        cast ($CMS179 as varchar(25)) IS NOT NULL;
 
@@ -4001,7 +4001,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS179' AND
+       openchpl.cqm_criterion.cms_id = 'CMS179' AND
        cqm_version.version = $CMS179_2 AND
        cast ($CMS179_2 as varchar(25)) IS NOT NULL;
 
@@ -4010,7 +4010,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS182' AND
+       openchpl.cqm_criterion.cms_id = 'CMS182' AND
        cqm_version.version = $CMS182 AND
        cast ($CMS182 as varchar(25)) IS NOT NULL;
 
@@ -4019,7 +4019,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS182' AND
+       openchpl.cqm_criterion.cms_id = 'CMS182' AND
        cqm_version.version = $CMS182_2 AND
        cast ($CMS182_2 as varchar(25)) IS NOT NULL;
 
@@ -4028,7 +4028,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS185' AND
+       openchpl.cqm_criterion.cms_id = 'CMS185' AND
        cqm_version.version = $CMS185 AND
        cast ($CMS185 as varchar(25)) IS NOT NULL;
 
@@ -4037,7 +4037,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS185' AND
+       openchpl.cqm_criterion.cms_id = 'CMS185' AND
        cqm_version.version = $CMS185_2 AND
        cast ($CMS185_2 as varchar(25)) IS NOT NULL;
 
@@ -4046,7 +4046,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS188' AND
+       openchpl.cqm_criterion.cms_id = 'CMS188' AND
        cqm_version.version = $CMS188 AND
        cast ($CMS188 as varchar(25)) IS NOT NULL;
 
@@ -4055,7 +4055,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS188' AND
+       openchpl.cqm_criterion.cms_id = 'CMS188' AND
        cqm_version.version = $CMS188_2 AND
        cast ($CMS188_2 as varchar(25)) IS NOT NULL;
 
@@ -4064,7 +4064,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS190' AND
+       openchpl.cqm_criterion.cms_id = 'CMS190' AND
        cqm_version.version = $CMS190 AND
        cast ($CMS190 as varchar(25)) IS NOT NULL;
 
@@ -4073,7 +4073,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS190' AND
+       openchpl.cqm_criterion.cms_id = 'CMS190' AND
        cqm_version.version = $CMS190_2 AND
        cast ($CMS190_2 as varchar(25)) IS NOT NULL;
 
@@ -4082,7 +4082,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS22' AND
+       openchpl.cqm_criterion.cms_id = 'CMS22' AND
        cqm_version.version = $CMS22 AND
        cast ($CMS22 as varchar(25)) IS NOT NULL;
 
@@ -4091,7 +4091,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS22' AND
+       openchpl.cqm_criterion.cms_id = 'CMS22' AND
        cqm_version.version = $CMS22_2 AND
        cast ($CMS22_2 as varchar(25)) IS NOT NULL;
 
@@ -4100,7 +4100,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS26V1' AND
+       openchpl.cqm_criterion.cms_id = 'CMS26V1' AND
        cqm_version.version = $CMS26V1 AND
        cast ($CMS26V1 as varchar(25)) IS NOT NULL;
 
@@ -4109,7 +4109,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS26V1' AND
+       openchpl.cqm_criterion.cms_id = 'CMS26V1' AND
        cqm_version.version = $CMS26V1_2 AND
        cast ($CMS26V1_2 as varchar(25)) IS NOT NULL;
 
@@ -4118,7 +4118,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS2' AND
+       openchpl.cqm_criterion.cms_id = 'CMS2' AND
        cqm_version.version = $CMS2 AND
        cast ($CMS2 as varchar(25)) IS NOT NULL;
 
@@ -4127,7 +4127,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS2' AND
+       openchpl.cqm_criterion.cms_id = 'CMS2' AND
        cqm_version.version = $CMS2_2 AND
        cast ($CMS2_2 as varchar(25)) IS NOT NULL;
 
@@ -4136,7 +4136,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS30' AND
+       openchpl.cqm_criterion.cms_id = 'CMS30' AND
        cqm_version.version = $CMS30 AND
        cast ($CMS30 as varchar(25)) IS NOT NULL;
 
@@ -4145,7 +4145,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS30' AND
+       openchpl.cqm_criterion.cms_id = 'CMS30' AND
        cqm_version.version = $CMS30_2 AND
        cast ($CMS30_2 as varchar(25)) IS NOT NULL;
 
@@ -4154,7 +4154,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS31' AND
+       openchpl.cqm_criterion.cms_id = 'CMS31' AND
        cqm_version.version = $CMS31 AND
        cast ($CMS31 as varchar(25)) IS NOT NULL;
 
@@ -4163,7 +4163,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS31' AND
+       openchpl.cqm_criterion.cms_id = 'CMS31' AND
        cqm_version.version = $CMS31_2 AND
        cast ($CMS31_2 as varchar(25)) IS NOT NULL;
 
@@ -4172,7 +4172,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS32' AND
+       openchpl.cqm_criterion.cms_id = 'CMS32' AND
        cqm_version.version = $CMS32 AND
        cast ($CMS32 as varchar(25)) IS NOT NULL;
 
@@ -4181,7 +4181,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS32' AND
+       openchpl.cqm_criterion.cms_id = 'CMS32' AND
        cqm_version.version = $CMS32_2 AND
        cast ($CMS32_2 as varchar(25)) IS NOT NULL;
 
@@ -4190,7 +4190,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS50' AND
+       openchpl.cqm_criterion.cms_id = 'CMS50' AND
        cqm_version.version = $CMS50 AND
        cast ($CMS50 as varchar(25)) IS NOT NULL;
 
@@ -4199,7 +4199,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS50' AND
+       openchpl.cqm_criterion.cms_id = 'CMS50' AND
        cqm_version.version = $CMS50_2 AND
        cast ($CMS50_2 as varchar(25)) IS NOT NULL;
 
@@ -4208,7 +4208,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS52' AND
+       openchpl.cqm_criterion.cms_id = 'CMS52' AND
        cqm_version.version = $CMS52 AND
        cast ($CMS52 as varchar(25)) IS NOT NULL;
 
@@ -4217,7 +4217,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS52' AND
+       openchpl.cqm_criterion.cms_id = 'CMS52' AND
        cqm_version.version = $CMS52_2 AND
        cast ($CMS52_2 as varchar(25)) IS NOT NULL;
 
@@ -4226,7 +4226,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS53' AND
+       openchpl.cqm_criterion.cms_id = 'CMS53' AND
        cqm_version.version = $CMS53 AND
        cast ($CMS53 as varchar(25)) IS NOT NULL;
 
@@ -4235,7 +4235,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS53' AND
+       openchpl.cqm_criterion.cms_id = 'CMS53' AND
        cqm_version.version = $CMS53_2 AND
        cast ($CMS53_2 as varchar(25)) IS NOT NULL;
 
@@ -4244,7 +4244,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS55' AND
+       openchpl.cqm_criterion.cms_id = 'CMS55' AND
        cqm_version.version = $CMS55 AND
        cast ($CMS55 as varchar(25)) IS NOT NULL;
 
@@ -4253,7 +4253,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS55' AND
+       openchpl.cqm_criterion.cms_id = 'CMS55' AND
        cqm_version.version = $CMS55_2 AND
        cast ($CMS55_2 as varchar(25)) IS NOT NULL;
 
@@ -4262,7 +4262,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS56' AND
+       openchpl.cqm_criterion.cms_id = 'CMS56' AND
        cqm_version.version = $CMS56 AND
        cast ($CMS56 as varchar(25)) IS NOT NULL;
 
@@ -4271,7 +4271,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS56' AND
+       openchpl.cqm_criterion.cms_id = 'CMS56' AND
        cqm_version.version = $CMS56_2 AND
        cast ($CMS56_2 as varchar(25)) IS NOT NULL;
 
@@ -4280,7 +4280,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS60' AND
+       openchpl.cqm_criterion.cms_id = 'CMS60' AND
        cqm_version.version = $CMS60 AND
        cast ($CMS60 as varchar(25)) IS NOT NULL;
 
@@ -4289,7 +4289,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS60' AND
+       openchpl.cqm_criterion.cms_id = 'CMS60' AND
        cqm_version.version = $CMS60_2 AND
        cast ($CMS60_2 as varchar(25)) IS NOT NULL;
 
@@ -4298,7 +4298,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS61' AND
+       openchpl.cqm_criterion.cms_id = 'CMS61' AND
        cqm_version.version = $CMS61 AND
        cast ($CMS61 as varchar(25)) IS NOT NULL;
 
@@ -4307,7 +4307,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS61' AND
+       openchpl.cqm_criterion.cms_id = 'CMS61' AND
        cqm_version.version = $CMS61_2 AND
        cast ($CMS61_2 as varchar(25)) IS NOT NULL;
 
@@ -4316,7 +4316,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS62' AND
+       openchpl.cqm_criterion.cms_id = 'CMS62' AND
        cqm_version.version = $CMS62 AND
        cast ($CMS62 as varchar(25)) IS NOT NULL;
 
@@ -4325,7 +4325,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS62' AND
+       openchpl.cqm_criterion.cms_id = 'CMS62' AND
        cqm_version.version = $CMS62_2 AND
        cast ($CMS62_2 as varchar(25)) IS NOT NULL;
 
@@ -4334,7 +4334,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS64' AND
+       openchpl.cqm_criterion.cms_id = 'CMS64' AND
        cqm_version.version = $CMS64 AND
        cast ($CMS64 as varchar(25)) IS NOT NULL;
 
@@ -4343,7 +4343,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS64' AND
+       openchpl.cqm_criterion.cms_id = 'CMS64' AND
        cqm_version.version = $CMS64_2 AND
        cast ($CMS64_2 as varchar(25)) IS NOT NULL;
 
@@ -4352,7 +4352,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS65' AND
+       openchpl.cqm_criterion.cms_id = 'CMS65' AND
        cqm_version.version = $CMS65 AND
        cast ($CMS65 as varchar(25)) IS NOT NULL;
 
@@ -4361,7 +4361,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS65' AND
+       openchpl.cqm_criterion.cms_id = 'CMS65' AND
        cqm_version.version = $CMS65_2 AND
        cast ($CMS65_2 as varchar(25)) IS NOT NULL;
 
@@ -4370,7 +4370,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS66' AND
+       openchpl.cqm_criterion.cms_id = 'CMS66' AND
        cqm_version.version = $CMS66 AND
        cast ($CMS66 as varchar(25)) IS NOT NULL;
 
@@ -4379,7 +4379,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS66' AND
+       openchpl.cqm_criterion.cms_id = 'CMS66' AND
        cqm_version.version = $CMS66_2 AND
        cast ($CMS66_2 as varchar(25)) IS NOT NULL;
 
@@ -4388,7 +4388,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS68' AND
+       openchpl.cqm_criterion.cms_id = 'CMS68' AND
        cqm_version.version = $CMS68 AND
        cast ($CMS68 as varchar(25)) IS NOT NULL;
 
@@ -4397,7 +4397,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS68' AND
+       openchpl.cqm_criterion.cms_id = 'CMS68' AND
        cqm_version.version = $CMS68_2 AND
        cast ($CMS68_2 as varchar(25)) IS NOT NULL;
 
@@ -4406,7 +4406,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS69' AND
+       openchpl.cqm_criterion.cms_id = 'CMS69' AND
        cqm_version.version = $CMS69 AND
        cast ($CMS69 as varchar(25)) IS NOT NULL;
 
@@ -4415,7 +4415,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS69' AND
+       openchpl.cqm_criterion.cms_id = 'CMS69' AND
        cqm_version.version = $CMS69_2 AND
        cast ($CMS69_2 as varchar(25)) IS NOT NULL;
 
@@ -4424,7 +4424,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS71' AND
+       openchpl.cqm_criterion.cms_id = 'CMS71' AND
        cqm_version.version = $CMS71 AND
        cast ($CMS71 as varchar(25)) IS NOT NULL;
 
@@ -4433,7 +4433,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS71' AND
+       openchpl.cqm_criterion.cms_id = 'CMS71' AND
        cqm_version.version = $CMS71_2 AND
        cast ($CMS71_2 as varchar(25)) IS NOT NULL;
 
@@ -4442,7 +4442,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS72' AND
+       openchpl.cqm_criterion.cms_id = 'CMS72' AND
        cqm_version.version = $CMS72 AND
        cast ($CMS72 as varchar(25)) IS NOT NULL;
 
@@ -4451,7 +4451,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS72' AND
+       openchpl.cqm_criterion.cms_id = 'CMS72' AND
        cqm_version.version = $CMS72_2 AND
        cast ($CMS72_2 as varchar(25)) IS NOT NULL;
 
@@ -4460,7 +4460,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS73' AND
+       openchpl.cqm_criterion.cms_id = 'CMS73' AND
        cqm_version.version = $CMS73 AND
        cast ($CMS73 as varchar(25)) IS NOT NULL;
 
@@ -4469,7 +4469,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS73' AND
+       openchpl.cqm_criterion.cms_id = 'CMS73' AND
        cqm_version.version = $CMS73_2 AND
        cast ($CMS73_2 as varchar(25)) IS NOT NULL;
 
@@ -4478,7 +4478,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS74' AND
+       openchpl.cqm_criterion.cms_id = 'CMS74' AND
        cqm_version.version = $CMS74 AND
        cast ($CMS74 as varchar(25)) IS NOT NULL;
 
@@ -4487,7 +4487,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS74' AND
+       openchpl.cqm_criterion.cms_id = 'CMS74' AND
        cqm_version.version = $CMS74_2 AND
        cast ($CMS74_2 as varchar(25)) IS NOT NULL;
 
@@ -4496,7 +4496,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS75' AND
+       openchpl.cqm_criterion.cms_id = 'CMS75' AND
        cqm_version.version = $CMS75 AND
        cast ($CMS75 as varchar(25)) IS NOT NULL;
 
@@ -4505,7 +4505,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS75' AND
+       openchpl.cqm_criterion.cms_id = 'CMS75' AND
        cqm_version.version = $CMS75_2 AND
        cast ($CMS75_2 as varchar(25)) IS NOT NULL;
 
@@ -4514,7 +4514,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS77' AND
+       openchpl.cqm_criterion.cms_id = 'CMS77' AND
        cqm_version.version = $CMS77 AND
        cast ($CMS77 as varchar(25)) IS NOT NULL;
 
@@ -4523,7 +4523,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS77' AND
+       openchpl.cqm_criterion.cms_id = 'CMS77' AND
        cqm_version.version = $CMS77_2 AND
        cast ($CMS77_2 as varchar(25)) IS NOT NULL;
 
@@ -4532,7 +4532,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS82' AND
+       openchpl.cqm_criterion.cms_id = 'CMS82' AND
        cqm_version.version = $CMS82 AND
        cast ($CMS82 as varchar(25)) IS NOT NULL;
 
@@ -4541,7 +4541,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS82' AND
+       openchpl.cqm_criterion.cms_id = 'CMS82' AND
        cqm_version.version = $CMS82_2 AND
        cast ($CMS82_2 as varchar(25)) IS NOT NULL;
 
@@ -4550,7 +4550,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS90' AND
+       openchpl.cqm_criterion.cms_id = 'CMS90' AND
        cqm_version.version = $CMS90 AND
        cast ($CMS90 as varchar(25)) IS NOT NULL;
 
@@ -4559,7 +4559,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS90' AND
+       openchpl.cqm_criterion.cms_id = 'CMS90' AND
        cqm_version.version = $CMS90_2 AND
        cast ($CMS90_2 as varchar(25)) IS NOT NULL;
 
@@ -4568,7 +4568,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS91' AND
+       openchpl.cqm_criterion.cms_id = 'CMS91' AND
        cqm_version.version = $CMS91 AND
        cast ($CMS91 as varchar(25)) IS NOT NULL;
 
@@ -4577,7 +4577,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS91' AND
+       openchpl.cqm_criterion.cms_id = 'CMS91' AND
        cqm_version.version = $CMS91_2 AND
        cast ($CMS91_2 as varchar(25)) IS NOT NULL;
 
@@ -4586,7 +4586,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS9V1' AND
+       openchpl.cqm_criterion.cms_id = 'CMS9V1' AND
        cqm_version.version = $CMS9V1 AND
        cast ($CMS9V1 as varchar(25)) IS NOT NULL;
 
@@ -4595,7 +4595,7 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.number = 'CMS9V1' AND
+       openchpl.cqm_criterion.cms_id = 'CMS9V1' AND
        cqm_version.version = $CMS9V1_2 AND
        cast ($CMS9V1_2 as varchar(25)) IS NOT NULL;
 
