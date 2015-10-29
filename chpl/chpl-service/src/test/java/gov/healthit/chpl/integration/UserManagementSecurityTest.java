@@ -78,7 +78,6 @@ public class UserManagementSecurityTest {
 	@Before
 	public void setUpMockMVC(){
 		//mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-		//mockMvc = MockMvcBuilders.standaloneSetup(new UserManagementController()).build();
 		mockMvc = MockMvcBuilders.standaloneSetup(userManagementController).addFilter(new JWTAuthenticationFilter(jwtUserConverter), "/*").build();
 	}
 	
@@ -186,7 +185,6 @@ public class UserManagementSecurityTest {
 		
 		assertTrue(content3.contains("roleAdded"));
 		assertTrue(content3.contains("false"));
-		
 		
 	}
 	
