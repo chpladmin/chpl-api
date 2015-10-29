@@ -99,13 +99,13 @@ implements EnvironmentAware {
 		
 	}
 	
-	
+	/*
     @Override
     @Autowired
     public void setObjectPostProcessor(
             ObjectPostProcessor<Object> objectPostProcessor) {
         super.setObjectPostProcessor(objectPostProcessor);
-    }
+    }*/
 	
 	@Bean
 	@Autowired

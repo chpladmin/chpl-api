@@ -70,11 +70,14 @@ public class UserManagementSecurityTest {
 	@Autowired
 	private UserManager userManager;
 	
+	@Autowired
+	private UserManagementController userManagementController;
 	
 	@Before
 	public void setUpMockMVC(){
 		//mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-		mockMvc = MockMvcBuilders.standaloneSetup(new UserManagementController()).build();
+		//mockMvc = MockMvcBuilders.standaloneSetup(new UserManagementController()).build();
+		mockMvc = MockMvcBuilders.standaloneSetup(userManagementController).build();
 	}
 	
 	@BeforeClass
@@ -94,13 +97,14 @@ public class UserManagementSecurityTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		UserDTO adminDTO = userManager.getByName("admin");
 		String jwt = userAuthenticator.getJWT(adminDTO);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
 		
 		UserDTO before = userManager.getByName("TESTUSER");
 		Set<UserPermissionDTO> beforeRoles = getUserPermissions(before);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		
-		//mockMvc.perform(post("/users/grant_role").contentType(MediaType.APPLICATION_JSON)
-		mockMvc.perform(post("/users/grant_role").contentType(MediaType.parseMediaType("application/json;charset=UTF-8"))
+		mockMvc.perform(post("/users/grant_role").contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.ALL)
 				.header("Authorization", "Bearer "+jwt )
 				//.header("Accept", "application/json")
@@ -113,13 +117,16 @@ public class UserManagementSecurityTest {
 		
 		
 		UserDTO after = userManager.getByName("TESTUSER");
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		assertEquals(beforeRoles.size(),1);
 		assertEquals(afterRoles.size(),2);
 		
 		String afterJwt = userAuthenticator.getJWT(after);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		// TESTUSER should be able to grant admin role, as we've given them admin privileges
 		MvcResult result = mockMvc.perform(post("/users/grant_role").header("Authorization", "Bearer "+afterJwt ).contentType(MediaType.APPLICATION_JSON)
@@ -134,18 +141,9 @@ public class UserManagementSecurityTest {
 		
 		UserDTO testUser2 = userManager.getByName("testUser2");
 		Set<UserPermissionDTO> testUserRolesAfter = getUserPermissions(testUser2);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		assertEquals(testUserRolesAfter.size(), 2);
 		
-		/*
-		MvcResult result2 = mockMvc.perform(post("/users/revoke_role").header("Authorization", "Bearer "+afterJwt ).contentType(MediaType.APPLICATION_JSON)
-	            .content("{\"subjectName\":\"testUser2\",\"role\":\"ROLE_ADMIN\"}"))
-	            .andExpect(status().is(200))
-	            .andReturn();
-		
-		String content2 = result2.getResponse().getContentAsString();
-		assertTrue(content2.contains("roleRemoved"));
-		assertTrue(content2.contains("true"));
-		*/
 		userManager.removeAdmin("TESTUSER");
 		userManager.removeAdmin("testUser2");
 		
@@ -153,12 +151,13 @@ public class UserManagementSecurityTest {
 		UserDTO unPrivileged = userManager.getByName("TESTUSER");
 		
 		Set<UserPermissionDTO> unPrivilegedRoles = getUserPermissions(unPrivileged);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		assertEquals(unPrivilegedRoles.size(),1);
 		assertEquals(afterRoles.size(),2);
 		
 		String unPrivilegedJwt = userAuthenticator.getJWT(unPrivileged);
-		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		
 		MvcResult result2 = mockMvc.perform(post("/users/grant_role").header("Authorization", "Bearer "+unPrivilegedJwt ).contentType(MediaType.APPLICATION_JSON)
