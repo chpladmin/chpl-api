@@ -132,6 +132,14 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		return dtos;
 	}
 	
+	public Long findIdByOncId(String id) throws EntityRetrievalException {
+		PendingCertifiedProductEntity entity = getEntityByOncId(id);
+		if(entity == null) {
+			return null;
+		}
+		return entity.getId();
+	}
+	
 	private void update(PendingCertifiedProductEntity product) {
 		
 		entityManager.merge(product);	
@@ -158,6 +166,27 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
+		}
+		
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		
+		return entity;
+	}
+	
+	private PendingCertifiedProductEntity getEntityByOncId(String id) throws EntityRetrievalException {
+		
+		PendingCertifiedProductEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
+				+ " where (unique_id = :id) "
+				+ " and (not pcp.deleted = true)", PendingCertifiedProductEntity.class );
+		query.setParameter("id", id);
+		List<PendingCertifiedProductEntity> result = query.getResultList();
+		
+		if (result.size() > 1){
+			throw new EntityRetrievalException("Data error. Duplicate ONC id in database.");
 		}
 		
 		if (result.size() > 0){
