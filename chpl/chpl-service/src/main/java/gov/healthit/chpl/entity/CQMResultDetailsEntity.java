@@ -37,7 +37,7 @@ public class CQMResultDetailsEntity {
 	private String nqfNumber;
 	
 	@Column( name = "cqm_criterion_type_id")
-	private String cqmCriterionTypeId;
+	private Long cqmCriterionTypeId;
 	
 	@Basic( optional = true )
 	@Column(name = "cqm_version_id", nullable = true )
@@ -104,11 +104,11 @@ public class CQMResultDetailsEntity {
 		this.nqfNumber = nqfNumber;
 	}
 
-	public String getCqmCriterionTypeId() {
+	public Long getCqmCriterionTypeId() {
 		return cqmCriterionTypeId;
 	}
 
-	public void setCqmCriterionTypeId(String cqmCriterionTypeId) {
+	public void setCqmCriterionTypeId(Long cqmCriterionTypeId) {
 		this.cqmCriterionTypeId = cqmCriterionTypeId;
 	}
 

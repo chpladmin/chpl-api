@@ -13,6 +13,9 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
 	
+	private String oncId;
+	private String validationStatus;
+	private List<String> validationMessages;
 	private String uploadNotes;
 	private String recordStatus;
 	private Map<String, Object> vendorAddress;
@@ -21,6 +24,9 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 	
 	public PendingCertifiedProductDetails(PendingCertifiedProductDTO dto) {
 		this.setId(dto.getId());
+		this.setOncId(dto.getUniqueId());
+		this.setValidationStatus(dto.getValidationStatus().name());
+		this.setValidationMessages(dto.getValidationMessages());
 		this.setRecordStatus(dto.getRecordStatus());
 		this.setTestingLabId(null);
 		this.setChplProductNumber(null);
@@ -154,6 +160,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			cqm.setSuccess(cqmCriterion.isMeetsCriteria());
 			cqm.setTitle(cqmCriterion.getTitle());
 			cqm.setVersion(cqmCriterion.getVersion());
+			cqm.setTypeId(cqmCriterion.getTypeId());
 			cqmResults.add(cqm);
 		}
 		this.setCqmResults(cqmResults);
@@ -181,5 +188,29 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
 	public void setRecordStatus(String recordStatus) {
 		this.recordStatus = recordStatus;
+	}
+
+	public String getOncId() {
+		return oncId;
+	}
+
+	public void setOncId(String oncId) {
+		this.oncId = oncId;
+	}
+
+	public String getValidationStatus() {
+		return validationStatus;
+	}
+
+	public void setValidationStatus(String validationStatus) {
+		this.validationStatus = validationStatus;
+	}
+
+	public List<String> getValidationMessages() {
+		return validationMessages;
+	}
+
+	public void setValidationMessages(List<String> validationMessages) {
+		this.validationMessages = validationMessages;
 	}
 }

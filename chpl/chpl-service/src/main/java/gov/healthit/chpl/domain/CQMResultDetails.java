@@ -8,6 +8,7 @@ public class CQMResultDetails {
 	private String cmsId;
 	private String title;
 	private String nqfNumber;
+	private Long typeId;
 	private Boolean success;
 	private String version;
 	
@@ -18,6 +19,7 @@ public class CQMResultDetails {
 		this.cmsId = dto.getCmsId();
 		this.title = dto.getTitle();
 		this.nqfNumber = dto.getNqfNumber();
+		this.typeId = dto.getCqmCriterionTypeId();
 		this.success = dto.getSuccess();
 		this.version = dto.getVersion();
 		
@@ -60,6 +62,14 @@ public class CQMResultDetails {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public Long getTypeId() {
+		return typeId;
+	}
+
+	public void setTypeId(Long typeId) {
+		this.typeId = typeId;
 	}
 	
 }
