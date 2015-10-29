@@ -9,6 +9,7 @@ import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -73,11 +74,12 @@ public class UserManagementSecurityTest {
 	@Autowired
 	private UserManagementController userManagementController;
 	
+	
 	@Before
 	public void setUpMockMVC(){
 		//mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 		//mockMvc = MockMvcBuilders.standaloneSetup(new UserManagementController()).build();
-		mockMvc = MockMvcBuilders.standaloneSetup(userManagementController).build();
+		mockMvc = MockMvcBuilders.standaloneSetup(userManagementController).addFilter(new JWTAuthenticationFilter(jwtUserConverter), "/*").build();
 	}
 	
 	@BeforeClass
@@ -107,14 +109,11 @@ public class UserManagementSecurityTest {
 		mockMvc.perform(post("/users/grant_role").contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.ALL)
 				.header("Authorization", "Bearer "+jwt )
-				//.header("Accept", "application/json")
-				//.header("Content-Type", "application/json")
-				//.contentType(MediaType.APPLICATION_JSON)
 	            .content("{\"subjectName\":\"TESTUSER\",\"role\":\"ROLE_ADMIN\"}"))
 	            .andDo(print())
 	            .andExpect(status().is(200))
 	            ;
-		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		UserDTO after = userManager.getByName("TESTUSER");
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -133,6 +132,7 @@ public class UserManagementSecurityTest {
 	            .content("{\"subjectName\":\"testUser2\",\"role\":\"ROLE_ADMIN\"}"))
 	            .andExpect(status().is(200))
 	            .andReturn();
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		String content = result.getResponse().getContentAsString();
 		
@@ -144,9 +144,25 @@ public class UserManagementSecurityTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		assertEquals(testUserRolesAfter.size(), 2);
 		
-		userManager.removeAdmin("TESTUSER");
-		userManager.removeAdmin("testUser2");
 		
+		MvcResult result2 = mockMvc.perform(post("/users/revoke_role").header("Authorization", "Bearer "+jwt ).contentType(MediaType.APPLICATION_JSON)
+	            .content("{\"subjectName\":\"testUser2\",\"role\":\"ROLE_ADMIN\"}"))
+	            .andExpect(status().is(200))
+	            .andReturn();
+		
+		String content2 = result2.getResponse().getContentAsString();
+		assertTrue(content2.contains("roleRemoved"));
+		assertTrue(content2.contains("true"));
+		
+		MvcResult result2a = mockMvc.perform(post("/users/revoke_role").header("Authorization", "Bearer "+jwt ).contentType(MediaType.APPLICATION_JSON)
+	            .content("{\"subjectName\":\"TESTUSER\",\"role\":\"ROLE_ADMIN\"}"))
+	            .andExpect(status().is(200))
+	            .andReturn();
+		
+		String content2a = result2a.getResponse().getContentAsString();
+		assertTrue(content2a.contains("roleRemoved"));
+		assertTrue(content2a.contains("true"));
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		UserDTO unPrivileged = userManager.getByName("TESTUSER");
 		
@@ -160,86 +176,20 @@ public class UserManagementSecurityTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		
-		MvcResult result2 = mockMvc.perform(post("/users/grant_role").header("Authorization", "Bearer "+unPrivilegedJwt ).contentType(MediaType.APPLICATION_JSON)
+		MvcResult result3 = mockMvc.perform(post("/users/grant_role").header("Authorization", "Bearer "+unPrivilegedJwt ).contentType(MediaType.APPLICATION_JSON)
 	            .content("{\"subjectName\":\"testUser2\",\"role\":\"ROLE_ADMIN\"}"))
 	            .andExpect(status().is(200))
 	            .andReturn();
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		String content2 = result2.getResponse().getContentAsString();
-		assertTrue(content2.contains("roleAdded"));
-		assertTrue(content2.contains("true"));
+		String content3 = result3.getResponse().getContentAsString();
+		
+		assertTrue(content3.contains("roleAdded"));
+		assertTrue(content3.contains("false"));
+		
 		
 	}
 	
-	/*
-	 * 	@Test
-	public void testRemoveAdmin() throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException, JWTCreationException, JWTValidationException{
-		
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		UserDTO before = userManager.getByName("testUser2");
-		Set<UserPermissionDTO> beforeRoles = getUserPermissions(before);
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		userManager.grantAdmin("testUser2");
-		
-		UserDTO after = userManager.getByName("testUser2");
-		
-		Set<UserPermissionDTO> afterRoles = getUserPermissions(after);
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
-		assertEquals(afterRoles.size(),2);
-		assertEquals(beforeRoles.size(),1);
-		
-		String jwt = userAuthenticator.getJWT(after);
-		User newAdmin = jwtUserConverter.getAuthenticatedUser(jwt);
-		
-		UserDTO testUser = userManager.getByName("TESTUSER");
-		Set<UserPermissionDTO> testUserRolesBefore = getUserPermissions(testUser);
-		
-		SecurityContextHolder.getContext().setAuthentication(newAdmin); // set the new admin user as the current Authentication
-		
-		userManager.grantAdmin("TESTUSER");// If we can do this, we have Admin privileges.
-		
-		Set<UserPermissionDTO> testUserRolesAfter = getUserPermissions(testUser);
-		SecurityContextHolder.getContext().setAuthentication(newAdmin);
-		
-		assertTrue(testUserRolesAfter.size() > testUserRolesBefore.size());
-		
-		userManager.removeAdmin("TESTUSER");
-		userManager.removeAdmin("testUser2");
-		
-		
-		UserDTO unPrivileged = userManager.getByName("testUser2");
-		
-		String unPrivilegedJwt = userAuthenticator.getJWT(unPrivileged);
-		User nonAdmin = jwtUserConverter.getAuthenticatedUser(unPrivilegedJwt);
-		
-		
-		SecurityContext old = SecurityContextHolder.getContext();
-		
-		System.out.println(old);
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
-		SecurityContextHolder.getContext().setAuthentication(nonAdmin);
-		
-		User currentUser = Util.getCurrentUser();
-		System.out.println(currentUser);
-		
-		userManager.grantAdmin("TESTUSER");
-		Boolean grantFailed = false;
-		
-		// TODO: Above should be failing...
-		
-		try {
-			userManager.grantAdmin("TESTUSER");
-		} catch (Exception e){
-			grantFailed = true;
-		}
-		SecurityContextHolder.getContext().setAuthentication(null);
-		
-		assertTrue(grantFailed);
-		
-	}
-	 */
 	private Set<UserPermissionDTO> getUserPermissions(UserDTO user){
 		
 		Authentication authenticator = new Authentication() {

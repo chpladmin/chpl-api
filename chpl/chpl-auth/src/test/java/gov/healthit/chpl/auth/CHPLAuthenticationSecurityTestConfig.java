@@ -1,7 +1,6 @@
 package gov.healthit.chpl.auth;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,17 +31,12 @@ import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.github.springtestdbunit.bean.DatabaseConfigBean;
@@ -68,44 +62,6 @@ implements EnvironmentAware {
 	public void setEnvironment(final Environment e) {
 		this.env = e;
 	}
-	
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth
-			.inMemoryAuthentication()
-				.withUser("user").password("password").roles("USER");
-	}
-	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-
-		http
-        		.sessionManagement()
-        			.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-		
-				.exceptionHandling().and()
-				.anonymous().and()
-				.servletApi().and()
-				//.headers().cacheControl().and()
-				.authorizeRequests()
-				.antMatchers("/favicon.ico").permitAll()
-				.antMatchers("/resources/**").permitAll()
-				
-				//allow anonymous resource requests
-				.antMatchers("/").permitAll().and()
-				// custom Token based authentication based on the header previously given to the client
-				.addFilterBefore(new JWTAuthenticationFilter(userConverter), UsernamePasswordAuthenticationFilter.class)
-			.headers().cacheControl();
-		
-	}
-	
-	/*
-    @Override
-    @Autowired
-    public void setObjectPostProcessor(
-            ObjectPostProcessor<Object> objectPostProcessor) {
-        super.setObjectPostProcessor(objectPostProcessor);
-    }*/
 	
 	@Bean
 	@Autowired

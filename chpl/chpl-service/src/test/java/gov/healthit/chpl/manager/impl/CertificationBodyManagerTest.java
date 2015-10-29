@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -66,7 +65,7 @@ public class CertificationBodyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
-	//@Test
+	@Test
 	public void testAddReadUserToAcb() throws UserRetrievalException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
