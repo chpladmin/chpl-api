@@ -30,7 +30,7 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 		//check (g)(1)
 		boolean hasG1Cert = false;
 		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314(g)(1)") && certCriteria.isMeetsCriteria()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.isMeetsCriteria()) {
 				hasG1Cert = true;
 			}
 		}	
@@ -47,14 +47,14 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			
 			if(!hasAtLeastOneCertPartner) {
 				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Certification criterion 170.314(g)(1) exists but a required compliemtnary certification was not found.");
+				product.getValidationMessages().add("Certification criterion 170.314 (g)(1) exists but a required compliemtnary certification was not found.");
 			}
 		}
 		
 		//check (g)(2)
 		boolean hasG2Cert = false;
 		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314(g)(2)") && certCriteria.isMeetsCriteria()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.isMeetsCriteria()) {
 				hasG2Cert = true;
 			}
 		}	
@@ -71,20 +71,20 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			
 			if(!hasAtLeastOneCertPartner) {
 				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Certification criterion 170.314(g)(2) exists but a required compliemtnary certification was not found.");
+				product.getValidationMessages().add("Certification criterion 170.314 (g)(2) exists but a required compliemtnary certification was not found.");
 			}
 		}
 		
 		//check presence of both certs
 		if(hasG1Cert && hasG2Cert) {
 			product.setValidationStatus(ValidationStatus.ERROR);
-			product.getValidationMessages().add("Product cannot have both 170.314(g)(1) and 170.314(g)(2) certification");
+			product.getValidationMessages().add("Product cannot have both 170.314 (g)(1) and 170.314 (g)(2) certification");
 		}
 		
 		//check (g)(3)
 		boolean hasG3Cert = false;
 		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314(g)(3)") && certCriteria.isMeetsCriteria()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(3)") && certCriteria.isMeetsCriteria()) {
 				hasG3Cert = true;
 			}
 		}	
@@ -101,20 +101,20 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			
 			if(!hasAtLeastOneCertPartner) {
 				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Certification criterion 170.314(g)(3) exists but a required compliemtnary certification was not found.");
+				product.getValidationMessages().add("Certification criterion 170.314 (g)(3) exists but a required compliemtnary certification was not found.");
 			}
 		}
 		
 		//check (g)(4)
 		boolean hasG4Cert = false;
 		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314(g)(4)") && certCriteria.isMeetsCriteria()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(4)") && certCriteria.isMeetsCriteria()) {
 				hasG4Cert = true;
 			}
 		}
 		if(!hasG4Cert) {
 			product.setValidationStatus(ValidationStatus.ERROR);
-			product.getValidationMessages().add("Certification 170.314(g)(4) is required but was not found.");
+			product.getValidationMessages().add("Certification 170.314 (g)(4) is required but was not found.");
 		}
 	}
 }
