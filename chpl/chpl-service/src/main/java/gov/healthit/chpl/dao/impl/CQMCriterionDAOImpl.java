@@ -123,8 +123,8 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	}
 	
 	@Override
-	public CQMCriterionDTO getByNumber(String number) {
-		CQMCriterionEntity entity = getEntityByNumber(number);
+	public CQMCriterionDTO getCMSByNumber(String number) {
+		CQMCriterionEntity entity = getCMSEntityByNumber(number);
 		if(entity == null) {
 			return null;
 		}
@@ -132,8 +132,17 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	}
 	
 	@Override
-	public CQMCriterionDTO getByNumberAndVersion(String number, String version) {
-		CQMCriterionEntity entity = getEntityByNumberAndVersion(number, version);
+	public CQMCriterionDTO getCMSByNumberAndVersion(String number, String version) {
+		CQMCriterionEntity entity = getCMSEntityByNumberAndVersion(number, version);
+		if(entity == null) {
+			return null;
+		}
+		return new CQMCriterionDTO(entity);
+	}
+	
+	@Override
+	public CQMCriterionDTO getNQFByNumber(String number) {
+		CQMCriterionEntity entity = getNQFEntityByNumber(number);
 		if(entity == null) {
 			return null;
 		}
@@ -179,7 +188,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	}
 	
 	@Override
-	public CQMCriterionEntity getEntityByNumber(String number) {
+	public CQMCriterionEntity getNQFEntityByNumber(String number) {
 		
 		CQMCriterionEntity entity = null;
 			
@@ -195,7 +204,23 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	}
 	
 	@Override
-	public CQMCriterionEntity getEntityByNumberAndVersion(String number, String version) {
+	public CQMCriterionEntity getCMSEntityByNumber(String number) {
+		
+		CQMCriterionEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from CQMCriterionEntity where (NOT deleted = true) AND (cms_id = :number) ", CQMCriterionEntity.class );
+		query.setParameter("number", number);
+		List<CQMCriterionEntity> result = query.getResultList();
+		
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+			
+		return entity;
+	}
+	
+	@Override
+	public CQMCriterionEntity getCMSEntityByNumberAndVersion(String number, String version) {
 		//first find the version id
 		CQMVersionEntity versionEntity = null;
 		Query versionQuery = entityManager.createQuery("from CQMVersionEntity where (NOT deleted = true) AND (version = :version)", CQMVersionEntity.class);
@@ -208,7 +233,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		CQMCriterionEntity entity = null;
 		if(versionEntity != null && versionEntity.getId() != null ) {
 				
-			Query query = entityManager.createQuery( "from CQMCriterionEntity where (NOT deleted = true) AND (number = :number) AND (cqm_version_id = :versionId) ", CQMCriterionEntity.class );
+			Query query = entityManager.createQuery( "from CQMCriterionEntity where (NOT deleted = true) AND (cms_id = :number) AND (cqm_version_id = :versionId) ", CQMCriterionEntity.class );
 			query.setParameter("number", number);
 			query.setParameter("versionId", versionEntity.getId());
 			

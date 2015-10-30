@@ -43,6 +43,10 @@ public class CQMResultDetailsEntity {
 	@Column(name = "cqm_version_id", nullable = true )
 	private Long cqmVersionId;
 	
+	@Basic(optional = true)
+	@Column(name = "cqm_domain", nullable = true)
+	private String domain;
+	
 	@Basic( optional = true )
 	@Column(name = "version")
 	private String version;
@@ -126,6 +130,14 @@ public class CQMResultDetailsEntity {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 	
 }

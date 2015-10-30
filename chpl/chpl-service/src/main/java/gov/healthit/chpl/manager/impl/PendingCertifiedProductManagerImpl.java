@@ -357,8 +357,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 		
 		for (CQMCriterion criterion : cqmCriteria){
-			
-			if (criterion.getNumber().startsWith("CMS")){
+			if(!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
 				criteria.add(criterion);
 			}
 		}
@@ -370,7 +369,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		
 		for (CQMCriterion criterion : cqmCriteria){
 			
-			if (criterion.getNumber().startsWith("NQF")){
+			if(StringUtils.isEmpty(criterion.getCmsId())) {
 				nqfs.add(criterion);
 			}
 		}

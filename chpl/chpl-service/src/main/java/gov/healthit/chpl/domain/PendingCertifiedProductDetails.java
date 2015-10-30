@@ -161,6 +161,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			cqm.setTitle(cqmCriterion.getTitle());
 			cqm.setVersion(cqmCriterion.getVersion());
 			cqm.setTypeId(cqmCriterion.getTypeId());
+			cqm.setDomain(cqmCriterion.getDomain());
 			cqmResults.add(cqm);
 		}
 		this.setCqmResults(cqmResults);

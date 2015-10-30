@@ -187,6 +187,7 @@ public class PendingCertifiedProductDTO {
 			cqmDto.setTitle(cqmResult.getTitle());
 			cqmDto.setVersion(cqmResult.getVersion());
 			cqmDto.setTypeId(cqmResult.getTypeId());
+			cqmDto.setDomain(cqmResult.getDomain());
 			this.cqmCriterion.add(cqmDto);
 		}	
 		this.validationStatus = ValidationStatus.OK;
