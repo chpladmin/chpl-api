@@ -25,7 +25,7 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 	public void validate(PendingCertifiedProductDTO product) {
 		//TODO:
 		//One less than all the mandatory Ambulatory certification criteria must be
-		//met
+		//met. i think i don't need to check this?
 		
 		//check (g)(1)
 		boolean hasG1Cert = false;

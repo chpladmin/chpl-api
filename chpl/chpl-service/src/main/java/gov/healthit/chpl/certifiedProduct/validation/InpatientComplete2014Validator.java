@@ -1,8 +1,11 @@
 package gov.healthit.chpl.certifiedProduct.validation;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.PendingCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -35,6 +38,7 @@ public class InpatientComplete2014Validator extends BaseEhr2014Validator {
 			}
 		}		
 		
+		//must have at least 16 cqms
 		int inpatientCqmCount = 0;
 		for(PendingCqmCriterionDTO cqmCriterion : product.getCqmCriterion()) {
 			if(cqmCriterion.getTypeId() == INPATIENT_CQM_TYPE_ID && cqmCriterion.isMeetsCriteria()) {
@@ -47,10 +51,18 @@ public class InpatientComplete2014Validator extends BaseEhr2014Validator {
 			product.getValidationMessages().add(inpatientCqmCount + " Inpatient CQM(s) were found but at least 16 are required.");
 		}
 		
-		//TODO
-		/* At least 3 CQM Domains from the set selected by CMS for
-EH/CAHs must be checked
-*/
+		//must check at least 3 domains
+		Set<String> checkedDomains = new HashSet<String>();
+		for(PendingCqmCriterionDTO cqmCriterion : product.getCqmCriterion()) {
+			if(!StringUtils.isEmpty(cqmCriterion.getDomain()) && 
+					cqmCriterion.getTypeId() == INPATIENT_CQM_TYPE_ID && cqmCriterion.isMeetsCriteria()) {
+				checkedDomains.add(cqmCriterion.getDomain());
+			}
+		}
+		if(checkedDomains.size() < 3) {
+			product.setValidationStatus(ValidationStatus.ERROR);
+			product.getValidationMessages().add(checkedDomains.size() + " domains were found but at least 3 are required.");
+		}
 	}
 
 }

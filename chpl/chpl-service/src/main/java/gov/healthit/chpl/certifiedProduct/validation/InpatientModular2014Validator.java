@@ -25,7 +25,7 @@ public class InpatientModular2014Validator implements PendingCertifiedProductVal
 	public void validate(PendingCertifiedProductDTO product) {
 		//TODO:
 		//One less than all the mandatory Inpatient certification criteria must be
-		//met
+		//met. i think i don't need to check this?
 		
 		//check (g)(1)
 		boolean hasG1Cert = false;
