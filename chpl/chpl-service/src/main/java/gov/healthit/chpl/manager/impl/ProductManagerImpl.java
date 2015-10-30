@@ -71,11 +71,13 @@ public class ProductManagerImpl implements ProductManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
+		ProductDTO beforeDTO = productDao.getById(dto.getId());
+		
 		ProductEntity result = productDao.update(dto);
 		ProductDTO afterDto = new ProductDTO(result);
 		
 		String activityMsg = "Product "+dto.getName()+" was updated.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, dto, afterDto);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, afterDto);
 		return new ProductDTO(result);
 		
 	}
