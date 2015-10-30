@@ -11,11 +11,11 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 @Component("ambulatoryComplete2014Validator")
 public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 
-	private static final String[] requiredCriteria = {"170.314(a)(2)", "170.314(a)(4)", "170.314(a)(9)",
-			"170.314(a)(10)", "170.314(a)(11)", "170.314(a)(12)", "170.314(a)(13)", "170.314(a)(14)",
-			"170.314(a)(15)", "170.314(b)(3)", "170.314(b)(4)", "170.314(b)(5)", "170.314(e)(1)", "170.314(e)(2)",
-			"170.314(e)(3)", "170.314(f)(1)", "170.314(f)(2)", "170.314(f)(3)", "170.314(g)(2)", 
-			"170.314(g)(3)", "170.314(g)(4)"};
+	private static final String[] requiredCriteria = {"170.314 (a)(2)", "170.314 (a)(4)", "170.314 (a)(9)",
+			"170.314 (a)(10)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
+			"170.314 (a)(15)", "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(5)", "170.314 (e)(1)", "170.314 (e)(2)",
+			"170.314 (e)(3)", "170.314 (f)(1)", "170.314 (f)(2)", "170.314 (f)(3)", "170.314 (g)(2)", 
+			"170.314 (g)(3)", "170.314 (g)(4)"};
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		super.validate(product);
@@ -30,7 +30,7 @@ public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 			}	
 			if(!hasCert) {
 				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Required certificaiton criteria " + requiredCriteria[i] + " was not found.");
+				product.getValidationMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
 			}
 		}		
 		
@@ -47,7 +47,7 @@ public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 		}
 		
 		//TODO
-		/*At least 6 Ambulatory CQMs from CMS’s recommended
+		/*At least 6 Ambulatory CQMs from CMS's recommended
 		core set must be checked
 		o At least 3 CQM Domains from the set selected by CMS for
 		EPs must be checked*/
