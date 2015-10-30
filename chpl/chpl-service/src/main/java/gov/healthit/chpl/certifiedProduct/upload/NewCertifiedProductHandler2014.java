@@ -1135,7 +1135,7 @@ public class NewCertifiedProductHandler2014 extends NewCertifiedProductHandler {
 			for(int i = 0; i < versionList.length; i++) {
 				String currVersion = versionList[i];
 				
-				CQMCriterionEntity cqmEntity = cqmDao.getEntityByNumberAndVersion(criterionNum, currVersion);
+				CQMCriterionEntity cqmEntity = cqmDao.getCMSEntityByNumberAndVersion(criterionNum, currVersion);
 				if(cqmEntity == null) {
 					throw new InvalidArgumentsException("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + currVersion);
 				}

@@ -60,11 +60,18 @@ public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 			String[] coreCqmParts = coreCqms[i].split("v");
 			String cqmNumber = coreCqmParts[0];
 			String cqmVersion = "v" + coreCqmParts[1];
+			int cqmVersionMinimunm = new Integer(coreCqmParts[1]).intValue();
 			boolean hasCurr = false;
 			for(PendingCqmCriterionDTO cqmCriterion : product.getCqmCriterion()) {
 				if(cqmCriterion.getTypeId() == AMBULATORY_CQM_TYPE_ID && cqmCriterion.isMeetsCriteria() && 
-					cqmCriterion.getCqmNumber().equals(cqmNumber) && cqmCriterion.getVersion().equals(cqmVersion)) {
-					hasCurr = true;
+					cqmCriterion.getCmsId().equals(cqmNumber)) {
+					
+					String currCriterionVersion = cqmCriterion.getVersion();
+					String currCriterionVersionNumber = currCriterionVersion.substring(currCriterionVersion.indexOf("v")+1);
+					int versionNumber = new Integer(currCriterionVersionNumber).intValue();
+					if(versionNumber >= cqmVersionMinimunm) {
+						hasCurr = true;
+					} 
 				}
 			}
 			if(hasCurr) {
