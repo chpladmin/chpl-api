@@ -28,6 +28,9 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
@@ -39,7 +42,8 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 @PropertySource("classpath:environment.test.properties")
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
@@ -60,6 +64,14 @@ public class CHPLTestConfig implements EnvironmentAware {
         ds.setPassword(env.getRequiredProperty("testDbPassword"));
 		return ds;
 	}
+	
+	
+	@Bean
+	@Autowired
+	public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception{
+		return auth.getOrBuild();
+	}
+	
 	
 	//we need this because dbunit deletes everything from the db to start with
 	//and the table "user" is declared as "user" and not user (since user is a reserved word
