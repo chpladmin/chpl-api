@@ -233,6 +233,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 				for(CertificationBodyDTO acb : acbs) {
 					acbManager.addPermission(acb, user.getId(), BasePermission.ADMINISTRATION);
 				}
+				isSuccess = String.valueOf(true);
 			} catch(AccessDeniedException adEx) {
 				logger.error("User " + Util.getUsername() + " does not have access to grant ROLE_ADMIN");
 				throw adEx;

@@ -1,5 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -79,9 +82,14 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	@Transactional
 	public void testCertifiedProductDetailsCertificationDate() throws EntityRetrievalException{
 		
+		//CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
+		//assertEquals(new Long(1440090840000L).longValue(), detail.getCertificationDate().longValue());
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(new Long(1440090840000L).longValue(), detail.getCertificationDate().longValue());
-	
+		Calendar expected = GregorianCalendar.getInstance();
+		expected.set(2015, 7, 20, 13, 14, 0);
+		expected.set(Calendar.MILLISECOND, 0);
+		assertEquals(expected.getTime().getTime(), detail.getCertificationDate().longValue());
+		
 	}
 	
 	@Test
