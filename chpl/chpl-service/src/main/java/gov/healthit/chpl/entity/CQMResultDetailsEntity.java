@@ -51,7 +51,10 @@ public class CQMResultDetailsEntity {
 	@Column(name = "version")
 	private String version;
 	
+	@Column(name = "cqm_id")
+	private String cqmId;
 	
+
 	public Long getId() {
 		return id;
 	}
@@ -138,6 +141,14 @@ public class CQMResultDetailsEntity {
 
 	public void setDomain(String domain) {
 		this.domain = domain;
+	}
+	
+	public String getCqmId() {
+		return cqmId;
+	}
+
+	public void setCqmId(String cqmId) {
+		this.cqmId = cqmId;
 	}
 	
 }

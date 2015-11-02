@@ -140,13 +140,15 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "vendor_name, "
 				+ "certification_date, "
 				+ "count_certifications, "
-				+ "count_cqms "
+				+ "count_cqms, "
+				+ "last_modified_date, "
+				+ "certification_status_name "
  
 				+ "FROM "
 				
 				+ "(SELECT certified_product_id_cqms FROM ( "
-				+ "SELECT DISTINCT ON(number, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
-			  	+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND number IN (:cqms)) a "
+				+ "SELECT DISTINCT ON(cqm_id, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
+			  	+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND cqm_id IN (:cqms)) a "
 				+ "GROUP BY certified_product_id_cqms HAVING COUNT(*) = :ncqms ) b "
 
 				+ "INNER JOIN openchpl.certified_product_details d "
@@ -279,15 +281,17 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "vendor_name, "
 				+ "certification_date, "
 				+ "count_certifications, "
-				+ "count_cqms "
- 
+				+ "count_cqms, "
+				+ "last_modified_date, "
+				+ "certification_status_name "
+				
 				+ "FROM ( "
 
 				+"SELECT * FROM ( "
 				+"SELECT certified_product_id, COUNT(*) as \"cqms_met\" "
 				+"FROM ( "
 				+"SELECT certified_product_id FROM openchpl.certification_result_details "
-				+"WHERE deleted = false AND successful = true AND number IN (:certs)) a "
+				+"WHERE deleted = false AND success = true AND number IN (:certs)) a "
 				+"GROUP BY certified_product_id  "
 				+"		) b where cqms_met = :ncerts "
 				+"		) c "
@@ -419,21 +423,23 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "vendor_name, "
 				+ "certification_date, "
 				+ "count_certifications, "
-				+ "count_cqms "
+				+ "count_cqms, "
+				+ "last_modified_date, "
+				+ "certification_status_name "
 
 				+ "FROM "
 
 				+ "(SELECT certified_product_id_certs as \"cpid\" FROM "
 
 				+ "(SELECT certified_product_id as \"certified_product_id_certs\" FROM openchpl.certification_result_details  "
-				+ "WHERE deleted = false AND successful = true AND number IN (:certs) "
+				+ "WHERE deleted = false AND success = true AND number IN (:certs) "
 				+ "GROUP BY certified_product_id_certs HAVING COUNT(*) = :ncerts) a "
 
 				+ "INNER JOIN  "
 
 				+ "(SELECT certified_product_id_cqms FROM ( "
-				+ "SELECT DISTINCT ON(number, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
-				+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND number IN (:cqms)) e "
+				+ "SELECT DISTINCT ON(cqm_id, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
+				+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND cqm_id IN (:cqms)) e "
 				+ "GROUP BY certified_product_id_cqms HAVING COUNT(*) = :ncqms ) b "
 
 				+ "on a.certified_product_id_certs = b.certified_product_id_cqms) c "
@@ -680,8 +686,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "FROM "
 				
 				+ "(SELECT certified_product_id_cqms FROM ( "
-				+ "SELECT DISTINCT ON(number, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
-			  	+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND number IN (:cqms)) a "
+				+ "SELECT DISTINCT ON(cqm_id, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
+			  	+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND cqm_id IN (:cqms)) a "
 				+ "GROUP BY certified_product_id_cqms HAVING COUNT(*) = :ncqms ) b "
 
 				+ "INNER JOIN openchpl.certified_product_details d "
@@ -785,7 +791,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+"SELECT certified_product_a, COUNT(*) as \"cqms_met\" "
 				+"FROM ( "
 				+"SELECT certified_product_id as \"certified_product_a\" FROM openchpl.certification_result_details "
-				+"WHERE deleted = false AND successful = true AND number IN (:certs)) a "
+				+"WHERE deleted = false AND success = true AND number IN (:certs)) a "
 				+"GROUP BY certified_product_a "
 				+"		) b where cqms_met = :ncerts "
 				+"		) c "
@@ -888,14 +894,14 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "(SELECT certified_product_id_certs as \"cpid\" FROM "
 
 				+ "(SELECT certified_product_id as \"certified_product_id_certs\" FROM openchpl.certification_result_details  "
-				+ "WHERE deleted = false AND successful = true AND number IN (:certs) "
+				+ "WHERE deleted = false AND success = true AND number IN (:certs) "
 				+ "GROUP BY certified_product_id_certs HAVING COUNT(*) = :ncerts) a "
 
 				+ "INNER JOIN  "
 
 				+ "(SELECT certified_product_id_cqms FROM ( "
-				+ "SELECT DISTINCT ON(number, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
-				+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND number IN (:cqms)) e "
+				+ "SELECT DISTINCT ON(cqm_id, certified_product_id_cqms) certified_product_id as \"certified_product_id_cqms\" "
+				+ "FROM openchpl.cqm_result_details  WHERE deleted = false AND success = true AND cqm_id IN (:cqms)) e "
 				+ "GROUP BY certified_product_id_cqms HAVING COUNT(*) = :ncqms ) b "
 
 				+ "on a.certified_product_id_certs = b.certified_product_id_cqms) c "
