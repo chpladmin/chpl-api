@@ -219,7 +219,6 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			produces="application/json; charset=utf-8")
 	public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
 		
-		String isSuccess = String.valueOf(false);
 		UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
 		if(user == null) {
 			throw new InvalidArgumentsException("No user with name " + grantRoleObj.getSubjectName() + " exists in the system.");
@@ -228,12 +227,6 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		if(grantRoleObj.getRole().equals("ROLE_ADMIN")) {
 			try {
 				userManager.grantAdmin(user.getSubjectName());
-
-				List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
-				for(CertificationBodyDTO acb : acbs) {
-					acbManager.addPermission(acb, user.getId(), BasePermission.ADMINISTRATION);
-				}
-				isSuccess = String.valueOf(true);
 			} catch(AccessDeniedException adEx) {
 				logger.error("User " + Util.getUsername() + " does not have access to grant ROLE_ADMIN");
 				throw adEx;
@@ -260,12 +253,6 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		if(grantRoleObj.getRole().equals("ROLE_ADMIN")) {
 			try {
 				userManager.removeAdmin(user.getSubjectName());
-				
-				//if they were a chpladmin then they need to have all ACB access removed
-				List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
-				for(CertificationBodyDTO acb : acbs) {
-					acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
-				}
 			} catch(AccessDeniedException adEx) {
 				logger.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
 			}
