@@ -161,26 +161,28 @@ public class InvitationManagerImpl implements InvitationManager {
 		Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
 		SecurityContextHolder.getContext().setAuthentication(authenticator);
 		
-		//create the user
-		UserDTO newUser = userManager.getByName(user.getSubjectName());
-		if(newUser == null) {
-			newUser = userManager.create(user);
-		} else {
-			throw new InvalidArgumentsException("A user with the name " + user.getSubjectName() + " already exists.");
+		try {
+			//create the user
+			UserDTO newUser = userManager.getByName(user.getSubjectName());
+			if(newUser == null) {
+				newUser = userManager.create(user);
+			} else {
+				throw new InvalidArgumentsException("A user with the name " + user.getSubjectName() + " already exists.");
+			}
+			
+			handleInvitation(invitation, newUser);
+			
+			//update invitation entity to change the hashes
+			invitation.setCreatedUserId(newUser.getId());
+			invitation.setInviteToken(null);
+			Date now = new Date();
+			invitation.setConfirmToken(md5(invitation.getEmail() + now.getTime()));
+			invitationDao.update(invitation);
+			return newUser;
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(null);
 		}
 		
-		handleInvitation(invitation, newUser);
-		
-		//update invitation entity to change the hashes
-		invitation.setCreatedUserId(newUser.getId());
-		invitation.setInviteToken(null);
-		Date now = new Date();
-		invitation.setConfirmToken(md5(invitation.getEmail() + now.getTime()));
-		invitationDao.update(invitation);
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
-		
-		return newUser;
 	}
 	
 	@Override
@@ -189,23 +191,24 @@ public class InvitationManagerImpl implements InvitationManager {
 		Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
 		SecurityContextHolder.getContext().setAuthentication(authenticator);
 		
-		//set the user signature date
-		UserDTO user = userDao.getById(invitation.getCreatedUserId());
-		if(user == null) {
-			throw new UserRetrievalException("Could not find user created from invitation. Looking for user with id " + invitation.getCreatedUserId());
+		try {
+			//set the user signature date
+			UserDTO user = userDao.getById(invitation.getCreatedUserId());
+			if(user == null) {
+				throw new UserRetrievalException("Could not find user created from invitation. Looking for user with id " + invitation.getCreatedUserId());
+			}
+			user.setSignatureDate(new Date());
+			userDao.update(user);
+			
+			//delete the invitation and permissions now we are done with them
+			for(InvitationPermissionDTO permission : invitation.getPermissions()) {
+				invitationPermissionDao.delete(permission.getId());
+			}
+			invitationDao.delete(invitation.getId());
+			return user;
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(null);
 		}
-		user.setSignatureDate(new Date());
-		userDao.update(user);
-		
-		//delete the invitation and permissions now we are done with them
-		for(InvitationPermissionDTO permission : invitation.getPermissions()) {
-			invitationPermissionDao.delete(permission.getId());
-		}
-		invitationDao.delete(invitation.getId());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
-		
-		return user;
 	}
 	
 	@Override

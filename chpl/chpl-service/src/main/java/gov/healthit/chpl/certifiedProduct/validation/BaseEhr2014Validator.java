@@ -10,11 +10,11 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 @Component("baseEhrValidator")
 public class BaseEhr2014Validator implements PendingCertifiedProductValidator {
 
-	private static final String[] requiredCriteria = {"170.314(a)(1)", "170.314(a)(3)",
-			"170.314(a)(5)", "170.314(a)(6)", "170.314(a)(7)", "170.314(a)(8)", "170.314(b)(1)", 
-			"170.314(b)(2)", "170.314(b)(7)", "170.314(c)(1)", "170.314(c)(2)", "170.314(c)(3)",
-			"170.314(d)(1)", "170.314(d)(2)", "170.314(d)(3)", "170.314(d)(4)", "170.314(d)(5)",
-			"170.314(d)(6)", "170.314(d)(7)", "170.314(d)(8)"};
+	private static final String[] requiredCriteria = {"170.314 (a)(1)", "170.314 (a)(3)",
+			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (b)(1)", 
+			"170.314 (b)(2)", "170.314 (b)(7)", "170.314 (c)(1)", "170.314 (c)(2)", "170.314 (c)(3)",
+			"170.314 (d)(1)", "170.314 (d)(2)", "170.314 (d)(3)", "170.314 (d)(4)", "170.314 (d)(5)",
+			"170.314 (d)(6)", "170.314 (d)(7)", "170.314 (d)(8)"};
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
@@ -28,7 +28,7 @@ public class BaseEhr2014Validator implements PendingCertifiedProductValidator {
 			}	
 			if(!hasCert) {
 				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Required certificaiton criteria " + requiredCriteria[i] + " was not found.");
+				product.getValidationMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
 			}
 		}
 	}

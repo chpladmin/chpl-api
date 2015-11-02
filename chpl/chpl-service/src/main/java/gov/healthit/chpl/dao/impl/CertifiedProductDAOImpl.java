@@ -209,13 +209,13 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	private void create(CertifiedProductEntity product) {
 		
 		entityManager.persist(product);
-		
+		entityManager.flush();
 	}
 	
 	private void update(CertifiedProductEntity product) {
 		
 		entityManager.merge(product);	
-	
+		entityManager.flush();
 	}
 	
 	private List<CertifiedProductEntity> getAllEntities() {

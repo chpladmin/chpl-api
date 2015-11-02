@@ -9,6 +9,7 @@ public class CQMResultDetails {
 	private String title;
 	private String nqfNumber;
 	private Long typeId;
+	private String domain;
 	private Boolean success;
 	private String version;
 	
@@ -20,6 +21,7 @@ public class CQMResultDetails {
 		this.title = dto.getTitle();
 		this.nqfNumber = dto.getNqfNumber();
 		this.typeId = dto.getCqmCriterionTypeId();
+		this.domain = dto.getDomain();
 		this.success = dto.getSuccess();
 		this.version = dto.getVersion();
 		
@@ -70,6 +72,14 @@ public class CQMResultDetails {
 
 	public void setTypeId(Long typeId) {
 		this.typeId = typeId;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 	
 }

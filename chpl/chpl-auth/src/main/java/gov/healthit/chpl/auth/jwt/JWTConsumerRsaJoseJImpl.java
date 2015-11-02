@@ -47,8 +47,8 @@ public class JWTConsumerRsaJoseJImpl extends AuthPropertiesConsumer implements J
 	    }
 	    catch (InvalidJwtException e)
 	    {
-	    	//TODO: Is it overkill to log every time an expired / invalid
-	    	// token is used?
+	    	//log every time an expired / invalid
+	    	// token is used.
 	    	logger.error("Invalid JWT", e);
 	        return null;
 	    }

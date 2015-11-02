@@ -152,6 +152,8 @@ public class CertifiedProductController {
 			CQMCriterionDTO cqmDto = new CQMCriterionDTO();
 			cqmDto.setCqmVersion(cqm.getVersion());
 			cqmDto.setNumber(cqm.getNumber());
+			cqmDto.setCmsId(cqm.getCmsId());
+			cqmDto.setNqfNumber(cqm.getNqfNumber());
 			cqmDto.setTitle(cqm.getTitle());
 			cqmDtos.put(cqmDto, cqm.isSuccess());
 		}
