@@ -1101,7 +1101,7 @@ public class NewCertifiedProductHandler2014 extends NewCertifiedProductHandler {
 	public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 		for (CQMCriterion criterion : allCqms) {
-			if (criterion.getNumber().startsWith("CMS")) {
+			if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
 				criteria.add(criterion);
 			}
 		}

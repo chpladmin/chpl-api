@@ -265,7 +265,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			for(CQMResultDetails cqmResult : pendingCp.getCqmResults()) {
 				CQMCriterionDTO criterion = null;
 				if(StringUtils.isEmpty(cqmResult.getCmsId())) {
-					criterion = cqmCriterionDao.getNQFByNumber(cqmResult.getNumber());
+					criterion = cqmCriterionDao.getNQFByNumber(cqmResult.getNqfNumber());
 				} else if(cqmResult.getCmsId().startsWith("CMS")) {
 					criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmResult.getVersion());
 				}
@@ -424,7 +424,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CQMCriterionDTO cqmDto : cqmResults.keySet()) {		
 			CQMCriterionDTO criterion = null;
 			if(StringUtils.isEmpty(cqmDto.getCmsId())) {
-				criterion = cqmCriterionDao.getNQFByNumber(cqmDto.getNumber());
+				criterion = cqmCriterionDao.getNQFByNumber(cqmDto.getNqfNumber());
 			} else if(cqmDto.getCmsId().startsWith("CMS")) {
 				criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmDto.getCmsId(), cqmDto.getCqmVersion());
 			}

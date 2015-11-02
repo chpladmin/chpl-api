@@ -192,7 +192,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		
 		CQMCriterionEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from CQMCriterionEntity where (NOT deleted = true) AND (number = :number) ", CQMCriterionEntity.class );
+		Query query = entityManager.createQuery( "from CQMCriterionEntity where (NOT deleted = true) AND (nqf_number = :number) ", CQMCriterionEntity.class );
 		query.setParameter("number", number);
 		List<CQMCriterionEntity> result = query.getResultList();
 		
