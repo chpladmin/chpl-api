@@ -61,7 +61,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());;
 		entity.setSuccess(cqmResult.getSuccess());
 		
-		update(entity);	
+		update(entity);
 		
 	}
 
