@@ -25,7 +25,7 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 	public void validate(PendingCertifiedProductDTO product) {
 		//TODO:
 		//One less than all the mandatory Ambulatory certification criteria must be
-		//met
+		//met. i think i don't need to check this?
 		
 		//check (g)(1)
 		boolean hasG1Cert = false;
@@ -47,7 +47,7 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			
 			if(!hasAtLeastOneCertPartner) {
 				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Certification criterion 170.314 (g)(1) exists but a required complimentary certification was not found.");
+				product.getValidationMessages().add("Certification criterion 170.314 (g)(1) exists but a required compliemtnary certification was not found.");
 			}
 		}
 		
@@ -71,20 +71,9 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			
 			if(!hasAtLeastOneCertPartner) {
 				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Certification criterion 170.314 (g)(2) exists but a required complimentary certification was not found.");
+				product.getValidationMessages().add("Certification criterion 170.314 (g)(2) exists but a required compliemtnary certification was not found.");
 			}
 		}
-		
-		//TODO:
-		/*
-		 *  It is legitimate to permit an EHR Module to be certified to
-			just (g)(2). If an EHR Module gets certified to just (g)(2), then it
-			has to be able to meet the (g)(2) criteria requirements for all the
-			MU %
-			-based measures for a setting, but doesn't have to included
-			capabilities that support MU %
-			-based measures like CPOE, etc. 
-		 */
 		
 		//check presence of both certs
 		if(hasG1Cert && hasG2Cert) {
@@ -112,7 +101,7 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			
 			if(!hasAtLeastOneCertPartner) {
 				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Certification criterion 170.314 (g)(3) exists but a required complimentary certification was not found.");
+				product.getValidationMessages().add("Certification criterion 170.314 (g)(3) exists but a required compliemtnary certification was not found.");
 			}
 		}
 		

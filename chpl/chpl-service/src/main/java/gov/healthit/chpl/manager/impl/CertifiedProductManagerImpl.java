@@ -264,14 +264,14 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		if(pendingCp.getCqmResults() != null && pendingCp.getCqmResults().size() > 0) {
 			for(CQMResultDetails cqmResult : pendingCp.getCqmResults()) {
 				CQMCriterionDTO criterion = null;
-				if(cqmResult.getNumber().startsWith("NQF")) {
-					criterion = cqmCriterionDao.getByNumber(cqmResult.getNumber());
-				} else if(cqmResult.getNumber().startsWith("CMS")) {
-					criterion = cqmCriterionDao.getByNumberAndVersion(cqmResult.getNumber(), cqmResult.getVersion());
+				if(StringUtils.isEmpty(cqmResult.getCmsId())) {
+					criterion = cqmCriterionDao.getNQFByNumber(cqmResult.getNqfNumber());
+				} else if(cqmResult.getCmsId().startsWith("CMS")) {
+					criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmResult.getVersion());
 				}
 				
 				if(criterion == null) {
-					throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getNumber() + 
+					throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getCmsId() + 
 							"and/or version " + cqmResult.getVersion() + ".");
 				}
 				
@@ -423,14 +423,14 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		
 		for(CQMCriterionDTO cqmDto : cqmResults.keySet()) {		
 			CQMCriterionDTO criterion = null;
-			if(cqmDto.getNumber().startsWith("NQF")) {
-				criterion = cqmCriterionDao.getByNumber(cqmDto.getNumber());
-			} else if(cqmDto.getNumber().startsWith("CMS")) {
-				criterion = cqmCriterionDao.getByNumberAndVersion(cqmDto.getNumber(), cqmDto.getCqmVersion());
+			if(StringUtils.isEmpty(cqmDto.getCmsId())) {
+				criterion = cqmCriterionDao.getNQFByNumber(cqmDto.getNqfNumber());
+			} else if(cqmDto.getCmsId().startsWith("CMS")) {
+				criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmDto.getCmsId(), cqmDto.getCqmVersion());
 			}
 			
 			if(criterion == null) {
-				throw new EntityRetrievalException("Could not find CQM with number " + cqmDto.getNumber() + " and version " + cqmDto.getCqmVersion());
+				throw new EntityRetrievalException("Could not find CQM with number " + cqmDto.getCmsId() + " and version " + cqmDto.getCqmVersion());
 			}
 			
 			CQMResultDTO toCreate = new CQMResultDTO();

@@ -304,355 +304,355 @@ public class NewCertifiedProductHandler2011 extends NewCertifiedProductHandler {
 //		//cqm criterion
 //		//starts at BO
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0001(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0001", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}			
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0002(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0002", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}	
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0004(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0004", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}	
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0012(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0012", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}	
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0013(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0013", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}	
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0014(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0014", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}	
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0018(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0018", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}	
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0024(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0024", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}	
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0027(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0027", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0028(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0028", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }		
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0031(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0031", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0032(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0032", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0033(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0033", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0034(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0034", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0036(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0036", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0038(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0038", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0041(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0041", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0043(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0043", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0047(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0047", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0052(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0052", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0055(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0055", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0056(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0056", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0059(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0059", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0061(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0061", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0062(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0062", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0064(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0064", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0067(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0067", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0068(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0068", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0070(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0070", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0073(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0073", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0074(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0074", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0075(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0075", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0081(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0081", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0083(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0083", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0084(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0084", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0086(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0086", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0088(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0088", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0089(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0089", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0105(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0105", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0371(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0371", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0372(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0372", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0373(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0373", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0374(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0374", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0375(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0375", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0376(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0376", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0385(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0385", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0387(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0387", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0389(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0389", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0421(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0421", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0435(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0435", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0436(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0436", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0437(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0437", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0438(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0438", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0439(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0439", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0440(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0440", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0441(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0441", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0495(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0495", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0497(I)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0497", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("NQF 0575(A)", colIndex++);
+			PendingCqmCriterionEntity entity = handleCqmNqfCriterion("0575", colIndex++);
 			if(entity != null && entity.getMappedCriterion() != null) {
 				pendingCertifiedProduct.getCqmCriterion().add(entity);
 			}
@@ -668,7 +668,7 @@ public class NewCertifiedProductHandler2011 extends NewCertifiedProductHandler {
 	public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 		for (CQMCriterion criterion : allCqms) {
-			if (criterion.getNumber().startsWith("NQF")) {
+			if (StringUtils.isEmpty(criterion.getCmsId())) {
 				criteria.add(criterion);
 			}
 		}
@@ -683,7 +683,7 @@ public class NewCertifiedProductHandler2011 extends NewCertifiedProductHandler {
 	 * @throws InvalidArgumentsException
 	 */
 	protected PendingCqmCriterionEntity handleCqmNqfCriterion(String criterionNum, int column) throws InvalidArgumentsException {
-		CQMCriterionEntity cqmEntity = cqmDao.getEntityByNumber(criterionNum);
+		CQMCriterionEntity cqmEntity = cqmDao.getNQFEntityByNumber(criterionNum);
 		if(cqmEntity == null) {
 			throw new InvalidArgumentsException("Could not find a CQM NQF criterion matching " + criterionNum);
 		}
