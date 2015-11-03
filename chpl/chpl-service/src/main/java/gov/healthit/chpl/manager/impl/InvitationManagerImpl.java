@@ -259,10 +259,6 @@ public class InvitationManagerImpl implements InvitationManager {
 						userManager.grantAdmin(user.getName());
 					} else {
 						userManager.grantRole(user.getName(), userPermission.getAuthority());
-						//if they are a acb admin or staff then they need to be given access to the invited acb
-						if(userAcb != null) {
-							acbManager.addPermission(userAcb, user.getId(), BasePermission.ADMINISTRATION);
-						}
 					}
 				} catch(UserPermissionRetrievalException ex) {
 					logger.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(), ex);
@@ -270,6 +266,11 @@ public class InvitationManagerImpl implements InvitationManager {
 					logger.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(), mex);
 				}
 			}
+		}
+		
+		//if they are a acb admin or staff then they need to be given access to the invited acb
+		if(userAcb != null) {
+			acbManager.addPermission(userAcb, user.getId(), BasePermission.ADMINISTRATION);
 		}
 	}
 	

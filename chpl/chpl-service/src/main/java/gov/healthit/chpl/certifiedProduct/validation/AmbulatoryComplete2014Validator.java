@@ -23,6 +23,7 @@ public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 				"CMS154v1", "CMS136v1", "CMS2v1", "CMS75v1", "CMS165v1", "CMS156v1", "CMS138v1",
 				"CMS166v1", "CMS68v1", "CMS69v1", "CMS50v1", "CMS90v1"};
 	
+	//TODO: only check g1-g4 validation and make sure we have a test report url that is a fully qualified URL
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		super.validate(product);
