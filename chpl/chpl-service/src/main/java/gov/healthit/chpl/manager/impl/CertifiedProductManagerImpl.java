@@ -400,7 +400,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certified Product "+productDto.getId()+" was updated." , before , after);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for Certified Product "+productDto.getId()+" was updated." , before , after);
 	}
 	
 	/**
@@ -445,7 +445,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certified Product "+productDto.getId()+" was updated." , before , after);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "CQMs for Certified Product "+productDto.getId()+" was updated." , before , after);
 	}
 	
 	@Override
@@ -466,7 +466,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certified Product "+productDto.getId()+" was updated." , before , after);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Additional Software for Certified Product "+productDto.getId()+" was updated." , before , after);
 		
 	}	
 }
