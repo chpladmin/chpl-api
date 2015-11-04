@@ -4,34 +4,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ValidationException extends Exception {
-	private List<String> messages;
+	private List<String> errorMessages;
+	private List<String> warningMessages;
 	
 	private static final long serialVersionUID = 1L;
 	public ValidationException() { 
 		super(); 
-		messages = new ArrayList<String>();
+		errorMessages = new ArrayList<String>();
+		warningMessages = new ArrayList<String>();
 	}
 	public ValidationException(String message) { 
 		super(message);
-		messages = new ArrayList<String>();
+		errorMessages = new ArrayList<String>();
+		warningMessages = new ArrayList<String>();
 	}
 	public ValidationException(String message, Throwable cause) { 
 		super(message, cause); 
-		messages = new ArrayList<String>();
+		errorMessages = new ArrayList<String>();
+		warningMessages = new ArrayList<String>();
 	}
 	public ValidationException(Throwable cause) { 
 		super(cause);
-		messages = new ArrayList<String>();
+		errorMessages = new ArrayList<String>();
+		warningMessages = new ArrayList<String>();
 	}
-	public ValidationException(List<String> messages) {
+	public ValidationException(List<String> errorMessages, List<String> warningMessages) {
 		super();
-		this.messages = messages;
+		this.errorMessages = errorMessages;
+		this.warningMessages = warningMessages;
 	}
-	public List<String> getMessages() {
-		return messages;
+	public List<String> getErrorMessages() {
+		return errorMessages;
 	}
-	public void setMessages(List<String> messages) {
-		this.messages = messages;
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
 	}
+	public List<String> getWarningMessages() {
+		return warningMessages;
+	}
+	public void setWarningMessages(List<String> warningMessages) {
+		this.warningMessages = warningMessages;
+	}
+
 
 }

@@ -2,7 +2,6 @@ package gov.healthit.chpl;
 
 
 import gov.healthit.chpl.auth.json.ErrorJSONObject;
-import gov.healthit.chpl.certifiedProduct.validation.ValidationStatus;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ValidationErrorJSONObject;
@@ -52,8 +51,8 @@ public class ApiExceptionControllerAdvice {
 	@ExceptionHandler(ValidationException.class)
 	public ResponseEntity<ValidationErrorJSONObject> exception(ValidationException e) {
 		ValidationErrorJSONObject error = new ValidationErrorJSONObject();
-		error.setValidationMessages(e.getMessages());
-		error.setValidationStatus(ValidationStatus.ERROR);
+		error.setErrorMessages(e.getErrorMessages());
+		error.setWarningMessages(e.getWarningMessages());
 		return new ResponseEntity<ValidationErrorJSONObject>(error, HttpStatus.BAD_REQUEST);
 	}
 	
