@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
@@ -179,6 +180,27 @@ public class ActivityController {
 		}
 	}
 	
+	
+	@RequestMapping(value="/user_activity", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public Map<Long, List<ActivityEvent> > activityByUser(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		
+		if (lastNDays == null){
+			return getActivityEventByUser();
+		} else {
+			return getActivityEventsByUser(lastNDays);
+		}
+	}
+	
+	
+	@RequestMapping(value="/user_activity/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		
+		if (lastNDays == null){
+			return getActivityEventByUser(id);
+		} else {
+			//return getActivityEventsForVendors(id, lastNDays);
+		}
+	}
 	
 	
 	private List<ActivityEvent> getActivityEventsForACBs(Long id) throws JsonParseException, IOException{
@@ -538,5 +560,7 @@ public class ActivityController {
 		}
 		return events;
 	}
+	
+	
 	
 }
