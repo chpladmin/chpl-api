@@ -39,4 +39,12 @@ public class JSONUtils {
 	
 	}
 	
+	public static boolean jsonEquals(String json1, String json2) throws JsonProcessingException, IOException{
+				
+		JsonNode node1 = getReader().readTree(json1);
+		JsonNode node2 = getReader().readTree(json2);
+		
+		return node1.equals(node2);
+	}
+	
 }

@@ -96,7 +96,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, 'delete') or hasPermission(#acb, admin)")
-	public void delete(CertificationBodyDTO acb) {
+	public void delete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
 		certificationBodyDAO.delete(acb.getId());
 		// Delete the ACL information as well
@@ -106,6 +106,10 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		if (logger.isDebugEnabled()) {
 			logger.debug("Deleted acb " + acb + " including ACL permissions");
 		}
+		
+		String activityMsg = "Deleted acb " + acb.getName();
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, acb.getId(), activityMsg, acb, null);
 		
 	}
 	

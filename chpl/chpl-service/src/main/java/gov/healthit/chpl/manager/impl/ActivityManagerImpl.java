@@ -55,20 +55,36 @@ public class ActivityManagerImpl implements ActivityManager {
 			String activityDescription, Object originalData, Object newData)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
-		ActivityDTO dto = new ActivityDTO();
-		dto.setConcept(concept);
-		dto.setId(null);
-		dto.setDescription(activityDescription);
-		dto.setOriginalData(JSONUtils.toJSON(originalData));
-		dto.setNewData(JSONUtils.toJSON(newData));
-		dto.setActivityDate(new Date());
-		dto.setActivityObjectId(objectId);
-		dto.setCreationDate(new Date());
-		dto.setLastModifiedDate(new Date());
-		dto.setLastModifiedUser(Util.getCurrentUser().getId());
-		dto.setDeleted(false);
+		String originalDataStr = JSONUtils.toJSON(originalData);
+		String newDataStr = JSONUtils.toJSON(newData);
 		
-		activityDAO.create(dto);
+		Boolean originalMatchesNew = false;
+		
+		try {
+			originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
+		} catch (IOException e){
+			
+		}
+		
+		
+		// Do not add the activity if nothing has changed.
+		if (!originalMatchesNew){
+			
+			ActivityDTO dto = new ActivityDTO();
+			dto.setConcept(concept);
+			dto.setId(null);
+			dto.setDescription(activityDescription);
+			dto.setOriginalData(originalDataStr);
+			dto.setNewData(newDataStr);
+			dto.setActivityDate(new Date());
+			dto.setActivityObjectId(objectId);
+			dto.setCreationDate(new Date());
+			dto.setLastModifiedDate(new Date());
+			dto.setLastModifiedUser(Util.getCurrentUser().getId());
+			dto.setDeleted(false);
+			
+			activityDAO.create(dto);
+		}
 		
 	}
 
@@ -79,21 +95,35 @@ public class ActivityManagerImpl implements ActivityManager {
 			Date timestamp) throws EntityCreationException,
 			EntityRetrievalException, JsonProcessingException {
 		
-		ActivityDTO dto = new ActivityDTO();
-		dto.setConcept(concept);
-		dto.setId(null);
-		dto.setDescription(activityDescription);
-		dto.setOriginalData(JSONUtils.toJSON(originalData));
-		dto.setNewData(JSONUtils.toJSON(newData));
-		dto.setActivityDate(timestamp);
-		dto.setActivityObjectId(objectId);
-		dto.setCreationDate(new Date());
-		dto.setLastModifiedDate(new Date());
-		dto.setLastModifiedUser(Util.getCurrentUser().getId());
-		dto.setDeleted(false);
+		String originalDataStr = JSONUtils.toJSON(originalData);
+		String newDataStr = JSONUtils.toJSON(newData);
 		
-		activityDAO.create(dto);
+		Boolean originalMatchesNew = false;
 		
+		try {
+			originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
+		} catch (IOException e){
+			
+		}
+		
+		// Do not add the activity if nothing has changed.
+		if (!originalMatchesNew){
+		
+			ActivityDTO dto = new ActivityDTO();
+			dto.setConcept(concept);
+			dto.setId(null);
+			dto.setDescription(activityDescription);
+			dto.setOriginalData(JSONUtils.toJSON(originalData));
+			dto.setNewData(JSONUtils.toJSON(newData));
+			dto.setActivityDate(timestamp);
+			dto.setActivityObjectId(objectId);
+			dto.setCreationDate(new Date());
+			dto.setLastModifiedDate(new Date());
+			dto.setLastModifiedUser(Util.getCurrentUser().getId());
+			dto.setDeleted(false);
+			
+			activityDAO.create(dto);
+		}
 	}
 	
 	@Override

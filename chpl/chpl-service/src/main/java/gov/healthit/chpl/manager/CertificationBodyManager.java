@@ -29,7 +29,7 @@ public interface CertificationBodyManager {
 	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	
 	
-	public void delete(CertificationBodyDTO acb);
+	public void delete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
 	
 	
 	public List<CertificationBodyDTO> getAllForUser();
