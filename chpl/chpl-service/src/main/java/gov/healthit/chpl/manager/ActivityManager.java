@@ -4,10 +4,12 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.dto.ActivityDTO;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,5 +25,9 @@ public interface ActivityManager {
 	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException;
 	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException;
 	public void deleteActivity(Long toDelete) throws EntityRetrievalException;
+	public Map<Long, List<ActivityDTO>> getActivityByUser();
+	public Map<Long, List<ActivityDTO>> getActivityByUserInLastNDays(Integer nDays);
+	public List<ActivityDTO> getActivityForUser(Long userId);
+	public List<ActivityDTO> getActivityForUserInLastNDays(Long userId, Integer nDays);
 	
 }
