@@ -65,7 +65,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	}
 	
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#user, admin)")
 	public UserDTO update(UserDTO user) throws UserRetrievalException {
 		return userDAO.update(user);
 	}
@@ -105,7 +105,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	}
 	
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id, 'gov.healthit.chpl.auth.user.User', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#id, 'gov.healthit.chpl.auth.dto.UserDTO', admin)")
 	public UserDTO getById(Long id) throws UserRetrievalException{
 		return userDAO.getById(id);
 	}

@@ -36,6 +36,7 @@ import org.springframework.security.authentication.AccountStatusUserDetailsCheck
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -81,6 +82,9 @@ public class CHPLAuthenticationSecurityConfig extends
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http
+        		.sessionManagement()
+        			.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+		
 				.exceptionHandling().and()
 				.anonymous().and()
 				.servletApi().and()
@@ -88,9 +92,6 @@ public class CHPLAuthenticationSecurityConfig extends
 				.authorizeRequests()
 				.antMatchers("/favicon.ico").permitAll()
 				.antMatchers("/resources/**").permitAll()
-				
-				//defined Admin only API area
-				//.antMatchers("/admin/**").hasRole("ADMIN")
 				
 				//allow anonymous resource requests
 				.antMatchers("/").permitAll().and()

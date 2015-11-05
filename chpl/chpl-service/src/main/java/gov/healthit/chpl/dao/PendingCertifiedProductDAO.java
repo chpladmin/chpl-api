@@ -13,6 +13,7 @@ public interface PendingCertifiedProductDAO {
 	public void updateStatus(Long pendingProductId, CertificationStatusDTO reason) throws EntityRetrievalException;
 	public List<PendingCertifiedProductDTO> findAll();
 	public List<PendingCertifiedProductDTO> findByStatus(Long statusId);
+	public Long findIdByOncId(String id) throws EntityRetrievalException;
 	public PendingCertifiedProductDTO findById(Long pcpId) throws EntityRetrievalException;
 	public List<PendingCertifiedProductDTO> findByAcbId(Long acbId);
 }

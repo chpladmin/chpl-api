@@ -172,178 +172,178 @@ public class NewCertifiedProductHandler2014 extends NewCertifiedProductHandler {
 		//more certification criterion
 		//starts at column DV
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(1)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(1)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(2)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(2)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(3)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(3)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(4)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(4)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(5)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(5)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(6)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(6)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(7)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(7)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(8)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(8)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(9)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(9)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(10)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(10)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(11)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(11)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(12)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(12)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(13)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(13)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(14)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(14)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(15)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(15)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(16)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(16)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(17)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(17)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(18)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(18)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(19)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(19)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(a)(20)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(20)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(b)(1)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(1)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(b)(2)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(2)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(b)(3)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(3)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(b)(4)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(4)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(b)(5)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(5)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(b)(6)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(6)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(b)(7)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(7)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(b)(8)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(8)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(b)(9)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(9)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(c)(1)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (c)(1)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(c)(2)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (c)(2)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(c)(3)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (c)(3)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(d)(1)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(1)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(d)(2)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(2)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(d)(3)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(3)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(d)(4)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(4)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(d)(5)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(5)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(d)(6)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(6)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(d)(7)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(7)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(d)(8)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(8)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(d)(9)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(9)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(e)(1)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (e)(1)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(e)(2)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (e)(2)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(e)(3)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (e)(3)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(f)(1)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(1)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(f)(2)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(2)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(f)(3)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(3)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(f)(4)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(4)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(f)(5)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(5)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(f)(6)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(6)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(f)(7)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(7)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(g)(1)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (g)(1)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(g)(2)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (g)(2)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(g)(3)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (g)(3)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(g)(4)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (g)(4)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(h)(1)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (h)(1)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(h)(2)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (h)(2)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314(h)(3)", colIndex++));
+			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (h)(3)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		//ends on GA
 		
@@ -1101,7 +1101,7 @@ public class NewCertifiedProductHandler2014 extends NewCertifiedProductHandler {
 	public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 		for (CQMCriterion criterion : allCqms) {
-			if (criterion.getNumber().startsWith("CMS")) {
+			if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
 				criteria.add(criterion);
 			}
 		}
@@ -1135,7 +1135,7 @@ public class NewCertifiedProductHandler2014 extends NewCertifiedProductHandler {
 			for(int i = 0; i < versionList.length; i++) {
 				String currVersion = versionList[i];
 				
-				CQMCriterionEntity cqmEntity = cqmDao.getEntityByNumberAndVersion(criterionNum, currVersion);
+				CQMCriterionEntity cqmEntity = cqmDao.getCMSEntityByNumberAndVersion(criterionNum, currVersion);
 				if(cqmEntity == null) {
 					throw new InvalidArgumentsException("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + currVersion);
 				}

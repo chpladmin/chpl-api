@@ -9,8 +9,10 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 
@@ -36,6 +38,8 @@ import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 @Service
 public class CertificationBodyManagerImpl extends ApplicationObjectSupport implements CertificationBodyManager {
 
@@ -49,10 +53,13 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Autowired
 	private MutableAclService mutableAclService;
 
+	@Autowired
+	private ActivityManager activityManager;
+	
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException {
+	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		// Create the ACB itself
 		CertificationBodyDTO result = certificationBodyDAO.create(acb);
 
@@ -60,31 +67,30 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		addPermission(result, Util.getCurrentUser().getId(),
 				BasePermission.ADMINISTRATION);
 		
-		//all existing users with ROLE_ADMIN now need access to this new ACB
-		List<UserDTO> allUsers = userManager.getAll();
-		for(UserDTO user : allUsers) {
-			Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
-			boolean isChplAdmin = false;
-			for(UserPermissionDTO permission : permissions) {
-				if(permission.getAuthority().equals("ROLE_ADMIN")) {
-					isChplAdmin = true;
-				}
-			}
-			if(isChplAdmin) {
-				addPermission(result, user.getId(), BasePermission.ADMINISTRATION);
-			}
-		}
-		
 		logger.debug("Created acb " + result
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
+		
+		String activityMsg = "Created Certification Body "+result.getName();
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, null, result);
+		
 		return result;
 	}
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
-	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException {
+	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acb.getId());
+		
 		CertificationBodyDTO result = certificationBodyDAO.update(acb);
+		
 		logger.debug("Updated acb " + acb);
+		
+		String activityMsg = "Updated acb " + acb.getName();
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, toUpdate, result);
+		
 		return result;
 	}
 	
@@ -255,12 +261,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			//now delete permission from all of the pending certified products for this ACB
 			pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, new PrincipalSid(userDto.getSubjectName()));
 		}
-	}
-	
-	private boolean permissionExists(CertificationBodyDTO acb, Sid recipient, Permission permission) {
-		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		return permissionExists(acl, recipient, permission);
 	}
 	
 	private boolean permissionExists(MutableAcl acl, Sid recipient, Permission permission) {

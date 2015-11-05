@@ -20,7 +20,7 @@ public class UserInvitation {
 	public UserInvitation(InvitationDTO dto) {
 		this.emailAddress = dto.getEmail();
 		this.acbId = dto.getAcbId();
-		this.hash = dto.getToken();
+		this.hash = dto.getInviteToken();
 		this.permissions = new ArrayList<String>();
 		for(InvitationPermissionDTO permission : dto.getPermissions()) {
 			this.permissions.add(permission.getPermissionName());

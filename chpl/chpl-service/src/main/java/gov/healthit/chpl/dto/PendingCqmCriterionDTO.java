@@ -13,6 +13,8 @@ public class PendingCqmCriterionDTO {
 	private String cmsId;
 	private String nqfNumber;
 	private String version; //only valid for CMS
+	private Long typeId;
+	private String domain;
 	
 	public PendingCqmCriterionDTO() {} 
 	
@@ -27,6 +29,8 @@ public class PendingCqmCriterionDTO {
 		this.setCmsId(entity.getMappedCriterion().getCmsId());
 		this.setNqfNumber(entity.getMappedCriterion().getNqfNumber());
 		this.setVersion(entity.getMappedCriterion().getCqmVersion());
+		this.setTypeId(entity.getMappedCriterion().getCqmCriterionTypeId());
+		this.setDomain(entity.getMappedCriterion().getCqmDomain());
 	}
 
 	public Long getId() {
@@ -99,5 +103,21 @@ public class PendingCqmCriterionDTO {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public Long getTypeId() {
+		return typeId;
+	}
+
+	public void setTypeId(Long typeId) {
+		this.typeId = typeId;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 }

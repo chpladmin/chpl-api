@@ -32,8 +32,14 @@ public class InvitationEntity {
 	@Column(name = "certification_body_id")
 	private Long acbId;
 	
-	@Column(name="token", unique=true)
-	private String token;
+	@Column(name="invite_token", unique=true)
+	private String inviteToken;
+	
+	@Column(name="confirm_token", unique=true)
+	private String confirmToken;
+	
+	@Column(name="created_user_id", unique=true)
+	private Long createdUserId;
 	
 	@Basic( optional = true )
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="invitedUser")
@@ -67,12 +73,12 @@ public class InvitationEntity {
 		this.emailAddress = emailAddress;
 	}
 
-	public String getToken() {
-		return token;
+	public String getInviteToken() {
+		return inviteToken;
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public void setInviteToken(String token) {
+		this.inviteToken = token;
 	}
 
 	public Date getCreationDate() {
@@ -121,5 +127,21 @@ public class InvitationEntity {
 
 	public void setPermissions(Set<InvitationPermissionEntity> permissions) {
 		this.permissions = permissions;
+	}
+
+	public String getConfirmToken() {
+		return confirmToken;
+	}
+
+	public void setConfirmToken(String confirmToken) {
+		this.confirmToken = confirmToken;
+	}
+
+	public Long getCreatedUserId() {
+		return createdUserId;
+	}
+
+	public void setCreatedUserId(Long createdUserId) {
+		this.createdUserId = createdUserId;
 	}
 }

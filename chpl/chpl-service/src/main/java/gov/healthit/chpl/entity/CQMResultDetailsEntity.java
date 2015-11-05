@@ -37,17 +37,24 @@ public class CQMResultDetailsEntity {
 	private String nqfNumber;
 	
 	@Column( name = "cqm_criterion_type_id")
-	private String cqmCriterionTypeId;
+	private Long cqmCriterionTypeId;
 	
 	@Basic( optional = true )
 	@Column(name = "cqm_version_id", nullable = true )
 	private Long cqmVersionId;
 	
+	@Basic(optional = true)
+	@Column(name = "cqm_domain", nullable = true)
+	private String domain;
+	
 	@Basic( optional = true )
 	@Column(name = "version")
 	private String version;
 	
+	@Column(name = "cqm_id")
+	private String cqmId;
 	
+
 	public Long getId() {
 		return id;
 	}
@@ -104,11 +111,11 @@ public class CQMResultDetailsEntity {
 		this.nqfNumber = nqfNumber;
 	}
 
-	public String getCqmCriterionTypeId() {
+	public Long getCqmCriterionTypeId() {
 		return cqmCriterionTypeId;
 	}
 
-	public void setCqmCriterionTypeId(String cqmCriterionTypeId) {
+	public void setCqmCriterionTypeId(Long cqmCriterionTypeId) {
 		this.cqmCriterionTypeId = cqmCriterionTypeId;
 	}
 
@@ -126,6 +133,22 @@ public class CQMResultDetailsEntity {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	
+	public String getCqmId() {
+		return cqmId;
+	}
+
+	public void setCqmId(String cqmId) {
+		this.cqmId = cqmId;
 	}
 	
 }

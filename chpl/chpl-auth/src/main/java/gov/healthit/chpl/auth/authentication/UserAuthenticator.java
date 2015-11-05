@@ -50,6 +50,10 @@ public class UserAuthenticator implements Authenticator {
 		UserDTO user = getUserByName(credentials.getUserName());
 		
 		if (user != null){
+			if(user.getSignatureDate() == null) {
+				throw new BadCredentialsException("Account for user " + user.getSubjectName() + " has not been confirmed.");
+			}
+			
 			if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))){
 				
 				try {
@@ -69,10 +73,6 @@ public class UserAuthenticator implements Authenticator {
 
 	protected boolean checkPassword(String rawPassword, String encodedPassword){
 		return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
-	}
-	
-	public String createPassword(String seed) {
-		return bCryptPasswordEncoder.encode(seed);
 	}
 	
 	public String getJWT(UserDTO user) throws JWTCreationException {
@@ -201,10 +201,14 @@ public class UserAuthenticator implements Authenticator {
 			
 		};
 		SecurityContextHolder.getContext().setAuthentication(authenticator);
-		Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
-		SecurityContextHolder.getContext().setAuthentication(null);
+		try {
+			Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
+			return permissions;
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(null);
+		}
 		
-		return permissions;
+		
 	}
 	
 	private UserDTO getUserByName(String userName) throws UserRetrievalException {
@@ -246,13 +250,17 @@ public class UserAuthenticator implements Authenticator {
 			}
 			
 		};
+		
+		
 		SecurityContextHolder.getContext().setAuthentication(authenticator);
-		UserDTO user = userManager.getByName(userName);
-		SecurityContextHolder.getContext().setAuthentication(null);
-		return user;
+		try {
+			UserDTO user = userManager.getByName(userName);
+			return user;
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(null);
+		}
 		
 	}
-	
 	
 	public JWTAuthor getJwtAuthor() {
 		return jwtAuthor;
