@@ -122,7 +122,7 @@ public class CertificationBodyController {
 	
 	@RequestMapping(value="/{acbId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public String deleteAcb(@PathVariable("acbId") Long acbId) {
+	public String deleteAcb(@PathVariable("acbId") Long acbId) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		CertificationBodyDTO toDelete = new CertificationBodyDTO();
 		toDelete.setId(acbId);
 		acbManager.delete(toDelete);
