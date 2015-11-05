@@ -196,11 +196,22 @@ public class ActivityController {
 	public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
-			return getActivityEventByUser(id);
+			return getActivityEventsByUser(id);
 		} else {
-			//return getActivityEventsForVendors(id, lastNDays);
+			return getActivityEventsByUser(id, lastNDays);
 		}
 	}
+	
+	
+	private List<ActivityEvent> getActivityEventsByUser(Long userId){
+		
+		events = getActivityEventsForObject(concept, id);
+		return events;
+		
+	}
+	
+	
+	
 	
 	
 	private List<ActivityEvent> getActivityEventsForACBs(Long id) throws JsonParseException, IOException{
@@ -533,6 +544,15 @@ public class ActivityController {
 	private List<ActivityEvent> getActivityEvents() throws JsonParseException, IOException{
 		return activityManager.getAllActivity();
 	}
+	
+	private List<ActivityEvent> getActivityEventsByUser(Integer lastNDays) throws JsonParseException, IOException{
+		return activityManager.getAllActivityInLastNDays(lastNDays);
+	}
+	
+	private List<ActivityEvent> getActivityByUserInLastNDays() throws JsonParseException, IOException{
+		return activityManager.getAllActivity();
+	}
+	
 	
 	
 	private List<ActivityEvent> getActivityEventsForConcept(Long conceptId) throws JsonParseException, IOException{
