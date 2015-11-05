@@ -27,8 +27,7 @@ public class BaseEhr2014Validator implements PendingCertifiedProductValidator {
 				}
 			}	
 			if(!hasCert) {
-				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
+				product.getWarningMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
 			}
 		}
 	}
