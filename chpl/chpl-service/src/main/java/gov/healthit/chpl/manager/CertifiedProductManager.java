@@ -29,11 +29,13 @@ public interface CertifiedProductManager {
 	
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDetails pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public void replaceCertifications(Long acbId, CertifiedProductDTO dto, Map<CertificationCriterionDTO, Boolean> certResults)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+	//public void replaceCertifications(Long acbId, CertifiedProductDTO dto, Map<CertificationCriterionDTO, Boolean> certResults)
+	//		throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public void replaceCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public void replaceAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	
 }

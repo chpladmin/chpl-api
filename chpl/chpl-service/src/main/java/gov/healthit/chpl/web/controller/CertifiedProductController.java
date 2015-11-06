@@ -150,6 +150,8 @@ public class CertifiedProductController {
 		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();
 		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
 			CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+			cqmDto.setNqfNumber(cqm.getNqfNumber());
+			cqmDto.setCmsId(cqm.getCmsId());
 			cqmDto.setCqmVersion(cqm.getVersion());
 			cqmDto.setNumber(cqm.getNumber());
 			cqmDto.setTitle(cqm.getTitle());
