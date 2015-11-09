@@ -449,6 +449,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	 * for CMS's it is only those which were successful
 	 * @throws JsonProcessingException 
 	 */
+	/*
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
@@ -488,76 +489,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "CQMs for Certified Product "+productDto.getId()+" was updated." , before , after);
 	}
-	
-
-	
-	/**
-	 * both successes and failures are passed in
-	 * @throws JsonProcessingException 
-	 */
-	/*
-	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
-			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
-			+ ")")
-	@Transactional(readOnly = false)
-	public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
-		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
-		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
-		//delete existing certifiations for the product
-		//certDao.deleteByCertifiedProductId(productDto.getId());
-		List<CQMResultDTO> oldCqmResults = cqmResultDAO.findByCertifiedProductId(productDto.getId());
-		
-		for (CQMResultDTO oldResult : oldCqmResults){
-			
-			Long cqmCriterionId = oldResult.getCqmCriterionId();
-			CQMCriterionDTO criterionDTO = cqmCriterionDao.getById(cqmCriterionId);
-			
-			for (Map.Entry<CQMCriterionDTO, Boolean> cqmResult : cqmResults.entrySet()){
-				
-				Boolean cmsIdMatches = false;
-				Boolean nqfMatches = false;
-				Boolean versionMatches = false;
-				
-				if ((cqmResult.getKey().getCmsId() == null) && (criterionDTO.getCmsId() == null)) {
-					cmsIdMatches = true;
-				} else if ((cqmResult.getKey().getCmsId() == null) || (criterionDTO.getCmsId() == null)) {
-					cmsIdMatches = false;
-				} else if (cqmResult.getKey().getCmsId().equals(criterionDTO.getCmsId())) {
-					cmsIdMatches = true;
-				} else {
-					cmsIdMatches = false;
-				}
-				
-				if (cmsIdMatches){
-					
-					if ((cqmResult.getKey().getNqfNumber() == null) && (criterionDTO.getNqfNumber() == null)) {
-						nqfMatches = true;
-					} else if ((cqmResult.getKey().getNqfNumber() == null) || (criterionDTO.getNqfNumber() == null)) {
-						nqfMatches = false;
-					} else if (cqmResult.getKey().getNqfNumber().equals(criterionDTO.getNqfNumber())) {
-						nqfMatches = true;
-					} else {
-						nqfMatches = false;
-					}
-					
-				}	
-				if (cmsIdMatches && nqfMatches){
-					// replace the value of the result
-					oldResult.setSuccess(cqmResult.getValue());
-					cqmResultDAO.update(oldResult);
-					break;
-				}
-			}
-		}
-		
-		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for Certified Product "+productDto.getId()+" was updated." , before , after);
-	}
 	*/
-	
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -577,6 +509,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		List<CQMResultDTO> beforeCQMs = cqmResultDAO.findByCertifiedProductId(productDto.getId());
 		List<CQMResultDTO> newCQMs = new ArrayList<CQMResultDTO>();
 		
+		// Handle NQFs and Additions:
 		for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
 			
 			Boolean isNQF = (cqm.getKey().getCmsId() == null);
@@ -595,87 +528,75 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				}
 			} else {
 				
+				Boolean found = false;
+				
 				for (CQMResultDTO beforeCQM : beforeCQMs){
 					
 					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
 					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
 					
-					for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
-						
+					if (beforeCriterionDTO.getCmsId().equals(cqm.getKey().getCmsId())){
+						found = true;
+						break;
 					}
-					//for newCQMs
-					
 				}
-				
+				if (!found){
+					
+					CQMCriterionDTO criterion = null;
+					if(StringUtils.isEmpty(cqm.getKey().getCmsId())) {
+						criterion = cqmCriterionDao.getNQFByNumber(cqm.getKey().getNumber());
+					} else if(cqm.getKey().getCmsId().startsWith("CMS")) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqm.getKey().getCmsId(), cqm.getKey().getCqmVersion());
+					}
+					if(criterion == null) {
+						throw new EntityRetrievalException("Could not find CQM with number " + cqm.getKey().getCmsId() + " and version " + cqm.getKey().getCqmVersion());
+					}
+					
+					CQMResultDTO newCQMResult = new CQMResultDTO();
+					
+					newCQMResult.setCertifiedProductId(productDto.getId());
+					newCQMResult.setCqmCriterionId(criterion.getId());
+					newCQMResult.setCreationDate(new Date());
+					newCQMResult.setDeleted(false);
+					newCQMResult.setSuccess(true);
+					cqmResultDAO.create(newCQMResult);
+					dataHasChanged = true;
+				}
 			}
-				
-				
-				
-				
-				Long cqmCriterionId = cqm.getKey().getId(); 
-				CQMCriterionDTO criterionDTO = cqmCriterionDao.getById(cqmCriterionId);
-				CQMResultDTO nqfDTO = cqmResultDAO.getById(criterionDTO.get)
-				
-			}
-			
-			afterCQMs.add(cqm.getKey());
 		}
 		
-		
-		
-		
-		for (CQMResultDTO oldResult : oldCqmResults){
+		// Handle CQM deletions:
+		for (CQMCriterionDTO criterion : cqmCriterionDao.findAll()){
 			
-			Long cqmCriterionId = oldResult.getCqmCriterionId();
-			CQMCriterionDTO criterionDTO = cqmCriterionDao.getById(cqmCriterionId);
+			Boolean isDeletion = true;
 			
-			for (Map.Entry<CQMCriterionDTO, Boolean> cqmResult : cqmResults.entrySet()){
+			for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
 				
-				Boolean cmsIdMatches = false;
-				Boolean nqfMatches = false;
-				Boolean versionMatches = false;
-				
-				if ((cqmResult.getKey().getCmsId() == null) && (criterionDTO.getCmsId() == null)) {
-					cmsIdMatches = true;
-				} else if ((cqmResult.getKey().getCmsId() == null) || (criterionDTO.getCmsId() == null)) {
-					cmsIdMatches = false;
-				} else if (cqmResult.getKey().getCmsId().equals(criterionDTO.getCmsId())) {
-					cmsIdMatches = true;
+				Boolean isNQF = (cqm.getKey().getCmsId() == null);
+				if (isNQF){
+					isDeletion = false;
+					continue;
 				} else {
-					cmsIdMatches = false;
-				}
-				
-				if (cmsIdMatches){
-					
-					if ((cqmResult.getKey().getNqfNumber() == null) && (criterionDTO.getNqfNumber() == null)) {
-						nqfMatches = true;
-					} else if ((cqmResult.getKey().getNqfNumber() == null) || (criterionDTO.getNqfNumber() == null)) {
-						nqfMatches = false;
-					} else if (cqmResult.getKey().getNqfNumber().equals(criterionDTO.getNqfNumber())) {
-						nqfMatches = true;
-					} else {
-						nqfMatches = false;
+					if (cqm.getKey().getCmsId().equals(criterion.getCmsId())){
+						isDeletion = false;
+						break;
 					}
-					
-				}	
-				if (cmsIdMatches && nqfMatches){
-					// replace the value of the result
-					oldResult.setSuccess(cqmResult.getValue());
-					cqmResultDAO.update(oldResult);
-					break;
 				}
+			}
+			
+			if (isDeletion){
+				cqmCriterionDao.delete(criterion.getId());
+				dataHasChanged = true;
 			}
 		}
 		
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for Certified Product "+productDto.getId()+" was updated." , before , after);
-	}	
-	
-	
-	
-	
-	
-	
+		
+		if (dataHasChanged){
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for Certified Product "+productDto.getId()+" was updated." , before , after);
+		}
+		
+	}
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -684,6 +605,60 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ ")")
 	@Transactional(readOnly = false)
 	public void replaceAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
+		List<AdditionalSoftwareDTO> beforeSoftware = softwareDao.findByCertifiedProductId(productDto.getId());
+		
+		Boolean dataHasChanged = false;
+		
+		// Handle additions
+		for (AdditionalSoftwareDTO newSw : newSoftware){
+			
+			Boolean newMatchesExisting = false;
+			for (AdditionalSoftwareDTO existingSw : beforeSoftware){
+				if (newSw.getName().equals(existingSw.getName())){
+					newMatchesExisting = true;
+					break;
+				}
+			}
+			if (!newMatchesExisting){
+				// Add new Ad.Sw. here
+				dataHasChanged = true;
+			}	
+		}
+		
+		/*
+		 * for e in existingSw: 
+		 * 		if e not in newSw
+		 * 			e is deletion
+		 * 
+		 */
+		
+		
+		
+		
+		
+		softwareDao.deleteByCertifiedProduct(productDto.getId());
+		for(AdditionalSoftwareDTO software : newSoftware) {
+			software.setCertifiedProductId(productDto.getId());
+			softwareDao.create(software);
+		}
+		
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Additional Software for Certified Product "+productDto.getId()+" was updated." , before , after);
+		
+	}
+	
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
@@ -697,8 +672,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Additional Software for Certified Product "+productDto.getId()+" was updated." , before , after);
 		
-	}	
+	}
+	
 }
+
 //	
 //	@Override
 //	@Transactional(readOnly = true)
