@@ -26,10 +26,10 @@ import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
-@Component("newCertifiedProductHandler2014")
-public class NewCertifiedProductHandler2014 extends NewCertifiedProductHandler {
+@Component("certifiedProductHandler2014")
+public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	
-	private static final Logger logger = LogManager.getLogger(NewCertifiedProductHandler2014.class);
+	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler2014.class);
 
 	public PendingCertifiedProductEntity handle() {
 		PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
@@ -1101,7 +1101,7 @@ public class NewCertifiedProductHandler2014 extends NewCertifiedProductHandler {
 	public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 		for (CQMCriterion criterion : allCqms) {
-			if (criterion.getNumber().startsWith("CMS")) {
+			if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
 				criteria.add(criterion);
 			}
 		}

@@ -12,7 +12,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 @Component("inpatientComplete2014Validator")
-public class InpatientComplete2014Validator extends BaseEhr2014Validator {
+public class InpatientComplete2014Validator extends InpatientModular2014Validator {
 
 	private static final String[] requiredCriteria = {"170.314 (a)(2)", "170.314 (a)(4)", "170.314 (a)(9)",
 			"170.314 (a)(10)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
@@ -33,8 +33,7 @@ public class InpatientComplete2014Validator extends BaseEhr2014Validator {
 				}
 			}	
 			if(!hasCert) {
-				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Required certificaiton criteria " + requiredCriteria[i] + " was not found.");
+				product.getWarningMessages().add("Required certificaiton criteria " + requiredCriteria[i] + " was not found.");
 			}
 		}		
 		
@@ -47,8 +46,7 @@ public class InpatientComplete2014Validator extends BaseEhr2014Validator {
 		}
 		
 		if(inpatientCqmCount < 16) {
-			product.setValidationStatus(ValidationStatus.ERROR);
-			product.getValidationMessages().add(inpatientCqmCount + " Inpatient CQM(s) were found but at least 16 are required.");
+			product.getWarningMessages().add(inpatientCqmCount + " Inpatient CQM(s) were found but at least 16 are required.");
 		}
 		
 		//must check at least 3 domains
@@ -60,8 +58,7 @@ public class InpatientComplete2014Validator extends BaseEhr2014Validator {
 			}
 		}
 		if(checkedDomains.size() < 3) {
-			product.setValidationStatus(ValidationStatus.ERROR);
-			product.getValidationMessages().add(checkedDomains.size() + " domains were found but at least 3 are required.");
+			product.getWarningMessages().add(checkedDomains.size() + " domains were found but at least 3 are required.");
 		}
 	}
 

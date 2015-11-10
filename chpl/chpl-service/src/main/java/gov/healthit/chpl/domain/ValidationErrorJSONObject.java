@@ -2,21 +2,20 @@ package gov.healthit.chpl.domain;
 
 import java.util.List;
 
-import gov.healthit.chpl.certifiedProduct.validation.ValidationStatus;
-
 public class ValidationErrorJSONObject {
-	private ValidationStatus validationStatus;
-	private List<String> validationMessages;
-	public ValidationStatus getValidationStatus() {
-		return validationStatus;
+	private List<String> errorMessages;
+	private List<String> warningMessages;
+	public List<String> getErrorMessages() {
+		return errorMessages;
 	}
-	public void setValidationStatus(ValidationStatus validationStatus) {
-		this.validationStatus = validationStatus;
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
 	}
-	public List<String> getValidationMessages() {
-		return validationMessages;
+	public List<String> getWarningMessages() {
+		return warningMessages;
 	}
-	public void setValidationMessages(List<String> validationMessages) {
-		this.validationMessages = validationMessages;
+	public void setWarningMessages(List<String> warningMessages) {
+		this.warningMessages = warningMessages;
 	}
+	
 }

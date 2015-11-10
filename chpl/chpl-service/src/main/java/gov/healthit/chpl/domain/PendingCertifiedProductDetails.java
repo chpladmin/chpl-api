@@ -14,8 +14,8 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
 	
 	private String oncId;
-	private String validationStatus;
-	private List<String> validationMessages;
+	private List<String> errorMessages;
+	private List<String> warningMessages;
 	private String uploadNotes;
 	private String recordStatus;
 	private Map<String, Object> vendorAddress;
@@ -25,8 +25,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 	public PendingCertifiedProductDetails(PendingCertifiedProductDTO dto) {
 		this.setId(dto.getId());
 		this.setOncId(dto.getUniqueId());
-		this.setValidationStatus(dto.getValidationStatus().name());
-		this.setValidationMessages(dto.getValidationMessages());
+		this.setErrorMessages(dto.getErrorMessages());
+		this.setWarningMessages(dto.getWarningMessages());
 		this.setRecordStatus(dto.getRecordStatus());
 		this.setTestingLabId(null);
 		this.setChplProductNumber(null);
@@ -199,19 +199,19 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.oncId = oncId;
 	}
 
-	public String getValidationStatus() {
-		return validationStatus;
+	public List<String> getErrorMessages() {
+		return errorMessages;
 	}
 
-	public void setValidationStatus(String validationStatus) {
-		this.validationStatus = validationStatus;
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
 	}
 
-	public List<String> getValidationMessages() {
-		return validationMessages;
+	public List<String> getWarningMessages() {
+		return warningMessages;
 	}
 
-	public void setValidationMessages(List<String> validationMessages) {
-		this.validationMessages = validationMessages;
+	public void setWarningMessages(List<String> warningMessages) {
+		this.warningMessages = warningMessages;
 	}
 }

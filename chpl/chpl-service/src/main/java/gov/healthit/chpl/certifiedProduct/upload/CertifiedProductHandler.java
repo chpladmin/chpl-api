@@ -11,9 +11,9 @@ import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
-@Component("newCertifiedProductHandler")
-public abstract class NewCertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
-	private static final Logger logger = LogManager.getLogger(NewCertifiedProductHandler.class);
+@Component("certifiedProductHandler")
+public abstract class CertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
+	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler.class);
 	
 	public abstract PendingCertifiedProductEntity handle();
 	

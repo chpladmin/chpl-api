@@ -67,21 +67,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		addPermission(result, Util.getCurrentUser().getId(),
 				BasePermission.ADMINISTRATION);
 		
-		//all existing users with ROLE_ADMIN now need access to this new ACB
-		List<UserDTO> allUsers = userManager.getAll();
-		for(UserDTO user : allUsers) {
-			Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
-			boolean isChplAdmin = false;
-			for(UserPermissionDTO permission : permissions) {
-				if(permission.getAuthority().equals("ROLE_ADMIN")) {
-					isChplAdmin = true;
-				}
-			}
-			if(isChplAdmin) {
-				addPermission(result, user.getId(), BasePermission.ADMINISTRATION);
-			}
-		}
-		
 		logger.debug("Created acb " + result
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
 		
@@ -280,12 +265,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			//now delete permission from all of the pending certified products for this ACB
 			pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, new PrincipalSid(userDto.getSubjectName()));
 		}
-	}
-	
-	private boolean permissionExists(CertificationBodyDTO acb, Sid recipient, Permission permission) {
-		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		return permissionExists(acl, recipient, permission);
 	}
 	
 	private boolean permissionExists(MutableAcl acl, Sid recipient, Permission permission) {

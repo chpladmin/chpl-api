@@ -251,14 +251,12 @@ public class InvitationManagerImpl implements InvitationManager {
 		}
 		
 		//give them permissions
-		boolean isChplAdmin = false;
 		if(invitation.getPermissions() != null && invitation.getPermissions().size() > 0) {
 			for(InvitationPermissionDTO permission : invitation.getPermissions()) {
 				UserPermissionDTO userPermission = userPermissionDao.findById(permission.getPermissionId());
 				try {
 					if(userPermission.getAuthority().equals("ROLE_ADMIN")) {
 						userManager.grantAdmin(user.getName());
-						isChplAdmin = true;
 					} else {
 						userManager.grantRole(user.getName(), userPermission.getAuthority());
 					}
@@ -269,15 +267,9 @@ public class InvitationManagerImpl implements InvitationManager {
 				}
 			}
 		}
-			
-		//give them roles on the appropriate ACBs
-		//if they are a chpladmin then they need to be given access to all of the ACBs
-		if(isChplAdmin) {
-			List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
-			for(CertificationBodyDTO acb : acbs) {
-				acbManager.addPermission(acb, user.getId(), BasePermission.ADMINISTRATION);
-			}
-		} else if(userAcb != null) {
+		
+		//if they are a acb admin or staff then they need to be given access to the invited acb
+		if(userAcb != null) {
 			acbManager.addPermission(userAcb, user.getId(), BasePermission.ADMINISTRATION);
 		}
 	}

@@ -46,8 +46,7 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Certification criterion 170.314 (g)(1) exists but a required compliemtnary certification was not found.");
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(1) exists but a required compliemtnary certification was not found.");
 			}
 		}
 		
@@ -70,15 +69,13 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Certification criterion 170.314 (g)(2) exists but a required compliemtnary certification was not found.");
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(2) exists but a required compliemtnary certification was not found.");
 			}
 		}
 		
 		//check presence of both certs
 		if(hasG1Cert && hasG2Cert) {
-			product.setValidationStatus(ValidationStatus.ERROR);
-			product.getValidationMessages().add("Product cannot have both 170.314 (g)(1) and 170.314 (g)(2) certification");
+			product.getErrorMessages().add("Product cannot have both 170.314 (g)(1) and 170.314 (g)(2) certification");
 		}
 		
 		//check (g)(3)
@@ -100,8 +97,7 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Certification criterion 170.314 (g)(3) exists but a required compliemtnary certification was not found.");
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(3) exists but a required compliemtnary certification was not found.");
 			}
 		}
 		
@@ -113,8 +109,7 @@ public class AmbulatoryModular2014Validator implements PendingCertifiedProductVa
 			}
 		}
 		if(!hasG4Cert) {
-			product.setValidationStatus(ValidationStatus.ERROR);
-			product.getValidationMessages().add("Certification 170.314 (g)(4) is required but was not found.");
+			product.getErrorMessages().add("Certification 170.314 (g)(4) is required but was not found.");
 		}
 	}
 }

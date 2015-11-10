@@ -12,7 +12,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 @Component("ambulatoryComplete2014Validator")
-public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
+public class AmbulatoryComplete2014Validator extends AmbulatoryModular2014Validator {
 
 	private static final String[] requiredCriteria = {"170.314 (a)(2)", "170.314 (a)(4)", "170.314 (a)(9)",
 			"170.314 (a)(10)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
@@ -23,6 +23,7 @@ public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 				"CMS154v1", "CMS136v1", "CMS2v1", "CMS75v1", "CMS165v1", "CMS156v1", "CMS138v1",
 				"CMS166v1", "CMS68v1", "CMS69v1", "CMS50v1", "CMS90v1"};
 	
+	//TODO: only check g1-g4 validation and make sure we have a test report url that is a fully qualified URL
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		super.validate(product);
@@ -36,8 +37,7 @@ public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 				}
 			}	
 			if(!hasCert) {
-				product.setValidationStatus(ValidationStatus.ERROR);
-				product.getValidationMessages().add("Required certificaiton criteria " + requiredCriteria[i] + " was not found.");
+				product.getWarningMessages().add("Required certificaiton criteria " + requiredCriteria[i] + " was not found.");
 			}
 		}		
 		
@@ -50,8 +50,7 @@ public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 		}
 		
 		if(ambulatoryCqmCount < 9) {
-			product.setValidationStatus(ValidationStatus.ERROR);
-			product.getValidationMessages().add(ambulatoryCqmCount + " Ambulatory CQM(s) were found but at least 9 are required.");
+			product.getWarningMessages().add(ambulatoryCqmCount + " Ambulatory CQM(s) were found but at least 9 are required.");
 		}
 		
 		//has at least 6 cqms from the core set
@@ -79,8 +78,7 @@ public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 			}
 		}
 		if(coreAmbulatoryCount < 6) {
-			product.setValidationStatus(ValidationStatus.ERROR);
-			product.getValidationMessages().add(coreAmbulatoryCount + " Ambulatory CQM(s) were met from CMS's recommended core set were found but at least 6 are required.");
+			product.getWarningMessages().add(coreAmbulatoryCount + " Ambulatory CQM(s) were met from CMS's recommended core set were found but at least 6 are required.");
 		}
 		
 		//checks 3 domains
@@ -92,8 +90,7 @@ public class AmbulatoryComplete2014Validator extends BaseEhr2014Validator {
 			}
 		}
 		if(checkedDomains.size() < 3) {
-			product.setValidationStatus(ValidationStatus.ERROR);
-			product.getValidationMessages().add(checkedDomains.size() + " domains were found but at least 3 are required.");
+			product.getWarningMessages().add(checkedDomains.size() + " domains were found but at least 3 are required.");
 		}
 	}
 

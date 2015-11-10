@@ -33,7 +33,6 @@ import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFa
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadType;
 import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
 import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
-import gov.healthit.chpl.certifiedProduct.validation.ValidationStatus;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
@@ -154,6 +153,8 @@ public class CertifiedProductController {
 			cqmDto.setCmsId(cqm.getCmsId());
 			cqmDto.setCqmVersion(cqm.getVersion());
 			cqmDto.setNumber(cqm.getNumber());
+			cqmDto.setCmsId(cqm.getCmsId());
+			cqmDto.setNqfNumber(cqm.getNqfNumber());
 			cqmDto.setTitle(cqm.getTitle());
 			cqmDtos.put(cqmDto, cqm.isSuccess());
 		}
@@ -212,8 +213,8 @@ public class CertifiedProductController {
 		PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
 		PendingCertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
 		validator.validate(pcpDto);
-		if(pcpDto.getValidationStatus() != ValidationStatus.OK) {
-			throw new ValidationException(pcpDto.getValidationMessages());
+		if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
+			throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
 		}
 		
 		Long acbId = new Long(acbIdStr);
@@ -264,14 +265,14 @@ public class CertifiedProductController {
 						PendingCertifiedProductDTO pendingCpDto = null;
 						
 						CertifiedProductUploadType uploadType = CertifiedProductUploadType.valueOf(pendingCp.getRecordStatus().toUpperCase());
-						if(uploadType == CertifiedProductUploadType.NEW) { 
+						//if(uploadType == CertifiedProductUploadType.NEW) { 
 							if(pendingCp.getCertificationBodyId() == null) {
 								throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
 							}
 							pendingCpDto = pcpManager.createOrReplace(pendingCp.getCertificationBodyId(), pendingCp);
-						} else {
-							pendingCpDto = new PendingCertifiedProductDTO(pendingCp);
-						}
+						//} else {
+						//	pendingCpDto = new PendingCertifiedProductDTO(pendingCp);
+						//}
 						
 						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
 						//set applicable criteria
