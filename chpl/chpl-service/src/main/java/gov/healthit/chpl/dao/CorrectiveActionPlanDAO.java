@@ -10,5 +10,5 @@ public interface CorrectiveActionPlanDAO {
 	public CorrectiveActionPlanDTO update(CorrectiveActionPlanDTO toUpdate) throws EntityRetrievalException;
 	public CorrectiveActionPlanDTO getById(Long id) throws EntityRetrievalException;
 	public List<CorrectiveActionPlanDTO> getAllForCertifiedProduct(Long certifiedProductId);
-	public void delete(Long id);
+	public void delete(Long id) throws EntityRetrievalException;
 }

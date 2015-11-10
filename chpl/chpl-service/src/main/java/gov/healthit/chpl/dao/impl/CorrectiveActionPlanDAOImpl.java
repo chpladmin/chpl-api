@@ -101,8 +101,12 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 	}
 
 	@Override
-	public void delete(Long id) {
-		
+	public void delete(Long id) throws EntityRetrievalException {
+		CorrectiveActionPlanEntity entity = getEntityById(id);
+		entity.setDeleted(true);
+		entity.setLastModifiedDate(new Date());
+		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		update(entity);
 	}
 	
 	private void create(CorrectiveActionPlanEntity entity) {

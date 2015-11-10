@@ -95,6 +95,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = true)
 	public List<CertifiedProductDTO> getAllWithEditPermission() {
 		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
+		if(userAcbs == null || userAcbs.size() == 0) {
+			return new ArrayList<CertifiedProductDTO>();
+		}
 		List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
 		for(CertificationBodyDTO dto : userAcbs) {
 			acbIdList.add(dto.getId());
@@ -120,6 +123,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = true)
 	public List<CertifiedProductDTO> getByVersionWithEditPermission(Long versionId) {
 		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
+		if(userAcbs == null || userAcbs.size() == 0) {
+			return new ArrayList<CertifiedProductDTO>();
+		}
 		List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
 		for(CertificationBodyDTO dto : userAcbs) {
 			acbIdList.add(dto.getId());
