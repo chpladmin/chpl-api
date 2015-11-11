@@ -1,10 +1,12 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +51,7 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.VendorDTO;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
@@ -74,6 +77,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired
 	public CertifiedProductDetailsManager detailsManager;
 		
+	@Autowired 
+	public CertificationBodyManager acbManager;
+	
 	public CertifiedProductManagerImpl() {
 	}
 	
@@ -82,6 +88,21 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	public List<CertifiedProductDTO> getAll() {
 		return dao.findAll();
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<CertifiedProductDTO> getAllWithEditPermission() {
+		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
+		if(userAcbs == null || userAcbs.size() == 0) {
+			return new ArrayList<CertifiedProductDTO>();
+		}
+		List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
+		for(CertificationBodyDTO dto : userAcbs) {
+			acbIdList.add(dto.getId());
+		}
+		return dao.getByAcbIds(acbIdList);
+	}
+	
 	@Autowired CertificationStatusDAO statusDao;
 	
 	@Override
@@ -94,6 +115,20 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = true)
 	public List<CertifiedProductDTO> getByVersion(Long versionId) {
 		return dao.getByVersionId(versionId);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<CertifiedProductDTO> getByVersionWithEditPermission(Long versionId) {
+		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
+		if(userAcbs == null || userAcbs.size() == 0) {
+			return new ArrayList<CertifiedProductDTO>();
+		}
+		List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
+		for(CertificationBodyDTO dto : userAcbs) {
+			acbIdList.add(dto.getId());
+		}
+		return dao.getByVersionAndAcbIds(versionId, acbIdList);
 	}
 	
 	@Override
@@ -222,6 +257,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setProductVersionId(new Long(productVersionId));
 		toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
 		toCreate.setVisibleOnChpl(true);
+		//TODO: this may have to be added to pending certified products if it's in the spreadsheet?
+		toCreate.setPrivacyAttestation(false);
 		
 		CertifiedProductDTO newCertifiedProduct = dao.create(toCreate);
 		

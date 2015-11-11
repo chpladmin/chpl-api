@@ -24,6 +24,7 @@ public class CertifiedProductSearchResult {
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	private Long certificationDate;
 	private Boolean visibleOnChpl;
+	private Boolean privacyAttestation;
 	private Integer countCerts;
 	private Integer countCqms;
 	
@@ -134,6 +135,12 @@ public class CertifiedProductSearchResult {
 	}
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
+	}
+	public Boolean getPrivacyAttestation() {
+		return privacyAttestation;
+	}
+	public void setPrivacyAttestation(Boolean privacyAttestation) {
+		this.privacyAttestation = privacyAttestation;
 	}
 	
 }

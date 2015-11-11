@@ -68,13 +68,22 @@ public class CertifiedProductController {
 
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(@RequestParam(required=false) Long versionId) {
+	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
+			@RequestParam(required=false) Long versionId, @RequestParam(required=false, defaultValue="false") boolean editable) {
 		List<CertifiedProductDTO> certifiedProductList = null;
 		
 		if(versionId != null && versionId > 0) {
-			certifiedProductList = cpManager.getByVersion(versionId);
+			if(editable) {
+				certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
+			} else {
+				certifiedProductList = cpManager.getByVersion(versionId);
+			}
 		} else {
-			certifiedProductList = cpManager.getAll();
+			if(editable) {
+				certifiedProductList = cpManager.getAllWithEditPermission();
+			} else {
+				certifiedProductList = cpManager.getAll();
+			}
 		}
 		
 		List<CertifiedProduct> products= new ArrayList<CertifiedProduct>();
@@ -104,7 +113,7 @@ public class CertifiedProductController {
 		Long acbId = existingProduct.getCertificationBodyId();
 		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id").toString());
 		
-		if(acbId != newAcbId) {
+		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
 			cpManager.changeOwnership(updateRequest.getId(), newAcbId);
 		}
 		

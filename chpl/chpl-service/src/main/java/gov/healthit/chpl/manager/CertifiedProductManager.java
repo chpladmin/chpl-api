@@ -15,10 +15,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface CertifiedProductManager {
 
 	public List<CertifiedProductDTO> getAll();
+	public List<CertifiedProductDTO> getAllWithEditPermission();
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
 	public List<CertifiedProductDTO> getByVersion(Long versionId);
 	public List<CertifiedProductDTO> getByVersions(List<Long> versionIds);
-	
+	public List<CertifiedProductDTO> getByVersionWithEditPermission(Long versionId);
+
 //	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityRetrievalException, EntityCreationException;
 //	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;

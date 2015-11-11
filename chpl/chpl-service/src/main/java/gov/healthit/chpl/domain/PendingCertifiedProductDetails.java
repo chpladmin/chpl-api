@@ -127,6 +127,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		}
 		
 		this.setVisibleOnChpl(false);
+		//TODO: this needs to be included in the upload
+		this.setPrivacyAttestation(false);
 		this.setUploadNotes(dto.getUploadNotes());
 		
 		List<AdditionalSoftware> softwareList = new ArrayList<AdditionalSoftware>();
