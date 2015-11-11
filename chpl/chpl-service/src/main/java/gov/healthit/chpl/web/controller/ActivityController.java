@@ -1,13 +1,11 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
-import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -202,10 +200,7 @@ public class ActivityController {
 		} else {
 			return activityManager.getActivityForUserInLastNDays(id, lastNDays);
 		}
-	}
-	
-	
-	
+	}	
 	
 	
 	private List<ActivityEvent> getActivityEventsForACBs(Long id) throws JsonParseException, IOException{
