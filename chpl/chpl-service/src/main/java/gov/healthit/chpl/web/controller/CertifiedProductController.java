@@ -142,7 +142,7 @@ public class CertifiedProductController {
 			softwareDto.setVersion(software.getVersion());
 			softwareDtos.add(softwareDto);
 		}
-		cpManager.replaceAdditionalSoftware(acbId, toUpdate, softwareDtos);
+		cpManager.updateAdditionalSoftware(acbId, toUpdate, softwareDtos);
 		
 		//update product certifications
 		Map<CertificationCriterionDTO, Boolean> newCerts = new HashMap<CertificationCriterionDTO, Boolean>();
@@ -152,12 +152,14 @@ public class CertifiedProductController {
 			newCert.setTitle(certResult.getTitle());
 			newCerts.put(newCert, certResult.isSuccess());
 		}
-		cpManager.replaceCertifications(acbId, toUpdate, newCerts);
+		cpManager.updateCertifications(acbId, toUpdate, newCerts);
 		
 		//update product cqms
 		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();
 		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
 			CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+			cqmDto.setNqfNumber(cqm.getNqfNumber());
+			cqmDto.setCmsId(cqm.getCmsId());
 			cqmDto.setCqmVersion(cqm.getVersion());
 			cqmDto.setNumber(cqm.getNumber());
 			cqmDto.setCmsId(cqm.getCmsId());
@@ -165,7 +167,7 @@ public class CertifiedProductController {
 			cqmDto.setTitle(cqm.getTitle());
 			cqmDtos.put(cqmDto, cqm.isSuccess());
 		}
-		cpManager.replaceCqms(acbId, toUpdate, cqmDtos);
+		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
 		
 		//search for the product by id to get it with all the updates
 		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
