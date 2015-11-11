@@ -1,11 +1,13 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,29 +187,21 @@ public class ActivityController {
 	public Map<Long, List<ActivityEvent> > activityByUser(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
-			return getActivityEventByUser();
+			return activityManager.getActivityByUser();
 		} else {
-			return getActivityEventsByUser(lastNDays);
+			return activityManager.getActivityByUserInLastNDays(lastNDays);
 		}
 	}
 	
-	
+
 	@RequestMapping(value="/user_activity/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
-			return getActivityEventsByUser(id);
+			return activityManager.getActivityForUser(id);
 		} else {
-			return getActivityEventsByUser(id, lastNDays);
+			return activityManager.getActivityForUserInLastNDays(id, lastNDays);
 		}
-	}
-	
-	
-	private List<ActivityEvent> getActivityEventsByUser(Long userId){
-		
-		events = getActivityEventsForObject(concept, id);
-		return events;
-		
 	}
 	
 	
@@ -580,7 +574,5 @@ public class ActivityController {
 		}
 		return events;
 	}
-	
-	
 	
 }

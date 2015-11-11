@@ -25,9 +25,9 @@ public interface ActivityManager {
 	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException;
 	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException;
 	public void deleteActivity(Long toDelete) throws EntityRetrievalException;
-	public Map<Long, List<ActivityDTO>> getActivityByUser();
-	public Map<Long, List<ActivityDTO>> getActivityByUserInLastNDays(Integer nDays);
-	public List<ActivityDTO> getActivityForUser(Long userId);
-	public List<ActivityDTO> getActivityForUserInLastNDays(Long userId, Integer nDays);
+	public Map<Long, List<ActivityEvent>> getActivityByUser() throws JsonParseException, IOException;
+	public Map<Long, List<ActivityEvent>> getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException;
+	public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException;
+	public List<ActivityEvent> getActivityForUserInLastNDays(Long userId, Integer nDays) throws JsonParseException, IOException;
 	
 }

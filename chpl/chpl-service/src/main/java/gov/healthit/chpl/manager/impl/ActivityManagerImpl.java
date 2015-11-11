@@ -26,9 +26,12 @@ import gov.healthit.chpl.manager.ActivityManager;
 
 
 
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -227,26 +230,70 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public Map<Long, List<ActivityDTO> > getActivityByUser(){
-		return activityDAO.findAllByUser();
+	public Map<Long, List<ActivityEvent> > getActivityByUser() throws JsonParseException, IOException{
+		
+		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUser();
+		Map<Long, List<ActivityEvent> > activityEvents = new HashMap<Long, List<ActivityEvent> >();
+		
+		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
+			
+			List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+			
+			for (ActivityDTO userEventDTO : userEntry.getValue()){
+				ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+				userActivityEvents.add(event);
+			}
+			activityEvents.put(userEntry.getKey(), userActivityEvents);
+		}
+		return activityEvents;
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
-	public Map<Long, List<ActivityDTO> > getActivityByUserInLastNDays(Integer nDays){
-		return activityDAO.findAllByUserInLastNDays(nDays);
+	public Map<Long, List<ActivityEvent> > getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException{
+		
+		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUserInLastNDays(nDays);
+		Map<Long, List<ActivityEvent> > activityEvents = new HashMap<Long, List<ActivityEvent> >();
+		
+		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
+			
+			List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+			
+			for (ActivityDTO userEventDTO : userEntry.getValue()){
+				ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+				userActivityEvents.add(event);
+			}
+			activityEvents.put(userEntry.getKey(), userActivityEvents);
+		}
+		return activityEvents;
+		
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<ActivityDTO> getActivityForUser(Long userId){
-		return activityDAO.findByUserId(userId);
+	public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+		
+		for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId)){
+			ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+			userActivityEvents.add(event);
+		}
+		return userActivityEvents;
 	}
+	
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<ActivityDTO> getActivityForUserInLastNDays(Long userId, Integer nDays){
-		return activityDAO.findByUserId(userId, nDays);
+	public List<ActivityEvent> getActivityForUserInLastNDays(Long userId, Integer nDays) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+		
+		for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId, nDays)){
+			ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+			userActivityEvents.add(event);
+		}
+		return userActivityEvents;
 	}
 	
 
