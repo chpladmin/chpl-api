@@ -516,7 +516,31 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for (AdditionalSoftwareDTO beforeSw : beforeSoftware){
 			Boolean existingMatchesNew = false;
 			for (AdditionalSoftwareDTO newSw : newSoftware){
-				if (beforeSw.getName().equals(newSw.getName())){
+				
+				
+				Boolean nameMatches = false;
+				if ((beforeSw.getName() != null) && (newSw.getName() != null)) {
+					nameMatches = beforeSw.getName().equals(newSw.getName());
+				} else if ((beforeSw.getName() == null) && (newSw.getName() == null)){
+					nameMatches = true;
+				}
+				
+				Boolean versionMatches = false;
+				if ((beforeSw.getVersion() != null) && (newSw.getVersion() != null)) {
+					versionMatches = beforeSw.getVersion().equals(newSw.getVersion());
+				} else if ((beforeSw.getVersion() == null) && (newSw.getVersion() == null)){
+					versionMatches = true;
+				}
+				
+				Boolean justificationMatches = false;
+				if ((beforeSw.getJustification() != null) && (newSw.getJustification() != null)) {
+					justificationMatches = beforeSw.getJustification().equals(newSw.getJustification());
+				} else if ((beforeSw.getJustification() == null) && (newSw.getJustification() == null)){
+					justificationMatches = true;
+				}
+				
+				
+				if ((nameMatches) && (versionMatches) && (justificationMatches)){
 					existingMatchesNew = true;
 					break;
 				}
@@ -533,8 +557,30 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for (AdditionalSoftwareDTO newSw : newSoftware){
 			
 			Boolean newMatchesExisting = false;
-			for (AdditionalSoftwareDTO existingSw : beforeSoftware){
-				if (newSw.getName().equals(existingSw.getName())){
+			for (AdditionalSoftwareDTO beforeSw : beforeSoftware){
+				
+				Boolean nameMatches = false;
+				if ((beforeSw.getName() != null) && (newSw.getName() != null)) {
+					nameMatches = beforeSw.getName().equals(newSw.getName());
+				} else if ((beforeSw.getName() == null) && (newSw.getName() == null)){
+					nameMatches = true;
+				}
+				
+				Boolean versionMatches = false;
+				if ((beforeSw.getVersion() != null) && (newSw.getVersion() != null)) {
+					versionMatches = beforeSw.getVersion().equals(newSw.getVersion());
+				} else if ((beforeSw.getVersion() == null) && (newSw.getVersion() == null)){
+					versionMatches = true;
+				}
+				
+				Boolean justificationMatches = false;
+				if ((beforeSw.getJustification() != null) && (newSw.getJustification() != null)) {
+					justificationMatches = beforeSw.getJustification().equals(newSw.getJustification());
+				} else if ((beforeSw.getJustification() == null) && (newSw.getJustification() == null)){
+					justificationMatches = true;
+				}
+				
+				if ((nameMatches) && (versionMatches) && (justificationMatches)){
 					newMatchesExisting = true;
 					break;
 				}
@@ -549,8 +595,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Additional Software for Certified Product "+productDto.getId()+" was updated." , before , after);
 		}
-		
-		
 	}
 	
 }
