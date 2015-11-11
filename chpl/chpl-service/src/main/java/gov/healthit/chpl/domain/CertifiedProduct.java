@@ -24,6 +24,8 @@ public class CertifiedProduct {
 	private Map<String, String> practiceType = new HashMap<String, String>();
 	private Map<String, String> certifyingBody = new HashMap<String, String>();
 	private String certificationDate;
+	private Boolean privacyAttestation;
+	
 	// TODO: Add Additional Software Here
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
@@ -149,6 +151,12 @@ public class CertifiedProduct {
 	}
 	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+	public Boolean getPrivacyAttestation() {
+		return privacyAttestation;
+	}
+	public void setPrivacyAttestation(Boolean privacyAttestation) {
+		this.privacyAttestation = privacyAttestation;
 	}
 	
 }

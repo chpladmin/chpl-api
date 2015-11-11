@@ -19,5 +19,6 @@ public interface CertifiedProductDAO {
 	public List<CertifiedProductDTO> getByVersionId(Long versionId);
 	
 	public List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds);
-	
+	public List<CertifiedProductDTO> getByAcbIds(List<Long> acbIds);
+	public List<CertifiedProductDTO> getByVersionAndAcbIds(Long versionId, List<Long> acbIds);
 }

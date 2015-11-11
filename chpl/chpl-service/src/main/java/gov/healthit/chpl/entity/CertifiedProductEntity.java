@@ -102,6 +102,8 @@ public class CertifiedProductEntity {
 	@Column(name = "visible_on_chpl")
 	private Boolean visibleOnChpl;
 
+	@Column(name = "privacy_attestation")
+	private Boolean privacyAttestation;
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -270,6 +272,14 @@ public class CertifiedProductEntity {
 
 	public void setVisibleOnChpl(Boolean visibleOnChpl) {
 		this.visibleOnChpl = visibleOnChpl;
+	}
+
+	public Boolean getPrivacyAttestation() {
+		return privacyAttestation;
+	}
+
+	public void setPrivacyAttestation(Boolean privacyAttestation) {
+		this.privacyAttestation = privacyAttestation;
 	}
 
 }

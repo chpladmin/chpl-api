@@ -87,7 +87,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
 			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
-			
+			searchResult.setPrivacyAttestation(dto.getPrivacyAttestation());
 			searchResults.add(searchResult);
 		}
 		
