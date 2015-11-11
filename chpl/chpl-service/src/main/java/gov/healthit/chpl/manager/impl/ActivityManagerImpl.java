@@ -24,10 +24,13 @@ import gov.healthit.chpl.manager.ActivityManager;
 
 
 
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -220,6 +223,30 @@ public class ActivityManagerImpl implements ActivityManager {
 		dto.setDeleted(true);
 		activityDAO.update(dto);
 		
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Map<Long, List<ActivityDTO> > getActivityByUser(){
+		return activityDAO.findAllByUser();
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Map<Long, List<ActivityDTO> > getActivityByUserInLastNDays(Integer nDays){
+		return activityDAO.findAllByUserInLastNDays(nDays);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<ActivityDTO> getActivityForUser(Long userId){
+		return activityDAO.findByUserId(userId);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<ActivityDTO> getActivityForUserInLastNDays(Long userId, Integer nDays){
+		return activityDAO.findByUserId(userId, nDays);
 	}
 	
 

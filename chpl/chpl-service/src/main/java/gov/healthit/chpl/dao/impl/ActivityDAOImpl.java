@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 
@@ -187,6 +189,88 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		return activities;
 	}
 	
+	
+	@Override
+	public List<ActivityDTO> findByUserId(Long userId, Integer lastNDays) {
+		
+		List<ActivityEntity> entities = this.getEntitiesByUserId(userId, lastNDays);
+		List<ActivityDTO> activities = new ArrayList<>();
+		
+		for (ActivityEntity entity : entities) {
+			ActivityDTO result = new ActivityDTO(entity);
+			activities.add(result);
+		}
+		return activities;
+	}
+	
+	@Override
+	public List<ActivityDTO> findByUserId(Long userId) {
+		
+		List<ActivityEntity> entities = this.getEntitiesByUserId(userId);
+		List<ActivityDTO> activities = new ArrayList<>();
+		
+		for (ActivityEntity entity : entities) {
+			ActivityDTO result = new ActivityDTO(entity);
+			activities.add(result);
+		}
+		return activities;
+	}
+	
+	@Override
+	public Map<Long, List<ActivityDTO> > findAllByUser(){
+		
+		Map<Long, List<ActivityDTO> > activityByUser = new HashMap<Long, List<ActivityDTO> >();
+		
+		List<ActivityEntity> entities = getAllEntities();
+		
+		for (ActivityEntity entity : entities) {
+			
+			ActivityDTO result = new ActivityDTO(entity);
+			Long userId = result.getLastModifiedUser();
+			
+			if( activityByUser.containsKey(userId)){
+				
+				activityByUser.get(userId).add(result);
+				
+			} else {
+				
+				List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
+				activity.add(result);
+				activityByUser.put(userId, activity);
+				
+			}
+		}
+		return activityByUser;
+	}
+	
+	@Override
+	public Map<Long, List<ActivityDTO> > findAllByUserInLastNDays(Integer lastNDays){
+		
+		Map<Long, List<ActivityDTO> > activityByUser = new HashMap<Long, List<ActivityDTO> >();
+		
+		List<ActivityEntity> entities = this.getAllEntitiesInLastNDays(lastNDays);
+		
+		for (ActivityEntity entity : entities) {
+			
+			ActivityDTO result = new ActivityDTO(entity);
+			Long userId = result.getLastModifiedUser();
+			
+			if( activityByUser.containsKey(userId)){
+				
+				activityByUser.get(userId).add(result);
+				
+			} else {
+				
+				List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
+				activity.add(result);
+				activityByUser.put(userId, activity);
+				
+			}
+		}
+		return activityByUser;
+	}
+	
+	
 	private void create(ActivityEntity entity) {
 		
 		entityManager.persist(entity);
@@ -292,6 +376,33 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		
 		List<ActivityEntity> result = query.getResultList();
 		
+		return result;
+	}
+	
+	private List<ActivityEntity> getEntitiesByUserId(Long userId) {
+		
+		Query query = entityManager.createQuery("from ActivityEntity where (NOT deleted = true) AND (last_modified_user = :userid) ", ActivityEntity.class );
+		query.setParameter("userid", userId);
+		List<ActivityEntity> result = query.getResultList();
+		return result;
+	}
+	
+	
+	
+	private List<ActivityEntity> getEntitiesByUserId(Long userId, Integer lastNDays) {
+		
+		
+		Calendar cal = new GregorianCalendar();
+		cal.add(Calendar.DAY_OF_MONTH, -lastNDays);
+		Date nDaysAgo = cal.getTime();
+		
+		Query query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) "
+				+ "AND (last_modified_user = :userid) "
+				+ "AND (activity_date >= :startdate) "
+				+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class );
+		query.setParameter("userid", userId);
+		query.setParameter("startdate", nDaysAgo);
+		List<ActivityEntity> result = query.getResultList();
 		return result;
 	}
 
