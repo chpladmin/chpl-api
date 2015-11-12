@@ -438,8 +438,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
-		//delete existing certifiations for the product
-		//certDao.deleteByCertifiedProductId(productDto.getId());
 		
 		Boolean dataHasChanged = false;
 		
@@ -505,25 +503,28 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for (CQMCriterionDTO criterion : cqmCriterionDao.findAll()){
 			
 			Boolean isDeletion = true;
+			Boolean isNQF = (criterion == null);
 			
-			for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
-				
-				Boolean isNQF = (cqm.getKey().getCmsId() == null);
-				if (isNQF){
-					isDeletion = false;
-					continue;
-				} else {
-					if (cqm.getKey().getCmsId().equals(criterion.getCmsId())){
-						isDeletion = false;
-						break;
+			if (isNQF){
+				isDeletion = false;
+			} else {
+							
+				for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
+					
+					Boolean cqmIsNQF = (cqm.getKey().getCmsId() == null);
+					if (!cqmIsNQF){
+						if (cqm.getKey().getCmsId().equals(criterion.getCmsId())){
+							isDeletion = false;
+							break;
+						}
 					}
 				}
 			}
-			
 			if (isDeletion){
-				cqmCriterionDao.delete(criterion.getId());
+				deleteCqmResult(productDto.getId(), criterion.getId());
 				dataHasChanged = true;
 			}
+			
 		}
 		
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
@@ -533,6 +534,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 	}
+	
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -631,6 +633,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		if (dataHasChanged){
 			CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Additional Software for Certified Product "+productDto.getId()+" was updated." , before , after);
+		}
+	}
+	
+	private void deleteCqmResult(Long certifiedProductId, Long cqmId){
+		
+		List<CQMResultDTO> cqmResults = cqmResultDAO.findByCertifiedProductId(certifiedProductId);
+		
+		for (CQMResultDTO cqmResult : cqmResults){
+			if (cqmResult.getCqmCriterionId().equals(cqmId)){
+				cqmResultDAO.delete(cqmResult.getId());
+			}
 		}
 	}
 	
