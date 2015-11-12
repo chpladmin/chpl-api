@@ -224,6 +224,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void deleteActivity(Long toDelete) throws EntityRetrievalException{
 		
 		ActivityDTO dto = activityDAO.getById(toDelete);
