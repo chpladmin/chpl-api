@@ -95,7 +95,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 	
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, 'delete') or hasPermission(#acb, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
 		certificationBodyDAO.delete(acb.getId());
