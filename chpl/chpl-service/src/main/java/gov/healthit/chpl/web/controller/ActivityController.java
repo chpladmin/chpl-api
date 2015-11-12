@@ -200,7 +200,7 @@ public class ActivityController {
 		} else {
 			return activityManager.getActivityForUserInLastNDays(id, lastNDays);
 		}
-	}	
+	}
 	
 	
 	private List<ActivityEvent> getActivityEventsForACBs(Long id) throws JsonParseException, IOException{

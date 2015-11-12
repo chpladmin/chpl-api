@@ -28,6 +28,8 @@ import gov.healthit.chpl.manager.ActivityManager;
 
 
 
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -230,6 +234,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public Map<Long, List<ActivityEvent> > getActivityByUser() throws JsonParseException, IOException{
 		
 		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUser();
@@ -250,6 +255,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public Map<Long, List<ActivityEvent> > getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException{
 		
 		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUserInLastNDays(nDays);
@@ -271,6 +277,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
@@ -285,6 +292,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ActivityEvent> getActivityForUserInLastNDays(Long userId, Integer nDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
