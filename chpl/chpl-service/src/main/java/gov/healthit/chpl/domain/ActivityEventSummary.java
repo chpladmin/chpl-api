@@ -2,22 +2,17 @@ package gov.healthit.chpl.domain;
 
 
 import gov.healthit.chpl.domain.ActivityConcept;
-
 import java.util.Date;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-public class ActivityEvent {
+public class ActivityEventSummary {
 	
 	private Long id;
 	private String description;
-	private JsonNode originalData;
-	private JsonNode newData;
 	private Date activityDate;
 	private Long activityObjectId;
 	private ActivityConcept concept;
 	
-	public ActivityEvent(){}
+	public ActivityEventSummary(){}
 	
 	public Long getId() {
 		return id;
@@ -48,17 +43,5 @@ public class ActivityEvent {
 	}
 	public void setConcept(ActivityConcept concept) {
 		this.concept = concept;
-	}
-	public JsonNode getOriginalData() {
-		return originalData;
-	}
-	public void setOriginalData(JsonNode originalData) {
-		this.originalData = originalData;
-	}
-	public JsonNode getNewData() {
-		return newData;
-	}
-	public void setNewData(JsonNode newData) {
-		this.newData = newData;
 	}
 }

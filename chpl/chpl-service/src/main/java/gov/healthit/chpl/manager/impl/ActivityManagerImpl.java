@@ -138,6 +138,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ActivityEvent> getAllActivity() throws JsonParseException, IOException {
 		List<ActivityDTO> dtos = activityDAO.findAll();
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
@@ -147,6 +148,11 @@ public class ActivityManagerImpl implements ActivityManager {
 			events.add(event);
 		}
 		return events;
+	}
+	
+	@Override
+	public ActivityEvent getActivityEventById(Long activityId) throws JsonParseException, IOException, EntityRetrievalException{
+		return getActivityEventFromDTO(activityDAO.getById(activityId));
 	}
 
 	@Override
