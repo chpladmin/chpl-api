@@ -503,18 +503,23 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for (CQMCriterionDTO criterion : cqmCriterionDao.findAll()){
 			
 			Boolean isDeletion = true;
+			Boolean isNQF = (criterion == null);
 			
-			for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
-				
-				Boolean isNQF = (cqm.getKey().getCmsId() == null);
-				if (!isNQF){
-					if (cqm.getKey().getCmsId().equals(criterion.getCmsId())){
-						isDeletion = false;
-						break;
+			if (isNQF){
+				isDeletion = false;
+			} else {
+							
+				for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
+					
+					Boolean cqmIsNQF = (cqm.getKey().getCmsId() == null);
+					if (!cqmIsNQF){
+						if (cqm.getKey().getCmsId().equals(criterion.getCmsId())){
+							isDeletion = false;
+							break;
+						}
 					}
 				}
 			}
-			
 			if (isDeletion){
 				deleteCqmResult(productDto.getId(), criterion.getId());
 				dataHasChanged = true;
