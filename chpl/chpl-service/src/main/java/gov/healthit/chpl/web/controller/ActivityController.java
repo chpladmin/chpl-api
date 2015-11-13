@@ -185,7 +185,7 @@ public class ActivityController {
 	}
 	
 	
-	@RequestMapping(value="/user_activity", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	@RequestMapping(value="/user_activities", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public Map<Long, List<ActivityEvent> > activityByUser(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
@@ -196,7 +196,7 @@ public class ActivityController {
 	}
 	
 
-	@RequestMapping(value="/user_activity/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	@RequestMapping(value="/user_activities/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
