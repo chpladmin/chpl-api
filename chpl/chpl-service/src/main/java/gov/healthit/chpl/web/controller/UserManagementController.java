@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
@@ -41,10 +43,13 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.AuthorizeCredentials;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 
@@ -56,6 +61,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired InvitationManager invitationManager;
 	@Autowired private Authenticator authenticator;
+	@Autowired private ActivityManager activityManager;
 	
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
     
@@ -64,7 +70,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			produces="application/json; charset=utf-8")
 	public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) 
 			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
-			EntityRetrievalException, MessagingException {
+			EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
 		
 		if(userInfo.getUser() == null || userInfo.getUser().getSubjectName() == null) {
 			throw new InvalidArgumentsException("Username ('subject name') is required.");
@@ -91,6 +97,9 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		SendMailUtil emailUtils = new SendMailUtil();
 		emailUtils.sendEmail(createdUser.getEmail(), "Confirm CHPL Administrator Account", htmlMessage);
 		
+		String activityDescription = "User "+createdUser.getSubjectName()+" was created.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, null, createdUser);
+		
 		return new User(createdUser);
 	}
 	
@@ -98,7 +107,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public User createUser(@RequestBody String hash) 
-			throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, MessagingException {
+			throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
 		InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
 
 		if(invitation == null || invitation.isExpired())
@@ -107,6 +116,11 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		}
 		
 		UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
+		
+		String activityDescription = "User "+createdUser.getSubjectName()+" was confirmed.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, createdUser, createdUser);
+		
+		
 		return new User(createdUser);
 	}
 	
@@ -194,7 +208,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@RequestMapping(value="/{userId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteUser(@PathVariable("userId") Long userId) 
-			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		if(userId <= 0) {
 			throw new UserRetrievalException("Cannot delete user with ID less than 0");
 		}
@@ -210,6 +224,10 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		//delete the user
 		userManager.delete(toDelete);
 		
+		String activityDescription = "User "+toDelete.getSubjectName()+" was deleted.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, toDelete.getId(), activityDescription, toDelete, null);
+		
+		
 		return "{\"deletedUser\" : true }";
 	}
 	
@@ -217,7 +235,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@RequestMapping(value="/grant_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+	public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
 		UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
 		if(user == null) {
@@ -235,6 +253,11 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			userManager.grantRole(user.getSubjectName(), grantRoleObj.getRole());
 		}
 
+		UserDTO updated = userManager.getByName(grantRoleObj.getSubjectName());
+		
+		String activityDescription = "User "+user.getSubjectName()+" was granted role "+grantRoleObj.getRole()+".";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user, updated);
+		
 		return "{\"roleAdded\" : true }";
 		
 	}
@@ -242,7 +265,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@RequestMapping(value="/revoke_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException {
+	public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
 		String isSuccess = String.valueOf(false);
 		UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
@@ -272,7 +295,11 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
 		}
 		
-
+		UserDTO updated = userManager.getByName(grantRoleObj.getSubjectName());
+		
+		String activityDescription = "User "+user.getSubjectName()+" was removed from role "+grantRoleObj.getRole()+".";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user, updated);
+		
 		
 		isSuccess = String.valueOf(true);
 		return "{\"roleRemoved\" : "+isSuccess+" }";

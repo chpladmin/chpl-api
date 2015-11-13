@@ -3,12 +3,16 @@ package gov.healthit.chpl.web.controller;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.manager.ActivityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -181,7 +185,7 @@ public class ActivityController {
 	}
 	
 	
-	@RequestMapping(value="/user_activity", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	@RequestMapping(value="/user_activities", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public Map<Long, List<ActivityEvent> > activityByUser(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
@@ -192,7 +196,7 @@ public class ActivityController {
 	}
 	
 
-	@RequestMapping(value="/user_activity/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	@RequestMapping(value="/user_activities/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
 		if (lastNDays == null){
@@ -252,7 +256,21 @@ public class ActivityController {
 		
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_USER;
-		events = getActivityEventsForObject(concept, id);
+		
+		Set<GrantedPermission> permissions = Util.getCurrentUser().getPermissions();
+		
+		// Only return data if the user has ROLE_ADMIN
+		Boolean hasAdmin = false;
+		for (GrantedPermission permission : permissions){
+			if (permission.getAuthority().equals("ROLE_ADMIN")){
+				hasAdmin = true;
+			}
+		}
+		if (!hasAdmin){
+			throw new AccessDeniedException("Insufficient permissions to access User activity.");
+		} else {
+			events = getActivityEventsForObject(concept, id);
+		}
 		
 		return events;
 	}
