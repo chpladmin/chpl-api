@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface ActivityManager {
 
 	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData, Long asUser) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData, Date timestamp) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public List<ActivityEvent> getAllActivity() throws JsonParseException, IOException;
 	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId) throws JsonParseException, IOException;

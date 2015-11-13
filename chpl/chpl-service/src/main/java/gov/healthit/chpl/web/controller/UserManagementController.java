@@ -98,7 +98,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		emailUtils.sendEmail(createdUser.getEmail(), "Confirm CHPL Administrator Account", htmlMessage);
 		
 		String activityDescription = "User "+createdUser.getSubjectName()+" was created.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, null, createdUser);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, null, createdUser, createdUser.getId());
 		
 		return new User(createdUser);
 	}
@@ -118,7 +118,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
 		
 		String activityDescription = "User "+createdUser.getSubjectName()+" was confirmed.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, createdUser, createdUser);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, createdUser, createdUser, createdUser.getId());
 		
 		
 		return new User(createdUser);

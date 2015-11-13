@@ -1,8 +1,6 @@
 package gov.healthit.chpl.domain;
 
 
-
-import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.domain.ActivityConcept;
 
 import java.util.Date;
