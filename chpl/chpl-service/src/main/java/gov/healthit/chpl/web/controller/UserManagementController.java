@@ -198,11 +198,11 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			produces="application/json; charset=utf-8")
 	public User updateUserDetails(@RequestBody User userInfo) throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
-		UserDTO before = userManager.getById(userInfo.getUserId());
-		
 		if(userInfo.getUserId() <= 0) {
 			throw new UserRetrievalException("Cannot update user with ID less than 0");
 		}
+		
+		UserDTO before = userManager.getById(userInfo.getUserId());
 		UserDTO updated = userManager.update(userInfo);
 		
 		String activityDescription = "User "+userInfo.getSubjectName()+" was updated.";
