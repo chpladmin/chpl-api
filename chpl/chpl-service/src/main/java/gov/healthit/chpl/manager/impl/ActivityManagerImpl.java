@@ -97,6 +97,45 @@ public class ActivityManagerImpl implements ActivityManager {
 		}
 		
 	}
+	
+	@Override
+	@Transactional
+	public void addActivity(ActivityConcept concept, Long objectId,
+			String activityDescription, Object originalData, Object newData, Long asUser)
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
+		String originalDataStr = JSONUtils.toJSON(originalData);
+		String newDataStr = JSONUtils.toJSON(newData);
+		
+		Boolean originalMatchesNew = false;
+		
+		try {
+			originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
+		} catch (IOException e){
+			
+		}
+		
+		
+		// Do not add the activity if nothing has changed.
+		if (!originalMatchesNew){
+			
+			ActivityDTO dto = new ActivityDTO();
+			dto.setConcept(concept);
+			dto.setId(null);
+			dto.setDescription(activityDescription);
+			dto.setOriginalData(originalDataStr);
+			dto.setNewData(newDataStr);
+			dto.setActivityDate(new Date());
+			dto.setActivityObjectId(objectId);
+			dto.setCreationDate(new Date());
+			dto.setLastModifiedDate(new Date());
+			dto.setLastModifiedUser(asUser);
+			dto.setDeleted(false);
+			
+			activityDAO.create(dto);
+		}
+		
+	}
 
 	@Override
 	@Transactional
