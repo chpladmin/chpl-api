@@ -58,7 +58,9 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@Autowired private Authenticator authenticator;
 	
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
-    
+	private static final long VALID_INVITATION_LENGTH = 3*24*60*60*1000;
+	private static final long VALID_CONFIRMATION_LENGTH = 30*24*60*60*1000;
+	
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -71,7 +73,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		}
 		
 		InvitationDTO invitation = invitationManager.getByInvitationHash(userInfo.getHash());
-		if(invitation == null || invitation.isExpired()) {
+		if(invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
 			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
 		}
 		
@@ -97,11 +99,11 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@RequestMapping(value="/confirm", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public User createUser(@RequestBody String hash) 
+	public User confirmUser(@RequestBody String hash) 
 			throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, MessagingException {
 		InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
 
-		if(invitation == null || invitation.isExpired())
+		if(invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH))
 		{
 			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
 		}
@@ -123,7 +125,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			throw new InvalidArgumentsException("Username, Password, and Token are all required.");
 		}
 		InvitationDTO invitation = invitationManager.getByInvitationHash(credentials.getHash());
-		if(invitation == null || invitation.isExpired()) {
+		if(invitation == null || invitation.isOlderThan(VALID_CONFIRMATION_LENGTH)) {
 			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
 		}
 		
