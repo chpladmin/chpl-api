@@ -130,6 +130,7 @@ public class CertifiedProductController {
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
+		toUpdate.setPrivacyAttestation(updateRequest.getPrivacyAttestation());
 		toUpdate = cpManager.update(acbId, toUpdate);
 		
 		//update additional software
