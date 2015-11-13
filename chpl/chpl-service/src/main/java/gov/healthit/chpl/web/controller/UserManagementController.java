@@ -196,11 +196,18 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public User updateUserDetails(@RequestBody User userInfo) throws UserRetrievalException, UserPermissionRetrievalException {
+	public User updateUserDetails(@RequestBody User userInfo) throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
+		
 		if(userInfo.getUserId() <= 0) {
 			throw new UserRetrievalException("Cannot update user with ID less than 0");
 		}
+		
+		UserDTO before = userManager.getById(userInfo.getUserId());
 		UserDTO updated = userManager.update(userInfo);
+		
+		String activityDescription = "User "+userInfo.getSubjectName()+" was updated.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, before.getId(), activityDescription, before, updated);
+		
 		return new User(updated);
 	}
 	
