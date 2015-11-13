@@ -33,7 +33,6 @@ import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFa
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadType;
 import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
 import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
-import gov.healthit.chpl.certifiedProduct.validation.ValidationStatus;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
@@ -69,13 +68,22 @@ public class CertifiedProductController {
 
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(@RequestParam(required=false) Long versionId) {
+	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
+			@RequestParam(required=false) Long versionId, @RequestParam(required=false, defaultValue="false") boolean editable) {
 		List<CertifiedProductDTO> certifiedProductList = null;
 		
 		if(versionId != null && versionId > 0) {
-			certifiedProductList = cpManager.getByVersion(versionId);
+			if(editable) {
+				certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
+			} else {
+				certifiedProductList = cpManager.getByVersion(versionId);
+			}
 		} else {
-			certifiedProductList = cpManager.getAll();
+			if(editable) {
+				certifiedProductList = cpManager.getAllWithEditPermission();
+			} else {
+				certifiedProductList = cpManager.getAll();
+			}
 		}
 		
 		List<CertifiedProduct> products= new ArrayList<CertifiedProduct>();
@@ -105,7 +113,7 @@ public class CertifiedProductController {
 		Long acbId = existingProduct.getCertificationBodyId();
 		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id").toString());
 		
-		if(acbId != newAcbId) {
+		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
 			cpManager.changeOwnership(updateRequest.getId(), newAcbId);
 		}
 		
@@ -122,6 +130,7 @@ public class CertifiedProductController {
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
+		toUpdate.setPrivacyAttestation(updateRequest.getPrivacyAttestation());
 		toUpdate = cpManager.update(acbId, toUpdate);
 		
 		//update additional software
@@ -134,7 +143,7 @@ public class CertifiedProductController {
 			softwareDto.setVersion(software.getVersion());
 			softwareDtos.add(softwareDto);
 		}
-		cpManager.replaceAdditionalSoftware(acbId, toUpdate, softwareDtos);
+		cpManager.updateAdditionalSoftware(acbId, toUpdate, softwareDtos);
 		
 		//update product certifications
 		Map<CertificationCriterionDTO, Boolean> newCerts = new HashMap<CertificationCriterionDTO, Boolean>();
@@ -144,12 +153,14 @@ public class CertifiedProductController {
 			newCert.setTitle(certResult.getTitle());
 			newCerts.put(newCert, certResult.isSuccess());
 		}
-		cpManager.replaceCertifications(acbId, toUpdate, newCerts);
+		cpManager.updateCertifications(acbId, toUpdate, newCerts);
 		
 		//update product cqms
 		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();
 		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
 			CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+			cqmDto.setNqfNumber(cqm.getNqfNumber());
+			cqmDto.setCmsId(cqm.getCmsId());
 			cqmDto.setCqmVersion(cqm.getVersion());
 			cqmDto.setNumber(cqm.getNumber());
 			cqmDto.setCmsId(cqm.getCmsId());
@@ -157,7 +168,7 @@ public class CertifiedProductController {
 			cqmDto.setTitle(cqm.getTitle());
 			cqmDtos.put(cqmDto, cqm.isSuccess());
 		}
-		cpManager.replaceCqms(acbId, toUpdate, cqmDtos);
+		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
 		
 		//search for the product by id to get it with all the updates
 		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
@@ -212,8 +223,8 @@ public class CertifiedProductController {
 		PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
 		PendingCertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
 		validator.validate(pcpDto);
-		if(pcpDto.getValidationStatus() != ValidationStatus.OK) {
-			throw new ValidationException(pcpDto.getValidationMessages());
+		if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
+			throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
 		}
 		
 		Long acbId = new Long(acbIdStr);
@@ -264,14 +275,14 @@ public class CertifiedProductController {
 						PendingCertifiedProductDTO pendingCpDto = null;
 						
 						CertifiedProductUploadType uploadType = CertifiedProductUploadType.valueOf(pendingCp.getRecordStatus().toUpperCase());
-						if(uploadType == CertifiedProductUploadType.NEW) { 
+						//if(uploadType == CertifiedProductUploadType.NEW) { 
 							if(pendingCp.getCertificationBodyId() == null) {
 								throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
 							}
 							pendingCpDto = pcpManager.createOrReplace(pendingCp.getCertificationBodyId(), pendingCp);
-						} else {
-							pendingCpDto = new PendingCertifiedProductDTO(pendingCp);
-						}
+						//} else {
+						//	pendingCpDto = new PendingCertifiedProductDTO(pendingCp);
+						//}
 						
 						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
 						//set applicable criteria

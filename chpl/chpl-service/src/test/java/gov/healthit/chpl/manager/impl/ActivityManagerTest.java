@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager.impl;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import gov.healthit.chpl.JSONUtils;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
@@ -28,7 +29,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -272,6 +272,22 @@ public class ActivityManagerTest extends TestCase {
 		List<ActivityEvent> events2 = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, lastNDays);
 		
 		assertEquals(1, events2.size());
+	}
+	
+	@Test
+	public void testGetActivityForUser() throws JsonParseException, IOException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		List<ActivityEvent> eventsForUser = activityManager.getActivityForUser(-1L);
+		assertEquals(5, eventsForUser.size());
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	public void testGetActivityByUser() throws JsonParseException, IOException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Map<Long, List<ActivityEvent>> eventsForUser = activityManager.getActivityByUser();
+		assertEquals(5, eventsForUser.get(-1L).size());
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 }

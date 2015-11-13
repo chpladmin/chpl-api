@@ -5,6 +5,7 @@ import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ActivityDAO {
 	
@@ -18,5 +19,9 @@ public interface ActivityDAO {
 	public List<ActivityDTO> findAllInLastNDays(Integer lastNDays);
 	public List<ActivityDTO> findByObjectId(Long objectId, ActivityConcept concept, Integer lastNDays);
 	public List<ActivityDTO> findByConcept(ActivityConcept concept, Integer lastNDays);
+	public List<ActivityDTO> findByUserId(Long userId, Integer lastNDays);
+	public List<ActivityDTO> findByUserId(Long userId);
+	public Map<Long, List<ActivityDTO> > findAllByUser();
+	public Map<Long, List<ActivityDTO>> findAllByUserInLastNDays(Integer lastNDays);
 
 }
