@@ -4,7 +4,9 @@ package gov.healthit.chpl;
 import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ValidationErrorJSONObject;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.web.controller.ValidationException;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -44,6 +46,14 @@ public class ApiExceptionControllerAdvice {
 	@ExceptionHandler(MessagingException.class)
 	public ResponseEntity<ErrorJSONObject> exception(MessagingException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Could not send email. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity<ValidationErrorJSONObject> exception(ValidationException e) {
+		ValidationErrorJSONObject error = new ValidationErrorJSONObject();
+		error.setErrorMessages(e.getErrorMessages());
+		error.setWarningMessages(e.getWarningMessages());
+		return new ResponseEntity<ValidationErrorJSONObject>(error, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(Exception.class)

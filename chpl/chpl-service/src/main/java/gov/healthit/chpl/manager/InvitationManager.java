@@ -19,11 +19,13 @@ public interface InvitationManager {
 	
 	public InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-	public boolean isHashValid(String hash);
-	public InvitationDTO getByHash(String hash);
+	public InvitationDTO getByInvitationHash(String hash);
+	public InvitationDTO getById(Long id)  throws UserRetrievalException;
+	public InvitationDTO getByConfirmationHash(String hash);
 	public UserDTO createUserFromInvitation(InvitationDTO invitation, UserCreationJSONObject user) 
 			throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
 			UserCreationException;
+	public UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException;
 	public InvitationDTO inviteWithAcbRole(String emailAddress, List<String> permissions) 
 			throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 	public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO user) 

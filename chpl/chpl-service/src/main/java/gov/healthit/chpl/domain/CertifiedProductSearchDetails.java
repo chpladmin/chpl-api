@@ -13,18 +13,20 @@ public class CertifiedProductSearchDetails {
     private String reportFileLocation;
     private String qualityManagementSystemAtt;
     private String acbCertificationId;
-    private Map<String, String> classificationType = new HashMap<String, String>();
+    private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
-    private String certificationStatusId;
-	private Map<String, String> vendor = new HashMap<String, String>();
-	private Map<String, String> product = new HashMap<String, String>();
-	private Map<String, String> certificationEdition = new HashMap<String, String>();
-	private Map<String, String> practiceType = new HashMap<String, String>();
-	private Map<String, String> certifyingBody = new HashMap<String, String>();
-	private String certificationDate;
+    private Map<String, Object> certificationStatus = new HashMap<String, Object>();
+	private Map<String, Object> vendor = new HashMap<String, Object>();
+	private Map<String, Object> product = new HashMap<String, Object>();
+	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
+	private Map<String, Object> practiceType = new HashMap<String, Object>();
+	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
+	private Long certificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
 	private Boolean visibleOnChpl;
+	private Boolean privacyAttestation;
+	private Long lastModifiedDate;
 	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
@@ -68,10 +70,10 @@ public class CertifiedProductSearchDetails {
 	public void setAcbCertificationId(String acbCertificationId) {
 		this.acbCertificationId = acbCertificationId;
 	}
-	public Map<String, String> getClassificationType() {
+	public Map<String, Object> getClassificationType() {
 		return classificationType;
 	}
-	public void setClassificationType(Map<String, String> classificationType) {
+	public void setClassificationType(Map<String, Object> classificationType) {
 		this.classificationType = classificationType;
 	}
 	public String getOtherAcb() {
@@ -80,46 +82,40 @@ public class CertifiedProductSearchDetails {
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
 	}
-	public String getCertificationStatusId() {
-		return certificationStatusId;
-	}
-	public void setCertificationStatusId(String certificationStatusId) {
-		this.certificationStatusId = certificationStatusId;
-	}
-	public Map<String, String> getVendor() {
+	public Map<String, Object> getVendor() {
 		return vendor;
 	}
-	public void setVendor(Map<String, String> vendor) {
+	public void setVendor(Map<String, Object> vendor) {
 		this.vendor = vendor;
 	}
-	public Map<String, String> getProduct() {
+	public Map<String, Object> getProduct() {
 		return product;
 	}
-	public void setProduct(Map<String, String> product) {
+	public void setProduct(Map<String, Object> product) {
 		this.product = product;
 	}
-	public Map<String, String> getCertificationEdition() {
+	public Map<String, Object> getCertificationEdition() {
 		return certificationEdition;
 	}
-	public void setCertificationEdition(Map<String, String> certificationEdition) {
+	public void setCertificationEdition(Map<String, Object> certificationEdition) {
 		this.certificationEdition = certificationEdition;
 	}
-	public Map<String, String> getPracticeType() {
+	public Map<String, Object> getPracticeType() {
 		return practiceType;
 	}
-	public void setPracticeType(Map<String, String> practiceType) {
+	public void setPracticeType(Map<String, Object> practiceType) {
 		this.practiceType = practiceType;
 	}
-	public Map<String, String> getCertifyingBody() {
+	public Map<String, Object> getCertifyingBody() {
 		return certifyingBody;
 	}
-	public void setCertifyingBody(Map<String, String> certifyingBody) {
+	public void setCertifyingBody(Map<String, Object> certifyingBody) {
 		this.certifyingBody = certifyingBody;
 	}
-	public String getCertificationDate() {
+	public Long getCertificationDate() {
 		return certificationDate;
 	}
-	public void setCertificationDate(String certificationDate) {
+	public void setCertificationDate(Long certificationDate) {
 		this.certificationDate = certificationDate;
 	}
 	public List<CertificationResult> getCertificationResults() {
@@ -171,5 +167,23 @@ public class CertifiedProductSearchDetails {
 	public void setCertificationEvents(
 			List<CertificationEvent> certificationEvents) {
 		this.certificationEvents = certificationEvents;
+	}
+	public Long getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+	public void setLastModifiedDate(Long lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+	public Map<String, Object> getCertificationStatus() {
+		return certificationStatus;
+	}
+	public void setCertificationStatus(Map<String, Object> certificationStatus) {
+		this.certificationStatus = certificationStatus;
+	}
+	public Boolean getPrivacyAttestation() {
+		return privacyAttestation;
+	}
+	public void setPrivacyAttestation(Boolean privacyAttestation) {
+		this.privacyAttestation = privacyAttestation;
 	}
 }

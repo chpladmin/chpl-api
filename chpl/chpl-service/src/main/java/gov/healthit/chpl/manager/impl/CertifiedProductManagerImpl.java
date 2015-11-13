@@ -1,14 +1,18 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
@@ -26,9 +30,11 @@ import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.VendorDAO;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -44,6 +50,9 @@ import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
 @Service
@@ -61,7 +70,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired ProductVersionDAO versionDao;
 	@Autowired CertificationEventDAO eventDao;
 	@Autowired EventTypeDAO eventTypeDao;
+	
+	@Autowired
+	public ActivityManager activityManager;
+	
+	@Autowired
+	public CertifiedProductDetailsManager detailsManager;
 		
+	@Autowired 
+	public CertificationBodyManager acbManager;
+	
 	public CertifiedProductManagerImpl() {
 	}
 	
@@ -70,6 +88,21 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	public List<CertifiedProductDTO> getAll() {
 		return dao.findAll();
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<CertifiedProductDTO> getAllWithEditPermission() {
+		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
+		if(userAcbs == null || userAcbs.size() == 0) {
+			return new ArrayList<CertifiedProductDTO>();
+		}
+		List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
+		for(CertificationBodyDTO dto : userAcbs) {
+			acbIdList.add(dto.getId());
+		}
+		return dao.getByAcbIds(acbIdList);
+	}
+	
 	@Autowired CertificationStatusDAO statusDao;
 	
 	@Override
@@ -86,6 +119,20 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	
 	@Override
 	@Transactional(readOnly = true)
+	public List<CertifiedProductDTO> getByVersionWithEditPermission(Long versionId) {
+		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
+		if(userAcbs == null || userAcbs.size() == 0) {
+			return new ArrayList<CertifiedProductDTO>();
+		}
+		List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
+		for(CertificationBodyDTO dto : userAcbs) {
+			acbIdList.add(dto.getId());
+		}
+		return dao.getByVersionAndAcbIds(versionId, acbIdList);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
 	public List<CertifiedProductDTO> getByVersions(List<Long> versionIds) {
 		return dao.getByVersionIds(versionIds);
 	}
@@ -95,26 +142,29 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDetails pendingCp) 
-			throws EntityRetrievalException, EntityCreationException {
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		
 		CertifiedProductDTO toCreate = new CertifiedProductDTO();
 		toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
 		
-		String certifyingBodyId = pendingCp.getCertifyingBody().get("id");
-		if(StringUtils.isEmpty(certifyingBodyId)) {
+		String certifyingBodyId = null;
+		if(pendingCp.getCertifyingBody().get("id") == null) {
 			CertificationBodyDTO acbDto = new CertificationBodyDTO();
-			acbDto.setName(pendingCp.getCertifyingBody().get("name"));
+			acbDto.setName(pendingCp.getCertifyingBody().get("name").toString());
 			if(StringUtils.isEmpty(acbDto.getName())) {
 				throw new EntityCreationException("Cannot create a certifying body without a name.");
 			}
 			acbDto = acbDao.create(acbDto);
 			certifyingBodyId = acbDto.getId().toString();
+		} else {
+			certifyingBodyId = pendingCp.getCertifyingBody().get("id").toString();
 		}
 		toCreate.setCertificationBodyId(new Long(certifyingBodyId));
 		
-		String certificationEditionId = pendingCp.getCertificationEdition().get("id");
-		if(StringUtils.isEmpty(certificationEditionId)) {
+		if(pendingCp.getCertificationEdition().get("id") == null) {
 			throw new EntityCreationException("The ID of an existing certification edition (year) must be provided. A new certification edition cannot be created via this process.");
 		}
+		String certificationEditionId = pendingCp.getCertificationEdition().get("id").toString();
 		toCreate.setCertificationEditionId(new Long(certificationEditionId));
 		
 		String status = pendingCp.getRecordStatus();
@@ -131,70 +181,84 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setLastModifiedDate(new Date());
 		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
 		
-		String practiceTypeId = pendingCp.getPracticeType().get("id");
 		//can be null
-		if(!StringUtils.isEmpty(practiceTypeId)) {
+		if(pendingCp.getPracticeType().get("id") != null) {
+			String practiceTypeId = pendingCp.getPracticeType().get("id").toString();
 			toCreate.setPracticeTypeId(new Long(practiceTypeId));
 		}
 		
-		String classificationTypeId = pendingCp.getClassificationType().get("id");
 		//can be null
-		if(!StringUtils.isEmpty(classificationTypeId)) {
-			toCreate.setProductClassificationTypeId(new Long(classificationTypeId));
+		if(pendingCp.getClassificationType().get("id") != null) {
+			String productClassificationTypeId = pendingCp.getClassificationType().get("id").toString();
+			toCreate.setProductClassificationTypeId(new Long(productClassificationTypeId));
 		}
 		
-		String vendorId = pendingCp.getVendor().get("id");
-		if(StringUtils.isEmpty(vendorId)) {
+		String vendorId = null; 
+		if(pendingCp.getVendor().get("id") == null) {
 			VendorDTO newVendor = new VendorDTO();
-			String vendorName = pendingCp.getVendor().get("name");
-			if(StringUtils.isEmpty(vendorName)) {
+			if(pendingCp.getVendor().get("name") == null) {
 				throw new EntityCreationException("You must provide a vendor name to create a new vendor.");
 			}
-			newVendor.setName(vendorName);
-			Map<String, String> vendorAddress = pendingCp.getVendorAddress();
+			newVendor.setName(pendingCp.getVendor().get("name").toString());
+			Map<String, Object> vendorAddress = pendingCp.getVendorAddress();
 			if(vendorAddress != null) {
 				AddressDTO address = new AddressDTO();
-				address.setStreetLineOne(vendorAddress.get("streetLine1"));
-				address.setCity(vendorAddress.get("city"));
-				address.setRegion(vendorAddress.get("state"));
+				if(vendorAddress.get("line1") != null) {
+					address.setStreetLineOne(vendorAddress.get("line1").toString());
+				}
+				if(vendorAddress.get("city") != null) {
+					address.setCity(vendorAddress.get("city").toString());
+				}
+				if(vendorAddress.get("state") != null) {
+					address.setState(vendorAddress.get("state").toString());
+				}
+				if(vendorAddress.get("zipcode") != null) {
+					address.setZipcode(vendorAddress.get("zipcode").toString());
+				}
 				address.setCountry("USA");
 				newVendor.setAddress(address);
 			}
 			
 			newVendor = vendorDao.create(newVendor);
 			vendorId = newVendor.getId().toString();
+		} else {
+			vendorId = pendingCp.getVendor().get("id").toString();
 		}
 		
-		String productId = pendingCp.getProduct().get("id");
-		if(StringUtils.isEmpty(productId)) {
+		String productId = null;
+		if(pendingCp.getProduct().get("id") == null) {
 			ProductDTO newProduct = new ProductDTO();
-			String productName = pendingCp.getProduct().get("name");
-			if(StringUtils.isEmpty(productName)) {
+			if(pendingCp.getProduct().get("name") == null) {
 				throw new EntityCreationException("Either product name or ID must be provided.");
 			}
-			newProduct.setName(productName);
+			newProduct.setName(pendingCp.getProduct().get("name").toString());
 			newProduct.setVendorId(new Long(vendorId));
 			newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
 			newProduct = productDao.create(newProduct);
 			productId = newProduct.getId().toString();
+		} else {
+			productId = pendingCp.getProduct().get("id").toString();
 		}
 		
-		String productVersionId = pendingCp.getProduct().get("versionId");
-		if(StringUtils.isEmpty(productVersionId)) {
+		String productVersionId = null;
+		if(pendingCp.getProduct().get("versionId") == null) {
 			ProductVersionDTO newVersion = new ProductVersionDTO();
-			String version = pendingCp.getProduct().get("version");
-			if(StringUtils.isEmpty(version)) {
+			if(pendingCp.getProduct().get("version") == null) {
 				throw new EntityCreationException("Either version id or version must be provided.");
 			}
-			newVersion.setVersion(version);
+			newVersion.setVersion(pendingCp.getProduct().get("version").toString());
 			newVersion.setProductId(new Long(productId));
 			newVersion = versionDao.create(newVersion);
 			productVersionId = newVersion.getId().toString();
+		} else {
+			productVersionId = pendingCp.getProduct().get("versionId").toString();
 		}
 		
 		toCreate.setProductVersionId(new Long(productVersionId));
 		toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
 		toCreate.setVisibleOnChpl(true);
+		//TODO: this may have to be added to pending certified products if it's in the spreadsheet?
+		toCreate.setPrivacyAttestation(false);
 		
 		CertifiedProductDTO newCertifiedProduct = dao.create(toCreate);
 		
@@ -235,14 +299,14 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		if(pendingCp.getCqmResults() != null && pendingCp.getCqmResults().size() > 0) {
 			for(CQMResultDetails cqmResult : pendingCp.getCqmResults()) {
 				CQMCriterionDTO criterion = null;
-				if(cqmResult.getNumber().startsWith("NQF")) {
-					criterion = cqmCriterionDao.getByNumber(cqmResult.getNumber());
-				} else if(cqmResult.getNumber().startsWith("CMS")) {
-					criterion = cqmCriterionDao.getByNumberAndVersion(cqmResult.getNumber(), cqmResult.getVersion());
+				if(StringUtils.isEmpty(cqmResult.getCmsId())) {
+					criterion = cqmCriterionDao.getNQFByNumber(cqmResult.getNumber());
+				} else if(cqmResult.getCmsId().startsWith("CMS")) {
+					criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmResult.getVersion());
 				}
 				
 				if(criterion == null) {
-					throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getNumber() + 
+					throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getCmsId() + 
 							"and/or version " + cqmResult.getVersion() + ".");
 				}
 				
@@ -284,15 +348,29 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		activeEvent.setCertifiedProductId(newCertifiedProduct.getId());
 		eventDao.create(activeEvent);
 		
+		CertifiedProductSearchDetails details = detailsManager.getCertifiedProductDetails(newCertifiedProduct.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(), "Certified Product "+newCertifiedProduct.getId()+" was created.", null, details);
+		
 		return newCertifiedProduct;
 	}
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false) 
-	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException {
+	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
 		CertifiedProductDTO toUpdate = dao.getById(certifiedProductId);
 		toUpdate.setCertificationBodyId(acbId);
+		return update(acbId, toUpdate);
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@Transactional(readOnly = false)
+	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) 
+		throws EntityRetrievalException {
+		CertifiedProductDTO toUpdate = dao.getById(certifiedProductId);
+		toUpdate.setProductVersionId(newVersionId);
 		return dao.update(toUpdate);
 	}
 	
@@ -302,12 +380,20 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException {
-		return dao.update(dto);
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(dto.getId());
+		CertifiedProductDTO result = dao.update(dto);
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(result.getId());
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), "Certified Product "+result.getId()+" was updated." , before , after);
+		return result;
 	}
+	
 	
 	/**
 	 * both successes and failures are passed in
+	 * @throws JsonProcessingException 
 	 */
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -315,92 +401,254 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public void replaceCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
-		throws EntityCreationException, EntityRetrievalException {
-		//delete existing certifiations for the product
-		certDao.deleteByCertifiedProductId(productDto.getId());
+	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
-		//add in new certs for the product
-		for(CertificationCriterionDTO newCertDto : certResults.keySet()) {
-			CertificationCriterionDTO criterion = null;
-			if(newCertDto.getId() == null || newCertDto.getId() < 0) {
-				criterion = certCriterionDao.getByName(newCertDto.getNumber());
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
+		List<CertificationResultDTO> oldCertificationResults = certDao.findByCertifiedProductId(productDto.getId());
+		
+		for (CertificationResultDTO oldResult : oldCertificationResults){
+			
+			Long certificationCriterionId = oldResult.getCertificationCriterionId();
+			CertificationCriterionDTO criterionDTO = certCriterionDao.getById(certificationCriterionId);
+			
+			for (Map.Entry<CertificationCriterionDTO, Boolean> certResult : certResults.entrySet()){
+				if (certResult.getKey().getNumber().equals(criterionDTO.getNumber())){	
+					// replace the value of the result
+					oldResult.setSuccessful(certResult.getValue());
+					certDao.update(oldResult);
+					break;
+				}
+			}
+		}
+		
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for Certified Product "+productDto.getId()+" was updated." , before , after);
+	}
+	
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
+		Boolean dataHasChanged = false;
+		
+		List<CQMResultDTO> beforeCQMs = cqmResultDAO.findByCertifiedProductId(productDto.getId());
+		
+		// Handle NQFs and Additions:
+		for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
+			
+			Boolean isNQF = (cqm.getKey().getCmsId() == null);
+			if (isNQF){
+				for (CQMResultDTO beforeCQM : beforeCQMs){
+					
+					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
+					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
+					
+					if ((beforeCriterionDTO.getCmsId() == null) && (beforeCriterionDTO.getNqfNumber().equals(cqm.getKey().getNqfNumber()) ) ){
+						beforeCQM.setSuccess(cqm.getValue());
+						cqmResultDAO.update(beforeCQM);
+						dataHasChanged = true;
+						break;
+					}
+				}
 			} else {
-				criterion = certCriterionDao.getById(newCertDto.getId());
+				
+				Boolean found = false;
+				
+				for (CQMResultDTO beforeCQM : beforeCQMs){
+					
+					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
+					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
+					
+					if (beforeCriterionDTO.getCmsId().equals(cqm.getKey().getCmsId())){
+						found = true;
+						break;
+					}
+				}
+				if (!found){
+					
+					CQMCriterionDTO criterion = null;
+					if(StringUtils.isEmpty(cqm.getKey().getCmsId())) {
+						criterion = cqmCriterionDao.getNQFByNumber(cqm.getKey().getNumber());
+					} else if(cqm.getKey().getCmsId().startsWith("CMS")) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqm.getKey().getCmsId(), cqm.getKey().getCqmVersion());
+					}
+					if(criterion == null) {
+						throw new EntityRetrievalException("Could not find CQM with number " + cqm.getKey().getCmsId() + " and version " + cqm.getKey().getCqmVersion());
+					}
+					
+					CQMResultDTO newCQMResult = new CQMResultDTO();
+					
+					newCQMResult.setCertifiedProductId(productDto.getId());
+					newCQMResult.setCqmCriterionId(criterion.getId());
+					newCQMResult.setCreationDate(new Date());
+					newCQMResult.setDeleted(false);
+					newCQMResult.setSuccess(true);
+					cqmResultDAO.create(newCQMResult);
+					dataHasChanged = true;
+				}
 			}
-			
-			if(criterion == null) {
-				throw new EntityRetrievalException("Could not find entity with id " + newCertDto.getId() + " or number " + newCertDto.getNumber());
-			}
-			
-			CertificationResultDTO toCreate = new CertificationResultDTO();
-			toCreate.setAutomatedMeasureCapable(criterion.getAutomatedMeasureCapable());
-			toCreate.setAutomatedNumerator(criterion.getAutomatedNumeratorCapable());
-			toCreate.setCertificationCriterionId(criterion.getId());
-			toCreate.setCertifiedProduct(productDto.getId());
-			toCreate.setCreationDate(new Date());
-			toCreate.setDeleted(false);
-			toCreate.setLastModifiedDate(new Date());
-			toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-			toCreate.setSuccessful(certResults.get(newCertDto));
-			toCreate.setInherited(criterion.getParentCriterionId() != null ? true : false);
-			certDao.create(toCreate);
 		}
+		
+		// Handle CQM deletions:
+		for (CQMCriterionDTO criterion : cqmCriterionDao.findAll()){
+			
+			Boolean isDeletion = true;
+			Boolean isNQF = (criterion == null);
+			
+			if (isNQF){
+				isDeletion = false;
+			} else {
+							
+				for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
+					
+					Boolean cqmIsNQF = (cqm.getKey().getCmsId() == null);
+					if (!cqmIsNQF){
+						if (cqm.getKey().getCmsId().equals(criterion.getCmsId())){
+							isDeletion = false;
+							break;
+						}
+					}
+				}
+			}
+			if (isDeletion){
+				deleteCqmResult(productDto.getId(), criterion.getId());
+				dataHasChanged = true;
+			}
+			
+		}
+		
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
+		if (dataHasChanged){
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for Certified Product "+productDto.getId()+" was updated." , before , after);
+		}
+		
 	}
 	
-	/**
-	 * for NQF's, both successes and failures are passed in.
-	 * for CMS's it is only those which were successful
-	 */
+	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public void replaceCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults) 
-			throws EntityRetrievalException, EntityCreationException {
-		cqmResultDAO.deleteByCertifiedProductId(productDto.getId());
+	public void updateAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
-		for(CQMCriterionDTO cqmDto : cqmResults.keySet()) {		
-			CQMCriterionDTO criterion = null;
-			if(cqmDto.getNumber().startsWith("NQF")) {
-				criterion = cqmCriterionDao.getByNumber(cqmDto.getNumber());
-			} else if(cqmDto.getNumber().startsWith("CMS")) {
-				criterion = cqmCriterionDao.getByNumberAndVersion(cqmDto.getNumber(), cqmDto.getCqmVersion());
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
+		List<AdditionalSoftwareDTO> beforeSoftware = softwareDao.findByCertifiedProductId(productDto.getId());
+		
+		Boolean dataHasChanged = false;
+		
+		
+		for (AdditionalSoftwareDTO beforeSw : beforeSoftware){
+			Boolean existingMatchesNew = false;
+			for (AdditionalSoftwareDTO newSw : newSoftware){
+				
+				
+				Boolean nameMatches = false;
+				if ((beforeSw.getName() != null) && (newSw.getName() != null)) {
+					nameMatches = beforeSw.getName().equals(newSw.getName());
+				} else if ((beforeSw.getName() == null) && (newSw.getName() == null)){
+					nameMatches = true;
+				}
+				
+				Boolean versionMatches = false;
+				if ((beforeSw.getVersion() != null) && (newSw.getVersion() != null)) {
+					versionMatches = beforeSw.getVersion().equals(newSw.getVersion());
+				} else if ((beforeSw.getVersion() == null) && (newSw.getVersion() == null)){
+					versionMatches = true;
+				}
+				
+				Boolean justificationMatches = false;
+				if ((beforeSw.getJustification() != null) && (newSw.getJustification() != null)) {
+					justificationMatches = beforeSw.getJustification().equals(newSw.getJustification());
+				} else if ((beforeSw.getJustification() == null) && (newSw.getJustification() == null)){
+					justificationMatches = true;
+				}
+				
+				
+				if ((nameMatches) && (versionMatches) && (justificationMatches)){
+					existingMatchesNew = true;
+					break;
+				}
 			}
-			
-			if(criterion == null) {
-				throw new EntityRetrievalException("Could not find CQM with number " + cqmDto.getNumber() + " and version " + cqmDto.getCqmVersion());
+			if (!existingMatchesNew){
+				softwareDao.delete(beforeSw.getId());
+				dataHasChanged = true;
 			}
+		}
+		
+		// Handle additions
+		beforeSoftware = softwareDao.findByCertifiedProductId(productDto.getId());
+		
+		for (AdditionalSoftwareDTO newSw : newSoftware){
 			
-			CQMResultDTO toCreate = new CQMResultDTO();
-			toCreate.setCqmCriterionId(criterion.getId());
-			toCreate.setCertifiedProductId(productDto.getId());
-			toCreate.setCreationDate(new Date());
-			toCreate.setDeleted(false);
-			toCreate.setLastModifiedDate(new Date());
-			toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-			toCreate.setSuccess(cqmResults.get(cqmDto));
-			cqmResultDAO.create(toCreate);
+			Boolean newMatchesExisting = false;
+			for (AdditionalSoftwareDTO beforeSw : beforeSoftware){
+				
+				Boolean nameMatches = false;
+				if ((beforeSw.getName() != null) && (newSw.getName() != null)) {
+					nameMatches = beforeSw.getName().equals(newSw.getName());
+				} else if ((beforeSw.getName() == null) && (newSw.getName() == null)){
+					nameMatches = true;
+				}
+				
+				Boolean versionMatches = false;
+				if ((beforeSw.getVersion() != null) && (newSw.getVersion() != null)) {
+					versionMatches = beforeSw.getVersion().equals(newSw.getVersion());
+				} else if ((beforeSw.getVersion() == null) && (newSw.getVersion() == null)){
+					versionMatches = true;
+				}
+				
+				Boolean justificationMatches = false;
+				if ((beforeSw.getJustification() != null) && (newSw.getJustification() != null)) {
+					justificationMatches = beforeSw.getJustification().equals(newSw.getJustification());
+				} else if ((beforeSw.getJustification() == null) && (newSw.getJustification() == null)){
+					justificationMatches = true;
+				}
+				
+				if ((nameMatches) && (versionMatches) && (justificationMatches)){
+					newMatchesExisting = true;
+					break;
+				}
+			}
+			if (!newMatchesExisting){
+				softwareDao.create(newSw);
+				dataHasChanged = true;
+			}	
+		}
+		
+		if (dataHasChanged){
+			CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Additional Software for Certified Product "+productDto.getId()+" was updated." , before , after);
 		}
 	}
 	
-	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
-			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
-			+ ")")
-	@Transactional(readOnly = false)
-	public void replaceAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
-		throws EntityCreationException {
-		softwareDao.deleteByCertifiedProduct(productDto.getId());
+	private void deleteCqmResult(Long certifiedProductId, Long cqmId){
 		
-		for(AdditionalSoftwareDTO software : newSoftware) {
-			software.setCertifiedProductId(productDto.getId());
-			softwareDao.create(software);
+		List<CQMResultDTO> cqmResults = cqmResultDAO.findByCertifiedProductId(certifiedProductId);
+		
+		for (CQMResultDTO cqmResult : cqmResults){
+			if (cqmResult.getCqmCriterionId().equals(cqmId)){
+				cqmResultDAO.delete(cqmResult.getId());
+			}
 		}
 	}
+	
+}
+
 //	
 //	@Override
 //	@Transactional(readOnly = true)
@@ -413,4 +661,3 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 //	public void delete(Long certifiedProductId) throws EntityRetrievalException {
 //		
 //	}
-}

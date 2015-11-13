@@ -3,3 +3,4 @@ testDbPassword=changeit
 testDbServer=localhost/changeit
 persistenceUnitName=changeit
 authAclCacheName=aclCache
+keyLocation=D:\\test\JSONRsaJoseJWebKey.txt

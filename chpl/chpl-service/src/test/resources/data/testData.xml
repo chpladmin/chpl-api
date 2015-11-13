@@ -1,6 +1,6 @@
 <dataset>
-    <address address_id="1" street_line_1="1 Test Road" city="Baltimore" region="MD" country="USA" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
-    <address address_id="2" street_line_1="2 Test Road" street_line_2="Apt C" city="Baltimore" region="MD" country="USA" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
+    <address address_id="1" street_line_1="1 Test Road" city="Baltimore" state="MD" zipcode="21220" country="USA" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
+    <address address_id="2" street_line_1="2 Test Road" street_line_2="Apt C" city="Baltimore" state="MD" zipcode="21228" country="USA" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
 
     <vendor vendor_id="1" address_id="1" name="Test Vendor 1" website="http://www.google.com" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
     <vendor vendor_id="2" address_id="2" name="Test Vendor 2" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
@@ -29,18 +29,18 @@
 	<certification_body certification_body_id="7" name="Pending" creation_date="2015-08-27 15:36:44.217" last_modified_date="2015-08-27 15:36:44.217" last_modified_user="-2" deleted="false" />
 
  	<certified_product certified_product_id="1" certification_edition_id="2" product_version_id="1" certification_body_id="1" chpl_product_number="CHP-024050" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="1" certification_status_id="1" visible_on_chpl="true"/>
+ 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="1" certification_status_id="1" visible_on_chpl="true" privacy_attestation="false"/>
  	<certified_product certified_product_id="2" certification_edition_id="2" product_version_id="2" certification_body_id="1" chpl_product_number="CHP-024051" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" visible_on_chpl="true"/>
+ 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" visible_on_chpl="true" privacy_attestation="false" />
 	<certified_product certified_product_id="3" certification_edition_id="1" product_version_id="3" certification_body_id="1" chpl_product_number="CHP-024052" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" visible_on_chpl="false" />
+ 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" visible_on_chpl="false" privacy_attestation="false" />
 
- 	<certification_result certification_result_id="1" certification_criterion_id="1" certified_product_id="1" successful="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
- 	<certification_result certification_result_id="2" certification_criterion_id="2" certified_product_id="1" successful="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
- 	<certification_result certification_result_id="3" certification_criterion_id="3" certified_product_id="1" successful="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
- 	<certification_result certification_result_id="4" certification_criterion_id="4" certified_product_id="1" successful="false"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
- 	<certification_result certification_result_id="5" certification_criterion_id="5" certified_product_id="1" successful="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
- 	<certification_result certification_result_id="6" certification_criterion_id="6" certified_product_id="1" successful="false"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
+ 	<certification_result certification_result_id="1" certification_criterion_id="1" certified_product_id="1" success="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
+ 	<certification_result certification_result_id="2" certification_criterion_id="2" certified_product_id="1" success="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
+ 	<certification_result certification_result_id="3" certification_criterion_id="3" certified_product_id="1" success="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
+ 	<certification_result certification_result_id="4" certification_criterion_id="4" certified_product_id="1" success="false"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
+ 	<certification_result certification_result_id="5" certification_criterion_id="5" certified_product_id="1" success="true"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
+ 	<certification_result certification_result_id="6" certification_criterion_id="6" certified_product_id="1" success="false"  creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
  	<cqm_result cqm_result_id="1" certified_product_id="1" cqm_criterion_id="1" success="false" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
  	<cqm_result cqm_result_id="2" certified_product_id="1" cqm_criterion_id="2" success="false" creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
@@ -90,7 +90,7 @@
 	<contact contact_id="1" first_name="TEST" last_name="USER" email="test@ainq.com" phone_number="(301) 560-6999" title="employee" signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 
 	<user user_id="-2" user_name="admin" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="-2" />
-	<user user_id="1" user_name="TESTUSER" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
+	<user user_id="1" user_name="TESTUSER" password="$2a$10$hJnf2sF4hTE9W4UdOQcBZ.mGzTyPjHsHHdYXkVCG.2.R8a6b2JjDi" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
 	<user user_id="2" user_name="testUser2" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
 
 	<user_permission user_permission_id="-2" name="ADMIN" description="This permission confers administrative privileges to its owner." authority="ROLE_ADMIN" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
@@ -104,5 +104,11 @@
 	
 	<additional_software additional_software_id="1" certified_product_id="1" name="Additional Software 1" version="1" justification="Justification" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	<additional_software additional_software_id="2" certified_product_id="1" name="Additional Software 2" version="1.2" justification="Justification" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	
+	<activity activity_id="1" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test1":"test1"}' activity_date="2015-01-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<activity activity_id="2" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test2":"test2"}' activity_date="2015-10-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<activity activity_id="3" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test3":"test3"}' activity_date="2015-10-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<activity activity_id="4" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test4":"test4"}' activity_date="2015-10-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<activity activity_id="5" description="Description Here" certification_body="2" original_data='{"test":"test"}' new_data='{"test4":"test4"}' activity_date="2015-10-05 12:43:00.015" activity_object_id="2" activity_object_concept_id="2" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	
 </dataset>

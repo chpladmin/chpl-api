@@ -1,8 +1,6 @@
 package gov.healthit.chpl.entity;
 
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +23,7 @@ public class CertificationResultDetailsEntity {
     @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
     
-    @Column(name = "successful")
+    @Column(name = "success")
     private Boolean success;
     
     @Column(name = "number")

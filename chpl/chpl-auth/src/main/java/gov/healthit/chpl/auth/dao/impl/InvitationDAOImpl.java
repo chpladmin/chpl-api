@@ -32,12 +32,30 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 		toCreate.setDeleted(false);
 		toCreate.setAcbId(dto.getAcbId());
 		toCreate.setEmailAddress(dto.getEmail());
-		toCreate.setToken(dto.getToken());
+		toCreate.setInviteToken(dto.getInviteToken());
 		toCreate.setLastModifiedDate(new Date());
 		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
 		
 		create(toCreate);
 		return new InvitationDTO(toCreate);
+	}
+	
+	@Override
+	public InvitationDTO update(InvitationDTO dto) throws UserRetrievalException {
+		InvitationEntity toUpdate = getEntityById(dto.getId());
+		
+		if(toUpdate == null) {
+			throw new UserRetrievalException("Could not find invitation with id " + dto.getId());
+		}
+		toUpdate.setConfirmToken(dto.getConfirmToken());
+		toUpdate.setInviteToken(dto.getInviteToken());
+		toUpdate.setCreatedUserId(dto.getCreatedUserId());
+		toUpdate.setLastModifiedDate(new Date());
+		toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
+		
+		update(toUpdate);
+		
+		return new InvitationDTO(toUpdate);
 	}
 	
 	@Override
@@ -58,8 +76,26 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 	}
 	
 	@Override
-	public InvitationDTO getByToken(String token) {
-		InvitationEntity entity = getEntityByToken(token);
+	public InvitationDTO getById(Long id) throws UserRetrievalException {
+		InvitationEntity entity = getEntityById(id);
+		if(entity == null) {
+			return null;
+		}
+		return new InvitationDTO(entity);
+	}
+	
+	@Override
+	public InvitationDTO getByInvitationToken(String token) {
+		InvitationEntity entity = getEntityByInvitationToken(token);
+		if(entity == null) {
+			return null;
+		}
+		return new InvitationDTO(entity);
+	}
+	
+	@Override
+	public InvitationDTO getByConfirmationToken(String token) {
+		InvitationEntity entity = getEntityByConfirmToken(token);
 		if(entity == null) {
 			return null;
 		}
@@ -96,11 +132,25 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 		return result.get(0);
 	}
 	
-	private InvitationEntity getEntityByToken(String token) {
+	private InvitationEntity getEntityByInvitationToken(String token) {
 		
 		InvitationEntity invitation = null;
 		
-		Query query = entityManager.createQuery( "from InvitationEntity where (NOT deleted = true) AND (token = :token) ", InvitationEntity.class );
+		Query query = entityManager.createQuery( "from InvitationEntity where (NOT deleted = true) AND (invite_token = :token) ", InvitationEntity.class );
+		query.setParameter("token", token);
+		List<InvitationEntity> result = query.getResultList();
+
+		if(result.size() == 0) {
+			return null;
+		}
+		return result.get(0);
+	}
+	
+	private InvitationEntity getEntityByConfirmToken(String token) {
+		
+		InvitationEntity invitation = null;
+		
+		Query query = entityManager.createQuery( "from InvitationEntity where (NOT deleted = true) AND (confirm_token = :token) ", InvitationEntity.class );
 		query.setParameter("token", token);
 		List<InvitationEntity> result = query.getResultList();
 

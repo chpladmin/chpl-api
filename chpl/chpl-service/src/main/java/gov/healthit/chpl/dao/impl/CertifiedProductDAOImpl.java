@@ -46,6 +46,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			entity.setTestingLabId(dto.getTestingLabId());
 			entity.setOtherAcb(dto.getOtherAcb());
 			entity.setVisibleOnChpl(dto.getVisibleOnChpl());
+			entity.setPrivacyAttestation(dto.getPrivacyAttestation());
 			
 			if(dto.getCertificationBodyId() != null) {
 				entity.setCertificationBodyId(dto.getCertificationBodyId());
@@ -104,6 +105,10 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setReportFileLocation(dto.getReportFileLocation());
 		entity.setTestingLabId(dto.getTestingLabId());
 		entity.setOtherAcb(dto.getOtherAcb());
+		
+		if(dto.getPrivacyAttestation() != null) {
+			entity.setPrivacyAttestation(dto.getPrivacyAttestation());
+		}
 		
 		if(dto.getCertificationBodyId() != null) {
 			entity.setCertificationBodyId(dto.getCertificationBodyId());
@@ -206,16 +211,41 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
+	public List<CertifiedProductDTO> getByAcbIds(List<Long> acbIds) {
+		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and certification_body_id IN :idList", CertifiedProductEntity.class );
+		query.setParameter("idList", acbIds);
+		List<CertifiedProductEntity> results = query.getResultList();
+		
+		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());
+		for(CertifiedProductEntity result : results) {
+			dtoResults.add(new CertifiedProductDTO(result));
+		}
+		return dtoResults;
+	}
+	
+	public List<CertifiedProductDTO> getByVersionAndAcbIds(Long versionId, List<Long> acbIds) {
+		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and certification_body_id IN :idList and product_version_id = :versionId", CertifiedProductEntity.class );
+		query.setParameter("idList", acbIds);
+		query.setParameter("versionId", versionId);
+		List<CertifiedProductEntity> results = query.getResultList();
+		
+		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());
+		for(CertifiedProductEntity result : results) {
+			dtoResults.add(new CertifiedProductDTO(result));
+		}
+		return dtoResults;
+	}
+	
 	private void create(CertifiedProductEntity product) {
 		
 		entityManager.persist(product);
-		
+		entityManager.flush();
 	}
 	
 	private void update(CertifiedProductEntity product) {
 		
 		entityManager.merge(product);	
-	
+		entityManager.flush();
 	}
 	
 	private List<CertifiedProductEntity> getAllEntities() {

@@ -65,7 +65,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	}
 	
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#user, admin)")
 	public UserDTO update(UserDTO user) throws UserRetrievalException {
 		return userDAO.update(user);
 	}
@@ -83,7 +83,11 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 		//find the granted permissions for this user and remove them
 		Set<UserPermissionDTO> permissions = getGrantedPermissionsForUser(user);
 		for(UserPermissionDTO permission : permissions) {
-			removeRole(user, permission.getAuthority());
+			if(permission.getAuthority().equals("ROLE_ADMIN")) {
+				removeAdmin(user.getSubjectName());
+			} else {
+				removeRole(user, permission.getAuthority());
+			}
 		}
 		
 		//remove all ACLs for the user for all users and acbs
@@ -101,7 +105,7 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 	}
 	
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#id, 'gov.healthit.chpl.auth.user.User', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#id, 'gov.healthit.chpl.auth.dto.UserDTO', admin)")
 	public UserDTO getById(Long id) throws UserRetrievalException{
 		return userDAO.getById(id);
 	}

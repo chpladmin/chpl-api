@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class JWTUserConverterImpl implements JWTUserConverter {
 	
 	@Autowired
-	JWTConsumer jwtConsumer;
+	private JWTConsumer jwtConsumer;
 	
 	public JWTUserConverterImpl(){}
 	

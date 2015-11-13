@@ -11,7 +11,8 @@ public class CQMResultDetailsDTO {
 	private String cmsId;
 	private String title;
 	private String nqfNumber;
-	private String cqmCriterionTypeId;
+	private Long cqmCriterionTypeId;
+	private String domain;
 	private Long cqmVersionId;
 	private String version;
 	
@@ -27,6 +28,7 @@ public class CQMResultDetailsDTO {
 		this.title = entity.getTitle();
 		this.nqfNumber = entity.getNqfNumber();
 		this.cqmCriterionTypeId = entity.getCqmCriterionTypeId();
+		this.domain = entity.getDomain();
 		this.cqmVersionId = entity.getCqmVersionId();
 		this.version = entity.getVersion();
 		
@@ -74,10 +76,10 @@ public class CQMResultDetailsDTO {
 	public void setNqfNumber(String nqfNumber) {
 		this.nqfNumber = nqfNumber;
 	}
-	public String getCqmCriterionTypeId() {
+	public Long getCqmCriterionTypeId() {
 		return cqmCriterionTypeId;
 	}
-	public void setCqmCriterionTypeId(String cqmCriterionTypeId) {
+	public void setCqmCriterionTypeId(Long cqmCriterionTypeId) {
 		this.cqmCriterionTypeId = cqmCriterionTypeId;
 	}
 	public Long getCqmVersionId() {
@@ -91,6 +93,14 @@ public class CQMResultDetailsDTO {
 	}
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 	
 }

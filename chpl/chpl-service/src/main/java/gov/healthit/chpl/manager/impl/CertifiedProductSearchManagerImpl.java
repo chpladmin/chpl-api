@@ -48,42 +48,46 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setId(dto.getId());
 			searchResult.setAcbCertificationId(dto.getAcbCertificationId());
-			searchResult.setCertificationDate(dto.getCertificationDate().toString());
 			
-			searchResult.getCertificationEdition().put("id", dto.getCertificationEditionId().toString());
+			if(dto.getCertificationDate() != null) {
+				searchResult.setCertificationDate(dto.getCertificationDate().getTime());
+			}
+			
+			searchResult.getCertificationEdition().put("id", dto.getCertificationEditionId());
 			searchResult.getCertificationEdition().put("name", dto.getYear());
 			
-			searchResult.setCertificationStatusId(dto.getCertificationStatusId());	
-			
-			searchResult.getCertifyingBody().put("id", dto.getCertificationBodyId().toString());
+			searchResult.getCertificationStatus().put("id", dto.getCertificationStatusId());	
+			searchResult.getCertificationStatus().put("name", dto.getCertificationStatusName());	
+
+			searchResult.getCertifyingBody().put("id", dto.getCertificationBodyId());
 			searchResult.getCertifyingBody().put("name", dto.getCertificationBodyName());
 			
 			searchResult.setChplProductNumber(dto.getChplProductNumber());
 			
-			searchResult.getClassificationType().put("id", dto.getProductClassificationTypeId().toString());
+			searchResult.getClassificationType().put("id", dto.getProductClassificationTypeId());
 			searchResult.getClassificationType().put("name", dto.getProductClassificationName());
 			
 			searchResult.setOtherAcb(dto.getOtherAcb());
 			
-			searchResult.getPracticeType().put("id", dto.getPracticeTypeId().toString());
+			searchResult.getPracticeType().put("id", dto.getPracticeTypeId());
 			searchResult.getPracticeType().put("name", dto.getPracticeTypeName());
 			
-			searchResult.getProduct().put("id",dto.getProductId().toString());
+			searchResult.getProduct().put("id",dto.getProductId());
 			searchResult.getProduct().put("name",dto.getProductName());
-			searchResult.getProduct().put("versionId",dto.getProductVersionId().toString());
+			searchResult.getProduct().put("versionId",dto.getProductVersionId());
 			searchResult.getProduct().put("version", dto.getProductVersion());
 			
 			searchResult.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
 			searchResult.setReportFileLocation(dto.getReportFileLocation());
 			searchResult.setTestingLabId(dto.getTestingLabId());
 			
-			searchResult.getVendor().put("id", dto.getVendorId().toString());
+			searchResult.getVendor().put("id", dto.getVendorId());
 			searchResult.getVendor().put("name", dto.getVendorName());
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
 			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
-			
+			searchResult.setPrivacyAttestation(dto.getPrivacyAttestation());
 			searchResults.add(searchResult);
 		}
 		

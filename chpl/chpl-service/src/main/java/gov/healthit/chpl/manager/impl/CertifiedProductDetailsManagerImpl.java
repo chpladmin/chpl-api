@@ -30,6 +30,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
@@ -78,42 +79,47 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setId(dto.getId());
 		searchDetails.setAcbCertificationId(dto.getAcbCertificationId());
 		
-		searchDetails.setCertificationDate(dto.getCertificationDate().getTime() + "");
+		if(dto.getCertificationDate() != null) {
+			searchDetails.setCertificationDate(dto.getCertificationDate().getTime());
+		}
 			
-		searchDetails.getCertificationEdition().put("id", dto.getCertificationEditionId().toString());
+		searchDetails.getCertificationEdition().put("id", dto.getCertificationEditionId());
 		searchDetails.getCertificationEdition().put("name", dto.getYear());
 				
-		searchDetails.setCertificationStatusId(dto.getCertificationStatusId());	
+		searchDetails.getCertificationStatus().put("id", dto.getCertificationStatusId());
+		searchDetails.getCertificationStatus().put("name", dto.getCertificationStatusName());
 			
-		searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId().toString());
+		searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId());
 		searchDetails.getCertifyingBody().put("name", dto.getCertificationBodyName());
 			
 		searchDetails.setChplProductNumber(dto.getChplProductNumber());
 		
-		searchDetails.getClassificationType().put("id", dto.getProductClassificationTypeId().toString());
+		searchDetails.getClassificationType().put("id", dto.getProductClassificationTypeId());
 		searchDetails.getClassificationType().put("name", dto.getProductClassificationName());
 		
 		searchDetails.setOtherAcb(dto.getOtherAcb());
 		
-		searchDetails.getPracticeType().put("id", dto.getPracticeTypeId().toString());
+		searchDetails.getPracticeType().put("id", dto.getPracticeTypeId());
 		searchDetails.getPracticeType().put("name", dto.getPracticeTypeName());
 		
-		searchDetails.getProduct().put("id",dto.getProductId().toString());
+		searchDetails.getProduct().put("id",dto.getProductId());
 		searchDetails.getProduct().put("name",dto.getProductName());
-		searchDetails.getProduct().put("versionId",dto.getProductVersionId().toString());
+		searchDetails.getProduct().put("versionId",dto.getProductVersionId());
 		searchDetails.getProduct().put("version", dto.getProductVersion());
 				
 		searchDetails.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
 		searchDetails.setReportFileLocation(dto.getReportFileLocation());
 		searchDetails.setTestingLabId(dto.getTestingLabId());
 		
-		searchDetails.getVendor().put("id", dto.getVendorId().toString());
+		searchDetails.getVendor().put("id", dto.getVendorId());
 		searchDetails.getVendor().put("name", dto.getVendorName());
 		
 		List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
+		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());
+		searchDetails.setLastModifiedDate(dto.getLastModifiedDate().getTime());
 		
 		searchDetails.setCountCerts(dto.getCountCertifications());
 		searchDetails.setCountCqms(dto.getCountCqms());
@@ -247,7 +253,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		for (CQMCriterion criterion : cqmCriteria){
 			
-			if (criterion.getNumber().startsWith("CMS")){
+			if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")){
 				criteria.add(criterion);
 			}
 		}
@@ -260,7 +266,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		for (CQMCriterion criterion : cqmCriteria){
 			
-			if (criterion.getNumber().startsWith("NQF")){
+			if (StringUtils.isEmpty(criterion.getCmsId())){
 				nqfs.add(criterion);
 			}
 		}

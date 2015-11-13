@@ -40,7 +40,7 @@ public class CertificationResultDTO {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.sedInherited = entity.isSedInherited();
 		this.sedSuccessful = entity.isSedSuccessful();
-		this.successful = entity.isSuccessful();
+		this.successful = entity.isSuccess();
 		this.testDataVersionId = entity.getTestDataVersionId();
 		this.testProcedureVersionId = entity.getTestProcedureVersionId();
 		this.deleted = entity.isDeleted();

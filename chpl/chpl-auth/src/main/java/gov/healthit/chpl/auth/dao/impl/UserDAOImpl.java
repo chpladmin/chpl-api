@@ -76,6 +76,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			contact.setLastModifiedUser(Util.getCurrentUser().getId());
 			contact.setLastModifiedDate(new Date());
 			contact.setDeleted(false);
+			contact.setSignatureDate(null); //null for new user, must confirm email to get it filled in
 			
 			userContactDAO.create(contact);
 			userEntity.setContact(contact);
@@ -96,6 +97,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		userEntity.setLastName(user.getLastName());
 		userEntity.getContact().setEmail(user.getEmail());
 		userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
+		userEntity.getContact().setSignatureDate(user.getSignatureDate());
 		userEntity.getContact().setTitle(user.getTitle());
 		userEntity.setAccountEnabled(user.isAccountEnabled());
 		userEntity.setAccountExpired(user.isAccountExpired());
@@ -182,6 +184,26 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			}
 		}
 		return result;
+	}
+	
+	public UserDTO findUserByNameAndEmail(String username, String email) {
+		UserDTO foundUser = null;
+		
+		String userQuery = "from UserEntity u" 
+				+ " where (NOT u.deleted = true) "
+				+ " AND (u.subjectName = :subjectName) "
+				+ " AND (u.contact.email = :email)";
+
+		Query query = entityManager.createQuery(userQuery, UserEntity.class );
+		query.setParameter("subjectName", username);
+		query.setParameter("email", email);
+		List<UserEntity> result = query.getResultList();
+		if (result.size() >= 1){
+			UserEntity entity = result.get(0);
+			foundUser = new UserDTO(entity);
+		} 
+		
+		return foundUser;
 	}
 	
 	public UserDTO findUser(UserDTO toSearch) {

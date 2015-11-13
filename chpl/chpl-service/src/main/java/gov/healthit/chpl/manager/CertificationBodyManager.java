@@ -12,6 +12,8 @@ import java.util.List;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 
 public interface CertificationBodyManager {
 	
@@ -21,16 +23,16 @@ public interface CertificationBodyManager {
 	public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient);
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
 	
-	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException;
+	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	
 	
-	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException;
+	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	
 	
-	public void delete(CertificationBodyDTO acb);
+	public void delete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
 	
 	
-	public List<CertificationBodyDTO> getAll();
+	public List<CertificationBodyDTO> getAllForUser();
 	
 
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
