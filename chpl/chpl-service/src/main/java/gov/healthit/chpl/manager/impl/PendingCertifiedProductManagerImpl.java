@@ -21,23 +21,30 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
+import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
+import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 
@@ -45,6 +52,8 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport implements PendingCertifiedProductManager {
 
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
+	@Autowired PendingCertifiedProductValidatorFactory validatorFactory;
+	
 	@Autowired PendingCertifiedProductDAO pcpDao;
 	@Autowired CertificationStatusDAO statusDao;
 	@Autowired CertificationBodyManager acbManager;
@@ -53,6 +62,9 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Autowired private MutableAclService mutableAclService;
 	@Autowired private CQMCriterionDAO cqmCriterionDAO;
 	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
+	
+	@Autowired
+	private ActivityManager activityManager;
 	
 	@PostConstruct
 	public void setup() {
@@ -65,7 +77,9 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "(hasPermission(filterObject, read) or hasPermission(filterObject, admin)))")
 	public List<PendingCertifiedProductDTO> getAll() {
-		return pcpDao.findAll();
+		List<PendingCertifiedProductDTO> all = pcpDao.findAll();
+		validate(all);
+		return all;
 	}
 
 	@Override
@@ -75,7 +89,9 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 			+ "(hasPermission(filterObject, read) or hasPermission(filterObject, admin)))")
 	public List<PendingCertifiedProductDTO> getPending() {
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
-		return pcpDao.findByStatus(statusDto.getId());
+		List<PendingCertifiedProductDTO> products = pcpDao.findByStatus(statusDto.getId());
+		validate(products);
+		return products;
 	}
 	
 	@Override
@@ -83,23 +99,33 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@PreAuthorize("hasRole('ROLE_ADMIN') or ((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin))")	
 	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException {
-		return pcpDao.findById(id);
+		PendingCertifiedProductDTO dto = pcpDao.findById(id);
+		validate(dto);
+		return dto;
 	}
-
+	
 	@Override
 	@Transactional (readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "(hasPermission(#acb, read) or hasPermission(#acb, admin)))")
 	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb) {
-		return pcpDao.findByAcbId(acb.getId());
+		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acb.getId());
+		validate(products);
+		return products;
 	}
 	
 	@Override
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public PendingCertifiedProductDTO create(Long acbId, PendingCertifiedProductEntity toCreate) 
-		throws EntityRetrievalException, EntityCreationException {
+	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
+		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
+		if(existingId != null) {
+			CertificationStatusDTO newStatus = statusDao.getByStatusName("Withdrawn");
+			pcpDao.delete(existingId, newStatus);
+		}
+		
 		//insert the record
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
 		//add appropriate ACLs
@@ -110,6 +136,11 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		for(UserDTO user : usersOnAcb) {
 			addPermission(acb, pendingCpDto, user, BasePermission.ADMINISTRATION);
 		}
+		validate(pendingCpDto);
+		
+		String activityMsg = "Certified product "+pendingCpDto.getProductName()+" is pending.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, null, pendingCpDto);
+		
 		return pendingCpDto;
 	}
 	
@@ -117,18 +148,33 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
-	public void reject(Long pendingProductId) throws EntityRetrievalException {
+	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
+		
 		CertificationStatusDTO newStatus = statusDao.getByStatusName("Withdrawn");
 		pcpDao.delete(pendingProductId, newStatus);
+		
+		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been rejected.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, null);
+
+		
 	}
 	
 	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
-	public void confirm(Long pendingProductId) throws EntityRetrievalException {
+	public void confirm(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
+		
 		CertificationStatusDTO newStatus = statusDao.getByStatusName("Active");
 		pcpDao.updateStatus(pendingProductId, newStatus);
+		
+		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been confirmed.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, pendingCpDto);
+		
 	}
 	
 	@Override
@@ -265,12 +311,14 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	
 	@Override
 	public List<CQMCriterion> getApplicableCriteria(PendingCertifiedProductDTO pendingCpDto) {
-		if (pendingCpDto.getCertificationEdition().startsWith("2011")){
-		 	return getAvailableNQFVersions();
-		} else if(pendingCpDto.getCertificationEdition().startsWith("2014")){
-			return getAvailableCQMVersions();
+		if(!StringUtils.isEmpty(pendingCpDto.getCertificationEdition())) {
+			if (pendingCpDto.getCertificationEdition().startsWith("2011")){
+			 	return getAvailableNQFVersions();
+			} else if(pendingCpDto.getCertificationEdition().startsWith("2014")){
+				return getAvailableCQMVersions();
+			}
 		}
-		return cqmCriteria;
+		return new ArrayList<CQMCriterion>();
 	}
 	
 	private boolean permissionExists(MutableAcl acl, Sid recipient, Permission permission) {
@@ -309,8 +357,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 		
 		for (CQMCriterion criterion : cqmCriteria){
-			
-			if (criterion.getNumber().startsWith("CMS")){
+			if(!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
 				criteria.add(criterion);
 			}
 		}
@@ -322,10 +369,24 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		
 		for (CQMCriterion criterion : cqmCriteria){
 			
-			if (criterion.getNumber().startsWith("NQF")){
+			if(StringUtils.isEmpty(criterion.getCmsId())) {
 				nqfs.add(criterion);
 			}
 		}
 		return nqfs;
+	}
+	
+	private void validate(List<PendingCertifiedProductDTO> products) {
+		for(PendingCertifiedProductDTO dto : products) {
+			PendingCertifiedProductValidator validator = validatorFactory.getValidator(dto);
+			validator.validate(dto);
+		}
+	}
+	
+	private void validate(PendingCertifiedProductDTO... products) {
+		for(PendingCertifiedProductDTO dto : products) {
+			PendingCertifiedProductValidator validator = validatorFactory.getValidator(dto);
+			validator.validate(dto);
+		}
 	}
 }

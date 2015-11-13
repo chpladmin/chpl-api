@@ -151,7 +151,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		
 		CertificationResultEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from CertificationResultEntity where (NOT deleted = true) AND (cqm_result_id = :entityid) ", CertificationResultEntity.class );
+		Query query = entityManager.createQuery( "from CertificationResultEntity where (NOT deleted = true) AND (certification_result_id = :entityid) ", CertificationResultEntity.class );
 		query.setParameter("entityid", id);
 		List<CertificationResultEntity> result = query.getResultList();
 		

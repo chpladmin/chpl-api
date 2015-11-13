@@ -13,6 +13,9 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
 	
+	private String oncId;
+	private List<String> errorMessages;
+	private List<String> warningMessages;
 	private String uploadNotes;
 	private String recordStatus;
 	private Map<String, Object> vendorAddress;
@@ -21,6 +24,9 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 	
 	public PendingCertifiedProductDetails(PendingCertifiedProductDTO dto) {
 		this.setId(dto.getId());
+		this.setOncId(dto.getUniqueId());
+		this.setErrorMessages(dto.getErrorMessages());
+		this.setWarningMessages(dto.getWarningMessages());
 		this.setRecordStatus(dto.getRecordStatus());
 		this.setTestingLabId(null);
 		this.setChplProductNumber(null);
@@ -121,6 +127,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		}
 		
 		this.setVisibleOnChpl(false);
+		//TODO: this needs to be included in the upload
+		this.setPrivacyAttestation(false);
 		this.setUploadNotes(dto.getUploadNotes());
 		
 		List<AdditionalSoftware> softwareList = new ArrayList<AdditionalSoftware>();
@@ -154,6 +162,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			cqm.setSuccess(cqmCriterion.isMeetsCriteria());
 			cqm.setTitle(cqmCriterion.getTitle());
 			cqm.setVersion(cqmCriterion.getVersion());
+			cqm.setTypeId(cqmCriterion.getTypeId());
+			cqm.setDomain(cqmCriterion.getDomain());
 			cqmResults.add(cqm);
 		}
 		this.setCqmResults(cqmResults);
@@ -181,5 +191,29 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
 	public void setRecordStatus(String recordStatus) {
 		this.recordStatus = recordStatus;
+	}
+
+	public String getOncId() {
+		return oncId;
+	}
+
+	public void setOncId(String oncId) {
+		this.oncId = oncId;
+	}
+
+	public List<String> getErrorMessages() {
+		return errorMessages;
+	}
+
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
+	}
+
+	public List<String> getWarningMessages() {
+		return warningMessages;
+	}
+
+	public void setWarningMessages(List<String> warningMessages) {
+		this.warningMessages = warningMessages;
 	}
 }

@@ -34,6 +34,7 @@ public class CertifiedProductDetailsDTO {
     private Integer countCqms;
     private Boolean visibleOnChpl;
     private Date lastModifiedDate;
+    private Boolean privacyAttestation;
     
     public CertifiedProductDetailsDTO(){}
     
@@ -62,6 +63,7 @@ public class CertifiedProductDetailsDTO {
     	this.vendorId = entity.getVendorId();
     	this.vendorName = entity.getVendorName();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
+    	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
@@ -241,6 +243,14 @@ public class CertifiedProductDetailsDTO {
 
 	public void setCertificationStatusName(String certificationStatusName) {
 		this.certificationStatusName = certificationStatusName;
+	}
+
+	public Boolean getPrivacyAttestation() {
+		return privacyAttestation;
+	}
+
+	public void setPrivacyAttestation(Boolean privacyAttestation) {
+		this.privacyAttestation = privacyAttestation;
 	}
 	
 }

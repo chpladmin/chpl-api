@@ -190,7 +190,16 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
 		
 		for (CQMCriterionDTO dto : dtos) {
-			criterionNames.add( new DescriptiveModel(dto.getId(), dto.getNumber(), dto.getTitle()));
+			
+			String idNumber;
+			
+			if (dto.getCmsId() != null){
+				idNumber = dto.getCmsId();
+			} else {
+				idNumber = dto.getNqfNumber();
+			}
+			
+			criterionNames.add( new DescriptiveModel(dto.getId(), idNumber, dto.getTitle()));
 		}
 		return criterionNames;
 	}

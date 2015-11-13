@@ -6,7 +6,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.domain.AdditionalSoftware;
+import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
@@ -23,6 +26,8 @@ public class PendingCertifiedProductDTO {
     private Long certificationBodyId;    
     private Long productClassificationId;
     private Long additionalSoftwareId;
+    private List<String> errorMessages;
+    private List<String> warningMessages;
     
     /**
     * fields directly from the spreadsheet
@@ -53,8 +58,139 @@ public class PendingCertifiedProductDTO {
 	private Date uploadDate;
 	
 	public PendingCertifiedProductDTO(){
+		this.errorMessages = new ArrayList<String>();	
+		this.warningMessages = new ArrayList<String>();
 		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
+	}
+	
+	public PendingCertifiedProductDTO(PendingCertifiedProductDetails details) {
+		this.id = details.getId();
+		if(details.getPracticeType().get("id") != null) {
+			String practiceTypeId = details.getPracticeType().get("id").toString();
+			this.practiceTypeId =  new Long(practiceTypeId);
+		}
+		if(details.getPracticeType().get("name") != null) {
+			this.practiceType = details.getPracticeType().get("name").toString();
+		}
+		
+		if(details.getVendor().get("id") != null) {
+			String vendorId = details.getVendor().get("id").toString();
+			this.vendorId = new Long(vendorId);
+		}
+		if(details.getVendor().get("name") != null) {
+			this.vendorName = details.getVendor().get("name").toString();
+		}
+		if(details.getVendor().get("website") != null) {
+			this.vendorWebsite = details.getVendor().get("website").toString();
+		}
+		if(details.getVendor().get("email") != null) {
+			this.vendorEmail = details.getVendor().get("email").toString();
+		}
+		
+		AddressDTO address = new AddressDTO();
+		if(details.getVendorAddress().get("id") != null) {
+			String addressId = details.getVendor().get("id").toString();
+			address.setId(new Long(addressId));
+		}
+		if(details.getVendorAddress().get("line1") != null) {
+			address.setStreetLineOne(details.getVendorAddress().get("line1").toString());
+		}
+		if(details.getVendorAddress().get("city") != null) {
+			address.setCity(details.getVendorAddress().get("city").toString());
+		}
+		if(details.getVendorAddress().get("state") != null) {
+			address.setState(details.getVendorAddress().get("state").toString());
+		}
+		if(details.getVendorAddress().get("zipcode") != null) {
+			address.setZipcode(details.getVendorAddress().get("zipcode").toString());
+		}
+		this.vendorAddress = address;
+		
+		if(details.getProduct().get("id") != null) {
+			String productId = details.getProduct().get("id").toString();
+			this.productId = new Long(productId);
+		}
+		if(details.getProduct().get("name") != null) {
+			this.productName = details.getProduct().get("name").toString();
+		}
+		if(details.getProduct().get("versionId") != null) {
+			String productVersionId = details.getProduct().get("versionId").toString();
+			this.productVersionId = new Long(productVersionId);
+		}
+		if(details.getProduct().get("version") != null) {
+			this.productVersion = details.getProduct().get("version").toString();
+		}
+		
+		if(details.getCertificationEdition().get("id") != null) {
+			String certificationEditionId = details.getCertificationEdition().get("id").toString();
+			this.certificationEditionId = new Long(certificationEditionId);
+		}
+		if(details.getCertificationEdition().get("name") != null) {
+			this.certificationEdition = details.getCertificationEdition().get("name").toString();
+		}
+		
+		if(details.getCertifyingBody().get("id") != null) {
+			String certificationBodyId = details.getCertifyingBody().get("id").toString();
+			this.certificationBodyId = new Long(certificationBodyId);
+		}
+		if(details.getCertifyingBody().get("name") != null) {
+			this.certificationBodyName = details.getCertifyingBody().get("name").toString();
+		}
+		
+		if(details.getClassificationType().get("id") != null) {
+			String classificationTypeId = details.getClassificationType().get("id").toString();
+			this.productClassificationId = new Long(classificationTypeId);
+		}
+		if(details.getClassificationType().get("name") != null) {
+			this.productClassificationName = details.getClassificationType().get("name").toString();
+		}
+		
+		if(details.getAdditionalSoftware() != null && details.getAdditionalSoftware().size() > 0) {
+			AdditionalSoftware software = details.getAdditionalSoftware().get(0);
+			this.additionalSoftwareId = software.getAdditionalSoftwareid();
+		}
+		
+		if(details.getCertificationDate() != null) {
+			this.certificationDate = new Date(details.getCertificationDate());
+		}
+		
+		this.uniqueId = details.getOncId();
+		this.recordStatus = details.getRecordStatus();
+		this.acbCertificationId = details.getAcbCertificationId(); 
+		this.uploadNotes = details.getUploadNotes();
+		this.reportFileLocation = details.getReportFileLocation();
+
+		
+		//this.productClassificationModule = entity.getProductClassificationModule();
+		//this.uploadDate = entity.getCreationDate();
+		
+		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
+		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
+		
+		List<CertificationResult> certificationResults = details.getCertificationResults();
+		for(CertificationResult crResult : certificationResults) {
+			PendingCertificationCriterionDTO certDto = new PendingCertificationCriterionDTO();
+			certDto.setNumber(crResult.getNumber());
+			certDto.setTitle(crResult.getTitle());
+			certDto.setMeetsCriteria(crResult.isSuccess());
+			this.certificationCriterion.add(certDto);
+		}
+		List<CQMResultDetails> cqmResults = details.getCqmResults();
+		for(CQMResultDetails cqmResult : cqmResults) {
+			PendingCqmCriterionDTO cqmDto = new PendingCqmCriterionDTO();
+			cqmDto.setCmsId(cqmResult.getCmsId());
+			cqmDto.setNqfNumber(cqmResult.getNqfNumber());
+			cqmDto.setCqmNumber(cqmResult.getNumber());
+			cqmDto.setMeetsCriteria(cqmResult.isSuccess());
+			cqmDto.setTitle(cqmResult.getTitle());
+			cqmDto.setVersion(cqmResult.getVersion());
+			cqmDto.setTypeId(cqmResult.getTypeId());
+			cqmDto.setDomain(cqmResult.getDomain());
+			this.cqmCriterion.add(cqmDto);
+		}	
+		this.errorMessages = new ArrayList<String>();	
+		this.warningMessages = new ArrayList<String>();
 	}
 	
 	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){
@@ -96,13 +232,20 @@ public class PendingCertifiedProductDTO {
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
 		
 		Set<PendingCertificationCriterionEntity> criterionEntities = entity.getCertificationCriterion();
-		for(PendingCertificationCriterionEntity crEntity : criterionEntities) {
-			this.certificationCriterion.add(new PendingCertificationCriterionDTO(crEntity));
+		if(criterionEntities != null && criterionEntities.size() > 0) {
+			for(PendingCertificationCriterionEntity crEntity : criterionEntities) {
+				this.certificationCriterion.add(new PendingCertificationCriterionDTO(crEntity));
+			}
 		}
 		Set<PendingCqmCriterionEntity> cqmEntities = entity.getCqmCriterion();
-		for(PendingCqmCriterionEntity cqmEntity : cqmEntities) {
-			this.cqmCriterion.add(new PendingCqmCriterionDTO(cqmEntity));
-		}	}
+		if(cqmEntities != null && cqmEntities.size() > 0) {
+			for(PendingCqmCriterionEntity cqmEntity : cqmEntities) {
+				this.cqmCriterion.add(new PendingCqmCriterionDTO(cqmEntity));
+			}	
+		}
+		this.errorMessages = new ArrayList<String>();	
+		this.warningMessages = new ArrayList<String>();	
+	}
 
 	
 	public Long getId() {
@@ -374,5 +517,21 @@ public class PendingCertifiedProductDTO {
 
 	public void setUploadDate(Date uploadDate) {
 		this.uploadDate = uploadDate;
+	}
+
+	public List<String> getErrorMessages() {
+		return errorMessages;
+	}
+
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
+	}
+
+	public List<String> getWarningMessages() {
+		return warningMessages;
+	}
+
+	public void setWarningMessages(List<String> warningMessages) {
+		this.warningMessages = warningMessages;
 	}
 }

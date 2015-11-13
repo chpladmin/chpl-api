@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -71,7 +72,7 @@ public class InvitationManagerImpl implements InvitationManager {
 		InvitationDTO dto = new InvitationDTO();
 		dto.setEmail(emailAddress);
 		Date now = new Date();
-		dto.setToken(md5(emailAddress + now.getTime()));
+		dto.setInviteToken(md5(emailAddress + now.getTime()));
 	
 		return createInvitation(dto, permissions);
 	}
@@ -84,7 +85,7 @@ public class InvitationManagerImpl implements InvitationManager {
 		InvitationDTO dto = new InvitationDTO();
 		dto.setEmail(emailAddress);
 		Date now = new Date();
-		dto.setToken(md5(emailAddress + now.getTime()));
+		dto.setInviteToken(md5(emailAddress + now.getTime()));
 		
 		return createInvitation(dto, permissions);
 	}
@@ -100,7 +101,7 @@ public class InvitationManagerImpl implements InvitationManager {
 		dto.setAcbId(acbId);
 		//could be multiple invitations for the same email so add the time to make it unique
 		Date currTime = new Date();
-		dto.setToken(md5(emailAddress + currTime.getTime()));
+		dto.setInviteToken(md5(emailAddress + currTime.getTime()));
 	
 		return createInvitation(dto, permissions);
 	}
@@ -134,25 +135,23 @@ public class InvitationManagerImpl implements InvitationManager {
 		}
 		return createdInvitation;
 	}
-	
+
 	@Override
 	@Transactional
-	public boolean isHashValid(String hash) {
-		InvitationDTO invitation = invitationDao.getByToken(hash);
-		if(invitation == null) { 
-			return false;
-		}
-		
-		if(invitation.isExpired()) {
-			return false;
-		}
-		return true;
+	public InvitationDTO getByInvitationHash(String hash) {
+		return invitationDao.getByInvitationToken(hash);
 	}
 	
 	@Override
 	@Transactional
-	public InvitationDTO getByHash(String hash) {
-		return invitationDao.getByToken(hash);
+	public InvitationDTO getByConfirmationHash(String hash) {
+		return invitationDao.getByConfirmationToken(hash);
+	}
+	
+	@Override
+	@Transactional
+	public InvitationDTO getById(Long id) throws UserRetrievalException {
+		return invitationDao.getById(id);
 	}
 	
 	@Override
@@ -162,17 +161,54 @@ public class InvitationManagerImpl implements InvitationManager {
 		Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
 		SecurityContextHolder.getContext().setAuthentication(authenticator);
 		
-		//create the user
-		UserDTO newUser = userManager.getByName(user.getSubjectName());
-		if(newUser == null) {
-			newUser = userManager.create(user);
-		} else {
-			throw new InvalidArgumentsException("A user with the name " + user.getSubjectName() + " already exists.");
+		try {
+			//create the user
+			UserDTO newUser = userManager.getByName(user.getSubjectName());
+			if(newUser == null) {
+				newUser = userManager.create(user);
+			} else {
+				throw new InvalidArgumentsException("A user with the name " + user.getSubjectName() + " already exists.");
+			}
+			
+			handleInvitation(invitation, newUser);
+			
+			//update invitation entity to change the hashes
+			invitation.setCreatedUserId(newUser.getId());
+			invitation.setInviteToken(null);
+			Date now = new Date();
+			invitation.setConfirmToken(md5(invitation.getEmail() + now.getTime()));
+			invitationDao.update(invitation);
+			return newUser;
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(null);
 		}
 		
-		handleInvitation(invitation, newUser);
-
-		return newUser;
+	}
+	
+	@Override
+	@Transactional
+	public UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException {
+		Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
+		SecurityContextHolder.getContext().setAuthentication(authenticator);
+		
+		try {
+			//set the user signature date
+			UserDTO user = userDao.getById(invitation.getCreatedUserId());
+			if(user == null) {
+				throw new UserRetrievalException("Could not find user created from invitation. Looking for user with id " + invitation.getCreatedUserId());
+			}
+			user.setSignatureDate(new Date());
+			userDao.update(user);
+			
+			//delete the invitation and permissions now we are done with them
+			for(InvitationPermissionDTO permission : invitation.getPermissions()) {
+				invitationPermissionDao.delete(permission.getId());
+			}
+			invitationDao.delete(invitation.getId());
+			return user;
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(null);
+		}
 	}
 	
 	@Override
@@ -183,6 +219,12 @@ public class InvitationManagerImpl implements InvitationManager {
 		SecurityContextHolder.getContext().setAuthentication(authenticator);
 		
 		handleInvitation(invitation, toUpdate);
+		
+		//delete invitation and permissions, we are done with it
+		for(InvitationPermissionDTO permission : invitation.getPermissions()) {
+			invitationPermissionDao.delete(permission.getId());
+		}
+		invitationDao.delete(invitation.getId());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
 		return toUpdate;
@@ -209,14 +251,12 @@ public class InvitationManagerImpl implements InvitationManager {
 		}
 		
 		//give them permissions
-		boolean isChplAdmin = false;
 		if(invitation.getPermissions() != null && invitation.getPermissions().size() > 0) {
 			for(InvitationPermissionDTO permission : invitation.getPermissions()) {
 				UserPermissionDTO userPermission = userPermissionDao.findById(permission.getPermissionId());
 				try {
 					if(userPermission.getAuthority().equals("ROLE_ADMIN")) {
 						userManager.grantAdmin(user.getName());
-						isChplAdmin = true;
 					} else {
 						userManager.grantRole(user.getName(), userPermission.getAuthority());
 					}
@@ -227,24 +267,11 @@ public class InvitationManagerImpl implements InvitationManager {
 				}
 			}
 		}
-			
-		//give them roles on the appropriate ACBs
-		//if they are a chpladmin then they need to be given access to all of the ACBs
-		if(isChplAdmin) {
-			List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
-			for(CertificationBodyDTO acb : acbs) {
-				acbManager.addPermission(acb, user.getId(), BasePermission.ADMINISTRATION);
-			}
-		} else if(userAcb != null) {
+		
+		//if they are a acb admin or staff then they need to be given access to the invited acb
+		if(userAcb != null) {
 			acbManager.addPermission(userAcb, user.getId(), BasePermission.ADMINISTRATION);
 		}
-		
-		//delete the permissions
-		for(InvitationPermissionDTO permission : invitation.getPermissions()) {
-			invitationPermissionDao.delete(permission.getId());
-		}
-		//delete the invitation
-		invitationDao.delete(invitation.getId());
 	}
 	
 	private Authentication getInvitedUserAuthenticator(Long id) {

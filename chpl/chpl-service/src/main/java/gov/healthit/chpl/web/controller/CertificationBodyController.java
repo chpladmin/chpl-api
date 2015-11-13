@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
@@ -70,7 +73,7 @@ public class CertificationBodyController {
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public CertificationBody createAcb(@RequestBody CertificationBody acbInfo) throws UserRetrievalException, EntityRetrievalException, EntityCreationException {
+	public CertificationBody createAcb(@RequestBody CertificationBody acbInfo) throws UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		CertificationBodyDTO toCreate = new CertificationBodyDTO();
 		toCreate.setName(acbInfo.getName());
 		toCreate.setWebsite(acbInfo.getWebsite());
@@ -94,7 +97,7 @@ public class CertificationBodyController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws EntityRetrievalException {
+	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		CertificationBodyDTO toUpdate = new CertificationBodyDTO();
 		toUpdate.setId(acbInfo.getId());
 		toUpdate.setName(acbInfo.getName());
@@ -119,11 +122,12 @@ public class CertificationBodyController {
 	
 	@RequestMapping(value="/{acbId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public String deleteAcb(@PathVariable("acbId") Long acbId) {
-		CertificationBodyDTO toDelete = new CertificationBodyDTO();
-		toDelete.setId(acbId);
+	public String deleteAcb(@PathVariable("acbId") Long acbId) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+		
+		CertificationBodyDTO toDelete = acbManager.getById(acbId);		
 		acbManager.delete(toDelete);
 		return "{\"deletedAcb\" : true }";
+	
 	}
 	
 	@RequestMapping(value="/add_user", method= RequestMethod.POST, 

@@ -20,10 +20,9 @@ import javax.persistence.Table;
 public class InvitationPermissionEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "invitedUserPermissionInvitedUserPermission_idGenerator")
 	@Basic( optional = false )
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "invited_user_permission_id", nullable = false  )
-	@SequenceGenerator(name = "invitedUserPermissionInvitedUserPermission_idGenerator", sequenceName = "invited_user_permission_invited_user_permission_id_seq")	
 	private Long id;
 
 	@ManyToOne(fetch=FetchType.LAZY)

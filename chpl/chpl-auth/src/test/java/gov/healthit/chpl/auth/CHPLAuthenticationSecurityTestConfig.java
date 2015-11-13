@@ -1,11 +1,14 @@
 package gov.healthit.chpl.auth;
 
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.postgresql.ds.PGSimpleDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.EnvironmentAware;
@@ -27,7 +30,10 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,19 +45,31 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 @PropertySource("classpath:environment.auth.test.properties")
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"gov.healthit.chpl.auth**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
-public class CHPLAuthenticationSecurityTestConfig implements EnvironmentAware {
+@ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+public class CHPLAuthenticationSecurityTestConfig extends WebSecurityConfigurerAdapter 
+implements EnvironmentAware {
 	
-private Environment env;
+	private Environment env;
+	
+	@Autowired
+	private JWTUserConverter userConverter;
 	
 	@Override
 	public void setEnvironment(final Environment e) {
 		this.env = e;
 	}
 	
+	@Bean
+	@Autowired
+	public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception{
+		return auth.getOrBuild();
+	}
+	
+    
 	@Bean
 	public DataSource dataSource() {
         PGSimpleDataSource ds = new PGSimpleDataSource();

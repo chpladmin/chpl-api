@@ -30,6 +30,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
@@ -117,6 +118,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
+		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());
 		searchDetails.setLastModifiedDate(dto.getLastModifiedDate().getTime());
 		
 		searchDetails.setCountCerts(dto.getCountCertifications());
@@ -251,7 +253,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		for (CQMCriterion criterion : cqmCriteria){
 			
-			if (criterion.getNumber().startsWith("CMS")){
+			if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")){
 				criteria.add(criterion);
 			}
 		}
@@ -264,7 +266,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		for (CQMCriterion criterion : cqmCriteria){
 			
-			if (criterion.getNumber().startsWith("NQF")){
+			if (StringUtils.isEmpty(criterion.getCmsId())){
 				nqfs.add(criterion);
 			}
 		}

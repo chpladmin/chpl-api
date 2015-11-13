@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.UpdateVendorsRequest;
 import gov.healthit.chpl.domain.Vendor;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -67,39 +70,27 @@ public class VendorController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public Vendor updateVendor(@RequestBody(required=true) UpdateVendorsRequest vendorInfo) throws EntityCreationException, EntityRetrievalException {
+	public Vendor updateVendor(@RequestBody(required=true) UpdateVendorsRequest vendorInfo) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		VendorDTO result = null;
 		
 		if(vendorInfo.getVendorIds().size() > 1) {
 			//merge these vendors into one 
 			// - create a new vendor with the rest of the passed in information
-			VendorDTO newVendor = new VendorDTO();
-			newVendor.setName(vendorInfo.getVendor().getName());
-			newVendor.setWebsite(vendorInfo.getVendor().getWebsite());
-			AddressDTO address = null;
-			if(vendorInfo.getVendor().getAddress() != null) {
-				address = new AddressDTO();
-				address.setId(vendorInfo.getVendor().getAddress().getAddressId());
-				address.setStreetLineOne(vendorInfo.getVendor().getAddress().getLine1());
-				address.setStreetLineTwo(vendorInfo.getVendor().getAddress().getLine2());
-				address.setCity(vendorInfo.getVendor().getAddress().getCity());
-				address.setState(vendorInfo.getVendor().getAddress().getState());
-				address.setZipcode(vendorInfo.getVendor().getAddress().getZipcode());
-				address.setCountry(vendorInfo.getVendor().getAddress().getCountry());
+			VendorDTO toCreate = new VendorDTO();
+			toCreate.setName(vendorInfo.getVendor().getName());
+			toCreate.setWebsite(vendorInfo.getVendor().getWebsite());
+			Address vendorAddress = vendorInfo.getVendor().getAddress();
+			if(vendorAddress != null) {
+				AddressDTO toCreateAddress = new AddressDTO();
+				toCreateAddress.setStreetLineOne(vendorAddress.getLine1());
+				toCreateAddress.setStreetLineTwo(vendorAddress.getLine2());
+				toCreateAddress.setCity(vendorAddress.getCity());
+				toCreateAddress.setState(vendorAddress.getState());
+				toCreateAddress.setZipcode(vendorAddress.getZipcode());
+				toCreateAddress.setCountry(vendorAddress.getCountry());
+				toCreate.setAddress(toCreateAddress);
 			}
-			newVendor.setAddress(address);
-			result = vendorManager.create(newVendor);
-			// - search for any products assigned to the list of vendors passed in
-			List<ProductDTO> vendorProducts = productManager.getByVendors(vendorInfo.getVendorIds());
-			// - reassign those products to the new vendor
-			for(ProductDTO product : vendorProducts) {
-				product.setVendorId(result.getId());
-				productManager.update(product);
-			}
-			// - mark the passed in vendors as deleted
-			for(Long vendorId : vendorInfo.getVendorIds()) {
-				vendorManager.delete(vendorId);
-			}
+			result = vendorManager.merge(vendorInfo.getVendorIds(), toCreate);
 		} else if(vendorInfo.getVendorIds().size() == 1) {
 			//update the information for the vendor id supplied in the database
 			VendorDTO toUpdate = new VendorDTO();

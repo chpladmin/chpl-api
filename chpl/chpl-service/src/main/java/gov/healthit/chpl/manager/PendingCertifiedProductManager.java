@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -23,11 +25,11 @@ public interface PendingCertifiedProductManager {
 	public List<PendingCertifiedProductDTO> getPending();
 	public List<CQMCriterion> getApplicableCriteria(PendingCertifiedProductDTO pendingCpDto);
 	
-	public PendingCertifiedProductDTO create(Long acbId, PendingCertifiedProductEntity toCreate) 
-			throws EntityRetrievalException, EntityCreationException;
+	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 			
-	public void reject(Long pendingProductId) throws EntityRetrievalException;
-	public void confirm(Long pendingProductId) throws EntityRetrievalException;
+	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	public void confirm(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, Long userId, Permission permission) throws UserRetrievalException;
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, UserDTO user, Permission permission);
 	public void addPermissionToAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, UserDTO user, Permission permission);

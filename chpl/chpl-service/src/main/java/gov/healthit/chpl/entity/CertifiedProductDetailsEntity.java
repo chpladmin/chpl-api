@@ -103,6 +103,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
 
+    @Column(name = "privacy_attestation")
+	private Boolean privacyAttestation;
+    
 	public Long getId() {
 		return id;
 	}
@@ -325,6 +328,14 @@ public class CertifiedProductDetailsEntity {
 
 	public void setCertificationStatusName(String certificationStatusName) {
 		this.certificationStatusName = certificationStatusName;
+	}
+
+	public Boolean getPrivacyAttestation() {
+		return privacyAttestation;
+	}
+
+	public void setPrivacyAttestation(Boolean privacyAttestation) {
+		this.privacyAttestation = privacyAttestation;
 	}
 	
 }
