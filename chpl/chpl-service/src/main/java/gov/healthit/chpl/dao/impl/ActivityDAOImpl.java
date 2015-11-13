@@ -51,7 +51,13 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			entity.setActivityObjectId(dto.getActivityObjectId());
 			entity.setCreationDate(new Date());
 			entity.setLastModifiedDate(new Date());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			
+			if (dto.getLastModifiedUser() == null){
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			} else {
+				entity.setLastModifiedUser(dto.getLastModifiedUser());
+			}
+			
 			entity.setDeleted(false);
 			
 			create(entity);
@@ -78,7 +84,11 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		entity.setActivityObjectId(dto.getActivityObjectId());
 		entity.setCreationDate(new Date());
 		entity.setLastModifiedDate(new Date());
-		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		if (dto.getLastModifiedUser() == null){
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		} else {
+			entity.setLastModifiedUser(dto.getLastModifiedUser());
+		}
 		entity.setDeleted(dto.getDeleted());
 		
 		update(entity);
