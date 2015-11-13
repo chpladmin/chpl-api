@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
@@ -179,6 +180,27 @@ public class ActivityController {
 		}
 	}
 	
+	
+	@RequestMapping(value="/user_activity", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public Map<Long, List<ActivityEvent> > activityByUser(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		
+		if (lastNDays == null){
+			return activityManager.getActivityByUser();
+		} else {
+			return activityManager.getActivityByUserInLastNDays(lastNDays);
+		}
+	}
+	
+
+	@RequestMapping(value="/user_activity/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		
+		if (lastNDays == null){
+			return activityManager.getActivityForUser(id);
+		} else {
+			return activityManager.getActivityForUserInLastNDays(id, lastNDays);
+		}
+	}
 	
 	
 	private List<ActivityEvent> getActivityEventsForACBs(Long id) throws JsonParseException, IOException{
@@ -511,6 +533,15 @@ public class ActivityController {
 	private List<ActivityEvent> getActivityEvents() throws JsonParseException, IOException{
 		return activityManager.getAllActivity();
 	}
+	
+	private List<ActivityEvent> getActivityEventsByUser(Integer lastNDays) throws JsonParseException, IOException{
+		return activityManager.getAllActivityInLastNDays(lastNDays);
+	}
+	
+	private List<ActivityEvent> getActivityByUserInLastNDays() throws JsonParseException, IOException{
+		return activityManager.getAllActivity();
+	}
+	
 	
 	
 	private List<ActivityEvent> getActivityEventsForConcept(Long conceptId) throws JsonParseException, IOException{

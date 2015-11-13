@@ -24,12 +24,22 @@ import gov.healthit.chpl.manager.ActivityManager;
 
 
 
+
+
+
+
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -214,12 +224,85 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void deleteActivity(Long toDelete) throws EntityRetrievalException{
 		
 		ActivityDTO dto = activityDAO.getById(toDelete);
 		dto.setDeleted(true);
 		activityDAO.update(dto);
 		
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public Map<Long, List<ActivityEvent> > getActivityByUser() throws JsonParseException, IOException{
+		
+		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUser();
+		Map<Long, List<ActivityEvent> > activityEvents = new HashMap<Long, List<ActivityEvent> >();
+		
+		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
+			
+			List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+			
+			for (ActivityDTO userEventDTO : userEntry.getValue()){
+				ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+				userActivityEvents.add(event);
+			}
+			activityEvents.put(userEntry.getKey(), userActivityEvents);
+		}
+		return activityEvents;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public Map<Long, List<ActivityEvent> > getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException{
+		
+		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUserInLastNDays(nDays);
+		Map<Long, List<ActivityEvent> > activityEvents = new HashMap<Long, List<ActivityEvent> >();
+		
+		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
+			
+			List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+			
+			for (ActivityDTO userEventDTO : userEntry.getValue()){
+				ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+				userActivityEvents.add(event);
+			}
+			activityEvents.put(userEntry.getKey(), userActivityEvents);
+		}
+		return activityEvents;
+		
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+		
+		for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId)){
+			ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+			userActivityEvents.add(event);
+		}
+		return userActivityEvents;
+	}
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public List<ActivityEvent> getActivityForUserInLastNDays(Long userId, Integer nDays) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+		
+		for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId, nDays)){
+			ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+			userActivityEvents.add(event);
+		}
+		return userActivityEvents;
 	}
 	
 

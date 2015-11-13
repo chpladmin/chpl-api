@@ -20,16 +20,6 @@ public class ActivityEvent {
 	private ActivityConcept concept;
 	
 	public ActivityEvent(){}
-//	public ActivityEvent(ActivityDTO dto){
-//		
-//		this.id = dto.getId();
-//		this.description = dto.getDescription();
-//		this.originalData = dto.getOriginalData();
-//		this.newData = dto.getNewData();
-//		this.activityDate = dto.getActivityDate();
-//		this.activityObjectId = dto.getActivityObjectId();		
-//		this.concept = dto.getConcept();
-//	}
 	
 	public Long getId() {
 		return id;
