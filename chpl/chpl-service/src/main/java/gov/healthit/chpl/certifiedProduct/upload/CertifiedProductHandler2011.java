@@ -26,10 +26,10 @@ import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
-@Component("newCertifiedProductHandler2011")
-public class NewCertifiedProductHandler2011 extends NewCertifiedProductHandler {
+@Component("certifiedProductHandler2011")
+public class CertifiedProductHandler2011 extends CertifiedProductHandler {
 	
-	private static final Logger logger = LogManager.getLogger(NewCertifiedProductHandler2011.class);
+	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler2011.class);
 
 	
 	public PendingCertifiedProductEntity handle() {

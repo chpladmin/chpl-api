@@ -25,6 +25,7 @@ public class CertifiedProductSearchDetails {
 	private Integer countCerts;
 	private Integer countCqms;
 	private Boolean visibleOnChpl;
+	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
 	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
@@ -178,5 +179,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
+	}
+	public Boolean getPrivacyAttestation() {
+		return privacyAttestation;
+	}
+	public void setPrivacyAttestation(Boolean privacyAttestation) {
+		this.privacyAttestation = privacyAttestation;
 	}
 }

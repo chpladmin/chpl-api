@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import gov.healthit.chpl.certifiedProduct.validation.ValidationStatus;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -27,8 +26,8 @@ public class PendingCertifiedProductDTO {
     private Long certificationBodyId;    
     private Long productClassificationId;
     private Long additionalSoftwareId;
-    private ValidationStatus validationStatus;
-    private List<String> validationMessages;
+    private List<String> errorMessages;
+    private List<String> warningMessages;
     
     /**
     * fields directly from the spreadsheet
@@ -59,8 +58,8 @@ public class PendingCertifiedProductDTO {
 	private Date uploadDate;
 	
 	public PendingCertifiedProductDTO(){
-		this.validationStatus = ValidationStatus.OK;
-		this.validationMessages = new ArrayList<String>();
+		this.errorMessages = new ArrayList<String>();	
+		this.warningMessages = new ArrayList<String>();
 		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
 	}
@@ -190,8 +189,8 @@ public class PendingCertifiedProductDTO {
 			cqmDto.setDomain(cqmResult.getDomain());
 			this.cqmCriterion.add(cqmDto);
 		}	
-		this.validationStatus = ValidationStatus.OK;
-		this.validationMessages = new ArrayList<String>();	
+		this.errorMessages = new ArrayList<String>();	
+		this.warningMessages = new ArrayList<String>();
 	}
 	
 	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){
@@ -244,8 +243,8 @@ public class PendingCertifiedProductDTO {
 				this.cqmCriterion.add(new PendingCqmCriterionDTO(cqmEntity));
 			}	
 		}
-		this.validationStatus = ValidationStatus.OK;
-		this.validationMessages = new ArrayList<String>();	
+		this.errorMessages = new ArrayList<String>();	
+		this.warningMessages = new ArrayList<String>();	
 	}
 
 	
@@ -520,19 +519,19 @@ public class PendingCertifiedProductDTO {
 		this.uploadDate = uploadDate;
 	}
 
-	public ValidationStatus getValidationStatus() {
-		return validationStatus;
+	public List<String> getErrorMessages() {
+		return errorMessages;
 	}
 
-	public void setValidationStatus(ValidationStatus validationStatus) {
-		this.validationStatus = validationStatus;
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
 	}
 
-	public List<String> getValidationMessages() {
-		return validationMessages;
+	public List<String> getWarningMessages() {
+		return warningMessages;
 	}
 
-	public void setValidationMessages(List<String> validationMessages) {
-		this.validationMessages = validationMessages;
+	public void setWarningMessages(List<String> warningMessages) {
+		this.warningMessages = warningMessages;
 	}
 }

@@ -118,6 +118,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
+		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());
 		searchDetails.setLastModifiedDate(dto.getLastModifiedDate().getTime());
 		
 		searchDetails.setCountCerts(dto.getCountCertifications());
