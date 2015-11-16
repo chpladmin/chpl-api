@@ -1,9 +1,11 @@
 package gov.healthit.chpl.manager;
 
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 import java.io.IOException;
@@ -26,8 +28,8 @@ public interface ActivityManager {
 	public List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException;
 	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException;
 	public void deleteActivity(Long toDelete) throws EntityRetrievalException;
-	public Map<Long, List<ActivityEvent>> getActivityByUser() throws JsonParseException, IOException;
-	public Map<Long, List<ActivityEvent>> getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException;
+	public List<UserActivity> getActivityByUser() throws JsonParseException, IOException, UserRetrievalException;
+	public List<UserActivity> getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException, UserRetrievalException;
 	public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException;
 	public List<ActivityEvent> getActivityForUserInLastNDays(Long userId, Integer nDays) throws JsonParseException, IOException;
 	

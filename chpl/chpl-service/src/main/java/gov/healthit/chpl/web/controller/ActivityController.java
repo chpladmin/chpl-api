@@ -7,8 +7,10 @@ import java.util.Set;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.manager.ActivityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,7 +188,7 @@ public class ActivityController {
 	
 	
 	@RequestMapping(value="/user_activities", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public Map<Long, List<ActivityEvent> > activityByUser(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+	public List<UserActivity> activityByUser(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException, UserRetrievalException{
 		
 		if (lastNDays == null){
 			return activityManager.getActivityByUser();
