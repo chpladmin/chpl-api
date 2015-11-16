@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,10 +9,12 @@ import java.util.Map;
 import gov.healthit.chpl.JSONUtils;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.dto.VendorDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import junit.framework.TestCase;
@@ -277,16 +280,24 @@ public class ActivityManagerTest extends TestCase {
 	@Test
 	public void testGetActivityForUser() throws JsonParseException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		List<ActivityEvent> eventsForUser = activityManager.getActivityForUser(-1L);
+		List<ActivityEvent> eventsForUser = activityManager.getActivityForUser(1L);
 		assertEquals(5, eventsForUser.size());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
-	public void testGetActivityByUser() throws JsonParseException, IOException {
+	public void testGetActivityByUser() throws JsonParseException, IOException, UserRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Map<Long, List<ActivityEvent>> eventsForUser = activityManager.getActivityByUser();
-		assertEquals(5, eventsForUser.get(-1L).size());
+		List<UserActivity> eventsForUser = activityManager.getActivityByUser();
+		
+		List<UserActivity> forUser = new ArrayList<UserActivity>();
+		
+		for (UserActivity activity : eventsForUser){
+			if(activity.getUser().getUserId().equals(1L)){
+				forUser.add(activity);
+			}
+		}
+		assertEquals(5, forUser.get(0).getEvents().size());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
