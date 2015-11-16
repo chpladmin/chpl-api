@@ -64,26 +64,26 @@ public class CorrectiveActionDaoTest extends TestCase {
 	
 	@Test
 	public void testGetCorrectiveActionPlanById() throws EntityRetrievalException {
-		CorrectiveActionPlanDTO plan = capDao.getById(1L);
+		CorrectiveActionPlanDTO plan = capDao.getById(0L);
 		assertNotNull(plan);
 		assertNotNull(plan.getId());
-		assertEquals(1, plan.getId().longValue());
+		assertEquals(0, plan.getId().longValue());
 	}
 	
 	@Test
 	public void testPlanCertificationsExist() throws EntityRetrievalException {
-		List<CorrectiveActionPlanCertificationResultDTO> capResults = capCertDao.getAllForCorrectiveActionPlan(1L);
+		List<CorrectiveActionPlanCertificationResultDTO> capResults = capCertDao.getAllForCorrectiveActionPlan(0L);
 		assertNotNull(capResults);
 		assertEquals(1, capResults.size());
-		assertEquals(1, capResults.get(0).getId().longValue());
+		assertEquals(0, capResults.get(0).getId().longValue());
 	}
 	
 	@Test
 	public void testGetPlanCertificationById() throws EntityRetrievalException {
-		CorrectiveActionPlanCertificationResultDTO capResult = capCertDao.getById(1L);
+		CorrectiveActionPlanCertificationResultDTO capResult = capCertDao.getById(0L);
 		assertNotNull(capResult);
-		assertEquals(1, capResult.getId().longValue());
-		assertEquals(1, capResult.getCorrectiveActionPlanId().longValue());
+		assertEquals(0, capResult.getId().longValue());
+		assertEquals(0, capResult.getCorrectiveActionPlanId().longValue());
 	}
 	
 	@Test
@@ -92,7 +92,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 		assertNotNull(plans);
 		assertEquals(1, plans.size());
 		assertNotNull(plans.get(0).getId());
-		assertEquals(1, plans.get(0).getId().longValue());
+		assertEquals(0, plans.get(0).getId().longValue());
 	}
 	
 	@Test
@@ -100,12 +100,12 @@ public class CorrectiveActionDaoTest extends TestCase {
 	public void testUpdatePlan() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		CorrectiveActionPlanDTO plan = capDao.getById(1L);
+		CorrectiveActionPlanDTO plan = capDao.getById(0L);
 		String resolution = "This has been resolved";
 		plan.setResolution(resolution);
 		capDao.update(plan);
 		
-		plan = capDao.getById(1L);
+		plan = capDao.getById(0L);
 		assertNotNull(plan);
 		assertEquals(resolution, plan.getResolution());
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -146,6 +146,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 		
 		CertificationCriterionDTO cert = certDao.getById(1L);
 		CorrectiveActionPlanCertificationResultDTO planCert = new CorrectiveActionPlanCertificationResultDTO();
+		planCert.setId(2L);
 		planCert.setAcbSummary("cert acb summary");
 		planCert.setCertCriterion(cert);
 		planCert.setCorrectiveActionPlanId(createdPlan.getId());
