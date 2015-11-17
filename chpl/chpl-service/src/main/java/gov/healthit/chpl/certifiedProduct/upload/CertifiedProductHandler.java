@@ -14,6 +14,8 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 @Component("certifiedProductHandler")
 public abstract class CertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler.class);
+	protected static final String PRACTICE_TYPE_AMBULATORY = "AMBULATORY";
+	protected static final String PRACTICE_TYPE_INPATIENT = "INPATIENT";
 	
 	public abstract PendingCertifiedProductEntity handle();
 	

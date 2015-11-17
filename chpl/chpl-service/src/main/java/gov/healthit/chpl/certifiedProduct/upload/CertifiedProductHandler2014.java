@@ -30,7 +30,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler2014.class);
-
+	
 	public PendingCertifiedProductEntity handle() {
 		PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
 		pendingCertifiedProduct.setStatus(getDefaultStatusId());
@@ -244,7 +244,11 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(4)", colIndex++));
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(5)", colIndex++));
+			if(pendingCertifiedProduct.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
+				pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(5)(A)", colIndex++));
+			} else if(pendingCertifiedProduct.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_INPATIENT)) {
+				pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(5)(B)", colIndex++));
+			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		try {
 			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(6)", colIndex++));

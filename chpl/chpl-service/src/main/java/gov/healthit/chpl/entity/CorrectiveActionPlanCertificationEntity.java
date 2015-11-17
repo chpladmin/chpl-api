@@ -21,11 +21,11 @@ public class CorrectiveActionPlanCertificationEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, 
-		generator = "correctiveActionPlanCertificationResultCorrective_action_plan_certification_result_idGenerator")
+		generator = "correctiveActionPlanCertificationResultCorrective_action_plan_certif_idGenerator")
 	@Basic( optional = false )
 	@Column( name = "corrective_action_plan_certification_result_id", nullable = false  )
-	@SequenceGenerator(name = "correctiveActionPlanCertificationResultCorrective_action_plan_certification_result_idGenerator", 
-		sequenceName = "corrective_action_plan_certification_result_corrective_action_plan_certification_result_id_seq", 
+	@SequenceGenerator(name = "correctiveActionPlanCertificationResultCorrective_action_plan_certif_idGenerator", 
+		sequenceName = "corrective_action_plan_certif_corrective_action_plan_certif_seq", 
 		allocationSize = 1)
 	private Long id;
 	
