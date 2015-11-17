@@ -16,7 +16,7 @@ public class AmbulatoryComplete2014Validator extends AmbulatoryModular2014Valida
 
 	private static final String[] requiredCriteria = {"170.314 (a)(2)", "170.314 (a)(4)", "170.314 (a)(9)",
 			"170.314 (a)(10)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
-			"170.314 (a)(15)", "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(5)", "170.314 (e)(1)", "170.314 (e)(2)",
+			"170.314 (a)(15)", "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(5)(A)", "170.314 (e)(1)", "170.314 (e)(2)",
 			"170.314 (e)(3)", "170.314 (f)(1)", "170.314 (f)(2)", "170.314 (f)(3)", "170.314 (g)(2)", 
 			"170.314 (g)(3)", "170.314 (g)(4)"};
 	private static final String[] coreCqms = {"CMS146v1", "CMS155v1", "CMS153v1", "CMS126v1", "CMS117v1",
@@ -37,7 +37,7 @@ public class AmbulatoryComplete2014Validator extends AmbulatoryModular2014Valida
 				}
 			}	
 			if(!hasCert) {
-				product.getWarningMessages().add("Required certificaiton criteria " + requiredCriteria[i] + " was not found.");
+				product.getWarningMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
 			}
 		}		
 		

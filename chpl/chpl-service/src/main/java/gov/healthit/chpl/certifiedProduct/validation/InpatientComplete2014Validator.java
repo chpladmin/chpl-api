@@ -17,7 +17,7 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 	private static final String[] requiredCriteria = {"170.314 (a)(2)", "170.314 (a)(4)", "170.314 (a)(9)",
 			"170.314 (a)(10)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
 			"170.314 (a)(15)", "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(3)", "170.314 (b)(4)", 
-			"170.314 (b)(5)", "170.314 (b)(6)", "170.314 (e)(1)", "170.314 (f)(1)", "170.314 (f)(2)", 
+			"170.314 (b)(5)(B)", "170.314 (b)(6)", "170.314 (e)(1)", "170.314 (f)(1)", "170.314 (f)(2)", 
 			"170.314 (f)(3)", "170.314 (f)(4)", "170.314 (g)(2)", "170.314 (g)(3)", "170.314 (g)(4)"};
 
 	@Override
@@ -33,7 +33,7 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 				}
 			}	
 			if(!hasCert) {
-				product.getWarningMessages().add("Required certificaiton criteria " + requiredCriteria[i] + " was not found.");
+				product.getWarningMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
 			}
 		}		
 		
