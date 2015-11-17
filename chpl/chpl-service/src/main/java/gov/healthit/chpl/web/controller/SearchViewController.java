@@ -101,7 +101,7 @@ public class SearchViewController {
 	@RequestMapping(value="/data/certification_editions", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Set<KeyValueModel> getEditionNames() {
-		return searchMenuManager.getEditionNames();
+		return searchMenuManager.getEditionNames(false);
 	}
 	
 	@RequestMapping(value="/data/certification_statuses", method=RequestMethod.GET,
@@ -136,8 +136,13 @@ public class SearchViewController {
 	
 	@RequestMapping(value="/data/search_options", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody PopulateSearchOptions getPopulateSearchData() {
-		return searchMenuManager.getPopulateSearchOptions();
+	public @ResponseBody PopulateSearchOptions getPopulateSearchData(
+			@RequestParam(value = "simple", required = false) Boolean simple
+			) {
+		if (simple == null){
+			simple = false;
+		}
+		return searchMenuManager.getPopulateSearchOptions(simple);
 	}
 	
 }
