@@ -32,23 +32,15 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public CorrectiveActionPlanDetails create(Long acbId, CorrectiveActionPlanDTO toCreate,
-				List<CorrectiveActionPlanCertificationResultDTO> certs)
+	public CorrectiveActionPlanDetails create(Long acbId, CorrectiveActionPlanDTO toCreate)
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CorrectiveActionPlanDTO created = capDao.create(toCreate);
 		
-		List<CorrectiveActionPlanCertificationResultDTO> createdCerts = new
-				ArrayList<CorrectiveActionPlanCertificationResultDTO>();
-		for(CorrectiveActionPlanCertificationResultDTO certToCreate : certs) {
-			CorrectiveActionPlanCertificationResultDTO createdCert = capCertDao.create(certToCreate);
-			createdCerts.add(createdCert);
-		}
-		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, created.getId(), 
 				"Corrective action plan with id "+ created.getId() +" was created.", null, created);
 
-		return new CorrectiveActionPlanDetails(created, createdCerts);
+		return new CorrectiveActionPlanDetails(created, null);
 	}
 
 	@Override

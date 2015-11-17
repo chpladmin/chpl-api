@@ -92,6 +92,7 @@ public class CorrectiveActionPlanController {
 		InvalidArgumentsException {
 		
 		CorrectiveActionPlanDTO toUpdate = new CorrectiveActionPlanDTO();
+		toUpdate.setId(updateRequest.getId());
 		toUpdate.setAcbSummary(updateRequest.getAcbSummary());
 		toUpdate.setActualCompletionDate(updateRequest.getActualCompletionDate());
 		toUpdate.setApprovalDate(updateRequest.getApprovalDate());
@@ -101,13 +102,14 @@ public class CorrectiveActionPlanController {
 		toUpdate.setEstimatedCompleteionDate(updateRequest.getEstimatedCompleteionDate());
 		toUpdate.setResolution(updateRequest.getResolution());
 		
-		//get the acb that owns the product to make sure we have permissions to update it
+		//update the plan info
+		Long owningAcbId = null;
 		CorrectiveActionPlanDTO existingPlan = capManager.getPlanById(updateRequest.getId());
 		if(existingPlan.getCertifiedProductId() != null) {
 			CertifiedProductDTO certifiedProduct = productManager.getById(existingPlan.getCertifiedProductId());
 			if(certifiedProduct != null) {
-				Long acbId = certifiedProduct.getCertificationBodyId();
-				capManager.update(acbId, toUpdate);
+				owningAcbId = certifiedProduct.getCertificationBodyId();
+				capManager.update(owningAcbId, toUpdate);
 			} else {
 				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
 			}
@@ -115,17 +117,64 @@ public class CorrectiveActionPlanController {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
 		
-		//TODO: now update the list of certs!
+		//remove certifications that aren't there anymore
+		List<CorrectiveActionPlanCertificationResultDTO> certsToDelete = new ArrayList<CorrectiveActionPlanCertificationResultDTO>();
 		List<CorrectiveActionPlanCertificationResultDTO> existingCerts = capManager.getCertificationsForPlan(existingPlan.getId());
 		for(int i = 0; i < existingCerts.size(); i++) {
+			CorrectiveActionPlanCertificationResultDTO existingCert = existingCerts.get(i);
+			boolean foundCert = false;
+			for(int j = 0; j < updateRequest.getCertifications().size(); j++) {
+				CorrectiveActionPlanCertificationResult updateCert = updateRequest.getCertifications().get(j);
+				if(existingCert.getId().longValue() == updateCert.getId().longValue()) {
+					foundCert = true;
+				}
+			}
 			
+			if(!foundCert) {
+				CorrectiveActionPlanCertificationResultDTO certToDelete = new CorrectiveActionPlanCertificationResultDTO();
+				certToDelete.setId(existingCert.getId());
+				certsToDelete.add(certToDelete);
+			}
 		}
-		//END TODO
+		if(certsToDelete.size() > 0) {
+			capManager.removeCertificationsFromPlan(owningAcbId, certsToDelete);
+		}
+		
+		//add certifications that weren't there before
+		List<CorrectiveActionPlanCertificationResultDTO> certsToAdd = new ArrayList<CorrectiveActionPlanCertificationResultDTO>();
+		existingCerts = capManager.getCertificationsForPlan(existingPlan.getId());
+		for(int i = 0; i < updateRequest.getCertifications().size(); i++) {
+			CorrectiveActionPlanCertificationResult updateCert = updateRequest.getCertifications().get(i);
+			boolean foundCert = false;
+			for(int j = 0; j < existingCerts.size(); j++) {
+				CorrectiveActionPlanCertificationResultDTO existingCert = existingCerts.get(j);
+				if(existingCert.getId().longValue() == updateCert.getId().longValue()) {
+					foundCert = true;
+				}
+			}
+			
+			if(!foundCert) {
+				CorrectiveActionPlanCertificationResultDTO certToAdd = new CorrectiveActionPlanCertificationResultDTO();
+				certToAdd.setAcbSummary(updateCert.getAcbSummary());
+				certToAdd.setCorrectiveActionPlanId(updateRequest.getId());
+				certToAdd.setDeveloperSummary(updateCert.getDeveloperSummary());
+				certToAdd.setResolution(updateCert.getResolution());
+				
+				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
+				criterion.setId(updateCert.getCertificationCriterionId());
+				certToAdd.setCertCriterion(criterion);
+				certsToAdd.add(certToAdd);
+			}
+		}
+		if(certsToDelete.size() > 0) {
+			capManager.addCertificationsToPlan(owningAcbId, updateRequest.getId(), certsToDelete);
+		}
+		//END 
 		
 		return capManager.getPlanDetails(toUpdate.getId());
 	}
 	
-	@RequestMapping(value="/create", method=RequestMethod.GET,
+	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CorrectiveActionPlanDetails create(@RequestBody(required=true) CorrectiveActionPlanDetails createRequest) 
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException,
@@ -140,39 +189,36 @@ public class CorrectiveActionPlanController {
 		toCreate.setEstimatedCompleteionDate(createRequest.getEstimatedCompleteionDate());
 		toCreate.setResolution(createRequest.getResolution());
 		
+		Long createdPlanId = null;
+		Long acbId = null;
+		
+		//get the acb that owns the product to make sure we have permissions to create it		
+		CertifiedProductDTO certifiedProduct = productManager.getById(toCreate.getCertifiedProductId());
+		if(certifiedProduct != null) {
+			acbId = certifiedProduct.getCertificationBodyId();
+			CorrectiveActionPlanDetails createdPlan = capManager.create(acbId, toCreate);
+			createdPlanId = createdPlan.getId();
+		} else {
+			throw new InvalidArgumentsException("Could not find the certified product for this plan.");
+		}
+		
 		List<CorrectiveActionPlanCertificationResultDTO> certsToCreate = new ArrayList<CorrectiveActionPlanCertificationResultDTO>();
 		if(createRequest.getCertifications() != null && createRequest.getCertifications().size() > 0) {
 			for(CorrectiveActionPlanCertificationResult cert : createRequest.getCertifications()) {
 				CorrectiveActionPlanCertificationResultDTO currCertToCreate = new CorrectiveActionPlanCertificationResultDTO();
 				currCertToCreate.setAcbSummary(cert.getAcbSummary());
-				currCertToCreate.setCorrectiveActionPlanId(createRequest.getId());
+				currCertToCreate.setCorrectiveActionPlanId(createdPlanId);
 				currCertToCreate.setDeveloperSummary(cert.getDeveloperSummary());
 				currCertToCreate.setResolution(cert.getResolution());
 				
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setId(cert.getCertificationCriterionId());
-				criterion.setNumber(cert.getCertificationCriterionNumber());
-				criterion.setTitle(cert.getCertificationCriterionTitle());
 				currCertToCreate.setCertCriterion(criterion);
 				certsToCreate.add(currCertToCreate);
 			}
 		}
 		
-		CorrectiveActionPlanDetails result = null;
-		//get the acb that owns the product to make sure we have permissions to update it
-		CorrectiveActionPlanDTO existingPlan = capManager.getPlanById(createRequest.getId());
-		if(existingPlan.getCertifiedProductId() != null) {
-			CertifiedProductDTO certifiedProduct = productManager.getById(existingPlan.getCertifiedProductId());
-			if(certifiedProduct != null) {
-				Long acbId = certifiedProduct.getCertificationBodyId();
-				result = capManager.create(acbId, toCreate, certsToCreate);
-			} else {
-				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
-			}
-		} else {
-			throw new InvalidArgumentsException("No certified product id was found for this plan.");
-		}
-		
+		CorrectiveActionPlanDetails result = capManager.addCertificationsToPlan(acbId, createdPlanId, certsToCreate);
 		return result;
 	}
 	

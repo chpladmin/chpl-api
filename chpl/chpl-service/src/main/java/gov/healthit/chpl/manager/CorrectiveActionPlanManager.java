@@ -14,8 +14,7 @@ import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
 public interface CorrectiveActionPlanManager {
 			
 	public CorrectiveActionPlanDetails create(Long acbId, 
-			CorrectiveActionPlanDTO toCreate,
-			List<CorrectiveActionPlanCertificationResultDTO> certs)
+			CorrectiveActionPlanDTO toCreate)
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	
 	public CorrectiveActionPlanDetails addCertificationsToPlan(Long acbId, Long correctiveActionPlanId,List<CorrectiveActionPlanCertificationResultDTO> certs)
