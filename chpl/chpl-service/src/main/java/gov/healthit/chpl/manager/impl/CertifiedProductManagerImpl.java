@@ -268,7 +268,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				AdditionalSoftwareDTO newSoftware = new AdditionalSoftwareDTO();
 				newSoftware.setCertifiedProductId(newCertifiedProduct.getId());
 				newSoftware.setName(software.getName());
-				newSoftware.setVersion("-1");
+				if(!StringUtils.isEmpty(software.getVersion())) {
+					newSoftware.setVersion(software.getVersion());
+				} else {
+					newSoftware.setVersion("-1");
+				}
 				softwareDao.create(newSoftware);
 			}
 		}
