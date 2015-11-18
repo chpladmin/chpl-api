@@ -122,7 +122,7 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		entityManager.flush();
 	}
 	
-	private CorrectiveActionPlanEntity getEntityById(Long id) throws EntityRetrievalException {
+	public CorrectiveActionPlanEntity getEntityById(Long id) throws EntityRetrievalException {
 		
 		CorrectiveActionPlanEntity entity = null;
 			
