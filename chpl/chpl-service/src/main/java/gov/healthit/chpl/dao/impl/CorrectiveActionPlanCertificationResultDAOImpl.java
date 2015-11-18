@@ -10,16 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.CertificationEventDAO;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanCertificationResultDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
-import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.CertificationEventEntity;
 import gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity;
 import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
 
@@ -27,6 +24,7 @@ import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
 public class CorrectiveActionPlanCertificationResultDAOImpl extends BaseDAOImpl implements CorrectiveActionPlanCertificationResultDAO {
 	
 	@Autowired CorrectiveActionPlanDAO capDao;
+	@Autowired CertificationCriterionDAO certDao;
 	
 	@Override
 	public CorrectiveActionPlanCertificationResultDTO create(CorrectiveActionPlanCertificationResultDTO toCreate) throws EntityCreationException,
@@ -43,11 +41,8 @@ public class CorrectiveActionPlanCertificationResultDAOImpl extends BaseDAOImpl 
 		if(entity != null) {
 			throw new EntityCreationException("An entity with this id already exists.");
 		} else {
-			CorrectiveActionPlanEntity plan = new CorrectiveActionPlanEntity();
-			plan.setId(toCreate.getCorrectiveActionPlanId());
-			
-			CertificationCriterionEntity cert = new CertificationCriterionEntity();
-			cert.setId(toCreate.getCertCriterion().getId());
+			CorrectiveActionPlanEntity plan = capDao.getEntityById(toCreate.getCorrectiveActionPlanId());
+			CertificationCriterionEntity cert = certDao.getEntityById(toCreate.getCertCriterion().getId());
 			
 			entity = new CorrectiveActionPlanCertificationEntity();
 			entity.setCorrectiveActionPlan(plan);
@@ -72,15 +67,11 @@ public class CorrectiveActionPlanCertificationResultDAOImpl extends BaseDAOImpl 
 		}
 		
 		if(toUpdate.getCorrectiveActionPlanId() != null) {
-			CorrectiveActionPlanEntity plan = new CorrectiveActionPlanEntity();
-			plan.setId(toUpdate.getCorrectiveActionPlanId());
-			
+			CorrectiveActionPlanEntity plan = capDao.getEntityById(toUpdate.getCorrectiveActionPlanId());
 			entity.setCorrectiveActionPlan(plan);
 		}
 		if(toUpdate.getCertCriterion() != null) {
-			CertificationCriterionEntity cert = new CertificationCriterionEntity();
-			cert.setId(toUpdate.getCertCriterion().getId());
-			
+			CertificationCriterionEntity cert = certDao.getEntityById(toUpdate.getCertCriterion().getId());
 			entity.setCertificationCriterion(cert);
 		}
 		
