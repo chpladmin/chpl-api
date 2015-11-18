@@ -86,12 +86,20 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<KeyValueModel> getEditionNames() {
+	public Set<KeyValueModel> getEditionNames(Boolean simple) {
+		
+		
 		
 		List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
 		Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
 		
 		for (CertificationEditionDTO dto : certificationEditions) {
+			
+			if (simple){
+				if (dto.getYear().equals("2011")){
+					continue;
+				}
+			}
 			editionNames.add(new KeyValueModel(dto.getId(), dto.getYear()));
 		}
 		
@@ -184,7 +192,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<DescriptiveModel> getCQMCriterionNumbers(){
+	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple){
 
 		List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
 		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
@@ -193,10 +201,18 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			
 			String idNumber;
 			
-			if (dto.getCmsId() != null){
-				idNumber = dto.getCmsId();
-			} else {
-				idNumber = dto.getNqfNumber();
+			if (simple){
+				if (dto.getCmsId() != null){
+					idNumber = dto.getCmsId();
+				} else {
+					continue;
+				}
+			} else {	
+				if (dto.getCmsId() != null){
+					idNumber = dto.getCmsId();
+				} else {
+					idNumber = dto.getNqfNumber();
+				}
 			}
 			
 			criterionNames.add( new DescriptiveModel(dto.getId(), idNumber, dto.getTitle()));
@@ -207,17 +223,17 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public PopulateSearchOptions getPopulateSearchOptions() {
+	public PopulateSearchOptions getPopulateSearchOptions(Boolean simple) {
 		
 		PopulateSearchOptions searchOptions = new PopulateSearchOptions();
 		searchOptions.setCertBodyNames(this.getCertBodyNames());
-		searchOptions.setEditions(this.getEditionNames());
+		searchOptions.setEditions(this.getEditionNames(simple));
 		searchOptions.setCertificationStatuses(this.getCertificationStatuses());
 		searchOptions.setPracticeTypeNames(this.getPracticeTypeNames());
 		searchOptions.setProductClassifications(this.getClassificationNames());
 		searchOptions.setProductNames(this.getProductNames());
 		searchOptions.setVendorNames(this.getVendorNames());
-		searchOptions.setCqmCriterionNumbers(this.getCQMCriterionNumbers());
+		searchOptions.setCqmCriterionNumbers(this.getCQMCriterionNumbers(simple));
 		searchOptions.setCertificationCriterionNumbers(this.getCertificationCriterionNumbers());
 		
 		return searchOptions;
