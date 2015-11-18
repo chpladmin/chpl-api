@@ -1,21 +1,12 @@
 package gov.healthit.chpl.web.controller;
 
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,41 +14,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadType;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.AdditionalSoftware;
-import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CorrectiveActionPlanCertificationResult;
 import gov.healthit.chpl.domain.CorrectiveActionPlanDetails;
 import gov.healthit.chpl.domain.CorrectiveActionPlanResults;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
-import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CorrectiveActionPlanManager;
-import gov.healthit.chpl.manager.PendingCertifiedProductManager;
-import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 @RestController
 @RequestMapping("/corrective_action_plan")
@@ -166,8 +136,8 @@ public class CorrectiveActionPlanController {
 				certsToAdd.add(certToAdd);
 			}
 		}
-		if(certsToDelete.size() > 0) {
-			capManager.addCertificationsToPlan(owningAcbId, updateRequest.getId(), certsToDelete);
+		if(certsToAdd.size() > 0) {
+			capManager.addCertificationsToPlan(owningAcbId, updateRequest.getId(), certsToAdd);
 		}
 		//END 
 		
