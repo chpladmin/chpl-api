@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +26,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
-import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -54,6 +50,9 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.manager.VendorManager;
 
 @Service
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
@@ -65,9 +64,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired CQMCriterionDAO cqmCriterionDao;
 	@Autowired AdditionalSoftwareDAO softwareDao;
 	@Autowired CertificationBodyDAO acbDao;
-	@Autowired VendorDAO vendorDao;
-	@Autowired ProductDAO productDao;
-	@Autowired ProductVersionDAO versionDao;
+	@Autowired VendorManager vendorManager;
+	@Autowired ProductManager productManager;
+	@Autowired ProductVersionManager versionManager;
 	@Autowired CertificationEventDAO eventDao;
 	@Autowired EventTypeDAO eventTypeDao;
 	
@@ -219,7 +218,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				newVendor.setAddress(address);
 			}
 			
-			newVendor = vendorDao.create(newVendor);
+			newVendor = vendorManager.create(newVendor);
 			vendorId = newVendor.getId().toString();
 		} else {
 			vendorId = pendingCp.getVendor().get("id").toString();
@@ -234,7 +233,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			newProduct.setName(pendingCp.getProduct().get("name").toString());
 			newProduct.setVendorId(new Long(vendorId));
 			newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
-			newProduct = productDao.create(newProduct);
+			newProduct = productManager.create(newProduct);
 			productId = newProduct.getId().toString();
 		} else {
 			productId = pendingCp.getProduct().get("id").toString();
@@ -248,7 +247,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 			newVersion.setVersion(pendingCp.getProduct().get("version").toString());
 			newVersion.setProductId(new Long(productId));
-			newVersion = versionDao.create(newVersion);
+			newVersion = versionManager.create(newVersion);
 			productVersionId = newVersion.getId().toString();
 		} else {
 			productVersionId = pendingCp.getProduct().get("versionId").toString();
