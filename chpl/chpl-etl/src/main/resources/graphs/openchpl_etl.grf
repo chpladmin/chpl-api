@@ -3117,7 +3117,35 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__5_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number LIKE '170.314 (b)(5)%'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(5)(A)'
+       AND $Practice_Setting = 'Ambulatory'
+       AND $Certification_Edition_Year = '2014'
+       AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, false, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(5)(A)'
+       AND $Practice_Setting = 'Inpatient'
+       AND $Certification_Edition_Year = '2014'
+       AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__5_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(5)(B)'
+       AND $Practice_Setting = 'Inpatient'
+       AND $Certification_Edition_Year = '2014'
+       AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, false, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(5)(B)'
+       AND $Practice_Setting = 'Ambulatory'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
 
