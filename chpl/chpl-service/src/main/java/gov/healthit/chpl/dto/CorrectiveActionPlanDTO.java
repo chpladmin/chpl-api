@@ -15,7 +15,7 @@ public class CorrectiveActionPlanDTO {
 	private Date estimatedCompleteionDate;
 	private Date actualCompletionDate;
 	private String resolution;
-	
+
 	public CorrectiveActionPlanDTO() {
 	}
 	

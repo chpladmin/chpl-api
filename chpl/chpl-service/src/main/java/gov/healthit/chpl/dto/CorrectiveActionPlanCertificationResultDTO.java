@@ -5,6 +5,7 @@ import gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity;
 public class CorrectiveActionPlanCertificationResultDTO {
 
 	private Long id;
+	private Long correctiveActionPlanId;
 	private CertificationCriterionDTO certCriterion;
 	private String acbSummary;
 	private String developerSummary;
@@ -16,6 +17,9 @@ public class CorrectiveActionPlanCertificationResultDTO {
 	
 	public CorrectiveActionPlanCertificationResultDTO(CorrectiveActionPlanCertificationEntity entity) {
 		setId(entity.getId());
+		if(entity.getCorrectiveActionPlan() != null) {
+			setCorrectiveActionPlanId(entity.getCorrectiveActionPlan().getId());
+		}
 		setAcbSummary(entity.getAcbSummary());
 		setDeveloperSummary(entity.getDeveloperSummaryDescription());
 		setResolution(entity.getResolution());
@@ -60,5 +64,13 @@ public class CorrectiveActionPlanCertificationResultDTO {
 
 	public void setResolution(String resolution) {
 		this.resolution = resolution;
+	}
+
+	public Long getCorrectiveActionPlanId() {
+		return correctiveActionPlanId;
+	}
+
+	public void setCorrectiveActionPlanId(Long correctiveActionPlanId) {
+		this.correctiveActionPlanId = correctiveActionPlanId;
 	}
 }

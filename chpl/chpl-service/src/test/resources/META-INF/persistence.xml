@@ -33,6 +33,8 @@
 		<class>gov.healthit.chpl.entity.PendingCqmCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.ActivityEntity</class>
+		<class>gov.healthit.chpl.entity.CorrectiveActionPlanEntity</class>
+		<class>gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />
