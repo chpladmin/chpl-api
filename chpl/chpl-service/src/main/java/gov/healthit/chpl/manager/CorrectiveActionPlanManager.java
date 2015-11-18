@@ -28,7 +28,8 @@ public interface CorrectiveActionPlanManager {
 	public List<CorrectiveActionPlanDetails> getPlansForCertifiedProductDetails(Long certifiedProductId) 
 			throws EntityRetrievalException;
 	public CorrectiveActionPlanDetails getPlanDetails(Long capId) throws EntityRetrievalException;
-	public CorrectiveActionPlanDTO update(Long acbId, CorrectiveActionPlanDTO toUpdate) throws EntityRetrievalException;
+	public CorrectiveActionPlanDTO update(Long acbId, CorrectiveActionPlanDTO toUpdate) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	
-	public void delete(Long acbId, Long capId)  throws EntityRetrievalException;
+	public void delete(Long acbId, Long capId)  throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 }

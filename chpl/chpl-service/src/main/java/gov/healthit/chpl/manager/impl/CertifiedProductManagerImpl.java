@@ -352,7 +352,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		eventDao.create(activeEvent);
 		
 		CertifiedProductSearchDetails details = detailsManager.getCertifiedProductDetails(newCertifiedProduct.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(), "Certified Product "+newCertifiedProduct.getId()+" was created.", null, details);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(), "Created "+newCertifiedProduct.getChplProductNumberForActivity(), null, details);
 		
 		return newCertifiedProduct;
 	}
@@ -389,7 +389,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		CertifiedProductDTO result = dao.update(dto);
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(result.getId());
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), "Certified Product "+result.getId()+" was updated." , before , after);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), "Updated " + result.getChplProductNumberForActivity() , before , after);
 		return result;
 	}
 	
@@ -427,7 +427,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for Certified Product "+productDto.getId()+" was updated." , before , after);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity() + " were updated." , before , after);
 	}
 	
 	
@@ -533,7 +533,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
 		
 		if (dataHasChanged){
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for Certified Product "+productDto.getId()+" was updated." , before , after);
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity()+" were updated." , before , after);
 		}
 		
 	}
@@ -635,7 +635,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		
 		if (dataHasChanged){
 			CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Additional Software for Certified Product "+productDto.getId()+" was updated." , before , after);
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Additional Software for "+productDto.getChplProductNumberForActivity()+" was updated." , before , after);
 		}
 	}
 	

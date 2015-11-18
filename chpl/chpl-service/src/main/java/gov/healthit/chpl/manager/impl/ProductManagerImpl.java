@@ -99,8 +99,9 @@ public class ProductManagerImpl implements ProductManager {
 	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductDTO toDelete = productDao.getById(productId);
+		String activityMsg = "Product "+ toDelete.getName() +" was deleted.";
+
 		productDao.delete(productId);
-		String activityMsg = "Product "+productId.toString()+" was deleted.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, activityMsg, toDelete , null);
 		
 	}
