@@ -385,11 +385,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = false)
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
-		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(dto.getId());
+		CertifiedProductDTO before = dao.getById(dto.getId());
 		CertifiedProductDTO result = dao.update(dto);
-		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(result.getId());
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), "Updated " + result.getChplProductNumberForActivity() , before , after);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), "Updated " + result.getChplProductNumberForActivity() , before , result);
 		return result;
 	}
 	
