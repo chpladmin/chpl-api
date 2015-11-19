@@ -74,6 +74,7 @@ public class CQMCriterionDaoTest {
 		dto.setDeleted(false);
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(Util.getCurrentUser().getId());
+		dto.setRetired(false);
 		
 		CQMCriterionDTO result = cqmCriterionDAO.create(dto);
 		CQMCriterionDTO check = cqmCriterionDAO.getById(result.getId());
@@ -122,6 +123,7 @@ public class CQMCriterionDaoTest {
 		dto.setDeleted(false);
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(Util.getCurrentUser().getId());
+		dto.setRetired(false);
 		
 		CQMCriterionDTO result = cqmCriterionDAO.create(dto);
 		
@@ -187,6 +189,7 @@ public class CQMCriterionDaoTest {
 		dto.setDeleted(false);
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(Util.getCurrentUser().getId());
+		dto.setRetired(false);
 		
 		CQMCriterionDTO result = cqmCriterionDAO.create(dto);
 		CQMCriterionDTO check = cqmCriterionDAO.getById(result.getId());
@@ -248,6 +251,7 @@ public class CQMCriterionDaoTest {
 		dto.setDeleted(false);
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(Util.getCurrentUser().getId());
+		dto.setRetired(false);
 		
 		CQMCriterionDTO result = cqmCriterionDAO.create(dto);
 		CQMCriterionDTO check = cqmCriterionDAO.getById(result.getId());
