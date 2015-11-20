@@ -138,7 +138,7 @@ public class SearchViewController {
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PopulateSearchOptions getPopulateSearchData(
 			@RequestParam(value = "simple", required = false) Boolean simple
-			) {
+			) throws EntityRetrievalException {
 		if (simple == null){
 			simple = false;
 		}

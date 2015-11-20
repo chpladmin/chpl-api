@@ -67,6 +67,12 @@ public class CertificationEditionEntity implements Serializable {
 	@Basic( optional = true )
 	@Column( name="year", length = 10  )
 	private String year;
+	
+	@Basic( optional = false )
+	@Column( name="retired", length = 10  )
+	private Boolean retired;
+	
+
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -218,6 +224,15 @@ public class CertificationEditionEntity implements Serializable {
 	 */
 	public void setYear(final String year) {
 		this.year = year;
+	}
+	
+	
+	public Boolean getRetired() {
+		return retired;
+	}
+
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
 	}
 	
 

@@ -50,6 +50,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 			entity.setNqfNumber(dto.getNqfNumber());
 			entity.setNumber(dto.getNumber());
 			entity.setTitle(dto.getTitle());
+			entity.setRetired(dto.getRetired());
 						
 			create(entity);	
 		}
@@ -81,7 +82,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		entity.setNqfNumber(dto.getNqfNumber());
 		entity.setNumber(dto.getNumber());
 		entity.setTitle(dto.getTitle());
-					
+		entity.setRetired(dto.getRetired());
 						
 		update(entity);	
 		
