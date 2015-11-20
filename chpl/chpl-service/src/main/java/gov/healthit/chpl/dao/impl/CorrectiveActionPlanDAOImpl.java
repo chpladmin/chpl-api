@@ -46,6 +46,7 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 			entity.setDeveloperSummaryDescription(toCreate.getDeveloperSummary());
 			entity.setEffectiveDate(toCreate.getEffectiveDate());
 			entity.setEstimatedCompletionDate(toCreate.getEstimatedCompletionDate());
+			entity.setNoncomplainceDeterminationDate(toCreate.getNoncomplainceDate());
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setResolution(toCreate.getResolution());
@@ -70,6 +71,7 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		entity.setDeveloperSummaryDescription(toUpdate.getDeveloperSummary());
 		entity.setEffectiveDate(toUpdate.getEffectiveDate());
 		entity.setEstimatedCompletionDate(toUpdate.getEstimatedCompletionDate());
+		entity.setNoncomplainceDeterminationDate(toUpdate.getNoncomplainceDate());
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setResolution(toUpdate.getResolution());
