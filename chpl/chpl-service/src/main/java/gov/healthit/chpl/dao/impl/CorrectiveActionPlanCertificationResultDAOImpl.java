@@ -6,8 +6,10 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.jose4j.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -42,8 +44,16 @@ public class CorrectiveActionPlanCertificationResultDAOImpl extends BaseDAOImpl 
 			throw new EntityCreationException("An entity with this id already exists.");
 		} else {
 			CorrectiveActionPlanEntity plan = capDao.getEntityById(toCreate.getCorrectiveActionPlanId());
-			CertificationCriterionEntity cert = certDao.getEntityById(toCreate.getCertCriterion().getId());
+			CertificationCriterionEntity cert = null;
+			if(toCreate.getCertCriterion().getId() != null) {
+				cert = certDao.getEntityById(toCreate.getCertCriterion().getId());
+			} else if(!StringUtils.isEmpty(toCreate.getCertCriterion().getNumber())) {
+				cert = certDao.getEntityByName(toCreate.getCertCriterion().getNumber());
+			}
 			
+			if(cert == null) {
+				throw new EntityCreationException("Cannot find a certification criterion with id " + toCreate.getCertCriterion().getId() + " or number " + toCreate.getCertCriterion().getNumber());
+			}
 			entity = new CorrectiveActionPlanCertificationEntity();
 			entity.setCorrectiveActionPlan(plan);
 			entity.setCertificationCriterion(cert);

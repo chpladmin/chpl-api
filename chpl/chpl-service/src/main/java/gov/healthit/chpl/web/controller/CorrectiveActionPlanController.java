@@ -69,7 +69,8 @@ public class CorrectiveActionPlanController {
 		toUpdate.setCertifiedProductId(updateRequest.getCertifiedProductId());
 		toUpdate.setDeveloperSummary(updateRequest.getDeveloperSummary());
 		toUpdate.setEffectiveDate(updateRequest.getEffectiveDate());
-		toUpdate.setEstimatedCompleteionDate(updateRequest.getEstimatedCompleteionDate());
+		toUpdate.setEstimatedCompletionDate(updateRequest.getEstimatedCompletionDate());
+		toUpdate.setNoncomplainceDate(updateRequest.getNoncomplianceDate());
 		toUpdate.setResolution(updateRequest.getResolution());
 		
 		//update the plan info
@@ -95,7 +96,7 @@ public class CorrectiveActionPlanController {
 			boolean foundCert = false;
 			for(int j = 0; j < updateRequest.getCertifications().size(); j++) {
 				CorrectiveActionPlanCertificationResult updateCert = updateRequest.getCertifications().get(j);
-				if(existingCert.getId().longValue() == updateCert.getId().longValue()) {
+				if(existingCert.getCertCriterion().getNumber().equals(updateCert.getCertificationCriterionNumber())) {
 					foundCert = true;
 				}
 			}
@@ -118,7 +119,7 @@ public class CorrectiveActionPlanController {
 			boolean foundCert = false;
 			for(int j = 0; j < existingCerts.size(); j++) {
 				CorrectiveActionPlanCertificationResultDTO existingCert = existingCerts.get(j);
-				if(existingCert.getId().longValue() == updateCert.getId().longValue()) {
+				if(existingCert.getCertCriterion().getNumber().equals(updateCert.getCertificationCriterionNumber())) {
 					foundCert = true;
 				}
 			}
@@ -131,7 +132,7 @@ public class CorrectiveActionPlanController {
 				certToAdd.setResolution(updateCert.getResolution());
 				
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
-				criterion.setId(updateCert.getCertificationCriterionId());
+				criterion.setNumber(updateCert.getCertificationCriterionNumber());
 				certToAdd.setCertCriterion(criterion);
 				certsToAdd.add(certToAdd);
 			}
@@ -156,7 +157,8 @@ public class CorrectiveActionPlanController {
 		toCreate.setCertifiedProductId(createRequest.getCertifiedProductId());
 		toCreate.setDeveloperSummary(createRequest.getDeveloperSummary());
 		toCreate.setEffectiveDate(createRequest.getEffectiveDate());
-		toCreate.setEstimatedCompleteionDate(createRequest.getEstimatedCompleteionDate());
+		toCreate.setEstimatedCompletionDate(createRequest.getEstimatedCompletionDate());
+		toCreate.setNoncomplainceDate(createRequest.getNoncomplianceDate());
 		toCreate.setResolution(createRequest.getResolution());
 		
 		Long createdPlanId = null;
@@ -183,6 +185,7 @@ public class CorrectiveActionPlanController {
 				
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setId(cert.getCertificationCriterionId());
+				criterion.setNumber(cert.getCertificationCriterionNumber());
 				currCertToCreate.setCertCriterion(criterion);
 				certsToCreate.add(currCertToCreate);
 			}
