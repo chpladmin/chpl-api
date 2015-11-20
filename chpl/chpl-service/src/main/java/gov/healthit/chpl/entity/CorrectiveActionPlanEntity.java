@@ -45,6 +45,9 @@ public class CorrectiveActionPlanEntity {
 	@Column(name = "completion_date_actual")
 	private Date actualCompletionDate;
 	
+	@Column(name = "noncompliance_determination_date")
+	private Date noncomplainceDeterminationDate;
+	
 	@Column(name = "resolution")
 	private String resolution;
 	
@@ -168,6 +171,14 @@ public class CorrectiveActionPlanEntity {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public Date getNoncomplainceDeterminationDate() {
+		return noncomplainceDeterminationDate;
+	}
+
+	public void setNoncomplainceDeterminationDate(Date noncomplainceDeterminationDate) {
+		this.noncomplainceDeterminationDate = noncomplainceDeterminationDate;
 	}
 
 }
