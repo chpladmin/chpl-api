@@ -88,9 +88,25 @@ public class CorrectiveActionPlanController {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
 		
+		//update data for any certifications that already exist
+		List<CorrectiveActionPlanCertificationResultDTO> existingCerts = capManager.getCertificationsForPlan(existingPlan.getId());
+		for(int i = 0; i < existingCerts.size(); i++) {
+			CorrectiveActionPlanCertificationResultDTO existingCert = existingCerts.get(i);
+			for(int j = 0; j < updateRequest.getCertifications().size(); j++) {
+				CorrectiveActionPlanCertificationResult updateCert = updateRequest.getCertifications().get(j);
+				if(existingCert.getCertCriterion().getNumber().equals(updateCert.getCertificationCriterionNumber())) {
+					existingCert.setAcbSummary(updateCert.getAcbSummary());
+					existingCert.setCorrectiveActionPlanId(updateRequest.getId());
+					existingCert.setDeveloperSummary(updateCert.getDeveloperSummary());
+					existingCert.setResolution(updateCert.getResolution());
+					capManager.updateCertification(owningAcbId, existingCert);
+				}
+			}
+		}
+		
 		//remove certifications that aren't there anymore
 		List<CorrectiveActionPlanCertificationResultDTO> certsToDelete = new ArrayList<CorrectiveActionPlanCertificationResultDTO>();
-		List<CorrectiveActionPlanCertificationResultDTO> existingCerts = capManager.getCertificationsForPlan(existingPlan.getId());
+		existingCerts = capManager.getCertificationsForPlan(existingPlan.getId());
 		for(int i = 0; i < existingCerts.size(); i++) {
 			CorrectiveActionPlanCertificationResultDTO existingCert = existingCerts.get(i);
 			boolean foundCert = false;
