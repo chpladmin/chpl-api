@@ -60,7 +60,6 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		System.out.println(detail.getQualityManagementSystemAtt());
 		System.out.println(detail.getReportFileLocation());
 		System.out.println(detail.getAdditionalSoftware());
-		System.out.println(detail.getApplicableCqmCriteria());
 		System.out.println(detail.getCertificationEdition());
 		System.out.println(detail.getCertificationEvents());
 		System.out.println(detail.getCertificationResults());
@@ -97,19 +96,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsChplProductNumber() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		
-		assertEquals("CHP-024050", detail.getChplProductNumber());
-		assertNotNull(detail.getApplicableCqmCriteria().get(0));
-		
-	}
-	
-	@Test
-	@Transactional
-	public void testCertifiedProductDetailApplicableCQMCriteria() throws EntityRetrievalException{
-		
-		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);	
-		assertNotNull(detail.getApplicableCqmCriteria().get(0));
-		
+		assertEquals("CHP-024050", detail.getChplProductNumber());		
 	}
 	
 	@Test

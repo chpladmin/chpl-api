@@ -303,25 +303,42 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			for(CQMResultDetails cqmResult : pendingCp.getCqmResults()) {
 				CQMCriterionDTO criterion = null;
 				if(StringUtils.isEmpty(cqmResult.getCmsId())) {
-					criterion = cqmCriterionDao.getNQFByNumber(cqmResult.getNumber());
+					criterion = cqmCriterionDao.getNQFByNumber(cqmResult.getNqfNumber());
+					
+					if(criterion == null) {
+						throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getNqfNumber());
+					}
+					
+					CQMResultDTO cqmResultToCreate = new CQMResultDTO();
+					cqmResultToCreate.setCqmCriterionId(criterion.getId());
+					cqmResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
+					cqmResultToCreate.setCreationDate(new Date());
+					cqmResultToCreate.setDeleted(false);
+					cqmResultToCreate.setLastModifiedDate(new Date());
+					cqmResultToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+					cqmResultToCreate.setSuccess(cqmResult.isSuccess());
+					cqmResultDAO.create(cqmResultToCreate);
+					
 				} else if(cqmResult.getCmsId().startsWith("CMS")) {
-					criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmResult.getVersion());
+					for(String version : cqmResult.getSuccessVersions()) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), version);
+						
+						if(criterion == null) {
+							throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getCmsId() + 
+									"and version " + version + ".");
+						}
+						
+						CQMResultDTO cqmResultToCreate = new CQMResultDTO();
+						cqmResultToCreate.setCqmCriterionId(criterion.getId());
+						cqmResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
+						cqmResultToCreate.setCreationDate(new Date());
+						cqmResultToCreate.setDeleted(false);
+						cqmResultToCreate.setLastModifiedDate(new Date());
+						cqmResultToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+						cqmResultToCreate.setSuccess(cqmResult.isSuccess());
+						cqmResultDAO.create(cqmResultToCreate);
+					}
 				}
-				
-				if(criterion == null) {
-					throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getCmsId() + 
-							"and/or version " + cqmResult.getVersion() + ".");
-				}
-				
-				CQMResultDTO cqmResultToCreate = new CQMResultDTO();
-				cqmResultToCreate.setCqmCriterionId(criterion.getId());
-				cqmResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
-				cqmResultToCreate.setCreationDate(new Date());
-				cqmResultToCreate.setDeleted(false);
-				cqmResultToCreate.setLastModifiedDate(new Date());
-				cqmResultToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-				cqmResultToCreate.setSuccess(cqmResult.isSuccess());
-				cqmResultDAO.create(cqmResultToCreate);
 			}
 		}
 		

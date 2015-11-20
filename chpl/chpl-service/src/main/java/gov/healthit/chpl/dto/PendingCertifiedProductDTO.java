@@ -178,16 +178,30 @@ public class PendingCertifiedProductDTO {
 		}
 		List<CQMResultDetails> cqmResults = details.getCqmResults();
 		for(CQMResultDetails cqmResult : cqmResults) {
-			PendingCqmCriterionDTO cqmDto = new PendingCqmCriterionDTO();
-			cqmDto.setCmsId(cqmResult.getCmsId());
-			cqmDto.setNqfNumber(cqmResult.getNqfNumber());
-			cqmDto.setCqmNumber(cqmResult.getNumber());
-			cqmDto.setMeetsCriteria(cqmResult.isSuccess());
-			cqmDto.setTitle(cqmResult.getTitle());
-			cqmDto.setVersion(cqmResult.getVersion());
-			cqmDto.setTypeId(cqmResult.getTypeId());
-			cqmDto.setDomain(cqmResult.getDomain());
-			this.cqmCriterion.add(cqmDto);
+			if(cqmResult.getSuccessVersions() != null && cqmResult.getSuccessVersions().size() > 0) {
+				for(String version : cqmResult.getSuccessVersions()) {
+					PendingCqmCriterionDTO cqmDto = new PendingCqmCriterionDTO();
+					cqmDto.setCmsId(cqmResult.getCmsId());
+					cqmDto.setNqfNumber(cqmResult.getNqfNumber());
+					cqmDto.setCqmNumber(cqmResult.getNumber());
+					cqmDto.setTitle(cqmResult.getTitle());
+					cqmDto.setTypeId(cqmResult.getTypeId());
+					cqmDto.setDomain(cqmResult.getDomain());
+					cqmDto.setMeetsCriteria(Boolean.TRUE);
+					cqmDto.setVersion(version);
+					this.cqmCriterion.add(cqmDto);
+				}
+			} else {
+				PendingCqmCriterionDTO cqmDto = new PendingCqmCriterionDTO();
+				cqmDto.setCmsId(cqmResult.getCmsId());
+				cqmDto.setNqfNumber(cqmResult.getNqfNumber());
+				cqmDto.setCqmNumber(cqmResult.getNumber());
+				cqmDto.setMeetsCriteria(cqmResult.isSuccess());
+				cqmDto.setTitle(cqmResult.getTitle());
+				cqmDto.setTypeId(cqmResult.getTypeId());
+				cqmDto.setDomain(cqmResult.getDomain());
+				this.cqmCriterion.add(cqmDto);	
+			}
 		}	
 		this.errorMessages = new ArrayList<String>();	
 		this.warningMessages = new ArrayList<String>();
