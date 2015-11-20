@@ -15,7 +15,8 @@ public class CorrectiveActionPlanDetails {
 	private String developerSummary;
 	private Date approvalDate;
 	private Date effectiveDate;
-	private Date estimatedCompleteionDate;
+	private Date estimatedCompletionDate;
+	private Date noncomplianceDate;
 	private Date actualCompletionDate;
 	private String resolution;
 	private List<CorrectiveActionPlanCertificationResult> certifications;
@@ -30,7 +31,8 @@ public class CorrectiveActionPlanDetails {
 		this.developerSummary = dto.getDeveloperSummary();
 		this.approvalDate = dto.getApprovalDate();
 		this.effectiveDate = dto.getEffectiveDate();
-		this.estimatedCompleteionDate = dto.getEstimatedCompleteionDate();
+		this.estimatedCompletionDate = dto.getEstimatedCompletionDate();
+		this.noncomplianceDate = dto.getNoncomplainceDate();
 		this.actualCompletionDate = dto.getActualCompletionDate();
 		this.resolution = dto.getResolution();
 		
@@ -43,7 +45,8 @@ public class CorrectiveActionPlanDetails {
 		this.developerSummary = dto.getDeveloperSummary();
 		this.approvalDate = dto.getApprovalDate();
 		this.effectiveDate = dto.getEffectiveDate();
-		this.estimatedCompleteionDate = dto.getEstimatedCompleteionDate();
+		this.estimatedCompletionDate = dto.getEstimatedCompletionDate();
+		this.noncomplianceDate = dto.getNoncomplainceDate();
 		this.actualCompletionDate = dto.getActualCompletionDate();
 		this.resolution = dto.getResolution();
 		
@@ -92,12 +95,6 @@ public class CorrectiveActionPlanDetails {
 	public void setEffectiveDate(Date effectiveDate) {
 		this.effectiveDate = effectiveDate;
 	}
-	public Date getEstimatedCompleteionDate() {
-		return estimatedCompleteionDate;
-	}
-	public void setEstimatedCompleteionDate(Date estimatedCompleteionDate) {
-		this.estimatedCompleteionDate = estimatedCompleteionDate;
-	}
 	public Date getActualCompletionDate() {
 		return actualCompletionDate;
 	}
@@ -124,5 +121,17 @@ public class CorrectiveActionPlanDetails {
 				this.certifications.add(currCert);
 			}
 		}
+	}
+	public Date getEstimatedCompletionDate() {
+		return estimatedCompletionDate;
+	}
+	public void setEstimatedCompletionDate(Date estimatedCompletionDate) {
+		this.estimatedCompletionDate = estimatedCompletionDate;
+	}
+	public Date getNoncomplianceDate() {
+		return noncomplianceDate;
+	}
+	public void setNoncomplianceDate(Date noncomplianceDate) {
+		this.noncomplianceDate = noncomplianceDate;
 	}
 }

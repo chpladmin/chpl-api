@@ -12,8 +12,9 @@ public class CorrectiveActionPlanDTO {
 	private String developerSummary;
 	private Date approvalDate;
 	private Date effectiveDate;
-	private Date estimatedCompleteionDate;
+	private Date estimatedCompletionDate;
 	private Date actualCompletionDate;
+	private Date noncomplainceDate;
 	private String resolution;
 
 	public CorrectiveActionPlanDTO() {
@@ -26,8 +27,9 @@ public class CorrectiveActionPlanDTO {
 		setDeveloperSummary(entity.getDeveloperSummaryDescription());
 		setApprovalDate(entity.getApprovalDate());
 		setEffectiveDate(entity.getEffectiveDate());
-		setEstimatedCompleteionDate(entity.getEstimatedCompletionDate());
+		setEstimatedCompletionDate(entity.getEstimatedCompletionDate());
 		setActualCompletionDate(entity.getActualCompletionDate());
+		setNoncomplainceDate(entity.getNoncomplainceDeterminationDate());
 		setResolution(entity.getResolution());
 	}
 
@@ -87,12 +89,12 @@ public class CorrectiveActionPlanDTO {
 		this.effectiveDate = effectiveDate;
 	}
 
-	public Date getEstimatedCompleteionDate() {
-		return estimatedCompleteionDate;
+	public Date getEstimatedCompletionDate() {
+		return estimatedCompletionDate;
 	}
 
-	public void setEstimatedCompleteionDate(Date estimatedCompleteionDate) {
-		this.estimatedCompleteionDate = estimatedCompleteionDate;
+	public void setEstimatedCompletionDate(Date estimatedCompleteionDate) {
+		this.estimatedCompletionDate = estimatedCompleteionDate;
 	}
 
 	public Date getActualCompletionDate() {
@@ -101,5 +103,13 @@ public class CorrectiveActionPlanDTO {
 
 	public void setActualCompletionDate(Date actualCompletionDate) {
 		this.actualCompletionDate = actualCompletionDate;
+	}
+
+	public Date getNoncomplainceDate() {
+		return noncomplainceDate;
+	}
+
+	public void setNoncomplainceDate(Date noncomplainceDate) {
+		this.noncomplainceDate = noncomplainceDate;
 	}
 }
