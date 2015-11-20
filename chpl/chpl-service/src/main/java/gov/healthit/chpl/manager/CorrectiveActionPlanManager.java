@@ -21,7 +21,8 @@ public interface CorrectiveActionPlanManager {
 		throws EntityRetrievalException, EntityCreationException;
 	public void removeCertificationsFromPlan(Long acbId, List<CorrectiveActionPlanCertificationResultDTO> certs)
 			throws EntityRetrievalException;
-			
+	public CorrectiveActionPlanCertificationResultDTO updateCertification(Long acbId, CorrectiveActionPlanCertificationResultDTO cert)
+			throws EntityRetrievalException;		
 	public CorrectiveActionPlanDTO getPlanById(Long capId) throws EntityRetrievalException;
 	public List<CorrectiveActionPlanDTO> getPlansForCertifiedProduct(Long certifiedProductId) throws EntityRetrievalException;
 	public List<CorrectiveActionPlanCertificationResultDTO> getCertificationsForPlan(Long capId) throws EntityRetrievalException; 

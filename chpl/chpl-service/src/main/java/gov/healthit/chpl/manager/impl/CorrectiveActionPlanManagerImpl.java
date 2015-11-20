@@ -78,6 +78,15 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	}
 	
 	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+	public CorrectiveActionPlanCertificationResultDTO updateCertification(Long acbId, CorrectiveActionPlanCertificationResultDTO cert)
+					throws EntityRetrievalException {
+		return capCertDao.update(cert);
+	}
+	
+	@Override
 	public CorrectiveActionPlanDTO getPlanById(Long capId) throws EntityRetrievalException {
 		return capDao.getById(capId);
 	}
