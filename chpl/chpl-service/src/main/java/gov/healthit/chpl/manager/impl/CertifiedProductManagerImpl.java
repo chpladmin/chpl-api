@@ -488,7 +488,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
 					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
 					
-					if (beforeCriterionDTO.getCmsId().equals(cqm.getKey().getCmsId())){
+					if (beforeCriterionDTO.getCmsId().equals(cqm.getKey().getCmsId()) && 
+							beforeCriterionDTO.getCqmVersion().equals(cqm.getKey().getCqmVersion())) {
 						found = true;
 						break;
 					}
@@ -522,7 +523,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for (CQMCriterionDTO criterion : cqmCriterionDao.findAll()){
 			
 			Boolean isDeletion = true;
-			Boolean isNQF = (criterion == null);
+			Boolean isNQF = (criterion.getCmsId() == null);
 			
 			if (isNQF){
 				isDeletion = false;
