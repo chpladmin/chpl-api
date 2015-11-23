@@ -39,10 +39,13 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -91,6 +94,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
 		List<PendingCertifiedProductDTO> products = pcpDao.findByStatus(statusDto.getId());
 		validate(products);
+		
 		return products;
 	}
 	
@@ -98,10 +102,14 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or ((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin))")	
-	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException {
+	public PendingCertifiedProductDetails getById(Long id) throws EntityRetrievalException {
 		PendingCertifiedProductDTO dto = pcpDao.findById(id);
 		validate(dto);
-		return dto;
+
+		PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(dto);
+		addAllVersionsToCmsCriterion(pcpDetails);
+		
+		return pcpDetails;
 	}
 	
 	@Override
@@ -112,7 +120,27 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb) {
 		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acb.getId());
 		validate(products);
+		
 		return products;
+	}
+	
+	@Override
+	@Transactional (readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "(hasPermission(#acb, read) or hasPermission(#acb, admin)))")
+	public List<PendingCertifiedProductDetails> getDetailsByAcb(CertificationBodyDTO acb) {
+		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acb.getId());
+		validate(products);
+		
+		List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
+		for(PendingCertifiedProductDTO product : products) {
+			PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
+			addAllVersionsToCmsCriterion(pcpDetails);
+			result.add(pcpDetails);
+		}
+		
+		return result;
 	}
 	
 	@Override
@@ -387,6 +415,34 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		for(PendingCertifiedProductDTO dto : products) {
 			PendingCertifiedProductValidator validator = validatorFactory.getValidator(dto);
 			validator.validate(dto);
+		}
+	}
+	
+	public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails) {
+		//now add allVersions for CMSs
+		String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
+		if (certificationEdition.startsWith("2014")){
+			List<CQMCriterion> cqms2014 = getAvailableCQMVersions();
+			for(CQMCriterion cqm : cqms2014) {
+				boolean cqmExists = false;
+				for(CQMResultDetails details : pcpDetails.getCqmResults()) {
+					if(cqm.getCmsId().equals(details.getCmsId())) {
+						cqmExists = true;
+						details.getAllVersions().add(cqm.getCqmVersion());
+					}
+				}
+				if(!cqmExists) {
+					CQMResultDetails result = new CQMResultDetails();
+					result.setCmsId(cqm.getCmsId());
+					result.setNqfNumber(cqm.getNqfNumber());
+					result.setNumber(cqm.getNumber());
+					result.setTitle(cqm.getTitle());
+					result.setSuccess(Boolean.FALSE);
+					result.setTypeId(cqm.getCqmCriterionTypeId());
+					result.getAllVersions().add(cqm.getCqmVersion());
+					pcpDetails.getCqmResults().add(result);
+				}
+			}
 		}
 	}
 }

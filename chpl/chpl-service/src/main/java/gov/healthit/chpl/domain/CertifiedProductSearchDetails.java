@@ -30,7 +30,6 @@ public class CertifiedProductSearchDetails {
 	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
-	private List<CQMCriterion> applicableCqmCriteria = new ArrayList<CQMCriterion>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
 	
 	
@@ -148,12 +147,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setAdditionalSoftware(List<AdditionalSoftware> additionalSoftware) {
 		this.additionalSoftware = additionalSoftware;
-	}
-	public List<CQMCriterion> getApplicableCqmCriteria() {
-		return applicableCqmCriteria;
-	}
-	public void setApplicableCqmCriteria(List<CQMCriterion> applicableCqmCriteria) {
-		this.applicableCqmCriteria = applicableCqmCriteria;
 	}
 	public Boolean getVisibleOnChpl() {
 		return visibleOnChpl;

@@ -155,16 +155,31 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		//set cqm results
 		List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 		for(PendingCqmCriterionDTO cqmCriterion : dto.getCqmCriterion()) {
-			CQMResultDetails cqm = new CQMResultDetails();
-			cqm.setCmsId(cqmCriterion.getCmsId());
-			cqm.setNqfNumber(cqmCriterion.getNqfNumber());
-			cqm.setNumber(cqmCriterion.getCqmNumber());
-			cqm.setSuccess(cqmCriterion.isMeetsCriteria());
-			cqm.setTitle(cqmCriterion.getTitle());
-			cqm.setVersion(cqmCriterion.getVersion());
-			cqm.setTypeId(cqmCriterion.getTypeId());
-			cqm.setDomain(cqmCriterion.getDomain());
-			cqmResults.add(cqm);
+			boolean existingCms = false;
+			if(!StringUtils.isEmpty(cqmCriterion.getCmsId())) {
+				for(CQMResultDetails result : cqmResults) {
+					if(dto.getCertificationEdition().equals("2014") && result.getCmsId().equals(cqmCriterion.getCmsId())) {
+						existingCms = true;
+						result.getSuccessVersions().add(cqmCriterion.getVersion());
+					}
+				}
+			}
+			
+			if(!existingCms) {
+				CQMResultDetails cqm = new CQMResultDetails();
+				cqm.setCmsId(cqmCriterion.getCmsId());
+				cqm.setNqfNumber(cqmCriterion.getNqfNumber());
+				cqm.setNumber(cqmCriterion.getCqmNumber());
+				cqm.setTitle(cqmCriterion.getTitle());
+				cqm.setTypeId(cqmCriterion.getTypeId());
+				cqm.setDomain(cqmCriterion.getDomain());
+				if(dto.getCertificationEdition().equals("2014") && !StringUtils.isEmpty(cqmCriterion.getCmsId())) {
+					cqm.getSuccessVersions().add(cqmCriterion.getVersion());
+				} else if(!StringUtils.isEmpty(cqmCriterion.getNqfNumber())) {
+					cqm.setSuccess(cqmCriterion.isMeetsCriteria());
+				}
+				cqmResults.add(cqm);
+			}
 		}
 		this.setCqmResults(cqmResults);
 	}

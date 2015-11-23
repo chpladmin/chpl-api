@@ -137,26 +137,64 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		searchDetails.setCertificationResults(certificationResults);
 			
+		//fill in CQM results, sadly there is different data for NQFs and CMSs
 		List<CQMResultDetailsDTO> cqmResultDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(dto.getId());
 		List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
-		
 		for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs){
+			boolean existingCms = false;
+			//for a CMS, first check to see if we already have an object with the same CMS id
+			//so we can just add to it's success versions. 
+			if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+				for(CQMResultDetails result : cqmResults) {
+					if(cqmResultDTO.getCmsId().equals(result.getCmsId())) {
+						existingCms = true;
+						result.getSuccessVersions().add(cqmResultDTO.getVersion());
+					}
+				}
+			}
 			
-			CQMResultDetails result = new CQMResultDetails();
-			
-			result.setCmsId(cqmResultDTO.getCmsId());
-			result.setNqfNumber(cqmResultDTO.getNqfNumber());
-			result.setNumber(cqmResultDTO.getNumber());
-			result.setSuccess(cqmResultDTO.getSuccess());
-			result.setTitle(cqmResultDTO.getTitle());
-			result.setVersion(cqmResultDTO.getVersion());
-			cqmResults.add(result);
-			
+			if(!existingCms) {
+				CQMResultDetails result = new CQMResultDetails();
+				result.setCmsId(cqmResultDTO.getCmsId());
+				result.setNqfNumber(cqmResultDTO.getNqfNumber());
+				result.setNumber(cqmResultDTO.getNumber());
+				result.setTitle(cqmResultDTO.getTitle());
+				result.setTypeId(cqmResultDTO.getCqmCriterionTypeId());
+				if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+					result.getSuccessVersions().add(cqmResultDTO.getVersion());
+				} else {
+					result.setSuccess(cqmResultDTO.getSuccess());
+				}
+				cqmResults.add(result);
+			}
+		}	
+		
+		//now add allVersions for CMSs
+		if (dto.getYear().startsWith("2014")){
+			List<CQMCriterion> cqms2014 = getAvailableCQMVersions();
+			for(CQMCriterion cqm : cqms2014) {
+				boolean cqmExists = false;
+				for(CQMResultDetails details : cqmResults) {
+					if(cqm.getCmsId().equals(details.getCmsId())) {
+						cqmExists = true;
+						details.getAllVersions().add(cqm.getCqmVersion());
+					}
+				}
+				if(!cqmExists) {
+					CQMResultDetails result = new CQMResultDetails();
+					result.setCmsId(cqm.getCmsId());
+					result.setNqfNumber(cqm.getNqfNumber());
+					result.setNumber(cqm.getNumber());
+					result.setTitle(cqm.getTitle());
+					result.setSuccess(Boolean.FALSE);
+					result.getAllVersions().add(cqm.getCqmVersion());
+					result.setTypeId(cqm.getCqmCriterionTypeId());
+					cqmResults.add(result);
+				}
+			}
 		}
-				
 		searchDetails.setCqmResults(cqmResults);
-		
-		
+
 		
 		List<AdditionalSoftwareDTO> additionalSoftwareDTOs = additionalSoftwareDAO.findByCertifiedProductId(dto.getId());
 		List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
@@ -175,12 +213,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}
 		
 		searchDetails.setAdditionalSoftware(additionalSoftware);
-		
-		if (dto.getYear().startsWith("2011")){
-			searchDetails.setApplicableCqmCriteria(getAvailableNQFVersions());
-		} else {
-			searchDetails.setApplicableCqmCriteria(getAvailableCQMVersions());
-		}
 		
 		
 		searchDetails.setCertificationEvents(getCertificationEvents(dto.getId()));
