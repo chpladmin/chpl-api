@@ -26,7 +26,15 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 			FilterChain chain) throws IOException, ServletException {
 		
 		HttpServletRequest request = (HttpServletRequest) req;
+		
 		System.out.println(request.getPathInfo());
+		System.out.println(request.getPathTranslated());
+		System.out.println(request.getRequestURI());/*We want this one*/
+		System.out.println(request.getRequestURL());
+		/*
+		 * TODO: How do we get query params?
+		 */
+		
 		String key = request.getHeader("API-Key");
 		
 		if (key == null){
