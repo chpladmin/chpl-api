@@ -26,7 +26,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 			FilterChain chain) throws IOException, ServletException {
 		
 		HttpServletRequest request = (HttpServletRequest) req;
-		
+		System.out.println(request.getPathInfo());
 		String key = request.getHeader("API-Key");
 		
 		if (key == null){
