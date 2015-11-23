@@ -35,10 +35,10 @@ public class CQMResultDetails {
 		this.successVersions = new HashSet<String>();
 		this.allVersions = new HashSet<String>();
 		
-		if(!StringUtils.isEmpty(dto.getNqfNumber())) {
-			this.setSuccess(dto.getSuccess());
-		} else if(!StringUtils.isEmpty(dto.getCmsId())) {
+		if(!StringUtils.isEmpty(dto.getCmsId())) {
 			this.getSuccessVersions().add(dto.getVersion());
+		} else if(!StringUtils.isEmpty(dto.getNqfNumber())) {
+			this.setSuccess(dto.getSuccess());
 		}
 	}
 	

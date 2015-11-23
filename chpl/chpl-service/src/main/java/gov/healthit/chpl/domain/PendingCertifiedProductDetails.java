@@ -158,7 +158,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			boolean existingCms = false;
 			if(!StringUtils.isEmpty(cqmCriterion.getCmsId())) {
 				for(CQMResultDetails result : cqmResults) {
-					if(result.getCmsId().equals(cqmCriterion.getCmsId())) {
+					if(dto.getCertificationEdition().equals("2014") && result.getCmsId().equals(cqmCriterion.getCmsId())) {
 						existingCms = true;
 						result.getSuccessVersions().add(cqmCriterion.getVersion());
 					}
@@ -173,10 +173,10 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				cqm.setTitle(cqmCriterion.getTitle());
 				cqm.setTypeId(cqmCriterion.getTypeId());
 				cqm.setDomain(cqmCriterion.getDomain());
-				if(!StringUtils.isEmpty(cqmCriterion.getNqfNumber())) {
-					cqm.setSuccess(cqmCriterion.isMeetsCriteria());
-				} else if(!StringUtils.isEmpty(cqmCriterion.getCmsId())) {
+				if(dto.getCertificationEdition().equals("2014") && !StringUtils.isEmpty(cqmCriterion.getCmsId())) {
 					cqm.getSuccessVersions().add(cqmCriterion.getVersion());
+				} else if(!StringUtils.isEmpty(cqmCriterion.getNqfNumber())) {
+					cqm.setSuccess(cqmCriterion.isMeetsCriteria());
 				}
 				cqmResults.add(cqm);
 			}

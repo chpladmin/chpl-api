@@ -144,9 +144,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			boolean existingCms = false;
 			//for a CMS, first check to see if we already have an object with the same CMS id
 			//so we can just add to it's success versions. 
-			if(!StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+			if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
 				for(CQMResultDetails result : cqmResults) {
-					if(result.getCmsId().equals(cqmResultDTO.getCmsId())) {
+					if(cqmResultDTO.getCmsId().equals(result.getCmsId())) {
 						existingCms = true;
 						result.getSuccessVersions().add(cqmResultDTO.getVersion());
 					}
@@ -159,7 +159,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				result.setNqfNumber(cqmResultDTO.getNqfNumber());
 				result.setNumber(cqmResultDTO.getNumber());
 				result.setTitle(cqmResultDTO.getTitle());
-				if(!StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+				result.setTypeId(cqmResultDTO.getCqmCriterionTypeId());
+				if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
 					result.getSuccessVersions().add(cqmResultDTO.getVersion());
 				} else {
 					result.setSuccess(cqmResultDTO.getSuccess());
@@ -187,6 +188,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 					result.setTitle(cqm.getTitle());
 					result.setSuccess(Boolean.FALSE);
 					result.getAllVersions().add(cqm.getCqmVersion());
+					result.setTypeId(cqm.getCqmCriterionTypeId());
 					cqmResults.add(result);
 				}
 			}

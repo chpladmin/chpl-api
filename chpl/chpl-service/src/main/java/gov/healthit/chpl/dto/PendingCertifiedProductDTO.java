@@ -207,7 +207,7 @@ public class PendingCertifiedProductDTO {
 		this.warningMessages = new ArrayList<String>();
 	}
 	
-	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){
+	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){		
 		this.id = entity.getId();
 		this.practiceTypeId = entity.getPracticeTypeId();
 		this.vendorId = entity.getVendorId();

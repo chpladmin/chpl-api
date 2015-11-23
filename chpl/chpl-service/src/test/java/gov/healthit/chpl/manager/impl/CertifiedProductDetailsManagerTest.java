@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import junit.framework.TestCase;
@@ -147,7 +148,26 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCQMResults() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(3 ,detail.getCqmResults().size());
+		assertNotNull(detail.getCqmResults());
+		
+		int cqmSuccessCount = 0;
+		for(CQMResultDetails cqmDetail : detail.getCqmResults()) {
+			if(cqmDetail.isSuccess()) {
+				cqmSuccessCount++;
+			}
+		}
+		assertEquals(0 ,cqmSuccessCount);
+		
+		detail = certifiedProductDetailsManager.getCertifiedProductDetails(2L);
+		assertNotNull(detail.getCqmResults());
+		
+		cqmSuccessCount = 0;
+		for(CQMResultDetails cqmDetail : detail.getCqmResults()) {
+			if(cqmDetail.isSuccess()) {
+				cqmSuccessCount++;
+			}
+		}
+		assertEquals(2 ,cqmSuccessCount);
 	}
 	
 	@Test
