@@ -142,7 +142,6 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		
 		ApiKeyEntity entity = null;
 		
-		
 		Query query = entityManager.createQuery( "from ApiKeyEntity where (NOT deleted = true) AND (api_key = :apikey) ", ApiKeyEntity.class );
 		query.setParameter("apikey", key);
 		List<ApiKeyEntity> result = query.getResultList();
@@ -152,6 +151,5 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		}
 		return entity;
 	}
-	
 
 }
