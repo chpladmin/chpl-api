@@ -2,8 +2,10 @@ package gov.healthit.chpl.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
@@ -117,13 +119,27 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		if(dto.getCertificationCriterion() == null) {
 			this.setCountCerts(0);
 		} else {
-			this.setCountCerts(dto.getCertificationCriterion().size());
+			int certCount = 0;
+			for(PendingCertificationCriterionDTO cert : dto.getCertificationCriterion()) {
+				if(cert.isMeetsCriteria()) {
+					certCount++;
+				}
+			}
+			this.setCountCerts(certCount);
 		}
 		
 		if(dto.getCqmCriterion() == null) {
 			this.setCountCqms(0);
 		} else {
-			this.setCountCqms(dto.getCqmCriterion().size());
+			int cqmCount = 0;
+			Set<String> cqmsMet = new HashSet<String>();
+			for(PendingCqmCriterionDTO cqm : dto.getCqmCriterion()) {
+				if(!cqmsMet.contains(cqm.getCmsId()) && cqm.isMeetsCriteria()) {
+					cqmsMet.add(cqm.getCmsId());
+					cqmCount++;
+				}
+			}
+			this.setCountCqms(cqmCount);
 		}
 		
 		this.setVisibleOnChpl(false);

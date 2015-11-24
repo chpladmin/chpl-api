@@ -7,6 +7,9 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
@@ -62,4 +65,45 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 		}
 	}
 
+	@Override
+	public void validate(CertifiedProductSearchDetails product) {
+		super.validate(product);
+		
+		List<CertificationResult> certificationCriterion = product.getCertificationResults();
+		for(int i = 0; i < requiredCriteria.length; i++) {
+			boolean hasCert = false;
+			for(CertificationResult certCriteria : certificationCriterion) {
+				if(certCriteria.getNumber().equals(requiredCriteria[i]) && certCriteria.isSuccess()) {
+					hasCert = true;
+				}
+			}	
+			if(!hasCert) {
+				product.getWarningMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
+			}
+		}		
+		
+		//must have at least 16 cqms
+		int inpatientCqmCount = 0;
+		for(CQMResultDetails cqmCriterion : product.getCqmResults()) {
+			if(cqmCriterion.getTypeId() == INPATIENT_CQM_TYPE_ID && cqmCriterion.isSuccess()) {
+				inpatientCqmCount++;
+			}
+		}
+		
+		if(inpatientCqmCount < 16) {
+			product.getWarningMessages().add(inpatientCqmCount + " Inpatient CQM(s) were found but at least 16 are required.");
+		}
+		
+		//must check at least 3 domains
+		Set<String> checkedDomains = new HashSet<String>();
+		for(CQMResultDetails cqmCriterion : product.getCqmResults()) {
+			if(!StringUtils.isEmpty(cqmCriterion.getDomain()) && 
+					cqmCriterion.getTypeId() == INPATIENT_CQM_TYPE_ID && cqmCriterion.isSuccess()) {
+				checkedDomains.add(cqmCriterion.getDomain());
+			}
+		}
+		if(checkedDomains.size() < 3) {
+			product.getWarningMessages().add(checkedDomains.size() + " domains were found but at least 3 are required.");
+		}
+	}
 }
