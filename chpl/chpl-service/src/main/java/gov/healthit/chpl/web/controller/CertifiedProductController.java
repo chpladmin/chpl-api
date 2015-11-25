@@ -100,6 +100,8 @@ public class CertifiedProductController {
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 		CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+		CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
+		validator.validate(certifiedProduct);
 		
 		return certifiedProduct;
 	}
