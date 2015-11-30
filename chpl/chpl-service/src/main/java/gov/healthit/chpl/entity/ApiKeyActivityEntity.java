@@ -24,7 +24,7 @@ public class ApiKeyActivityEntity {
 	
 	@Basic(optional=false)
 	@Column(name = "api_call_path" )
-	private Long apiCallPath;
+	private String apiCallPath;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false )
@@ -59,11 +59,11 @@ public class ApiKeyActivityEntity {
 		this.apiKeyId = apiKeyId;
 	}
 
-	public Long getApiCallPath() {
+	public String getApiCallPath() {
 		return apiCallPath;
 	}
 
-	public void setApiCallPath(Long apiCallPath) {
+	public void setApiCallPath(String apiCallPath) {
 		this.apiCallPath = apiCallPath;
 	}
 

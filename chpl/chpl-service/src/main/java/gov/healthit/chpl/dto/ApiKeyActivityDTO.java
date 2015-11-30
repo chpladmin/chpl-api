@@ -8,7 +8,7 @@ public class ApiKeyActivityDTO {
 	
 	private Long id;
 	private Long apiKeyId;
-	private Long apiCallPath;
+	private String apiCallPath;
 	private Date creationDate;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
@@ -41,10 +41,10 @@ public class ApiKeyActivityDTO {
 	public void setApiKeyId(Long apiKeyId) {
 		this.apiKeyId = apiKeyId;
 	}
-	public Long getApiCallPath() {
+	public String getApiCallPath() {
 		return apiCallPath;
 	}
-	public void setApiCallPath(Long apiCallPath) {
+	public void setApiCallPath(String apiCallPath) {
 		this.apiCallPath = apiCallPath;
 	}
 	public Date getCreationDate() {

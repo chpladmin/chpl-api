@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -33,9 +34,19 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		} else {
 			
 			entity = new ApiKeyActivityEntity();
-			entity.setApiKeyId(dto.getApiCallPath());
-			entity.setApiCallPath(dto.getApiCallPath());
-			entity.setCreationDate(dto.getCreationDate());
+			entity.setApiKeyId(dto.getApiKeyId());
+			entity.setApiCallPath(dto.getApiCallPath());	
+			
+			if(dto.getLastModifiedDate() != null) {
+				entity.setLastModifiedDate(dto.getLastModifiedDate());
+			} else {
+				entity.setLastModifiedDate(new Date());
+			}
+			if(dto.getCreationDate() != null) {
+				entity.setCreationDate(dto.getCreationDate());
+			} else {
+				entity.setCreationDate(new Date());
+			}
 			entity.setDeleted(dto.getDeleted());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			create(entity);
@@ -48,9 +59,14 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		
 		ApiKeyActivityEntity entity = getEntityById(dto.getId());
 		
-		entity.setApiKeyId(dto.getApiCallPath());
+		entity.setApiKeyId(dto.getApiKeyId());
 		entity.setApiCallPath(dto.getApiCallPath());
-		entity.setCreationDate(dto.getCreationDate());
+		
+		if(dto.getLastModifiedDate() != null) {
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
+		} else {
+			entity.setLastModifiedDate(new Date());
+		}
 		entity.setDeleted(dto.getDeleted());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		update(entity);
