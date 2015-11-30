@@ -32,6 +32,8 @@ public class CertifiedProductSearchDetails {
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
 	
+	private List<String> warningMessages = new ArrayList<String>();
+	private List<String> errorMessages = new ArrayList<String>();
 	
 	public Long getId() {
 		return id;
@@ -178,5 +180,17 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setPrivacyAttestation(Boolean privacyAttestation) {
 		this.privacyAttestation = privacyAttestation;
+	}
+	public List<String> getWarningMessages() {
+		return warningMessages;
+	}
+	public void setWarningMessages(List<String> warningMessages) {
+		this.warningMessages = warningMessages;
+	}
+	public List<String> getErrorMessages() {
+		return errorMessages;
+	}
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
 	}
 }

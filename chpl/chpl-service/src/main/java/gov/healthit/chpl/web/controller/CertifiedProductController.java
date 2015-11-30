@@ -31,8 +31,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadType;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
+import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
+import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
@@ -64,7 +64,7 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired PendingCertifiedProductManager pcpManager;
 	@Autowired CertificationBodyManager acbManager;
-	@Autowired PendingCertifiedProductValidatorFactory validatorFactory;
+	@Autowired CertifiedProductValidatorFactory validatorFactory;
 
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
@@ -100,6 +100,8 @@ public class CertifiedProductController {
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 		CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+		CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
+		validator.validate(certifiedProduct);
 		
 		return certifiedProduct;
 	}
@@ -107,7 +109,13 @@ public class CertifiedProductController {
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
-		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+		
+		CertifiedProductValidator validator = validatorFactory.getValidator(updateRequest);
+		validator.validate(updateRequest);
+		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {
+			throw new ValidationException(updateRequest.getErrorMessages(), updateRequest.getWarningMessages());
+		}
 		
 		CertifiedProductDTO existingProduct = cpManager.getById(updateRequest.getId());
 		Long acbId = existingProduct.getCertificationBodyId();
@@ -229,7 +237,7 @@ public class CertifiedProductController {
 		}
 		
 		PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
-		PendingCertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
+		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
 		validator.validate(pcpDto);
 		if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
 			throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());

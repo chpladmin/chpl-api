@@ -2,11 +2,13 @@ package gov.healthit.chpl.certifiedProduct.validation;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 @Component("inpatientModular2014Validator")
-public class InpatientModular2014Validator implements PendingCertifiedProductValidator {
+public class InpatientModular2014Validator implements CertifiedProductValidator {
 
 	private static final String[] g1ComplimentaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
 			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
@@ -103,6 +105,96 @@ public class InpatientModular2014Validator implements PendingCertifiedProductVal
 		boolean hasG4Cert = false;
 		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
 			if(certCriteria.getNumber().equals("170.314 (g)(4)") && certCriteria.isMeetsCriteria()) {
+				hasG4Cert = true;
+			}
+		}
+		if(!hasG4Cert) {
+			product.getErrorMessages().add("Certification 170.314 (g)(4) is required but was not found.");
+		}
+	}
+	
+	@Override
+	public void validate(CertifiedProductSearchDetails product) {
+		//TODO:
+		//One less than all the mandatory Inpatient certification criteria must be
+		//met. i think i don't need to check this?
+		
+		//check (g)(1)
+		boolean hasG1Cert = false;
+		for(CertificationResult certCriteria : product.getCertificationResults()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.isSuccess()) {
+				hasG1Cert = true;
+			}
+		}	
+		if(hasG1Cert) {
+			boolean hasAtLeastOneCertPartner = false;
+			for(int i = 0; i < g1ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+				for(CertificationResult certCriteria : product.getCertificationResults()) {
+					if(certCriteria.getNumber().equals(g1ComplimentaryCerts[i]) && certCriteria.isSuccess()) {
+						hasAtLeastOneCertPartner = true;
+					}
+				}
+			}
+			
+			if(!hasAtLeastOneCertPartner) {
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(1) exists but a required compliemtnary certification was not found.");
+			}
+		}
+		
+		//check (g)(2)
+		boolean hasG2Cert = false;
+		for(CertificationResult certCriteria : product.getCertificationResults()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.isSuccess()) {
+				hasG2Cert = true;
+			}
+		}	
+		if(hasG2Cert) {
+			boolean hasAtLeastOneCertPartner = false;
+			for(int i = 0; i < g2ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+				for(CertificationResult certCriteria : product.getCertificationResults()) {
+					if(certCriteria.getNumber().equals(g2ComplimentaryCerts[i]) && certCriteria.isSuccess()) {
+						hasAtLeastOneCertPartner = true;
+					}
+				}
+			}
+			
+			if(!hasAtLeastOneCertPartner) {
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(2) exists but a required compliemtnary certification was not found.");
+			}
+		}
+		
+		//check presence of both certs
+		if(hasG1Cert && hasG2Cert) {
+			product.getErrorMessages().add("Product cannot have both 170.314 (g)(1) and 170.314 (g)(2) certification");
+		}
+		
+		//check (g)(3)
+		boolean hasG3Cert = false;
+		for(CertificationResult certCriteria : product.getCertificationResults()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(3)") && certCriteria.isSuccess()) {
+				hasG3Cert = true;
+			}
+		}	
+		if(hasG3Cert) {
+			boolean hasAtLeastOneCertPartner = false;
+			for(int i = 0; i < g3ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+				for(CertificationResult certCriteria : product.getCertificationResults()) {
+					if(certCriteria.getNumber().equals(g3ComplimentaryCerts[i]) &&
+							certCriteria.isSuccess()) {
+						hasAtLeastOneCertPartner = true;
+					}
+				}
+			}
+			
+			if(!hasAtLeastOneCertPartner) {
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(3) exists but a required compliemtnary certification was not found.");
+			}
+		}
+		
+		//check (g)(4)
+		boolean hasG4Cert = false;
+		for(CertificationResult certCriteria : product.getCertificationResults()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(4)") && certCriteria.isSuccess()) {
 				hasG4Cert = true;
 			}
 		}

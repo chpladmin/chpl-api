@@ -30,8 +30,8 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
+import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
+import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -55,7 +55,7 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport implements PendingCertifiedProductManager {
 
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-	@Autowired PendingCertifiedProductValidatorFactory validatorFactory;
+	@Autowired CertifiedProductValidatorFactory validatorFactory;
 	
 	@Autowired PendingCertifiedProductDAO pcpDao;
 	@Autowired CertificationStatusDAO statusDao;
@@ -406,14 +406,14 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	
 	private void validate(List<PendingCertifiedProductDTO> products) {
 		for(PendingCertifiedProductDTO dto : products) {
-			PendingCertifiedProductValidator validator = validatorFactory.getValidator(dto);
+			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
 			validator.validate(dto);
 		}
 	}
 	
 	private void validate(PendingCertifiedProductDTO... products) {
 		for(PendingCertifiedProductDTO dto : products) {
-			PendingCertifiedProductValidator validator = validatorFactory.getValidator(dto);
+			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
 			validator.validate(dto);
 		}
 	}
