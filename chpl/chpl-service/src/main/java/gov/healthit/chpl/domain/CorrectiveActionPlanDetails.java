@@ -21,11 +21,11 @@ public class CorrectiveActionPlanDetails {
 	private Date actualCompletionDate;
 	private String resolution;
 	private List<CorrectiveActionPlanCertificationResult> certifications;
-	private List<CorrectiveActionPlanDocumentation> supportingDocumentation;
+	private List<CorrectiveActionPlanDocumentation> documentation;
 	
 	public CorrectiveActionPlanDetails() {
 		this.certifications = new ArrayList<CorrectiveActionPlanCertificationResult>();
-		this.supportingDocumentation = new ArrayList<CorrectiveActionPlanDocumentation>();
+		this.documentation = new ArrayList<CorrectiveActionPlanDocumentation>();
 	}
 	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto) {
 		this();
@@ -48,7 +48,6 @@ public class CorrectiveActionPlanDetails {
 				this.certifications.add(currCert);
 			}
 		}
-		this.supportingDocumentation = new ArrayList<CorrectiveActionPlanDocumentation>();
 	}
 	
 	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto, List<CorrectiveActionPlanCertificationResultDTO> certDtos,
@@ -57,7 +56,7 @@ public class CorrectiveActionPlanDetails {
 		if(docs != null && docs.size() > 0) {
 			for(CorrectiveActionPlanDocumentationDTO doc : docs) {
 				CorrectiveActionPlanDocumentation currDoc = new CorrectiveActionPlanDocumentation(doc);
-				this.supportingDocumentation.add(currDoc);
+				this.documentation.add(currDoc);
 			}
 		}
 	}
@@ -136,5 +135,20 @@ public class CorrectiveActionPlanDetails {
 	}
 	public void setNoncomplianceDate(Date noncomplianceDate) {
 		this.noncomplianceDate = noncomplianceDate;
+	}
+	public List<CorrectiveActionPlanDocumentation> getDocumentation() {
+		return documentation;
+	}
+	public void setDocumentation(List<CorrectiveActionPlanDocumentation> documentation) {
+		this.documentation = documentation;
+	}
+	
+	public void setDocumentationDtos(List<CorrectiveActionPlanDocumentationDTO> docDtos) {
+		if(docDtos != null && docDtos.size() > 0) {
+			for(CorrectiveActionPlanDocumentationDTO docDto : docDtos) {
+				CorrectiveActionPlanDocumentation currDoc = new CorrectiveActionPlanDocumentation(docDto);
+				this.documentation.add(currDoc);
+			}
+		}
 	}
 }
