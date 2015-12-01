@@ -19,14 +19,15 @@ public interface CorrectiveActionPlanManager {
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	
 	public CorrectiveActionPlanDocumentationDTO addDocumentationToPlan(Long acbId, CorrectiveActionPlanDocumentationDTO doc)
-			throws EntityRetrievalException, EntityCreationException;
+			throws EntityRetrievalException, EntityCreationException,JsonProcessingException;
 	public CorrectiveActionPlanDetails addCertificationsToPlan(Long acbId, Long correctiveActionPlanId,List<CorrectiveActionPlanCertificationResultDTO> certs)
-		throws EntityRetrievalException, EntityCreationException;
+		throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public void removeCertificationsFromPlan(Long acbId, List<CorrectiveActionPlanCertificationResultDTO> certs)
-			throws EntityRetrievalException;
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public CorrectiveActionPlanCertificationResultDTO updateCertification(Long acbId, CorrectiveActionPlanCertificationResultDTO cert)
-			throws EntityRetrievalException;
-	public void removeDocumentation(Long acbId, CorrectiveActionPlanDocumentationDTO toRemove) throws EntityRetrievalException;
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+	public void removeDocumentation(Long acbId, CorrectiveActionPlanDocumentationDTO toRemove) 
+			throws EntityRetrievalException,EntityCreationException, JsonProcessingException;
 	public CorrectiveActionPlanDTO getPlanById(Long capId) throws EntityRetrievalException;
 	public List<CorrectiveActionPlanDTO> getPlansForCertifiedProduct(Long certifiedProductId) throws EntityRetrievalException;
 	public List<CorrectiveActionPlanCertificationResultDTO> getCertificationsForPlan(Long capId) throws EntityRetrievalException; 
