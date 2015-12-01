@@ -168,6 +168,7 @@ public class CorrectiveActionPlanController {
 			if(!foundCert) {
 				CorrectiveActionPlanCertificationResultDTO certToDelete = new CorrectiveActionPlanCertificationResultDTO();
 				certToDelete.setId(existingCert.getId());
+				certToDelete.setCorrectiveActionPlanId(updateRequest.getId());
 				certsToDelete.add(certToDelete);
 			}
 		}
