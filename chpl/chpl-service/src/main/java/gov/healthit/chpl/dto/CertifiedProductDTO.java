@@ -5,6 +5,8 @@ import gov.healthit.chpl.entity.CertifiedProductEntity;
 
 import java.util.Date;
 
+import org.springframework.util.StringUtils;
+
 public class CertifiedProductDTO {
 	
 	
@@ -83,6 +85,12 @@ public class CertifiedProductDTO {
 	}
 	public void setChplProductNumber(String chplProductNumber) {
 		this.chplProductNumber = chplProductNumber;
+	}
+	public String getChplProductNumberForActivity() {
+		if(StringUtils.isEmpty(this.chplProductNumber)) {
+			return "a certified product";
+		}
+		return this.chplProductNumber;
 	}
 	public Date getCreationDate() {
 		return creationDate;

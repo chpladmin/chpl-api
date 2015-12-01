@@ -45,7 +45,8 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 			entity.setDeleted(false);
 			entity.setDeveloperSummaryDescription(toCreate.getDeveloperSummary());
 			entity.setEffectiveDate(toCreate.getEffectiveDate());
-			entity.setEstimatedCompletionDate(toCreate.getEstimatedCompleteionDate());
+			entity.setEstimatedCompletionDate(toCreate.getEstimatedCompletionDate());
+			entity.setNoncomplainceDeterminationDate(toCreate.getNoncomplainceDate());
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setResolution(toCreate.getResolution());
@@ -69,7 +70,8 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		entity.setApprovalDate(toUpdate.getApprovalDate());
 		entity.setDeveloperSummaryDescription(toUpdate.getDeveloperSummary());
 		entity.setEffectiveDate(toUpdate.getEffectiveDate());
-		entity.setEstimatedCompletionDate(toUpdate.getEstimatedCompleteionDate());
+		entity.setEstimatedCompletionDate(toUpdate.getEstimatedCompletionDate());
+		entity.setNoncomplainceDeterminationDate(toUpdate.getNoncomplainceDate());
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setResolution(toUpdate.getResolution());
@@ -122,7 +124,7 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		entityManager.flush();
 	}
 	
-	private CorrectiveActionPlanEntity getEntityById(Long id) throws EntityRetrievalException {
+	public CorrectiveActionPlanEntity getEntityById(Long id) throws EntityRetrievalException {
 		
 		CorrectiveActionPlanEntity entity = null;
 			

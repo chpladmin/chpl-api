@@ -20,6 +20,7 @@ public class CQMCriterionDTO {
 	private String nqfNumber;
 	private String number;
 	private String title;
+	private Boolean retired;
 	
 	public CQMCriterionDTO(){}
 	
@@ -39,6 +40,7 @@ public class CQMCriterionDTO {
 		this.nqfNumber = entity.getNqfNumber();
 		this.number = entity.getNumber();
 		this.title = entity.getTitle();
+		this.setRetired(entity.getRetired());
 		
 	}
 	
@@ -126,6 +128,12 @@ public class CQMCriterionDTO {
 	}
 	public void setCqmVersion(String cqmVersion) {
 		this.cqmVersion = cqmVersion;
+	}
+	public Boolean getRetired() {
+		return retired;
+	}
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
 	}
 	
 }
