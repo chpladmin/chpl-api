@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager;
 
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
@@ -15,8 +16,8 @@ public interface SearchMenuManager {
 	public Set<KeyValueModel> getProductNames();
 	public Set<KeyValueModel> getVendorNames();
 	public Set<KeyValueModel> getCertBodyNames();
-	public Set<DescriptiveModel> getCertificationCriterionNumbers();
+	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException;
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple);
-	public PopulateSearchOptions getPopulateSearchOptions(Boolean simple);
+	public PopulateSearchOptions getPopulateSearchOptions(Boolean simple) throws EntityRetrievalException;
 	
 }
