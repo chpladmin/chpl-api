@@ -37,7 +37,11 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 			entity.setNameOrganization(dto.getNameOrganization());
 			entity.setCreationDate(dto.getCreationDate());
 			entity.setDeleted(dto.getDeleted());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			if (dto.getLastModifiedUser() == null){
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			} else {
+				entity.setLastModifiedUser(dto.getLastModifiedUser());
+			}
 			create(entity);
 		}
 		return new ApiKeyDTO(entity);
@@ -53,7 +57,11 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		entity.setNameOrganization(dto.getNameOrganization());
 		entity.setCreationDate(dto.getCreationDate());
 		entity.setDeleted(dto.getDeleted());
-		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		if (dto.getLastModifiedUser() == null){
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		} else {
+			entity.setLastModifiedUser(dto.getLastModifiedUser());
+		}
 		update(entity);
 		
 		return new ApiKeyDTO(entity);

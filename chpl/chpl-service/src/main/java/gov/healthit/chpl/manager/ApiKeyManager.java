@@ -11,8 +11,10 @@ public interface ApiKeyManager {
 	
 	public ApiKeyDTO createKey(ApiKeyDTO toCreate) throws EntityCreationException;
 	public void deleteKey(Long keyId);
+	public void deleteKey(String keyString);
 	public ApiKeyDTO findKey(Long keyId) throws EntityRetrievalException;
 	public ApiKeyDTO findKey(String keyString);
+	public List<ApiKeyDTO> findAll();
 	public void logApiKeyActivity(String keyString, String activityPath) throws EntityCreationException;
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString);
 	

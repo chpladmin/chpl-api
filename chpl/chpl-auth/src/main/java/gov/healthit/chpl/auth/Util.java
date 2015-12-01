@@ -39,59 +39,6 @@ public class Util {
 		return user;	
 	}
 	
-	public static Authentication getUnpriviligedUser(Long id) {
-		
-		JWTAuthenticatedUser unpriviligedUser = new JWTAuthenticatedUser() {
-			
-			@Override
-			public Long getId() {
-				return id == null ? -3L : id;
-			}
-			
-			@Override
-			public Collection<? extends GrantedAuthority> getAuthorities() {
-				//List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-				return null;
-			}
-
-			@Override
-			public Object getCredentials(){
-				return null;
-			}
-
-			@Override
-			public Object getDetails() {
-				return null;
-			}
-
-			@Override
-			public Object getPrincipal(){
-				return getName();
-			}
-			
-			@Override 
-			public String getSubjectName() {
-				return this.getName();
-			}
-			
-			@Override
-			public boolean isAuthenticated(){
-				return true;
-			}
-			
-			@Override
-			public void setAuthenticated(boolean arg0) throws IllegalArgumentException {}
-			
-			@Override
-			public String getName(){
-				return "unpriviliged";
-			}
-			
-		};
-		return unpriviligedUser;
-	}
-	
-	
 	
 	public static String fromInt(Integer toStr){
 		return toStr.toString();

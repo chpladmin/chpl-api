@@ -1,19 +1,18 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.Util;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.domain.ApiKey;
 import gov.healthit.chpl.domain.ApiKeyRegistration;
 import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.manager.ApiKeyManager;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,12 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/key")
 public class ApiKeyController {
+	
+	@Autowired
+	private ApiKeyManager apiKeyManager;
 
 	
 	@RequestMapping(value="/register", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String register(@RequestBody ApiKeyRegistration registration) {
+	public String register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException {
 		
 		Date now = new Date();
 		
@@ -42,7 +44,41 @@ public class ApiKeyController {
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		
-		return "{\"keyRegistered\" : true }";
+		apiKeyManager.createKey(toCreate);
+		
+		return "{\"keyRegistered\" : \""+apiKey+"\" }";
 	}
+	
+	@RequestMapping(value="/revoke", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public String revoke(@RequestBody ApiKey key) throws EntityCreationException {
+		
+		String keyString = key.getKey();
+		apiKeyManager.findKey(keyString);
+		return "{\"keyRevoked\" : \""+keyString+"\" }";
+		
+	}
+	
+	
+	@RequestMapping(value="/list", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public List<ApiKey> listKeys() throws EntityCreationException {
+		
+		List<ApiKey> keys = new ArrayList<ApiKey>();
+		List<ApiKeyDTO> dtos = apiKeyManager.findAll();
+		
+		for (ApiKeyDTO dto : dtos){
+			ApiKey apiKey = new ApiKey();
+			apiKey.setName(dto.getNameOrganization());
+			apiKey.setEmail(dto.getEmail());
+			apiKey.setKey(dto.getApiKey());
+			keys.add(apiKey);
+		}
+		return keys;
+	}
+	
+	
 	
 }

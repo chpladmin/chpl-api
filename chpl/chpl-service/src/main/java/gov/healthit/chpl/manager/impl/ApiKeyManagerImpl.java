@@ -34,6 +34,13 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	public void deleteKey(Long keyId) {
 		apiKeyDAO.delete(keyId);
 	}
+	
+	@Override
+	@Transactional
+	public void deleteKey(String keyString) {
+		Long keyId = this.findKey(keyString).getId();
+		apiKeyDAO.delete(keyId);
+	}
 
 	@Override
 	@Transactional
@@ -86,5 +93,11 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		}
 		return activity;
 	}
+
+	@Override
+	public List<ApiKeyDTO> findAll() {
+		return apiKeyDAO.findAll();
+	}
+	
 	
 }
