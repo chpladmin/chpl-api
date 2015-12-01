@@ -101,7 +101,9 @@ public class CertifiedProductController {
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 		CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
 		CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
-		validator.validate(certifiedProduct);
+		if(validator != null) {
+			validator.validate(certifiedProduct);
+		}
 		
 		return certifiedProduct;
 	}
@@ -112,7 +114,9 @@ public class CertifiedProductController {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
 		
 		CertifiedProductValidator validator = validatorFactory.getValidator(updateRequest);
-		validator.validate(updateRequest);
+		if(validator != null) {
+			validator.validate(updateRequest);
+		}
 		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {
 			throw new ValidationException(updateRequest.getErrorMessages(), updateRequest.getWarningMessages());
 		}
@@ -238,7 +242,9 @@ public class CertifiedProductController {
 		
 		PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
 		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
-		validator.validate(pcpDto);
+		if(validator != null) {
+			validator.validate(pcpDto);
+		}
 		if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
 			throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
 		}

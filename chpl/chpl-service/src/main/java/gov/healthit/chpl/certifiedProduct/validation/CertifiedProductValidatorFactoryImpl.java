@@ -84,7 +84,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 				logger.error("Cannot find validator for practice type '" + product.getPracticeType() + "'");
 			}
 		} else {
-			logger.error("Cannot find validator for certificatoin edition '" + product.getCertificationEdition() + "'.");
+			logger.info("Cannot find validator for certification edition '" + product.getCertificationEdition() + "'.");
 		}
 		return null;
 	}
