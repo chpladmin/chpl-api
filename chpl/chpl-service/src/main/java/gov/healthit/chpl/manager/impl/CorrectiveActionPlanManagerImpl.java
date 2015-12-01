@@ -56,8 +56,12 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public CorrectiveActionPlanDocumentationDTO addDocumentationToPlan(Long acbId, CorrectiveActionPlanDocumentationDTO doc)
-		throws EntityRetrievalException, EntityCreationException {
+		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		CertifiedProductDTO cpDto = cpDao.getById(doc.getCorrectiveActionPlanId());
 		CorrectiveActionPlanDocumentationDTO created = capDocDao.create(doc);
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, created.getId(), 
+				"A file " + doc.getFileName() + " was added to a corrective action plan for certified product "+ cpDto.getChplProductNumberForActivity(), null, created);
 		return created;
 	}
 	
@@ -67,15 +71,19 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public CorrectiveActionPlanDetails addCertificationsToPlan(Long acbId,
 			Long correctiveActionPlanId, List<CorrectiveActionPlanCertificationResultDTO> certs)
-					throws EntityRetrievalException, EntityCreationException {
-		
+					throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		CorrectiveActionPlanDTO plan = capDao.getById(correctiveActionPlanId);
+		CertifiedProductDTO cpDto = cpDao.getById(plan.getId());
+
 		for(CorrectiveActionPlanCertificationResultDTO toCreate : certs) {
 			CorrectiveActionPlanCertificationResultDTO created = capCertDao.create(toCreate);
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, created.getId(), 
+					"Added certification " + created.getCertCriterion().getNumber() + 
+					" to a corrective action plan for certified product "+ cpDto.getChplProductNumberForActivity(), 
+					null, created);
 		}
 		
-		CorrectiveActionPlanDTO plan = capDao.getById(correctiveActionPlanId);
 		List<CorrectiveActionPlanCertificationResultDTO> planCerts = capCertDao.getAllForCorrectiveActionPlan(correctiveActionPlanId);
-		
 		return new CorrectiveActionPlanDetails(plan, planCerts);
 	}
 
@@ -84,10 +92,19 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public void removeCertificationsFromPlan(Long acbId, List<CorrectiveActionPlanCertificationResultDTO> certs)
-					throws EntityRetrievalException {
+					throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		for(CorrectiveActionPlanCertificationResultDTO toDelete : certs) {
+			CorrectiveActionPlanCertificationResultDTO toDeleteWithAllInfo = capCertDao.getById(toDelete.getId());
+			CorrectiveActionPlanDTO plan = capDao.getById(toDeleteWithAllInfo.getCorrectiveActionPlanId());
+			CertifiedProductDTO cpDto = cpDao.getById(plan.getId());
+			
 			capCertDao.delete(toDelete.getId());
+			
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, toDeleteWithAllInfo.getId(), 
+					"Deleted certification " + toDeleteWithAllInfo.getCertCriterion().getNumber() + 
+					" from a corrective action plan for certified product "+ cpDto.getChplProductNumberForActivity(), 
+					toDeleteWithAllInfo, null);
 		}
 	}
 	
@@ -96,15 +113,36 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public CorrectiveActionPlanCertificationResultDTO updateCertification(Long acbId, CorrectiveActionPlanCertificationResultDTO cert)
-					throws EntityRetrievalException {
-		return capCertDao.update(cert);
+					throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		CorrectiveActionPlanCertificationResultDTO originalCert = capCertDao.getById(cert.getId());		
+		CorrectiveActionPlanDTO plan = capDao.getById(originalCert.getCorrectiveActionPlanId());
+		CertifiedProductDTO cpDto = cpDao.getById(plan.getId());
+		
+		CorrectiveActionPlanCertificationResultDTO updatedCert = capCertDao.update(cert);
+
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, cert.getId(), 
+				"Updated information for certification " + originalCert.getCertCriterion().getNumber() + 
+				" in a corrective action plan for certified product "+ cpDto.getChplProductNumberForActivity(), 
+				originalCert, updatedCert);
+		
+		return updatedCert;
 	}
 	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public void removeDocumentation(Long acbId, CorrectiveActionPlanDocumentationDTO toRemove) throws EntityRetrievalException {
+	public void removeDocumentation(Long acbId, CorrectiveActionPlanDocumentationDTO toRemove) 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		
+		CorrectiveActionPlanDTO plan = capDao.getById(toRemove.getCorrectiveActionPlanId());
+		CertifiedProductDTO cpDto = cpDao.getById(plan.getId());
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, toRemove.getId(), 
+				"Removed uploaded file " + toRemove.getFileName() + 
+				" from a corrective action plan for certified product "+ cpDto.getChplProductNumberForActivity(), 
+				toRemove, null);
+		
 		capDocDao.delete(toRemove.getId());
 	}
 	
