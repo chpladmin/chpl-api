@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
@@ -15,6 +16,7 @@ import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ApiKeyManager;
 
+@Service
 public class ApiKeyManagerImpl implements ApiKeyManager {
 	
 	@Autowired

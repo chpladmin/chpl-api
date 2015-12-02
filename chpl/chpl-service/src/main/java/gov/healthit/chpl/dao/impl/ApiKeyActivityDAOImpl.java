@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.dao.ApiKeyDAO;
@@ -14,7 +16,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 
-
+@Repository("apiKeyActivityDAO")
 public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivityDAO {
 
 	@Override
