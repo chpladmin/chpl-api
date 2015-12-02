@@ -96,6 +96,21 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		return dtos;
 		
 	}
+	
+	@Override
+	public List<ApiKeyActivityDTO> findAll(Integer pageNumber, Integer pageSize) {
+		
+		List<ApiKeyActivityEntity> entities = getAllEntities(pageNumber, pageSize);
+		List<ApiKeyActivityDTO> dtos = new ArrayList<>();
+		
+		for (ApiKeyActivityEntity entity : entities) {
+			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+		
+	}
+	
 
 	@Override
 	public ApiKeyActivityDTO getById(Long id) throws EntityRetrievalException {
@@ -112,6 +127,19 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 	@Override
 	public List<ApiKeyActivityDTO> findByKeyId(Long apiKeyId) {
 		List<ApiKeyActivityEntity> entities = getActivityEntitiesByKeyId(apiKeyId);
+		List<ApiKeyActivityDTO> dtos = new ArrayList<ApiKeyActivityDTO>();
+		
+		for (ApiKeyActivityEntity entity : entities){
+			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	@Override
+	public List<ApiKeyActivityDTO> findByKeyId(Long apiKeyId, Integer pageNumber, Integer pageSize) {
+		
+		List<ApiKeyActivityEntity> entities = getActivityEntitiesByKeyId(apiKeyId, pageNumber, pageSize);
 		List<ApiKeyActivityDTO> dtos = new ArrayList<ApiKeyActivityDTO>();
 		
 		for (ApiKeyActivityEntity entity : entities){
@@ -154,18 +182,39 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
-
 		return entity;
+	}
+	
+	private List<ApiKeyActivityEntity> getAllEntities(Integer pageNumber, Integer pageSize) {
+		
+		Query query = entityManager.createQuery("from ApiKeyActivityEntity where (NOT deleted = true) ", ApiKeyActivityEntity.class);
+		query.setMaxResults(pageSize);
+	    query.setFirstResult(pageNumber * pageSize);
+		List<ApiKeyActivityEntity> result = query.getResultList();
+		
+		return result;
 	}
 	
 	private List<ApiKeyActivityEntity> getActivityEntitiesByKeyId(Long keyId) {
 		
-		ApiKeyActivityEntity entity = null;
 		Query query = entityManager.createQuery( "from ApiKeyActivityEntity where (NOT deleted = true) AND (api_key_id = :apikeyid) ", ApiKeyActivityEntity.class );
 		query.setParameter("apikeyid", keyId);
 		List<ApiKeyActivityEntity> result = query.getResultList();
 		return result;
 		
 	}
-
+	
+	private List<ApiKeyActivityEntity> getActivityEntitiesByKeyId(Long keyId, Integer pageNumber, Integer pageSize) {
+		
+		
+		Query query = entityManager.createQuery( "from ApiKeyActivityEntity where (NOT deleted = true) AND (api_key_id = :apikeyid) ", ApiKeyActivityEntity.class );
+		query.setParameter("apikeyid", keyId);
+		query.setMaxResults(pageSize);
+	    query.setFirstResult(pageNumber * pageSize);
+		
+		List<ApiKeyActivityEntity> result = query.getResultList();
+		return result;
+		
+	}
+	
 }

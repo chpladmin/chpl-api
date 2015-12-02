@@ -10,7 +10,10 @@ public interface ApiKeyActivityDAO {
 	public ApiKeyActivityDTO update(ApiKeyActivityDTO apiKeyActivityDto) throws EntityRetrievalException;
 	public void delete(Long id);
 	public List<ApiKeyActivityDTO> findAll();
+	public List<ApiKeyActivityDTO> findAll(Integer pageNumber, Integer pageSize);
 	public List<ApiKeyActivityDTO> findByKeyId(Long apiKeyId);
+	public List<ApiKeyActivityDTO> findByKeyId(Long apiKeyId, Integer pageNumber, Integer pageSize);
 	public ApiKeyActivityDTO getById(Long id) throws EntityRetrievalException;
+	
 	
 }

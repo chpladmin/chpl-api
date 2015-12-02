@@ -6,16 +6,21 @@ import java.util.List;
 
 import gov.healthit.chpl.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ApiKey;
+import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.domain.ApiKeyRegistration;
+import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ApiKeyManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -76,9 +81,52 @@ public class ApiKeyController {
 			apiKey.setKey(dto.getApiKey());
 			keys.add(apiKey);
 		}
+		
 		return keys;
 	}
 	
+	@RequestMapping(value="/activity", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public List<ApiKeyActivity> listActivity(
+			@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException
+	{
+		if (pageNumber == null){
+			pageNumber = 0;
+		}
+		
+		if (pageSize == null){
+			pageSize = 100;
+		}
+		
+		List<ApiKeyActivity> activity = apiKeyManager.getApiKeyActivity(pageNumber, pageSize);
+		
+		return activity;
+		
+	}
+	
+	@RequestMapping(value="/activity/{apiKey}", method= RequestMethod.POST, 
+			consumes= MediaType.APPLICATION_JSON_VALUE,
+			produces="application/json; charset=utf-8")
+	public List<ApiKeyActivity> listActivityByKey(
+			@PathVariable("apiKey") String apiKey,
+			@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException
+	{
+		if (pageNumber == null){
+			pageNumber = 0;
+		}
+		
+		if (pageSize == null){
+			pageSize = 100;
+		}
+		
+		List<ApiKeyActivity> activity = apiKeyManager.getApiKeyActivity(apiKey, pageNumber, pageSize);
+		
+		return activity;
+		
+	}
 	
 	
 }

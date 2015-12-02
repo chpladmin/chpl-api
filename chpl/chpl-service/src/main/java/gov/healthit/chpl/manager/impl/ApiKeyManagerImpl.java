@@ -93,11 +93,91 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		}
 		return activity;
 	}
+	
+	
+	@Override
+	@Transactional
+	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize) {
+		
+		ApiKeyDTO apiKey = findKey(keyString);
+		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findByKeyId(apiKey.getId(), pageNumber, pageSize);
+		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
+		
+		for (ApiKeyActivityDTO dto : activityDTOs){
+			
+			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
+			
+			apiKeyActivity.setApiKey(apiKey.getApiKey());
+			apiKeyActivity.setApiKeyId(apiKey.getId());
+			apiKeyActivity.setEmail(apiKey.getEmail());
+			apiKeyActivity.setName(apiKey.getNameOrganization());
+			apiKeyActivity.setId(dto.getId());
+			apiKeyActivity.setCreationDate(dto.getCreationDate());
+			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
+			
+			activity.add(apiKeyActivity);
+			
+		}
+		return activity;
+	}
+	
+	
 
 	@Override
 	public List<ApiKeyDTO> findAll() {
 		return apiKeyDAO.findAll();
 	}
+
+	@Override
+	public List<ApiKeyActivity> getApiKeyActivity() throws EntityRetrievalException {
+		
+		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll();
+		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
+		
+		for (ApiKeyActivityDTO dto : activityDTOs){
+			
+			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
+			
+			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
+			
+			apiKeyActivity.setApiKey(apiKey.getApiKey());
+			apiKeyActivity.setApiKeyId(apiKey.getId());
+			apiKeyActivity.setEmail(apiKey.getEmail());
+			apiKeyActivity.setName(apiKey.getNameOrganization());
+			apiKeyActivity.setId(dto.getId());
+			apiKeyActivity.setCreationDate(dto.getCreationDate());
+			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
+			
+			activity.add(apiKeyActivity);
+			
+		}
+		return activity;
+	}
 	
+	@Override
+	public List<ApiKeyActivity> getApiKeyActivity(Integer pageNumber, Integer pageSize) throws EntityRetrievalException {
+		
+		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll(pageNumber, pageSize) ;
+		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
+		
+		for (ApiKeyActivityDTO dto : activityDTOs){
+			
+			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
+			
+			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
+			
+			apiKeyActivity.setApiKey(apiKey.getApiKey());
+			apiKeyActivity.setApiKeyId(apiKey.getId());
+			apiKeyActivity.setEmail(apiKey.getEmail());
+			apiKeyActivity.setName(apiKey.getNameOrganization());
+			apiKeyActivity.setId(dto.getId());
+			apiKeyActivity.setCreationDate(dto.getCreationDate());
+			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
+			
+			activity.add(apiKeyActivity);
+			
+		}
+		return activity;
+	}
 	
 }
