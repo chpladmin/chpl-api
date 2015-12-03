@@ -31,14 +31,6 @@ public class SurveillanceEntity {
 	@Column(name="certified_product_id")
 	private Long certifiedProductId;
 	
-	@Column(name="site_name")
-	private String siteName;
-	
-	@Basic( optional = false )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "surveillance_address", unique=true, nullable = true)
-	private AddressEntity address;
-	
 	@Column(name = "start_date")
 	private Date startDate;
 	
@@ -77,22 +69,6 @@ public class SurveillanceEntity {
 
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
-	}
-
-	public String getSiteName() {
-		return siteName;
-	}
-
-	public void setSiteName(String siteName) {
-		this.siteName = siteName;
-	}
-
-	public AddressEntity getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressEntity address) {
-		this.address = address;
 	}
 
 	public Date getStartDate() {

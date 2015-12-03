@@ -25,7 +25,7 @@ public class SurveillanceCertificationResultEntity {
 	@Basic( optional = false )
 	@Column( name = "surveillance_certification_result_id", nullable = false  )
 	@SequenceGenerator(name = "surveillance_certification_resultSurveillance_certification_result_idGenerator", 
-		sequenceName = "surveillance_certification_result_surveillance_certification_result_id_seq", 
+		sequenceName = "surveillance_certification_re_surveillance_certification_re_seq", 
 		allocationSize = 1)
 	private Long id;
 	
@@ -39,8 +39,14 @@ public class SurveillanceCertificationResultEntity {
 	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
 	private CertificationCriterionEntity certCriterion;
 	
-	@Column(name="pass")
-	private Boolean passes;
+	@Column(name = "num_sites")
+	private int numSites;
+	
+	@Column(name = "pass_rate")
+	private String passRate;
+	
+	@Column(name = "results")
+	private String results;
 
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -116,12 +122,27 @@ public class SurveillanceCertificationResultEntity {
 		this.certCriterion = certCriterion;
 	}
 
-	public Boolean getPasses() {
-		return passes;
+	public int getNumSites() {
+		return numSites;
 	}
 
-	public void setPasses(Boolean passes) {
-		this.passes = passes;
+	public void setNumSites(int numSites) {
+		this.numSites = numSites;
 	}
 
+	public String getPassRate() {
+		return passRate;
+	}
+
+	public void setPassRate(String passRate) {
+		this.passRate = passRate;
+	}
+
+	public String getResults() {
+		return results;
+	}
+
+	public void setResults(String results) {
+		this.results = results;
+	}
 }
