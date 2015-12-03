@@ -50,7 +50,13 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 				entity.setCreationDate(new Date());
 			}
 			entity.setDeleted(dto.getDeleted());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			
+			if (Util.getCurrentUser() == null){
+				entity.setLastModifiedUser(-3L);
+			} else {
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			}
+			
 			create(entity);
 		}
 		return new ApiKeyActivityDTO(entity);

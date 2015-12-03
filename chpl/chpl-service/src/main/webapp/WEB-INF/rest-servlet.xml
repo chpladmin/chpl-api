@@ -26,8 +26,5 @@
    <sec:global-method-security pre-post-annotations="enabled" >
    		<sec:expression-handler ref="expressionHandler" />
    </sec:global-method-security>
-	
-	<tx:annotation-driven transaction-manager="transactionManager"
-		proxy-target-class="true" />
 
 </beans>

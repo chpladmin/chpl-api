@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -38,6 +39,12 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 			entity.setEmail(dto.getEmail());
 			entity.setNameOrganization(dto.getNameOrganization());
 			entity.setCreationDate(dto.getCreationDate());
+			if (dto.getLastModifiedDate() == null){
+				entity.setLastModifiedDate(new Date());
+			} else {
+				entity.setLastModifiedDate(dto.getLastModifiedDate());
+			}
+			
 			entity.setDeleted(dto.getDeleted());
 			if (dto.getLastModifiedUser() == null){
 				entity.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -59,6 +66,11 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		entity.setNameOrganization(dto.getNameOrganization());
 		entity.setCreationDate(dto.getCreationDate());
 		entity.setDeleted(dto.getDeleted());
+		if (dto.getLastModifiedDate() == null){
+			entity.setLastModifiedDate(new Date());
+		} else {
+			entity.setLastModifiedDate(dto.getLastModifiedDate());
+		}
 		if (dto.getLastModifiedUser() == null){
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		} else {
@@ -97,6 +109,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getEntityById(id);
+		
 		if (entity != null){
 			dto = new ApiKeyDTO(entity);
 		}
@@ -106,8 +119,13 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
 	@Override
 	public ApiKeyDTO getByKey(String apiKey) {
+		
+		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getEntityByKey(apiKey);
-		ApiKeyDTO dto = new ApiKeyDTO(entity);
+		
+		if (entity != null){
+			dto = new ApiKeyDTO(entity);
+		}
 		return dto;
 	}
 	

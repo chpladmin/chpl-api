@@ -4,18 +4,22 @@ import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
+@Entity
+@Table(name="openchpl.api_key_activity")
 public class ApiKeyActivityEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "api_key_activity_api_key_activity_idGenerator")
 	@Basic( optional = false )
 	@Column( name = "api_key_activity_id", nullable = false )
-	@SequenceGenerator(name = "api_key_activity_api_key_activity_idGenerator", sequenceName = "api_key_activity_api_activity_id_seq")
+	@SequenceGenerator(name = "api_key_activity_api_key_activity_idGenerator", sequenceName = "api_key_activity_api_key_activity_id_seq")
 	private Long id;
 	
 	@Basic(optional=false)

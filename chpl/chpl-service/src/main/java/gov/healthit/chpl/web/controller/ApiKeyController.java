@@ -48,6 +48,7 @@ public class ApiKeyController {
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
+		toCreate.setDeleted(false);
 		
 		apiKeyManager.createKey(toCreate);
 		
