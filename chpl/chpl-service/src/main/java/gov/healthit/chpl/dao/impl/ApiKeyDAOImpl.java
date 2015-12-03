@@ -162,7 +162,6 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
-
 		return entity;
 	}
 	

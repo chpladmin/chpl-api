@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +34,14 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
 	@Override
 	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void deleteKey(Long keyId) {
 		apiKeyDAO.delete(keyId);
 	}
 	
 	@Override
 	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void deleteKey(String keyString) {
 		Long keyId = this.findKey(keyString).getId();
 		apiKeyDAO.delete(keyId);
@@ -72,6 +75,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
 	@Override
 	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
@@ -99,6 +103,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	
 	@Override
 	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
@@ -126,11 +131,13 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	
 
 	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ApiKeyDTO> findAll() {
 		return apiKeyDAO.findAll();
 	}
 
 	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ApiKeyActivity> getApiKeyActivity() throws EntityRetrievalException {
 		
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll();
@@ -157,6 +164,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	}
 	
 	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ApiKeyActivity> getApiKeyActivity(Integer pageNumber, Integer pageSize) throws EntityRetrievalException {
 		
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll(pageNumber, pageSize) ;

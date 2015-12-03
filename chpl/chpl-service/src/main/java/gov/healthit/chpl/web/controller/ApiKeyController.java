@@ -4,7 +4,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.healthit.chpl.Util;
+
+
+
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
+import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ApiKey;
@@ -39,7 +47,7 @@ public class ApiKeyController {
 		
 		Date now = new Date();
 		
-		String apiKey = Util.md5(registration.getName() + registration.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.Util.md5(registration.getName() + registration.getEmail() + now.getTime() );
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		
 		toCreate.setApiKey(apiKey);
@@ -58,19 +66,17 @@ public class ApiKeyController {
 	@RequestMapping(value="/revoke", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String revoke(@RequestBody ApiKey key) throws EntityCreationException {
-		
+	public String revoke(@RequestBody ApiKey key) {
 		String keyString = key.getKey();
-		apiKeyManager.findKey(keyString);
+		apiKeyManager.deleteKey(keyString);
 		return "{\"keyRevoked\" : \""+keyString+"\" }";
 		
 	}
 	
 	
-	@RequestMapping(value="/list", method= RequestMethod.POST, 
-			consumes= MediaType.APPLICATION_JSON_VALUE,
+	@RequestMapping(value="/list", method= RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public List<ApiKey> listKeys() throws EntityCreationException {
+	public List<ApiKey> listKeys() {
 		
 		List<ApiKey> keys = new ArrayList<ApiKey>();
 		List<ApiKeyDTO> dtos = apiKeyManager.findAll();
@@ -127,6 +133,13 @@ public class ApiKeyController {
 		
 		return activity;
 		
+	}
+	
+	private void sendRegistrationEmail(String email, String orgName, String apiKey) throws AddressException, MessagingException{
+		String subject = "";
+		String htmlMessage = "";
+		SendMailUtil mailUtil = new SendMailUtil();// (email);
+		mailUtil.sendEmail(email, subject, htmlMessage);
 	}
 	
 	
