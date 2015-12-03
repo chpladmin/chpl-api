@@ -73,7 +73,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 			Long correctiveActionPlanId, List<CorrectiveActionPlanCertificationResultDTO> certs)
 					throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		CorrectiveActionPlanDTO plan = capDao.getById(correctiveActionPlanId);
-		CertifiedProductDTO cpDto = cpDao.getById(plan.getId());
+		CertifiedProductDTO cpDto = cpDao.getById(plan.getCertifiedProductId());
 
 		for(CorrectiveActionPlanCertificationResultDTO toCreate : certs) {
 			CorrectiveActionPlanCertificationResultDTO created = capCertDao.create(toCreate);
@@ -97,7 +97,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 		for(CorrectiveActionPlanCertificationResultDTO toDelete : certs) {
 			CorrectiveActionPlanCertificationResultDTO toDeleteWithAllInfo = capCertDao.getById(toDelete.getId());
 			CorrectiveActionPlanDTO plan = capDao.getById(toDeleteWithAllInfo.getCorrectiveActionPlanId());
-			CertifiedProductDTO cpDto = cpDao.getById(plan.getId());
+			CertifiedProductDTO cpDto = cpDao.getById(plan.getCertifiedProductId());
 			
 			capCertDao.delete(toDelete.getId());
 			
@@ -116,7 +116,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 					throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		CorrectiveActionPlanCertificationResultDTO originalCert = capCertDao.getById(cert.getId());		
 		CorrectiveActionPlanDTO plan = capDao.getById(originalCert.getCorrectiveActionPlanId());
-		CertifiedProductDTO cpDto = cpDao.getById(plan.getId());
+		CertifiedProductDTO cpDto = cpDao.getById(plan.getCertifiedProductId());
 		
 		CorrectiveActionPlanCertificationResultDTO updatedCert = capCertDao.update(cert);
 
@@ -136,7 +136,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CorrectiveActionPlanDTO plan = capDao.getById(toRemove.getCorrectiveActionPlanId());
-		CertifiedProductDTO cpDto = cpDao.getById(plan.getId());
+		CertifiedProductDTO cpDto = cpDao.getById(plan.getCertifiedProductId());
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, toRemove.getId(), 
 				"Removed uploaded file " + toRemove.getFileName() + 
