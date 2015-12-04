@@ -5,11 +5,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -41,8 +44,14 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		
 		String activityMsg = "API Key "+created.getApiKey()+" was created.";
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null, created);
+		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
 		
+		try {
+			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null, created);
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(tmp);
+		}
 		return created;
 		
 	}
@@ -58,8 +67,13 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		
 		apiKeyDAO.delete(keyId);
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
-		
+		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
+		try {
+			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(tmp);
+		}
 	}
 	
 	@Override
@@ -73,7 +87,13 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		
 		apiKeyDAO.delete(toDelete.getId());
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
+		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
+		try {
+			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(tmp);
+		}
 		
 	}
 
