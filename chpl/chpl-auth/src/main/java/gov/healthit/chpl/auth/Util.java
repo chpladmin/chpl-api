@@ -1,10 +1,7 @@
 package gov.healthit.chpl.auth;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 
@@ -39,7 +36,7 @@ public class Util {
 		}
 		return user;	
 	}
-	
+					   
 	public static User getUnprivilegedUser(Long id){
 		
 		JWTAuthenticatedUser unprivileged = new JWTAuthenticatedUser() {

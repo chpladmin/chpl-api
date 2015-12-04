@@ -47,7 +47,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
 		
 		try {
-			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
+			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(-3L));
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null, created);
 		} finally {
 			SecurityContextHolder.getContext().setAuthentication(tmp);
