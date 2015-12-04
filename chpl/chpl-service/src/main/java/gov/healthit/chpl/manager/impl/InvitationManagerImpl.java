@@ -1,13 +1,9 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,10 +13,10 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.Util;
 import gov.healthit.chpl.auth.dao.InvitationDAO;
 import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
@@ -72,7 +68,7 @@ public class InvitationManagerImpl implements InvitationManager {
 		InvitationDTO dto = new InvitationDTO();
 		dto.setEmail(emailAddress);
 		Date now = new Date();
-		dto.setInviteToken(md5(emailAddress + now.getTime()));
+		dto.setInviteToken(Util.md5(emailAddress + now.getTime()));
 	
 		return createInvitation(dto, permissions);
 	}
@@ -85,7 +81,7 @@ public class InvitationManagerImpl implements InvitationManager {
 		InvitationDTO dto = new InvitationDTO();
 		dto.setEmail(emailAddress);
 		Date now = new Date();
-		dto.setInviteToken(md5(emailAddress + now.getTime()));
+		dto.setInviteToken(Util.md5(emailAddress + now.getTime()));
 		
 		return createInvitation(dto, permissions);
 	}
@@ -101,7 +97,7 @@ public class InvitationManagerImpl implements InvitationManager {
 		dto.setAcbId(acbId);
 		//could be multiple invitations for the same email so add the time to make it unique
 		Date currTime = new Date();
-		dto.setInviteToken(md5(emailAddress + currTime.getTime()));
+		dto.setInviteToken(Util.md5(emailAddress + currTime.getTime()));
 	
 		return createInvitation(dto, permissions);
 	}
@@ -176,7 +172,7 @@ public class InvitationManagerImpl implements InvitationManager {
 			invitation.setCreatedUserId(newUser.getId());
 			invitation.setInviteToken(null);
 			Date now = new Date();
-			invitation.setConfirmToken(md5(invitation.getEmail() + now.getTime()));
+			invitation.setConfirmToken(Util.md5(invitation.getEmail() + now.getTime()));
 			invitationDao.update(invitation);
 			return newUser;
 		} finally {
@@ -326,25 +322,4 @@ public class InvitationManagerImpl implements InvitationManager {
 		return authenticator;
 	}
 	
-    private String md5(String input) {
-        String md5 = null;
-        if(null == input) {
-        	return null;
-        }
-         
-        try { 
-        	//Create MessageDigest object for MD5
-        	MessageDigest digest = MessageDigest.getInstance("MD5");
-         
-	        //Update input string in message digest
-	        digest.update(input.getBytes(), 0, input.length());
- 
-	        //Converts message digest value in base 16 (hex) 
-	        md5 = new BigInteger(1, digest.digest()).toString(16);
- 
-        } catch (NoSuchAlgorithmException e) {
-	       	e.printStackTrace();
-	    }
-        return md5;
-    }
 }

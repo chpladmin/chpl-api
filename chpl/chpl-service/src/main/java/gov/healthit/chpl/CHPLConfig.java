@@ -7,23 +7,30 @@ import java.util.Properties;
 
 import javax.servlet.MultipartConfigElement;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
+import gov.healthit.chpl.manager.ApiKeyManager;
+import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 
 
 @Configuration
+@EnableTransactionManagement(proxyTargetClass=true)
 @EnableWebSecurity
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLConfig {
 	
+	@Autowired
+	private ApiKeyManager apiKeyManager;
 	
 	public static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
 	
@@ -84,7 +91,10 @@ public class CHPLConfig {
 	        return resolver;
 	}
 	
-	
-	
+	@Bean
+	public APIKeyAuthenticationFilter apiKeyAuthenticationFilter()
+	{
+		return new APIKeyAuthenticationFilter(apiKeyManager);
+	}
 	
 }
