@@ -8,13 +8,17 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ApiKeyManager;
 
 @Service
@@ -26,25 +30,51 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	@Autowired
 	private ApiKeyActivityDAO apiKeyActivityDAO;
 	
+	@Autowired
+	private ActivityManager activityManager;
+	
 	@Override
 	@Transactional
-	public ApiKeyDTO createKey(ApiKeyDTO toCreate) throws EntityCreationException {
-		return apiKeyDAO.create(toCreate);
+	public ApiKeyDTO createKey(ApiKeyDTO toCreate) throws EntityCreationException, JsonProcessingException, EntityRetrievalException {
+		
+		ApiKeyDTO created = apiKeyDAO.create(toCreate);
+		
+		String activityMsg = "API Key "+created.getApiKey()+" was created.";
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null, created);
+		
+		return created;
+		
 	}
 
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void deleteKey(Long keyId) {
+	public void deleteKey(Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		ApiKeyDTO toDelete = apiKeyDAO.getById(keyId);
+		
+		String activityMsg = "API Key "+toDelete.getApiKey()+" was revoked.";
+		
 		apiKeyDAO.delete(keyId);
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
+		
 	}
 	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void deleteKey(String keyString) {
-		Long keyId = this.findKey(keyString).getId();
-		apiKeyDAO.delete(keyId);
+	public void deleteKey(String keyString) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+		
+		ApiKeyDTO toDelete = apiKeyDAO.getByKey(keyString);
+		
+		String activityMsg = "API Key "+toDelete.getApiKey()+" was revoked.";
+		
+		apiKeyDAO.delete(toDelete.getId());
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
+		
 	}
 
 	@Override

@@ -11,7 +11,9 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
+import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.ApiKeyManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,6 +31,9 @@ public class ActivityController {
 	
 	@Autowired
 	private ActivityManager activityManager;
+	
+	@Autowired
+	private ApiKeyManager apiKeyManager;
 	
 	
 	@RequestMapping(value="/", method=RequestMethod.GET, produces="application/json; charset=utf-8")
@@ -58,6 +63,17 @@ public class ActivityController {
 			return getActivityEventsForACBs(id);
 		} else {
 			return getActivityEventsForACBs(id, lastNDays);
+		}
+	}
+	
+	
+	@RequestMapping(value="/api_keys", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForApiKeys(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException {
+		
+		if (lastNDays == null){
+			return getActivityEventsForApiKeys();
+		} else {
+			return getActivityEventsForApiKeys(lastNDays);
 		}
 	}
 	
@@ -295,7 +311,14 @@ public class ActivityController {
 		
 	}
 	
-	
+	private List<ActivityEvent> getActivityEventsForApiKeys(Long id) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_API_KEY;
+		events = getActivityEventsForObject(concept, id);
+		
+		return events;
+	}
 	
 	
 	
@@ -367,7 +390,13 @@ public class ActivityController {
 		
 	}
 	
-	
+	private List<ActivityEvent> getActivityEventsForApiKeys(Long id, Integer lastNDays) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_API_KEY;
+		events = getActivityEventsForObject(concept, id, lastNDays);
+		return events;
+	}
 	
 	
 	
@@ -448,7 +477,14 @@ public class ActivityController {
 		
 	}
 	
-	
+	private List<ActivityEvent> getActivityEventsForApiKeys(Integer lastNDays) throws JsonParseException, IOException {
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_API_KEY;
+		events = getActivityEventsForConcept(concept, lastNDays);
+		
+		return events;
+	}
 	
 	
 	
@@ -526,6 +562,15 @@ public class ActivityController {
 		events = getActivityEventsForConcept(concept);
 		return events;
 		
+	}
+	
+	private List<ActivityEvent> getActivityEventsForApiKeys() throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_API_KEY;
+		events = getActivityEventsForConcept(concept);
+		
+		return events;
 	}
 	
 	
