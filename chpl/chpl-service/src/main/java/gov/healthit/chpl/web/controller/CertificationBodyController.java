@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,21 +74,25 @@ public class CertificationBodyController {
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public CertificationBody createAcb(@RequestBody CertificationBody acbInfo) throws UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+	public CertificationBody createAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		CertificationBodyDTO toCreate = new CertificationBodyDTO();
 		toCreate.setName(acbInfo.getName());
-		toCreate.setWebsite(acbInfo.getWebsite());
-		AddressDTO address = null;
-		if(acbInfo.getAddress() != null) {
-			address = new AddressDTO();
-			address.setId(acbInfo.getAddress().getAddressId());
-			address.setStreetLineOne(acbInfo.getAddress().getLine1());
-			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
-			address.setCity(acbInfo.getAddress().getCity());
-			address.setState(acbInfo.getAddress().getState());
-			address.setZipcode(acbInfo.getAddress().getZipcode());
-			address.setCountry(acbInfo.getAddress().getCountry());
+		if(StringUtils.isEmpty(acbInfo.getWebsite())) {
+			throw new InvalidArgumentsException("A website is required for a new certification body");
 		}
+		toCreate.setWebsite(acbInfo.getWebsite());
+		
+		if(acbInfo.getAddress() == null) {
+			throw new InvalidArgumentsException("An address is required for a new certification body");
+		}
+		AddressDTO address = new AddressDTO();
+		address.setId(acbInfo.getAddress().getAddressId());
+		address.setStreetLineOne(acbInfo.getAddress().getLine1());
+		address.setStreetLineTwo(acbInfo.getAddress().getLine2());
+		address.setCity(acbInfo.getAddress().getCity());
+		address.setState(acbInfo.getAddress().getState());
+		address.setZipcode(acbInfo.getAddress().getZipcode());
+		address.setCountry(acbInfo.getAddress().getCountry());
 		toCreate.setAddress(address);
 		toCreate = acbManager.create(toCreate);
 		return new CertificationBody(toCreate);
@@ -97,22 +102,26 @@ public class CertificationBodyController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		CertificationBodyDTO toUpdate = new CertificationBodyDTO();
 		toUpdate.setId(acbInfo.getId());
 		toUpdate.setName(acbInfo.getName());
-		toUpdate.setWebsite(acbInfo.getWebsite());
-		AddressDTO address = null;
-		if(acbInfo.getAddress() != null) {
-			address = new AddressDTO();
-			address.setId(acbInfo.getAddress().getAddressId());
-			address.setStreetLineOne(acbInfo.getAddress().getLine1());
-			address.setStreetLineTwo(acbInfo.getAddress().getLine2());
-			address.setCity(acbInfo.getAddress().getCity());
-			address.setState(acbInfo.getAddress().getState());
-			address.setZipcode(acbInfo.getAddress().getZipcode());
-			address.setCountry(acbInfo.getAddress().getCountry());
+		if(StringUtils.isEmpty(acbInfo.getWebsite())) {
+			throw new InvalidArgumentsException("A website is required to update the certification body");
 		}
+		toUpdate.setWebsite(acbInfo.getWebsite());
+		
+		if(acbInfo.getAddress() == null) {
+			throw new InvalidArgumentsException("An address is required to update the certification body");
+		}
+		AddressDTO address = new AddressDTO();
+		address.setId(acbInfo.getAddress().getAddressId());
+		address.setStreetLineOne(acbInfo.getAddress().getLine1());
+		address.setStreetLineTwo(acbInfo.getAddress().getLine2());
+		address.setCity(acbInfo.getAddress().getCity());
+		address.setState(acbInfo.getAddress().getState());
+		address.setZipcode(acbInfo.getAddress().getZipcode());
+		address.setCountry(acbInfo.getAddress().getCountry());
 		toUpdate.setAddress(address);
 		
 		CertificationBodyDTO result = acbManager.update(toUpdate);

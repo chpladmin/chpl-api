@@ -16,38 +16,35 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name="surveillance_certification_result")
-public class SurveillanceCertificationResultEntity {
+@Table(name="corrective_action_plan_documentation")
+public class CorrectiveActionPlanDocumentationEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, 
-		generator = "surveillance_certification_resultSurveillance_certification_result_idGenerator")
+		generator = "correctiveActionPlanDocumentationCorrective_action_plan_documentation_idGenerator")
 	@Basic( optional = false )
-	@Column( name = "surveillance_certification_result_id", nullable = false  )
-	@SequenceGenerator(name = "surveillance_certification_resultSurveillance_certification_result_idGenerator", 
-		sequenceName = "surveillance_certification_re_surveillance_certification_re_seq", 
+	@Column( name = "corrective_action_plan_documentation_id", nullable = false  )
+	@SequenceGenerator(name = "correctiveActionPlanDocumentationCorrective_action_plan_documentation_idGenerator", 
+		sequenceName = "corrective_action_plan_docume_corrective_action_plan_docume_seq", 
 		allocationSize = 1)
 	private Long id;
 	
 	@Basic( optional = false )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "surveillance_id", unique=true, nullable = true)
-	private SurveillanceEntity surveillance;
+	@JoinColumn(name = "corrective_action_plan_id", unique=true, nullable = true)
+	private CorrectiveActionPlanEntity correctiveActionPlan;
 	
 	@Basic( optional = false )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
-	private CertificationCriterionEntity certCriterion;
+	@Column(name = "filename")
+	private String fileName;
 	
-	@Column(name = "num_sites")
-	private int numSites;
+	@Column(name = "filetype")
+	private String fileType;
 	
-	@Column(name = "pass_rate")
-	private String passRate;
+	@Basic( optional = false )
+	@Column(name = "filedata")
+	private byte[] fileData;
 	
-	@Column(name = "results")
-	private String results;
-
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -72,6 +69,14 @@ public class SurveillanceCertificationResultEntity {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public CorrectiveActionPlanEntity getCorrectiveActionPlan() {
+		return correctiveActionPlan;
+	}
+
+	public void setCorrectiveActionPlan(CorrectiveActionPlanEntity correctiveActionPlan) {
+		this.correctiveActionPlan = correctiveActionPlan;
 	}
 
 	public Date getCreationDate() {
@@ -106,43 +111,27 @@ public class SurveillanceCertificationResultEntity {
 		this.deleted = deleted;
 	}
 
-	public SurveillanceEntity getSurveillance() {
-		return surveillance;
+	public String getFileName() {
+		return fileName;
 	}
 
-	public void setSurveillance(SurveillanceEntity surveillance) {
-		this.surveillance = surveillance;
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
-	public CertificationCriterionEntity getCertCriterion() {
-		return certCriterion;
+	public String getFileType() {
+		return fileType;
 	}
 
-	public void setCertCriterion(CertificationCriterionEntity certCriterion) {
-		this.certCriterion = certCriterion;
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
 	}
 
-	public int getNumSites() {
-		return numSites;
+	public byte[]  getFileData() {
+		return fileData;
 	}
 
-	public void setNumSites(int numSites) {
-		this.numSites = numSites;
-	}
-
-	public String getPassRate() {
-		return passRate;
-	}
-
-	public void setPassRate(String passRate) {
-		this.passRate = passRate;
-	}
-
-	public String getResults() {
-		return results;
-	}
-
-	public void setResults(String results) {
-		this.results = results;
+	public void setFileData(byte[]  fileData) {
+		this.fileData = fileData;
 	}
 }

@@ -39,9 +39,11 @@ public class CorrectiveActionPlanCertificationEntity {
 	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
 	private CertificationCriterionEntity certificationCriterion;
 	
+	@Basic( optional = false )
 	@Column(name = "acb_summary")
 	private String acbSummary;
 	
+	@Basic( optional = false )
 	@Column(name = "developer_summary")
 	private String developerSummaryDescription;
 	

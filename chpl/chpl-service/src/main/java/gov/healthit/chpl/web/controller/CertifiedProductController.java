@@ -31,8 +31,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadType;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
+import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
+import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
@@ -64,7 +64,7 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired PendingCertifiedProductManager pcpManager;
 	@Autowired CertificationBodyManager acbManager;
-	@Autowired PendingCertifiedProductValidatorFactory validatorFactory;
+	@Autowired CertifiedProductValidatorFactory validatorFactory;
 
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
@@ -100,6 +100,10 @@ public class CertifiedProductController {
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 		CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+		CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
+		if(validator != null) {
+			validator.validate(certifiedProduct);
+		}
 		
 		return certifiedProduct;
 	}
@@ -107,7 +111,15 @@ public class CertifiedProductController {
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
-		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+		
+		CertifiedProductValidator validator = validatorFactory.getValidator(updateRequest);
+		if(validator != null) {
+			validator.validate(updateRequest);
+		}
+		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {
+			throw new ValidationException(updateRequest.getErrorMessages(), updateRequest.getWarningMessages());
+		}
 		
 		CertifiedProductDTO existingProduct = cpManager.getById(updateRequest.getId());
 		Long acbId = existingProduct.getCertificationBodyId();
@@ -158,15 +170,28 @@ public class CertifiedProductController {
 		//update product cqms
 		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();
 		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
-			CQMCriterionDTO cqmDto = new CQMCriterionDTO();
-			cqmDto.setNqfNumber(cqm.getNqfNumber());
-			cqmDto.setCmsId(cqm.getCmsId());
-			cqmDto.setCqmVersion(cqm.getVersion());
-			cqmDto.setNumber(cqm.getNumber());
-			cqmDto.setCmsId(cqm.getCmsId());
-			cqmDto.setNqfNumber(cqm.getNqfNumber());
-			cqmDto.setTitle(cqm.getTitle());
-			cqmDtos.put(cqmDto, cqm.isSuccess());
+			if(!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null && cqm.getSuccessVersions().size() > 0) {
+				for(String version : cqm.getSuccessVersions()) {
+					CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+					cqmDto.setNqfNumber(cqm.getNqfNumber());
+					cqmDto.setCmsId(cqm.getCmsId());
+					cqmDto.setNumber(cqm.getNumber());
+					cqmDto.setCmsId(cqm.getCmsId());
+					cqmDto.setNqfNumber(cqm.getNqfNumber());
+					cqmDto.setTitle(cqm.getTitle());
+					cqmDto.setCqmVersion(version);
+					cqmDtos.put(cqmDto, Boolean.TRUE);
+				}
+			} else if(StringUtils.isEmpty(cqm.getCmsId())) {
+				CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+				cqmDto.setNqfNumber(cqm.getNqfNumber());
+				cqmDto.setCmsId(cqm.getCmsId());
+				cqmDto.setNumber(cqm.getNumber());
+				cqmDto.setCmsId(cqm.getCmsId());
+				cqmDto.setNqfNumber(cqm.getNqfNumber());
+				cqmDto.setTitle(cqm.getTitle());
+				cqmDtos.put(cqmDto, cqm.isSuccess());
+			}
 		}
 		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
 		
@@ -176,30 +201,25 @@ public class CertifiedProductController {
 	
 	@RequestMapping(value="/pending", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {
-		List<PendingCertifiedProductDetails> products = new ArrayList<PendingCertifiedProductDetails>();
+	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {		
+		List<PendingCertifiedProductDTO> allProductDtos = pcpManager.getPending();
 		
-		List<PendingCertifiedProductDTO> productDtos = pcpManager.getPending();
-		for(PendingCertifiedProductDTO dto : productDtos) {
-			PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(dto);
-			details.setApplicableCqmCriteria(pcpManager.getApplicableCriteria(dto));
-			products.add(details);
-		}		
+		List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
+		for(PendingCertifiedProductDTO product : allProductDtos) {
+			PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
+			pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
+			result.add(pcpDetails);
+		}
 		
 		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
-		results.getPendingCertifiedProducts().addAll(products);
+		results.getPendingCertifiedProducts().addAll(result);
 		return results;
 	}
 	
 	@RequestMapping(value="/pending/{pcpId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId) throws EntityRetrievalException {
-		List<PendingCertifiedProductDetails> products = new ArrayList<PendingCertifiedProductDetails>();
-
-		PendingCertifiedProductDTO dto = pcpManager.getById(pcpId);
-		PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(dto);
-		details.setApplicableCqmCriteria(pcpManager.getApplicableCriteria(dto));
-		
+		PendingCertifiedProductDetails details = pcpManager.getById(pcpId);	
 		return details;
 	}
 	
@@ -221,8 +241,10 @@ public class CertifiedProductController {
 		}
 		
 		PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
-		PendingCertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
-		validator.validate(pcpDto);
+		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
+		if(validator != null) {
+			validator.validate(pcpDto);
+		}
 		if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
 			throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
 		}
@@ -285,8 +307,6 @@ public class CertifiedProductController {
 						//}
 						
 						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-						//set applicable criteria
-						details.setApplicableCqmCriteria(pcpManager.getApplicableCriteria(pendingCpDto));
 						uploadedProducts.add(details);
 					} catch(EntityCreationException ex) {
 						logger.error("could not create entity at row " + i + ". Message is " + ex.getMessage());

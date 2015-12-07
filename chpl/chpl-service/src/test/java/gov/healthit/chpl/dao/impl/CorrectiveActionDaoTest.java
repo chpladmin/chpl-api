@@ -123,6 +123,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 		plan.setDeveloperSummary("Developer summary");
 		plan.setEffectiveDate(new Date());
 		plan.setEstimatedCompletionDate(new Date());
+		plan.setNoncomplainceDate(new Date());
 		CorrectiveActionPlanDTO createdPlan = capDao.create(plan);
 		assertNotNull(createdPlan);
 		assertNotNull(createdPlan.getId());
@@ -140,6 +141,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 		plan.setDeveloperSummary("Developer summary");
 		plan.setEffectiveDate(new Date());
 		plan.setEstimatedCompletionDate(new Date());
+		plan.setNoncomplainceDate(new Date());
 		CorrectiveActionPlanDTO createdPlan = capDao.create(plan);
 		assertNotNull(createdPlan);
 		assertNotNull(createdPlan.getId());

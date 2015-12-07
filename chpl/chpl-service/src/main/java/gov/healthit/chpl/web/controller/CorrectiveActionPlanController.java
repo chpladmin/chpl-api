@@ -1,8 +1,13 @@
 package gov.healthit.chpl.web.controller;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -14,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -26,6 +33,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
+import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CorrectiveActionPlanManager;
 
@@ -54,6 +62,46 @@ public class CorrectiveActionPlanController {
 	public @ResponseBody CorrectiveActionPlanDetails getCorrectiveActionPlanById(@PathVariable("capId") Long capId) throws EntityRetrievalException {
 		return capManager.getPlanDetails(capId);
 	}
+	
+	@RequestMapping(value="/documentation/{capDocId}", method=RequestMethod.GET)
+	public void getCorrectiveActionPlanDocumentationById(
+			@PathVariable("capDocId") Long capDocId, HttpServletResponse response) throws EntityRetrievalException, IOException {
+		CorrectiveActionPlanDocumentationDTO doc = capManager.getDocumentationById(capDocId);
+		
+		if(doc != null && doc.getFileData() != null && doc.getFileData().length > 0) {
+	        ByteArrayInputStream inputStream = new ByteArrayInputStream(doc.getFileData());
+	        // get MIME type of the file
+	        String mimeType = doc.getFileType();
+	        if (mimeType == null) {
+	            // set to binary type if MIME mapping not found
+	            mimeType = "application/octet-stream";
+	        }
+	        // set content attributes for the response
+	        response.setContentType(mimeType);
+	        response.setContentLength((int) doc.getFileData().length);
+	 
+	        // set headers for the response
+	        String headerKey = "Content-Disposition";
+	        String headerValue = String.format("attachment; filename=\"%s\"",
+	                doc.getFileName());
+	        response.setHeader(headerKey, headerValue);
+	 
+	        // get output stream of the response
+	        OutputStream outStream = response.getOutputStream();
+	 
+	        byte[] buffer = new byte[1024];
+	        int bytesRead = -1;
+	 
+	        // write bytes read from the input stream into the output stream
+	        while ((bytesRead = inputStream.read(buffer)) != -1) {
+	            outStream.write(buffer, 0, bytesRead);
+	        }
+	 
+	        inputStream.close();
+	        outStream.close();	
+		}   
+	}
+
 	
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
@@ -120,6 +168,7 @@ public class CorrectiveActionPlanController {
 			if(!foundCert) {
 				CorrectiveActionPlanCertificationResultDTO certToDelete = new CorrectiveActionPlanCertificationResultDTO();
 				certToDelete.setId(existingCert.getId());
+				certToDelete.setCorrectiveActionPlanId(updateRequest.getId());
 				certsToDelete.add(certToDelete);
 			}
 		}
@@ -159,6 +208,38 @@ public class CorrectiveActionPlanController {
 		//END 
 		
 		return capManager.getPlanDetails(toUpdate.getId());
+	}
+	
+	@RequestMapping(value="/{capId}/documentation", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8") 
+	public @ResponseBody String upload(@PathVariable("capId") Long correctiveActionPlanId,
+			@RequestParam("file") MultipartFile file) throws 
+			InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
+		if (file.isEmpty()) {
+			throw new InvalidArgumentsException("You cannot upload an empty file!");
+		}
+		
+		CorrectiveActionPlanDocumentationDTO toCreate = new CorrectiveActionPlanDocumentationDTO();
+		toCreate.setFileType(file.getContentType());
+		toCreate.setFileName(file.getOriginalFilename());
+		toCreate.setFileData(file.getBytes());	
+		toCreate.setCorrectiveActionPlanId(correctiveActionPlanId);
+		
+		Long owningAcbId = null;
+		CorrectiveActionPlanDTO existingPlan = capManager.getPlanById(correctiveActionPlanId);
+		if(existingPlan.getCertifiedProductId() != null) {
+			CertifiedProductDTO certifiedProduct = productManager.getById(existingPlan.getCertifiedProductId());
+			if(certifiedProduct != null) {
+				owningAcbId = certifiedProduct.getCertificationBodyId();
+				capManager.addDocumentationToPlan(owningAcbId, toCreate);
+			} else {
+				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
+			}
+		} else {
+			throw new InvalidArgumentsException("No certified product id was found for this plan.");
+		}
+		
+		return "{\"success\": \"true\"}";
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST,
@@ -224,6 +305,30 @@ public class CorrectiveActionPlanController {
 			if(certifiedProduct != null) {
 				Long acbId = certifiedProduct.getCertificationBodyId();
 				capManager.delete(acbId, planId);
+			} else {
+				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
+			}
+		} else {
+			throw new InvalidArgumentsException("No certified product id was found for this plan.");
+		}
+		return "{\"deleted\" : true }";
+	}
+	
+	@RequestMapping(value="/documentation/{docId}/delete", method= RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public String deleteDocumentationById(@PathVariable("docId") Long docId) 
+			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
+				InvalidArgumentsException {
+		
+		CorrectiveActionPlanDocumentationDTO doc = capManager.getDocumentationById(docId);
+		
+		//get the acb that owns the product to make sure we have permissions to update it
+		CorrectiveActionPlanDTO existingPlan = capManager.getPlanById(doc.getCorrectiveActionPlanId());
+		if(existingPlan.getCertifiedProductId() != null) {
+			CertifiedProductDTO certifiedProduct = productManager.getById(existingPlan.getCertifiedProductId());
+			if(certifiedProduct != null) {
+				Long acbId = certifiedProduct.getCertificationBodyId();
+				capManager.removeDocumentation(acbId, doc);
 			} else {
 				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
 			}

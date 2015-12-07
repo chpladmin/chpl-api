@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
+import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 
 public class CorrectiveActionPlanDetails {
 	
@@ -20,11 +21,14 @@ public class CorrectiveActionPlanDetails {
 	private Date actualCompletionDate;
 	private String resolution;
 	private List<CorrectiveActionPlanCertificationResult> certifications;
+	private List<CorrectiveActionPlanDocumentation> documentation;
 	
 	public CorrectiveActionPlanDetails() {
 		this.certifications = new ArrayList<CorrectiveActionPlanCertificationResult>();
+		this.documentation = new ArrayList<CorrectiveActionPlanDocumentation>();
 	}
 	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto) {
+		this();
 		this.id = dto.getId();
 		this.certifiedProductId = dto.getCertifiedProductId();
 		this.acbSummary = dto.getAcbSummary();
@@ -35,26 +39,24 @@ public class CorrectiveActionPlanDetails {
 		this.noncomplianceDate = dto.getNoncomplainceDate();
 		this.actualCompletionDate = dto.getActualCompletionDate();
 		this.resolution = dto.getResolution();
-		
-		this.certifications = new ArrayList<CorrectiveActionPlanCertificationResult>();
 	}
 	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto, List<CorrectiveActionPlanCertificationResultDTO> certDtos) {
-		this.id = dto.getId();
-		this.certifiedProductId = dto.getCertifiedProductId();
-		this.acbSummary = dto.getAcbSummary();
-		this.developerSummary = dto.getDeveloperSummary();
-		this.approvalDate = dto.getApprovalDate();
-		this.effectiveDate = dto.getEffectiveDate();
-		this.estimatedCompletionDate = dto.getEstimatedCompletionDate();
-		this.noncomplianceDate = dto.getNoncomplainceDate();
-		this.actualCompletionDate = dto.getActualCompletionDate();
-		this.resolution = dto.getResolution();
-		
-		this.certifications = new ArrayList<CorrectiveActionPlanCertificationResult>();
+		this(dto);
 		if(certDtos != null && certDtos.size() > 0) {
 			for(CorrectiveActionPlanCertificationResultDTO certDto : certDtos) {
 				CorrectiveActionPlanCertificationResult currCert = new CorrectiveActionPlanCertificationResult(certDto);
 				this.certifications.add(currCert);
+			}
+		}
+	}
+	
+	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto, List<CorrectiveActionPlanCertificationResultDTO> certDtos,
+			List<CorrectiveActionPlanDocumentationDTO> docs) {
+		this(dto, certDtos);
+		if(docs != null && docs.size() > 0) {
+			for(CorrectiveActionPlanDocumentationDTO doc : docs) {
+				CorrectiveActionPlanDocumentation currDoc = new CorrectiveActionPlanDocumentation(doc);
+				this.documentation.add(currDoc);
 			}
 		}
 	}
@@ -133,5 +135,20 @@ public class CorrectiveActionPlanDetails {
 	}
 	public void setNoncomplianceDate(Date noncomplianceDate) {
 		this.noncomplianceDate = noncomplianceDate;
+	}
+	public List<CorrectiveActionPlanDocumentation> getDocumentation() {
+		return documentation;
+	}
+	public void setDocumentation(List<CorrectiveActionPlanDocumentation> documentation) {
+		this.documentation = documentation;
+	}
+	
+	public void setDocumentationDtos(List<CorrectiveActionPlanDocumentationDTO> docDtos) {
+		if(docDtos != null && docDtos.size() > 0) {
+			for(CorrectiveActionPlanDocumentationDTO docDto : docDtos) {
+				CorrectiveActionPlanDocumentation currDoc = new CorrectiveActionPlanDocumentation(docDto);
+				this.documentation.add(currDoc);
+			}
+		}
 	}
 }
