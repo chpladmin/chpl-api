@@ -1,8 +1,14 @@
 package gov.healthit.chpl.auth;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -32,6 +38,7 @@ public class Util {
 		}
 		return user;	
 	}
+	
 	
 	public static String fromInt(Integer toStr){
 		return toStr.toString();

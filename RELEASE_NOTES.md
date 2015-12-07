@@ -1,7 +1,7 @@
 # Release Notes
 
-## Next version
-_Date TBD_
+## Version 0.0.2
+_7 December 2015__
 
 Features added or Updated
 * Updated the format activity streams for users are returned.
