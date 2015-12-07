@@ -39,6 +39,7 @@
 		<class>gov.healthit.chpl.entity.SurveillanceEntity</class>
 		<class>gov.healthit.chpl.entity.SurveillanceCertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.ApiKeyEntity</class>
+		<class>gov.healthit.chpl.entity.ApiKeyActivityEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

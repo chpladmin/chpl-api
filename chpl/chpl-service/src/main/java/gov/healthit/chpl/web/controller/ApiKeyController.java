@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,10 +65,16 @@ public class ApiKeyController {
 	@RequestMapping(value="/revoke", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String revoke(@RequestBody ApiKey key) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-		String keyString = key.getKey();
-		apiKeyManager.deleteKey(keyString);
-		return "{\"keyRevoked\" : \""+keyString+"\" }";
+	public String revoke(@RequestBody ApiKey key,
+			@RequestHeader(value="API-Key", required = false) String userApiKey,
+			@RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
+		
+		String keyToRevoke = key.getKey();
+		if (keyToRevoke.equals(userApiKey) || keyToRevoke.equals(userApiKeyParam)){
+			throw new Exception("A user can not delete their own API key.");
+		}
+		apiKeyManager.deleteKey(keyToRevoke);
+		return "{\"keyRevoked\" : \""+keyToRevoke+"\" }";
 		
 	}
 	

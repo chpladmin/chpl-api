@@ -1,10 +1,13 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.Date;
+import java.util.List;
+
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import junit.framework.TestCase;
@@ -209,8 +212,9 @@ public class ApiKeyManagerTest extends TestCase {
 	
 	@Test
 	public void TestLogApiKeyActivity() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
+	
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		// create key
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
@@ -221,17 +225,146 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		// create key
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		
 		// log activity for key
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal");
 		apiKeyManager.deleteKey(toCreate.getApiKey());
-		
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
+	
+	@Test
+	public void testGetApiKeyActivity() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		int initialSize = apiKeyManager.getApiKeyActivity().size();
+		ApiKeyDTO toCreate = new ApiKeyDTO();
+		Date now = new Date();
+		
+		toCreate.setApiKey("123456789");
+		toCreate.setEmail("test@test.com");
+		toCreate.setNameOrganization("Ai");
+		toCreate.setCreationDate(now);
+		toCreate.setLastModifiedDate(now);
+		toCreate.setLastModifiedUser(-3L);
+		toCreate.setDeleted(false);
+		// create key
+		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
+		
+		// log activity for key
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal");
+		
+		int finalSize = apiKeyManager.getApiKeyActivity().size();
+		assertEquals((initialSize + 1), (finalSize));
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	public void testGetApiKeyActivityByKey() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		ApiKeyDTO toCreate = new ApiKeyDTO();
+		Date now = new Date();
+		
+		toCreate.setApiKey("12345678910");
+		toCreate.setEmail("test@test.com");
+		toCreate.setNameOrganization("Ai");
+		toCreate.setCreationDate(now);
+		toCreate.setLastModifiedDate(now);
+		toCreate.setLastModifiedUser(-3L);
+		toCreate.setDeleted(false);
+		// create key
+		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
+		
+		int initialSize = apiKeyManager.getApiKeyActivity(toCreate.getApiKey()).size();
+		
+		// log activity for key
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal");
+		
+		int finalSize = apiKeyManager.getApiKeyActivity(toCreate.getApiKey()).size();
+		
+		assertEquals((initialSize + 1), (finalSize));
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	
+	@Test
+	public void testGetApiKeyActivityWithPaging() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		ApiKeyDTO toCreate = new ApiKeyDTO();
+		Date now = new Date();
+		
+		toCreate.setApiKey("123456789");
+		toCreate.setEmail("test@test.com");
+		toCreate.setNameOrganization("Ai");
+		toCreate.setCreationDate(now);
+		toCreate.setLastModifiedDate(now);
+		toCreate.setLastModifiedUser(-3L);
+		toCreate.setDeleted(false);
+		// create key
+		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
+		
+		// log activity for key
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal1");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal2");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal3");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal4");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal5");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal6");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal7");
+		
+		
+		int pageSize = 2;
+		int pageNumber = 1;
+		int finalSize = apiKeyManager.getApiKeyActivity(pageNumber, pageSize).size();
+		assertEquals((int) pageSize, finalSize);
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	
+	@Test
+	public void testGetApiKeyActivityWithKeyAndPaging() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		ApiKeyDTO toCreate = new ApiKeyDTO();
+		Date now = new Date();
+		
+		toCreate.setApiKey("123456789");
+		toCreate.setEmail("test@test.com");
+		toCreate.setNameOrganization("Ai");
+		toCreate.setCreationDate(now);
+		toCreate.setLastModifiedDate(now);
+		toCreate.setLastModifiedUser(-3L);
+		toCreate.setDeleted(false);
+		// create key
+		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
+		
+		// log activity for key
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal1");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal2");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal3");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal4");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal5");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal6");
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal7");
+		
+		
+		int pageSize = 2;
+		int pageNumber = 1;
+		int finalSize = apiKeyManager.getApiKeyActivity(toCreate.getApiKey(), pageNumber, pageSize).size();
+		assertEquals((int) pageSize, finalSize);
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	
+	
 	/*
-	public void logApiKeyActivity(String keyString, String activityPath) throws EntityCreationException;
-	public List<ApiKeyActivity> getApiKeyActivity() throws EntityRetrievalException;
-	public List<ApiKeyActivity> getApiKeyActivity(Integer pageNumber, Integer pageSize) throws EntityRetrievalException;
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString);
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize);
 	 */
