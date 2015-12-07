@@ -98,5 +98,9 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 				);
 		return response;
 	}
-	
+		
+	@Override
+	public List<CertifiedProductDetailsDTO> searchForDtos(SearchRequest searchRequest) {
+		return certifiedProductSearchResultDAO.search(searchRequest);
+	}
 }

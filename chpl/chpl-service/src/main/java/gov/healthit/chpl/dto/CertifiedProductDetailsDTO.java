@@ -1,7 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import gov.healthit.chpl.entity.AdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.CQMResultDetailsEntity;
+import gov.healthit.chpl.entity.CertificationResultDetailsEntity;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
 public class CertifiedProductDetailsDTO {
@@ -36,9 +41,18 @@ public class CertifiedProductDetailsDTO {
     private Date lastModifiedDate;
     private Boolean privacyAttestation;
     
-    public CertifiedProductDetailsDTO(){}
+    private List<CertificationResultDetailsDTO> certResults;
+    private List<CQMResultDetailsDTO> cqmResults;
+    private List<AdditionalSoftwareDTO> additionalSoftware;
+    
+    public CertifiedProductDetailsDTO(){
+    	certResults = new ArrayList<CertificationResultDetailsDTO>();
+    	cqmResults = new ArrayList<CQMResultDetailsDTO>();
+    	additionalSoftware = new ArrayList<AdditionalSoftwareDTO>();
+    }
     
     public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
+    	this();
     	
     	this.id = entity.getId();
     	this.acbCertificationId = entity.getAcbCertificationId();
@@ -69,6 +83,27 @@ public class CertifiedProductDetailsDTO {
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
     	this.lastModifiedDate = entity.getLastModifiedDate();
+    	
+    	if(entity.getCertResults() != null && entity.getCertResults().size() > 0) {
+    		for(CertificationResultDetailsEntity cert : entity.getCertResults()) {
+    			CertificationResultDetailsDTO certDto = new CertificationResultDetailsDTO(cert);
+    			this.certResults.add(certDto);
+    		}
+    	}
+    	
+    	if(entity.getCqmResults() != null && entity.getCqmResults().size() > 0) {
+    		for(CQMResultDetailsEntity cqm : entity.getCqmResults()) {
+    			CQMResultDetailsDTO cqmDto = new CQMResultDetailsDTO(cqm);
+    			this.cqmResults.add(cqmDto);
+    		}
+    	}
+    	
+    	if(entity.getAdditionalSoftware() != null && entity.getAdditionalSoftware().size() > 0) {
+    		for(AdditionalSoftwareEntity ase : entity.getAdditionalSoftware()) {
+    			AdditionalSoftwareDTO asDto = new AdditionalSoftwareDTO(ase);
+    			this.additionalSoftware.add(asDto);
+    		}
+    	}
     }
     
     
@@ -251,6 +286,30 @@ public class CertifiedProductDetailsDTO {
 
 	public void setPrivacyAttestation(Boolean privacyAttestation) {
 		this.privacyAttestation = privacyAttestation;
+	}
+
+	public List<CertificationResultDetailsDTO> getCertResults() {
+		return certResults;
+	}
+
+	public void setCertResults(List<CertificationResultDetailsDTO> certResults) {
+		this.certResults = certResults;
+	}
+
+	public List<CQMResultDetailsDTO> getCqmResults() {
+		return cqmResults;
+	}
+
+	public void setCqmResults(List<CQMResultDetailsDTO> cqmResults) {
+		this.cqmResults = cqmResults;
+	}
+
+	public List<AdditionalSoftwareDTO> getAdditionalSoftware() {
+		return additionalSoftware;
+	}
+
+	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> additionalSoftware) {
+		this.additionalSoftware = additionalSoftware;
 	}
 	
 }

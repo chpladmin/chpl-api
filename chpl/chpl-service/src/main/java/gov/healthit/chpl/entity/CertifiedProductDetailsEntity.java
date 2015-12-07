@@ -2,11 +2,17 @@ package gov.healthit.chpl.entity;
 
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -106,6 +112,37 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "privacy_attestation")
 	private Boolean privacyAttestation;
     
+	@Basic( optional = true )
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "certified_product_id", nullable = true)
+	private Set<AdditionalSoftwareEntity> additionalSoftware;
+	
+	@Basic( optional = true )
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "certified_product_id", nullable = true)
+	private Set<CertificationResultDetailsEntity> certResults;
+	
+	@Basic( optional = true )
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "certified_product_id", nullable = true)
+	private Set<CQMResultDetailsEntity> cqmResults;
+	
+//	 public boolean equals(CertifiedProductDetailsEntity other) {
+//	    	if(other == null) {
+//	    		return false;
+//	    	}
+//	    	if(other.getId() == null) {
+//	    		return false;
+//	    	}
+//	    	if(this.getId() == null) {
+//	    		return false;
+//	    	}
+//	    	if(other.getId().longValue() == this.getId().longValue()) {
+//	    		return true;
+//	    	}
+//	    	return false;
+//	    }
+	 
 	public Long getId() {
 		return id;
 	}
@@ -337,5 +374,28 @@ public class CertifiedProductDetailsEntity {
 	public void setPrivacyAttestation(Boolean privacyAttestation) {
 		this.privacyAttestation = privacyAttestation;
 	}
-	
+
+	public Set<CertificationResultDetailsEntity> getCertResults() {
+		return certResults;
+	}
+
+	public void setCertResults(Set<CertificationResultDetailsEntity> certResults) {
+		this.certResults = certResults;
+	}
+
+	public Set<CQMResultDetailsEntity> getCqmResults() {
+		return cqmResults;
+	}
+
+	public void setCqmResults(Set<CQMResultDetailsEntity> cqmResults) {
+		this.cqmResults = cqmResults;
+	}
+
+	public Set<AdditionalSoftwareEntity> getAdditionalSoftware() {
+		return additionalSoftware;
+	}
+
+	public void setAdditionalSoftware(Set<AdditionalSoftwareEntity> additionalSoftware) {
+		this.additionalSoftware = additionalSoftware;
+	}	
 }

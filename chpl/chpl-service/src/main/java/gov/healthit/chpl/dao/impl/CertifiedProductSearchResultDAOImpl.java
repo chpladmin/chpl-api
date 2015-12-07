@@ -1,8 +1,10 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +48,25 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		return dto;
 	}
 
+	public CertifiedProductDetailsDTO getAllDetailsById(Long productId) throws EntityRetrievalException {		
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity products "
+				+ "LEFT OUTER JOIN FETCH products.additionalSoftware "
+				+ "LEFT OUTER JOIN FETCH products.certResults "
+				+ "LEFT OUTER JOIN FETCH products.cqmResults "
+				+ " where products.id = :entityId", CertifiedProductDetailsEntity.class);
+		query.setParameter("entityId", productId);
+		
+		Collection<CertifiedProductDetailsEntity> results = new LinkedHashSet<CertifiedProductDetailsEntity>(query.getResultList());
+		if(results == null || results.size() == 0) {
+			return new CertifiedProductDetailsDTO();
+		}
+		
+		CertifiedProductDetailsEntity result = results.iterator().next();
+		CertifiedProductDetailsDTO dto = new CertifiedProductDetailsDTO(result);
+
+		return dto;
+	}
+	
 	@Override
 	public List<CertifiedProductDetailsDTO> search(
 			SearchRequest searchRequest) {
