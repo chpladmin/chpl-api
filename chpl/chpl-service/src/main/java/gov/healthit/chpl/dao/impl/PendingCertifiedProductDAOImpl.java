@@ -118,6 +118,9 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 	
 	public PendingCertifiedProductDTO findById(Long pcpId) throws EntityRetrievalException {
 		PendingCertifiedProductEntity entity = getEntityById(pcpId);
+		if(entity == null) {
+			return null;
+		}
 		return new PendingCertifiedProductDTO(entity);
 	}
 	

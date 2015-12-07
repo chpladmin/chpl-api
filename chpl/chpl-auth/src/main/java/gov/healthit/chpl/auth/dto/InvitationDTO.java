@@ -7,9 +7,7 @@ import java.util.List;
 import gov.healthit.chpl.auth.entity.InvitationEntity;
 import gov.healthit.chpl.auth.entity.InvitationPermissionEntity;
 
-public class InvitationDTO {
-	private static final long VALID_INVITATION_LENGTH = 3*24*60*60*1000;
-	
+public class InvitationDTO {	
 	private Long id;
 	private String email;
 	private Long acbId;
@@ -47,13 +45,13 @@ public class InvitationDTO {
 		}
 	}
 	
-	public boolean isExpired() {
+	public boolean isOlderThan(long numDaysInMillis) {
 		if(this.creationDate == null || this.lastModifiedDate == null) {
 			return true;
 		}
 		
 		Date now = new Date();
-		if((now.getTime() - this.lastModifiedDate.getTime()) > VALID_INVITATION_LENGTH) {
+		if((now.getTime() - this.lastModifiedDate.getTime()) > numDaysInMillis) {
 			return true;
 		}
 		return false;

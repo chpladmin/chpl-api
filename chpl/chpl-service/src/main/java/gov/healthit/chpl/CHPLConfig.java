@@ -72,8 +72,8 @@ public class CHPLConfig {
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 	
-	 @Bean(name="multipartResolver") 
-	    public CommonsMultipartResolver getResolver() throws IOException{
+	@Bean(name="multipartResolver") 
+	public CommonsMultipartResolver getResolver() throws IOException{
 	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 	         
 	        //Set the maximum allowed size (in bytes) for each individual file.
@@ -82,5 +82,9 @@ public class CHPLConfig {
 	        //You may also set other available properties.
 	         
 	        return resolver;
-	    }
+	}
+	
+	
+	
+	
 }

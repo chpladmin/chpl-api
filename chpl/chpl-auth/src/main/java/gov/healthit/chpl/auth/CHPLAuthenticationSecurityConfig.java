@@ -83,7 +83,7 @@ public class CHPLAuthenticationSecurityConfig extends
 
 		http
         		.sessionManagement()
-        			.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        		.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 		
 				.exceptionHandling().and()
 				.anonymous().and()

@@ -77,8 +77,11 @@ public class CQMCriterionEntity {
 	@Column( length = 250  )
 	private String title;
 
+	@Basic( optional = false )
+	@Column( name="retired", length = 10  )
+	private Boolean retired;
 	
-	
+
 	public String getCmsId() {
 		return cmsId;
 	}
@@ -185,6 +188,14 @@ public class CQMCriterionEntity {
 	
 	public CQMVersionEntity getCqmVersionEntity() {
 		return cqmVersion;
+	}
+	
+	public Boolean getRetired() {
+		return retired;
+	}
+
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
 	}
 	
 	public String getCqmVersion(){

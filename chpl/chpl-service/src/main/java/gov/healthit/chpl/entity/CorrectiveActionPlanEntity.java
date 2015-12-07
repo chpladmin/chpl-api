@@ -27,23 +27,32 @@ public class CorrectiveActionPlanEntity {
 	@Column(name="certified_product_id")
 	private Long certifiedProductId;
 	
+	@Basic( optional = false )
 	@Column(name="acb_summary")
 	private String acbSummaryDescription;
 	
+	@Basic( optional = false )
 	@Column(name = "developer_summary")
 	private String developerSummaryDescription;
 	
+	@Basic( optional = false )
 	@Column(name = "approval_date")
 	private Date approvalDate;
 	
+	@Basic( optional = false )
 	@Column(name = "effective_date")
 	private Date effectiveDate;
 	
+	@Basic( optional = false )
 	@Column(name = "completion_date_estimated")
 	private Date estimatedCompletionDate;
 	
 	@Column(name = "completion_date_actual")
 	private Date actualCompletionDate;
+	
+	@Basic( optional = false )
+	@Column(name = "noncompliance_determination_date")
+	private Date noncomplainceDeterminationDate;
 	
 	@Column(name = "resolution")
 	private String resolution;
@@ -168,6 +177,14 @@ public class CorrectiveActionPlanEntity {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public Date getNoncomplainceDeterminationDate() {
+		return noncomplainceDeterminationDate;
+	}
+
+	public void setNoncomplainceDeterminationDate(Date noncomplainceDeterminationDate) {
+		this.noncomplainceDeterminationDate = noncomplainceDeterminationDate;
 	}
 
 }

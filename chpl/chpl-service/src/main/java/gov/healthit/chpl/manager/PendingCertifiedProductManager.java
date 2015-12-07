@@ -13,6 +13,7 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -20,14 +21,16 @@ import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 
 public interface PendingCertifiedProductManager {
 	public List<PendingCertifiedProductDTO> getAll();
-	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException;
+	public PendingCertifiedProductDetails getById(Long id) throws EntityRetrievalException;
 	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb);
+	public List<PendingCertifiedProductDetails> getDetailsByAcb(CertificationBodyDTO acb);
 	public List<PendingCertifiedProductDTO> getPending();
 	public List<CQMCriterion> getApplicableCriteria(PendingCertifiedProductDTO pendingCpDto);
 	
 	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 			
+	public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails);
 	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void confirm(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, Long userId, Permission permission) throws UserRetrievalException;

@@ -16,16 +16,16 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name="corrective_action_plan_certification_result")
-public class CorrectiveActionPlanCertificationEntity {
+@Table(name="corrective_action_plan_documentation")
+public class CorrectiveActionPlanDocumentationEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, 
-		generator = "correctiveActionPlanCertificationResultCorrective_action_plan_certif_idGenerator")
+		generator = "correctiveActionPlanDocumentationCorrective_action_plan_documentation_idGenerator")
 	@Basic( optional = false )
-	@Column( name = "corrective_action_plan_certification_result_id", nullable = false  )
-	@SequenceGenerator(name = "correctiveActionPlanCertificationResultCorrective_action_plan_certif_idGenerator", 
-		sequenceName = "corrective_action_plan_certif_corrective_action_plan_certif_seq", 
+	@Column( name = "corrective_action_plan_documentation_id", nullable = false  )
+	@SequenceGenerator(name = "correctiveActionPlanDocumentationCorrective_action_plan_documentation_idGenerator", 
+		sequenceName = "corrective_action_plan_docume_corrective_action_plan_docume_seq", 
 		allocationSize = 1)
 	private Long id;
 	
@@ -35,20 +35,15 @@ public class CorrectiveActionPlanCertificationEntity {
 	private CorrectiveActionPlanEntity correctiveActionPlan;
 	
 	@Basic( optional = false )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
-	private CertificationCriterionEntity certificationCriterion;
+	@Column(name = "filename")
+	private String fileName;
+	
+	@Column(name = "filetype")
+	private String fileType;
 	
 	@Basic( optional = false )
-	@Column(name = "acb_summary")
-	private String acbSummary;
-	
-	@Basic( optional = false )
-	@Column(name = "developer_summary")
-	private String developerSummaryDescription;
-	
-	@Column(name = "resolution")
-	private String resolution;
+	@Column(name = "filedata")
+	private byte[] fileData;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -84,38 +79,6 @@ public class CorrectiveActionPlanCertificationEntity {
 		this.correctiveActionPlan = correctiveActionPlan;
 	}
 
-	public CertificationCriterionEntity getCertificationCriterion() {
-		return certificationCriterion;
-	}
-
-	public void setCertificationCriterion(CertificationCriterionEntity certificationCriterion) {
-		this.certificationCriterion = certificationCriterion;
-	}
-
-	public String getAcbSummary() {
-		return acbSummary;
-	}
-
-	public void setAcbSummary(String acbSummary) {
-		this.acbSummary = acbSummary;
-	}
-
-	public String getDeveloperSummaryDescription() {
-		return developerSummaryDescription;
-	}
-
-	public void setDeveloperSummaryDescription(String developerSummaryDescription) {
-		this.developerSummaryDescription = developerSummaryDescription;
-	}
-
-	public String getResolution() {
-		return resolution;
-	}
-
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
-	}
-
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -146,5 +109,29 @@ public class CorrectiveActionPlanCertificationEntity {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+
+	public byte[]  getFileData() {
+		return fileData;
+	}
+
+	public void setFileData(byte[]  fileData) {
+		this.fileData = fileData;
 	}
 }

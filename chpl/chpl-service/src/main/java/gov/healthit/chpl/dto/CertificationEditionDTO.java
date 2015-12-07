@@ -16,6 +16,7 @@ public class CertificationEditionDTO {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private String year;
+	private Boolean retired;
 	
 	public CertificationEditionDTO(){}
 	public CertificationEditionDTO(CertificationEditionEntity entity){
@@ -26,6 +27,7 @@ public class CertificationEditionDTO {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.year = entity.getYear();
+		this.retired = entity.getRetired();
 		Set<CertificationCriterionEntity> certCriterionEntities = entity.getCertificationCriterions();
 		if(certCriterionEntities != null && certCriterionEntities.size() > 0) {
 			for (CertificationCriterionEntity certCriterion : certCriterionEntities){
@@ -83,6 +85,12 @@ public class CertificationEditionDTO {
 	}
 	public void setYear(String year) {
 		this.year = year;
+	}
+	public Boolean getRetired() {
+		return retired;
+	}
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
 	}
 	
 }
