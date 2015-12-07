@@ -236,6 +236,13 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
+	@Override
+	public String getLargestChplNumber() {
+		Query query = entityManager.createNativeQuery( "select max(chpl_product_number) as max_num from certified_product where (NOT deleted = true)");
+		String maxNum = query.getSingleResult().toString();
+		return maxNum;
+	}
+	
 	private void create(CertifiedProductEntity product) {
 		
 		entityManager.persist(product);
