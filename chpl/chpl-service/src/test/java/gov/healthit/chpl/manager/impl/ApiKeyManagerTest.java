@@ -127,7 +127,7 @@ public class ApiKeyManagerTest extends TestCase {
 		assertEquals(toCreate.getApiKey(), created.getApiKey());
 		assertEquals(toCreate.getApiKey(), retrieved.getApiKey());
 		
-		apiKeyManager.deleteKey(retrieved.getApiKey());
+		apiKeyManager.deleteKey(retrieved.getId());
 		
 		assertEquals(null, apiKeyManager.findKey(toCreate.getApiKey()));
 		
@@ -154,7 +154,7 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO retrieved = apiKeyManager.findKey(created.getApiKey());
 		
 		assertEquals(created.getApiKey(), retrieved.getApiKey());
-		apiKeyManager.deleteKey(retrieved.getApiKey());
+		apiKeyManager.deleteKey(retrieved.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -230,7 +230,7 @@ public class ApiKeyManagerTest extends TestCase {
 		
 		// log activity for key
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal");
-		apiKeyManager.deleteKey(toCreate.getApiKey());
+		apiKeyManager.deleteKey(toCreate.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -256,8 +256,10 @@ public class ApiKeyManagerTest extends TestCase {
 		// log activity for key
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal");
 		
+		
 		int finalSize = apiKeyManager.getApiKeyActivity().size();
 		assertEquals((initialSize + 1), (finalSize));
+		apiKeyManager.deleteKey(toCreate.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -285,7 +287,7 @@ public class ApiKeyManagerTest extends TestCase {
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal");
 		
 		int finalSize = apiKeyManager.getApiKeyActivity(toCreate.getApiKey()).size();
-		
+		apiKeyManager.deleteKey(toCreate.getId());
 		assertEquals((initialSize + 1), (finalSize));
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
@@ -323,6 +325,8 @@ public class ApiKeyManagerTest extends TestCase {
 		int pageNumber = 1;
 		int finalSize = apiKeyManager.getApiKeyActivity(pageNumber, pageSize).size();
 		assertEquals((int) pageSize, finalSize);
+		
+		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -359,15 +363,8 @@ public class ApiKeyManagerTest extends TestCase {
 		int pageNumber = 1;
 		int finalSize = apiKeyManager.getApiKeyActivity(toCreate.getApiKey(), pageNumber, pageSize).size();
 		assertEquals((int) pageSize, finalSize);
+		apiKeyManager.deleteKey(toCreate.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
-	
-	
-	
-	/*
-	public List<ApiKeyActivity> getApiKeyActivity(String keyString);
-	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize);
-	 */
-	
 	
 }

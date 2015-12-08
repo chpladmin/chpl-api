@@ -197,18 +197,20 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 			
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
 			
-			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
-			
-			apiKeyActivity.setApiKey(apiKey.getApiKey());
-			apiKeyActivity.setApiKeyId(apiKey.getId());
-			apiKeyActivity.setEmail(apiKey.getEmail());
-			apiKeyActivity.setName(apiKey.getNameOrganization());
-			apiKeyActivity.setId(dto.getId());
-			apiKeyActivity.setCreationDate(dto.getCreationDate());
-			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
-			
-			activity.add(apiKeyActivity);
-			
+			if (apiKey != null){
+				
+				ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
+				
+				apiKeyActivity.setApiKey(apiKey.getApiKey());
+				apiKeyActivity.setApiKeyId(apiKey.getId());
+				apiKeyActivity.setEmail(apiKey.getEmail());
+				apiKeyActivity.setName(apiKey.getNameOrganization());
+				apiKeyActivity.setId(dto.getId());
+				apiKeyActivity.setCreationDate(dto.getCreationDate());
+				apiKeyActivity.setApiCallPath(dto.getApiCallPath());
+				
+				activity.add(apiKeyActivity);
+			}	
 		}
 		return activity;
 	}
@@ -224,18 +226,20 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 			
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
 			
-			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
-			
-			apiKeyActivity.setApiKey(apiKey.getApiKey());
-			apiKeyActivity.setApiKeyId(apiKey.getId());
-			apiKeyActivity.setEmail(apiKey.getEmail());
-			apiKeyActivity.setName(apiKey.getNameOrganization());
-			apiKeyActivity.setId(dto.getId());
-			apiKeyActivity.setCreationDate(dto.getCreationDate());
-			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
-			
-			activity.add(apiKeyActivity);
-			
+			if (apiKey != null){
+				
+				ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
+				
+				apiKeyActivity.setApiKey(apiKey.getApiKey());
+				apiKeyActivity.setApiKeyId(apiKey.getId());
+				apiKeyActivity.setEmail(apiKey.getEmail());
+				apiKeyActivity.setName(apiKey.getNameOrganization());
+				apiKeyActivity.setId(dto.getId());
+				apiKeyActivity.setCreationDate(dto.getCreationDate());
+				apiKeyActivity.setApiCallPath(dto.getApiCallPath());
+				
+				activity.add(apiKeyActivity);
+			}
 		}
 		return activity;
 	}
