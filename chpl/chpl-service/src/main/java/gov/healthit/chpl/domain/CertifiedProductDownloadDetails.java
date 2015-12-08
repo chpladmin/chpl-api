@@ -2,22 +2,26 @@ package gov.healthit.chpl.domain;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerImpl;
 
 @XmlRootElement(name = "certifiedProductDetails")
 public class CertifiedProductDownloadDetails {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductDownloadDetails.class);
 
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	private Long id;
     private Long testingLabId;
     private String chplProductNumber;
@@ -332,6 +336,7 @@ public class CertifiedProductDownloadDetails {
 		}
 	}
 	
+	@XmlTransient
 	public Long getId() {
 		return id;
 	}
@@ -376,30 +381,48 @@ public class CertifiedProductDownloadDetails {
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
 	}
+	
+	@XmlTransient
 	public Integer getCountCerts() {
 		return countCerts;
 	}
 	public void setCountCerts(Integer countCertsSuccessful) {
 		this.countCerts = countCertsSuccessful;
 	}
+	
+	@XmlTransient
 	public Integer getCountCqms() {
 		return countCqms;
 	}
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
 	}
+	
+	@XmlTransient
 	public Boolean getVisibleOnChpl() {
 		return visibleOnChpl;
 	}
 	public void setVisibleOnChpl(Boolean visibleOnChpl) {
 		this.visibleOnChpl = visibleOnChpl;
 	}
+	
+	@XmlTransient
 	public Long getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 	public void setLastModifiedDate(Long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
+	
+	@XmlElement(name = "lastModifiedDate") 
+	public String getFormattedLastModifiedDate() {
+		if(lastModifiedDate != null) {
+			Date d = new Date(lastModifiedDate);
+			return timestampFormat.format(d);
+		}
+		return null;
+	}
+	
 	public Boolean getPrivacyAttestation() {
 		return privacyAttestation;
 	}
@@ -463,6 +486,7 @@ public class CertifiedProductDownloadDetails {
 		this.certifyingBody = certifyingBody;
 	}
 
+	@XmlTransient
 	public Date getCertificationDate() {
 		return certificationDate;
 	}
@@ -471,6 +495,14 @@ public class CertifiedProductDownloadDetails {
 		this.certificationDate = certificationDate;
 	}
 
+	@XmlElement(name = "certificationDate")
+	public String getFormattedCertificationDate() {
+		if(certificationDate != null) {
+			return dateFormat.format(certificationDate);
+		}
+		return null;
+	}
+	
 	public String getVersion() {
 		return version;
 	}
