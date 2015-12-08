@@ -63,23 +63,15 @@ public class SearchViewController {
 		return product;
 	}
 
-	/**
-	 * don't want this to be accessible right now, but am leaving the code in here because we will need it at some point.
-	 */
-	@RequestMapping(value="/downloadSome", method=RequestMethod.GET,
+	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="application/xml")
-	public ResponseEntity<CertifiedProductDownloadResponse> downloadSome() throws EntityRetrievalException {
+	public ResponseEntity<CertifiedProductDownloadResponse> downloadSome(
+			@RequestParam(value ="numRecords", defaultValue = "10", required = false) int numRecords) throws EntityRetrievalException {
 		List<CertifiedProductDTO> someCertifiedProducts = new ArrayList<CertifiedProductDTO>();
-		someCertifiedProducts.add(cpManager.getById(1L));
-		someCertifiedProducts.add(cpManager.getById(2L));
-		someCertifiedProducts.add(cpManager.getById(3L));
-		someCertifiedProducts.add(cpManager.getById(4L));
-		someCertifiedProducts.add(cpManager.getById(5L));
-		someCertifiedProducts.add(cpManager.getById(6L));
-		someCertifiedProducts.add(cpManager.getById(7L));
-		someCertifiedProducts.add(cpManager.getById(8L));
-		someCertifiedProducts.add(cpManager.getById(9L));
-		someCertifiedProducts.add(cpManager.getById(10L));
+		
+		for(int i = 0; i < numRecords; i++) {
+			someCertifiedProducts.add(cpManager.getById(new Long(i+1)));
+		}
 		
 		CertifiedProductDownloadResponse result = new CertifiedProductDownloadResponse();
 		for(CertifiedProductDTO cp : someCertifiedProducts) {
