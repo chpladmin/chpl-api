@@ -5,16 +5,23 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ApiKeyManager;
 
 @Service
@@ -26,25 +33,68 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	@Autowired
 	private ApiKeyActivityDAO apiKeyActivityDAO;
 	
+	@Autowired
+	private ActivityManager activityManager;
+	
 	@Override
 	@Transactional
-	public ApiKeyDTO createKey(ApiKeyDTO toCreate) throws EntityCreationException {
-		return apiKeyDAO.create(toCreate);
+	public ApiKeyDTO createKey(ApiKeyDTO toCreate) throws EntityCreationException, JsonProcessingException, EntityRetrievalException {
+		
+		ApiKeyDTO created = apiKeyDAO.create(toCreate);
+		
+		String activityMsg = "API Key "+created.getApiKey()+" was created.";
+		
+		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
+		
+		try {
+			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(-3L));
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null, created);
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(tmp);
+		}
+		return created;
+		
 	}
 
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void deleteKey(Long keyId) {
+	public void deleteKey(Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		
+		ApiKeyDTO toDelete = apiKeyDAO.getById(keyId);
+		
+		String activityMsg = "API Key "+toDelete.getApiKey()+" was revoked.";
+		
 		apiKeyDAO.delete(keyId);
+		
+		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
+		try {
+			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(tmp);
+		}
 	}
 	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void deleteKey(String keyString) {
-		Long keyId = this.findKey(keyString).getId();
-		apiKeyDAO.delete(keyId);
+	public void deleteKey(String keyString) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+		
+		ApiKeyDTO toDelete = apiKeyDAO.getByKey(keyString);
+		
+		String activityMsg = "API Key "+toDelete.getApiKey()+" was revoked.";
+		
+		apiKeyDAO.delete(toDelete.getId());
+		
+		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
+		try {
+			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(tmp);
+		}
+		
 	}
 
 	@Override
@@ -79,6 +129,10 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
+		if (apiKey == null){
+			apiKey = apiKeyDAO.getRevokedKeyByKey(keyString);
+		}
+		
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findByKeyId(apiKey.getId());
 		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
 		
@@ -107,6 +161,10 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
+		if (apiKey == null){
+			apiKey = apiKeyDAO.getRevokedKeyByKey(keyString);
+		}
+		
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findByKeyId(apiKey.getId(), pageNumber, pageSize);
 		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
 		
@@ -146,9 +204,12 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		for (ApiKeyActivityDTO dto : activityDTOs){
 			
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
-			
+			if (apiKey == null){
+				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
+			}
+
 			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
-			
+				
 			apiKeyActivity.setApiKey(apiKey.getApiKey());
 			apiKeyActivity.setApiKeyId(apiKey.getId());
 			apiKeyActivity.setEmail(apiKey.getEmail());
@@ -156,10 +217,10 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 			apiKeyActivity.setId(dto.getId());
 			apiKeyActivity.setCreationDate(dto.getCreationDate());
 			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
-			
+				
 			activity.add(apiKeyActivity);
-			
 		}
+		
 		return activity;
 	}
 	
@@ -173,19 +234,21 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		for (ApiKeyActivityDTO dto : activityDTOs){
 			
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
+			if (apiKey == null){
+				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
+			}
 			
 			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
-			
+				
 			apiKeyActivity.setApiKey(apiKey.getApiKey());
-			apiKeyActivity.setApiKeyId(apiKey.getId());
+			apiKeyActivity.setApiKeyId(apiKey.getId());	
 			apiKeyActivity.setEmail(apiKey.getEmail());
 			apiKeyActivity.setName(apiKey.getNameOrganization());
 			apiKeyActivity.setId(dto.getId());
 			apiKeyActivity.setCreationDate(dto.getCreationDate());
 			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
-			
+				
 			activity.add(apiKeyActivity);
-			
 		}
 		return activity;
 	}

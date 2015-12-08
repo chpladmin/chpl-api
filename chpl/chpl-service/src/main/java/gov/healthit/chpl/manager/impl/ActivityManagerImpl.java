@@ -191,6 +191,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	@Transactional
 	public List<ActivityEvent> getAllActivity() throws JsonParseException, IOException {
+		
 		List<ActivityDTO> dtos = activityDAO.findAll();
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
