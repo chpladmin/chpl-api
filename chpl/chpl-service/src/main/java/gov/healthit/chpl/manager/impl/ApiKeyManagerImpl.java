@@ -129,6 +129,10 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
+		if (apiKey == null){
+			apiKey = apiKeyDAO.getRevokedKeyByKey(keyString);
+		}
+		
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findByKeyId(apiKey.getId());
 		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
 		
@@ -157,6 +161,10 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
+		if (apiKey == null){
+			apiKey = apiKeyDAO.getRevokedKeyByKey(keyString);
+		}
+		
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findByKeyId(apiKey.getId(), pageNumber, pageSize);
 		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
 		
@@ -196,22 +204,23 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		for (ApiKeyActivityDTO dto : activityDTOs){
 			
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
-			
-			if (apiKey != null){
+			if (apiKey == null){
+				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
+			}
+
+			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
 				
-				ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
+			apiKeyActivity.setApiKey(apiKey.getApiKey());
+			apiKeyActivity.setApiKeyId(apiKey.getId());
+			apiKeyActivity.setEmail(apiKey.getEmail());
+			apiKeyActivity.setName(apiKey.getNameOrganization());
+			apiKeyActivity.setId(dto.getId());
+			apiKeyActivity.setCreationDate(dto.getCreationDate());
+			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
 				
-				apiKeyActivity.setApiKey(apiKey.getApiKey());
-				apiKeyActivity.setApiKeyId(apiKey.getId());
-				apiKeyActivity.setEmail(apiKey.getEmail());
-				apiKeyActivity.setName(apiKey.getNameOrganization());
-				apiKeyActivity.setId(dto.getId());
-				apiKeyActivity.setCreationDate(dto.getCreationDate());
-				apiKeyActivity.setApiCallPath(dto.getApiCallPath());
-				
-				activity.add(apiKeyActivity);
-			}	
+			activity.add(apiKeyActivity);
 		}
+		
 		return activity;
 	}
 	
@@ -225,21 +234,21 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		for (ApiKeyActivityDTO dto : activityDTOs){
 			
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
-			
-			if (apiKey != null){
-				
-				ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
-				
-				apiKeyActivity.setApiKey(apiKey.getApiKey());
-				apiKeyActivity.setApiKeyId(apiKey.getId());
-				apiKeyActivity.setEmail(apiKey.getEmail());
-				apiKeyActivity.setName(apiKey.getNameOrganization());
-				apiKeyActivity.setId(dto.getId());
-				apiKeyActivity.setCreationDate(dto.getCreationDate());
-				apiKeyActivity.setApiCallPath(dto.getApiCallPath());
-				
-				activity.add(apiKeyActivity);
+			if (apiKey == null){
+				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
 			}
+			
+			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
+				
+			apiKeyActivity.setApiKey(apiKey.getApiKey());
+			apiKeyActivity.setApiKeyId(apiKey.getId());	
+			apiKeyActivity.setEmail(apiKey.getEmail());
+			apiKeyActivity.setName(apiKey.getNameOrganization());
+			apiKeyActivity.setId(dto.getId());
+			apiKeyActivity.setCreationDate(dto.getCreationDate());
+			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
+				
+			activity.add(apiKeyActivity);
 		}
 		return activity;
 	}

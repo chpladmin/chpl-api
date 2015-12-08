@@ -60,13 +60,15 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		ApiKeyDTO retrieved = apiKeyManager.findKey(created.getId());
@@ -85,13 +87,15 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		ApiKeyDTO retrieved = apiKeyManager.findKey(created.getId());
@@ -113,13 +117,15 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		ApiKeyDTO retrieved = apiKeyManager.findKey(created.getId());
@@ -142,13 +148,15 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		ApiKeyDTO retrieved = apiKeyManager.findKey(created.getApiKey());
@@ -165,13 +173,15 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		ApiKeyDTO retrieved = apiKeyManager.findKey(created.getId());
@@ -189,13 +199,15 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
 		
 		Integer countAll = apiKeyManager.findAll().size();
 		
@@ -218,19 +230,22 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456789");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
+		
 		// create key
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		
 		// log activity for key
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal");
-		apiKeyManager.deleteKey(toCreate.getId());
+		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -243,13 +258,16 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456789");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
+		
 		// create key
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		
@@ -259,7 +277,7 @@ public class ApiKeyManagerTest extends TestCase {
 		
 		int finalSize = apiKeyManager.getApiKeyActivity().size();
 		assertEquals((initialSize + 1), (finalSize));
-		apiKeyManager.deleteKey(toCreate.getId());
+		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -271,13 +289,16 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("12345678910");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
+		
 		// create key
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		
@@ -287,7 +308,7 @@ public class ApiKeyManagerTest extends TestCase {
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal");
 		
 		int finalSize = apiKeyManager.getApiKeyActivity(toCreate.getApiKey()).size();
-		apiKeyManager.deleteKey(toCreate.getId());
+		apiKeyManager.deleteKey(created.getId());
 		assertEquals((initialSize + 1), (finalSize));
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
@@ -301,13 +322,16 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456789");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
+		
 		// create key
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		
@@ -324,7 +348,7 @@ public class ApiKeyManagerTest extends TestCase {
 		int pageSize = 2;
 		int pageNumber = 1;
 		int finalSize = apiKeyManager.getApiKeyActivity(pageNumber, pageSize).size();
-		assertEquals((int) pageSize, finalSize);
+		assertEquals(pageSize, finalSize);
 		
 		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -339,13 +363,16 @@ public class ApiKeyManagerTest extends TestCase {
 		ApiKeyDTO toCreate = new ApiKeyDTO();
 		Date now = new Date();
 		
-		toCreate.setApiKey("123456789");
 		toCreate.setEmail("test@test.com");
 		toCreate.setNameOrganization("Ai");
 		toCreate.setCreationDate(now);
 		toCreate.setLastModifiedDate(now);
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
+		
+		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		toCreate.setApiKey(apiKey);
+		
 		// create key
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
 		
@@ -363,7 +390,7 @@ public class ApiKeyManagerTest extends TestCase {
 		int pageNumber = 1;
 		int finalSize = apiKeyManager.getApiKeyActivity(toCreate.getApiKey(), pageNumber, pageSize).size();
 		assertEquals((int) pageSize, finalSize);
-		apiKeyManager.deleteKey(toCreate.getId());
+		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
