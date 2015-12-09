@@ -123,6 +123,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		searchDetails.setCountCerts(dto.getCountCertifications());
 		searchDetails.setCountCqms(dto.getCountCqms());
+		searchDetails.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
 		
 		for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs){
 			CertificationResult result = new CertificationResult();

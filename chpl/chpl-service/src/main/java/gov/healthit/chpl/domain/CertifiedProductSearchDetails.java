@@ -24,6 +24,7 @@ public class CertifiedProductSearchDetails {
 	private Long certificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
+	private Integer countCorrectiveActionPlans;
 	private Boolean visibleOnChpl;
 	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
@@ -192,5 +193,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setErrorMessages(List<String> errorMessages) {
 		this.errorMessages = errorMessages;
+	}
+	public Integer getCountCorrectiveActionPlans() {
+		return countCorrectiveActionPlans;
+	}
+	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
+		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
 	}
 }
