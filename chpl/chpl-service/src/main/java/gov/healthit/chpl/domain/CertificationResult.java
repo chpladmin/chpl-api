@@ -1,5 +1,7 @@
 package gov.healthit.chpl.domain;
 
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+
 public class CertificationResult {
 	
 	
@@ -8,7 +10,11 @@ public class CertificationResult {
 	private boolean success;
 	
 	public CertificationResult(){}
-	
+	public CertificationResult(CertificationResultDetailsDTO certResult) {
+		this.setNumber(certResult.getNumber());
+		this.setSuccess(certResult.getSuccess());
+		this.setTitle(certResult.getTitle());	
+	}
 	
 	public String getNumber() {
 		return number;

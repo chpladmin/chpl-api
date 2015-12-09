@@ -1,7 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "searchResults")
 public class SearchResponse {
 	
 	
@@ -10,7 +14,9 @@ public class SearchResponse {
 	private Integer pageNumber;
 	private List<CertifiedProductSearchResult> results;
 	
-	public SearchResponse(){}
+	public SearchResponse(){
+		results = new ArrayList<CertifiedProductSearchResult>();
+	}
 	
 	public SearchResponse(Integer recordCount, List<CertifiedProductSearchResult> results){
 		this.recordCount = recordCount;

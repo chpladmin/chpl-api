@@ -23,6 +23,9 @@ public class CertificationResultDetailsEntity {
     @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
     
+    @Column(name = "certified_product_id")
+    private Long certifiedProductId;
+    
     @Column(name = "success")
     private Boolean success;
     
@@ -31,7 +34,7 @@ public class CertificationResultDetailsEntity {
     
     @Column(name = "title")
     private String title;
-
+    
 	public Long getId() {
 		return id;
 	}

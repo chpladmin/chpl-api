@@ -259,6 +259,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		//TODO: this may have to be added to pending certified products if it's in the spreadsheet?
 		toCreate.setPrivacyAttestation(false);
 		
+		String largestChplNumber = dao.getLargestChplNumber();
+		String number = largestChplNumber.substring("CHP-".length());
+		int largestNumber = new Integer(number).intValue();
+		String largestNumberStr = new String((largestNumber+1)+"");
+		while(largestNumberStr.length() < 6) {
+			largestNumberStr = "0" + largestNumberStr;
+		}
+		String newChplNumber = "CHP-" + largestNumberStr;
+		toCreate.setChplProductNumber(newChplNumber);
 		CertifiedProductDTO newCertifiedProduct = dao.create(toCreate);
 		
 		//additional software

@@ -145,7 +145,7 @@ public class ApiKeyController {
 		String subject = "OpenDataCHPL Api Key";
 		
 		String htmlMessage = "<p>Thank you registering to use the Open Data CHPL API. Your unique API key is: " +apiKey+
-				" Each time you access data through our open APIs, you’ll need to use this unique key <br/>" +
+				" Each time you access data through our open APIs, you'll need to use this unique key <br/>" +
 				"For more information about how to use the API, please visit opendatachpl.org. <br/> "+
 				" -Open Data CHPL Team "+
 				"</p>";
