@@ -125,7 +125,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 	}
 	
-	
 	@Test
 	@Transactional
 	public void testSearchProductClassificationType(){
@@ -157,7 +156,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 	}
 	
-	
 	@Test
 	@Transactional
 	public void testSearchVisibleOnCHPL(){
@@ -172,7 +170,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		}
 		
 	}
-	
 	
 	@Test
 	@Transactional
