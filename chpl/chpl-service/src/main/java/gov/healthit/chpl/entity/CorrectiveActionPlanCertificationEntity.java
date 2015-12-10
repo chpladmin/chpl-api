@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -20,13 +19,9 @@ import javax.validation.constraints.NotNull;
 public class CorrectiveActionPlanCertificationEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, 
-		generator = "correctiveActionPlanCertificationResultCorrective_action_plan_certif_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "corrective_action_plan_certification_result_id", nullable = false  )
-	@SequenceGenerator(name = "correctiveActionPlanCertificationResultCorrective_action_plan_certif_idGenerator", 
-		sequenceName = "corrective_action_plan_certif_corrective_action_plan_certif_seq", 
-		allocationSize = 1)
 	private Long id;
 	
 	@Basic( optional = false )

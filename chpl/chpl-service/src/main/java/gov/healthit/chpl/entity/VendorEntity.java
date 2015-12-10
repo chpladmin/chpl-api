@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,11 +15,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 
 
 /** 
@@ -38,10 +35,9 @@ public class VendorEntity implements Cloneable, Serializable {
 	private static final long serialVersionUID = -1396979009499564864L;
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vendorVendor_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "vendor_id", nullable = false  )
-	@SequenceGenerator(name = "vendorVendor_idGenerator", sequenceName = "vendor_vendor_id_seq")
 	private Long id;
 	
 	@Column(name = "vendor_code")
