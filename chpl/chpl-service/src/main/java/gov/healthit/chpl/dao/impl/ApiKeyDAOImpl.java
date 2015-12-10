@@ -130,6 +130,45 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 	}
 	
 	
+	@Override
+	public List<ApiKeyDTO> findAllRevoked() {
+		
+		List<ApiKeyEntity> entities = getAllRevokedEntities();
+		List<ApiKeyDTO> dtos = new ArrayList<>();
+		
+		for (ApiKeyEntity entity : entities) {
+			ApiKeyDTO dto = new ApiKeyDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+		
+	}
+
+	@Override
+	public ApiKeyDTO getRevokedKeyById(Long id) throws EntityRetrievalException {
+		
+		ApiKeyDTO dto = null;
+		ApiKeyEntity entity = getRevokedEntityById(id);
+		
+		if (entity != null){
+			dto = new ApiKeyDTO(entity);
+		}
+		return dto;
+		
+	}
+
+	@Override
+	public ApiKeyDTO getRevokedKeyByKey(String apiKey) {
+		
+		ApiKeyDTO dto = null;
+		ApiKeyEntity entity = getRevokedEntityByKey(apiKey);
+		
+		if (entity != null){
+			dto = new ApiKeyDTO(entity);
+		}
+		return dto;
+	}
+	
 	private void create(ApiKeyEntity entity) {
 		
 		entityManager.persist(entity);
@@ -178,5 +217,41 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		}
 		return entity;
 	}
-
+	
+	private List<ApiKeyEntity> getAllRevokedEntities() {
+		
+		List<ApiKeyEntity> result = entityManager.createQuery( "from ApiKeyEntity where (deleted = true) ", ApiKeyEntity.class).getResultList();
+		return result;
+	}
+	
+	private ApiKeyEntity getRevokedEntityById(Long entityId) throws EntityRetrievalException {
+		
+		ApiKeyEntity entity = null;
+		
+		Query query = entityManager.createQuery( "from ApiKeyEntity where (deleted = true) AND (api_key_id = :entityid) ", ApiKeyEntity.class );
+		query.setParameter("entityid", entityId);
+		List<ApiKeyEntity> result = query.getResultList();
+		
+		if (result.size() > 1){
+			throw new EntityRetrievalException("Data error. Duplicate api key id in database.");
+		} else if(result.size() == 1) {
+			entity = result.get(0);
+		}
+		return entity;
+	}
+	
+	private ApiKeyEntity getRevokedEntityByKey(String key) {
+		
+		ApiKeyEntity entity = null;
+		
+		Query query = entityManager.createQuery( "from ApiKeyEntity where (deleted = true) AND (api_key = :apikey) ", ApiKeyEntity.class );
+		query.setParameter("apikey", key);
+		List<ApiKeyEntity> result = query.getResultList();
+		
+		if(result != null && result.size() > 0) {
+			entity = result.get(0);
+		}
+		return entity;
+	}
+	
 }

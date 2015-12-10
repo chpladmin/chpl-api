@@ -27,6 +27,7 @@ public class CertifiedProductSearchResult {
 	private Boolean privacyAttestation;
 	private Integer countCerts;
 	private Integer countCqms;
+	private Integer countCorrectiveActionPlans;
 	
 	public Long getId() {
 		return id;
@@ -141,6 +142,12 @@ public class CertifiedProductSearchResult {
 	}
 	public void setPrivacyAttestation(Boolean privacyAttestation) {
 		this.privacyAttestation = privacyAttestation;
+	}
+	public Integer getCountCorrectiveActionPlans() {
+		return countCorrectiveActionPlans;
+	}
+	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
+		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
 	}
 	
 }

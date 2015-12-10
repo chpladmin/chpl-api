@@ -18,10 +18,9 @@ import javax.validation.constraints.Size;
 public class AddressEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addressAddress_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column( name = "address_id", nullable = false  )
-	@SequenceGenerator(name = "addressAddress_idGenerator", sequenceName = "address_address_id_seq")
+	@Column( name = "address_id", nullable = false )
 	private Long id;
 	
 	@Basic( optional = false )

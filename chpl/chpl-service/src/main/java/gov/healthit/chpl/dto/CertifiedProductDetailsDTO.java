@@ -41,6 +41,7 @@ public class CertifiedProductDetailsDTO {
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
+    private Integer countCorrectiveActionPlans;
     private Boolean visibleOnChpl;
     private Date lastModifiedDate;
     private Boolean privacyAttestation;
@@ -93,6 +94,7 @@ public class CertifiedProductDetailsDTO {
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
+    	this.countCorrectiveActionPlans = entity.getCountCorrectiveActionPlans();
     	this.lastModifiedDate = entity.getLastModifiedDate();
     }
     
@@ -278,6 +280,13 @@ public class CertifiedProductDetailsDTO {
 		this.privacyAttestation = privacyAttestation;
 	}
 
+	public Integer getCountCorrectiveActionPlans() {
+		return countCorrectiveActionPlans;
+	}
+
+	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
+		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
+	}
 	public List<CertificationResultDetailsDTO> getCertResults() {
 		return certResults;
 	}
