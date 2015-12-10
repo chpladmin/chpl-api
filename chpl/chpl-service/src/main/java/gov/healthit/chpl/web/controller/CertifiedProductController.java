@@ -45,6 +45,7 @@ import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -70,7 +71,7 @@ public class CertifiedProductController {
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
 			@RequestParam(required=false) Long versionId, @RequestParam(required=false, defaultValue="false") boolean editable) {
-		List<CertifiedProductDTO> certifiedProductList = null;
+		List<CertifiedProductDetailsDTO> certifiedProductList = null;
 		
 		if(versionId != null && versionId > 0) {
 			if(editable) {
@@ -88,7 +89,7 @@ public class CertifiedProductController {
 		
 		List<CertifiedProduct> products= new ArrayList<CertifiedProduct>();
 		if(certifiedProductList != null && certifiedProductList.size() > 0) {
-			for(CertifiedProductDTO dto : certifiedProductList) {
+			for(CertifiedProductDetailsDTO dto : certifiedProductList) {
 				CertifiedProduct result = new CertifiedProduct(dto);
 				products.add(result);
 			}
@@ -111,7 +112,8 @@ public class CertifiedProductController {
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
-		throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+		throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, 
+		JsonProcessingException, ValidationException {
 		
 		CertifiedProductValidator validator = validatorFactory.getValidator(updateRequest);
 		if(validator != null) {
@@ -136,13 +138,36 @@ public class CertifiedProductController {
 		toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id").toString()));
 		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
-		toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
 		toUpdate.setQualityManagementSystemAtt(updateRequest.getQualityManagementSystemAtt());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
 		toUpdate.setPrivacyAttestation(updateRequest.getPrivacyAttestation());
+		
+		if(updateRequest.getCertificationEdition().get("name").equals("2011") ||
+				updateRequest.getCertificationEdition().get("name").equals("2014")) {
+			toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
+			toUpdate.setProductCode(null);
+			toUpdate.setVersionCode(null);
+			toUpdate.setIcsCode(null);
+			toUpdate.setAdditionalSoftwareCode(null);
+			toUpdate.setCertifiedDateCode(null);
+		} else {
+			//parse out the components of the chpl id
+			toUpdate.setChplProductNumber(null);
+			String chplProductId = updateRequest.getChplProductNumber();
+			String[] chplProductIdComponents = chplProductId.split("\\.");
+			if(chplProductIdComponents == null || chplProductIdComponents.length != 8) {
+				throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
+			}
+			toUpdate.setProductCode(chplProductIdComponents[3]);
+			toUpdate.setVersionCode(chplProductIdComponents[4]);
+			toUpdate.setIcsCode(chplProductIdComponents[5]);
+			toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[6]);
+			toUpdate.setCertifiedDateCode(chplProductIdComponents[7]);
+		}
+
 		toUpdate = cpManager.update(acbId, toUpdate);
 		
 		//update additional software

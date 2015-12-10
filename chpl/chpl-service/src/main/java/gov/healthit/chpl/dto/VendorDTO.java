@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class VendorDTO {
 
+	private String vendorCode;
 	private Long id;
 	private AddressDTO address;
 	private Date creationDate;
@@ -18,8 +19,8 @@ public class VendorDTO {
 	public VendorDTO(){}
 	
 	public VendorDTO(VendorEntity entity){
-		
 		this.id = entity.getId();
+		this.vendorCode = entity.getVendorCode();
 		if(entity.getAddress() != null) {
 			this.address = new AddressDTO(entity.getAddress());			
 		}
@@ -82,6 +83,14 @@ public class VendorDTO {
 	}
 	public void setWebsite(String website) {
 		this.website = website;
+	}
+
+	public String getVendorCode() {
+		return vendorCode;
+	}
+
+	public void setVendorCode(String vendorCode) {
+		this.vendorCode = vendorCode;
 	}
 	
 }

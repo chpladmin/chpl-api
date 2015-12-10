@@ -5,6 +5,8 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 
@@ -99,6 +101,11 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		
 		entity.setAcbCertificationId(dto.getAcbCertificationId());
 		entity.setChplProductNumber(dto.getChplProductNumber());
+		entity.setProductCode(dto.getProductCode());
+		entity.setVersionCode(dto.getVersionCode());
+		entity.setIcsCode(dto.getIcsCode());
+		entity.setAdditionalSoftwareCode(dto.getAdditionalSoftwareCode());
+		entity.setCertifiedDateCode(dto.getCertifiedDateCode());
 		entity.setPracticeTypeId(dto.getPracticeTypeId());
 		entity.setProductClassificationTypeId(dto.getProductClassificationTypeId());
 		entity.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
@@ -163,13 +170,15 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		
 	}
 	
-	public List<CertifiedProductDTO> findAll(){
+	public List<CertifiedProductDetailsDTO> findAll(){
 		
-		List<CertifiedProductEntity> entities = getAllEntities();
-		List<CertifiedProductDTO> products = new ArrayList<>();
+		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery( 
+				"from CertifiedProductDetailsEntity where (NOT deleted = true) ", CertifiedProductDetailsEntity.class).getResultList();
+
+		List<CertifiedProductDetailsDTO> products = new ArrayList<>();
 		
-		for (CertifiedProductEntity entity : entities) {
-			CertifiedProductDTO product = new CertifiedProductDTO(entity);
+		for (CertifiedProductDetailsEntity entity : entities) {
+			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
 			products.add(product);
 		}
 		return products;
@@ -187,18 +196,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dto;
 	}
 	
-	public List<CertifiedProductDTO> getByVersionId(Long versionId) {
-		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and product_version_id = :versionId)", CertifiedProductEntity.class );
-		query.setParameter("versionId", versionId);
-		List<CertifiedProductEntity> results = query.getResultList();
-		
-		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>();
-		for(CertifiedProductEntity result : results) {
-			dtoResults.add(new CertifiedProductDTO(result));
-		}
-		return dtoResults;
-	}
-	
 	public List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds) {
 		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and product_version_id IN :idList", CertifiedProductEntity.class );
 		query.setParameter("idList", versionIds);
@@ -211,27 +208,51 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
-	public List<CertifiedProductDTO> getByAcbIds(List<Long> acbIds) {
-		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and certification_body_id IN :idList", CertifiedProductEntity.class );
-		query.setParameter("idList", acbIds);
-		List<CertifiedProductEntity> results = query.getResultList();
+	public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId) {
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and product_version_id = :versionId)", CertifiedProductDetailsEntity.class );
+		query.setParameter("versionId", versionId);
+		List<CertifiedProductDetailsEntity> results = query.getResultList();
 		
-		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());
-		for(CertifiedProductEntity result : results) {
-			dtoResults.add(new CertifiedProductDTO(result));
+		List<CertifiedProductDetailsDTO> dtoResults = new ArrayList<CertifiedProductDetailsDTO>();
+		for(CertifiedProductDetailsEntity result : results) {
+			dtoResults.add(new CertifiedProductDetailsDTO(result));
 		}
 		return dtoResults;
 	}
 	
-	public List<CertifiedProductDTO> getByVersionAndAcbIds(Long versionId, List<Long> acbIds) {
-		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and certification_body_id IN :idList and product_version_id = :versionId", CertifiedProductEntity.class );
+	public List<CertifiedProductDetailsDTO> getDetailsByVersionIds(List<Long> versionIds) {
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and product_version_id IN :idList", CertifiedProductDetailsEntity.class );
+		query.setParameter("idList", versionIds);
+		List<CertifiedProductDetailsEntity> results = query.getResultList();
+		
+		List<CertifiedProductDetailsDTO> dtoResults = new ArrayList<CertifiedProductDetailsDTO>(results.size());
+		for(CertifiedProductDetailsEntity result : results) {
+			dtoResults.add(new CertifiedProductDetailsDTO(result));
+		}
+		return dtoResults;
+	}
+	
+	public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds) {
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and certification_body_id IN :idList", CertifiedProductDetailsEntity.class );
+		query.setParameter("idList", acbIds);
+		List<CertifiedProductDetailsEntity> results = query.getResultList();
+		
+		List<CertifiedProductDetailsDTO> dtoResults = new ArrayList<CertifiedProductDetailsDTO>(results.size());
+		for(CertifiedProductDetailsEntity result : results) {
+			dtoResults.add(new CertifiedProductDetailsDTO(result));
+		}
+		return dtoResults;
+	}
+	
+	public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds) {
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and certification_body_id IN :idList and product_version_id = :versionId", CertifiedProductDetailsEntity.class );
 		query.setParameter("idList", acbIds);
 		query.setParameter("versionId", versionId);
-		List<CertifiedProductEntity> results = query.getResultList();
+		List<CertifiedProductDetailsEntity> results = query.getResultList();
 		
-		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());
-		for(CertifiedProductEntity result : results) {
-			dtoResults.add(new CertifiedProductDTO(result));
+		List<CertifiedProductDetailsDTO> dtoResults = new ArrayList<CertifiedProductDetailsDTO>(results.size());
+		for(CertifiedProductDetailsEntity result : results) {
+			dtoResults.add(new CertifiedProductDetailsDTO(result));
 		}
 		return dtoResults;
 	}

@@ -44,6 +44,7 @@ public class CertifiedProductDownloadDetails {
 	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
 	private String additionalSoftware;
+	
 	private boolean CERT_170_302__a;
 	private boolean CERT_170_302__b;
 	private boolean CERT_170_302__c;
@@ -313,7 +314,15 @@ public class CertifiedProductDownloadDetails {
 		
 		this.id = dto.getId();
 		this.testingLabId = dto.getTestingLabId();
-		this.chplProductNumber = dto.getChplProductNumber();
+		if(dto.getYear() != null && 
+				(dto.getYear().equals("2011") || dto.getYear().equals("2014"))) {
+			this.chplProductNumber = dto.getChplProductNumber();
+		} else {
+			this.chplProductNumber = "ATL." + dto.getCertificationBodyCode() + "." + 
+					dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
+					"." + dto.getCertifiedDateCode();
+		}
 		this.reportFileLocation = dto.getReportFileLocation();
 		this.qualityManagementSystemAtt = dto.getQualityManagementSystemAtt();
 		this.acbCertificationId = dto.getAcbCertificationId();
