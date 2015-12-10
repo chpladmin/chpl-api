@@ -20,10 +20,9 @@ public class CertificationBodyEntity {
 	
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certification_body_id_generator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "certification_body_id", nullable = false  )
-	@SequenceGenerator(name = "certification_body_id_generator", sequenceName = "certification_body_certification_body_id_seq")
 	private Long id;
 	
 	@Basic( optional = true )
