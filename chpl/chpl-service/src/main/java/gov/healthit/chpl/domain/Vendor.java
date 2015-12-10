@@ -4,6 +4,7 @@ import gov.healthit.chpl.dto.VendorDTO;
 
 public class Vendor {
 	private Long vendorId;
+	private String vendorCode;
 	private String name;
 	private String website;
 	private Address address;
@@ -13,6 +14,7 @@ public class Vendor {
 	
 	public Vendor(VendorDTO dto) {
 		this.vendorId = dto.getId();
+		this.vendorCode = dto.getVendorCode();
 		this.name = dto.getName();
 		this.website = dto.getWebsite();
 		if(dto.getAddress() != null) {
@@ -51,5 +53,13 @@ public class Vendor {
 	}
 	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getVendorCode() {
+		return vendorCode;
+	}
+
+	public void setVendorCode(String vendorCode) {
+		this.vendorCode = vendorCode;
 	}
 }

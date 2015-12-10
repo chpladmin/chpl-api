@@ -7,7 +7,7 @@ import java.util.List;
 public interface CertifiedProductSearchResultDAO {
 	
 	public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException;
-	public CertifiedProductDetailsDTO getAllDetailsById(Long productId) throws EntityRetrievalException;
+	//public CertifiedProductDetailsDTO getAllDetailsById(Long productId) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> search(
 			SearchRequest searchRequest);
 	
