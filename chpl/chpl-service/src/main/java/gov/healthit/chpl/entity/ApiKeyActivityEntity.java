@@ -16,10 +16,9 @@ import javax.persistence.Table;
 public class ApiKeyActivityEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "api_key_activity_api_key_activity_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "api_key_activity_id", nullable = false )
-	@SequenceGenerator(name = "api_key_activity_api_key_activity_idGenerator", sequenceName = "api_key_activity_api_key_activity_id_seq")
 	private Long id;
 	
 	@Basic(optional=false)
