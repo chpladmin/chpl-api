@@ -5,13 +5,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 
@@ -32,11 +28,10 @@ public class CQMVersionEntity {
 	private Boolean deleted;
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cqmVersionCqm_version_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "cqm_version_id", nullable = false  )
-	@SequenceGenerator(name = "cqmVersionCqm_version_idGenerator", sequenceName = "cqm_version_cqm_version_id_seq")
-	private Long id;
+    private Long id;
     
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )

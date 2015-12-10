@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -29,10 +28,9 @@ public class CertifiedProductEntity {
 	private static final long serialVersionUID = -2928065796550377879L;
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certifiedProductCertified_product_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "certified_product_id", nullable = false  )
-	@SequenceGenerator(name = "certifiedProductCertified_product_idGenerator", sequenceName = "openchpl.openchpl.certified_product_certified_product_id_seq")
 	private Long id;
     
 	@Basic( optional = true )

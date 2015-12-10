@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -20,13 +19,9 @@ import javax.validation.constraints.NotNull;
 public class SurveillanceCertificationResultEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, 
-		generator = "surveillance_certification_resultSurveillance_certification_result_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "surveillance_certification_result_id", nullable = false  )
-	@SequenceGenerator(name = "surveillance_certification_resultSurveillance_certification_result_idGenerator", 
-		sequenceName = "surveillance_certification_re_surveillance_certification_re_seq", 
-		allocationSize = 1)
 	private Long id;
 	
 	@Basic( optional = false )
