@@ -165,6 +165,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "count_cqms, "
 				+ "last_modified_date, "
 				+ "certification_status_name "
+				+ "count_corrective_action_plans"
  
 				+ "FROM "
 				
@@ -221,6 +222,14 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		} else {
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
+		
+		
+		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
+			queryStr += " AND (count_corrective_action_plans > 0) ";
+		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
+			queryStr += " AND (count_corrective_action_plans = 0 ) ";
+		} // In the case of no specification, or "both" do nothing, we want all results.
+		
 		
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
@@ -307,6 +316,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "count_cqms, "
 				+ "last_modified_date, "
 				+ "certification_status_name "
+				+ "count_corrective_action_plans"
 				
 				+ "FROM ( "
 
@@ -364,6 +374,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		} else {
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
+		
+		
+		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
+			queryStr += " AND (count_corrective_action_plans > 0) ";
+		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
+			queryStr += " AND (count_corrective_action_plans = 0 ) ";
+		} // In the case of no specification, or "both" do nothing, we want all results.
 		
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
@@ -450,6 +467,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "count_cqms, "
 				+ "last_modified_date, "
 				+ "certification_status_name "
+				+ "count_corrective_action_plans"
 
 				+ "FROM "
 
@@ -516,6 +534,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		} else {
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
+		
+		
+		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
+			queryStr += " AND (count_corrective_action_plans > 0) ";
+		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
+			queryStr += " AND (count_corrective_action_plans = 0 ) ";
+		} // In the case of no specification, or "both" do nothing, we want all results.
 		
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
@@ -616,6 +641,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		} else {
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
+		
+		
+		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
+			queryStr += " AND (count_corrective_action_plans > 0) ";
+		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
+			queryStr += " AND (count_corrective_action_plans = 0 ) ";
+		} // In the case of no specification, or "both" do nothing, we want all results.
 		
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
@@ -761,6 +793,12 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
 		
+		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
+			queryStr += " AND (count_corrective_action_plans > 0) ";
+		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
+			queryStr += " AND (count_corrective_action_plans = 0 ) ";
+		} // In the case of no specification, or "both" do nothing, we want all results.
+		
 		
 		Query query = entityManager.createNativeQuery(queryStr);
 		
@@ -865,6 +903,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		} else {
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
+		
+		
+		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
+			queryStr += " AND (count_corrective_action_plans > 0) ";
+		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
+			queryStr += " AND (count_corrective_action_plans = 0 ) ";
+		} // In the case of no specification, or "both" do nothing, we want all results.
 		
 		
 		Query query = entityManager.createNativeQuery(queryStr);
@@ -978,6 +1023,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
 		
+		
+		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
+			queryStr += " AND (count_corrective_action_plans > 0) ";
+		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
+			queryStr += " AND (count_corrective_action_plans = 0 ) ";
+		} // In the case of no specification, or "both" do nothing, we want all results.
+		
 				
 		Query query = entityManager.createNativeQuery(queryStr);
 		
@@ -1070,6 +1122,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		
+		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
+			queryStr += " AND (count_corrective_action_plans > 0) ";
+		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
+			queryStr += " AND (count_corrective_action_plans = 0 ) ";
+		} // In the case of no specification, or "both" do nothing, we want all results.
+		
+		
 		Query query = entityManager.createQuery(queryStr);
 		
 		
@@ -1104,7 +1163,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
 		}
-		
 		return query;
 	}
 	

@@ -136,7 +136,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 	}
 	
-	
 	@Test
 	@Transactional
 	public void testSearchProductClassificationType(){
@@ -168,7 +167,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 	}
 	
-	
 	@Test
 	@Transactional
 	public void testSearchVisibleOnCHPL(){
@@ -186,6 +184,23 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	public void testSearchHasCAP(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setHasCAP("YES");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getCountCorrectiveActionPlans() > 0);
+		}
+		
+	}
+	
+	
+	
+	@Test
+	@Transactional
 	public void testSearch(){
 		
 		SearchRequest searchRequest = new SearchRequest();
@@ -199,6 +214,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setProductClassification("Complete EHR");
 		searchRequest.setPracticeType("Ambulatory");
 		searchRequest.setVisibleOnCHPL("YES");
+		searchRequest.setHasCAP("BOTH");
 		searchRequest.setOrderBy("product");
 		searchRequest.setSortDescending(true);
 		searchRequest.setPageNumber(0);

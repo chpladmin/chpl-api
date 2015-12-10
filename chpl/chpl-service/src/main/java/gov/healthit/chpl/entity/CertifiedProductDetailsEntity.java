@@ -103,7 +103,10 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "count_cqms")
     private Integer countCqms;
     
-    @Column(name = "visible_on_chpl")
+    @Column(name = "count_corrective_action_plans")
+    private Integer countCorrectiveActionPlans;
+
+	@Column(name = "visible_on_chpl")
     private Boolean visibleOnChpl;
     
     @Column(name = "last_modified_date")
@@ -341,6 +344,14 @@ public class CertifiedProductDetailsEntity {
 
 	public void setCountCqms(Integer countCqms) {
 		this.countCqms = countCqms;
+	}
+	
+    public Integer getCountCorrectiveActionPlans() {
+		return countCorrectiveActionPlans;
+	}
+
+	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
+		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
 	}
 	
 	public Boolean getVisibleOnChpl() {
