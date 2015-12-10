@@ -1,10 +1,8 @@
 package gov.healthit.chpl.entity;
 
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -17,9 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PostPersist;
-import javax.persistence.PrePersist;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -39,11 +34,9 @@ public class PendingCertifiedProductEntity {
 	 * fields we generate mostly from spreadsheet values
 	 */
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pendingCertifiedProduct_Pending_Certified_product_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
-	@SequenceGenerator(name = "pendingCertifiedProduct_Pending_Certified_product_idGenerator", 
-		sequenceName = "pending_certified_product_pending_certified_product_id_seq")
 	private Long id;
     
     @Column(name = "practice_type_id")

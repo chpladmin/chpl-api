@@ -11,19 +11,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name="pending_certification_criterion")
 public class PendingCertificationCriterionEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pending_certification_criterion_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_certification_criterion_id", nullable = false  )
-	@SequenceGenerator(name = "pending_certification_criterion_idGenerator", 
-		sequenceName = "pending_certification_criteri_pending_certification_criteri_seq")
 	private Long id;
 	
 	@Basic( optional = false )
