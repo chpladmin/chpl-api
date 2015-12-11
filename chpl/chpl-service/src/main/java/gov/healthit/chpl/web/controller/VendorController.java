@@ -92,6 +92,8 @@ public class VendorController {
 				toCreate.setAddress(toCreateAddress);
 			}
 			result = vendorManager.merge(vendorInfo.getVendorIds(), toCreate);
+			//re-query because the vendor code isn't filled in otherwise
+			result = vendorManager.getById(result.getId());
 		} else if(vendorInfo.getVendorIds().size() == 1) {
 			//update the information for the vendor id supplied in the database
 			VendorDTO toUpdate = new VendorDTO();
