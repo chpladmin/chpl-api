@@ -48,24 +48,24 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		return dto;
 	}
 
-	public CertifiedProductDetailsDTO getAllDetailsById(Long productId) throws EntityRetrievalException {		
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity products "
-				+ "LEFT OUTER JOIN FETCH products.additionalSoftware "
-				+ "LEFT OUTER JOIN FETCH products.certResults "
-				+ "LEFT OUTER JOIN FETCH products.cqmResults "
-				+ " where products.id = :entityId", CertifiedProductDetailsEntity.class);
-		query.setParameter("entityId", productId);
-		
-		Collection<CertifiedProductDetailsEntity> results = new LinkedHashSet<CertifiedProductDetailsEntity>(query.getResultList());
-		if(results == null || results.size() == 0) {
-			return new CertifiedProductDetailsDTO();
-		}
-		
-		CertifiedProductDetailsEntity result = results.iterator().next();
-		CertifiedProductDetailsDTO dto = new CertifiedProductDetailsDTO(result);
-
-		return dto;
-	}
+//	public CertifiedProductDetailsDTO getAllDetailsById(Long productId) throws EntityRetrievalException {		
+//		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity products "
+//				+ "LEFT OUTER JOIN FETCH products.additionalSoftware "
+//				+ "LEFT OUTER JOIN FETCH products.certResults "
+//				+ "LEFT OUTER JOIN FETCH products.cqmResults "
+//				+ " where products.id = :entityId", CertifiedProductDetailsEntity.class);
+//		query.setParameter("entityId", productId);
+//		
+//		Collection<CertifiedProductDetailsEntity> results = new LinkedHashSet<CertifiedProductDetailsEntity>(query.getResultList());
+//		if(results == null || results.size() == 0) {
+//			return new CertifiedProductDetailsDTO();
+//		}
+//		
+//		CertifiedProductDetailsEntity result = results.iterator().next();
+//		CertifiedProductDetailsDTO dto = new CertifiedProductDetailsDTO(result);
+//
+//		return dto;
+//	}
 	
 	@Override
 	public List<CertifiedProductDetailsDTO> search(
@@ -153,6 +153,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "privacy_attestation, "
 				+ "year, "
 				+ "certification_body_name, "
+				+ "certification_body_code, "
 				+ "product_classification_name, "
 				+ "practice_type_name, "
 				+ "product_version, "
@@ -160,11 +161,17 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "product_name, "
 				+ "vendor_id, "
 				+ "vendor_name, "
+				+ "vendor_code, "
 				+ "certification_date, "
 				+ "count_certifications, "
 				+ "count_cqms, "
 				+ "last_modified_date, "
-				+ "certification_status_name "
+				+ "certification_status_name, "
+				+ "product_code, "
+				+ "version_code, "
+				+ "ics_code, "
+				+ "additional_software_code, "
+				+ "certified_date_code, "
 				+ "count_corrective_action_plans"
  
 				+ "FROM "
@@ -304,6 +311,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "privacy_attestation, "
 				+ "year, "
 				+ "certification_body_name, "
+				+ "certification_body_code, "
 				+ "product_classification_name, "
 				+ "practice_type_name, "
 				+ "product_version, "
@@ -311,11 +319,17 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "product_name, "
 				+ "vendor_id, "
 				+ "vendor_name, "
+				+ "vendor_code, "
 				+ "certification_date, "
 				+ "count_certifications, "
 				+ "count_cqms, "
 				+ "last_modified_date, "
-				+ "certification_status_name "
+				+ "certification_status_name, "
+				+ "product_code, "
+				+ "version_code, "
+				+ "ics_code, "
+				+ "additional_software_code, "
+				+ "certified_date_code, "
 				+ "count_corrective_action_plans"
 				
 				+ "FROM ( "
@@ -455,6 +469,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "privacy_attestation, " 
 				+ "year, "
 				+ "certification_body_name, "
+				+ "certification_body_code, "
 				+ "product_classification_name, "
 				+ "practice_type_name, "
 				+ "product_version, "
@@ -462,11 +477,17 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "product_name, "
 				+ "vendor_id, "
 				+ "vendor_name, "
+				+ "vendor_code, "
 				+ "certification_date, "
 				+ "count_certifications, "
 				+ "count_cqms, "
 				+ "last_modified_date, "
-				+ "certification_status_name "
+				+ "certification_status_name, "
+				+ "product_code, "
+				+ "version_code, "
+				+ "ics_code, "
+				+ "additional_software_code, "
+				+ "certified_date_code, "
 				+ "count_corrective_action_plans"
 
 				+ "FROM "

@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.healthit.chpl.entity.AdditionalSoftwareEntity;
-import gov.healthit.chpl.entity.CQMResultDetailsEntity;
-import gov.healthit.chpl.entity.CertificationResultDetailsEntity;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
 public class CertifiedProductDetailsDTO {
 	
 	private Long id;
+	private String productCode;
+	private String versionCode;
+	private String icsCode;
+	private String additionalSoftwareCode;
+	private String certifiedDateCode;
     private Long testingLabId;
     private String chplProductNumber;
     private String reportFileLocation;
@@ -27,6 +29,7 @@ public class CertifiedProductDetailsDTO {
     private String year;
     private Long certificationBodyId;
     private String certificationBodyName;
+    private String certificationBodyCode;
     private String productClassificationName;
     private Long productVersionId;
     private String productVersion;
@@ -34,6 +37,7 @@ public class CertifiedProductDetailsDTO {
     private String productName;
     private Long vendorId;
     private String vendorName;
+    private String vendorCode;
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
@@ -56,9 +60,15 @@ public class CertifiedProductDetailsDTO {
     	this();
     	
     	this.id = entity.getId();
+    	this.productCode = entity.getProductCode();
+    	this.versionCode = entity.getVersionCode();
+    	this.icsCode = entity.getIcsCode();
+    	this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
+    	this.certifiedDateCode = entity.getCertifiedDateCode();
     	this.acbCertificationId = entity.getAcbCertificationId();
     	this.certificationBodyId = entity.getCertificationBodyId();
     	this.certificationBodyName = entity.getCertificationBodyName();
+    	this.certificationBodyCode = entity.getCertificationBodyCode();
     	this.certificationEditionId = entity.getCertificationBodyId();
     	this.certificationStatusId = entity.getCertificationStatusId();
     	this.certificationStatusName = entity.getCertificationStatusName();
@@ -77,6 +87,7 @@ public class CertifiedProductDetailsDTO {
     	this.testingLabId = entity.getTestingLabId();
     	this.vendorId = entity.getVendorId();
     	this.vendorName = entity.getVendorName();
+    	this.vendorCode = entity.getVendorCode();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.year = entity.getYear();
@@ -85,27 +96,6 @@ public class CertifiedProductDetailsDTO {
     	this.countCertifications = entity.getCountCertifications();
     	this.countCorrectiveActionPlans = entity.getCountCorrectiveActionPlans();
     	this.lastModifiedDate = entity.getLastModifiedDate();
-    	
-    	if(entity.getCertResults() != null && entity.getCertResults().size() > 0) {
-    		for(CertificationResultDetailsEntity cert : entity.getCertResults()) {
-    			CertificationResultDetailsDTO certDto = new CertificationResultDetailsDTO(cert);
-    			this.certResults.add(certDto);
-    		}
-    	}
-    	
-    	if(entity.getCqmResults() != null && entity.getCqmResults().size() > 0) {
-    		for(CQMResultDetailsEntity cqm : entity.getCqmResults()) {
-    			CQMResultDetailsDTO cqmDto = new CQMResultDetailsDTO(cqm);
-    			this.cqmResults.add(cqmDto);
-    		}
-    	}
-    	
-    	if(entity.getAdditionalSoftware() != null && entity.getAdditionalSoftware().size() > 0) {
-    		for(AdditionalSoftwareEntity ase : entity.getAdditionalSoftware()) {
-    			AdditionalSoftwareDTO asDto = new AdditionalSoftwareDTO(ase);
-    			this.additionalSoftware.add(asDto);
-    		}
-    	}
     }
     
     
@@ -319,6 +309,62 @@ public class CertifiedProductDetailsDTO {
 
 	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> additionalSoftware) {
 		this.additionalSoftware = additionalSoftware;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getVersionCode() {
+		return versionCode;
+	}
+
+	public void setVersionCode(String versionCode) {
+		this.versionCode = versionCode;
+	}
+
+	public String getAdditionalSoftwareCode() {
+		return additionalSoftwareCode;
+	}
+
+	public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+		this.additionalSoftwareCode = additionalSoftwareCode;
+	}
+
+	public String getCertifiedDateCode() {
+		return certifiedDateCode;
+	}
+
+	public void setCertifiedDateCode(String certifiedDateCode) {
+		this.certifiedDateCode = certifiedDateCode;
+	}
+
+	public String getCertificationBodyCode() {
+		return certificationBodyCode;
+	}
+
+	public void setCertificationBodyCode(String certificationBodyCode) {
+		this.certificationBodyCode = certificationBodyCode;
+	}
+
+	public String getVendorCode() {
+		return vendorCode;
+	}
+
+	public void setVendorCode(String vendorCode) {
+		this.vendorCode = vendorCode;
+	}
+
+	public String getIcsCode() {
+		return icsCode;
+	}
+
+	public void setIcsCode(String icsCode) {
+		this.icsCode = icsCode;
 	}
 	
 }

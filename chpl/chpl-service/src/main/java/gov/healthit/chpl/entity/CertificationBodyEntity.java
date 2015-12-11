@@ -29,6 +29,9 @@ public class CertificationBodyEntity {
 	@JoinColumn(name = "address_id", unique=true, nullable = true)
 	private AddressEntity address;
 	
+	@Column(name = "acb_code")
+	private String acbCode;
+	
 	@Column(name="name")
 	private String name;
 	
@@ -115,6 +118,14 @@ public class CertificationBodyEntity {
 
 	public void setAddress(AddressEntity address) {
 		this.address = address;
+	}
+
+	public String getAcbCode() {
+		return acbCode;
+	}
+
+	public void setAcbCode(String acbCode) {
+		this.acbCode = acbCode;
 	}
 	
 }

@@ -37,14 +37,14 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	private CertifiedProductSearchResultDAO searchResultDAO;
 	
 	
-	@Test
-	public void testGetDownloadResults() throws EntityRetrievalException {
-		CertifiedProductDetailsDTO result = searchResultDAO.getAllDetailsById(1L);
-		assertNotNull(result);
-		assertNotNull(result.getCqmResults());
-		assertNotNull(result.getCertResults());
-		assertEquals(3, result.getCqmResults().size());
-	}
+//	@Test
+//	public void testGetDownloadResults() throws EntityRetrievalException {
+//		CertifiedProductDetailsDTO result = searchResultDAO.getAllDetailsById(1L);
+//		assertNotNull(result);
+//		assertNotNull(result.getCqmResults());
+//		assertNotNull(result.getCertResults());
+//		assertEquals(3, result.getCqmResults().size());
+//	}
 	
 	@Test
 	@Transactional

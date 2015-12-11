@@ -2,15 +2,11 @@ package gov.healthit.chpl.entity;
 
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
@@ -25,6 +21,21 @@ public class CertifiedProductDetailsEntity {
 	@Basic( optional = false )
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long id;
+    
+    @Column(name = "product_code")
+    private String productCode;
+    
+    @Column(name = "version_code")
+    private String versionCode;
+    
+    @Column(name = "ics_code")
+    private String icsCode;
+    
+    @Column(name = "additional_software_code")
+    private String additionalSoftwareCode;
+    
+    @Column(name = "certified_date_code")
+    private String certifiedDateCode;
     
     @Column(name = "testing_lab_id")
     private Long testingLabId;
@@ -71,6 +82,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_body_name")
     private String certificationBodyName;
     
+    @Column(name = "certification_body_code")
+    private String certificationBodyCode;
+    
     @Column(name = "product_classification_name")
     private String productClassificationName;
     
@@ -91,6 +105,9 @@ public class CertifiedProductDetailsEntity {
     
     @Column(name = "vendor_name")
     private String vendorName;
+    
+    @Column(name = "vendor_code")
+    private String vendorCode;
 
     @Column(name = "certification_date")
     private Date certificationDate;
@@ -112,37 +129,6 @@ public class CertifiedProductDetailsEntity {
 
     @Column(name = "privacy_attestation")
 	private Boolean privacyAttestation;
-    
-	@Basic( optional = true )
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "certified_product_id", nullable = true)
-	private Set<AdditionalSoftwareEntity> additionalSoftware;
-	
-	@Basic( optional = true )
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "certified_product_id", nullable = true)
-	private Set<CertificationResultDetailsEntity> certResults;
-	
-	@Basic( optional = true )
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "certified_product_id", nullable = true)
-	private Set<CQMResultDetailsEntity> cqmResults;
-	
-//	 public boolean equals(CertifiedProductDetailsEntity other) {
-//	    	if(other == null) {
-//	    		return false;
-//	    	}
-//	    	if(other.getId() == null) {
-//	    		return false;
-//	    	}
-//	    	if(this.getId() == null) {
-//	    		return false;
-//	    	}
-//	    	if(other.getId().longValue() == this.getId().longValue()) {
-//	    		return true;
-//	    	}
-//	    	return false;
-//	    }
 	 
 	public Long getId() {
 		return id;
@@ -384,27 +370,83 @@ public class CertifiedProductDetailsEntity {
 		this.privacyAttestation = privacyAttestation;
 	}
 
-	public Set<CertificationResultDetailsEntity> getCertResults() {
-		return certResults;
+//	public Set<CertificationResultDetailsEntity> getCertResults() {
+//		return certResults;
+//	}
+//
+//	public void setCertResults(Set<CertificationResultDetailsEntity> certResults) {
+//		this.certResults = certResults;
+//	}
+//
+//	public Set<CQMResultDetailsEntity> getCqmResults() {
+//		return cqmResults;
+//	}
+//
+//	public void setCqmResults(Set<CQMResultDetailsEntity> cqmResults) {
+//		this.cqmResults = cqmResults;
+//	}
+//
+//	public Set<AdditionalSoftwareEntity> getAdditionalSoftware() {
+//		return additionalSoftware;
+//	}
+//
+//	public void setAdditionalSoftware(Set<AdditionalSoftwareEntity> additionalSoftware) {
+//		this.additionalSoftware = additionalSoftware;
+//	}
+
+	public String getProductCode() {
+		return productCode;
 	}
 
-	public void setCertResults(Set<CertificationResultDetailsEntity> certResults) {
-		this.certResults = certResults;
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 
-	public Set<CQMResultDetailsEntity> getCqmResults() {
-		return cqmResults;
+	public String getVersionCode() {
+		return versionCode;
 	}
 
-	public void setCqmResults(Set<CQMResultDetailsEntity> cqmResults) {
-		this.cqmResults = cqmResults;
+	public void setVersionCode(String versionCode) {
+		this.versionCode = versionCode;
 	}
 
-	public Set<AdditionalSoftwareEntity> getAdditionalSoftware() {
-		return additionalSoftware;
+	public String getAdditionalSoftwareCode() {
+		return additionalSoftwareCode;
 	}
 
-	public void setAdditionalSoftware(Set<AdditionalSoftwareEntity> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
+	public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+		this.additionalSoftwareCode = additionalSoftwareCode;
+	}
+
+	public String getCertifiedDateCode() {
+		return certifiedDateCode;
+	}
+
+	public void setCertifiedDateCode(String certifiedDateCode) {
+		this.certifiedDateCode = certifiedDateCode;
+	}
+
+	public String getCertificationBodyCode() {
+		return certificationBodyCode;
+	}
+
+	public void setCertificationBodyCode(String certificationBodyCode) {
+		this.certificationBodyCode = certificationBodyCode;
+	}
+
+	public String getVendorCode() {
+		return vendorCode;
+	}
+
+	public void setVendorCode(String vendorCode) {
+		this.vendorCode = vendorCode;
+	}
+
+	public String getIcsCode() {
+		return icsCode;
+	}
+
+	public void setIcsCode(String icsCode) {
+		this.icsCode = icsCode;
 	}	
 }

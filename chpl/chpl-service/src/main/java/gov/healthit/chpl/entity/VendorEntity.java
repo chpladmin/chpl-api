@@ -40,6 +40,9 @@ public class VendorEntity implements Cloneable, Serializable {
 	@Column( name = "vendor_id", nullable = false  )
 	private Long id;
 	
+	@Column(name = "vendor_code")
+	private String vendorCode;
+	
 	@Column(name = "name" )
 	private String name;
 
@@ -313,5 +316,13 @@ public class VendorEntity implements Cloneable, Serializable {
 		sb.append("name: " + this.getName() + ", ");
 		sb.append("website: " + this.getWebsite());
 		return sb.toString();		
+	}
+
+	public String getVendorCode() {
+		return vendorCode;
+	}
+
+	public void setVendorCode(String vendorCode) {
+		this.vendorCode = vendorCode;
 	}
 }

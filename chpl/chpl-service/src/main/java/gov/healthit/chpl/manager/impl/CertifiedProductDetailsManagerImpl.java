@@ -19,8 +19,10 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -74,6 +76,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		loadCQMCriteria();
 	}
 	
+
 	@Override
 	@Transactional
 	public CertifiedProductSearchDetails getCertifiedProductDetails(
@@ -92,15 +95,22 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			
 		searchDetails.getCertificationEdition().put("id", dto.getCertificationEditionId());
 		searchDetails.getCertificationEdition().put("name", dto.getYear());
-				
+		
+		if(dto.getYear().equals("2011") || dto.getYear().equals("2014")) {
+			searchDetails.setChplProductNumber(dto.getChplProductNumber());
+		} else {
+			searchDetails.setChplProductNumber("ATL." + dto.getCertificationBodyCode() + "." + 
+				dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+				"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
+				"." + dto.getCertifiedDateCode());
+		}
+
 		searchDetails.getCertificationStatus().put("id", dto.getCertificationStatusId());
 		searchDetails.getCertificationStatus().put("name", dto.getCertificationStatusName());
 			
 		searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId());
 		searchDetails.getCertifyingBody().put("name", dto.getCertificationBodyName());
-			
-		searchDetails.setChplProductNumber(dto.getChplProductNumber());
-		
+					
 		searchDetails.getClassificationType().put("id", dto.getProductClassificationTypeId());
 		searchDetails.getClassificationType().put("name", dto.getProductClassificationName());
 		

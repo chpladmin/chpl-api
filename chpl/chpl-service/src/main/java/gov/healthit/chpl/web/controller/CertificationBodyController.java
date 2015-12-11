@@ -76,6 +76,7 @@ public class CertificationBodyController {
 			produces="application/json; charset=utf-8")
 	public CertificationBody createAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		CertificationBodyDTO toCreate = new CertificationBodyDTO();
+		toCreate.setAcbCode(acbInfo.getAcbCode());
 		toCreate.setName(acbInfo.getName());
 		if(StringUtils.isEmpty(acbInfo.getWebsite())) {
 			throw new InvalidArgumentsException("A website is required for a new certification body");
@@ -105,6 +106,7 @@ public class CertificationBodyController {
 	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		CertificationBodyDTO toUpdate = new CertificationBodyDTO();
 		toUpdate.setId(acbInfo.getId());
+		toUpdate.setAcbCode(acbInfo.getAcbCode());
 		toUpdate.setName(acbInfo.getName());
 		if(StringUtils.isEmpty(acbInfo.getWebsite())) {
 			throw new InvalidArgumentsException("A website is required to update the certification body");
