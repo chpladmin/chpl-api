@@ -69,7 +69,7 @@ public class ProductDaoTest extends TestCase {
 	
 	@Test
 	public void getProductByVendor() {
-		Long vendorId = 1L;
+		Long vendorId = -1L;
 		List<ProductDTO> products = null;
 		products = productDao.getByVendor(vendorId);
 		assertNotNull(products);
@@ -79,8 +79,8 @@ public class ProductDaoTest extends TestCase {
 	@Test
 	public void getProductByVendors() {
 		List<Long> vendorIds = new ArrayList<Long>();
-		vendorIds.add(1L);
-		vendorIds.add(2L);
+		vendorIds.add(-1L);
+		vendorIds.add(-2L);
 		List<ProductDTO> products = null;
 		products = productDao.getByVendors(vendorIds);
 		assertNotNull(products);
@@ -90,7 +90,7 @@ public class ProductDaoTest extends TestCase {
 	@Test
 	public void updateProduct() throws EntityRetrievalException {
 		ProductDTO product = productDao.getById(1L);
-		product.setVendorId(2L);
+		product.setVendorId(-2L);
 		
 		ProductEntity result = null;
 		try {
@@ -103,7 +103,7 @@ public class ProductDaoTest extends TestCase {
 
 		try {
 			ProductDTO updatedProduct = productDao.getById(product.getId());
-			assertTrue(updatedProduct.getVendorId() == 2L);
+			assertTrue(updatedProduct.getVendorId() == -2L);
 		} catch(Exception ex) {
 			fail("could not find product!");
 			System.out.println(ex.getStackTrace());

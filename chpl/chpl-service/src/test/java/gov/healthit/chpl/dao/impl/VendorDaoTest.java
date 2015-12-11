@@ -59,7 +59,7 @@ public class VendorDaoTest extends TestCase {
 
 	@Test
 	public void getVendorWithAddress() {
-		Long vendorId = 1L;
+		Long vendorId = -1L;
 		VendorDTO vendor = null;
 		try {
 			vendor = vendorDao.getById(vendorId);
@@ -67,14 +67,14 @@ public class VendorDaoTest extends TestCase {
 			fail("Could not find vendor with id " + vendorId);
 		}
 		assertNotNull(vendor);
-		assertEquals(1, vendor.getId().longValue());
+		assertEquals(-1, vendor.getId().longValue());
 		assertNotNull(vendor.getAddress());
-		assertEquals(1, vendor.getAddress().getId().longValue());
+		assertEquals(-1, vendor.getAddress().getId().longValue());
 	}
 	
 	@Test
 	public void getVendorWithoutAddress() {
-		Long vendorId = 3L;
+		Long vendorId = -3L;
 		VendorDTO vendor = null;
 		try {
 			vendor = vendorDao.getById(vendorId);
@@ -82,7 +82,7 @@ public class VendorDaoTest extends TestCase {
 			fail("Could not find vendor with id " + vendorId);
 		}
 		assertNotNull(vendor);
-		assertEquals(3, vendor.getId().longValue());
+		assertEquals(-3, vendor.getId().longValue());
 		assertNull(vendor.getAddress());
 	}
 	
@@ -161,7 +161,7 @@ public class VendorDaoTest extends TestCase {
 		
 		try 
 		{
-			AddressDTO existingAddress = addressDao.getById(1L);
+			AddressDTO existingAddress = addressDao.getById(-1L);
 			existingAddress.setCountry("Russia");
 			vendor.setAddress(existingAddress);
 		} catch(EntityRetrievalException ex) {
@@ -181,7 +181,7 @@ public class VendorDaoTest extends TestCase {
 		assertTrue(result.getId() > 0L);
 		assertNotNull(result.getAddress());
 		assertNotNull(result.getAddress().getId());
-		assertTrue(result.getAddress().getId() == 1L);
+		assertTrue(result.getAddress().getId() == -1L);
 		assertEquals("Russia", result.getAddress().getCountry());
 	}
 	
