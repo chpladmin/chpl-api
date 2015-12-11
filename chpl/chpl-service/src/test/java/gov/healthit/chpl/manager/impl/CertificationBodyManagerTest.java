@@ -58,7 +58,7 @@ public class CertificationBodyManagerTest extends TestCase {
 	@Test
 	public void testGetUsersOnAcb() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		CertificationBodyDTO acb = acbDao.getById(3L);
+		CertificationBodyDTO acb = acbDao.getById(-3L);
 		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
 		
 		assertEquals(2, users.size());
@@ -70,7 +70,7 @@ public class CertificationBodyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		//add to the acb
-		CertificationBodyDTO acb = acbDao.getById(3L);
+		CertificationBodyDTO acb = acbDao.getById(-3L);
 		Long userId = 2L;
 		acbManager.addPermission(acb, userId, BasePermission.READ);
 		
@@ -91,7 +91,7 @@ public class CertificationBodyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		//add to the acb
-		CertificationBodyDTO acb = acbDao.getById(3L);
+		CertificationBodyDTO acb = acbDao.getById(-3L);
 		UserDTO user = userDao.getById(1L);
 		acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
 		

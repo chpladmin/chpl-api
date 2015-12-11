@@ -232,10 +232,10 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		try {
 			CertifiedProductDetailsDTO product = searchResultDAO.getById(1L);
 			
-			assertEquals(1, product.getCertificationBodyId().intValue());
+			assertEquals(-1, product.getCertificationBodyId().intValue());
 			assertEquals("InfoGard", product.getCertificationBodyName());
 			assertEquals("CHP-024050",product.getChplProductNumber());
-			assertEquals(1, product.getCertificationEditionId().intValue());
+			assertEquals(2, product.getCertificationEditionId().intValue());
 			assertEquals("Test Vendor 1", product.getVendorName());
 			assertEquals(4, product.getCountCertifications().intValue());
 			assertEquals(0, product.getCountCqms().intValue());
