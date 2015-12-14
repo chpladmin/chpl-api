@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -29,11 +28,25 @@ public class CertifiedProductEntity {
 	private static final long serialVersionUID = -2928065796550377879L;
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certifiedProductCertified_product_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "certified_product_id", nullable = false  )
-	@SequenceGenerator(name = "certifiedProductCertified_product_idGenerator", sequenceName = "openchpl.openchpl.certified_product_certified_product_id_seq")
 	private Long id;
+    
+    @Column(name = "product_code")
+    private String productCode;
+    
+    @Column(name = "version_code")
+    private String versionCode;
+    
+    @Column(name = "ics_code")
+    private String icsCode;
+    
+    @Column(name = "additional_software_code")
+    private String additionalSoftwareCode;
+    
+    @Column(name = "certified_date_code")
+    private String certifiedDateCode;
     
 	@Basic( optional = true )
 	@Column( name = "acb_certification_id", length = 250  )
@@ -280,6 +293,46 @@ public class CertifiedProductEntity {
 
 	public void setPrivacyAttestation(Boolean privacyAttestation) {
 		this.privacyAttestation = privacyAttestation;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getVersionCode() {
+		return versionCode;
+	}
+
+	public void setVersionCode(String versionCode) {
+		this.versionCode = versionCode;
+	}
+
+	public String getAdditionalSoftwareCode() {
+		return additionalSoftwareCode;
+	}
+
+	public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+		this.additionalSoftwareCode = additionalSoftwareCode;
+	}
+
+	public String getCertifiedDateCode() {
+		return certifiedDateCode;
+	}
+
+	public void setCertifiedDateCode(String certifiedDateCode) {
+		this.certifiedDateCode = certifiedDateCode;
+	}
+
+	public String getIcsCode() {
+		return icsCode;
+	}
+
+	public void setIcsCode(String icsCode) {
+		this.icsCode = icsCode;
 	}
 
 }

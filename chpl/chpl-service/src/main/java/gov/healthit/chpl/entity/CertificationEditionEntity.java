@@ -2,14 +2,10 @@ package gov.healthit.chpl.entity;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,10 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.hibernate.proxy.HibernateProxy;
 
 
 /** 
@@ -37,10 +31,9 @@ public class CertificationEditionEntity implements Serializable {
 
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificationEditionCertification_edition_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "certification_edition_id", nullable = false  )
-	@SequenceGenerator(name = "certificationEditionCertification_edition_idGenerator", sequenceName = "certification_edition_certification_edition_id_seq")
 	private Long id;
     
  	@OneToMany( fetch = FetchType.EAGER, mappedBy = "certificationEditionId"  )

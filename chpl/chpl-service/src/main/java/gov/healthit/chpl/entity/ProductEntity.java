@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
@@ -32,10 +31,9 @@ public class ProductEntity implements Serializable {
 	private static final long serialVersionUID = -5332080900089062551L;
 
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productProduct_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "product_id", nullable = false  )
-	@SequenceGenerator(name = "productProduct_idGenerator", sequenceName = "product_product_id_seq")
 	private Long id;
     
 	@Basic( optional = false )

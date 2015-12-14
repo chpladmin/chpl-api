@@ -42,6 +42,7 @@ import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -82,26 +83,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	public CertifiedProductManagerImpl() {
 	}
 	
-	@Override
-	@Transactional(readOnly = true)
-	public List<CertifiedProductDTO> getAll() {
-		return dao.findAll();
-	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	public List<CertifiedProductDTO> getAllWithEditPermission() {
-		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
-		if(userAcbs == null || userAcbs.size() == 0) {
-			return new ArrayList<CertifiedProductDTO>();
-		}
-		List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
-		for(CertificationBodyDTO dto : userAcbs) {
-			acbIdList.add(dto.getId());
-		}
-		return dao.getByAcbIds(acbIdList);
-	}
-	
 	@Autowired CertificationStatusDAO statusDao;
 	
 	@Override
@@ -112,28 +93,48 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDTO> getByVersion(Long versionId) {
-		return dao.getByVersionId(versionId);
+	public List<CertifiedProductDetailsDTO> getAll() {
+		return dao.findAll();
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDTO> getByVersionWithEditPermission(Long versionId) {
+	public List<CertifiedProductDetailsDTO> getAllWithEditPermission() {
 		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
 		if(userAcbs == null || userAcbs.size() == 0) {
-			return new ArrayList<CertifiedProductDTO>();
+			return new ArrayList<CertifiedProductDetailsDTO>();
 		}
 		List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
 		for(CertificationBodyDTO dto : userAcbs) {
 			acbIdList.add(dto.getId());
 		}
-		return dao.getByVersionAndAcbIds(versionId, acbIdList);
+		return dao.getDetailsByAcbIds(acbIdList);
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDTO> getByVersions(List<Long> versionIds) {
-		return dao.getByVersionIds(versionIds);
+	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId) {
+		return dao.getDetailsByVersionId(versionId);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId) {
+		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser();
+		if(userAcbs == null || userAcbs.size() == 0) {
+			return new ArrayList<CertifiedProductDetailsDTO>();
+		}
+		List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
+		for(CertificationBodyDTO dto : userAcbs) {
+			acbIdList.add(dto.getId());
+		}
+		return dao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<CertifiedProductDetailsDTO> getByVersions(List<Long> versionIds) {
+		return dao.getDetailsByVersionIds(versionIds);
 	}
 	
 	@Override
@@ -259,6 +260,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		//TODO: this may have to be added to pending certified products if it's in the spreadsheet?
 		toCreate.setPrivacyAttestation(false);
 		
+		String largestChplNumber = dao.getLargestChplNumber();
+		String number = largestChplNumber.substring("CHP-".length());
+		int largestNumber = new Integer(number).intValue();
+		String largestNumberStr = new String((largestNumber+1)+"");
+		while(largestNumberStr.length() < 6) {
+			largestNumberStr = "0" + largestNumberStr;
+		}
+		String newChplNumber = "CHP-" + largestNumberStr;
+		toCreate.setChplProductNumber(newChplNumber);
 		CertifiedProductDTO newCertifiedProduct = dao.create(toCreate);
 		
 		//additional software

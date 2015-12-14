@@ -11,6 +11,11 @@ public class CertifiedProductDTO {
 	
 	
 	private Long id;
+	private String productCode;
+	private String versionCode;
+	private String icsCode;
+	private String additionalSoftwareCode;
+	private String certifiedDateCode;
 	private String acbCertificationId;
 	private Long certificationBodyId;
 	private Long certificationEditionId;
@@ -33,8 +38,12 @@ public class CertifiedProductDTO {
 	public CertifiedProductDTO(){}
 	
 	public CertifiedProductDTO(CertifiedProductEntity entity){
-		
 		this.id = entity.getId();
+		this.productCode = entity.getProductCode();
+		this.versionCode = entity.getVersionCode();
+		this.icsCode = entity.getIcsCode();
+		this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
+		this.certifiedDateCode = entity.getCertifiedDateCode();
 		this.acbCertificationId = entity.getAcbCertificationId();
 		this.certificationBodyId = entity.getCertificationBodyId();
 		this.certificationEditionId = entity.getCertificationEditionId();
@@ -183,6 +192,46 @@ public class CertifiedProductDTO {
 
 	public void setPrivacyAttestation(Boolean privacyAttestation) {
 		this.privacyAttestation = privacyAttestation;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getVersionCode() {
+		return versionCode;
+	}
+
+	public void setVersionCode(String versionCode) {
+		this.versionCode = versionCode;
+	}
+
+	public String getAdditionalSoftwareCode() {
+		return additionalSoftwareCode;
+	}
+
+	public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+		this.additionalSoftwareCode = additionalSoftwareCode;
+	}
+
+	public String getCertifiedDateCode() {
+		return certifiedDateCode;
+	}
+
+	public void setCertifiedDateCode(String certifiedDateCode) {
+		this.certifiedDateCode = certifiedDateCode;
+	}
+
+	public String getIcsCode() {
+		return icsCode;
+	}
+
+	public void setIcsCode(String icsCode) {
+		this.icsCode = icsCode;
 	}
 	
 }

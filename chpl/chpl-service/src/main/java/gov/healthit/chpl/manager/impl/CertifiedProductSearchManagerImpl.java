@@ -62,7 +62,14 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.getCertifyingBody().put("id", dto.getCertificationBodyId());
 			searchResult.getCertifyingBody().put("name", dto.getCertificationBodyName());
 			
-			searchResult.setChplProductNumber(dto.getChplProductNumber());
+			if(dto.getYear().equals("2011") || dto.getYear().equals("2014")) {
+				searchResult.setChplProductNumber(dto.getChplProductNumber());
+			} else {
+				searchResult.setChplProductNumber("ATL." + dto.getCertificationBodyCode() + "." + 
+					dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
+					"." + dto.getCertifiedDateCode());
+			}
 			
 			searchResult.getClassificationType().put("id", dto.getProductClassificationTypeId());
 			searchResult.getClassificationType().put("name", dto.getProductClassificationName());
@@ -86,6 +93,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
+			searchResult.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
 			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
 			searchResult.setPrivacyAttestation(dto.getPrivacyAttestation());
 			searchResults.add(searchResult);
@@ -98,5 +106,4 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 				);
 		return response;
 	}
-	
 }

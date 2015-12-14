@@ -5,13 +5,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -20,24 +16,14 @@ import javax.validation.constraints.NotNull;
 public class SurveillanceEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "surveillanceSurveillance_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "surveillance_id", nullable = false  )
-	@SequenceGenerator(name = "surveillanceSurveillance_idGenerator", sequenceName = "surveillance_surveillance_id_seq", 
-	allocationSize = 1)
 	private Long id;
 	
 	@Basic( optional = false )
 	@Column(name="certified_product_id")
 	private Long certifiedProductId;
-	
-	@Column(name="site_name")
-	private String siteName;
-	
-	@Basic( optional = false )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "surveillance_address", unique=true, nullable = true)
-	private AddressEntity address;
 	
 	@Column(name = "start_date")
 	private Date startDate;
@@ -77,22 +63,6 @@ public class SurveillanceEntity {
 
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
-	}
-
-	public String getSiteName() {
-		return siteName;
-	}
-
-	public void setSiteName(String siteName) {
-		this.siteName = siteName;
-	}
-
-	public AddressEntity getAddress() {
-		return address;
-	}
-
-	public void setAddress(AddressEntity address) {
-		this.address = address;
 	}
 
 	public Date getStartDate() {

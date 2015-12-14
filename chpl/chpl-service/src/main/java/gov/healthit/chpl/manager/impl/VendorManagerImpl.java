@@ -89,7 +89,7 @@ public class VendorManagerImpl implements VendorManager {
 	}
 	
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
 	public VendorDTO merge(List<Long> vendorIdsToMerge, VendorDTO vendorToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		

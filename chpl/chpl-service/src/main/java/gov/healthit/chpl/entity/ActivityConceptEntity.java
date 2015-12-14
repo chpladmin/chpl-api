@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 
@@ -16,11 +15,10 @@ import javax.persistence.Table;
 @Table(name="activity_class")
 public class ActivityConceptEntity {
 	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "activity_class_activity_class_idGenerator")
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "activity_id", nullable = false )
-	@SequenceGenerator(name = "activity_class_activity_class_idGenerator", sequenceName = "activity_class_activity_class_id_seq")
 	private Long id;
 	
 	@Basic( optional = false )

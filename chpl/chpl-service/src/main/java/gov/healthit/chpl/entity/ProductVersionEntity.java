@@ -10,10 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.Size;
 
 
 /** 
@@ -39,10 +37,9 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	private Boolean deleted;
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productVersionProduct_version_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "product_version_id", nullable = false  )
-	@SequenceGenerator(name = "productVersionProduct_version_idGenerator", sequenceName = "product_version_product_version_id_seq")
 	private Long id;
     
 	@Basic( optional = false )

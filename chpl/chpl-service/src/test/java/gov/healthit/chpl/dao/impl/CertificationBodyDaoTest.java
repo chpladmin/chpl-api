@@ -147,7 +147,7 @@ public class CertificationBodyDaoTest extends TestCase {
 	
 	@Test
 	public void testDeleteAcb() throws EntityRetrievalException {
-		Long deleteId = 1L;
+		Long deleteId = -1L;
 		acbDao.delete(deleteId);
 		
 		CertificationBodyDTO deleted = acbDao.getById(deleteId);
@@ -156,7 +156,7 @@ public class CertificationBodyDaoTest extends TestCase {
 	
 	@Test
 	public void listUsersForAcb() {
-		Long acbIdWithUsers=3L;
+		Long acbIdWithUsers=-3L;
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acbIdWithUsers);
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
 		

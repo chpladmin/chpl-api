@@ -1,12 +1,19 @@
 package gov.healthit.chpl.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
 public class CertifiedProductDetailsDTO {
 	
 	private Long id;
+	private String productCode;
+	private String versionCode;
+	private String icsCode;
+	private String additionalSoftwareCode;
+	private String certifiedDateCode;
     private Long testingLabId;
     private String chplProductNumber;
     private String reportFileLocation;
@@ -22,6 +29,7 @@ public class CertifiedProductDetailsDTO {
     private String year;
     private Long certificationBodyId;
     private String certificationBodyName;
+    private String certificationBodyCode;
     private String productClassificationName;
     private Long productVersionId;
     private String productVersion;
@@ -29,22 +37,39 @@ public class CertifiedProductDetailsDTO {
     private String productName;
     private Long vendorId;
     private String vendorName;
+    private String vendorCode;
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
+    private Integer countCorrectiveActionPlans;
     private Boolean visibleOnChpl;
     private Date lastModifiedDate;
     private Boolean privacyAttestation;
     
-    public CertifiedProductDetailsDTO(){}
+    private List<CertificationResultDetailsDTO> certResults;
+    private List<CQMResultDetailsDTO> cqmResults;
+    private List<AdditionalSoftwareDTO> additionalSoftware;
+    
+    public CertifiedProductDetailsDTO(){
+    	certResults = new ArrayList<CertificationResultDetailsDTO>();
+    	cqmResults = new ArrayList<CQMResultDetailsDTO>();
+    	additionalSoftware = new ArrayList<AdditionalSoftwareDTO>();
+    }
     
     public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
+    	this();
     	
     	this.id = entity.getId();
+    	this.productCode = entity.getProductCode();
+    	this.versionCode = entity.getVersionCode();
+    	this.icsCode = entity.getIcsCode();
+    	this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
+    	this.certifiedDateCode = entity.getCertifiedDateCode();
     	this.acbCertificationId = entity.getAcbCertificationId();
     	this.certificationBodyId = entity.getCertificationBodyId();
     	this.certificationBodyName = entity.getCertificationBodyName();
-    	this.certificationEditionId = entity.getCertificationBodyId();
+    	this.certificationBodyCode = entity.getCertificationBodyCode();
+    	this.certificationEditionId = entity.getCertificationEditionId();
     	this.certificationStatusId = entity.getCertificationStatusId();
     	this.certificationStatusName = entity.getCertificationStatusName();
     	this.chplProductNumber = entity.getChplProductNumber();
@@ -62,12 +87,14 @@ public class CertifiedProductDetailsDTO {
     	this.testingLabId = entity.getTestingLabId();
     	this.vendorId = entity.getVendorId();
     	this.vendorName = entity.getVendorName();
+    	this.vendorCode = entity.getVendorCode();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
+    	this.countCorrectiveActionPlans = entity.getCountCorrectiveActionPlans();
     	this.lastModifiedDate = entity.getLastModifiedDate();
     }
     
@@ -251,6 +278,93 @@ public class CertifiedProductDetailsDTO {
 
 	public void setPrivacyAttestation(Boolean privacyAttestation) {
 		this.privacyAttestation = privacyAttestation;
+	}
+
+	public Integer getCountCorrectiveActionPlans() {
+		return countCorrectiveActionPlans;
+	}
+
+	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
+		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
+	}
+	public List<CertificationResultDetailsDTO> getCertResults() {
+		return certResults;
+	}
+
+	public void setCertResults(List<CertificationResultDetailsDTO> certResults) {
+		this.certResults = certResults;
+	}
+
+	public List<CQMResultDetailsDTO> getCqmResults() {
+		return cqmResults;
+	}
+
+	public void setCqmResults(List<CQMResultDetailsDTO> cqmResults) {
+		this.cqmResults = cqmResults;
+	}
+
+	public List<AdditionalSoftwareDTO> getAdditionalSoftware() {
+		return additionalSoftware;
+	}
+
+	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> additionalSoftware) {
+		this.additionalSoftware = additionalSoftware;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getVersionCode() {
+		return versionCode;
+	}
+
+	public void setVersionCode(String versionCode) {
+		this.versionCode = versionCode;
+	}
+
+	public String getAdditionalSoftwareCode() {
+		return additionalSoftwareCode;
+	}
+
+	public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+		this.additionalSoftwareCode = additionalSoftwareCode;
+	}
+
+	public String getCertifiedDateCode() {
+		return certifiedDateCode;
+	}
+
+	public void setCertifiedDateCode(String certifiedDateCode) {
+		this.certifiedDateCode = certifiedDateCode;
+	}
+
+	public String getCertificationBodyCode() {
+		return certificationBodyCode;
+	}
+
+	public void setCertificationBodyCode(String certificationBodyCode) {
+		this.certificationBodyCode = certificationBodyCode;
+	}
+
+	public String getVendorCode() {
+		return vendorCode;
+	}
+
+	public void setVendorCode(String vendorCode) {
+		this.vendorCode = vendorCode;
+	}
+
+	public String getIcsCode() {
+		return icsCode;
+	}
+
+	public void setIcsCode(String icsCode) {
+		this.icsCode = icsCode;
 	}
 	
 }
