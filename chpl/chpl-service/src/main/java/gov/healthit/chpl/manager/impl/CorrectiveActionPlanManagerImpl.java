@@ -57,7 +57,9 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public CorrectiveActionPlanDocumentationDTO addDocumentationToPlan(Long acbId, CorrectiveActionPlanDocumentationDTO doc)
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		CertifiedProductDTO cpDto = cpDao.getById(doc.getCorrectiveActionPlanId());
+		CorrectiveActionPlanDTO plan = capDao.getById(doc.getCorrectiveActionPlanId());
+		CertifiedProductDTO cpDto = cpDao.getById(plan.getCertifiedProductId());
+		
 		CorrectiveActionPlanDocumentationDTO created = capDocDao.create(doc);
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, created.getId(), 
