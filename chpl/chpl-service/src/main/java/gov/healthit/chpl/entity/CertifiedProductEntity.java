@@ -117,6 +117,13 @@ public class CertifiedProductEntity {
 
 	@Column(name = "privacy_attestation")
 	private Boolean privacyAttestation;
+	
+	@Column(name = "terms_of_use_url")
+	private String termsOfUse;
+	
+	@Column(name = "api_documentation_url")
+	private String apiDocumentation;
+	
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -335,4 +342,19 @@ public class CertifiedProductEntity {
 		this.icsCode = icsCode;
 	}
 
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
 }

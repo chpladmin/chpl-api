@@ -25,6 +25,9 @@ public class CertifiedProductSearchResult {
 	private Long certificationDate;
 	private Boolean visibleOnChpl;
 	private Boolean privacyAttestation;
+	private String termsOfUse;
+	private String apiDocumentation;
+	private Boolean transparencyAttestation;
 	private Integer countCerts;
 	private Integer countCqms;
 	private Integer countCorrectiveActionPlans;
@@ -148,6 +151,24 @@ public class CertifiedProductSearchResult {
 	}
 	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
 		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
+	}
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
 	}
 	
 }

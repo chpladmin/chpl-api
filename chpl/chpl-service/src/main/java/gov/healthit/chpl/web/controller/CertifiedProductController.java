@@ -144,6 +144,8 @@ public class CertifiedProductController {
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
 		toUpdate.setPrivacyAttestation(updateRequest.getPrivacyAttestation());
+		toUpdate.setApiDocumentation(updateRequest.getApiDocumentation());
+		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		
 		if(updateRequest.getCertificationEdition().get("name").equals("2011") ||
 				updateRequest.getCertificationEdition().get("name").equals("2014")) {
