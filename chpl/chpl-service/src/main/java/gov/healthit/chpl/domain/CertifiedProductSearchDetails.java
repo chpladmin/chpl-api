@@ -26,6 +26,9 @@ public class CertifiedProductSearchDetails {
 	private Integer countCqms;
 	private Integer countCorrectiveActionPlans;
 	private Boolean visibleOnChpl;
+	private String termsOfUse;
+	private String apiDocumentation;
+	private Boolean transparencyAttestation;
 	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
 	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
@@ -199,5 +202,23 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
 		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
+	}
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
 	}
 }

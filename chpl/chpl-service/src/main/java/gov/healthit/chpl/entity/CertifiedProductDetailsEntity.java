@@ -130,6 +130,12 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "privacy_attestation")
 	private Boolean privacyAttestation;
 	 
+	@Column(name = "terms_of_use_url")
+	private String termsOfUse;
+	
+	@Column(name = "api_documentation_url")
+	private String apiDocumentation;
+	
 	public Long getId() {
 		return id;
 	}
@@ -448,5 +454,21 @@ public class CertifiedProductDetailsEntity {
 
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
+	}
+
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
 	}	
 }

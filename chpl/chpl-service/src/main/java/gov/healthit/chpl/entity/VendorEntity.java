@@ -40,7 +40,7 @@ public class VendorEntity implements Cloneable, Serializable {
 	@Column( name = "vendor_id", nullable = false  )
 	private Long id;
 	
-	@Column(name = "vendor_code")
+	@Column(name = "vendor_code", insertable=false, updatable = false)
 	private String vendorCode;
 	
 	@Column(name = "name" )

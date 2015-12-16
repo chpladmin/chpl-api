@@ -26,6 +26,13 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 	
 	@Override
 	public CertifiedProductValidator getValidator(PendingCertifiedProductDTO product) {
+		//TODO: 2015 validation
+		/*g4 and g5 are required
+		g3 is a two-way binding with column L (if you are certified to g3 you must have one or more from column L; if you are certified for anything from L you must have g3)
+		g1 and g2 - if you are certified for either g1 or g2 you must have at least one cert from column L
+		no restriction about having both g1 and g2
+*/
+		
 		if(product.getCertificationEdition().equals("2014")) {
 			if(product.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
 				if(product.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {

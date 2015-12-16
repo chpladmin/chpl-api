@@ -8,7 +8,6 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
-import gov.healthit.chpl.entity.ProductVersionEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,6 +48,8 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			entity.setOtherAcb(dto.getOtherAcb());
 			entity.setVisibleOnChpl(dto.getVisibleOnChpl());
 			entity.setPrivacyAttestation(dto.getPrivacyAttestation());
+			entity.setTermsOfUse(dto.getTermsOfUse());
+			entity.setApiDocumentation(dto.getApiDocumentation());
 			
 			if(dto.getCertificationBodyId() != null) {
 				entity.setCertificationBodyId(dto.getCertificationBodyId());
@@ -112,6 +113,8 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setReportFileLocation(dto.getReportFileLocation());
 		entity.setTestingLabId(dto.getTestingLabId());
 		entity.setOtherAcb(dto.getOtherAcb());
+		entity.setTermsOfUse(dto.getTermsOfUse());
+		entity.setApiDocumentation(dto.getApiDocumentation());
 		
 		if(dto.getPrivacyAttestation() != null) {
 			entity.setPrivacyAttestation(dto.getPrivacyAttestation());
@@ -200,6 +203,26 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and product_version_id IN :idList", CertifiedProductEntity.class );
 		query.setParameter("idList", versionIds);
 		List<CertifiedProductEntity> results = query.getResultList();
+		
+		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());
+		for(CertifiedProductEntity result : results) {
+			dtoResults.add(new CertifiedProductDTO(result));
+		}
+		return dtoResults;
+	}
+	
+	@Override
+	public List<CertifiedProductDTO> getCertifiedProductsForVendor(Long vendorId) {
+		Query getCertifiedProductsQuery = entityManager.createQuery(
+				"FROM CertifiedProductEntity cpe, ProductVersionEntity pve,"
+				+ "ProductEntity pe, VendorEntity ve " 
+				+ "WHERE (NOT cpe.deleted = true) "
+				+ "AND cpe.productVersion = pve.id " 
+				+ "AND pve.productId = pe.id " 
+				+ "AND ve.id = pe.vendorId "
+				+ "AND ve.id = :vendorId", CertifiedProductEntity.class);
+		getCertifiedProductsQuery.setParameter("vendorId", vendorId);
+		List<CertifiedProductEntity> results = getCertifiedProductsQuery.getResultList();
 		
 		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());
 		for(CertifiedProductEntity result : results) {

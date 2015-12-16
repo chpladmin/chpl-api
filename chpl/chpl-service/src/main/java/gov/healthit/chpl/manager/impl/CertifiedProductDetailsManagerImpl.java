@@ -110,6 +110,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			
 		searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId());
 		searchDetails.getCertifyingBody().put("name", dto.getCertificationBodyName());
+		searchDetails.getCertifyingBody().put("code", dto.getCertificationBodyCode());
 					
 		searchDetails.getClassificationType().put("id", dto.getProductClassificationTypeId());
 		searchDetails.getClassificationType().put("name", dto.getProductClassificationName());
@@ -130,9 +131,12 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		searchDetails.getVendor().put("id", dto.getVendorId());
 		searchDetails.getVendor().put("name", dto.getVendorName());
+		searchDetails.getVendor().put("code", dto.getVendorCode());
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
 		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());
+		searchDetails.setApiDocumentation(dto.getApiDocumentation());
+		searchDetails.setTermsOfUse(dto.getTermsOfUse());
 		searchDetails.setLastModifiedDate(dto.getLastModifiedDate().getTime());
 		
 		searchDetails.setCountCerts(dto.getCountCertifications());

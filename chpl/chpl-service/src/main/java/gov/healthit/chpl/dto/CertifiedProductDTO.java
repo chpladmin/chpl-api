@@ -34,6 +34,8 @@ public class CertifiedProductDTO {
 	private String otherAcb;
 	private Boolean visibleOnChpl;
 	private Boolean privacyAttestation;
+	private String termsOfUse;
+	private String apiDocumentation;
 	
 	public CertifiedProductDTO(){}
 	
@@ -62,6 +64,8 @@ public class CertifiedProductDTO {
 		this.otherAcb = entity.getOtherAcb();
 		this.setVisibleOnChpl(entity.getVisibleOnChpl());
 		this.setPrivacyAttestation(entity.getPrivacyAttestation());
+		this.setTermsOfUse(entity.getTermsOfUse());
+		this.setApiDocumentation(entity.getApiDocumentation());
 	}
 
 	
@@ -233,5 +237,20 @@ public class CertifiedProductDTO {
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
 	}
-	
+
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
 }

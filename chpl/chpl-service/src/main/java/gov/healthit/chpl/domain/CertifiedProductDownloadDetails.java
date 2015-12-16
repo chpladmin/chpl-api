@@ -42,6 +42,8 @@ public class CertifiedProductDownloadDetails {
 	private Integer countCqms;
 	private Boolean visibleOnChpl;
 	private Boolean privacyAttestation;
+	private String termsOfUse;
+	private String apiDocumentation;
 	private Long lastModifiedDate;
 	private String additionalSoftware;
 	
@@ -340,6 +342,8 @@ public class CertifiedProductDownloadDetails {
 		this.countCqms = dto.getCountCqms();
 		this.visibleOnChpl = dto.getVisibleOnChpl();
 		this.privacyAttestation = dto.getPrivacyAttestation();
+		this.termsOfUse = dto.getTermsOfUse();
+		this.apiDocumentation = dto.getApiDocumentation();
 		if(dto.getLastModifiedDate() != null) {
 			this.lastModifiedDate = dto.getLastModifiedDate().getTime();
 		}
@@ -2682,5 +2686,21 @@ public class CertifiedProductDownloadDetails {
 				logger.error("InvocationTargetException " + methodName, e);
 			}
 		}
+	}
+
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
 	}
 }

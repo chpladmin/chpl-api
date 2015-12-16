@@ -45,7 +45,9 @@ public class CertifiedProductDetailsDTO {
     private Boolean visibleOnChpl;
     private Date lastModifiedDate;
     private Boolean privacyAttestation;
-    
+	private String termsOfUse;
+	private String apiDocumentation;
+	
     private List<CertificationResultDetailsDTO> certResults;
     private List<CQMResultDetailsDTO> cqmResults;
     private List<AdditionalSoftwareDTO> additionalSoftware;
@@ -90,6 +92,8 @@ public class CertifiedProductDetailsDTO {
     	this.vendorCode = entity.getVendorCode();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.privacyAttestation = entity.getPrivacyAttestation();
+    	this.termsOfUse = entity.getTermsOfUse();
+    	this.apiDocumentation = entity.getApiDocumentation();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
@@ -366,5 +370,20 @@ public class CertifiedProductDetailsDTO {
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
 	}
-	
+
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
 }
