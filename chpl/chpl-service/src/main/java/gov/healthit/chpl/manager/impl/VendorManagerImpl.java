@@ -18,10 +18,14 @@ import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.Vendor;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.VendorACBMapDTO;
 import gov.healthit.chpl.dto.VendorDTO;
 import gov.healthit.chpl.entity.VendorEntity;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.VendorManager;
 
 @Service
@@ -31,33 +35,77 @@ public class VendorManagerImpl implements VendorManager {
 	VendorDAO vendorDao;
 	
 	@Autowired ProductDAO productDao;
-	
+	@Autowired CertificationBodyManager acbManager;
+
 	@Autowired
 	ActivityManager activityManager;
 	
 	@Override
 	@Transactional(readOnly = true)
 	public List<VendorDTO> getAll() {
-		return vendorDao.findAll();
+		List<VendorDTO> allVendors = vendorDao.findAll();
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		if(availableAcbs != null && availableAcbs.size() == 1) {
+			//if someone is a member of multiple acbs, they will not see the transparency
+			CertificationBodyDTO acb = availableAcbs.get(0);
+			for(VendorDTO vendor : allVendors) {
+				VendorACBMapDTO map = vendorDao.getTransparencyMapping(vendor.getId(), acb.getId());
+				if(map == null) {
+					vendor.setTransparencyAttestation(Boolean.FALSE);
+				} else {
+					vendor.setTransparencyAttestation(map.getTransparencyAttestation());
+				}
+			}
+		}
+		return allVendors;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public VendorDTO getById(Long id) throws EntityRetrievalException {
-		return vendorDao.getById(id);
+		VendorDTO vendor = vendorDao.getById(id);
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		if(availableAcbs != null && availableAcbs.size() == 1) {
+			//if someone is a member of multiple acbs, they will not see the transparency
+			CertificationBodyDTO acb = availableAcbs.get(0);
+			VendorACBMapDTO map = vendorDao.getTransparencyMapping(vendor.getId(), acb.getId());
+			if(map == null) {
+				vendor.setTransparencyAttestation(Boolean.FALSE);
+			} else {
+				vendor.setTransparencyAttestation(map.getTransparencyAttestation());
+			}
+		}
+		return vendor;
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
 	public VendorDTO update(VendorDTO vendor) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
-		VendorDTO before = vendorDao.getById(vendor.getId());
+		VendorDTO before = getById(vendor.getId());
 		VendorEntity result = vendorDao.update(vendor);
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		if(availableAcbs != null && availableAcbs.size() > 0) {
+			for(CertificationBodyDTO acb : availableAcbs) {
+				VendorACBMapDTO existingMap = vendorDao.getTransparencyMapping(vendor.getId(), acb.getId());
+				if(existingMap == null) {
+					VendorACBMapDTO vendorMappingToUpdate = new VendorACBMapDTO();
+					vendorMappingToUpdate.setAcbId(acb.getId());
+					vendorMappingToUpdate.setVendorId(before.getId());
+					vendorMappingToUpdate.setTransparencyAttestation(vendor.getTransparencyAttestation());
+					vendorDao.createTransparencyMapping(vendorMappingToUpdate);
+				} else {
+					existingMap.setTransparencyAttestation(vendor.getTransparencyAttestation());
+					vendorDao.updateTransparencyMapping(existingMap);
+				}
+			}
+		}
 		VendorDTO after = new VendorDTO(result);
+		after.setTransparencyAttestation(vendor.getTransparencyAttestation());
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, after.getId(), "Vendor "+vendor.getName()+" was updated.", before, after);
 		
-		return new VendorDTO(result);
+		return after;
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
@@ -65,6 +113,17 @@ public class VendorManagerImpl implements VendorManager {
 	public VendorDTO create(VendorDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		VendorDTO created = vendorDao.create(dto);
+		
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		if(availableAcbs != null && availableAcbs.size() > 0) {
+			for(CertificationBodyDTO acb : availableAcbs) {
+				VendorACBMapDTO vendorMappingToCreate = new VendorACBMapDTO();
+				vendorMappingToCreate.setAcbId(acb.getId());
+				vendorMappingToCreate.setVendorId(created.getId());
+				vendorMappingToCreate.setTransparencyAttestation(dto.getTransparencyAttestation());
+				vendorDao.createTransparencyMapping(vendorMappingToCreate);
+			}
+		}
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, created.getId(), "Vendor "+created.getName()+" has been created.", null, created);
 		return created;
 	}
@@ -74,6 +133,12 @@ public class VendorManagerImpl implements VendorManager {
 	public void delete(VendorDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		VendorDTO toDelete = vendorDao.getById(dto.getId());
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		if(availableAcbs != null && availableAcbs.size() > 0) {
+			for(CertificationBodyDTO acb : availableAcbs) {
+				vendorDao.deleteTransparencyMapping(dto.getId(), acb.getId());
+			}
+		}
 		vendorDao.delete(dto.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, toDelete.getId(), "Vendor "+toDelete.getName()+" has been deleted.", toDelete, null);
 		
@@ -84,6 +149,12 @@ public class VendorManagerImpl implements VendorManager {
 	public void delete(Long vendorId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		VendorDTO toDelete = vendorDao.getById(vendorId);
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		if(availableAcbs != null && availableAcbs.size() > 0) {
+			for(CertificationBodyDTO acb : availableAcbs) {
+				vendorDao.deleteTransparencyMapping(vendorId, acb.getId());
+			}
+		}
 		vendorDao.delete(vendorId);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, toDelete.getId(), "Vendor "+toDelete.getName()+" has been deleted.", toDelete, null);
 	}
@@ -108,6 +179,12 @@ public class VendorManagerImpl implements VendorManager {
 		}
 		// - mark the passed in vendors as deleted
 		for(Long vendorId : vendorIdsToMerge) {
+			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+			if(availableAcbs != null && availableAcbs.size() > 0) {
+				for(CertificationBodyDTO acb : availableAcbs) {
+					vendorDao.deleteTransparencyMapping(vendorId, acb.getId());
+				}
+			}
 			vendorDao.delete(vendorId);
 		}
 		

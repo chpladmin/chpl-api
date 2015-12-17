@@ -44,6 +44,7 @@ public class CertifiedProductDownloadDetails {
 	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private Boolean transparencyAttestation;
 	private Long lastModifiedDate;
 	private String additionalSoftware;
 	
@@ -344,6 +345,11 @@ public class CertifiedProductDownloadDetails {
 		this.privacyAttestation = dto.getPrivacyAttestation();
 		this.termsOfUse = dto.getTermsOfUse();
 		this.apiDocumentation = dto.getApiDocumentation();
+		if(dto.getTransparencyAttestation() == null) {
+			this.transparencyAttestation = Boolean.FALSE;
+		} else {
+			this.transparencyAttestation = dto.getTransparencyAttestation();
+		}
 		if(dto.getLastModifiedDate() != null) {
 			this.lastModifiedDate = dto.getLastModifiedDate().getTime();
 		}
@@ -2702,5 +2708,13 @@ public class CertifiedProductDownloadDetails {
 
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
+	}
+
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
 	}
 }

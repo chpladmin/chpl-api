@@ -36,6 +36,7 @@ public class CertifiedProductDTO {
 	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private Boolean transparencyAttestation = null;
 	
 	public CertifiedProductDTO(){}
 	
@@ -252,5 +253,13 @@ public class CertifiedProductDTO {
 
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
+	}
+
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
 	}
 }

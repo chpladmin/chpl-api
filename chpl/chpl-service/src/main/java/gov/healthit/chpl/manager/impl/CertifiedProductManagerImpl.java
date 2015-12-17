@@ -26,6 +26,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
+import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -46,6 +47,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.dto.VendorACBMapDTO;
 import gov.healthit.chpl.dto.VendorDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -65,6 +67,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired CQMCriterionDAO cqmCriterionDao;
 	@Autowired AdditionalSoftwareDAO softwareDao;
 	@Autowired CertificationBodyDAO acbDao;
+	@Autowired VendorDAO vendorDao;
 	@Autowired VendorManager vendorManager;
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
@@ -88,7 +91,30 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Override
 	@Transactional(readOnly = true)
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
-		return dao.getById(id);
+		CertifiedProductDTO result = dao.getById(id);
+		
+//		//get the vendor associated with this product
+//		VendorDTO vendor = vendorDao.getByCertifiedProduct(result);
+//
+//		//is the user allowed to see info about the acb that this product is associated with?
+//		List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
+//		boolean isAllowed = false;
+//		if(allowedAcbs != null && allowedAcbs.size() > 0) {
+//			for(CertificationBodyDTO acb : allowedAcbs) {
+//				if(acb.getId().longValue() == result.getCertificationBodyId().longValue()) {
+//					isAllowed = true;
+//				}
+//			}
+//		}
+//		
+//		//get the vendor-to-acb map associated with this product and acb
+//		if(isAllowed) {
+//			VendorACBMapDTO mapping = vendorDao.getTransparencyMapping(vendor.getId(), result.getCertificationBodyId());
+//			result.setTransparencyAttestation(mapping.getTransparencyAttestation());
+//		} else {
+//			result.setTransparencyAttestation(Boolean.FALSE);
+//		}
+		return result;
 	}
 	
 	@Override

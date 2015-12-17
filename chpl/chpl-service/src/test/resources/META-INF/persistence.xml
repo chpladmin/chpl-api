@@ -16,6 +16,7 @@
 		<class>gov.healthit.chpl.entity.ContactEntity</class>
 		<class>gov.healthit.chpl.entity.VendorContactMap</class>
 		<class>gov.healthit.chpl.entity.VendorEntity</class>
+		<class>gov.healthit.chpl.entity.VendorACBMapEntity</class>
 		<class>gov.healthit.chpl.entity.ProductEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
