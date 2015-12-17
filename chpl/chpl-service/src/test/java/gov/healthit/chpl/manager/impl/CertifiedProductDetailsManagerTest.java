@@ -217,6 +217,20 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
 		assertTrue(detail.getVisibleOnChpl());
 	}
+
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsTransparencyAttestation() throws EntityRetrievalException{
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
+		assertTrue(detail.getTransparencyAttestation());
+	}
 	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsTransparencyAttestationFalse() throws EntityRetrievalException{
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(4L);
+		assertFalse(detail.getTransparencyAttestation());
+	}
 }
+
 

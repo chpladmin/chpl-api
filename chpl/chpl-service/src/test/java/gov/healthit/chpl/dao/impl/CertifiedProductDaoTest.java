@@ -52,7 +52,7 @@ public class CertifiedProductDaoTest {
 	public void getAllCertifiedProducts() {
 		List<CertifiedProductDetailsDTO> results = productDao.findAll();
 		assertNotNull(results);
-		assertEquals(3, results.size());
+		assertEquals(4, results.size());
 	}
 
 	@Test

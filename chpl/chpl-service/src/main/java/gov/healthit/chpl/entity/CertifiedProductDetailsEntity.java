@@ -136,6 +136,9 @@ public class CertifiedProductDetailsEntity {
 	@Column(name = "api_documentation_url")
 	private String apiDocumentation;
 	
+	@Column(name = "transparency_attestation")
+	private Boolean transparencyAttestation;
+	
 	public Long getId() {
 		return id;
 	}
@@ -470,5 +473,13 @@ public class CertifiedProductDetailsEntity {
 
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
+	}
+
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
 	}	
 }

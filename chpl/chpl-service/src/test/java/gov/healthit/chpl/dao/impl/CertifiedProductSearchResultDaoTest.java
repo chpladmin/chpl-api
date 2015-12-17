@@ -128,7 +128,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setCertificationBody("InfoGard");
 		searchRequest.setVisibleOnCHPL("BOTH");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(4, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getCertificationBodyName().startsWith("InfoGard"));
@@ -159,7 +159,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setPracticeType("Ambulatory");
 		searchRequest.setVisibleOnCHPL("BOTH");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(4, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getPracticeTypeName().startsWith("Ambulatory"));

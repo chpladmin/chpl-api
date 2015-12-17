@@ -26,6 +26,8 @@ import gov.healthit.chpl.domain.Vendor;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.VendorManager;
 import gov.healthit.chpl.web.controller.results.VendorResults;
@@ -36,6 +38,7 @@ public class VendorController {
 	
 	@Autowired VendorManager vendorManager;
 	@Autowired ProductManager productManager;
+	@Autowired CertifiedProductManager cpManager;
 	
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
@@ -101,6 +104,7 @@ public class VendorController {
 			toUpdate.setId(vendorInfo.getVendorIds().get(0));
 			toUpdate.setName(vendorInfo.getVendor().getName());
 			toUpdate.setWebsite(vendorInfo.getVendor().getWebsite());
+			toUpdate.setTransparencyAttestation(vendorInfo.getVendor().getTransparencyAttestation());
 			if(vendorInfo.getVendor().getAddress() != null) {
 				AddressDTO address = new AddressDTO();
 				address.setId(vendorInfo.getVendor().getAddress().getAddressId());

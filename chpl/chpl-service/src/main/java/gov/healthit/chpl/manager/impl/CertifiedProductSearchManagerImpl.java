@@ -98,6 +98,11 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setPrivacyAttestation(dto.getPrivacyAttestation());
 			searchResult.setApiDocumentation(dto.getApiDocumentation());
 			searchResult.setTermsOfUse(dto.getTermsOfUse());
+			if(dto.getTransparencyAttestation() == null) {
+				searchResult.setTransparencyAttestation(Boolean.FALSE);
+			} else {
+				searchResult.setTransparencyAttestation(dto.getTransparencyAttestation());
+			}
 			searchResults.add(searchResult);
 		}
 		

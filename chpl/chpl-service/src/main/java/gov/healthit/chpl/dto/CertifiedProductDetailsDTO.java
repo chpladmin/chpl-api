@@ -47,6 +47,7 @@ public class CertifiedProductDetailsDTO {
     private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private Boolean transparencyAttestation;
 	
     private List<CertificationResultDetailsDTO> certResults;
     private List<CQMResultDetailsDTO> cqmResults;
@@ -94,6 +95,7 @@ public class CertifiedProductDetailsDTO {
     	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.termsOfUse = entity.getTermsOfUse();
     	this.apiDocumentation = entity.getApiDocumentation();
+    	this.transparencyAttestation = entity.getTransparencyAttestation();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
@@ -385,5 +387,13 @@ public class CertifiedProductDetailsDTO {
 
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
+	}
+
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
 	}
 }
