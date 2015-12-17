@@ -5,6 +5,8 @@ _Date TBD_
 
 Features added or Updated
 * Added terms of use and api documentation to the certified product apis.
+* Added ability to update transparencyAttestation field per vendor and ACB combination. ADMINs can update the transparencyAttestation for all vendor/ACB combinations and anyone else can only update that field for the ACBs to which they have access.
+* Added transparencyAttestation to the fields that come back with certified product details and search results. It is inferred from the vendor/ACB mapping.
 
 Bugs Fixed
 * Correct CHPL number is inserted in corrective action plan documentation activity.
