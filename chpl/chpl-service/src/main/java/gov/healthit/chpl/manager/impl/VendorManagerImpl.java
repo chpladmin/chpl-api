@@ -1,16 +1,21 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -84,19 +89,32 @@ public class VendorManagerImpl implements VendorManager {
 		
 		VendorDTO before = getById(vendor.getId());
 		VendorEntity result = vendorDao.update(vendor);
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
-		if(availableAcbs != null && availableAcbs.size() > 0) {
-			for(CertificationBodyDTO acb : availableAcbs) {
-				VendorACBMapDTO existingMap = vendorDao.getTransparencyMapping(vendor.getId(), acb.getId());
-				if(existingMap == null) {
-					VendorACBMapDTO vendorMappingToUpdate = new VendorACBMapDTO();
-					vendorMappingToUpdate.setAcbId(acb.getId());
-					vendorMappingToUpdate.setVendorId(before.getId());
-					vendorMappingToUpdate.setTransparencyAttestation(vendor.getTransparencyAttestation());
-					vendorDao.createTransparencyMapping(vendorMappingToUpdate);
-				} else {
-					existingMap.setTransparencyAttestation(vendor.getTransparencyAttestation());
-					vendorDao.updateTransparencyMapping(existingMap);
+		
+		//chplAdmin cannot update the transparency but any other role
+		//allowed in this method can
+		boolean isChplAdmin = false;
+		Set<GrantedPermission> permissions = Util.getCurrentUser().getPermissions();
+		for(GrantedPermission permission : permissions) {
+			if(permission.getAuthority().equals("ROLE_ADMIN")) {
+				isChplAdmin = true;
+			}
+		}
+		
+		if(!isChplAdmin) {
+			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+			if(availableAcbs != null && availableAcbs.size() > 0) {
+				for(CertificationBodyDTO acb : availableAcbs) {
+					VendorACBMapDTO existingMap = vendorDao.getTransparencyMapping(vendor.getId(), acb.getId());
+					if(existingMap == null) {
+						VendorACBMapDTO vendorMappingToUpdate = new VendorACBMapDTO();
+						vendorMappingToUpdate.setAcbId(acb.getId());
+						vendorMappingToUpdate.setVendorId(before.getId());
+						vendorMappingToUpdate.setTransparencyAttestation(vendor.getTransparencyAttestation());
+						vendorDao.createTransparencyMapping(vendorMappingToUpdate);
+					} else {
+						existingMap.setTransparencyAttestation(vendor.getTransparencyAttestation());
+						vendorDao.updateTransparencyMapping(existingMap);
+					}
 				}
 			}
 		}
