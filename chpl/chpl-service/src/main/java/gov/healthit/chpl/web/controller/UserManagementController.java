@@ -171,10 +171,16 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		InvitationDTO createdInvite = null;
 		if(isChplAdmin) {
 			createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress(), invitation.getPermissions());
-		} else if(invitation.getAcbId() == null) {
-			createdInvite = invitationManager.inviteWithAcbRole(invitation.getEmailAddress(), invitation.getPermissions());
 		} else {
-			createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
+			if(invitation.getAcbId() == null && invitation.getTestingLabId() == null) {
+				createdInvite = invitationManager.inviteWithRolesOnly(invitation.getEmailAddress(), invitation.getPermissions());
+			} else if(invitation.getAcbId() != null && invitation.getTestingLabId() == null) {
+				createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
+			} else if(invitation.getAcbId() == null && invitation.getTestingLabId() != null) {
+				createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(), invitation.getTestingLabId(), invitation.getPermissions());
+			} else {
+				createdInvite = invitationManager.inviteWithAcbAndAtlAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getTestingLabId(), invitation.getPermissions());
+			}
 		}
 		
 		//send email		

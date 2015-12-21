@@ -11,6 +11,7 @@ public class InvitationDTO {
 	private Long id;
 	private String email;
 	private Long acbId;
+	private Long testingLabId;
 	private String inviteToken;
 	private String confirmToken;
 	private Long createdUserId;
@@ -28,6 +29,7 @@ public class InvitationDTO {
 		this.id = entity.getId();
 		this.email = entity.getEmailAddress();
 		this.acbId = entity.getAcbId();
+		this.testingLabId = entity.getTestingLabId();
 		this.inviteToken = entity.getInviteToken();
 		this.confirmToken = entity.getConfirmToken();
 		this.createdUserId = entity.getCreatedUserId();
@@ -143,5 +145,13 @@ public class InvitationDTO {
 
 	public void setCreatedUserId(Long createdUserId) {
 		this.createdUserId = createdUserId;
+	}
+
+	public Long getTestingLabId() {
+		return testingLabId;
+	}
+
+	public void setTestingLabId(Long testingLabId) {
+		this.testingLabId = testingLabId;
 	}
 }
