@@ -12,7 +12,7 @@ Bugs Fixed
 * Correct CHPL number is inserted in corrective action plan documentation activity.
 
 ## Version 0.0.2
-_7 December 2015__
+_7 December 2015_
 
 Features added or Updated
 * Updated the format activity streams for users are returned.
