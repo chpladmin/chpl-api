@@ -4,12 +4,12 @@ import java.util.List;
 
 import gov.healthit.chpl.auth.json.User;
 
-public class CertificationBodyUser {
+public class PermittedUser {
 	private User user;
 	private List<String> roles;
 	private List<String> permissions;
 	
-	public CertificationBodyUser() {
+	public PermittedUser() {
 		
 	}
 	
