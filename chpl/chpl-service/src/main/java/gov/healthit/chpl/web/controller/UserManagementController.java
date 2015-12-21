@@ -102,7 +102,9 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		String activityDescription = "User "+createdUser.getSubjectName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, null, createdUser, createdUser.getId());
 		
-		return new User(createdUser);
+		User result = new User(createdUser);
+		result.setHash(invitation.getConfirmToken());
+		return result;
 	}
 	
 	@RequestMapping(value="/confirm", method= RequestMethod.POST, 
