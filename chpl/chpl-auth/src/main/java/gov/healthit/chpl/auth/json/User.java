@@ -12,6 +12,7 @@ public class User {
 	private String title;
 	private Boolean accountLocked;
 	private Boolean accountEnabled;
+	private String hash;
 	
 	public User() {}
 	public User(UserDTO dto) {
@@ -79,5 +80,11 @@ public class User {
 	}
 	public void setAccountEnabled(Boolean accountEnabled) {
 		this.accountEnabled = accountEnabled;
+	}
+	public String getHash() {
+		return hash;
+	}
+	public void setHash(String hash) {
+		this.hash = hash;
 	}
 }
