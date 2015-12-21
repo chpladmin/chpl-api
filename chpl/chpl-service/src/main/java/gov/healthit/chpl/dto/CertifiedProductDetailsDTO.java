@@ -15,6 +15,8 @@ public class CertifiedProductDetailsDTO {
 	private String additionalSoftwareCode;
 	private String certifiedDateCode;
     private Long testingLabId;
+    private String testingLabName;
+    private String testingLabCode;
     private String chplProductNumber;
     private String reportFileLocation;
     private String qualityManagementSystemAtt;
@@ -63,6 +65,7 @@ public class CertifiedProductDetailsDTO {
     	this();
     	
     	this.id = entity.getId();
+    	this.testingLabCode = entity.getTestingLabCode();
     	this.productCode = entity.getProductCode();
     	this.versionCode = entity.getVersionCode();
     	this.icsCode = entity.getIcsCode();
@@ -88,6 +91,7 @@ public class CertifiedProductDetailsDTO {
     	this.qualityManagementSystemAtt = entity.getQualityManagementSystemAtt();
     	this.reportFileLocation = entity.getReportFileLocation();
     	this.testingLabId = entity.getTestingLabId();
+    	this.testingLabName = entity.getTestingLabName();
     	this.vendorId = entity.getVendorId();
     	this.vendorName = entity.getVendorName();
     	this.vendorCode = entity.getVendorCode();
@@ -395,5 +399,21 @@ public class CertifiedProductDetailsDTO {
 
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+
+	public String getTestingLabCode() {
+		return testingLabCode;
+	}
+
+	public void setTestingLabCode(String testingLabCode) {
+		this.testingLabCode = testingLabCode;
 	}
 }

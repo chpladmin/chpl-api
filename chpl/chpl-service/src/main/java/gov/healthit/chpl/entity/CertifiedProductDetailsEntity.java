@@ -22,6 +22,9 @@ public class CertifiedProductDetailsEntity {
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long id;
     
+    @Column(name = "testing_lab_code")
+    private String testingLabCode;
+    
     @Column(name = "product_code")
     private String productCode;
     
@@ -39,6 +42,9 @@ public class CertifiedProductDetailsEntity {
     
     @Column(name = "testing_lab_id")
     private Long testingLabId;
+    
+    @Column(name = "testing_lab_name")
+    private String testingLabName;
     
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
@@ -481,5 +487,21 @@ public class CertifiedProductDetailsEntity {
 
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public String getTestingLabCode() {
+		return testingLabCode;
+	}
+
+	public void setTestingLabCode(String testingLabCode) {
+		this.testingLabCode = testingLabCode;
+	}
+
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
 	}	
 }

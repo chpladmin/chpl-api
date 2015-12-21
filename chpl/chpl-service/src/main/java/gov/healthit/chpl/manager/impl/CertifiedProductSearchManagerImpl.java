@@ -65,7 +65,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			if(dto.getYear().equals("2011") || dto.getYear().equals("2014")) {
 				searchResult.setChplProductNumber(dto.getChplProductNumber());
 			} else {
-				searchResult.setChplProductNumber("ATL." + dto.getCertificationBodyCode() + "." + 
+				searchResult.setChplProductNumber(dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
 					dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 					"." + dto.getCertifiedDateCode());
@@ -87,6 +87,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
 			searchResult.setReportFileLocation(dto.getReportFileLocation());
 			searchResult.setTestingLabId(dto.getTestingLabId());
+			searchResult.setTestingLabName(dto.getTestingLabName());
 			
 			searchResult.getVendor().put("id", dto.getVendorId());
 			searchResult.getVendor().put("name", dto.getVendorName());

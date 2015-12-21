@@ -9,6 +9,7 @@ public class CertifiedProductSearchDetails {
 	
 	private Long id;
     private Long testingLabId;
+    private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
     private String qualityManagementSystemAtt;
@@ -220,5 +221,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
 	}
 }

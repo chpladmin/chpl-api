@@ -23,7 +23,7 @@ public class CertifiedProductDownloadDetails {
 	private SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private Long id;
-    private Long testingLabId;
+    private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
     private String qualityManagementSystemAtt;
@@ -316,12 +316,12 @@ public class CertifiedProductDownloadDetails {
 		this();
 		
 		this.id = dto.getId();
-		this.testingLabId = dto.getTestingLabId();
+		this.testingLabName = dto.getTestingLabName();
 		if(dto.getYear() != null && 
 				(dto.getYear().equals("2011") || dto.getYear().equals("2014"))) {
 			this.chplProductNumber = dto.getChplProductNumber();
 		} else {
-			this.chplProductNumber = "ATL." + dto.getCertificationBodyCode() + "." + 
+			this.chplProductNumber = dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
 					dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 					"." + dto.getCertifiedDateCode();
@@ -362,13 +362,6 @@ public class CertifiedProductDownloadDetails {
 	
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Long getTestingLabId() {
-		return testingLabId;
-	}
-	
-	public void setTestingLabId(Long testingLabId) {
-		this.testingLabId = testingLabId;
 	}
 	public String getChplProductNumber() {
 		return chplProductNumber;
@@ -2716,5 +2709,13 @@ public class CertifiedProductDownloadDetails {
 
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
 	}
 }
