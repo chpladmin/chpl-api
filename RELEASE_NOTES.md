@@ -8,9 +8,11 @@ Features added or Updated
 * Added ability to update transparencyAttestation field per vendor and ACB combination. ADMINs can update the transparencyAttestation for all vendor/ACB combinations and anyone else can only update that field for the ACBs to which they have access.
 * Added transparencyAttestation to the fields that come back with certified product details and search results. It is inferred from the vendor/ACB mapping.
 * Added APIs for testing labs, found under /atls urls. 
+* Complete CHPL Product Number for 2015 products with testing lab code.
 
 Bugs Fixed
 * Correct CHPL number is inserted in corrective action plan documentation activity.
+* Authorizing existing users for new roles or ACBs/ATLs is fixed
 
 ## Version 0.0.2
 _7 December 2015_
