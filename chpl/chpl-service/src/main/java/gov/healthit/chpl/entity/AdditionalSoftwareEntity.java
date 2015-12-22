@@ -24,6 +24,11 @@ public class AdditionalSoftwareEntity {
 	@Column(name = "certified_product_id", nullable = false )
 	private Long certifiedProductId;
 	
+	
+	@Basic( optional = false )
+	@Column(name = "certified_product_self_id", nullable = false )
+	private Long certifiedProductSelfId;
+	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -107,5 +112,10 @@ public class AdditionalSoftwareEntity {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	
+	public Long getCertifiedProductSelfId() {
+		return certifiedProductSelfId;
+	}
+	public void setCertifiedProductSelfId(Long certifiedProductSelfId) {
+		this.certifiedProductSelfId = certifiedProductSelfId;
+	}
 }
