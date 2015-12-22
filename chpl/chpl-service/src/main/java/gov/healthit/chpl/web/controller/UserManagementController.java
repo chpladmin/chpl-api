@@ -64,8 +64,8 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@Autowired private ActivityManager activityManager;
 	
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
-	private static final long VALID_INVITATION_LENGTH = 3*24*60*60*1000;
-	private static final long VALID_CONFIRMATION_LENGTH = 30*24*60*60*1000;
+	private static final long VALID_INVITATION_LENGTH = 3L*24L*60L*60L*1000L;
+	private static final long VALID_CONFIRMATION_LENGTH = 30L*24L*60L*60L*1000L;
 	
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
