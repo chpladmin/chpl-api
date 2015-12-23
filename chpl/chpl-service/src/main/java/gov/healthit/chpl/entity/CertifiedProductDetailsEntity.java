@@ -52,9 +52,6 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "report_file_location")
     private String reportFileLocation;
     
-    @Column(name = "quality_management_system_att")
-    private String qualityManagementSystemAtt;
-    
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
     
@@ -142,6 +139,15 @@ public class CertifiedProductDetailsEntity {
 	@Column(name = "api_documentation_url")
 	private String apiDocumentation;
 	
+	@Column(name = "ics")
+	private String ics;
+	
+	@Column(name = "sed")
+	private Boolean sedTesting;
+	
+	@Column(name = "qms")
+	private Boolean qmsTesting;
+	
 	@Column(name = "transparency_attestation")
 	private Boolean transparencyAttestation;
 	
@@ -175,14 +181,6 @@ public class CertifiedProductDetailsEntity {
 
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 
 	public String getAcbCertificationId() {
@@ -503,5 +501,29 @@ public class CertifiedProductDetailsEntity {
 
 	public void setTestingLabName(String testingLabName) {
 		this.testingLabName = testingLabName;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}	
 }

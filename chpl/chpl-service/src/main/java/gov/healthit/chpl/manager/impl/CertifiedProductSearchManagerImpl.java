@@ -84,7 +84,6 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.getProduct().put("versionId",dto.getProductVersionId());
 			searchResult.getProduct().put("version", dto.getProductVersion());
 			
-			searchResult.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
 			searchResult.setReportFileLocation(dto.getReportFileLocation());
 			searchResult.setTestingLabId(dto.getTestingLabId());
 			searchResult.setTestingLabName(dto.getTestingLabName());
@@ -98,6 +97,9 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
 			searchResult.setPrivacyAttestation(dto.getPrivacyAttestation());
 			searchResult.setApiDocumentation(dto.getApiDocumentation());
+			searchResult.setIcs(dto.getIcs());
+			searchResult.setSedTesting(dto.getSedTesting());
+			searchResult.setQmsTesting(dto.getQmsTesting());
 			searchResult.setTermsOfUse(dto.getTermsOfUse());
 			if(dto.getTransparencyAttestation() == null) {
 				searchResult.setTransparencyAttestation(Boolean.FALSE);

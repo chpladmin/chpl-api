@@ -120,7 +120,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.getProduct().put("versionId",dto.getProductVersionId());
 		searchDetails.getProduct().put("version", dto.getProductVersion());
 				
-		searchDetails.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
 		searchDetails.setReportFileLocation(dto.getReportFileLocation());
 		searchDetails.setTestingLabId(dto.getTestingLabId());
 		searchDetails.setTestingLabName(dto.getTestingLabName());
@@ -132,6 +131,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
 		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());
 		searchDetails.setApiDocumentation(dto.getApiDocumentation());
+		searchDetails.setIcs(dto.getIcs());
+		searchDetails.setSedTesting(dto.getSedTesting());
+		searchDetails.setQmsTesting(dto.getQmsTesting());
+		
 		if(dto.getTransparencyAttestation() == null) {
 			searchDetails.setTransparencyAttestation(Boolean.FALSE);
 		} else {

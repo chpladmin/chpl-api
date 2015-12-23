@@ -26,7 +26,6 @@ public class CertifiedProductDownloadDetails {
     private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
-    private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private String classificationType;
     private String otherAcb;
@@ -44,6 +43,9 @@ public class CertifiedProductDownloadDetails {
 	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private String ics;
+	private Boolean sedTesting;
+	private Boolean qmsTesting;
 	private Boolean transparencyAttestation;
 	private Long lastModifiedDate;
 	private String additionalSoftware;
@@ -327,7 +329,6 @@ public class CertifiedProductDownloadDetails {
 					"." + dto.getCertifiedDateCode();
 		}
 		this.reportFileLocation = dto.getReportFileLocation();
-		this.qualityManagementSystemAtt = dto.getQualityManagementSystemAtt();
 		this.acbCertificationId = dto.getAcbCertificationId();
 		this.classificationType = dto.getProductClassificationName();
 		this.otherAcb = dto.getOtherAcb();
@@ -345,6 +346,10 @@ public class CertifiedProductDownloadDetails {
 		this.privacyAttestation = dto.getPrivacyAttestation();
 		this.termsOfUse = dto.getTermsOfUse();
 		this.apiDocumentation = dto.getApiDocumentation();
+		this.ics = dto.getIcs();
+		this.sedTesting = dto.getSedTesting();
+		this.qmsTesting = dto.getQmsTesting();
+		
 		if(dto.getTransparencyAttestation() == null) {
 			this.transparencyAttestation = Boolean.FALSE;
 		} else {
@@ -374,12 +379,6 @@ public class CertifiedProductDownloadDetails {
 	}
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
@@ -2717,5 +2716,29 @@ public class CertifiedProductDownloadDetails {
 
 	public void setTestingLabName(String testingLabName) {
 		this.testingLabName = testingLabName;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}
 }

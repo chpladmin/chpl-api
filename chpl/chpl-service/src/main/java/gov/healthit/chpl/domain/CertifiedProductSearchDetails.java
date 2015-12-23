@@ -29,6 +29,9 @@ public class CertifiedProductSearchDetails {
 	private Boolean visibleOnChpl;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private String ics;
+	private Boolean sedTesting;
+	private Boolean qmsTesting;
 	private Boolean transparencyAttestation;
 	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
@@ -227,5 +230,23 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setTestingLabName(String testingLabName) {
 		this.testingLabName = testingLabName;
+	}
+	public String getIcs() {
+		return ics;
+	}
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}
 }

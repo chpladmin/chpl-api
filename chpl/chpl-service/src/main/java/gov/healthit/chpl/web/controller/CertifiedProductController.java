@@ -139,13 +139,15 @@ public class CertifiedProductController {
 		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
-		toUpdate.setQualityManagementSystemAtt(updateRequest.getQualityManagementSystemAtt());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
 		toUpdate.setPrivacyAttestation(updateRequest.getPrivacyAttestation());
 		toUpdate.setApiDocumentation(updateRequest.getApiDocumentation());
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
+		toUpdate.setIcs(updateRequest.getIcs());
+		toUpdate.setSedTesting(updateRequest.getSedTesting());
+		toUpdate.setQmsTestig(updateRequest.getQmsTesting());
 		
 		if(updateRequest.getCertificationEdition().get("name").equals("2011") ||
 				updateRequest.getCertificationEdition().get("name").equals("2014")) {

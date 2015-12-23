@@ -19,7 +19,6 @@ public class CertifiedProductDetailsDTO {
     private String testingLabCode;
     private String chplProductNumber;
     private String reportFileLocation;
-    private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Long practiceTypeId;
     private String practiceTypeName;
@@ -49,6 +48,9 @@ public class CertifiedProductDetailsDTO {
     private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private String ics;
+	private Boolean sedTesting;
+	private Boolean qmsTesting;
 	private Boolean transparencyAttestation;
 	
     private List<CertificationResultDetailsDTO> certResults;
@@ -88,7 +90,6 @@ public class CertifiedProductDetailsDTO {
     	this.productName = entity.getProductName();
     	this.productVersion = entity.getProductVersion();
     	this.productVersionId = entity.getProductVersionId();
-    	this.qualityManagementSystemAtt = entity.getQualityManagementSystemAtt();
     	this.reportFileLocation = entity.getReportFileLocation();
     	this.testingLabId = entity.getTestingLabId();
     	this.testingLabName = entity.getTestingLabName();
@@ -99,6 +100,9 @@ public class CertifiedProductDetailsDTO {
     	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.termsOfUse = entity.getTermsOfUse();
     	this.apiDocumentation = entity.getApiDocumentation();
+    	this.ics = entity.getIcs();
+    	this.sedTesting = entity.getSedTesting();
+    	this.qmsTesting = entity.getQmsTesting();
     	this.transparencyAttestation = entity.getTransparencyAttestation();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
@@ -132,12 +136,6 @@ public class CertifiedProductDetailsDTO {
 	}
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
@@ -415,5 +413,29 @@ public class CertifiedProductDetailsDTO {
 
 	public void setTestingLabCode(String testingLabCode) {
 		this.testingLabCode = testingLabCode;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}
 }

@@ -92,28 +92,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = true)
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		CertifiedProductDTO result = dao.getById(id);
-		
-//		//get the vendor associated with this product
-//		VendorDTO vendor = vendorDao.getByCertifiedProduct(result);
-//
-//		//is the user allowed to see info about the acb that this product is associated with?
-//		List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser();
-//		boolean isAllowed = false;
-//		if(allowedAcbs != null && allowedAcbs.size() > 0) {
-//			for(CertificationBodyDTO acb : allowedAcbs) {
-//				if(acb.getId().longValue() == result.getCertificationBodyId().longValue()) {
-//					isAllowed = true;
-//				}
-//			}
-//		}
-//		
-//		//get the vendor-to-acb map associated with this product and acb
-//		if(isAllowed) {
-//			VendorACBMapDTO mapping = vendorDao.getTransparencyMapping(vendor.getId(), result.getCertificationBodyId());
-//			result.setTransparencyAttestation(mapping.getTransparencyAttestation());
-//		} else {
-//			result.setTransparencyAttestation(Boolean.FALSE);
-//		}
 		return result;
 	}
 	
@@ -226,6 +204,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				throw new EntityCreationException("You must provide a vendor name to create a new vendor.");
 			}
 			newVendor.setName(pendingCp.getVendor().get("name").toString());
+			newVendor.setTransparencyAttestation(pendingCp.getTransparencyAttestation() == null ? Boolean.FALSE : pendingCp.getTransparencyAttestation());
 			Map<String, Object> vendorAddress = pendingCp.getVendorAddress();
 			if(vendorAddress != null) {
 				AddressDTO address = new AddressDTO();
@@ -283,6 +262,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setProductVersionId(new Long(productVersionId));
 		toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
 		toCreate.setVisibleOnChpl(true);
+		toCreate.setIcs(pendingCp.getIcs());
+		toCreate.setSedTesting(pendingCp.getSedTesting());
+		toCreate.setQmsTestig(pendingCp.getQmsTesting());
+		
 		//TODO: this may have to be added to pending certified products if it's in the spreadsheet?
 		toCreate.setPrivacyAttestation(false);
 		
