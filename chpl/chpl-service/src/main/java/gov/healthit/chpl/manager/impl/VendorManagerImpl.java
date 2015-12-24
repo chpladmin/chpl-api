@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager.impl;
+﻿package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
