@@ -194,52 +194,38 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	public CertificationResultAdditionalSoftwareMapDTO createAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto) throws EntityCreationException{
 		CertificationResultAdditionalSoftwareMapEntity mapping = getCertificationResultAdditionalSoftwareMap(dto.getCertificationResultId(), dto.getAdditionalSoftwareId());
 		if(mapping != null) {
-			throw new EntityCreationException("An mapping entity with this ID pair already exists.");
+			throw new EntityCreationException("A Certification Result - Additional Software mapping entity with this ID pair already exists.");
 		}
-	}
-	/*
-	 * 	@Override
-	public VendorACBMapDTO createTransparencyMapping(VendorACBMapDTO dto) {
-		VendorACBMapEntity mapping = new VendorACBMapEntity();
-		mapping.setVendorId(dto.getVendorId());
-		mapping.setCertificationBodyId(dto.getAcbId());
-		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
+		
+		mapping = new CertificationResultAdditionalSoftwareMapEntity();
+		mapping.setCertificationResultId(dto.getCertificationResultId());
+		mapping.setAdditionalSoftwareId(dto.getAdditionalSoftwareId());
 		mapping.setCreationDate(new Date());
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
 		entityManager.persist(mapping);
 		entityManager.flush();
-		return new VendorACBMapDTO(mapping);
-	}(non-Javadoc)
-	 * @see gov.healthit.chpl.dao.CertificationResultDAO#updateAdditionalSoftwareMapping(gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO)
-	 */
+		
+		return new CertificationResultAdditionalSoftwareMapDTO(mapping);
+		
+	}
+	
 	public CertificationResultAdditionalSoftwareMapDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto){
 		
 		CertificationResultAdditionalSoftwareMapEntity mapping = getCertificationResultAdditionalSoftwareMap(dto.getCertificationResultId(), dto.getAdditionalSoftwareId());
 		if(mapping == null) {
 			return null;
 		}
-		
-		
-	}
-	/*
-	 * 	@Override
-	public VendorACBMapDTO updateTransparencyMapping(VendorACBMapDTO dto) {
-		VendorACBMapEntity mapping = getTransparencyMappingEntity(dto.getVendorId(), dto.getAcbId());
-		if(mapping == null) {
-			return null;
-		}
-		
-		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
-		mapping.setLastModifiedDate(new Date());
+		mapping.setCertificationResultId(dto.getCertificationResultId());
+		mapping.setAdditionalSoftwareId(dto.getAdditionalSoftwareId());
+		mapping.setDeleted(dto.getDeleted());
+		mapping.setLastModifiedDate(dto.getLastModifiedDate());
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
 		entityManager.persist(mapping);
 		entityManager.flush();
-		return new VendorACBMapDTO(mapping);
-	}(non-Javadoc)
-	 * @see gov.healthit.chpl.dao.CertificationResultDAO#deleteAdditionalSoftwareMapping(java.lang.Long, java.lang.Long)
-	 */
+		return new CertificationResultAdditionalSoftwareMapDTO(mapping);
+	}
 	
 	public void deleteAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId){
 		CertificationResultAdditionalSoftwareMapEntity toDelete = getCertificationResultAdditionalSoftwareMap(certificationResultId, additionalSoftwareId);

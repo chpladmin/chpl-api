@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -13,7 +15,9 @@ import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CQMResultDTO;
+import gov.healthit.chpl.dto.CQMResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.entity.CQMResultEntity;
+import gov.healthit.chpl.entity.CQMResultAdditionalSoftwareMapEntity;
 
 @Repository(value="cqmResultDAO")
 public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
@@ -118,6 +122,88 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		}
 		
 		return dto;
+	}
+	
+	
+	@Override
+	public CQMResultAdditionalSoftwareMapDTO createAdditionalSoftwareMapping(CQMResultAdditionalSoftwareMapDTO dto) throws EntityCreationException{
+		CQMResultAdditionalSoftwareMapEntity mapping = getCQMResultAdditionalSoftwareMap(dto.getCqmResultId(), dto.getAdditionalSoftwareId());
+		if(mapping != null) {
+			throw new EntityCreationException("A CQM Result - Additional Software mapping entity with this ID pair already exists.");
+		}
+		
+		mapping = new CQMResultAdditionalSoftwareMapEntity();
+		mapping.setCQMResultId(dto.getCqmResultId());
+		mapping.setAdditionalSoftwareId(dto.getAdditionalSoftwareId());
+		mapping.setCreationDate(new Date());
+		mapping.setDeleted(false);
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		
+		return new CQMResultAdditionalSoftwareMapDTO(mapping);
+		
+	}
+	
+	@Override
+	public CQMResultAdditionalSoftwareMapDTO updateAdditionalSoftwareMapping(CQMResultAdditionalSoftwareMapDTO dto){
+		
+		CQMResultAdditionalSoftwareMapEntity mapping = getCQMResultAdditionalSoftwareMap(dto.getCqmResultId(), dto.getAdditionalSoftwareId());
+		if(mapping == null) {
+			return null;
+		}
+		mapping.setCQMResultId(dto.getCqmResultId());
+		mapping.setAdditionalSoftwareId(dto.getAdditionalSoftwareId());
+		mapping.setDeleted(dto.getDeleted());
+		mapping.setLastModifiedDate(dto.getLastModifiedDate());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		return new CQMResultAdditionalSoftwareMapDTO(mapping);
+	}
+	
+	@Override
+	public void deleteAdditionalSoftwareMapping(Long CQMResultId, Long additionalSoftwareId){
+		CQMResultAdditionalSoftwareMapEntity toDelete = getCQMResultAdditionalSoftwareMap(CQMResultId, additionalSoftwareId);
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(toDelete);
+			entityManager.flush();
+		}
+	}
+	
+	@Override
+	public CQMResultAdditionalSoftwareMapDTO getAdditionalSoftwareMapping(Long CQMResultId, Long additionalSoftwareId){
+		
+		CQMResultAdditionalSoftwareMapEntity mapping = getCQMResultAdditionalSoftwareMap(CQMResultId, additionalSoftwareId);
+		if (mapping == null){
+			return null;
+		}
+		return new CQMResultAdditionalSoftwareMapDTO(mapping);
+	}
+	
+	private CQMResultAdditionalSoftwareMapEntity getCQMResultAdditionalSoftwareMap(Long CQMResultId, Long additionalSoftwareId){
+		Query query = entityManager.createQuery( "FROM CQMResultAdditionalSoftwareMapEntity where "
+				+ "(NOT deleted = true) "
+				+ "AND CQMResultId = :CQMResultId "
+				+ "AND additionalSoftwareId = :additionalSoftwareId", CQMResultAdditionalSoftwareMapEntity.class);
+		query.setParameter("CQMResultId", CQMResultId);
+		query.setParameter("aditionalSoftwareId", additionalSoftwareId);
+		
+		Object result = null;
+		try {
+			result = query.getSingleResult();
+		} 
+		catch(NoResultException ex) {}
+		catch(NonUniqueResultException ex) {}
+		
+		if(result == null) {
+			return null;
+		}
+		return (CQMResultAdditionalSoftwareMapEntity)result;
 	}
 	
 	private void create(CQMResultEntity entity) {

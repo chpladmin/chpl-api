@@ -15,7 +15,7 @@ public interface CertificationResultDAO {
 	public List<CertificationResultDTO> findByCertifiedProductId(Long certifiedProductId);
 	public CertificationResultDTO getById(Long resultId) throws EntityRetrievalException;
 	
-	public CertificationResultAdditionalSoftwareMapDTO createAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto);
+	public CertificationResultAdditionalSoftwareMapDTO createAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto) throws EntityCreationException;
 	public CertificationResultAdditionalSoftwareMapDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto);
 	public void deleteAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId);
 	public CertificationResultAdditionalSoftwareMapDTO getAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId);
