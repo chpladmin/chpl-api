@@ -697,6 +697,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 	}
 	
+	
 	private void deleteCqmResult(Long certifiedProductId, Long cqmId){
 		
 		List<CQMResultDTO> cqmResults = cqmResultDAO.findByCertifiedProductId(certifiedProductId);
@@ -707,6 +708,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 		}
 	}
+	
 	
 }
 
