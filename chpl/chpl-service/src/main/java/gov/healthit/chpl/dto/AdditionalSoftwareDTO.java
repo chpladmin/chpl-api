@@ -9,6 +9,7 @@ public class AdditionalSoftwareDTO {
 	
 	private Long id;
 	private Long certifiedProductId;
+	private Long certifiedProductSelfId;
 	private Date creationDate;
 	private Boolean deleted;
 	private String justification;
@@ -23,6 +24,7 @@ public class AdditionalSoftwareDTO {
 		
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();
+		this.certifiedProductSelfId = entity.getCertifiedProductSelfId();
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.getDeleted();
 		this.justification = entity.getJustification();
@@ -86,6 +88,12 @@ public class AdditionalSoftwareDTO {
 	}
 	public void setVersion(String version) {
 		this.version = version;
+	}
+	public Long getCertifiedProductSelfId() {
+		return certifiedProductSelfId;
+	}
+	public void setCertifiedProductSelfId(Long certifiedProductSelfId) {
+		this.certifiedProductSelfId = certifiedProductSelfId;
 	}
 	
 }

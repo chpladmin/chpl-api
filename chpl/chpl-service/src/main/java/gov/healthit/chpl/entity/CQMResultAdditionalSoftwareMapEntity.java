@@ -54,11 +54,11 @@ public class CQMResultAdditionalSoftwareMapEntity {
 		this.id = id;
 	}
 
-	public Long getCertificationResultId() {
+	public Long getCQMResultId() {
 		return cqmResultId;
 	}
 
-	public void setCertificationResultId(Long certificationResultId) {
+	public void setCQMResultId(Long certificationResultId) {
 		this.cqmResultId = certificationResultId;
 	}
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -12,7 +14,9 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareMapEntity;
 import gov.healthit.chpl.entity.CertificationResultEntity;
 
 @Repository(value="certificationResultDAO")
@@ -187,5 +191,96 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		return result;
 	}
 	
-
+	public CertificationResultAdditionalSoftwareMapDTO createAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto) throws EntityCreationException{
+		CertificationResultAdditionalSoftwareMapEntity mapping = getCertificationResultAdditionalSoftwareMap(dto.getCertificationResultId(), dto.getAdditionalSoftwareId());
+		if(mapping != null) {
+			throw new EntityCreationException("An mapping entity with this ID pair already exists.");
+		}
+	}
+	/*
+	 * 	@Override
+	public VendorACBMapDTO createTransparencyMapping(VendorACBMapDTO dto) {
+		VendorACBMapEntity mapping = new VendorACBMapEntity();
+		mapping.setVendorId(dto.getVendorId());
+		mapping.setCertificationBodyId(dto.getAcbId());
+		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
+		mapping.setCreationDate(new Date());
+		mapping.setDeleted(false);
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		return new VendorACBMapDTO(mapping);
+	}(non-Javadoc)
+	 * @see gov.healthit.chpl.dao.CertificationResultDAO#updateAdditionalSoftwareMapping(gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO)
+	 */
+	public CertificationResultAdditionalSoftwareMapDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto){
+		
+		CertificationResultAdditionalSoftwareMapEntity mapping = getCertificationResultAdditionalSoftwareMap(dto.getCertificationResultId(), dto.getAdditionalSoftwareId());
+		if(mapping == null) {
+			return null;
+		}
+		
+		
+	}
+	/*
+	 * 	@Override
+	public VendorACBMapDTO updateTransparencyMapping(VendorACBMapDTO dto) {
+		VendorACBMapEntity mapping = getTransparencyMappingEntity(dto.getVendorId(), dto.getAcbId());
+		if(mapping == null) {
+			return null;
+		}
+		
+		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		return new VendorACBMapDTO(mapping);
+	}(non-Javadoc)
+	 * @see gov.healthit.chpl.dao.CertificationResultDAO#deleteAdditionalSoftwareMapping(java.lang.Long, java.lang.Long)
+	 */
+	
+	public void deleteAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId){
+		CertificationResultAdditionalSoftwareMapEntity toDelete = getCertificationResultAdditionalSoftwareMap(certificationResultId, additionalSoftwareId);
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(toDelete);
+			entityManager.flush();
+		}
+	}
+	
+	
+	public CertificationResultAdditionalSoftwareMapDTO getAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId){
+		
+		CertificationResultAdditionalSoftwareMapEntity mapping = getCertificationResultAdditionalSoftwareMap(certificationResultId, additionalSoftwareId);
+		if (mapping == null){
+			return null;
+		}
+		return new CertificationResultAdditionalSoftwareMapDTO(mapping);
+	}
+	
+	private CertificationResultAdditionalSoftwareMapEntity getCertificationResultAdditionalSoftwareMap(Long certificationResultId, Long additionalSoftwareId){
+		Query query = entityManager.createQuery( "FROM CertificationResultAdditionalSoftwareMapEntity where "
+				+ "(NOT deleted = true) "
+				+ "AND certificationResultId = :certificationResultId "
+				+ "AND additionalSoftwareId = :additionalSoftwareId", CertificationResultAdditionalSoftwareMapEntity.class);
+		query.setParameter("certificationResultId", certificationResultId);
+		query.setParameter("aditionalSoftwareId", additionalSoftwareId);
+		
+		Object result = null;
+		try {
+			result = query.getSingleResult();
+		} 
+		catch(NoResultException ex) {}
+		catch(NonUniqueResultException ex) {}
+		
+		if(result == null) {
+			return null;
+		}
+		return (CertificationResultAdditionalSoftwareMapEntity)result;
+	}
+	
 }

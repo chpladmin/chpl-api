@@ -41,6 +41,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 			entity.setVersion(dto.getVersion());
 			entity.setCertifiedProductId(dto.getCertifiedProductId());
 			entity.setJustification(dto.getJustification());
+			entity.setCertifiedProductSelfId(dto.getCertifiedProductSelfId());
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
 			if(dto.getLastModifiedDate() != null) {
@@ -132,6 +133,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		AdditionalSoftwareEntity entity =  this.getEntityById(dto.getId());
 		
 		entity.setCertifiedProductId(dto.getCertifiedProductId());
+		entity.setCertifiedProductSelfId(dto.getCertifiedProductSelfId());
 		entity.setCreationDate(dto.getCreationDate());
 		entity.setDeleted(dto.getDeleted());
 		entity.setId(dto.getId());
@@ -140,6 +142,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setName(dto.getName());
 		entity.setVersion(dto.getVersion());
+		
 		
 		update(entity);
 		
