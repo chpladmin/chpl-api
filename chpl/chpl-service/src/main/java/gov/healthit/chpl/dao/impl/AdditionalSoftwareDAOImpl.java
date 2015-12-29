@@ -158,6 +158,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 				+ "ON a.additional_software_id = b.additional_software_id;";
 		
 		Query query = entityManager.createNativeQuery(queryStr, AdditionalSoftwareEntity.class);
+		query.setParameter("resultid", id);
 		
 		List<AdditionalSoftwareEntity> results = query.getResultList();
 		
@@ -178,6 +179,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 				+ "ON a.additional_software_id = b.additional_software_id;";
 		
 		Query query = entityManager.createNativeQuery(queryStr, AdditionalSoftwareEntity.class);
+		query.setParameter("resultid", id);
 		
 		List<AdditionalSoftwareEntity> results = query.getResultList();
 		
@@ -204,7 +206,6 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 	
 	}
 	
-	
 	private AdditionalSoftwareEntity getEntityById(Long id) throws EntityRetrievalException {
 		
 		AdditionalSoftwareEntity entity = null;
@@ -224,6 +225,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 	}
 	
 	private AdditionalSoftwareEntity getEntityByName(String name) {
+		
 		AdditionalSoftwareEntity entity = null;
 			
 		Query query = entityManager.createQuery( "from AdditionalSoftwareEntity where (NOT deleted = true) AND (name = :name) ", AdditionalSoftwareEntity.class );
@@ -249,5 +251,5 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		List<AdditionalSoftwareEntity> result = entityManager.createQuery( "from AdditionalSoftwareEntity where (NOT deleted = true) ", AdditionalSoftwareEntity.class).getResultList();
 		return result;
 	}
-
+	
 }

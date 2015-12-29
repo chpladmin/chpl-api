@@ -1,20 +1,25 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
+import gov.healthit.chpl.manager.AdditionalSoftwareManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
-public class AdditionalSoftwareManagerImpl {
+public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager {
 	
 	@Autowired
 	private CertificationResultDAO certificationResultDAO;
@@ -71,6 +76,32 @@ public class AdditionalSoftwareManagerImpl {
 		dto.setCertifiedProductSelfId(certifiedProductId);
 		additionalSoftwareDAO.update(dto);
 		
+	}
+	
+	@Override
+	public List<AdditionalSoftware> getAdditionalSoftwareByCertificationResultId(Long id){
+		
+		List<AdditionalSoftwareDTO> dtos = additionalSoftwareDAO.findByCertificationResultId(id);
+		List<AdditionalSoftware> additionalSoftware = new ArrayList<>();
+		
+		for (AdditionalSoftwareDTO dto : dtos){
+			additionalSoftware.add(new AdditionalSoftware(dto));
+		}
+		
+		return additionalSoftware;
+	}
+	
+	@Override
+	public List<AdditionalSoftware> getAdditionalSoftwareByCQMResultId(Long id){
+		
+		List<AdditionalSoftwareDTO> dtos = additionalSoftwareDAO.findByCQMResultId(id);
+		List<AdditionalSoftware> additionalSoftware = new ArrayList<>();
+		
+		for (AdditionalSoftwareDTO dto : dtos){
+			additionalSoftware.add(new AdditionalSoftware(dto));
+		}
+		
+		return additionalSoftware;
 	}
 	
 }
