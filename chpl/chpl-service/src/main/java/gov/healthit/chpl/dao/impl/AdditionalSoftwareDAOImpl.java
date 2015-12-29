@@ -13,7 +13,9 @@ import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.AdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
 @Repository("additionalSoftwareDAO")
 public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements AdditionalSoftwareDAO {
@@ -143,11 +145,50 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		entity.setName(dto.getName());
 		entity.setVersion(dto.getVersion());
 		
-		
 		update(entity);
 		
 	}
 	
+	public List<AdditionalSoftwareDTO> findByCertificationResultId(Long id){
+		
+		String queryStr = "SELECT b.* FROM "
+				+ "(SELECT * FROM openchpl.certification_result_additional_software_map WHERE certification_result_id = :resultid) a "
+				+ "INNER JOIN "
+				+ "(SELECT * FROM openchpl.additional_software) b "
+				+ "ON a.additional_software_id = b.additional_software_id;";
+		
+		Query query = entityManager.createNativeQuery(queryStr, AdditionalSoftwareEntity.class);
+		
+		List<AdditionalSoftwareEntity> results = query.getResultList();
+		
+		List<AdditionalSoftwareDTO> additionalSoftware = new ArrayList<>();
+		
+		for (AdditionalSoftwareEntity entity : results){
+			additionalSoftware.add(new AdditionalSoftwareDTO(entity));
+		}
+		return additionalSoftware;
+	}
+	
+	public List<AdditionalSoftwareDTO> findByCQMResultId(Long id){
+		
+		String queryStr = "SELECT b.* FROM "
+				+ "(SELECT * FROM openchpl.cqm_result_additional_software_map WHERE cqm_result_id = :resultid) a "
+				+ "INNER JOIN "
+				+ "(SELECT * FROM openchpl.additional_software) b "
+				+ "ON a.additional_software_id = b.additional_software_id;";
+		
+		Query query = entityManager.createNativeQuery(queryStr, AdditionalSoftwareEntity.class);
+		
+		List<AdditionalSoftwareEntity> results = query.getResultList();
+		
+		List<AdditionalSoftwareDTO> additionalSoftware = new ArrayList<>();
+		
+		for (AdditionalSoftwareEntity entity : results){
+			additionalSoftware.add(new AdditionalSoftwareDTO(entity));
+		}
+		return additionalSoftware;
+		
+	}	
 	
 	private void create(AdditionalSoftwareEntity entity) {
 		
