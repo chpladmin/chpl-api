@@ -19,6 +19,7 @@ public class AdditionalSoftwareController {
 	@Autowired
 	AdditionalSoftwareManager additionalSoftwareManager;
 	
+	
 	@RequestMapping(value="/add_certified_product_self", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody String associateAdditionalSoftwareCerifiedProductSelf(
@@ -37,6 +38,7 @@ public class AdditionalSoftwareController {
 		additionalSoftwareManager.addAdditionalSoftwareCertificationResultMapping(additionalSoftwareId, certificationResultId);
 		return "{\"success\" : true }";
 	}
+	
 	
 	@RequestMapping(value="/add_additional_software_cqm_result_mapping", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")

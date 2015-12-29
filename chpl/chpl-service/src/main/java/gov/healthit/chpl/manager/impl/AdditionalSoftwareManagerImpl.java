@@ -25,6 +25,7 @@ public class AdditionalSoftwareManagerImpl {
 	@Autowired
 	private AdditionalSoftwareDAO additionalSoftwareDAO;
 	
+	
 	public CertificationResultAdditionalSoftwareMapDTO addAdditionalSoftwareCertificationResultMapping(Long additionalSoftwareId, Long certificationResultId) throws EntityCreationException{
 		
 		CertificationResultAdditionalSoftwareMapDTO dto = new CertificationResultAdditionalSoftwareMapDTO();
@@ -47,6 +48,23 @@ public class AdditionalSoftwareManagerImpl {
 		return created;
 		
 	}
+	
+	public void deleteAdditionalSoftwareCertificationResultMapping(Long additionalSoftwareId, Long certificationResultId){
+		
+		CertificationResultAdditionalSoftwareMapDTO dto = certificationResultDAO.getAdditionalSoftwareMapping(certificationResultId, additionalSoftwareId);
+		dto.setDeleted(true);
+		certificationResultDAO.updateAdditionalSoftwareMapping(dto);
+		
+	}
+	
+	public void deleteAdditionalSoftwareCQMResultMapping(Long additionalSoftwareId, Long cqmResultId){
+		
+		CQMResultAdditionalSoftwareMapDTO dto = cqmResultDAO.getAdditionalSoftwareMapping(cqmResultId, additionalSoftwareId);
+		dto.setDeleted(true);
+		cqmResultDAO.updateAdditionalSoftwareMapping(dto);
+		
+	}
+	
 	public void associateAdditionalSoftwareCerifiedProductSelf(Long additionalSoftwareId, Long certifiedProductId) throws EntityRetrievalException{
 		
 		AdditionalSoftwareDTO dto = additionalSoftwareDAO.getById(additionalSoftwareId);
@@ -54,6 +72,5 @@ public class AdditionalSoftwareManagerImpl {
 		additionalSoftwareDAO.update(dto);
 		
 	}
-	
 	
 }

@@ -6,6 +6,7 @@ public class AdditionalSoftware {
 
 	private Long additionalSoftwareid;
 	private Long certifiedProductId;
+	private Long certifiedProductSelf;
 	private String justification;
 	private String name;
 	private String version;
@@ -14,6 +15,7 @@ public class AdditionalSoftware {
 	public AdditionalSoftware(AdditionalSoftwareDTO additionalSoftwareDTO) {
 		this.setAdditionalSoftwareid(additionalSoftwareDTO.getId());
 		this.setCertifiedProductId(additionalSoftwareDTO.getCertifiedProductId());
+		this.setCertifiedProductSelf(additionalSoftwareDTO.getCertifiedProductSelfId());
 		this.setJustification(additionalSoftwareDTO.getJustification());
 		this.setName(additionalSoftwareDTO.getName());
 		this.setVersion(additionalSoftwareDTO.getVersion());
@@ -48,5 +50,11 @@ public class AdditionalSoftware {
 	}
 	public void setVersion(String version) {
 		this.version = version;
+	}
+	public Long getCertifiedProductSelf() {
+		return certifiedProductSelf;
+	}
+	public void setCertifiedProductSelf(Long certifiedProductSelf) {
+		this.certifiedProductSelf = certifiedProductSelf;
 	}
 }
