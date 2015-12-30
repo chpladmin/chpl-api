@@ -15,7 +15,9 @@ import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.manager.AdditionalSoftwareManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -30,7 +32,9 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 	@Autowired
 	private AdditionalSoftwareDAO additionalSoftwareDAO;
 	
-	
+	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public CertificationResultAdditionalSoftwareMapDTO addAdditionalSoftwareCertificationResultMapping(Long additionalSoftwareId, Long certificationResultId) throws EntityCreationException{
 		
 		CertificationResultAdditionalSoftwareMapDTO dto = new CertificationResultAdditionalSoftwareMapDTO();
@@ -42,6 +46,9 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 		return created;
 	}
 	
+	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public CQMResultAdditionalSoftwareMapDTO addAdditionalSoftwareCQMResultMapping(Long additionalSoftwareId, Long cqmResultId) throws EntityCreationException{
 		
 		CQMResultAdditionalSoftwareMapDTO dto = new CQMResultAdditionalSoftwareMapDTO();
@@ -54,22 +61,25 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 		
 	}
 	
+	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void deleteAdditionalSoftwareCertificationResultMapping(Long additionalSoftwareId, Long certificationResultId){
 		
-		CertificationResultAdditionalSoftwareMapDTO dto = certificationResultDAO.getAdditionalSoftwareMapping(certificationResultId, additionalSoftwareId);
-		dto.setDeleted(true);
-		certificationResultDAO.updateAdditionalSoftwareMapping(dto);
-		
+		certificationResultDAO.deleteAdditionalSoftwareMapping(certificationResultId, additionalSoftwareId);
 	}
 	
+	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void deleteAdditionalSoftwareCQMResultMapping(Long additionalSoftwareId, Long cqmResultId){
 		
-		CQMResultAdditionalSoftwareMapDTO dto = cqmResultDAO.getAdditionalSoftwareMapping(cqmResultId, additionalSoftwareId);
-		dto.setDeleted(true);
-		cqmResultDAO.updateAdditionalSoftwareMapping(dto);
-		
+		cqmResultDAO.deleteAdditionalSoftwareMapping(cqmResultId, additionalSoftwareId);
 	}
 	
+	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void associateAdditionalSoftwareCerifiedProductSelf(Long additionalSoftwareId, Long certifiedProductId) throws EntityRetrievalException{
 		
 		AdditionalSoftwareDTO dto = additionalSoftwareDAO.getById(additionalSoftwareId);

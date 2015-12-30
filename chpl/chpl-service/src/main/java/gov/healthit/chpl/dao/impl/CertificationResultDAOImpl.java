@@ -251,10 +251,10 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	private CertificationResultAdditionalSoftwareMapEntity getCertificationResultAdditionalSoftwareMap(Long certificationResultId, Long additionalSoftwareId){
 		Query query = entityManager.createQuery( "FROM CertificationResultAdditionalSoftwareMapEntity where "
 				+ "(NOT deleted = true) "
-				+ "AND certificationResultId = :certificationResultId "
-				+ "AND additionalSoftwareId = :additionalSoftwareId", CertificationResultAdditionalSoftwareMapEntity.class);
+				+ "AND certification_result_id = :certificationResultId "
+				+ "AND additional_software_id = :additionalSoftwareId", CertificationResultAdditionalSoftwareMapEntity.class);
 		query.setParameter("certificationResultId", certificationResultId);
-		query.setParameter("aditionalSoftwareId", additionalSoftwareId);
+		query.setParameter("additionalSoftwareId", additionalSoftwareId);
 		
 		Object result = null;
 		try {

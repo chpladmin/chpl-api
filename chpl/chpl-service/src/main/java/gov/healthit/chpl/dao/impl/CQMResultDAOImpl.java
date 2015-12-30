@@ -185,18 +185,18 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		return new CQMResultAdditionalSoftwareMapDTO(mapping);
 	}
 	
-	private CQMResultAdditionalSoftwareMapEntity getCQMResultAdditionalSoftwareMap(Long CQMResultId, Long additionalSoftwareId){
+	private CQMResultAdditionalSoftwareMapEntity getCQMResultAdditionalSoftwareMap(Long cqmResultId, Long additionalSoftwareId){
 		Query query = entityManager.createQuery( "FROM CQMResultAdditionalSoftwareMapEntity where "
 				+ "(NOT deleted = true) "
-				+ "AND CQMResultId = :CQMResultId "
-				+ "AND additionalSoftwareId = :additionalSoftwareId", CQMResultAdditionalSoftwareMapEntity.class);
-		query.setParameter("CQMResultId", CQMResultId);
-		query.setParameter("aditionalSoftwareId", additionalSoftwareId);
+				+ "AND cqm_result_id = :cqmResultId "
+				+ "AND additional_software_id = :additionalSoftwareId", CQMResultAdditionalSoftwareMapEntity.class);
+		query.setParameter("cqmResultId", cqmResultId);
+		query.setParameter("additionalSoftwareId", additionalSoftwareId);
 		
 		Object result = null;
 		try {
 			result = query.getSingleResult();
-		} 
+		}
 		catch(NoResultException ex) {}
 		catch(NonUniqueResultException ex) {}
 		
