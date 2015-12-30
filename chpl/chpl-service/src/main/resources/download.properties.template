@@ -1,0 +1,5 @@
+dbDriverClass=org.postgresql.Driver
+dataSourceName=java:/comp/env/jdbc/openchpl
+dataSourceConnection=jdbc:postgresql://localhost/openchpl
+dataSourceUsername=openchpl
+dataSourcePassword=
