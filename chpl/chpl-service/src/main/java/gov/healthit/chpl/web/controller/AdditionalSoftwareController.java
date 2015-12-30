@@ -5,7 +5,6 @@ import java.util.List;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.manager.AdditionalSoftwareManager;
 
@@ -56,7 +55,7 @@ public class AdditionalSoftwareController {
 	}
 	
 	
-	@RequestMapping(value="/ delete_additional_software_certification_result_mapping", method=RequestMethod.POST,
+	@RequestMapping(value="/delete_additional_software_certification_result_mapping", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody String deleteAdditionalSoftwareCertificationResultMapping(@RequestParam Long additionalSoftwareId, Long certificationResultId) throws EntityCreationException
 	{
