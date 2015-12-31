@@ -5,11 +5,13 @@ import java.util.List;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
+import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
 
 public interface AdditionalSoftwareManager {
 	
+	public AdditionalSoftwareDTO createAdditionalSoftware(AdditionalSoftwareDTO toCreate) throws EntityCreationException;
 	public CertificationResultAdditionalSoftwareMapDTO addAdditionalSoftwareCertificationResultMapping(Long additionalSoftwareId, Long certificationResultId) throws EntityCreationException;
 	public CQMResultAdditionalSoftwareMapDTO addAdditionalSoftwareCQMResultMapping(Long additionalSoftwareId, Long cqmResultId) throws EntityCreationException;
 	public void deleteAdditionalSoftwareCertificationResultMapping(Long additionalSoftwareId, Long certificationResultId);

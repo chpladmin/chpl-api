@@ -32,6 +32,13 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 	@Autowired
 	private AdditionalSoftwareDAO additionalSoftwareDAO;
 	
+	
+	@Override
+	public AdditionalSoftwareDTO createAdditionalSoftware(AdditionalSoftwareDTO toCreate) throws EntityCreationException{
+		return additionalSoftwareDAO.create(toCreate);
+	}
+	
+	
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
