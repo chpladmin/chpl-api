@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -38,12 +40,17 @@ public class App {
     private static final String DOWNLOAD_PROPERTIES_FILE = "download.properties";
 	private static final Logger logger = LogManager.getLogger(App.class);
 
+	private SimpleDateFormat timestampFormat;
 	private CertifiedProductDAO certifiedProductDAO;
 	private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private AdditionalSoftwareDAO additionalSoftwareDAO;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private CQMResultDetailsDAO cqmResultDetailsDAO;
 	
+    public App() {
+    	timestampFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    }
+    
 	public static void main( String[] args ) throws Exception {	
 		//read in properties - we need these to set up the data source context
 		Properties props = null;
@@ -85,8 +92,9 @@ public class App {
         //write out the file to a different location so as not to 
         //overwrite the existing download file
         List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findAll();
-		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
-		//for(int i = 1; i < 10; i++) {
+		//for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
+		for(int i = 1; i < 10; i++) {
+			CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
 			try {
 				
 				CertifiedProductDetailsDTO dto = app.getCertifiedProductSearchResultDAO().getById(currProduct.getId());
@@ -131,27 +139,19 @@ public class App {
 			}
 		}
         
-        String downloadFileName;
+        String downloadFolderPath;
         if (args.length > 0) {
-            downloadFileName = args[0];
+        	downloadFolderPath = args[0];
         } else {
-            downloadFileName = props.getProperty("downloadFilePath");
+        	downloadFolderPath = props.getProperty("downloadFolderPath");
+        }
+        File downloadFolder = new File(downloadFolderPath);
+        if(!downloadFolder.exists()) {
+        	downloadFolder.mkdirs();
         }
         
-        String newFileName = downloadFileName;
-        if(newFileName.endsWith(".xml")) {
-        	newFileName = newFileName.substring(0, newFileName.length() - 4) + "-new.xml";
-        } else {
-        	newFileName = newFileName + "-new.xml";
-        }
-        
-        String prevFileName = downloadFileName;
-        if(prevFileName.endsWith(".xml")) {
-        	prevFileName = prevFileName.substring(0, prevFileName.length() - 4) + "-prev.xml";
-        } else {
-        	prevFileName = prevFileName + "-prev.xml";
-        }
-        
+        Date now = new Date();
+        String newFileName = downloadFolder.getAbsolutePath() + File.separator + "chpl-" + app.getTimestampFormat().format(now) + ".xml";
         File newFile = new File(newFileName);
         if(!newFile.exists()) {
         	newFile.createNewFile();
@@ -173,18 +173,6 @@ public class App {
                 try { os.close(); } catch(IOException ignore) {}
             }
         }
-        //move existing download file to another name
-        File existingFile = new File(downloadFileName);
-        if(existingFile.exists()) {
-        	File prevFile = new File(prevFileName);
-        	if(prevFile.exists()) {
-        		prevFile.delete();
-        	}
-        	existingFile.renameTo(prevFile);
-        }
-        
-        //put this download file in the designated spot
-        newFile.renameTo(new File(downloadFileName)); 
         
         context.close();
 	}
@@ -227,5 +215,13 @@ public class App {
 
 	public void setCqmResultDetailsDAO(CQMResultDetailsDAO cqmResultDetailsDAO) {
 		this.cqmResultDetailsDAO = cqmResultDetailsDAO;
+	}
+
+	public SimpleDateFormat getTimestampFormat() {
+		return timestampFormat;
+	}
+
+	public void setTimestampFormat(SimpleDateFormat timestampFormat) {
+		this.timestampFormat = timestampFormat;
 	}
 }

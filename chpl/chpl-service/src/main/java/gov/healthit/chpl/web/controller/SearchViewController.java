@@ -27,9 +27,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
@@ -42,16 +40,11 @@ public class SearchViewController {
 	private SearchMenuManager searchMenuManager;
 	
 	@Autowired
-	private CertificationBodyManager certificationBodyManager;
-	
-	@Autowired
 	private CertifiedProductSearchManager certifiedProductSearchManager;
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
 	
-	@Autowired
-	private CertifiedProductManager cpManager;
 	
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
@@ -67,22 +60,47 @@ public class SearchViewController {
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="application/xml")
 	public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {	
-		String filename = properties.getProperty("downloadFilePath");
-		File toDownload = new File(filename);
-		if(!toDownload.exists() || !toDownload.canRead()) {
-			response.getWriter().write("Cannot read download file. File does not exist or cannot be read.");
+		String downloadFileLocation = properties.getProperty("downloadFolderPath");
+		File downloadFile = new File(downloadFileLocation);
+		if(!downloadFile.exists() || !downloadFile.canRead()) {
+			response.getWriter().write("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
 			return;
 		}
 		
-		FileInputStream inputStream = new FileInputStream(toDownload);
+		if(downloadFile.isDirectory()) {
+			//find the most recent file in the directory and use that
+			File[] children = downloadFile.listFiles();
+			if(children == null || children.length == 0) {
+				response.getWriter().write("No files for download were found in directory " + downloadFileLocation);
+				return;
+			} else {
+				File newestFile = null;
+				for(int i = 0; i < children.length; i++) {
+					if(newestFile == null) {
+						newestFile = children[i];
+					} else {
+						if(children[i].lastModified() > newestFile.lastModified()) {
+							newestFile = children[i];
+						}
+					}
+				}
+				if(newestFile != null) {
+					downloadFile = newestFile;
+				}
+			}
+		}
+		
+		logger.info("Downloading " + downloadFile.getName());
+		
+		FileInputStream inputStream = new FileInputStream(downloadFile);
 
 		// set content attributes for the response
 		response.setContentType("application/xml");
-		response.setContentLength((int) toDownload.length());
+		response.setContentLength((int) downloadFile.length());
 	 
 		// set headers for the response
 		String headerKey = "Content-Disposition";
-		String headerValue = String.format("attachment; filename=\"%s\"", toDownload.getName());
+		String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
 		response.setHeader(headerKey, headerValue);
 	 
 		// get output stream of the response
