@@ -9,7 +9,8 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Service
 public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProductUploadHandlerFactory {
-	private static int NUM_FIELDS_2014 = 276;
+	public static int NUM_FIELDS_2014 = 276;
+	public static int NUM_FIELDS_2014_EXTENDED = 279;
 	
 	@Autowired private CertifiedProductHandler2011 handler2011;
 	@Autowired private CertifiedProductHandler2014 handler2014;
@@ -23,10 +24,10 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
 		//what type of handler do we need?
 		CertifiedProductUploadType uploadType = CertifiedProductUploadType.valueOf(cpRecord.get(1).toUpperCase());
 
-		if(heading.size() == NUM_FIELDS_2014) {
+		if(heading.size() == NUM_FIELDS_2014 || heading.size() == NUM_FIELDS_2014_EXTENDED) {
 			handler = handler2014;
 		} else {
-			throw new InvalidArgumentsException("Expected " + NUM_FIELDS_2014 + " fields in the record but found " + cpRecord.size());
+			throw new InvalidArgumentsException("Expected " + NUM_FIELDS_2014 + " or " + NUM_FIELDS_2014_EXTENDED + " fields in the record but found " + cpRecord.size());
 		}
 			
 		handler.setRecord(cpRecord);

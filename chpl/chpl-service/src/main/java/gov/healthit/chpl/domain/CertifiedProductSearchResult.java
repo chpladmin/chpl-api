@@ -10,6 +10,7 @@ public class CertifiedProductSearchResult {
 	
 	private Long id;
     private Long testingLabId;
+    private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
     private String qualityManagementSystemAtt;
@@ -27,6 +28,9 @@ public class CertifiedProductSearchResult {
 	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private String ics;
+	private Boolean sedTesting;
+	private Boolean qmsTesting;
 	private Boolean transparencyAttestation;
 	private Integer countCerts;
 	private Integer countCqms;
@@ -169,6 +173,30 @@ public class CertifiedProductSearchResult {
 	}
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+	public String getIcs() {
+		return ics;
+	}
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}
 	
 }

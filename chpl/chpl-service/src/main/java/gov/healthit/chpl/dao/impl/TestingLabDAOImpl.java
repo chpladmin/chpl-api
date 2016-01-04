@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
 import org.apache.log4j.LogManager;
@@ -21,7 +19,6 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.TestingLabEntity;
-import gov.healthit.chpl.entity.VendorACBMapEntity;
 
 @Repository("testingLabDAO")
 public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
@@ -240,26 +237,5 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 		}
 
 		return entity;
-	}
-	
-	private VendorACBMapEntity getTransparencyMappingEntity(Long vendorId, Long acbId) {
-		Query query = entityManager.createQuery( "FROM VendorACBMapEntity where "
-				+ "(NOT deleted = true) "
-				+ "AND vendorId = :vendorId "
-				+ "AND certificationBodyId = :acbId", VendorACBMapEntity.class);
-		query.setParameter("vendorId", vendorId);
-		query.setParameter("acbId", acbId);
-		
-		Object result = null;
-		try {
-			result = query.getSingleResult();
-		} 
-		catch(NoResultException ex) {}
-		catch(NonUniqueResultException ex) {}
-		
-		if(result == null) {
-			return null;
-		}
-		return (VendorACBMapEntity)result;
 	}
 }

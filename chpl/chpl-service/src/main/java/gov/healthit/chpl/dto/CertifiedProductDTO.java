@@ -27,7 +27,6 @@ public class CertifiedProductDTO {
 	private Long practiceTypeId;
 	private Long productClassificationTypeId;
 	private Long productVersionId;
-	private String qualityManagementSystemAtt;
 	private String reportFileLocation;
 	private Long testingLabId;
 	private Long certificationStatusId;
@@ -36,6 +35,9 @@ public class CertifiedProductDTO {
 	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private String ics;
+	private Boolean sedTesting;
+	private Boolean qmsTestig;
 	private Boolean transparencyAttestation = null;
 	
 	public CertifiedProductDTO(){}
@@ -58,7 +60,6 @@ public class CertifiedProductDTO {
 		this.practiceTypeId = entity.getPracticeTypeId();
 		this.productClassificationTypeId = entity.getProductClassificationTypeId();
 		this.productVersionId = entity.getProductVersionId();
-		this.qualityManagementSystemAtt = entity.getQualityManagementSystemAtt();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.testingLabId = entity.getTestingLabId();		
 		this.certificationStatusId = entity.getCertificationStatusId();
@@ -67,6 +68,9 @@ public class CertifiedProductDTO {
 		this.setPrivacyAttestation(entity.getPrivacyAttestation());
 		this.setTermsOfUse(entity.getTermsOfUse());
 		this.setApiDocumentation(entity.getApiDocumentation());
+		this.setIcs(entity.getIcs());
+		this.setSedTesting(entity.getSedTesting());
+		this.setQmsTestig(entity.getQmsTesting());
 	}
 
 	
@@ -147,12 +151,6 @@ public class CertifiedProductDTO {
 	}
 	public void setProductVersionId(Long productVersionId) {
 		this.productVersionId = productVersionId;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getReportFileLocation() {
 		return reportFileLocation;
@@ -261,5 +259,29 @@ public class CertifiedProductDTO {
 
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTestig() {
+		return qmsTestig;
+	}
+
+	public void setQmsTestig(Boolean qmsTestig) {
+		this.qmsTestig = qmsTestig;
 	}
 }

@@ -35,6 +35,9 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setReportFileLocation(dto.getReportFileLocation());
 		this.setQualityManagementSystemAtt(null);
 		this.setAcbCertificationId(dto.getAcbCertificationId());
+		this.setIcs(dto.getIcs());
+		this.setSedTesting(dto.getSedTesting());
+		this.setQmsTesting(dto.getQmsTesting());
 		
 		Map<String, Object> classificationTypeMap = new HashMap<String, Object>();
 		if(dto.getProductClassificationId() == null) {
