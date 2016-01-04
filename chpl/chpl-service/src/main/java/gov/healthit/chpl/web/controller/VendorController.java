@@ -83,6 +83,11 @@ public class VendorController {
 			toCreate.setVendorCode(vendorInfo.getVendor().getVendorCode());
 			toCreate.setName(vendorInfo.getVendor().getName());
 			toCreate.setWebsite(vendorInfo.getVendor().getWebsite());
+			if(vendorInfo.getVendor().getTransparencyAttestation() == null) {
+				toCreate.setTransparencyAttestation(Boolean.FALSE);
+			} else {
+				toCreate.setTransparencyAttestation(vendorInfo.getVendor().getTransparencyAttestation());
+			}
 			Address vendorAddress = vendorInfo.getVendor().getAddress();
 			if(vendorAddress != null) {
 				AddressDTO toCreateAddress = new AddressDTO();
@@ -104,7 +109,11 @@ public class VendorController {
 			toUpdate.setId(vendorInfo.getVendorIds().get(0));
 			toUpdate.setName(vendorInfo.getVendor().getName());
 			toUpdate.setWebsite(vendorInfo.getVendor().getWebsite());
-			toUpdate.setTransparencyAttestation(vendorInfo.getVendor().getTransparencyAttestation());
+			if(vendorInfo.getVendor().getTransparencyAttestation() == null) {
+				toUpdate.setTransparencyAttestation(Boolean.FALSE);
+			} else {
+				toUpdate.setTransparencyAttestation(vendorInfo.getVendor().getTransparencyAttestation());
+			}
 			if(vendorInfo.getVendor().getAddress() != null) {
 				AddressDTO address = new AddressDTO();
 				address.setId(vendorInfo.getVendor().getAddress().getAddressId());
