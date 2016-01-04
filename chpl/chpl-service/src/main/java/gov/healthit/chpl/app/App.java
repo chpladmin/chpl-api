@@ -48,7 +48,7 @@ public class App {
     private CQMResultDetailsDAO cqmResultDetailsDAO;
 	
     public App() {
-    	timestampFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
     
 	public static void main( String[] args ) throws Exception {	
@@ -92,9 +92,9 @@ public class App {
         //write out the file to a different location so as not to 
         //overwrite the existing download file
         List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findAll();
-		//for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
-		for(int i = 1; i < 10; i++) {
-			CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
+		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
+		//for(int i = 1; i < 10; i++) {
+		//	CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
 			try {
 				
 				CertifiedProductDetailsDTO dto = app.getCertifiedProductSearchResultDAO().getById(currProduct.getId());

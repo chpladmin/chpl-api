@@ -242,7 +242,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>gov.healhit.chpl.app.App</mainClass>
+              <mainClass>gov.healthit.chpl.app.App</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
