@@ -48,7 +48,7 @@ public class App {
     private CQMResultDetailsDAO cqmResultDetailsDAO;
 	
     public App() {
-    	timestampFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
     
 	public static void main( String[] args ) throws Exception {	
