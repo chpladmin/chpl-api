@@ -64,8 +64,8 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@Autowired private ActivityManager activityManager;
 	
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
-	private static final long VALID_INVITATION_LENGTH = 3*24*60*60*1000;
-	private static final long VALID_CONFIRMATION_LENGTH = 30*24*60*60*1000;
+	private static final long VALID_INVITATION_LENGTH = 3L*24L*60L*60L*1000L;
+	private static final long VALID_CONFIRMATION_LENGTH = 30L*24L*60L*60L*1000L;
 	
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
@@ -102,7 +102,9 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		String activityDescription = "User "+createdUser.getSubjectName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, null, createdUser, createdUser.getId());
 		
-		return new User(createdUser);
+		User result = new User(createdUser);
+		result.setHash(invitation.getConfirmToken());
+		return result;
 	}
 	
 	@RequestMapping(value="/confirm", method= RequestMethod.POST, 
@@ -171,10 +173,16 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		InvitationDTO createdInvite = null;
 		if(isChplAdmin) {
 			createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress(), invitation.getPermissions());
-		} else if(invitation.getAcbId() == null) {
-			createdInvite = invitationManager.inviteWithAcbRole(invitation.getEmailAddress(), invitation.getPermissions());
 		} else {
-			createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
+			if(invitation.getAcbId() == null && invitation.getTestingLabId() == null) {
+				createdInvite = invitationManager.inviteWithRolesOnly(invitation.getEmailAddress(), invitation.getPermissions());
+			} else if(invitation.getAcbId() != null && invitation.getTestingLabId() == null) {
+				createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
+			} else if(invitation.getAcbId() == null && invitation.getTestingLabId() != null) {
+				createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(), invitation.getTestingLabId(), invitation.getPermissions());
+			} else {
+				createdInvite = invitationManager.inviteWithAcbAndAtlAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getTestingLabId(), invitation.getPermissions());
+			}
 		}
 		
 		//send email		

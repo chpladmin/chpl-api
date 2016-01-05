@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
@@ -30,14 +30,14 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertificationBodyPermission;
-import gov.healthit.chpl.domain.CertificationBodyUser;
+import gov.healthit.chpl.domain.ChplPermission;
+import gov.healthit.chpl.domain.PermittedUser;
 import gov.healthit.chpl.domain.UpdateUserAndAcbRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
-import gov.healthit.chpl.web.controller.results.CertificationBodyUserResults;
+import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 
 @RestController
 @RequestMapping("/acbs")
@@ -50,10 +50,16 @@ public class CertificationBodyController {
 	
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertificationBodyResults getAcbs() {
-		List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
-		
+	public @ResponseBody CertificationBodyResults getAcbs(
+			@RequestParam(required=false, defaultValue="false") boolean editable) {
 		CertificationBodyResults results = new CertificationBodyResults();
+		List<CertificationBodyDTO> acbs = null;
+		if(editable) {
+			acbs = acbManager.getAllForUser();
+		} else {
+			acbs = acbManager.getAll();
+		}
+		
 		if(acbs != null) {
 			for(CertificationBodyDTO acb : acbs) {
 				results.getAcbs().add(new CertificationBody(acb));
@@ -158,7 +164,7 @@ public class CertificationBodyController {
 			throw new InvalidArgumentsException("Could not find either ACB or User specified");
 		}
 
-		Permission permission = CertificationBodyPermission.toPermission(updateRequest.getAuthority());
+		Permission permission = ChplPermission.toPermission(updateRequest.getAuthority());
 		acbManager.addPermission(acb, updateRequest.getUserId(), permission);
 		return "{\"userAdded\" : true }";
 	}
@@ -184,13 +190,13 @@ public class CertificationBodyController {
 	
 	@RequestMapping(value="/{acbId}/users", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertificationBodyUserResults getUsers(@PathVariable("acbId") Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
+	public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
 		CertificationBodyDTO acb = acbManager.getById(acbId);
 		if(acb == null) {
 			throw new InvalidArgumentsException("Could not find the ACB specified.");
 		}
 		
-		List<CertificationBodyUser> acbUsers = new ArrayList<CertificationBodyUser>();
+		List<PermittedUser> acbUsers = new ArrayList<PermittedUser>();
 		List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
 		for(UserDTO user : users) {
 			
@@ -212,13 +218,13 @@ public class CertificationBodyController {
 				List<Permission> permissions = acbManager.getPermissionsForUser(acb, new PrincipalSid(user.getSubjectName()));
 				List<String> acbPerm = new ArrayList<String>(permissions.size());
 				for(Permission permission : permissions) {
-					CertificationBodyPermission perm = CertificationBodyPermission.fromPermission(permission);
+					ChplPermission perm = ChplPermission.fromPermission(permission);
 					if(perm != null) {
 						acbPerm.add(perm.toString());
 					}
 				}
 				
-				CertificationBodyUser userInfo = new CertificationBodyUser();
+				PermittedUser userInfo = new PermittedUser();
 				userInfo.setUser(new User(user));
 				userInfo.setPermissions(acbPerm);
 				userInfo.setRoles(roleNames);
@@ -226,7 +232,7 @@ public class CertificationBodyController {
 			}
 		}
 		
-		CertificationBodyUserResults results = new CertificationBodyUserResults();
+		PermittedUserResults results = new PermittedUserResults();
 		results.setUsers(acbUsers);
 		return results;
 	}

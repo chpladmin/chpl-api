@@ -23,10 +23,9 @@ public class CertifiedProductDownloadDetails {
 	private SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private Long id;
-    private Long testingLabId;
+    private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
-    private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private String classificationType;
     private String otherAcb;
@@ -42,6 +41,12 @@ public class CertifiedProductDownloadDetails {
 	private Integer countCqms;
 	private Boolean visibleOnChpl;
 	private Boolean privacyAttestation;
+	private String termsOfUse;
+	private String apiDocumentation;
+	private String ics;
+	private Boolean sedTesting;
+	private Boolean qmsTesting;
+	private Boolean transparencyAttestation;
 	private Long lastModifiedDate;
 	private String additionalSoftware;
 	
@@ -313,18 +318,17 @@ public class CertifiedProductDownloadDetails {
 		this();
 		
 		this.id = dto.getId();
-		this.testingLabId = dto.getTestingLabId();
+		this.testingLabName = dto.getTestingLabName();
 		if(dto.getYear() != null && 
 				(dto.getYear().equals("2011") || dto.getYear().equals("2014"))) {
 			this.chplProductNumber = dto.getChplProductNumber();
 		} else {
-			this.chplProductNumber = "ATL." + dto.getCertificationBodyCode() + "." + 
+			this.chplProductNumber = dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
 					dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 					"." + dto.getCertifiedDateCode();
 		}
 		this.reportFileLocation = dto.getReportFileLocation();
-		this.qualityManagementSystemAtt = dto.getQualityManagementSystemAtt();
 		this.acbCertificationId = dto.getAcbCertificationId();
 		this.classificationType = dto.getProductClassificationName();
 		this.otherAcb = dto.getOtherAcb();
@@ -340,6 +344,17 @@ public class CertifiedProductDownloadDetails {
 		this.countCqms = dto.getCountCqms();
 		this.visibleOnChpl = dto.getVisibleOnChpl();
 		this.privacyAttestation = dto.getPrivacyAttestation();
+		this.termsOfUse = dto.getTermsOfUse();
+		this.apiDocumentation = dto.getApiDocumentation();
+		this.ics = dto.getIcs();
+		this.sedTesting = dto.getSedTesting();
+		this.qmsTesting = dto.getQmsTesting();
+		
+		if(dto.getTransparencyAttestation() == null) {
+			this.transparencyAttestation = Boolean.FALSE;
+		} else {
+			this.transparencyAttestation = dto.getTransparencyAttestation();
+		}
 		if(dto.getLastModifiedDate() != null) {
 			this.lastModifiedDate = dto.getLastModifiedDate().getTime();
 		}
@@ -353,13 +368,6 @@ public class CertifiedProductDownloadDetails {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Long getTestingLabId() {
-		return testingLabId;
-	}
-	
-	public void setTestingLabId(Long testingLabId) {
-		this.testingLabId = testingLabId;
-	}
 	public String getChplProductNumber() {
 		return chplProductNumber;
 	}
@@ -371,12 +379,6 @@ public class CertifiedProductDownloadDetails {
 	}
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
@@ -2682,5 +2684,61 @@ public class CertifiedProductDownloadDetails {
 				logger.error("InvocationTargetException " + methodName, e);
 			}
 		}
+	}
+
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}
 }

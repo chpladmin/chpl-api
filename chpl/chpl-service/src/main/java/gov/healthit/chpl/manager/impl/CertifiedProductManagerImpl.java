@@ -26,6 +26,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
+import gov.healthit.chpl.dao.VendorDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -46,6 +47,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.dto.VendorACBMapDTO;
 import gov.healthit.chpl.dto.VendorDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -65,6 +67,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired CQMCriterionDAO cqmCriterionDao;
 	@Autowired AdditionalSoftwareDAO softwareDao;
 	@Autowired CertificationBodyDAO acbDao;
+	@Autowired VendorDAO vendorDao;
 	@Autowired VendorManager vendorManager;
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
@@ -88,7 +91,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Override
 	@Transactional(readOnly = true)
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
-		return dao.getById(id);
+		CertifiedProductDTO result = dao.getById(id);
+		return result;
 	}
 	
 	@Override
@@ -200,6 +204,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				throw new EntityCreationException("You must provide a vendor name to create a new vendor.");
 			}
 			newVendor.setName(pendingCp.getVendor().get("name").toString());
+			newVendor.setTransparencyAttestation(pendingCp.getTransparencyAttestation() == null ? Boolean.FALSE : pendingCp.getTransparencyAttestation());
 			Map<String, Object> vendorAddress = pendingCp.getVendorAddress();
 			if(vendorAddress != null) {
 				AddressDTO address = new AddressDTO();
@@ -257,18 +262,27 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setProductVersionId(new Long(productVersionId));
 		toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
 		toCreate.setVisibleOnChpl(true);
+		toCreate.setIcs(pendingCp.getIcs());
+		toCreate.setSedTesting(pendingCp.getSedTesting());
+		toCreate.setQmsTestig(pendingCp.getQmsTesting());
+		
 		//TODO: this may have to be added to pending certified products if it's in the spreadsheet?
 		toCreate.setPrivacyAttestation(false);
 		
-		String largestChplNumber = dao.getLargestChplNumber();
-		String number = largestChplNumber.substring("CHP-".length());
-		int largestNumber = new Integer(number).intValue();
-		String largestNumberStr = new String((largestNumber+1)+"");
-		while(largestNumberStr.length() < 6) {
-			largestNumberStr = "0" + largestNumberStr;
+		String certificationEdition = pendingCp.getCertificationEdition().get("name").toString();
+		if(!StringUtils.isEmpty(certificationEdition) && 
+				(certificationEdition.equals("2011") || certificationEdition.equals("2014"))) {
+			String largestChplNumber = dao.getLargestChplNumber();
+			String number = largestChplNumber.substring("CHP-".length());
+			int largestNumber = new Integer(number).intValue();
+			String largestNumberStr = new String((largestNumber+1)+"");
+			while(largestNumberStr.length() < 6) {
+				largestNumberStr = "0" + largestNumberStr;
+			}
+			String newChplNumber = "CHP-" + largestNumberStr;
+			toCreate.setChplProductNumber(newChplNumber);
 		}
-		String newChplNumber = "CHP-" + largestNumberStr;
-		toCreate.setChplProductNumber(newChplNumber);
+		
 		CertifiedProductDTO newCertifiedProduct = dao.create(toCreate);
 		
 		//additional software

@@ -26,6 +26,8 @@ import gov.healthit.chpl.domain.Vendor;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.VendorManager;
 import gov.healthit.chpl.web.controller.results.VendorResults;
@@ -36,6 +38,7 @@ public class VendorController {
 	
 	@Autowired VendorManager vendorManager;
 	@Autowired ProductManager productManager;
+	@Autowired CertifiedProductManager cpManager;
 	
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
@@ -80,6 +83,11 @@ public class VendorController {
 			toCreate.setVendorCode(vendorInfo.getVendor().getVendorCode());
 			toCreate.setName(vendorInfo.getVendor().getName());
 			toCreate.setWebsite(vendorInfo.getVendor().getWebsite());
+			if(vendorInfo.getVendor().getTransparencyAttestation() == null) {
+				toCreate.setTransparencyAttestation(Boolean.FALSE);
+			} else {
+				toCreate.setTransparencyAttestation(vendorInfo.getVendor().getTransparencyAttestation());
+			}
 			Address vendorAddress = vendorInfo.getVendor().getAddress();
 			if(vendorAddress != null) {
 				AddressDTO toCreateAddress = new AddressDTO();
@@ -92,6 +100,8 @@ public class VendorController {
 				toCreate.setAddress(toCreateAddress);
 			}
 			result = vendorManager.merge(vendorInfo.getVendorIds(), toCreate);
+			//re-query because the vendor code isn't filled in otherwise
+			result = vendorManager.getById(result.getId());
 		} else if(vendorInfo.getVendorIds().size() == 1) {
 			//update the information for the vendor id supplied in the database
 			VendorDTO toUpdate = new VendorDTO();
@@ -99,6 +109,11 @@ public class VendorController {
 			toUpdate.setId(vendorInfo.getVendorIds().get(0));
 			toUpdate.setName(vendorInfo.getVendor().getName());
 			toUpdate.setWebsite(vendorInfo.getVendor().getWebsite());
+			if(vendorInfo.getVendor().getTransparencyAttestation() == null) {
+				toUpdate.setTransparencyAttestation(Boolean.FALSE);
+			} else {
+				toUpdate.setTransparencyAttestation(vendorInfo.getVendor().getTransparencyAttestation());
+			}
 			if(vendorInfo.getVendor().getAddress() != null) {
 				AddressDTO address = new AddressDTO();
 				address.setId(vendorInfo.getVendor().getAddress().getAddressId());
