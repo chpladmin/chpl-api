@@ -66,6 +66,25 @@ public class ActivityController {
 		}
 	}
 	
+	@RequestMapping(value="/atls", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityforATLs(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		
+		if (lastNDays == null){
+			return getActivityEventsForATLs();
+		} else {
+			return getActivityEventsForATLs(lastNDays);
+		}
+	}
+	
+	@RequestMapping(value="/atls/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForATLById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		
+		if (lastNDays == null){
+			return getActivityEventsForATLs(id);
+		} else {
+			return getActivityEventsForATLs(id, lastNDays);
+		}
+	}
 	
 	@RequestMapping(value="/api_keys", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForApiKeys(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException {
@@ -234,6 +253,15 @@ public class ActivityController {
 		return events;
 	}
 	
+	private List<ActivityEvent> getActivityEventsForATLs(Long id) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ATL;
+		events = getActivityEventsForObject(concept, id);
+		
+		return events;
+	}
+	
 	private List<ActivityEvent> getActivityEventsForCertifications(Long id) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
@@ -320,9 +348,6 @@ public class ActivityController {
 		return events;
 	}
 	
-	
-	
-	
 	private List<ActivityEvent> getActivityEventsForACBs(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
@@ -331,6 +356,13 @@ public class ActivityController {
 		return events;
 	}
 	
+	private List<ActivityEvent> getActivityEventsForATLs(Long id, Integer lastNDays) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ATL;
+		events = getActivityEventsForObject(concept, id, lastNDays);
+		return events;
+	}
 	
 	private List<ActivityEvent> getActivityEventsForCertifications(Long id, Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -412,6 +444,14 @@ public class ActivityController {
 		return events;
 	}
 	
+	private List<ActivityEvent> getActivityEventsForATLs(Integer lastNDays) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ATL;
+		events = getActivityEventsForConcept(concept, lastNDays);
+		
+		return events;
+	}
 	
 	private List<ActivityEvent> getActivityEventsForCertifications(Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -486,10 +526,6 @@ public class ActivityController {
 		return events;
 	}
 	
-	
-	
-	
-	
 	private List<ActivityEvent> getActivityEventsForACBs() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = null;
@@ -499,6 +535,14 @@ public class ActivityController {
 		return events;
 	}
 	
+	private List<ActivityEvent> getActivityEventsForATLs() throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ATL;
+		events = getActivityEventsForConcept(concept);
+		
+		return events;
+	}
 	
 	private List<ActivityEvent> getActivityEventsForCertifications() throws JsonParseException, IOException{
 		

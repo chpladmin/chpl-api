@@ -163,6 +163,33 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		//report file location
 		pendingCertifiedProduct.setReportFileLocation(getRecord().get(colIndex++));
 		
+		//the three new (optional) fields
+		if(getHeading().size() == CertifiedProductUploadHandlerFactoryImpl.NUM_FIELDS_2014_EXTENDED) {
+			pendingCertifiedProduct.setIcs(getRecord().get(colIndex++));
+			
+			String sedData = getRecord().get(colIndex++);
+			if(!StringUtils.isEmpty(sedData)) {
+				sedData = sedData.trim();
+				if(sedData.equalsIgnoreCase("TRUE") || sedData.equals("1")) {
+					pendingCertifiedProduct.setSedTesting(Boolean.TRUE);
+				}
+			}
+			if(pendingCertifiedProduct.getSedTesting() == null) {
+				pendingCertifiedProduct.setSedTesting(Boolean.FALSE);
+			}
+			
+			String qmsData = getRecord().get(colIndex++);
+			if(!StringUtils.isEmpty(qmsData)) {
+				qmsData = qmsData.trim();
+				if(qmsData.equalsIgnoreCase("TRUE") || qmsData.equals("1")) {
+					pendingCertifiedProduct.setQmsTesting(Boolean.TRUE);
+				}
+			}
+			if(pendingCertifiedProduct.getQmsTesting() == null) {
+				pendingCertifiedProduct.setQmsTesting(Boolean.FALSE);
+			}
+		}
+		
 		//skip 2011 certifications
 		colIndex += 45;
 		

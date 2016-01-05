@@ -33,7 +33,7 @@ public interface CertificationBodyManager {
 	
 	
 	public List<CertificationBodyDTO> getAllForUser();
-	
+	public List<CertificationBodyDTO> getAll();
 
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
 	public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);

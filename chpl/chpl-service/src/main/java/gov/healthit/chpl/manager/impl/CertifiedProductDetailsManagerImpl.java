@@ -1,5 +1,15 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
@@ -19,26 +29,11 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.web.controller.SearchViewController;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Service
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
@@ -99,7 +94,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		if(dto.getYear().equals("2011") || dto.getYear().equals("2014")) {
 			searchDetails.setChplProductNumber(dto.getChplProductNumber());
 		} else {
-			searchDetails.setChplProductNumber("ATL." + dto.getCertificationBodyCode() + "." + 
+			searchDetails.setChplProductNumber(dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
 				dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 				"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 				"." + dto.getCertifiedDateCode());
@@ -110,6 +105,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			
 		searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId());
 		searchDetails.getCertifyingBody().put("name", dto.getCertificationBodyName());
+		searchDetails.getCertifyingBody().put("code", dto.getCertificationBodyCode());
 					
 		searchDetails.getClassificationType().put("id", dto.getProductClassificationTypeId());
 		searchDetails.getClassificationType().put("name", dto.getProductClassificationName());
@@ -124,15 +120,27 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.getProduct().put("versionId",dto.getProductVersionId());
 		searchDetails.getProduct().put("version", dto.getProductVersion());
 				
-		searchDetails.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
 		searchDetails.setReportFileLocation(dto.getReportFileLocation());
 		searchDetails.setTestingLabId(dto.getTestingLabId());
+		searchDetails.setTestingLabName(dto.getTestingLabName());
 		
 		searchDetails.getVendor().put("id", dto.getVendorId());
 		searchDetails.getVendor().put("name", dto.getVendorName());
+		searchDetails.getVendor().put("code", dto.getVendorCode());
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
 		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());
+		searchDetails.setApiDocumentation(dto.getApiDocumentation());
+		searchDetails.setIcs(dto.getIcs());
+		searchDetails.setSedTesting(dto.getSedTesting());
+		searchDetails.setQmsTesting(dto.getQmsTesting());
+		
+		if(dto.getTransparencyAttestation() == null) {
+			searchDetails.setTransparencyAttestation(Boolean.FALSE);
+		} else {
+			searchDetails.setTransparencyAttestation(dto.getTransparencyAttestation());
+		}
+		searchDetails.setTermsOfUse(dto.getTermsOfUse());
 		searchDetails.setLastModifiedDate(dto.getLastModifiedDate().getTime());
 		
 		searchDetails.setCountCerts(dto.getCountCertifications());

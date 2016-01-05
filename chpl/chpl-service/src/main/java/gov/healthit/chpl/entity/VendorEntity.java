@@ -40,7 +40,7 @@ public class VendorEntity implements Cloneable, Serializable {
 	@Column( name = "vendor_id", nullable = false  )
 	private Long id;
 	
-	@Column(name = "vendor_code")
+	@Column(name = "vendor_code", insertable=false, updatable = false)
 	private String vendorCode;
 	
 	@Column(name = "name" )
@@ -73,7 +73,7 @@ public class VendorEntity implements Cloneable, Serializable {
 	@NotNull
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-
+ 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id.vendorIdVendor"  )
 	@Basic( optional = false )
 	@Column( name = "vendor_id", nullable = false  )

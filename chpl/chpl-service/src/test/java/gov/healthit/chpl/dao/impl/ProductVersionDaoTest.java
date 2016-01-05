@@ -50,7 +50,7 @@ public class ProductVersionDaoTest extends TestCase {
 	public void getAllProductVersions() {
 		List<ProductVersionDTO> results = versionDao.findAll();
 		assertNotNull(results);
-		assertEquals(8, results.size());
+		assertEquals(9, results.size());
 	}
 
 	@Test

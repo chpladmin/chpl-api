@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.oxm.Marshaller;
+import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.MultipartResolver;
@@ -49,6 +51,18 @@ public class CHPLConfig {
 			props = new Properties();
 			props.load(in);
 		}
+	}
+	
+	@Bean
+	public Properties properties() {
+		if(props == null) {
+			try {
+				loadProperties();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return props;
 	}
 	
 	@Bean
@@ -95,6 +109,12 @@ public class CHPLConfig {
 	public APIKeyAuthenticationFilter apiKeyAuthenticationFilter()
 	{
 		return new APIKeyAuthenticationFilter(apiKeyManager);
+	}
+	
+	@Bean
+	public Marshaller marshaller()
+	{
+		return new CastorMarshaller();
 	}
 	
 }
