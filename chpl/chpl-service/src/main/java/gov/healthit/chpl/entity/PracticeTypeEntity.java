@@ -1,20 +1,15 @@
 package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.WeakHashMap;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.hibernate.proxy.HibernateProxy;
 
 
 /** 
@@ -33,10 +28,9 @@ public class PracticeTypeEntity implements Serializable {
 
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "practiceTypePractice_type_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "practice_type_id", nullable = false  )
-	@SequenceGenerator(name = "practiceTypePractice_type_idGenerator", sequenceName = "openchpl.openchpl.practice_type_practice_type_id_seq", schema = "openchpl", catalog = "openchpl")
 	private Long id;
 	
 	@Basic( optional = false )

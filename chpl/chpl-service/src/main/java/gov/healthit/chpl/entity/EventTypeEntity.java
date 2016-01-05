@@ -21,10 +21,9 @@ public class EventTypeEntity implements Serializable {
 
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eventTypeEvent_type_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "event_type_id", nullable = false  )
-	@SequenceGenerator(name = "eventTypeEvent_type_idGenerator", sequenceName = "event_type_event_type_id_seq")
 	private Long id;
 	
 	@Basic( optional = false )

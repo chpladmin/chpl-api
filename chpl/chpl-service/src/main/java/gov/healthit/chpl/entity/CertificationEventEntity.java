@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 
@@ -21,10 +20,9 @@ public class CertificationEventEntity implements Cloneable, Serializable {
 	private static final long serialVersionUID = 4174889617079658144L;
 
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificationEventCertification_event_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "certification_event_id", nullable = false  )
-	@SequenceGenerator(name = "certificationEventCertification_event_idGenerator", sequenceName = "certification_event_certification_event_id_seq")
 	private Long id;
 	
 	

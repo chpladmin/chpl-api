@@ -171,8 +171,8 @@ public class ActivityDaoTest extends TestCase {
 	@Test
 	@Transactional
 	public void testGetById() throws EntityRetrievalException{
-		ActivityDTO dto = activityDAO.getById(1L);
-		assertEquals((Long) dto.getId(),(Long) 1L);
+		ActivityDTO dto = activityDAO.getById(-1L);
+		assertEquals((long) dto.getId(), -1L);
 		
 	}
 	

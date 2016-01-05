@@ -8,6 +8,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 import java.util.List;
 
@@ -49,11 +50,17 @@ public class CertifiedProductDaoTest {
 
 	@Test
 	public void getAllCertifiedProducts() {
-		List<CertifiedProductDTO> results = productDao.findAll();
+		List<CertifiedProductDetailsDTO> results = productDao.findAll();
 		assertNotNull(results);
 		assertEquals(3, results.size());
 	}
 
+	@Test
+	public void getLargedChplNumber() {
+		String largest = productDao.getLargestChplNumber();
+		assertEquals("CHP-024052", largest);
+	}
+	
 	@Test
 	public void getById() {
 		Long productId = 1L;
@@ -70,8 +77,8 @@ public class CertifiedProductDaoTest {
 	@Test
 	public void getProductsByVersion() {
 		Long versionId = 1L;
-		List<CertifiedProductDTO> products = null;
-		products = productDao.getByVersionId(versionId);
+		List<CertifiedProductDetailsDTO> products = null;
+		products = productDao.getDetailsByVersionId(versionId);
 		assertNotNull(products);
 		assertEquals(1, products.size());
 	}

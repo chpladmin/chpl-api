@@ -17,6 +17,7 @@ public class SearchRequest {
 	String productClassification = null;
 	String practiceType = null;
 	String visibleOnCHPL = "YES";
+	String hasCAP = "BOTH";
 	String orderBy = "product";
 	Boolean sortDescending = false;
 	Integer pageNumber = 0;
@@ -103,6 +104,12 @@ public class SearchRequest {
 	}
 	public void setVisibleOnCHPL(String visibleOnCHPL) {
 		this.visibleOnCHPL = visibleOnCHPL;
+	}
+	public String getHasCAP() {
+		return hasCAP;
+	}
+	public void setHasCAP(String hasCAP) {
+		this.hasCAP = hasCAP;
 	}
 	public Integer getPageNumber() {
 		return pageNumber;

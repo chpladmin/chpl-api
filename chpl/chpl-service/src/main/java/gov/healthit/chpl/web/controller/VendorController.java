@@ -77,6 +77,7 @@ public class VendorController {
 			//merge these vendors into one 
 			// - create a new vendor with the rest of the passed in information
 			VendorDTO toCreate = new VendorDTO();
+			toCreate.setVendorCode(vendorInfo.getVendor().getVendorCode());
 			toCreate.setName(vendorInfo.getVendor().getName());
 			toCreate.setWebsite(vendorInfo.getVendor().getWebsite());
 			Address vendorAddress = vendorInfo.getVendor().getAddress();
@@ -94,6 +95,7 @@ public class VendorController {
 		} else if(vendorInfo.getVendorIds().size() == 1) {
 			//update the information for the vendor id supplied in the database
 			VendorDTO toUpdate = new VendorDTO();
+			toUpdate.setVendorCode(vendorInfo.getVendor().getVendorCode());
 			toUpdate.setId(vendorInfo.getVendorIds().get(0));
 			toUpdate.setName(vendorInfo.getVendor().getName());
 			toUpdate.setWebsite(vendorInfo.getVendor().getWebsite());

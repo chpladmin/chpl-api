@@ -22,6 +22,21 @@ public class CertifiedProductDetailsEntity {
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long id;
     
+    @Column(name = "product_code")
+    private String productCode;
+    
+    @Column(name = "version_code")
+    private String versionCode;
+    
+    @Column(name = "ics_code")
+    private String icsCode;
+    
+    @Column(name = "additional_software_code")
+    private String additionalSoftwareCode;
+    
+    @Column(name = "certified_date_code")
+    private String certifiedDateCode;
+    
     @Column(name = "testing_lab_id")
     private Long testingLabId;
     
@@ -67,6 +82,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_body_name")
     private String certificationBodyName;
     
+    @Column(name = "certification_body_code")
+    private String certificationBodyCode;
+    
     @Column(name = "product_classification_name")
     private String productClassificationName;
     
@@ -87,6 +105,9 @@ public class CertifiedProductDetailsEntity {
     
     @Column(name = "vendor_name")
     private String vendorName;
+    
+    @Column(name = "vendor_code")
+    private String vendorCode;
 
     @Column(name = "certification_date")
     private Date certificationDate;
@@ -97,7 +118,10 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "count_cqms")
     private Integer countCqms;
     
-    @Column(name = "visible_on_chpl")
+    @Column(name = "count_corrective_action_plans")
+    private Integer countCorrectiveActionPlans;
+
+	@Column(name = "visible_on_chpl")
     private Boolean visibleOnChpl;
     
     @Column(name = "last_modified_date")
@@ -105,7 +129,7 @@ public class CertifiedProductDetailsEntity {
 
     @Column(name = "privacy_attestation")
 	private Boolean privacyAttestation;
-    
+	 
 	public Long getId() {
 		return id;
 	}
@@ -306,6 +330,14 @@ public class CertifiedProductDetailsEntity {
 		this.countCqms = countCqms;
 	}
 	
+    public Integer getCountCorrectiveActionPlans() {
+		return countCorrectiveActionPlans;
+	}
+
+	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
+		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
+	}
+	
 	public Boolean getVisibleOnChpl() {
 		return visibleOnChpl;
 	}
@@ -337,5 +369,84 @@ public class CertifiedProductDetailsEntity {
 	public void setPrivacyAttestation(Boolean privacyAttestation) {
 		this.privacyAttestation = privacyAttestation;
 	}
-	
+
+//	public Set<CertificationResultDetailsEntity> getCertResults() {
+//		return certResults;
+//	}
+//
+//	public void setCertResults(Set<CertificationResultDetailsEntity> certResults) {
+//		this.certResults = certResults;
+//	}
+//
+//	public Set<CQMResultDetailsEntity> getCqmResults() {
+//		return cqmResults;
+//	}
+//
+//	public void setCqmResults(Set<CQMResultDetailsEntity> cqmResults) {
+//		this.cqmResults = cqmResults;
+//	}
+//
+//	public Set<AdditionalSoftwareEntity> getAdditionalSoftware() {
+//		return additionalSoftware;
+//	}
+//
+//	public void setAdditionalSoftware(Set<AdditionalSoftwareEntity> additionalSoftware) {
+//		this.additionalSoftware = additionalSoftware;
+//	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getVersionCode() {
+		return versionCode;
+	}
+
+	public void setVersionCode(String versionCode) {
+		this.versionCode = versionCode;
+	}
+
+	public String getAdditionalSoftwareCode() {
+		return additionalSoftwareCode;
+	}
+
+	public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+		this.additionalSoftwareCode = additionalSoftwareCode;
+	}
+
+	public String getCertifiedDateCode() {
+		return certifiedDateCode;
+	}
+
+	public void setCertifiedDateCode(String certifiedDateCode) {
+		this.certifiedDateCode = certifiedDateCode;
+	}
+
+	public String getCertificationBodyCode() {
+		return certificationBodyCode;
+	}
+
+	public void setCertificationBodyCode(String certificationBodyCode) {
+		this.certificationBodyCode = certificationBodyCode;
+	}
+
+	public String getVendorCode() {
+		return vendorCode;
+	}
+
+	public void setVendorCode(String vendorCode) {
+		this.vendorCode = vendorCode;
+	}
+
+	public String getIcsCode() {
+		return icsCode;
+	}
+
+	public void setIcsCode(String icsCode) {
+		this.icsCode = icsCode;
+	}	
 }

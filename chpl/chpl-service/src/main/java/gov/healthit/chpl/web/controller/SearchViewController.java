@@ -1,20 +1,31 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductDownloadDetails;
+import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +49,11 @@ public class SearchViewController {
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
 	
+	@Autowired
+	private CertifiedProductManager cpManager;
+	
+	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
+
 	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
@@ -46,9 +62,35 @@ public class SearchViewController {
 		CertifiedProductSearchDetails product = certifiedProductDetailsManager.getCertifiedProductDetails(id);
 		return product;
 	}
+
+	@RequestMapping(value="/download", method=RequestMethod.GET,
+			produces="application/xml")
+	public ResponseEntity<CertifiedProductDownloadResponse> downloadSome(
+			@RequestParam(value ="numRecords", defaultValue = "10", required = false) int numRecords) throws EntityRetrievalException {
+		List<CertifiedProductDTO> someCertifiedProducts = new ArrayList<CertifiedProductDTO>();
+		
+		for(int i = 0; i < numRecords; i++) {
+			someCertifiedProducts.add(cpManager.getById(new Long(i+1)));
+		}
+		
+		CertifiedProductDownloadResponse result = new CertifiedProductDownloadResponse();
+		for(CertifiedProductDTO cp : someCertifiedProducts) {
+			try {
+				//CertifiedProductDownloadDetails details = certifiedProductDetailsManager.getCertifiedProductDownloadDetails(cp.getId());
+				CertifiedProductDownloadDetails details = certifiedProductDetailsManager.getCertifiedProductDownloadDetails(cp.getId());
+				result.getProducts().add(details);
+			} catch(EntityRetrievalException ex) {
+				logger.error("Could not certified product details for certified product " + cp.getId());
+			}
+		}
+		
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentDispositionFormData("attachment", "certified_products.xml");
+	    return new ResponseEntity<CertifiedProductDownloadResponse>(result, responseHeaders, HttpStatus.OK);
+	}
 	
 	@RequestMapping(value="/search", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
+			produces={"application/json; charset=utf-8", "application/xml"})
 	public @ResponseBody SearchResponse simpleSearch(
 			@RequestParam("searchTerm") String searchTerm, 
 			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 

@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -20,16 +19,18 @@ public class CertificationBodyEntity {
 	
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certification_body_id_generator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "certification_body_id", nullable = false  )
-	@SequenceGenerator(name = "certification_body_id_generator", sequenceName = "certification_body_certification_body_id_seq")
 	private Long id;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "address_id", unique=true, nullable = true)
 	private AddressEntity address;
+	
+	@Column(name = "acb_code")
+	private String acbCode;
 	
 	@Column(name="name")
 	private String name;
@@ -117,6 +118,14 @@ public class CertificationBodyEntity {
 
 	public void setAddress(AddressEntity address) {
 		this.address = address;
+	}
+
+	public String getAcbCode() {
+		return acbCode;
+	}
+
+	public void setAcbCode(String acbCode) {
+		this.acbCode = acbCode;
 	}
 	
 }

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain;
 
+import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 
 public class AdditionalSoftware {
 
@@ -8,6 +9,15 @@ public class AdditionalSoftware {
 	private String justification;
 	private String name;
 	private String version;
+	
+	public AdditionalSoftware() {}
+	public AdditionalSoftware(AdditionalSoftwareDTO additionalSoftwareDTO) {
+		this.setAdditionalSoftwareid(additionalSoftwareDTO.getId());
+		this.setCertifiedProductId(additionalSoftwareDTO.getCertifiedProductId());
+		this.setJustification(additionalSoftwareDTO.getJustification());
+		this.setName(additionalSoftwareDTO.getName());
+		this.setVersion(additionalSoftwareDTO.getVersion());
+	}
 	
 	public Long getAdditionalSoftwareid() {
 		return additionalSoftwareid;

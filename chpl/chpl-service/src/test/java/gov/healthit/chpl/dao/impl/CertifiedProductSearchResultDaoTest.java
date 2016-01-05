@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -20,6 +21,7 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,6 +36,15 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	@Autowired
 	private CertifiedProductSearchResultDAO searchResultDAO;
 	
+	
+//	@Test
+//	public void testGetDownloadResults() throws EntityRetrievalException {
+//		CertifiedProductDetailsDTO result = searchResultDAO.getAllDetailsById(1L);
+//		assertNotNull(result);
+//		assertNotNull(result.getCqmResults());
+//		assertNotNull(result.getCertResults());
+//		assertEquals(3, result.getCqmResults().size());
+//	}
 	
 	@Test
 	@Transactional
@@ -125,7 +136,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 	}
 	
-	
 	@Test
 	@Transactional
 	public void testSearchProductClassificationType(){
@@ -157,7 +167,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 	}
 	
-	
 	@Test
 	@Transactional
 	public void testSearchVisibleOnCHPL(){
@@ -175,6 +184,23 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	public void testSearchHasCAP(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setHasCAP("YES");
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
+		
+		for (CertifiedProductDetailsDTO dto : products ){
+			assertTrue(dto.getCountCorrectiveActionPlans() > 0);
+		}
+		
+	}
+	
+	
+	
+	@Test
+	@Transactional
 	public void testSearch(){
 		
 		SearchRequest searchRequest = new SearchRequest();
@@ -188,6 +214,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setProductClassification("Complete EHR");
 		searchRequest.setPracticeType("Ambulatory");
 		searchRequest.setVisibleOnCHPL("YES");
+		searchRequest.setHasCAP("BOTH");
 		searchRequest.setOrderBy("product");
 		searchRequest.setSortDescending(true);
 		searchRequest.setPageNumber(0);
@@ -205,10 +232,10 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		try {
 			CertifiedProductDetailsDTO product = searchResultDAO.getById(1L);
 			
-			assertEquals(1, product.getCertificationBodyId().intValue());
+			assertEquals(-1, product.getCertificationBodyId().intValue());
 			assertEquals("InfoGard", product.getCertificationBodyName());
 			assertEquals("CHP-024050",product.getChplProductNumber());
-			assertEquals(1, product.getCertificationEditionId().intValue());
+			assertEquals(2, product.getCertificationEditionId().intValue());
 			assertEquals("Test Vendor 1", product.getVendorName());
 			assertEquals(4, product.getCountCertifications().intValue());
 			assertEquals(0, product.getCountCqms().intValue());

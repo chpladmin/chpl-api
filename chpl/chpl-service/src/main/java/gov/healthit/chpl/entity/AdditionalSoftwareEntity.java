@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -16,10 +15,9 @@ import javax.persistence.Table;
 public class AdditionalSoftwareEntity {
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "additionalSoftwareAdditional_software_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "additional_software_id", nullable = false  )
-	@SequenceGenerator(name = "additionalSoftwareAdditional_software_idGenerator", sequenceName = "additional_software_additional_software_id_seq")
 	private Long id;
 	
 	@Basic( optional = false )
