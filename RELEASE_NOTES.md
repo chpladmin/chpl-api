@@ -1,7 +1,7 @@
 # Release Notes
 
-## Next Version
-_Date TBD_
+## Version 0.1.0
+_5 January 2016_
 
 Features added or Updated
 * Added terms of use and api documentation to the certified product apis.
