@@ -38,7 +38,9 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
+import io.swagger.annotations.Api;
 
+@Api(value="acbs")
 @RestController
 @RequestMapping("/acbs")
 public class CertificationBodyController {

@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ApiKeyManager;
+import io.swagger.annotations.Api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonParseException;
 
+@Api(value = "activity")
 @RestController
 @RequestMapping("/activity")
 public class ActivityController {

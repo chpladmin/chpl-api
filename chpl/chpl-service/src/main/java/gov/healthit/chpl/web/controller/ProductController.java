@@ -24,7 +24,9 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.results.ProductResults;
+import io.swagger.annotations.Api;
 
+@Api(value="products")
 @RestController
 @RequestMapping("/products")
 public class ProductController {

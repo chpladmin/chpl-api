@@ -31,7 +31,10 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.VendorManager;
 import gov.healthit.chpl.web.controller.results.VendorResults;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.Authorization;
 
+@Api(value = "vendors")
 @RestController
 @RequestMapping("/vendors")
 public class VendorController {
