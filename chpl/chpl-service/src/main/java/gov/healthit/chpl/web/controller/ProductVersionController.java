@@ -23,7 +23,9 @@ import gov.healthit.chpl.domain.UpdateVersionsRequest;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import io.swagger.annotations.Api;
 
+@Api(value="versions")
 @RestController
 @RequestMapping("/versions")
 public class ProductVersionController {

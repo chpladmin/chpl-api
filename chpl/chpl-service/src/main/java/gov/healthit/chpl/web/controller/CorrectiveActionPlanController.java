@@ -36,7 +36,9 @@ import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CorrectiveActionPlanManager;
+import io.swagger.annotations.Api;
 
+@Api(value="corrective-action-plan")
 @RestController
 @RequestMapping("/corrective_action_plan")
 public class CorrectiveActionPlanController {

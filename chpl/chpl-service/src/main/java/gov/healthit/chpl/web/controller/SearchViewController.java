@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +31,14 @@ import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.Tag;
 
+@Api
 @RestController
 public class SearchViewController {
 	
-	@Autowired Properties properties;
+	@Autowired Environment env;
 	
 	@Autowired
 	private SearchMenuManager searchMenuManager;
@@ -48,7 +52,6 @@ public class SearchViewController {
 	
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
-	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws EntityRetrievalException{
@@ -60,7 +63,7 @@ public class SearchViewController {
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="application/xml")
 	public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {	
-		String downloadFileLocation = properties.getProperty("downloadFolderPath");
+		String downloadFileLocation = env.getProperty("downloadFolderPath");
 		File downloadFile = new File(downloadFileLocation);
 		if(!downloadFile.exists() || !downloadFile.canRead()) {
 			response.getWriter().write("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
