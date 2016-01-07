@@ -144,13 +144,13 @@ public class ApiKeyController {
 	
 	private void sendRegistrationEmail(String email, String orgName, String apiKey) throws AddressException, MessagingException{
 		
-		String subject = "OpenDataCHPL Api Key";
+		String subject = "OpenDataCHPL API Key";
 		
-		String htmlMessage = "<p>Thank you registering to use the Open Data CHPL API. Your unique API key is: " +apiKey+
-				" Each time you access data through our open APIs, you'll need to use this unique key <br/>" +
-				"For more information about how to use the API, please visit opendatachpl.org. <br/> "+
-				" -Open Data CHPL Team "+
-				"</p>";
+		String htmlMessage = "<p>Thank you registering to use the Open Data CHPL API. "
+				+ "Your unique API key is: " + apiKey + " .</p>" +
+				"<p>Each time you access data through our open APIs, you'll need to use this unique key. " +
+				" For more information about how to use the API, please visit opendatachpl.org. </p><br/>"+
+				" - Open Data CHPL Team";
 		
 		SendMailUtil mailUtil = new SendMailUtil();
 		mailUtil.sendEmail(email, subject, htmlMessage);
