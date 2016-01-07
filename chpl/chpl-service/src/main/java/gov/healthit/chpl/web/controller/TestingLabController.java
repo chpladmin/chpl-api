@@ -34,13 +34,13 @@ import gov.healthit.chpl.domain.PermittedUser;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.UpdateUserAndAtlRequest;
 import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.manager.TestingLabManager;
-import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
+import io.swagger.annotations.Api;
 
+@Api(value="atls")
 @RestController
 @RequestMapping("/atls")
 public class TestingLabController {

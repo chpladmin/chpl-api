@@ -53,7 +53,9 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
+import io.swagger.annotations.Api;
 
+@Api(value="certified-products")
 @RestController
 @RequestMapping("/certified_products")
 public class CertifiedProductController {
