@@ -16,8 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
@@ -28,7 +26,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableWebSecurity
 @PropertySource("classpath:environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
-public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
+public class CHPLConfig implements EnvironmentAware {
 	
 	@Autowired private ApiKeyManager apiKeyManager;
 	
@@ -38,15 +36,6 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     public void setEnvironment(final Environment environment) {
         this.env = environment;
     }
-	
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	    registry.addResourceHandler("swagger-ui.html")
-	      .addResourceLocations("classpath:/META-INF/resources/");
-	 
-	    registry.addResourceHandler("/webjars/**")
-	      .addResourceLocations("classpath:/META-INF/resources/webjars/");
-	}
 	
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
