@@ -117,6 +117,10 @@ public class CertifiedProductController {
 		throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, 
 		JsonProcessingException, ValidationException {
 		
+		//make sure the ui didn't send any error or warning messages back
+		updateRequest.setErrorMessages(new ArrayList<String>());
+		updateRequest.setWarningMessages(new ArrayList<String>());
+		//validate
 		CertifiedProductValidator validator = validatorFactory.getValidator(updateRequest);
 		if(validator != null) {
 			validator.validate(updateRequest);
