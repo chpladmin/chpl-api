@@ -185,6 +185,7 @@ public class CertifiedProductController {
 		cpManager.updateAdditionalSoftware(acbId, toUpdate, softwareDtos);
 		
 		//update product certifications
+		/*
 		Map<CertificationCriterionDTO, Boolean> newCerts = new HashMap<CertificationCriterionDTO, Boolean>();
 		for(CertificationResult certResult : updateRequest.getCertificationResults()) {
 			CertificationCriterionDTO newCert = new CertificationCriterionDTO();
@@ -192,7 +193,8 @@ public class CertifiedProductController {
 			newCert.setTitle(certResult.getTitle());
 			newCerts.put(newCert, certResult.isSuccess());
 		}
-		cpManager.updateCertifications(acbId, toUpdate, newCerts);
+		*/
+		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
 		
 		//update product cqms
 		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();

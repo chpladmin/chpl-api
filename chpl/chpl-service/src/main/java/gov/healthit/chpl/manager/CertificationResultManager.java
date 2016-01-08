@@ -1,23 +1,27 @@
-package gov.healthit.chpl.dao;
-
-import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
+package gov.healthit.chpl.manager;
 
 import java.util.List;
 
-public interface CertificationResultDAO {
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
+import gov.healthit.chpl.dto.CertificationResultDTO;
+
+public interface CertificationResultManager {
 	
-	public CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException;
-	public CertificationResultDTO update(CertificationResultDTO result) throws EntityRetrievalException;
+	public void create(CertificationResultDTO result) throws EntityCreationException;
+	public void update(CertificationResultDTO result) throws EntityRetrievalException, EntityCreationException;
 	public void delete(Long resultId);
 	public void deleteByCertifiedProductId(Long certifiedProductId);
-	public List<CertificationResultDTO> findAll();
-	public List<CertificationResultDTO> findByCertifiedProductId(Long certifiedProductId);
+	public List<CertificationResultDTO> getAll();
 	public CertificationResultDTO getById(Long resultId) throws EntityRetrievalException;
 	
 	public CertificationResultAdditionalSoftwareMapDTO createAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto) throws EntityCreationException;
 	public CertificationResultAdditionalSoftwareMapDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto);
 	public void deleteAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId);
 	public CertificationResultAdditionalSoftwareMapDTO getAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId);
+	public List<CertificationResultAdditionalSoftwareMapDTO> getAdditionalSoftwareMappingsForCertificationResult(
+			Long certificationResultId);
+
 	
 }

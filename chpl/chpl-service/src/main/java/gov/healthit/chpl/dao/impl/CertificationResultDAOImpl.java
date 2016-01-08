@@ -8,9 +8,11 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -22,8 +24,13 @@ import gov.healthit.chpl.entity.CertificationResultEntity;
 @Repository(value="certificationResultDAO")
 public class CertificationResultDAOImpl extends BaseDAOImpl implements CertificationResultDAO {
 
+	
+	@Autowired
+	private AdditionalSoftwareDAO additionalSoftwareDAO;
+	
+	
 	@Override
-	public void create(CertificationResultDTO result) throws EntityCreationException {
+	public CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException {
 		
 		CertificationResultEntity entity = null;
 		try {
@@ -56,12 +63,15 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			entity.setCreationDate(result.getCreationDate());
 			entity.setDeleted(false);
 			
-			create(entity);	
+			create(entity);
 		}
+		
+		return new CertificationResultDTO(entity);
+		
 	}
 
 	@Override
-	public void update(CertificationResultDTO result) throws EntityRetrievalException {
+	public CertificationResultDTO update(CertificationResultDTO result) throws EntityRetrievalException {
 	
 		CertificationResultEntity entity = getEntityById(result.getId());
 		
@@ -73,7 +83,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		entity.setDeleted(result.getDeleted());
 		entity.setGap(result.getGap());
 		entity.setInherited(result.getInherited());
-		//entity.setLastModifiedDate(result.getLastModifiedDate());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setSedInherited(result.getSedInherited());
 		entity.setSedSuccessful(result.getSedSuccessful());
@@ -81,7 +90,9 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		entity.setTestDataVersionId(result.getTestDataVersionId());
 		entity.setTestProcedureVersionId(result.getTestProcedureVersionId());
 		
-		update(entity);	
+		update(entity);
+		
+		return new CertificationResultDTO(entity);
 	}
 
 	@Override

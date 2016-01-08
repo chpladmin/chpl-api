@@ -461,6 +461,46 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
+	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, List<CertificationResult> certResults)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
+		List<CertificationResultDTO> oldCertificationResults = certDao.findByCertifiedProductId(productDto.getId());
+		
+		for (CertificationResultDTO oldResult : oldCertificationResults){
+			
+			Long certificationCriterionId = oldResult.getCertificationCriterionId();
+			CertificationCriterionDTO criterionDTO = certCriterionDao.getById(certificationCriterionId);
+			
+			//for (Map.Entry<CertificationCriterionDTO, Boolean> certResult : certResults.entrySet()){
+			for (CertificationResult certResult : certResults){
+				if (certResult.getNumber().equals(criterionDTO.getNumber())){	
+					// replace the value of the result
+					oldResult.setSuccessful(certResult.isSuccess());
+					oldResult.setAdditionalSoftware(certResult.getAdditionalSoftware());
+					certDao.update(oldResult);
+					break;
+				}
+			}
+		}
+		
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity() + " were updated." , before , after);
+	}
+	
+	
+	/**
+	 * both successes and failures are passed in
+	 * @throws JsonProcessingException 
+	 */
+	/*
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
 	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
@@ -486,6 +526,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity() + " were updated." , before , after);
 	}
+	*/
 	
 	
 	@Override
