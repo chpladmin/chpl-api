@@ -118,7 +118,7 @@ public class CertificationResultManagerImpl implements
 	
 	@Override
 	public List<CertificationResultAdditionalSoftwareMapDTO> getAdditionalSoftwareMappingsForCertificationResult(Long certificationResultId){
-		
+		return certResultDAO.getCertificationResultAdditionalSoftwareMappings(certificationResultId);
 	}
 	
 	

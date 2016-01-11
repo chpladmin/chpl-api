@@ -478,7 +478,26 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				if (certResult.getNumber().equals(criterionDTO.getNumber())){	
 					// replace the value of the result
 					oldResult.setSuccessful(certResult.isSuccess());
-					oldResult.setAdditionalSoftware(certResult.getAdditionalSoftware());
+					
+					List<AdditionalSoftware> additionalSoftware = certResult.getAdditionalSoftware();
+					List<AdditionalSoftwareDTO> dtos = new ArrayList<AdditionalSoftwareDTO>();
+					
+					for (AdditionalSoftware sw : additionalSoftware){
+						
+						AdditionalSoftwareDTO dto = new AdditionalSoftwareDTO();
+						
+						dto.setId(sw.getId());
+						dto.setCertifiedProductId(sw.getCertifiedProductId());
+						dto.setCertifiedProductSelfId(sw.getCertifiedProductSelf());
+						dto.setJustification(sw.getJustification());
+						dto.setName(sw.getName());
+						dto.setVersion(sw.getVersion());
+						dto.setCreationDate(creationDate);
+						
+						dtos.add(dto);
+					}
+					oldResult.setAdditionalSoftware(dtos);
+					
 					certDao.update(oldResult);
 					break;
 				}

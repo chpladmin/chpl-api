@@ -259,6 +259,22 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		return new CertificationResultAdditionalSoftwareMapDTO(mapping);
 	}
 	
+	@Override
+	public List<CertificationResultAdditionalSoftwareMapDTO> getCertificationResultAdditionalSoftwareMappings(Long certificationResultId){
+		
+		List<CertificationResultAdditionalSoftwareMapEntity> entities = getCertificationResultAdditionalSoftwareMapEntities(certificationResultId);
+		List<CertificationResultAdditionalSoftwareMapDTO> dtos = new ArrayList<CertificationResultAdditionalSoftwareMapDTO>();
+		
+		for (CertificationResultAdditionalSoftwareMapEntity entity : entities){
+			
+			CertificationResultAdditionalSoftwareMapDTO dto = new CertificationResultAdditionalSoftwareMapDTO(entity);
+			dtos.add(dto);	
+		}
+		return dtos;
+	}
+	
+	
+	
 	private CertificationResultAdditionalSoftwareMapEntity getCertificationResultAdditionalSoftwareMap(Long certificationResultId, Long additionalSoftwareId){
 		Query query = entityManager.createQuery( "FROM CertificationResultAdditionalSoftwareMapEntity where "
 				+ "(NOT deleted = true) "
@@ -277,7 +293,21 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		if(result == null) {
 			return null;
 		}
-		return (CertificationResultAdditionalSoftwareMapEntity)result;
+		return (CertificationResultAdditionalSoftwareMapEntity) result;
+	}
+	
+	
+	private List<CertificationResultAdditionalSoftwareMapEntity> getCertificationResultAdditionalSoftwareMapEntities(Long certificationResultId){
+		Query query = entityManager.createQuery( "FROM CertificationResultAdditionalSoftwareMapEntity where "
+				+ "(NOT deleted = true) "
+				+ "AND certification_result_id = :certificationResultId ", CertificationResultAdditionalSoftwareMapEntity.class);
+		query.setParameter("certificationResultId", certificationResultId);
+		
+		List<CertificationResultAdditionalSoftwareMapEntity> result = query.getResultList();
+		if(result == null) {
+			return null;
+		}
+		return result;
 	}
 	
 }

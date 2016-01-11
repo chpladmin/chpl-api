@@ -19,5 +19,7 @@ public interface CertificationResultDAO {
 	public CertificationResultAdditionalSoftwareMapDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto);
 	public void deleteAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId);
 	public CertificationResultAdditionalSoftwareMapDTO getAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId);
+	public List<CertificationResultAdditionalSoftwareMapDTO> getCertificationResultAdditionalSoftwareMappings(
+			Long certificationResultId);
 	
 }

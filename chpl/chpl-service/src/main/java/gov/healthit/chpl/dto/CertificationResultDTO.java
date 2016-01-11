@@ -151,8 +151,8 @@ public class CertificationResultDTO {
 		return additionalSoftware;
 	}
 
-	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
+	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> list) {
+		this.additionalSoftware = list;
 	}
 	
 }
