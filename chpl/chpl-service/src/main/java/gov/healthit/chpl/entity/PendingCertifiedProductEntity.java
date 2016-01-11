@@ -141,6 +141,15 @@ public class PendingCertifiedProductEntity {
     @Column(name = "test_report_url")
     private String reportFileLocation;
     
+	@Column(name = "ics")
+	private String ics;
+	
+	@Column(name = "sed")
+	private Boolean sedTesting;
+	
+	@Column(name = "qms")
+	private Boolean qmsTesting;
+	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
@@ -485,5 +494,29 @@ public class PendingCertifiedProductEntity {
 
 	public void setStatus(Long status) {
 		this.status = status;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}
 }

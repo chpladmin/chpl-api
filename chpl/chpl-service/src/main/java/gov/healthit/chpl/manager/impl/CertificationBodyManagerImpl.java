@@ -282,11 +282,14 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 	
 	@Transactional(readOnly = true)
+	public List<CertificationBodyDTO> getAll() {
+		return certificationBodyDAO.findAll();
+	}
+	
+	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<CertificationBodyDTO> getAllForUser() {
-		
 		return certificationBodyDAO.findAll();
-		
 	}
 
 	@Transactional(readOnly = true)

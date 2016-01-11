@@ -4,7 +4,7 @@ package gov.healthit.chpl.domain;
 public class UpdateUserAndAcbRequest {
 	private Long acbId;
 	private Long userId;
-	private CertificationBodyPermission authority;
+	private ChplPermission authority;
 	
 	public Long getAcbId() {
 		return acbId;
@@ -18,10 +18,10 @@ public class UpdateUserAndAcbRequest {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	public CertificationBodyPermission getAuthority() {
+	public ChplPermission getAuthority() {
 		return authority;
 	}
-	public void setAuthority(CertificationBodyPermission authority) {
+	public void setAuthority(ChplPermission authority) {
 		this.authority = authority;
 	}
 	

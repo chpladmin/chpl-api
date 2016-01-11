@@ -15,6 +15,7 @@ public class VendorDTO {
 	private Long lastModifiedUser;
 	private String name;
 	private String website;
+	private Boolean transparencyAttestation = null;
 	
 	public VendorDTO(){}
 	
@@ -91,6 +92,14 @@ public class VendorDTO {
 
 	public void setVendorCode(String vendorCode) {
 		this.vendorCode = vendorCode;
+	}
+
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
 	}
 	
 }

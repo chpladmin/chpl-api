@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
 import org.apache.log4j.LogManager;
@@ -17,9 +19,11 @@ import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.VendorDAO;
-import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.VendorACBMapDTO;
 import gov.healthit.chpl.dto.VendorDTO;
-import gov.healthit.chpl.entity.AddressEntity;
+import gov.healthit.chpl.entity.CertifiedProductEntity;
+import gov.healthit.chpl.entity.VendorACBMapEntity;
 import gov.healthit.chpl.entity.VendorEntity;
 
 @Repository("vendorDAO")
@@ -84,6 +88,21 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	}
 
 	@Override
+	public VendorACBMapDTO createTransparencyMapping(VendorACBMapDTO dto) {
+		VendorACBMapEntity mapping = new VendorACBMapEntity();
+		mapping.setVendorId(dto.getVendorId());
+		mapping.setCertificationBodyId(dto.getAcbId());
+		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
+		mapping.setCreationDate(new Date());
+		mapping.setDeleted(false);
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		return new VendorACBMapDTO(mapping);
+	}
+	
+	@Override
 	@Transactional
 	public VendorEntity update(VendorDTO dto) throws EntityRetrievalException {
 		VendorEntity entity = this.getEntityById(dto.getId());
@@ -130,6 +149,21 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	}
 
 	@Override
+	public VendorACBMapDTO updateTransparencyMapping(VendorACBMapDTO dto) {
+		VendorACBMapEntity mapping = getTransparencyMappingEntity(dto.getVendorId(), dto.getAcbId());
+		if(mapping == null) {
+			return null;
+		}
+		
+		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		return new VendorACBMapDTO(mapping);
+	}
+	
+	@Override
 	@Transactional
 	public void delete(Long id) throws EntityRetrievalException {
 		VendorEntity toDelete = getEntityById(id);
@@ -139,6 +173,18 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 			toDelete.setLastModifiedDate(new Date());
 			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
 			update(toDelete);
+		}
+	}
+	
+	@Override
+	public void deleteTransparencyMapping(Long vendorId, Long acbId) {
+		VendorACBMapEntity toDelete = getTransparencyMappingEntity(vendorId, acbId);
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(toDelete);
+			entityManager.flush();
 		}
 	}
 	
@@ -155,6 +201,15 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		return dtos;
 	}
 
+	@Override
+	public VendorACBMapDTO getTransparencyMapping(Long vendorId, Long acbId) {
+		VendorACBMapEntity mapping = getTransparencyMappingEntity(vendorId, acbId);
+		if(mapping == null) {
+			return null;
+		}
+		return new VendorACBMapDTO(mapping);
+	}
+	
 	@Override
 	public VendorDTO getById(Long id) throws EntityRetrievalException {
 		
@@ -174,6 +229,26 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 			dto = new VendorDTO(entity);
 		}
 		return dto;
+	}
+	
+	public VendorDTO getByCertifiedProduct(CertifiedProductDTO cpDto) throws EntityRetrievalException {
+		if(cpDto == null || cpDto.getProductVersionId() == null) {
+			throw new EntityRetrievalException("Version ID cannot be null!");
+		}
+		Query getVendorByVersionIdQuery = entityManager.createQuery(
+				"FROM ProductVersionEntity pve,"
+				+ "ProductEntity pe, VendorEntity ve " 
+				+ "WHERE (NOT pve.deleted = true) "
+				+ "AND pve.id = :versionId "
+				+ "AND pve.productId = pe.id " 
+				+ "AND ve.id = pe.vendorId ", VendorEntity.class);
+		getVendorByVersionIdQuery.setParameter("versionid", cpDto.getProductVersionId());
+		Object result = getVendorByVersionIdQuery.getSingleResult();
+		if(result == null) {
+			return null;
+		}
+		VendorEntity ve = (VendorEntity)result;
+		return new VendorDTO(ve);
 	}
 	
 	private void create(VendorEntity entity) {
@@ -224,5 +299,26 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		}
 
 		return entity;
+	}
+	
+	private VendorACBMapEntity getTransparencyMappingEntity(Long vendorId, Long acbId) {
+		Query query = entityManager.createQuery( "FROM VendorACBMapEntity where "
+				+ "(NOT deleted = true) "
+				+ "AND vendorId = :vendorId "
+				+ "AND certificationBodyId = :acbId", VendorACBMapEntity.class);
+		query.setParameter("vendorId", vendorId);
+		query.setParameter("acbId", acbId);
+		
+		Object result = null;
+		try {
+			result = query.getSingleResult();
+		} 
+		catch(NoResultException ex) {}
+		catch(NonUniqueResultException ex) {}
+		
+		if(result == null) {
+			return null;
+		}
+		return (VendorACBMapEntity)result;
 	}
 }

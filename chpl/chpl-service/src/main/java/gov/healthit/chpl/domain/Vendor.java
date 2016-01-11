@@ -9,6 +9,7 @@ public class Vendor {
 	private String website;
 	private Address address;
 	private String lastModifiedDate;
+	private Boolean transparencyAttestation = null;
 	
 	public Vendor() {}
 	
@@ -21,6 +22,7 @@ public class Vendor {
 			this.address = new Address(dto.getAddress());
 		}
 		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		this.transparencyAttestation = dto.getTransparencyAttestation();
 	}
 	public Long getVendorId() {
 		return vendorId;
@@ -61,5 +63,13 @@ public class Vendor {
 
 	public void setVendorCode(String vendorCode) {
 		this.vendorCode = vendorCode;
+	}
+
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
 	}
 }

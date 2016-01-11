@@ -35,8 +35,10 @@ import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
+import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Service
@@ -56,6 +58,7 @@ public class InvitationManagerImpl implements InvitationManager {
 	
 	@Autowired private UserManager userManager;
 	@Autowired private CertificationBodyManager acbManager;
+	@Autowired private TestingLabManager atlManager;
 	
 	private static final Logger logger = LogManager.getLogger(InvitationManagerImpl.class);
 
@@ -76,7 +79,7 @@ public class InvitationManagerImpl implements InvitationManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')")
-	public InvitationDTO inviteWithAcbRole(String emailAddress, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
+	public InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
 	{
 		InvitationDTO dto = new InvitationDTO();
 		dto.setEmail(emailAddress);
@@ -102,6 +105,43 @@ public class InvitationManagerImpl implements InvitationManager {
 		return createInvitation(dto, permissions);
 	}
 
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "(hasRole('ROLE_ATL_ADMIN') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
+	public InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
+	{
+		InvitationDTO dto = new InvitationDTO();
+		dto.setEmail(emailAddress);
+		dto.setTestingLabId(atlId);
+		//could be multiple invitations for the same email so add the time to make it unique
+		Date currTime = new Date();
+		dto.setInviteToken(Util.md5(emailAddress + currTime.getTime()));
+	
+		return createInvitation(dto, permissions);
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "("
+			+ "hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
+			+ " and "
+			+ "hasRole('ROLE_ATL_ADMIN') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)"
+			+ ")")
+	public InvitationDTO inviteWithAcbAndAtlAccess(String emailAddress, Long acbId, Long atlId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
+	{
+		InvitationDTO dto = new InvitationDTO();
+		dto.setEmail(emailAddress);
+		dto.setTestingLabId(atlId);
+		dto.setAcbId(acbId);
+		//could be multiple invitations for the same email so add the time to make it unique
+		Date currTime = new Date();
+		dto.setInviteToken(Util.md5(emailAddress + currTime.getTime()));
+	
+		return createInvitation(dto, permissions);
+	}
+	
 	private InvitationDTO createInvitation(InvitationDTO toCreate, List<String> permissions)  
 			throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
 	{
@@ -245,7 +285,14 @@ public class InvitationManagerImpl implements InvitationManager {
 				throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getAcbId());
 			}
 		}
-		
+		TestingLabDTO userAtl = null;
+		if(invitation.getTestingLabId() != null) {
+			userAtl = atlManager.getById(invitation.getTestingLabId());
+			if(userAtl == null) {
+				throw new InvalidArgumentsException("Could not find the testing lab with id " + invitation.getTestingLabId());
+			}
+		}
+
 		//give them permissions
 		if(invitation.getPermissions() != null && invitation.getPermissions().size() > 0) {
 			for(InvitationPermissionDTO permission : invitation.getPermissions()) {
@@ -264,9 +311,13 @@ public class InvitationManagerImpl implements InvitationManager {
 			}
 		}
 		
-		//if they are a acb admin or staff then they need to be given access to the invited acb
+		//give them access to the invited acb
 		if(userAcb != null) {
 			acbManager.addPermission(userAcb, user.getId(), BasePermission.ADMINISTRATION);
+		}
+		//give them access to the invited atl
+		if(userAtl != null) {
+			atlManager.addPermission(userAtl, user.getId(), BasePermission.ADMINISTRATION);
 		}
 	}
 	

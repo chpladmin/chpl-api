@@ -56,6 +56,9 @@ public class PendingCertifiedProductDTO {
 	private List<PendingCertificationCriterionDTO> certificationCriterion;
 	private List<PendingCqmCriterionDTO> cqmCriterion;
 	private Date uploadDate;
+	private String ics;
+	private Boolean sedTesting;
+	private Boolean qmsTesting;
 	
 	public PendingCertifiedProductDTO(){
 		this.errorMessages = new ArrayList<String>();	
@@ -160,7 +163,9 @@ public class PendingCertifiedProductDTO {
 		this.acbCertificationId = details.getAcbCertificationId(); 
 		this.uploadNotes = details.getUploadNotes();
 		this.reportFileLocation = details.getReportFileLocation();
-
+		this.ics = details.getIcs();
+		this.sedTesting = details.getSedTesting();
+		this.qmsTesting = details.getQmsTesting();
 		
 		//this.productClassificationModule = entity.getProductClassificationModule();
 		//this.uploadDate = entity.getCreationDate();
@@ -240,6 +245,9 @@ public class PendingCertifiedProductDTO {
 		this.additionalSoftware = entity.getAdditionalSoftware();
 		this.uploadNotes = entity.getUploadNotes();
 		this.reportFileLocation = entity.getReportFileLocation();
+		this.ics = entity.getIcs();
+		this.sedTesting = entity.getSedTesting();
+		this.qmsTesting = entity.getQmsTesting();
 		this.uploadDate = entity.getCreationDate();
 		
 		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
@@ -547,5 +555,29 @@ public class PendingCertifiedProductDTO {
 
 	public void setWarningMessages(List<String> warningMessages) {
 		this.warningMessages = warningMessages;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}
 }
