@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -72,7 +73,8 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) 
+	public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo,
+			HttpServletRequest request ) 
 			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
 			EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
 		
@@ -90,10 +92,16 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		//get the invitation again to get the new hash
 		invitation = invitationManager.getById(invitation.getId());
 		
+		int port = request.getServerPort();
+		String portStr = ":" + port;
+		if(port == 80 || port == 443) {
+			portStr = "";
+		}
+		
 		//send email for user to confirm email address	
 		String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Open Data CHPL. " +
 					"Please click the link below to activate your account: <br/>" +
-					"http://" + getProps().getProperty("chplServer") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
+					request.getScheme() + "://" + request.getServerName() + portStr + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>The Open Data CHPL Team</p>";
@@ -138,31 +146,45 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			produces="application/json; charset=utf-8")
 	public String authorizeUser(@RequestBody AuthorizeCredentials credentials) 
 			throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
-		if(StringUtils.isEmpty(credentials.getHash()) || StringUtils.isEmpty(credentials.getUserName()) ||
-				StringUtils.isEmpty(credentials.getPassword())) {
-			throw new InvalidArgumentsException("Username, Password, and Token are all required.");
+		if(StringUtils.isEmpty(credentials.getHash())) {
+			throw new InvalidArgumentsException("Invitation hash is required.");
 		}
+		
+		gov.healthit.chpl.auth.user.User loggedInUser = Util.getCurrentUser();
+		if(loggedInUser == null && (StringUtils.isEmpty(credentials.getUserName()) ||
+				StringUtils.isEmpty(credentials.getPassword()))) {
+			throw new InvalidArgumentsException("Username and Password are required since no user is currently logged in.");
+		}
+		
 		InvitationDTO invitation = invitationManager.getByInvitationHash(credentials.getHash());
 		if(invitation == null || invitation.isOlderThan(VALID_CONFIRMATION_LENGTH)) {
 			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
 		}
 		
-		UserDTO userToUpdate = authenticator.getUser(credentials);		
-		if(userToUpdate == null) {
-			throw new UserRetrievalException("The user " + credentials.getUserName() + " could not be authenticated.");
+		String jwtToken = null;
+		if(loggedInUser == null) {
+			UserDTO userToUpdate = authenticator.getUser(credentials);		
+			if(userToUpdate == null) {
+				throw new UserRetrievalException("The user " + credentials.getUserName() + " could not be authenticated.");
+			}
+			invitationManager.updateUserFromInvitation(invitation, userToUpdate);
+			jwtToken = authenticator.getJWT(credentials);
+		} else {
+			//add authorization to the currently logged in user
+			UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
+			invitationManager.updateUserFromInvitation(invitation, userToUpdate);
+			UserDTO updatedUser = userManager.getById(loggedInUser.getId());
+			jwtToken = authenticator.getJWT(updatedUser);
 		}
 		
-		invitationManager.updateUserFromInvitation(invitation, userToUpdate);
-		
-		String jwt = authenticator.getJWT(credentials);
-		String jwtJSON = "{\"token\": \""+jwt+"\"}";
+		String jwtJSON = "{\"token\": \""+jwtToken+"\"}";
 		return jwtJSON;
 	}
 	
 	@RequestMapping(value="/invite", method=RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public UserInvitation inviteUser(@RequestBody UserInvitation invitation) 
+	public UserInvitation inviteUser(@RequestBody UserInvitation invitation, HttpServletRequest request) 
 			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
 			UserPermissionRetrievalException, AddressException, MessagingException {
 		boolean isChplAdmin = false;
@@ -187,12 +209,18 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			}
 		}
 		
+		int port = request.getServerPort();
+		String portStr = ":" + port;
+		if(port == 80 || port == 443) {
+			portStr = "";
+		}
+		
 		//send email		
 		String htmlMessage = "<p>Hi,</p>" +
-				"<p>You've been invited to be an Administrator on the ONC's Open Data CHPL, " +
+				"<p>You have been granted a new role on ONC's Open Data CHPL " +
 					"which will allow you to manage certified product listings on the CHPL. " +
-					"Please click the link below to create your account: <br/>" +
-					"http://" + getProps().getProperty("chplServer") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
+					"Please click the link below to create or update your account: <br/>" +
+					request.getScheme() + "://" + request.getServerName() + portStr + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>Take care,<br/> " +
