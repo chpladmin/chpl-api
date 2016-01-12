@@ -7,6 +7,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -33,7 +34,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @Api(value="api-key")
 @RestController
 @RequestMapping("/key")
-public class ApiKeyController {
+public class ApiKeyController extends AuthPropertiesConsumer {
 	
 	@Autowired
 	private ApiKeyManager apiKeyManager;
@@ -149,7 +150,7 @@ public class ApiKeyController {
 		String htmlMessage = "<p>Thank you for registering to use the Open Data CHPL API.</p>"
 				+ "<p>Your unique API key is: " + apiKey + " .</p>" 
 				+ "<p>You'll need to use this unique key each time you access data through our open APIs."
-				+ "<p>For more information about how to use the API, please visit opendatachpl.org</p>"
+				+ "<p>For more information about how to use the API, please visit " + props.getProperty("chplUrlBegin") + "</p>"
 				+ "<p>Thanks, <br/>Open Data CHPL Team</p>";
 		
 		SendMailUtil mailUtil = new SendMailUtil();
