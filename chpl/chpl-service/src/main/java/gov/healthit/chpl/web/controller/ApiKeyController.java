@@ -146,11 +146,11 @@ public class ApiKeyController {
 		
 		String subject = "OpenDataCHPL API Key";
 		
-		String htmlMessage = "<p>Thank you registering to use the Open Data CHPL API. "
-				+ "Your unique API key is: " + apiKey + " .</p>" +
-				"<p>Each time you access data through our open APIs, you'll need to use this unique key. " +
-				" For more information about how to use the API, please visit opendatachpl.org. </p><br/>"+
-				" - Open Data CHPL Team";
+		String htmlMessage = "<p>Thank you for registering to use the Open Data CHPL API.</p>"
+				+ "<p>Your unique API key is: " + apiKey + " .</p>" 
+				+ "<p>You'll need to use this unique key each time you access data through our open APIs."
+				+ "<p>For more informatio about how to use the API, please visit opendatachpl.org</p>"
+				+ "<p>Thanks, <br/>Open Data CHPL Team</p>";
 		
 		SendMailUtil mailUtil = new SendMailUtil();
 		mailUtil.sendEmail(email, subject, htmlMessage);
