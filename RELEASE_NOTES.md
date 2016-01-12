@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+Features added or Updated
+* Set up swagger API and endpoint annotations
+* Added code to create the XML download file
+* Added code to allow a currently logged in user to get additional permissions if invited (/users/authorize)
+
+Bugs Fixed
+* Allow certified products with errors to be edited and remove those errors
+* Fix email content typos
+
 ## Version 0.1.0
 _5 January 2016_
 
@@ -12,7 +24,7 @@ Features added or Updated
 
 Bugs Fixed
 * Correct CHPL number is inserted in corrective action plan documentation activity.
-* Authorizing existing users for new roles or ACBs/ATLs is fixed
+* Authorizing existing users for new roles or ACBs/ATLs is fixed 
 
 ## Version 0.0.2
 _7 December 2015_

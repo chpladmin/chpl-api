@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -72,7 +73,8 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) 
+	public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo,
+			HttpServletRequest request ) 
 			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
 			EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
 		
@@ -90,10 +92,16 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		//get the invitation again to get the new hash
 		invitation = invitationManager.getById(invitation.getId());
 		
+		int port = request.getServerPort();
+		String portStr = ":" + port;
+		if(port == 80 || port == 443) {
+			portStr = "";
+		}
+		
 		//send email for user to confirm email address	
 		String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Open Data CHPL. " +
 					"Please click the link below to activate your account: <br/>" +
-					"http://" + getProps().getProperty("chplServer") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
+					request.getScheme() + "://" + request.getServerName() + portStr + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>The Open Data CHPL Team</p>";
@@ -176,7 +184,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 	@RequestMapping(value="/invite", method=RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public UserInvitation inviteUser(@RequestBody UserInvitation invitation) 
+	public UserInvitation inviteUser(@RequestBody UserInvitation invitation, HttpServletRequest request) 
 			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
 			UserPermissionRetrievalException, AddressException, MessagingException {
 		boolean isChplAdmin = false;
@@ -201,12 +209,18 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			}
 		}
 		
+		int port = request.getServerPort();
+		String portStr = ":" + port;
+		if(port == 80 || port == 443) {
+			portStr = "";
+		}
+		
 		//send email		
 		String htmlMessage = "<p>Hi,</p>" +
 				"<p>You have been granted a new role on ONC's Open Data CHPL " +
 					"which will allow you to manage certified product listings on the CHPL. " +
 					"Please click the link below to create or update your account: <br/>" +
-					"http://" + getProps().getProperty("chplServer") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
+					request.getScheme() + "://" + request.getServerName() + portStr + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>Take care,<br/> " +
