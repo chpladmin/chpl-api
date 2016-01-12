@@ -29,12 +29,12 @@ public class SwaggerConfig implements EnvironmentAware {
 
 	@Autowired ServletContext context;
 	@Autowired private Environment env;
-	
+
 	@Override
     public void setEnvironment(final Environment environment) {
         this.env = environment;
     }
-	
+
     @Bean
     public Docket customDocket(){
        return new Docket(DocumentationType.SWAGGER_2)
@@ -42,19 +42,19 @@ public class SwaggerConfig implements EnvironmentAware {
     		   .pathProvider(pathProvider())
                .select()
                .paths(this.paths())
-               .build(); 
+               .build();
     }
-    
+
     private ApiInfo apiInfo() {
-    	return new ApiInfo("CHPL", "Certified Health IT Product Listing", "0.1.0", 
-    			"http://terms/of/service.url", "CHPL@ainq.com", 
-    			"License Text", "http://license.url");
+    	return new ApiInfo("CHPL", "Certified Health IT Product Listing", "0.1.1",
+    			"http://terms/of/service.url", "CHPL@ainq.com",
+    			"License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
-    
+
     private PathProvider pathProvider() {
     	return new AbsolutePathProvider(context);
     }
-    
+
     @SuppressWarnings("unchecked")
     private Predicate<String> paths() {
       return or(
@@ -73,15 +73,15 @@ public class SwaggerConfig implements EnvironmentAware {
     		  regex("/users.*"),
     		  regex("/vendors.*"),
     		  regex("/versions.*")
-    		  
+
     		 );
     }
-    
+
     private class AbsolutePathProvider extends RelativePathProvider {
     	public AbsolutePathProvider(ServletContext context) {
     		super(context);
     	}
-    	
+
     	@Override
     	public String getApplicationBasePath() {
     		return env.getProperty("basePath");
