@@ -40,6 +40,7 @@ import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
+import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -448,8 +449,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), "Updated " + result.getChplProductNumberForActivity() , before , result);
 		return result;
-	}
-	
+	}	
 	
 	/**
 	 * both successes and failures are passed in
@@ -479,31 +479,60 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					// replace the value of the result
 					oldResult.setSuccessful(certResult.isSuccess());
 					
-					List<AdditionalSoftware> additionalSoftware = certResult.getAdditionalSoftware();
-					List<AdditionalSoftwareDTO> dtos = new ArrayList<AdditionalSoftwareDTO>();
-					
-					for (AdditionalSoftware sw : additionalSoftware){
+					if (!certResult.isSuccess()){
 						
-						AdditionalSoftwareDTO dto = new AdditionalSoftwareDTO();
+						oldResult.setAdditionalSoftware(null);
 						
-						dto.setId(sw.getId());
-						dto.setCertifiedProductId(sw.getCertifiedProductId());
-						dto.setCertifiedProductSelfId(sw.getCertifiedProductSelf());
-						dto.setJustification(sw.getJustification());
-						dto.setName(sw.getName());
-						dto.setVersion(sw.getVersion());
-						dto.setCreationDate(creationDate);
+					} else {
 						
-						dtos.add(dto);
+						
+						List<AdditionalSoftware> additionalSoftware = certResult.getAdditionalSoftware();
+						List<Long> existingIds = new ArrayList<Long>();
+						List<Long> newIds = new ArrayList<Long>();
+						List<CertificationResultAdditionalSoftwareMapDTO> existingAddlSoftwareMappings = certDao.getCertificationResultAdditionalSoftwareMappings(oldResult.getId());
+						
+						
+						// build a list of existing addl software IDs
+						for (CertificationResultAdditionalSoftwareMapDTO additionalSoftwareMappingDTO : existingAddlSoftwareMappings){
+							existingIds.add(additionalSoftwareMappingDTO.getAdditionalSoftwareId());
+						}
+						
+						// build a list of addl software IDs being passed in
+						for (AdditionalSoftware sw : additionalSoftware){
+							newIds.add(sw.getAdditionalSoftwareid());
+						}
+						
+						// remove all existing IDs from new IDs to get a list of net new IDs
+						newIds.removeAll(existingIds);
+						
+						// delete IDs that are no longer there
+						
+						
+						
+						for (AdditionalSoftware sw : additionalSoftware){
+							
+							AdditionalSoftwareDTO dto = new AdditionalSoftwareDTO();
+							
+							dto.setId(sw.getAdditionalSoftwareid());
+							dto.setCertifiedProductId(sw.getCertifiedProductId());
+							dto.setCertifiedProductSelfId(sw.getCertifiedProductSelf());
+							dto.setJustification(sw.getJustification());
+							dto.setName(sw.getName());
+							dto.setVersion(sw.getVersion());
+							dto.setCreationDate(new Date());
+							dto.setLastModifiedDate(new Date());
+							dto.setLastModifiedUser(Util.getCurrentUser().getId());
+							dto.setDeleted(false);
+							
+							newdtos.add(dto);
+						}
+						oldResult.setAdditionalSoftware(dtos);
 					}
-					oldResult.setAdditionalSoftware(dtos);
-					
 					certDao.update(oldResult);
 					break;
 				}
 			}
 		}
-		
 		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity() + " were updated." , before , after);
 	}
