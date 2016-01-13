@@ -24,10 +24,12 @@ public interface TestingLabManager {
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
 	public TestingLabDTO create(TestingLabDTO atl) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	public void undelete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
 	public void delete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
 	public List<TestingLabDTO> getAllForUser();
 	public List<TestingLabDTO> getAll();
 	public TestingLabDTO getById(Long id) throws EntityRetrievalException;
+	public TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 	public List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl);
 	public List<Permission> getPermissionsForUser(TestingLabDTO atl, Sid recipient);
 }

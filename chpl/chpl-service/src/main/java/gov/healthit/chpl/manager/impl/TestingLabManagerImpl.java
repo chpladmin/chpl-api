@@ -94,6 +94,17 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public void undelete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+		TestingLabDTO original = testingLabDAO.getById(atl.getId(), true);
+		atl.setDeleted(false);
+		TestingLabDTO result = testingLabDAO.update(atl);
+		
+		String activityMsg = "Testing Lab " + original.getName() + " is no longer marked as deleted.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, original, result);	
+	}
+	
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException,
 		EntityRetrievalException, UserRetrievalException {
 		//get the users associated with this ATL
@@ -340,10 +351,14 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', read) or "
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', admin)")
 	public TestingLabDTO getById(Long id) throws EntityRetrievalException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Returning testing lab with id: " + id);
-		}
-
 		return testingLabDAO.getById(id);
+	}
+	
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
+			+ "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', read) or "
+			+ "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', admin)")
+	public TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException {
+		return testingLabDAO.getById(id, includeDeleted);
 	}
 }

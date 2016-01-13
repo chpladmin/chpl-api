@@ -32,7 +32,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		CertificationBodyEntity entity = null;
 		try {
 			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
+				entity = this.getEntityById(dto.getId(), false);
 			}
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
@@ -83,7 +83,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Transactional
 	public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException{
 		
-		CertificationBodyEntity entity = getEntityById(dto.getId());	
+		CertificationBodyEntity entity = getEntityById(dto.getId(), true);	
 		if(entity == null) {
 			throw new EntityRetrievalException("Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
 		}
@@ -149,7 +149,18 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 	
 	public CertificationBodyDTO getById(Long acbId) throws EntityRetrievalException{
-		CertificationBodyEntity entity = getEntityById(acbId);
+		CertificationBodyEntity entity = getEntityById(acbId, false);
+		
+		CertificationBodyDTO dto = null;
+		if(entity != null) {
+			dto = new CertificationBodyDTO(entity);
+		}
+		return dto;
+		
+	}
+	
+	public CertificationBodyDTO getById(Long acbId, boolean includeDeleted) throws EntityRetrievalException{
+		CertificationBodyEntity entity = getEntityById(acbId, includeDeleted);
 		
 		CertificationBodyDTO dto = null;
 		if(entity != null) {
@@ -188,11 +199,17 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		return result;
 	}
 	
-	private CertificationBodyEntity getEntityById(Long entityId) throws EntityRetrievalException {
+	private CertificationBodyEntity getEntityById(Long entityId, boolean includeDeleted) throws EntityRetrievalException {
 		
 		CertificationBodyEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true) AND (certification_body_id = :entityid) ", CertificationBodyEntity.class );
+		String queryStr = "SELECT acb from CertificationBodyEntity acb "
+				+ "LEFT OUTER JOIN FETCH acb.address where "
+				+ "(certification_body_id = :entityid)";
+		if(!includeDeleted) {
+			queryStr += " AND (NOT acb.deleted = true)";
+		}
+		Query query = entityManager.createQuery(queryStr, CertificationBodyEntity.class );
 		query.setParameter("entityid", entityId);
 		List<CertificationBodyEntity> result = query.getResultList();
 		

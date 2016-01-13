@@ -100,6 +100,17 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public void undelete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+		CertificationBodyDTO original = certificationBodyDAO.getById(acb.getId(), true);
+		acb.setDeleted(false);
+		CertificationBodyDTO result = certificationBodyDAO.update(acb);
+		
+		String activityMsg = "ACB " + original.getName() + " is no longer marked as deleted.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, original, result);	
+	}
+	
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(CertificationBodyDTO acb) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {
@@ -360,15 +371,17 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', read) or "
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Returning acb with id: " + id);
-		}
-
 		return certificationBodyDAO.getById(id);
 	}
 	
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
+			+ "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', read) or "
+			+ "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	public CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException {
+		return certificationBodyDAO.getById(id, includeDeleted);
+	}
 	
-
 	public MutableAclService getMutableAclService() {
 		return mutableAclService;
 	}

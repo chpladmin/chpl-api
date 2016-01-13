@@ -151,6 +151,17 @@ public class TestingLabController {
 	
 	}
 	
+	@RequestMapping(value="/{atlId}/undelete", method= RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public String undeleteAtl(@PathVariable("atlId") Long atlId) 
+			throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+		
+		TestingLabDTO toResurrect = atlManager.getById(atlId, true);		
+		atlManager.undelete(toResurrect);
+		return "{\"resurrectedAtl\" : true }";
+	
+	}
+	
 	@RequestMapping(value="/add_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
