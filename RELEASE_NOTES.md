@@ -7,6 +7,7 @@ Features added or Updated
 * Set up swagger API and endpoint annotations
 * Added code to create the XML download file
 * Added code to allow a currently logged in user to get additional permissions if invited (/users/authorize)
+* Adjust what happens when an ACB gets deleted. The ACB is marked as deleted and any users who were ONLY associated with that ACB (no other ACBs, no ATLs, no ADMIN role) will have their account disabled.
 
 Bugs Fixed
 * Allow certified products with errors to be edited and remove those errors
