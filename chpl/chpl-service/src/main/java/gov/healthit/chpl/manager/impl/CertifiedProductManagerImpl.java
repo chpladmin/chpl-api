@@ -2,8 +2,10 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -62,6 +64,7 @@ import gov.healthit.chpl.manager.VendorManager;
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
 	@Autowired CertifiedProductDAO dao;
+	@Autowired AdditionalSoftwareDAO additionalSoftwareDao;
 	@Autowired CertificationResultDAO certDao;
 	@Autowired CertificationCriterionDAO certCriterionDao;
 	@Autowired CQMResultDAO cqmResultDAO;
@@ -473,7 +476,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			Long certificationCriterionId = oldResult.getCertificationCriterionId();
 			CertificationCriterionDTO criterionDTO = certCriterionDao.getById(certificationCriterionId);
 			
-			//for (Map.Entry<CertificationCriterionDTO, Boolean> certResult : certResults.entrySet()){
 			for (CertificationResult certResult : certResults){
 				if (certResult.getNumber().equals(criterionDTO.getNumber())){	
 					// replace the value of the result
@@ -487,46 +489,88 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						
 						
 						List<AdditionalSoftware> additionalSoftware = certResult.getAdditionalSoftware();
-						List<Long> existingIds = new ArrayList<Long>();
-						List<Long> newIds = new ArrayList<Long>();
+						Set<Long> existingIds = new HashSet<Long>();
+						Set<Long> incomingIds = new HashSet<Long>();
 						List<CertificationResultAdditionalSoftwareMapDTO> existingAddlSoftwareMappings = certDao.getCertificationResultAdditionalSoftwareMappings(oldResult.getId());
 						
 						
-						// build a list of existing addl software IDs
+						// Build a list of existing addl software IDs
 						for (CertificationResultAdditionalSoftwareMapDTO additionalSoftwareMappingDTO : existingAddlSoftwareMappings){
 							existingIds.add(additionalSoftwareMappingDTO.getAdditionalSoftwareId());
 						}
 						
-						// build a list of addl software IDs being passed in
+						// Build a list of addl software IDs being passed in
 						for (AdditionalSoftware sw : additionalSoftware){
-							newIds.add(sw.getAdditionalSoftwareid());
+							incomingIds.add(sw.getAdditionalSoftwareid());
 						}
 						
-						// remove all existing IDs from new IDs to get a list of net new IDs
-						newIds.removeAll(existingIds);
+						Set<Long> toBeDeleted = new HashSet<Long>(existingIds);
 						
-						// delete IDs that are no longer there
+						// Get a list of addl software that are no longer there.
+						toBeDeleted.removeAll(incomingIds);
 						
+						// Delete the addl software that is no longer there.
+						for (Long idToBeDeleted : toBeDeleted){
+							additionalSoftwareDao.delete(idToBeDeleted);
+							// Delete mapping too, so we don't leave orphans.
+							certDao.deleteAdditionalSoftwareMapping(oldResult.getId(), idToBeDeleted);
+						}
+						
+						
+						Set<Long> toBeUpdated = new HashSet<Long>(existingIds);
+						
+						// Get a list of addl software that were here already, are being updated
+						// by incoming data.
+						toBeUpdated.retainAll(incomingIds);
 						
 						
 						for (AdditionalSoftware sw : additionalSoftware){
 							
-							AdditionalSoftwareDTO dto = new AdditionalSoftwareDTO();
+							if (toBeUpdated.contains(sw.getAdditionalSoftwareid())){ // update additional software
+								
+								AdditionalSoftwareDTO dto = additionalSoftwareDao.getById(sw.getAdditionalSoftwareid());
+								
+								dto.setId(sw.getAdditionalSoftwareid());
+								dto.setCertifiedProductId(sw.getCertifiedProductId());
+								dto.setCertifiedProductSelfId(sw.getCertifiedProductSelf());
+								dto.setJustification(sw.getJustification());
+								dto.setName(sw.getName());
+								dto.setVersion(sw.getVersion());
+								dto.setCreationDate(new Date());
+								dto.setLastModifiedDate(new Date());
+								dto.setLastModifiedUser(Util.getCurrentUser().getId());
+								dto.setDeleted(false);
+								
+								additionalSoftwareDao.update(dto);
+								
+							} else { // create new additional software
+								
+								AdditionalSoftwareDTO dto = new AdditionalSoftwareDTO();
+								
+								dto.setCertifiedProductId(sw.getCertifiedProductId());
+								dto.setCertifiedProductSelfId(sw.getCertifiedProductSelf());
+								dto.setJustification(sw.getJustification());
+								dto.setName(sw.getName());
+								dto.setVersion(sw.getVersion());
+								dto.setCreationDate(new Date());
+								dto.setLastModifiedDate(new Date());
+								dto.setLastModifiedUser(Util.getCurrentUser().getId());
+								dto.setDeleted(false);
+								
+								additionalSoftwareDao.create(dto);
+								
+								CertificationResultAdditionalSoftwareMapDTO mapping = new CertificationResultAdditionalSoftwareMapDTO();
+								mapping.setAdditionalSoftwareId(dto.getId());
+								mapping.setCertificationResultId(oldResult.getId());
+								mapping.setCreationDate(new Date());
+								mapping.setLastModifiedDate(new Date());
+								mapping.setDeleted(false);
+								
+								certDao.createAdditionalSoftwareMapping(mapping);
+								
+							}
 							
-							dto.setId(sw.getAdditionalSoftwareid());
-							dto.setCertifiedProductId(sw.getCertifiedProductId());
-							dto.setCertifiedProductSelfId(sw.getCertifiedProductSelf());
-							dto.setJustification(sw.getJustification());
-							dto.setName(sw.getName());
-							dto.setVersion(sw.getVersion());
-							dto.setCreationDate(new Date());
-							dto.setLastModifiedDate(new Date());
-							dto.setLastModifiedUser(Util.getCurrentUser().getId());
-							dto.setDeleted(false);
-							
-							newdtos.add(dto);
 						}
-						oldResult.setAdditionalSoftware(dtos);
 					}
 					certDao.update(oldResult);
 					break;

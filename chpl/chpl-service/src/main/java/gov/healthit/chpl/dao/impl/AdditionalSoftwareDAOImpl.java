@@ -13,9 +13,7 @@ import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.AdditionalSoftwareEntity;
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
 @Repository("additionalSoftwareDAO")
 public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements AdditionalSoftwareDAO {
