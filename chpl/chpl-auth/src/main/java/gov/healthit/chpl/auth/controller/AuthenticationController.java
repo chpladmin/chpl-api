@@ -75,7 +75,7 @@ public class AuthenticationController extends AuthPropertiesConsumer {
 				+ "<pre>" + newPassword + "</pre>"
        			+ "<p>Click the link below to login to your account."
        			+ "<br/>" +
-       			props.getProperty("chplUrlBegin") + "/#/admin" +
+       			getProps().getProperty("chplUrlBegin") + "/#/admin" +
        			"</p>"
        			+ "<p>Take care,<br/> " +
 				 "The Open Data CHPL Team</p>";

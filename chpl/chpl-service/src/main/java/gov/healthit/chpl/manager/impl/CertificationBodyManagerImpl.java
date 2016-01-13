@@ -5,13 +5,16 @@ import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
@@ -46,6 +49,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
 	
+	@Autowired private TestingLabDAO testingLabDao;
 	@Autowired UserManager userManager;
 	@Autowired UserDAO userDAO;
 	@Autowired PendingCertifiedProductManager pendingCpManager;
@@ -96,21 +100,80 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+	public void delete(CertificationBodyDTO acb) 
+			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
+			UserRetrievalException {
 		
-		certificationBodyDAO.delete(acb.getId());
-		// Delete the ACL information as well
-		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
-		mutableAclService.deleteAcl(oid, false);
+		//get the users associated with this ACB
+		//normally we shouldn't call an internal manager method because permissions will be
+		//ignored but we know the user calling this has ROLE_ADMIN already
+		List<UserDTO> usersOnAcb = getAllUsersOnAcb(acb);
 		
-		if (logger.isDebugEnabled()) {
-			logger.debug("Deleted acb " + acb + " including ACL permissions");
+		//check all the ACBs to see if each user has permission on it
+		List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAll();
+		List<TestingLabDTO> allTestingLabs = testingLabDao.findAll();
+		
+		for(UserDTO currUser : usersOnAcb) {
+			boolean userHasOtherPermissions = false;
+			Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(currUser);
+			for(UserPermissionDTO currPermission : permissions) {
+				if(!currPermission.getAuthority().startsWith("ROLE_ACB")) {
+					userHasOtherPermissions = true;
+				}
+			}
+
+			boolean userHasOtherAccesses = false;
+			if(!userHasOtherPermissions) {
+				for(CertificationBodyDTO currAcb : allAcbs) {
+					//does the user have access to anything besides this ACB?
+					if(currAcb.getId().longValue() != acb.getId().longValue()) {
+						ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, currAcb.getId());
+						MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+						
+						List<AccessControlEntry> entries = acl.getEntries();
+						for (int i = 0; i < entries.size(); i++) {
+							AccessControlEntry currEntry = entries.get(i);
+							if(currEntry.getSid().equals(currUser.getSubjectName())) {
+								userHasOtherAccesses = true;
+							}
+						}
+					}
+				}
+				
+				if(!userHasOtherAccesses) {
+					//does the user have access to any ATLs?
+					for(TestingLabDTO currTestingLab : allTestingLabs) {
+						ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, currTestingLab.getId());
+						MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+						
+						List<AccessControlEntry> entries = acl.getEntries();
+						for (int i = 0; i < entries.size(); i++) {
+							AccessControlEntry currEntry = entries.get(i);
+							if(currEntry.getSid().equals(currUser.getSubjectName())) {
+								userHasOtherAccesses = true;
+							}
+						}
+					}
+				}
+			}
+			
+			if(!userHasOtherPermissions && !userHasOtherAccesses) {
+				UserDTO prevUser = currUser;
+				//if not, then mark their account disabled
+				currUser.setAccountEnabled(false);
+				UserDTO updatedUser = userManager.update(currUser);
+				//log this activity
+				activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, currUser.getId(), 
+						"Disabled account for " + currUser.getSubjectName() + " because it was only associated with a deleted ACB.", 
+						prevUser, updatedUser);
+			}
 		}
 		
+		//mark the ACB deleted
+		certificationBodyDAO.delete(acb.getId());
+		//log ACB delete activity
 		String activityMsg = "Deleted acb " + acb.getName();
-		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, acb.getId(), activityMsg, acb, null);
-		
 	}
 	
 	@Transactional

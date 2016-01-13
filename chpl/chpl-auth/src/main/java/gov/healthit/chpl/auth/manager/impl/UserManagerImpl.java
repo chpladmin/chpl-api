@@ -106,9 +106,10 @@ public class UserManagerImpl implements UserManager {
 		return securedUserManager.update(userDTO);
 	}
 	
+	@Override
 	@Transactional
-	private void update(UserDTO user) throws UserRetrievalException {	
-		securedUserManager.update(user);
+	public UserDTO update(UserDTO user) throws UserRetrievalException {	
+		return securedUserManager.update(user);
 	}
 	
 	@Transactional

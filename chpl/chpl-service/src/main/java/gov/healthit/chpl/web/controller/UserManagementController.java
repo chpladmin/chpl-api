@@ -94,7 +94,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		//send email for user to confirm email address	
 		String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Open Data CHPL. " +
 					"Please click the link below to activate your account: <br/>" +
-					props.getProperty("chplUrlBegin") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
+					getProps().getProperty("chplUrlBegin") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>The Open Data CHPL Team</p>";
@@ -207,7 +207,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 				"<p>You have been granted a new role on ONC's Open Data CHPL " +
 					"which will allow you to manage certified product listings on the CHPL. " +
 					"Please click the link below to create or update your account: <br/>" +
-					props.getProperty("chplUrlBegin") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
+					getProps().getProperty("chplUrlBegin") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>Take care,<br/> " +
