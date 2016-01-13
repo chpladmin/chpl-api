@@ -27,12 +27,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.TestingLabManager;
@@ -40,6 +43,7 @@ import gov.healthit.chpl.manager.TestingLabManager;
 @Service
 public class TestingLabManagerImpl extends ApplicationObjectSupport implements TestingLabManager {
 
+	@Autowired CertificationBodyDAO certificationBodyDao;
 	@Autowired
 	private TestingLabDAO testingLabDAO;
 	
@@ -90,17 +94,75 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-		
-		testingLabDAO.delete(atl.getId());
-		// Delete the ACL information as well
-		ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
-		mutableAclService.deleteAcl(oid, false);
-		
-		if (logger.isDebugEnabled()) {
-			logger.debug("Deleted testing lab " + atl.getId() + " including ACL permissions");
+	public void delete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException,
+		EntityRetrievalException, UserRetrievalException {
+		//get the users associated with this ATL
+		//normally we shouldn't call an internal manager method because permissions will be
+		//ignored but we know the user calling this has ROLE_ADMIN already
+		List<UserDTO> usersOnAcb = getAllUsersOnAtl(atl);
+
+		//check all the ACBs to see if each user has permission on it
+		List<CertificationBodyDTO> allAcbs = certificationBodyDao.findAll();
+		List<TestingLabDTO> allTestingLabs = testingLabDAO.findAll();
+
+		for(UserDTO currUser : usersOnAcb) {
+			boolean userHasOtherPermissions = false;
+			Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(currUser);
+			for(UserPermissionDTO currPermission : permissions) {
+				if(!currPermission.getAuthority().startsWith("ROLE_ATL")) {
+					userHasOtherPermissions = true;
+				}
+			}
+
+			boolean userHasOtherAccesses = false;
+			if(!userHasOtherPermissions) {
+				//does the user have access to any ATLs besidees this one?
+				for(TestingLabDTO currTestingLab : allTestingLabs) {
+					if(currTestingLab.getId().longValue() != atl.getId().longValue()) {
+						ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, currTestingLab.getId());
+						MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+						
+						List<AccessControlEntry> entries = acl.getEntries();
+						for (int i = 0; i < entries.size(); i++) {
+							AccessControlEntry currEntry = entries.get(i);
+							if(currEntry.getSid().equals(currUser.getSubjectName())) {
+								userHasOtherAccesses = true;
+							}
+						}
+					}
+				}
+				
+				if(!userHasOtherAccesses) {
+					for(CertificationBodyDTO currAcb : allAcbs) {
+						//does the user have access to any ACBs?
+						ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, currAcb.getId());
+						MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
+							
+						List<AccessControlEntry> entries = acl.getEntries();
+						for (int i = 0; i < entries.size(); i++) {
+							AccessControlEntry currEntry = entries.get(i);
+							if(currEntry.getSid().equals(currUser.getSubjectName())) {
+								userHasOtherAccesses = true;
+							}
+						}
+					}	
+				}
+			}
+			
+			if(!userHasOtherPermissions && !userHasOtherAccesses) {
+				UserDTO prevUser = currUser;
+				//if not, then mark their account disabled
+				currUser.setAccountEnabled(false);
+				UserDTO updatedUser = userManager.update(currUser);
+				//log this activity
+				activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, currUser.getId(), 
+						"Disabled account for " + currUser.getSubjectName() + " because it was only associated with a deleted ATL.", 
+						prevUser, updatedUser);
+			}
 		}
 		
+		//delete the ATL
+		testingLabDAO.delete(atl.getId());
 		String activityMsg = "Deleted testing lab " + atl.getName();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, atl.getId(), activityMsg, atl, null);
 		
