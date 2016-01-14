@@ -142,11 +142,23 @@ public class TestingLabController {
 	
 	@RequestMapping(value="/{atlId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public String deleteAtl(@PathVariable("atlId") Long atlId) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+	public String deleteAtl(@PathVariable("atlId") Long atlId) 
+			throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 		
 		TestingLabDTO toDelete = atlManager.getById(atlId);		
 		atlManager.delete(toDelete);
 		return "{\"deletedAtl\" : true }";
+	
+	}
+	
+	@RequestMapping(value="/{atlId}/undelete", method= RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public String undeleteAtl(@PathVariable("atlId") Long atlId) 
+			throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+		
+		TestingLabDTO toResurrect = atlManager.getById(atlId, true);		
+		atlManager.undelete(toResurrect);
+		return "{\"resurrectedAtl\" : true }";
 	
 	}
 	

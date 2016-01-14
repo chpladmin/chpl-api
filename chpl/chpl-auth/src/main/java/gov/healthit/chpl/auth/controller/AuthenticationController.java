@@ -1,7 +1,6 @@
 package gov.healthit.chpl.auth.controller;
 
 import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -66,24 +65,17 @@ public class AuthenticationController extends AuthPropertiesConsumer {
 	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public String resetPassword(@RequestBody UserResetPasswordJSONObject userInfo,
-			HttpServletRequest request) 
+	public String resetPassword(@RequestBody UserResetPasswordJSONObject userInfo) 
 			throws UserRetrievalException, MessagingException {		
 
 		String newPassword = userManager.resetUserPassword(userInfo.getUserName(), userInfo.getEmail());
 
-		int port = request.getServerPort();
-		String portStr = ":" + port;
-		if(port == 80 || port == 443) {
-			portStr = "";
-		}
-		
 		String htmlMessage = "<p>Hi, <br/>"
        			+ "Your CHPL account password has been reset. Your new password is: </p>"
 				+ "<pre>" + newPassword + "</pre>"
        			+ "<p>Click the link below to login to your account."
        			+ "<br/>" +
-       			request.getScheme() + "://" + request.getServerName() + portStr + "/#/admin" +
+       			getProps().getProperty("chplUrlBegin") + "/#/admin" +
        			"</p>"
        			+ "<p>Take care,<br/> " +
 				 "The Open Data CHPL Team</p>";

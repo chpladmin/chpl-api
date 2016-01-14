@@ -28,14 +28,16 @@ public interface CertificationBodyManager {
 	
 	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	
-	
-	public void delete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
+	public void undelete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
+
+	public void delete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
 	
 	
 	public List<CertificationBodyDTO> getAllForUser();
 	public List<CertificationBodyDTO> getAll();
 
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
+	public CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 	public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
 	public List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);
 }

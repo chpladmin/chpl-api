@@ -13,5 +13,6 @@ public interface TestingLabDAO {
 	public List<TestingLabDTO> findAll();
 	
 	public TestingLabDTO getById(Long id) throws EntityRetrievalException;
+	public TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 	public TestingLabDTO getByName(String name);
 }

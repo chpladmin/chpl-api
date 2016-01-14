@@ -141,12 +141,24 @@ public class CertificationBodyController {
 	
 	@RequestMapping(value="/{acbId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public String deleteAcb(@PathVariable("acbId") Long acbId) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+	public String deleteAcb(@PathVariable("acbId") Long acbId) 
+			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
+			UserRetrievalException {
 		
 		CertificationBodyDTO toDelete = acbManager.getById(acbId);		
 		acbManager.delete(toDelete);
 		return "{\"deletedAcb\" : true }";
+	}
 	
+	@RequestMapping(value="/{acbId}/undelete", method= RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public String undeleteAcb(@PathVariable("acbId") Long acbId) 
+			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
+			UserRetrievalException {
+		
+		CertificationBodyDTO toResurrect = acbManager.getById(acbId, true);		
+		acbManager.undelete(toResurrect);
+		return "{\"resurrectedAcb\" : true }";
 	}
 	
 	@RequestMapping(value="/add_user", method= RequestMethod.POST, 

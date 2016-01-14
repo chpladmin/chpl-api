@@ -13,3 +13,5 @@ smtpPort=25
 smtpFrom=fromEmailAddress
 smtpUsername=yourUsername
 smtpPassword=yourPassword
+
+chplUrlBegin=http://localhost:8080 or https://www.opendatachpl.org

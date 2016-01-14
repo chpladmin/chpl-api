@@ -80,6 +80,7 @@ public class App {
 		 
 		 //init spring classes
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+		 System.out.println(context.getClassLoader());
 		 App app = new App();
 		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
 		 app.setCertifiedProductSearchResultDAO((CertifiedProductSearchResultDAO)context.getBean("certifiedProductSearchResultDAO"));
