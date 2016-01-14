@@ -16,8 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement(proxyTargetClass=true)
-@EnableWebSecurity
-@ComponentScan(basePackages = {"gov.healthit.chpl.dao.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+@ComponentScan(basePackages = {"gov.healthit.chpl.dao.**", "gov.healthit.chpl.entity.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class AppConfig {
 	
 	public static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
