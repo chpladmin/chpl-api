@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth;
 
 import java.util.Collection;
 
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 
@@ -23,6 +24,16 @@ public class Util {
 		else {
 			return auth.getPrincipal().toString();
 		}
+	}
+	
+	public static boolean isUserRoleAdmin(){
+		User user = getCurrentUser();
+		for (GrantedPermission perm : user.getPermissions()){
+			if (perm.getAuthority().equals("ROLE_ADMIN")){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static User getCurrentUser(){
