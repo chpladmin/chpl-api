@@ -6,6 +6,7 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public interface TestingLabManager {
 	public void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient);
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
 	public TestingLabDTO create(TestingLabDTO atl) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException;
 	public void undelete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
 	public void delete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
 	public List<TestingLabDTO> getAllForUser();

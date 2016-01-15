@@ -5,6 +5,8 @@ import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ValidationErrorJSONObject;
+import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.ValidationException;
 
@@ -41,6 +43,16 @@ public class ApiExceptionControllerAdvice {
 	@ExceptionHandler(AddressException.class)
 	public ResponseEntity<ErrorJSONObject> exception(AddressException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Could not send email. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(UpdateTestingLabException.class )
+	public ResponseEntity<ErrorJSONObject> exception(UpdateTestingLabException e) {
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access Denied"), HttpStatus.FORBIDDEN);
+	}
+	
+	@ExceptionHandler(UpdateCertifiedBodyException.class )
+	public ResponseEntity<ErrorJSONObject> exception(UpdateCertifiedBodyException e) {
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access Denied"), HttpStatus.FORBIDDEN);
 	}
 	
 	@ExceptionHandler(MessagingException.class)

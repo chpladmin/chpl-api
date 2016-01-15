@@ -36,6 +36,7 @@ import gov.healthit.chpl.domain.UpdateUserAndAcbRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import io.swagger.annotations.Api;
@@ -111,7 +112,7 @@ public class CertificationBodyController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
 		CertificationBodyDTO toUpdate = new CertificationBodyDTO();
 		toUpdate.setId(acbInfo.getId());
 		toUpdate.setAcbCode(acbInfo.getAcbCode());

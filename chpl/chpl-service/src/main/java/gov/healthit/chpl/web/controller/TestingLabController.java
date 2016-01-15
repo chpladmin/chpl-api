@@ -36,6 +36,7 @@ import gov.healthit.chpl.domain.UpdateUserAndAtlRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 import io.swagger.annotations.Api;
@@ -111,7 +112,7 @@ public class TestingLabController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public TestingLab update(@RequestBody TestingLab atlInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public TestingLab update(@RequestBody TestingLab atlInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
 		TestingLabDTO toUpdate = new TestingLabDTO();
 		toUpdate.setId(atlInfo.getId());
 		toUpdate.setTestingLabCode(atlInfo.getAtlCode());
