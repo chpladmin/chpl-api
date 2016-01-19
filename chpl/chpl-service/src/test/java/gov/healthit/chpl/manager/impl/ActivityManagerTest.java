@@ -80,7 +80,7 @@ public class ActivityManagerTest extends TestCase {
 				vendor
 				);
 		
-		List<ActivityEvent> events = activityManager.getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, -1L);	
+		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR, -1L);	
 		
 		ActivityEvent event = events.get(events.size()-1);
 		
@@ -115,7 +115,7 @@ public class ActivityManagerTest extends TestCase {
 				timestamp
 				);
 		
-		List<ActivityEvent> events = activityManager.getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, -1L);	
+		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR, -1L);	
 		
 		ActivityEvent event = events.get(events.size()-1);
 		
@@ -133,7 +133,7 @@ public class ActivityManagerTest extends TestCase {
 	@Test
 	public void testGetAllActivity() throws JsonParseException, IOException{
 		
-		List<ActivityEvent> events = activityManager.getAllActivity();
+		List<ActivityEvent> events = activityManager.getAllActivity(false);
 		assertEquals(5, events.size());
 		
 	}
@@ -163,7 +163,7 @@ public class ActivityManagerTest extends TestCase {
 				"Test",
 				timestamp
 				);
-		List<ActivityEvent> events = activityManager.getAllActivityInLastNDays(lastNDays);
+		List<ActivityEvent> events = activityManager.getAllActivityInLastNDays(false, lastNDays);
 		
 		activityManager.deleteActivity(events.get(0).getId());
 		assertEquals(1, events.size());
@@ -177,7 +177,7 @@ public class ActivityManagerTest extends TestCase {
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
 		Long objectId = 1L;
 		
-		List<ActivityEvent> events = activityManager.getActivityForObject(concept, objectId);
+		List<ActivityEvent> events = activityManager.getActivityForObject(false, concept, objectId);
 		assertEquals(4, events.size());
 		
 		for (ActivityEvent event : events){
@@ -209,7 +209,7 @@ public class ActivityManagerTest extends TestCase {
 				"Test",
 				timestamp
 				);
-		List<ActivityEvent> events = activityManager.getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, vendor.getId() , lastNDays);
+		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR, vendor.getId() , lastNDays);
 		
 		activityManager.deleteActivity(events.get(0).getId());
 		assertEquals(1, events.size());
@@ -219,13 +219,13 @@ public class ActivityManagerTest extends TestCase {
 	@Test
 	public void testGetActivityForConcept() throws JsonParseException, IOException{
 		
-		List<ActivityEvent> events = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
+		List<ActivityEvent> events = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
 		assertEquals(4, events.size());
 		
-		List<ActivityEvent> events2 = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
+		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
 		assertEquals(1, events2.size());
 		
-		List<ActivityEvent> events3 = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
+		List<ActivityEvent> events3 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
 		assertEquals(0, events3.size());
 		
 	}
@@ -235,7 +235,7 @@ public class ActivityManagerTest extends TestCase {
 		
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
 		Integer lastNDays = 5;
-		List<ActivityEvent> events = activityManager.getActivityForConcept(concept, lastNDays);
+		List<ActivityEvent> events = activityManager.getActivityForConcept(false, concept, lastNDays);
 		assertEquals(0, events.size());
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -272,7 +272,7 @@ public class ActivityManagerTest extends TestCase {
 				timestamp2
 				);
 		
-		List<ActivityEvent> events2 = activityManager.getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_VENDOR, lastNDays);
+		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR, lastNDays);
 		
 		assertEquals(1, events2.size());
 	}

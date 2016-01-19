@@ -28,6 +28,9 @@ public class Util {
 	
 	public static boolean isUserRoleAdmin(){
 		User user = getCurrentUser();
+		if(user == null){
+			return false;
+		}
 		for (GrantedPermission perm : user.getPermissions()){
 			if (perm.getAuthority().equals("ROLE_ADMIN")){
 				return true;

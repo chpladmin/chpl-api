@@ -116,6 +116,11 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 		}
 		
 		if(dto.getDeleted() != null) {
+			if(!dto.getDeleted()){
+				Query query2 = entityManager.createQuery("UPDATE ActivityEntity SET deleted = false WHERE activity_object_id = :acbid");
+				query2.setParameter("acbid", dto.getId());
+				query2.executeUpdate();
+			}
 			entity.setDeleted(dto.getDeleted());
 		}
 		
@@ -145,13 +150,17 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 			toDelete.setLastModifiedDate(new Date());
 			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
 			update(toDelete);
+			
+			Query query = entityManager.createQuery("UPDATE ActivityEntity SET deleted = true WHERE activity_object_id = :atlid AND description NOT LIKE '%Deleted testing lab%' AND description NOT LIKE '%no longer marked as deleted%'");
+			query.setParameter("atlid", toDelete.getId());
+			query.executeUpdate();
 		}
 	}
 	
 	@Override
-	public List<TestingLabDTO> findAll() {
+	public List<TestingLabDTO> findAll(boolean showDeleted) {
 		
-		List<TestingLabEntity> entities = getAllEntities();
+		List<TestingLabEntity> entities = getAllEntities(showDeleted);
 		List<TestingLabDTO> dtos = new ArrayList<>();
 		
 		for (TestingLabEntity entity : entities) {
@@ -205,12 +214,17 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 		entityManager.flush();
 	}
 	
-	private List<TestingLabEntity> getAllEntities() {
-		List<TestingLabEntity> result = entityManager.createQuery( "SELECT atl from TestingLabEntity atl "
-				+ "LEFT OUTER JOIN FETCH atl.address "
-				+ "where (NOT atl.deleted = true)", TestingLabEntity.class).getResultList();
+	private List<TestingLabEntity> getAllEntities(boolean showDeleted) {
+		List<TestingLabEntity> result = null;
+		if(showDeleted){
+			result = entityManager.createQuery( "SELECT atl from TestingLabEntity atl "
+					+ "LEFT OUTER JOIN FETCH atl.address ", TestingLabEntity.class).getResultList();
+		}else{
+			result = entityManager.createQuery( "SELECT atl from TestingLabEntity atl "
+					+ "LEFT OUTER JOIN FETCH atl.address "
+					+ "where (NOT atl.deleted = true)", TestingLabEntity.class).getResultList();
+		}
 		return result;
-		
 	}
 
 	private TestingLabEntity getEntityById(Long id, boolean includeDeleted) throws EntityRetrievalException {

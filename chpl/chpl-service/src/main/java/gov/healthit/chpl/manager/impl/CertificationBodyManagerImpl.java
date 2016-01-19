@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Query;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PostFilter;
@@ -128,8 +130,8 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		List<UserDTO> usersOnAcb = getAllUsersOnAcb(acb);
 		
 		//check all the ACBs to see if each user has permission on it
-		List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAll();
-		List<TestingLabDTO> allTestingLabs = testingLabDao.findAll();
+		List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAll(false);
+		List<TestingLabDTO> allTestingLabs = testingLabDao.findAll(false);
 		
 		for(UserDTO currUser : usersOnAcb) {
 			boolean userHasOtherPermissions = false;
@@ -329,7 +331,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			userDto = userDAO.getById(userDto.getId());
 		}
 		
-		List<CertificationBodyDTO> acbs = certificationBodyDAO.findAll();
+		List<CertificationBodyDTO> acbs = certificationBodyDAO.findAll(false);
 		for(CertificationBodyDTO acb : acbs) {
 			ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 			MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -363,14 +365,14 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 	
 	@Transactional(readOnly = true)
-	public List<CertificationBodyDTO> getAll() {
-		return certificationBodyDAO.findAll();
+	public List<CertificationBodyDTO> getAll(boolean showDeleted) {
+		return certificationBodyDAO.findAll(showDeleted);
 	}
 	
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
-	public List<CertificationBodyDTO> getAllForUser() {
-		return certificationBodyDAO.findAll();
+	public List<CertificationBodyDTO> getAllForUser(boolean showDeleted) {
+		return certificationBodyDAO.findAll(showDeleted);
 	}
 
 	@Transactional(readOnly = true)

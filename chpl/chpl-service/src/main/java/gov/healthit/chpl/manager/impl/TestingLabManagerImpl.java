@@ -118,8 +118,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		List<UserDTO> usersOnAcb = getAllUsersOnAtl(atl);
 
 		//check all the ACBs to see if each user has permission on it
-		List<CertificationBodyDTO> allAcbs = certificationBodyDao.findAll();
-		List<TestingLabDTO> allTestingLabs = testingLabDAO.findAll();
+		List<CertificationBodyDTO> allAcbs = certificationBodyDao.findAll(false);
+		List<TestingLabDTO> allTestingLabs = testingLabDAO.findAll(false);
 
 		for(UserDTO currUser : usersOnAcb) {
 			boolean userHasOtherPermissions = false;
@@ -310,7 +310,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 			userDto = userDAO.getById(userDto.getId());
 		}
 		
-		List<TestingLabDTO> atls = testingLabDAO.findAll();
+		List<TestingLabDTO> atls = testingLabDAO.findAll(false);
 		for(TestingLabDTO atl : atls) {
 			ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
 			MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -341,14 +341,14 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	}
 	
 	@Transactional(readOnly = true)
-	public List<TestingLabDTO> getAll() {
-		return testingLabDAO.findAll();
+	public List<TestingLabDTO> getAll(boolean showDeleted) {
+		return testingLabDAO.findAll(showDeleted);
 	}
 	
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
-	public List<TestingLabDTO> getAllForUser() {
-		return testingLabDAO.findAll();
+	public List<TestingLabDTO> getAllForUser(boolean showDeleted) {
+		return testingLabDAO.findAll(showDeleted);
 	}
 
 	@Transactional(readOnly = true)
