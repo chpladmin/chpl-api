@@ -10,6 +10,7 @@ public class TestingLab {
 	private String website;
 	private String accredidationNumber;
 	private Address address;
+	private boolean isDeleted;
 	
 	public TestingLab() {}
 	
@@ -22,6 +23,7 @@ public class TestingLab {
 		if(dto.getAddress() != null) {
 			this.address = new Address(dto.getAddress());
 		}
+		this.isDeleted = dto.getDeleted();
 	}
 	
 	public Long getId() {
@@ -63,5 +65,13 @@ public class TestingLab {
 
 	public void setAccredidationNumber(String accredidationNumber) {
 		this.accredidationNumber = accredidationNumber;
+	}
+	
+	public boolean getIsDeleted(){
+		return isDeleted;
+	}
+	
+	public void setIsDeleted(boolean deleted){
+		this.isDeleted = deleted;
 	}
 }
