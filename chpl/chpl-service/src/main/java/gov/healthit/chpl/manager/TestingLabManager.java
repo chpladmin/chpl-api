@@ -27,8 +27,8 @@ public interface TestingLabManager {
 	public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException;
 	public void undelete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
 	public void delete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
-	public List<TestingLabDTO> getAllForUser();
-	public List<TestingLabDTO> getAll();
+	public List<TestingLabDTO> getAllForUser(boolean showDeleted);
+	public List<TestingLabDTO> getAll(boolean showDeleted);
 	public TestingLabDTO getById(Long id) throws EntityRetrievalException;
 	public TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 	public List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl);

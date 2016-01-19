@@ -106,6 +106,11 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		}
 		
 		if(dto.getDeleted() != null) {
+			if(!dto.getDeleted()){
+				Query query2 = entityManager.createQuery("UPDATE ActivityEntity SET deleted = false WHERE activity_object_id = :acbid");
+				query2.setParameter("acbid", dto.getId());
+				query2.executeUpdate();
+			}
 			entity.setDeleted(dto.getDeleted());
 		}
 		if(dto.getLastModifiedUser() != null) {
@@ -133,11 +138,15 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		query.setParameter("acbid", acbId);
 		query.executeUpdate();
 		
+		Query query2 = entityManager.createQuery("UPDATE ActivityEntity SET deleted = true WHERE activity_object_id = :acbid AND description NOT LIKE '%Deleted acb%' AND description NOT LIKE '%no longer marked as deleted%'");
+		query2.setParameter("acbid", acbId);
+		query2.executeUpdate();
+		
 	}
 	
-	public List<CertificationBodyDTO> findAll(){
+	public List<CertificationBodyDTO> findAll(boolean showDeleted){
 		
-		List<CertificationBodyEntity> entities = getAllEntities();
+		List<CertificationBodyEntity> entities = getAllEntities(showDeleted);
 		List<CertificationBodyDTO> acbs = new ArrayList<>();
 		
 		for (CertificationBodyEntity entity : entities) {
@@ -193,9 +202,15 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	
 	}
 	
-	private List<CertificationBodyEntity> getAllEntities() {
+	private List<CertificationBodyEntity> getAllEntities(boolean showDeleted) {
 		
-		List<CertificationBodyEntity> result = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true)", CertificationBodyEntity.class).getResultList();
+		List<CertificationBodyEntity> result;
+		
+		if(showDeleted){
+			result = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address", CertificationBodyEntity.class).getResultList();
+		}else{
+			result = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true)", CertificationBodyEntity.class).getResultList();
+		}
 		return result;
 	}
 	

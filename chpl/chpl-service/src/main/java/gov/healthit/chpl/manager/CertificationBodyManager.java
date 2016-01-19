@@ -34,8 +34,8 @@ public interface CertificationBodyManager {
 	public void delete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
 	
 	
-	public List<CertificationBodyDTO> getAllForUser();
-	public List<CertificationBodyDTO> getAll();
+	public List<CertificationBodyDTO> getAllForUser(boolean showDeleted);
+	public List<CertificationBodyDTO> getAll(boolean showDeleted);
 
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
 	public CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
