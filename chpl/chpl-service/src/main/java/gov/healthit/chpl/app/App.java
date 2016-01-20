@@ -37,7 +37,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 @Component("app")
 public class App {
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    private static final String DOWNLOAD_PROPERTIES_FILE = "download.properties";
 	private static final Logger logger = LogManager.getLogger(App.class);
 
 	private SimpleDateFormat timestampFormat;
@@ -64,15 +63,7 @@ public class App {
 			props.load(in);
 			in.close();
 		}
-		
-		in = App.class.getClassLoader().getResourceAsStream(DOWNLOAD_PROPERTIES_FILE);
-		if(in == null) {
-			throw new FileNotFoundException("Download properties file not found in the classpath");
-		} else {
-			props.load(in);
-			in.close();
-		}
-		
+
 		//set up data source context
 		 LocalContext ctx = LocalContextFactory.createLocalContext(props.getProperty("dbDriverClass"));
 		 ctx.addDataSource(props.getProperty("dataSourceName"),props.getProperty("dataSourceConnection"), 

@@ -56,7 +56,6 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 	public abstract List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
 	public abstract Long getDefaultStatusId();
 	
-	//public abstract 
 	@Override
 	public CSVRecord getRecord() {
 		return record;

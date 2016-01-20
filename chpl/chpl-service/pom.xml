@@ -13,6 +13,7 @@
   <packaging>war</packaging>
   <name>chpl-service Maven Webapp</name>
   <url>http://maven.apache.org</url>
+  
   <dependencies>
     	<dependency>
 			<groupId>gov.healthit.chpl</groupId>
@@ -268,4 +269,47 @@
       </plugin>
 	</plugins>
   </build>
+  
+  <profiles>
+
+    <!-- this profile will allow files in environment-specific folders like resources-prod or resources-test
+         to be added to the resulting war's classpath under WEB-INF/classes
+         to activate the profile, simply add '-Denv=production' to your maven build command 
+         this also works fine with war:inplace and war:exploded 
+    -->
+    <profile>
+        <id>environment-specific</id>
+        <activation>
+            <property>
+                <name>env</name>
+            </property>
+        </activation>
+        <build>
+        <plugins>   
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>2.4</version>
+            <configuration>
+                <webResources>
+                    <!-- note the order of the following resource elements are important. 
+                         if there are duplicate files, the first file copied will win
+                    -->
+                    <resource>
+                        <!-- this is relative to the pom.xml directory -->                        
+                        <directory>src/main/resources-${env}</directory>
+                        <!-- override default destination at root of war -->
+                        <targetPath>WEB-INF/classes</targetPath>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <targetPath>WEB-INF/classes</targetPath>
+                    </resource>
+                </webResources>
+            </configuration>
+          </plugin>             
+        </plugins>
+        </build>
+    </profile>
+  </profiles>
 </project>

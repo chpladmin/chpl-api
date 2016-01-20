@@ -17,7 +17,7 @@
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />
 			<property name="hibernate.driver_class" value="org.postgresql.Driver" />
-			<property name="hibernate.connection.datasource" value="java:/comp/env/jdbc/openchpl" />
+			<property name="hibernate.connection.datasource" value="java:/comp/env/jdbc/openchpl_test" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
 			<property name="hibernate.flush_before_completion" value="true" />
 			<property name="hibernate.c3p0.min_size" value="5" />
