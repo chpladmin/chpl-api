@@ -10,7 +10,7 @@ public interface CertificationBodyDAO {
 
 	public void delete(Long acbId);
 
-	public List<CertificationBodyDTO> findAll();
+	public List<CertificationBodyDTO> findAll(boolean showDeleted);
 
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
 	public CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;

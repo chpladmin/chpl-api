@@ -9,6 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.util.StringUtils;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
@@ -36,6 +38,7 @@ import gov.healthit.chpl.domain.UpdateUserAndAcbRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import io.swagger.annotations.Api;
@@ -53,18 +56,24 @@ public class CertificationBodyController {
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertificationBodyResults getAcbs(
-			@RequestParam(required=false, defaultValue="false") boolean editable) {
+			@RequestParam(required=false, defaultValue="false") boolean editable,
+			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) {
 		CertificationBodyResults results = new CertificationBodyResults();
-		List<CertificationBodyDTO> acbs = null;
-		if(editable) {
-			acbs = acbManager.getAllForUser();
-		} else {
-			acbs = acbManager.getAll();
-		}
-		
-		if(acbs != null) {
-			for(CertificationBodyDTO acb : acbs) {
-				results.getAcbs().add(new CertificationBody(acb));
+		if(!Util.isUserRoleAdmin() && showDeleted){
+			throw new AccessDeniedException("Only Admins can see deleted ACB's.");
+		}else{
+			results = new CertificationBodyResults();
+			List<CertificationBodyDTO> acbs = null;
+			if(editable) {
+				acbs = acbManager.getAllForUser(showDeleted);
+			} else {
+				acbs = acbManager.getAll(showDeleted);
+			}
+
+			if(acbs != null) {
+				for(CertificationBodyDTO acb : acbs) {
+					results.getAcbs().add(new CertificationBody(acb));
+				}
 			}
 		}
 		return results;
@@ -111,7 +120,7 @@ public class CertificationBodyController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
 		CertificationBodyDTO toUpdate = new CertificationBodyDTO();
 		toUpdate.setId(acbInfo.getId());
 		toUpdate.setAcbCode(acbInfo.getAcbCode());

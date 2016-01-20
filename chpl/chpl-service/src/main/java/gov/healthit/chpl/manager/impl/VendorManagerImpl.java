@@ -49,7 +49,7 @@ public class VendorManagerImpl implements VendorManager {
 	@Transactional(readOnly = true)
 	public List<VendorDTO> getAll() {
 		List<VendorDTO> allVendors = vendorDao.findAll();
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs != null && availableAcbs.size() == 1) {
 			//if someone is a member of multiple acbs, they will not see the transparency
 			CertificationBodyDTO acb = availableAcbs.get(0);
@@ -69,7 +69,7 @@ public class VendorManagerImpl implements VendorManager {
 	@Transactional(readOnly = true)
 	public VendorDTO getById(Long id) throws EntityRetrievalException {
 		VendorDTO vendor = vendorDao.getById(id);
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs != null && availableAcbs.size() == 1) {
 			//if someone is a member of multiple acbs, they will not see the transparency
 			CertificationBodyDTO acb = availableAcbs.get(0);
@@ -101,7 +101,7 @@ public class VendorManagerImpl implements VendorManager {
 		}
 		
 		if(!isChplAdmin) {
-			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 			if(availableAcbs != null && availableAcbs.size() > 0) {
 				for(CertificationBodyDTO acb : availableAcbs) {
 					VendorACBMapDTO existingMap = vendorDao.getTransparencyMapping(vendor.getId(), acb.getId());
@@ -132,7 +132,7 @@ public class VendorManagerImpl implements VendorManager {
 		
 		VendorDTO created = vendorDao.create(dto);
 		
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs != null && availableAcbs.size() > 0) {
 			for(CertificationBodyDTO acb : availableAcbs) {
 				VendorACBMapDTO vendorMappingToCreate = new VendorACBMapDTO();
@@ -151,7 +151,7 @@ public class VendorManagerImpl implements VendorManager {
 	public void delete(VendorDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		VendorDTO toDelete = vendorDao.getById(dto.getId());
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs != null && availableAcbs.size() > 0) {
 			for(CertificationBodyDTO acb : availableAcbs) {
 				vendorDao.deleteTransparencyMapping(dto.getId(), acb.getId());
@@ -167,7 +167,7 @@ public class VendorManagerImpl implements VendorManager {
 	public void delete(Long vendorId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		VendorDTO toDelete = vendorDao.getById(vendorId);
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs != null && availableAcbs.size() > 0) {
 			for(CertificationBodyDTO acb : availableAcbs) {
 				vendorDao.deleteTransparencyMapping(vendorId, acb.getId());
@@ -197,7 +197,7 @@ public class VendorManagerImpl implements VendorManager {
 		}
 		// - mark the passed in vendors as deleted
 		for(Long vendorId : vendorIdsToMerge) {
-			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser();
+			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 			if(availableAcbs != null && availableAcbs.size() > 0) {
 				for(CertificationBodyDTO acb : availableAcbs) {
 					vendorDao.deleteTransparencyMapping(vendorId, acb.getId());

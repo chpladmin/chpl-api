@@ -79,16 +79,21 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, admin)")
-	public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
 		
 		TestingLabDTO toUpdate = testingLabDAO.getById(atl.getId());
 		TestingLabDTO result = testingLabDAO.update(atl);
+		
+		if((atl.getName() != null && Util.isUserRoleAdmin()) || atl.getName() == null || atl.getName().equals(toUpdate.getName())){
 		
 		logger.debug("Updated testingLab " + atl);
 		
 		String activityMsg = "Updated testing lab " + atl.getName();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, toUpdate, result);
-		
+		}else{
+			 logger.debug("ATL update failed: only admin can update atl name.");
+			 throw new UpdateTestingLabException("Only ADMIN can change the name of an ATL.");
+		}
 		return result;
 	}
 	
@@ -113,8 +118,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		List<UserDTO> usersOnAcb = getAllUsersOnAtl(atl);
 
 		//check all the ACBs to see if each user has permission on it
-		List<CertificationBodyDTO> allAcbs = certificationBodyDao.findAll();
-		List<TestingLabDTO> allTestingLabs = testingLabDAO.findAll();
+		List<CertificationBodyDTO> allAcbs = certificationBodyDao.findAll(false);
+		List<TestingLabDTO> allTestingLabs = testingLabDAO.findAll(false);
 
 		for(UserDTO currUser : usersOnAcb) {
 			boolean userHasOtherPermissions = false;
@@ -305,7 +310,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 			userDto = userDAO.getById(userDto.getId());
 		}
 		
-		List<TestingLabDTO> atls = testingLabDAO.findAll();
+		List<TestingLabDTO> atls = testingLabDAO.findAll(false);
 		for(TestingLabDTO atl : atls) {
 			ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
 			MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -336,14 +341,14 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	}
 	
 	@Transactional(readOnly = true)
-	public List<TestingLabDTO> getAll() {
-		return testingLabDAO.findAll();
+	public List<TestingLabDTO> getAll(boolean showDeleted) {
+		return testingLabDAO.findAll(showDeleted);
 	}
 	
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
-	public List<TestingLabDTO> getAllForUser() {
-		return testingLabDAO.findAll();
+	public List<TestingLabDTO> getAllForUser(boolean showDeleted) {
+		return testingLabDAO.findAll(showDeleted);
 	}
 
 	@Transactional(readOnly = true)

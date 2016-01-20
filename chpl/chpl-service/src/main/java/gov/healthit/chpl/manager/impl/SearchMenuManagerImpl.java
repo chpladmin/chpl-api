@@ -166,7 +166,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Override
 	public Set<KeyValueModel> getCertBodyNames() {
 		
-		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
+		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(false);
 		Set<KeyValueModel> acbNames = new HashSet<KeyValueModel>();
 		
 		for (CertificationBodyDTO dto : dtos) {

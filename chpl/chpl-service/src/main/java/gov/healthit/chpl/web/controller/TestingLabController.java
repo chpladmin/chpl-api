@@ -9,6 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.util.StringUtils;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
@@ -36,6 +38,7 @@ import gov.healthit.chpl.domain.UpdateUserAndAtlRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 import io.swagger.annotations.Api;
@@ -52,18 +55,24 @@ public class TestingLabController {
 	
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody TestingLabResults getAtls(@RequestParam(required=false, defaultValue="false") boolean editable) {
+	public @ResponseBody TestingLabResults getAtls(@RequestParam(required=false, defaultValue="false") boolean editable,
+			@RequestParam(required=false, defaultValue="false") boolean showDeleted) {
 		TestingLabResults results = new TestingLabResults();
-		List<TestingLabDTO> atls = null;
-		if(editable) {
-			atls = atlManager.getAllForUser();
-		} else {
-			atls = atlManager.getAll();
-		}
-		
-		if(atls != null) {
-			for(TestingLabDTO atl : atls) {
-				results.getAtls().add(new TestingLab(atl));
+		if(!Util.isUserRoleAdmin() && showDeleted){
+			throw new AccessDeniedException("Only Admin can see deleted ATL's.");
+		}else{
+			results = new TestingLabResults();
+			List<TestingLabDTO> atls = null;
+			if(editable) {
+				atls = atlManager.getAllForUser(showDeleted);
+			} else {
+				atls = atlManager.getAll(showDeleted);
+			}
+
+			if(atls != null) {
+				for(TestingLabDTO atl : atls) {
+					results.getAtls().add(new TestingLab(atl));
+				}
 			}
 		}
 		return results;
@@ -111,7 +120,7 @@ public class TestingLabController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public TestingLab update(@RequestBody TestingLab atlInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public TestingLab update(@RequestBody TestingLab atlInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
 		TestingLabDTO toUpdate = new TestingLabDTO();
 		toUpdate.setId(atlInfo.getId());
 		toUpdate.setTestingLabCode(atlInfo.getAtlCode());

@@ -317,7 +317,7 @@ public class UserManagementController {
 				userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
 				
 				//if they were an acb admin then they need to have all ACB access removed
-				List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
+				List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
 				for(CertificationBodyDTO acb : acbs) {
 					acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
 				}
