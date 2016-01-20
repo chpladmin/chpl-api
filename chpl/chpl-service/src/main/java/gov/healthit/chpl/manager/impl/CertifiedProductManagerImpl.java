@@ -582,6 +582,117 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	
 	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateCqms(Long acbId, CertifiedProductDTO productDto, List<CQMResultDetails> cqmResults)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
+		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
+		Boolean dataHasChanged = false;
+		
+		List<CQMResultDTO> beforeCQMs = cqmResultDAO.findByCertifiedProductId(productDto.getId());
+		
+		// Handle NQFs and Additions:
+		for (CQMResultDetails cqm : cqmResults){
+			
+			Boolean isNQF = (cqm.getCmsId() == null);
+			if (isNQF){
+				for (CQMResultDTO beforeCQM : beforeCQMs){
+					
+					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
+					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
+					
+					if ((beforeCriterionDTO.getCmsId() == null) && (beforeCriterionDTO.getNqfNumber().equals(cqm.getNqfNumber()) ) ){
+						beforeCQM.setSuccess(cqm.isSuccess());
+						cqmResultDAO.update(beforeCQM);
+						dataHasChanged = true;
+						break;
+					}
+				}
+			} else {
+				
+				Boolean found = false;
+				
+				for (CQMResultDTO beforeCQM : beforeCQMs){
+					
+					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
+					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
+					
+					if (beforeCriterionDTO.getCmsId().equals(cqm.getCmsId()) && 
+							beforeCriterionDTO.getCqmVersion().equals(cqm .getKey().getCqmVersion())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found){
+					
+					CQMCriterionDTO criterion = null;
+					if(StringUtils.isEmpty(cqm.getKey().getCmsId())) {
+						criterion = cqmCriterionDao.getNQFByNumber(cqm.getKey().getNumber());
+					} else if(cqm.getKey().getCmsId().startsWith("CMS")) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqm.getKey().getCmsId(), cqm.getKey().getCqmVersion());
+					}
+					if(criterion == null) {
+						throw new EntityRetrievalException("Could not find CQM with number " + cqm.getKey().getCmsId() + " and version " + cqm.getKey().getCqmVersion());
+					}
+					
+					CQMResultDTO newCQMResult = new CQMResultDTO();
+					
+					newCQMResult.setCertifiedProductId(productDto.getId());
+					newCQMResult.setCqmCriterionId(criterion.getId());
+					newCQMResult.setCreationDate(new Date());
+					newCQMResult.setDeleted(false);
+					newCQMResult.setSuccess(true);
+					cqmResultDAO.create(newCQMResult);
+					dataHasChanged = true;
+				}
+			}
+		}
+		
+		// Handle CQM deletions:
+		for (CQMCriterionDTO criterion : cqmCriterionDao.findAll()){
+			
+			Boolean isDeletion = true;
+			Boolean isNQF = (criterion.getCmsId() == null);
+			
+			if (isNQF){
+				isDeletion = false;
+			} else {
+							
+				for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
+					
+					Boolean cqmIsNQF = (cqm.getKey().getCmsId() == null);
+					if (!cqmIsNQF){
+						if (cqm.getKey().getCmsId().equals(criterion.getCmsId())){
+							isDeletion = false;
+							break;
+						}
+					}
+				}
+			}
+			if (isDeletion){
+				deleteCqmResult(productDto.getId(), criterion.getId());
+				dataHasChanged = true;
+			}
+			
+		}
+		
+		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
+		
+		if (dataHasChanged){
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity()+" were updated." , before , after);
+		}
+		
+	}
+	
+	
+	
+	
 	/**
 	 * both successes and failures are passed in
 	 * @throws JsonProcessingException 
@@ -620,7 +731,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	*/
 	
-	
+	/*
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
@@ -728,7 +839,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 	}
-	
+	*/
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "

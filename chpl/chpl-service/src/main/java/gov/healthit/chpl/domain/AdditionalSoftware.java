@@ -4,7 +4,7 @@ import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 
 public class AdditionalSoftware {
 
-	private Long additionalSoftwareid;
+	private Long additionalSoftwareId;
 	private Long certifiedProductId;
 	private Long certifiedProductSelf;
 	private String justification;
@@ -13,7 +13,7 @@ public class AdditionalSoftware {
 	
 	public AdditionalSoftware() {}
 	public AdditionalSoftware(AdditionalSoftwareDTO additionalSoftwareDTO) {
-		this.setAdditionalSoftwareid(additionalSoftwareDTO.getId());
+		this.setAdditionalSoftwareId(additionalSoftwareDTO.getId());
 		this.setCertifiedProductId(additionalSoftwareDTO.getCertifiedProductId());
 		this.setCertifiedProductSelf(additionalSoftwareDTO.getCertifiedProductSelfId());
 		this.setJustification(additionalSoftwareDTO.getJustification());
@@ -21,11 +21,11 @@ public class AdditionalSoftware {
 		this.setVersion(additionalSoftwareDTO.getVersion());
 	}
 	
-	public Long getAdditionalSoftwareid() {
-		return additionalSoftwareid;
+	public Long getAdditionalSoftwareId() {
+		return additionalSoftwareId;
 	}
-	public void setAdditionalSoftwareid(Long additionalSoftwareid) {
-		this.additionalSoftwareid = additionalSoftwareid;
+	public void setAdditionalSoftwareId(Long additionalSoftwareid) {
+		this.additionalSoftwareId = additionalSoftwareid;
 	}
 	public Long getCertifiedProductId() {
 		return certifiedProductId;
