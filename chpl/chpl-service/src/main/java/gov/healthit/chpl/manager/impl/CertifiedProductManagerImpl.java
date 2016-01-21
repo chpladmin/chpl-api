@@ -501,7 +501,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						
 						// Build a list of addl software IDs being passed in
 						for (AdditionalSoftware sw : additionalSoftware){
-							incomingIds.add(sw.getAdditionalSoftwareid());
+							incomingIds.add(sw.getAdditionalSoftwareId());
 						}
 						
 						Set<Long> toBeDeleted = new HashSet<Long>(existingIds);
@@ -526,11 +526,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						
 						for (AdditionalSoftware sw : additionalSoftware){
 							
-							if (toBeUpdated.contains(sw.getAdditionalSoftwareid())){ // update additional software
+							if (toBeUpdated.contains(sw.getAdditionalSoftwareId())){ // update additional software
 								
-								AdditionalSoftwareDTO dto = additionalSoftwareDao.getById(sw.getAdditionalSoftwareid());
+								AdditionalSoftwareDTO dto = additionalSoftwareDao.getById(sw.getAdditionalSoftwareId());
 								
-								dto.setId(sw.getAdditionalSoftwareid());
+								dto.setId(sw.getAdditionalSoftwareId());
 								dto.setCertifiedProductId(sw.getCertifiedProductId());
 								dto.setCertifiedProductSelfId(sw.getCertifiedProductSelf());
 								dto.setJustification(sw.getJustification());
@@ -622,23 +622,24 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					
 					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
 					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
-					
+					// TODO: Is this okay?
 					if (beforeCriterionDTO.getCmsId().equals(cqm.getCmsId()) && 
-							beforeCriterionDTO.getCqmVersion().equals(cqm .getKey().getCqmVersion())) {
+							(cqm.getSuccessVersions().contains(beforeCriterionDTO.getCqmVersion()))) {
 						found = true;
 						break;
 					}
 				}
-				if (!found){
+				if (!found){ // if it's not found, it's a an addition.
 					
+					// TODO: Re-work this to deal with multiple versions.
 					CQMCriterionDTO criterion = null;
-					if(StringUtils.isEmpty(cqm.getKey().getCmsId())) {
-						criterion = cqmCriterionDao.getNQFByNumber(cqm.getKey().getNumber());
-					} else if(cqm.getKey().getCmsId().startsWith("CMS")) {
-						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqm.getKey().getCmsId(), cqm.getKey().getCqmVersion());
+					if(StringUtils.isEmpty(cqm.getCmsId())) {
+						criterion = cqmCriterionDao.getNQFByNumber(cqm.getNumber());
+					} else if(cqm.getCmsId().startsWith("CMS")) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqm.getCmsId(), cqm.getCqmVersion());
 					}
 					if(criterion == null) {
-						throw new EntityRetrievalException("Could not find CQM with number " + cqm.getKey().getCmsId() + " and version " + cqm.getKey().getCqmVersion());
+						throw new EntityRetrievalException("Could not find CQM with number " + cqm.getCmsId() + " and version " + cqm.getCqmVersion());
 					}
 					
 					CQMResultDTO newCQMResult = new CQMResultDTO();
