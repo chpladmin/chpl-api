@@ -44,7 +44,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@PropertySource("classpath:/environment.auth.properties")
+@PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLAuthenticationSecurityConfig extends
 		WebSecurityConfigurerAdapter implements EnvironmentAware {
