@@ -16,7 +16,7 @@ public class ProductDTO {
 	private String name;
 	private Set<ProductVersionDTO> productVersions = new HashSet<ProductVersionDTO>();
 	private String reportFileLocation;
-	private Long vendorId;
+	private Long developerId;
 	
 	public ProductDTO(){}
 	public ProductDTO(ProductEntity entity){
@@ -28,7 +28,7 @@ public class ProductDTO {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.name = entity.getName();
 		this.reportFileLocation = entity.getReportFileLocation();
-		this.vendorId = entity.getVendorId();
+		this.developerId = entity.getDeveloperId();
 	}
 	
 	
@@ -80,11 +80,11 @@ public class ProductDTO {
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
 	}
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 	
 }

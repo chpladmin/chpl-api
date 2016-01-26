@@ -22,10 +22,10 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.VendorDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.VendorDTO;
-import gov.healthit.chpl.entity.VendorEntity;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.entity.DeveloperEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,9 +35,9 @@ import junit.framework.TestCase;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-public class VendorDaoTest extends TestCase {
+public class DeveloperDaoTest extends TestCase {
 
-	@Autowired private VendorDAO vendorDao;
+	@Autowired private DeveloperDAO developerDao;
 	@Autowired private AddressDAO addressDao;
 	
 	private static JWTAuthenticatedUser authUser;
@@ -51,75 +51,75 @@ public class VendorDaoTest extends TestCase {
 	}
 
 	@Test
-	public void getAllVendors() {
-		List<VendorDTO> results = vendorDao.findAll();
+	public void getAllDevelopers() {
+		List<DeveloperDTO> results = developerDao.findAll();
 		assertNotNull(results);
 		assertEquals(3, results.size());
 	}
 
 	@Test
-	public void getVendorWithAddress() {
-		Long vendorId = -1L;
-		VendorDTO vendor = null;
+	public void getDeveloperWithAddress() {
+		Long developerId = -1L;
+		DeveloperDTO developer = null;
 		try {
-			vendor = vendorDao.getById(vendorId);
+			developer = developerDao.getById(developerId);
 		} catch(EntityRetrievalException ex) {
-			fail("Could not find vendor with id " + vendorId);
+			fail("Could not find developer with id " + developerId);
 		}
-		assertNotNull(vendor);
-		assertEquals(-1, vendor.getId().longValue());
-		assertNotNull(vendor.getAddress());
-		assertEquals(-1, vendor.getAddress().getId().longValue());
+		assertNotNull(developer);
+		assertEquals(-1, developer.getId().longValue());
+		assertNotNull(developer.getAddress());
+		assertEquals(-1, developer.getAddress().getId().longValue());
 	}
 	
 	@Test
-	public void getVendorWithoutAddress() {
-		Long vendorId = -3L;
-		VendorDTO vendor = null;
+	public void getDeveloperWithoutAddress() {
+		Long developerId = -3L;
+		DeveloperDTO developer = null;
 		try {
-			vendor = vendorDao.getById(vendorId);
+			developer = developerDao.getById(developerId);
 		} catch(EntityRetrievalException ex) {
-			fail("Could not find vendor with id " + vendorId);
+			fail("Could not find developer with id " + developerId);
 		}
-		assertNotNull(vendor);
-		assertEquals(-3, vendor.getId().longValue());
-		assertNull(vendor.getAddress());
+		assertNotNull(developer);
+		assertEquals(-3, developer.getId().longValue());
+		assertNull(developer.getAddress());
 	}
 	
 	@Test
-	public void createVendorWithoutAddress() throws EntityRetrievalException {
-		VendorDTO vendor = new VendorDTO();
-		vendor.setCreationDate(new Date());
-		vendor.setDeleted(false);
-		vendor.setLastModifiedDate(new Date());
-		vendor.setLastModifiedUser(-2L);
-		vendor.setName("Unit Test Vendor!");
-		vendor.setWebsite("http://www.google.com");
+	public void createDeveloperWithoutAddress() throws EntityRetrievalException {
+		DeveloperDTO developer = new DeveloperDTO();
+		developer.setCreationDate(new Date());
+		developer.setDeleted(false);
+		developer.setLastModifiedDate(new Date());
+		developer.setLastModifiedUser(-2L);
+		developer.setName("Unit Test Developer!");
+		developer.setWebsite("http://www.google.com");
 		
-		VendorDTO result = null;
+		DeveloperDTO result = null;
 		try {
-			result = vendorDao.create(vendor);
+			result = developerDao.create(developer);
 		} catch(Exception ex) {
-			fail("could not create vendor!");
+			fail("could not create developer!");
 			System.err.println(ex.getStackTrace());
 		}
 		
 		assertNotNull(result);
 		assertNotNull(result.getId());
 		assertTrue(result.getId() > 0L);
-		assertNull(vendor.getAddress());
-		assertNotNull(vendorDao.getById(result.getId()));
+		assertNull(developer.getAddress());
+		assertNotNull(developerDao.getById(result.getId()));
 	}
 	
 	@Test
-	public void createVendorWithNewAddress() {
-		VendorDTO vendor = new VendorDTO();
-		vendor.setCreationDate(new Date());
-		vendor.setDeleted(false);
-		vendor.setLastModifiedDate(new Date());
-		vendor.setLastModifiedUser(-2L);
-		vendor.setName("Unit Test Vendor!");
-		vendor.setWebsite("http://www.google.com");
+	public void createDeveloperWithNewAddress() {
+		DeveloperDTO developer = new DeveloperDTO();
+		developer.setCreationDate(new Date());
+		developer.setDeleted(false);
+		developer.setLastModifiedDate(new Date());
+		developer.setLastModifiedUser(-2L);
+		developer.setName("Unit Test Developer!");
+		developer.setWebsite("http://www.google.com");
 		
 		AddressDTO newAddress = new AddressDTO();
 		newAddress.setStreetLineOne("11 Holmehurst Ave");
@@ -131,13 +131,13 @@ public class VendorDaoTest extends TestCase {
 		newAddress.setCreationDate(new Date());
 		newAddress.setLastModifiedDate(new Date());
 		newAddress.setDeleted(false);
-		vendor.setAddress(newAddress);
+		developer.setAddress(newAddress);
 		
-		VendorDTO result = null;
+		DeveloperDTO result = null;
 		try {
-			result = vendorDao.create(vendor);
+			result = developerDao.create(developer);
 		} catch(Exception ex) {
-			fail("could not create vendor!");
+			fail("could not create developer!");
 			System.err.println(ex.getStackTrace());
 		}
 		
@@ -150,29 +150,29 @@ public class VendorDaoTest extends TestCase {
 	}
 	
 	@Test
-	public void createVendorWithExistingAddress() {
-		VendorDTO vendor = new VendorDTO();
-		vendor.setCreationDate(new Date());
-		vendor.setDeleted(false);
-		vendor.setLastModifiedDate(new Date());
-		vendor.setLastModifiedUser(-2L);
-		vendor.setName("Unit Test Vendor!");
-		vendor.setWebsite("http://www.google.com");
+	public void createDeveloperWithExistingAddress() {
+		DeveloperDTO developer = new DeveloperDTO();
+		developer.setCreationDate(new Date());
+		developer.setDeleted(false);
+		developer.setLastModifiedDate(new Date());
+		developer.setLastModifiedUser(-2L);
+		developer.setName("Unit Test Developer!");
+		developer.setWebsite("http://www.google.com");
 		
 		try 
 		{
 			AddressDTO existingAddress = addressDao.getById(-1L);
 			existingAddress.setCountry("Russia");
-			vendor.setAddress(existingAddress);
+			developer.setAddress(existingAddress);
 		} catch(EntityRetrievalException ex) {
-			fail("could not find existing address to set on vendor");
+			fail("could not find existing address to set on developer");
 		}
 		
-		VendorDTO result = null;
+		DeveloperDTO result = null;
 		try {
-			result = vendorDao.create(vendor);
+			result = developerDao.create(developer);
 		} catch(Exception ex) {
-			fail("could not create vendor!");
+			fail("could not create developer!");
 			System.out.println(ex.getStackTrace());
 		}
 		
@@ -186,24 +186,24 @@ public class VendorDaoTest extends TestCase {
 	}
 	
 	@Test
-	public void updateVendor() {
-		VendorDTO vendor = vendorDao.findAll().get(0);
-		vendor.setName("UPDATED NAME");
+	public void updateDeveloper() {
+		DeveloperDTO developer = developerDao.findAll().get(0);
+		developer.setName("UPDATED NAME");
 		
-		VendorEntity result = null;
+		DeveloperEntity result = null;
 		try {
-			result = vendorDao.update(vendor);
+			result = developerDao.update(developer);
 		} catch(Exception ex) {
-			fail("could not update vendor!");
+			fail("could not update developer!");
 			System.out.println(ex.getStackTrace());
 		}
 		assertNotNull(result);
 
 		try {
-			VendorDTO updatedVendor = vendorDao.getById(vendor.getId());
-			assertEquals("UPDATED NAME", updatedVendor.getName());
+			DeveloperDTO updatedDeveloper = developerDao.getById(developer.getId());
+			assertEquals("UPDATED NAME", updatedDeveloper.getName());
 		} catch(Exception ex) {
-			fail("could not find vendor!");
+			fail("could not find developer!");
 			System.out.println(ex.getStackTrace());
 		}
 	}

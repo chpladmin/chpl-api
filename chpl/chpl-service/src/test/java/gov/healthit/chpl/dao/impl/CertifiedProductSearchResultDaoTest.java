@@ -51,7 +51,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	public void testCountSearchResults(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setVendor("Test");
+		searchRequest.setDeveloper("Test");
 		searchRequest.setVisibleOnCHPL("YES");
 		Long countProducts = searchResultDAO.countMultiFilterSearchResults(searchRequest);
 		assertEquals(2, countProducts.intValue());
@@ -63,15 +63,15 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
-	public void testSearchVendor(){
+	public void testSearchDeveloper(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setVendor("Test Vendor 1");
+		searchRequest.setDeveloper("Test Developer 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(2, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
-			assertTrue(dto.getVendorName().startsWith("Test Vendor 1"));
+			assertTrue(dto.getDeveloperName().startsWith("Test Developer 1"));
 		}
 	}
 	
@@ -206,7 +206,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		
 		searchRequest.setSearchTerm("Test");
-		searchRequest.setVendor("Test Vendor");
+		searchRequest.setDeveloper("Test Developer 1");
 		searchRequest.setProduct("Test");
 		searchRequest.setVersion("1.0.1");
 		searchRequest.setCertificationEdition("2014");
@@ -236,7 +236,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 			assertEquals("InfoGard", product.getCertificationBodyName());
 			assertEquals("CHP-024050",product.getChplProductNumber());
 			assertEquals(2, product.getCertificationEditionId().intValue());
-			assertEquals("Test Vendor 1", product.getVendorName());
+			assertEquals("Test Developer 1", product.getDeveloperName());
 			assertEquals(4, product.getCountCertifications().intValue());
 			assertEquals(0, product.getCountCqms().intValue());
 			assertTrue(product.getVisibleOnChpl());

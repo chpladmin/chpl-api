@@ -18,8 +18,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.VendorDTO;
-import gov.healthit.chpl.manager.VendorManager;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.manager.DeveloperManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,9 +29,9 @@ import junit.framework.TestCase;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-public class VendorManagerTest extends TestCase {
+public class DeveloperManagerTest extends TestCase {
 	
-	@Autowired private VendorManager vendorManager;
+	@Autowired private DeveloperManager developerManager;
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser testUser3;
@@ -54,21 +54,21 @@ public class VendorManagerTest extends TestCase {
 	}
 	
 	@Test
-	public void testGetVendorAsAdmin() throws EntityRetrievalException {
+	public void testGetDeveloperAsAdmin() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		VendorDTO vendor = vendorManager.getById(-1L);
-		assertNotNull(vendor);
-		assertNull(vendor.getTransparencyAttestation());
+		DeveloperDTO developer = developerManager.getById(-1L);
+		assertNotNull(developer);
+		assertNull(developer.getTransparencyAttestation());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
-	public void testGetVendorAsAcbAdmin() throws EntityRetrievalException {
+	public void testGetDeveloperAsAcbAdmin() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
-		VendorDTO vendor = vendorManager.getById(-1L);
-		assertNotNull(vendor);
-		assertNotNull(vendor.getTransparencyAttestation());
-		assertTrue(vendor.getTransparencyAttestation());
+		DeveloperDTO developer = developerManager.getById(-1L);
+		assertNotNull(developer);
+		assertNotNull(developer.getTransparencyAttestation());
+		assertTrue(developer.getTransparencyAttestation());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 }

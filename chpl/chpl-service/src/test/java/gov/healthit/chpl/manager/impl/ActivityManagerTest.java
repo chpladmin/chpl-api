@@ -15,7 +15,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
-import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import junit.framework.TestCase;
 
@@ -67,27 +67,27 @@ public class ActivityManagerTest extends TestCase {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		VendorDTO vendor = new VendorDTO();
-		vendor.setCreationDate(new Date());
-		vendor.setId(-1L);
-		vendor.setName("Test");
-		vendor.setWebsite("www.zombo.com");
+		DeveloperDTO developer = new DeveloperDTO();
+		developer.setCreationDate(new Date());
+		developer.setId(-1L);
+		developer.setName("Test");
+		developer.setWebsite("www.zombo.com");
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
-				vendor.getId(), 
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER,
+				developer.getId(), 
 				"Test Activity",
 				null,
-				vendor
+				developer
 				);
 		
-		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR, -1L);	
+		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, -1L);	
 		
 		ActivityEvent event = events.get(events.size()-1);
 		
-		assertEquals(event.getConcept(), ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
+		assertEquals(event.getConcept(), ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
 		assertEquals(event.getOriginalData(), null);
-		assertEquals(event.getNewData().toString(), JSONUtils.toJSON(vendor));
-		assertEquals(event.getActivityObjectId(), vendor.getId());
+		assertEquals(event.getNewData().toString(), JSONUtils.toJSON(developer));
+		assertEquals(event.getActivityObjectId(), developer.getId());
 		
 		activityManager.deleteActivity(event.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -99,30 +99,30 @@ public class ActivityManagerTest extends TestCase {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		VendorDTO vendor = new VendorDTO();
-		vendor.setCreationDate(new Date());
-		vendor.setId(-1L);
-		vendor.setName("Test");
-		vendor.setWebsite("www.zombo.com");
+		DeveloperDTO developer = new DeveloperDTO();
+		developer.setCreationDate(new Date());
+		developer.setId(-1L);
+		developer.setName("Test");
+		developer.setWebsite("www.zombo.com");
 		
 		Date timestamp = new Date();
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
-				vendor.getId(), 
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER,
+				developer.getId(), 
 				"Test Activity",
 				null,
-				vendor,
+				developer,
 				timestamp
 				);
 		
-		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR, -1L);	
+		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, -1L);	
 		
 		ActivityEvent event = events.get(events.size()-1);
 		
-		assertEquals(event.getConcept(), ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
+		assertEquals(event.getConcept(), ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
 		assertEquals(event.getOriginalData(), null);
-		assertEquals(event.getNewData().toString(), JSONUtils.toJSON(vendor));
-		assertEquals(event.getActivityObjectId(), vendor.getId());
+		assertEquals(event.getNewData().toString(), JSONUtils.toJSON(developer));
+		assertEquals(event.getActivityObjectId(), developer.getId());
 		//assertEquals(event.getActivityDate(), timestamp);
 		
 		activityManager.deleteActivity(event.getId());
@@ -146,18 +146,18 @@ public class ActivityManagerTest extends TestCase {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		VendorDTO vendor = new VendorDTO();
-		vendor.setCreationDate(new Date());
-		vendor.setId(1L);
-		vendor.setName("Test");
-		vendor.setWebsite("www.zombo.com");
+		DeveloperDTO developer = new DeveloperDTO();
+		developer.setCreationDate(new Date());
+		developer.setId(1L);
+		developer.setName("Test");
+		developer.setWebsite("www.zombo.com");
 		
 		Date timestamp = new Date();
 		
 		
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
-				vendor.getId(),
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER,
+				developer.getId(),
 				"Test Activity",
 				"Before",
 				"Test",
@@ -194,22 +194,22 @@ public class ActivityManagerTest extends TestCase {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		VendorDTO vendor = new VendorDTO();
-		vendor.setCreationDate(new Date());
-		vendor.setId(1L);
-		vendor.setName("Test");
-		vendor.setWebsite("www.zombo.com");
+		DeveloperDTO developer = new DeveloperDTO();
+		developer.setCreationDate(new Date());
+		developer.setId(1L);
+		developer.setName("Test");
+		developer.setWebsite("www.zombo.com");
 		
 		Date timestamp = new Date();
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
-				vendor.getId(),
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER,
+				developer.getId(),
 				"Test Activity",
 				"Before",
 				"Test",
 				timestamp
 				);
-		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR, vendor.getId() , lastNDays);
+		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, developer.getId() , lastNDays);
 		
 		activityManager.deleteActivity(events.get(0).getId());
 		assertEquals(1, events.size());
@@ -225,7 +225,7 @@ public class ActivityManagerTest extends TestCase {
 		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
 		assertEquals(1, events2.size());
 		
-		List<ActivityEvent> events3 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
+		List<ActivityEvent> events3 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
 		assertEquals(0, events3.size());
 		
 	}
@@ -240,39 +240,39 @@ public class ActivityManagerTest extends TestCase {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		VendorDTO vendor = new VendorDTO();
-		vendor.setCreationDate(new Date());
-		vendor.setId(1L);
-		vendor.setName("Test");
-		vendor.setWebsite("www.zombo.com");
+		DeveloperDTO developer = new DeveloperDTO();
+		developer.setCreationDate(new Date());
+		developer.setId(1L);
+		developer.setName("Test");
+		developer.setWebsite("www.zombo.com");
 		
 		Date timestamp = new Date();
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
-				vendor.getId(),
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER,
+				developer.getId(),
 				"Test Activity",
 				"Before",
 				"Test",
 				timestamp
 				);
 		
-		VendorDTO vendor2 = new VendorDTO();
-		vendor2.setCreationDate(new Date());
-		vendor2.setId(2L);
-		vendor2.setName("Test");
-		vendor2.setWebsite("www.zombo.com");
+		DeveloperDTO developer2 = new DeveloperDTO();
+		developer2.setCreationDate(new Date());
+		developer2.setId(2L);
+		developer2.setName("Test");
+		developer2.setWebsite("www.zombo.com");
 		
 		Date timestamp2 = new Date(100);
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VENDOR,
-				vendor.getId(),
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER,
+				developer2.getId(),
 				"Test Activity",
 				"Before",
 				"Test",
 				timestamp2
 				);
 		
-		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR, lastNDays);
+		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, lastNDays);
 		
 		assertEquals(1, events2.size());
 	}

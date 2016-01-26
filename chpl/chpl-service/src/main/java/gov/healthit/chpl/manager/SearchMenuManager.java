@@ -14,7 +14,7 @@ public interface SearchMenuManager {
 	public Set<KeyValueModel> getCertificationStatuses();
 	public Set<KeyValueModel> getPracticeTypeNames();
 	public Set<KeyValueModel> getProductNames();
-	public Set<KeyValueModel> getVendorNames();
+	public Set<KeyValueModel> getDeveloperNames();
 	public Set<KeyValueModel> getCertBodyNames();
 	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException;
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple);

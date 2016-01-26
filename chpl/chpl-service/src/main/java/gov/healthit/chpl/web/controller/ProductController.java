@@ -36,12 +36,12 @@ public class ProductController {
 	
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody ProductResults getAllProducts(@RequestParam(required=false) Long vendorId) {
+	public @ResponseBody ProductResults getAllProducts(@RequestParam(required=false) Long developerId) {
 		
 		List<ProductDTO> productList = null;
 		
-		if(vendorId != null && vendorId > 0) {
-			productList = productManager.getByVendor(vendorId);	
+		if(developerId != null && developerId > 0) {
+			productList = productManager.getByDeveloper(developerId);	
 		} else {
 			productList = productManager.getAll();
 		}
@@ -83,11 +83,11 @@ public class ProductController {
 			throw new InvalidArgumentsException("At least one product id must be provided in the request.");
 		}
 		
-		if(productInfo.getProduct() == null && productInfo.getNewVendorId() != null) {
-			//no new product is specified, so we just need to update the vendor id
+		if(productInfo.getProduct() == null && productInfo.newDeveloperId() != null) {
+			//no new product is specified, so we just need to update the developer id
 			for(Long productId : productInfo.getProductIds()) {
 				ProductDTO toUpdate = productManager.getById(productId);
-				toUpdate.setVendorId(productInfo.getNewVendorId());
+				toUpdate.setDeveloperId(productInfo.newDeveloperId());
 				result = productManager.update(toUpdate);
 			}
 		} else {
@@ -97,8 +97,8 @@ public class ProductController {
 				ProductDTO newProduct = new ProductDTO();
 				newProduct.setName(productInfo.getProduct().getName());
 				newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-				if(productInfo.getNewVendorId() != null) {
-					newProduct.setVendorId(productInfo.getNewVendorId());
+				if(productInfo.newDeveloperId() != null) {
+					newProduct.setDeveloperId(productInfo.newDeveloperId());
 				}
 				result = productManager.merge(productInfo.getProductIds(), newProduct);
 				
@@ -108,9 +108,9 @@ public class ProductController {
 				toUpdate.setId(productInfo.getProductIds().get(0));
 				toUpdate.setName(productInfo.getProduct().getName());
 				toUpdate.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-				//update the vendor if an id is supplied
-				if(productInfo.getNewVendorId() != null) {
-					toUpdate.setVendorId(productInfo.getNewVendorId());
+				//update the developer if an id is supplied
+				if(productInfo.newDeveloperId() != null) {
+					toUpdate.setDeveloperId(productInfo.newDeveloperId());
 				}
 				result = productManager.update(toUpdate);
 			}	

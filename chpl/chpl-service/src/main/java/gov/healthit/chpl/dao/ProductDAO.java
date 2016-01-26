@@ -17,9 +17,9 @@ public interface ProductDAO {
 	
 	public ProductDTO getById(Long id) throws EntityRetrievalException;
 	
-	public List<ProductDTO> getByVendor(Long vendorId);
+	public List<ProductDTO> getByDeveloper(Long vendorId);
 	
-	public List<ProductDTO> getByVendors(List<Long> vendorIds);
+	public List<ProductDTO> getByDevelopers(List<Long> vendorIds);
 	
-	public ProductDTO getByVendorAndName(Long vendorId, String name);
+	public ProductDTO getByDeveloperAndName(Long vendorId, String name);
 }

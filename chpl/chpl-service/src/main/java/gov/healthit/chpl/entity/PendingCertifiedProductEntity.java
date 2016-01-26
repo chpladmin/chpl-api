@@ -43,12 +43,12 @@ public class PendingCertifiedProductEntity {
     private Long practiceTypeId;
     
     @Column(name = "vendor_id")
-    private Long vendorId;
+    private Long developerId;
     
     @Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendor_address_id", unique=true, nullable = true)
-	private AddressEntity vendorAddress;
+	private AddressEntity developerAddress;
     
     @Column(name = "product_id")
     private Long productId;
@@ -85,7 +85,7 @@ public class PendingCertifiedProductEntity {
     private String practiceType;
     
     @Column(name="vendor_name")
-    private String vendorName;
+    private String developerName;
     
     @Column(name = "product_name")
     private String productName;
@@ -113,23 +113,23 @@ public class PendingCertifiedProductEntity {
     private Date certificationDate;
     
     @Column(name = "vendor_street_address")
-    private String vendorStreetAddress;
+    private String developerStreetAddress;
     
     @Column(name = "vendor_city")
-    private String vendorCity;
+    private String developerCity;
     
     @Column(name = "vendor_state")
-    private String vendorState;
+    private String developerState;
     
     @Column(name = "vendor_zip_code")
-    private String vendorZipCode;
+    private String developerZipCode;
     
     @Column(name = "vendor_website")
-    private String vendorWebsite;
+    private String developerWebsite;
     
     //TODO: maps to nothing
     @Column(name = "vendor_email")
-    private String vendorEmail;
+    private String developerEmail;
     
     @Column(name = "additional_software")
     private String additionalSoftware;
@@ -208,12 +208,12 @@ public class PendingCertifiedProductEntity {
 		this.practiceTypeId = practiceTypeId;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
 	public Long getProductId() {
@@ -280,12 +280,12 @@ public class PendingCertifiedProductEntity {
 		this.practiceType = practiceType;
 	}
 
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
 
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
 
 	public String getProductName() {
@@ -352,52 +352,52 @@ public class PendingCertifiedProductEntity {
 		this.certificationDate = certificationDate;
 	}
 
-	public String getVendorStreetAddress() {
-		return vendorStreetAddress;
+	public String getDeveloperStreetAddress() {
+		return developerStreetAddress;
 	}
 
-	public void setVendorStreetAddress(String vendorStreetAddress) {
-		this.vendorStreetAddress = vendorStreetAddress;
+	public void setDeveloperStreetAddress(String developerStreetAddress) {
+		this.developerStreetAddress = developerStreetAddress;
 	}
 
-	public String getVendorCity() {
-		return vendorCity;
+	public String getDeveloperCity() {
+		return developerCity;
 	}
 
-	public void setVendorCity(String vendorCity) {
-		this.vendorCity = vendorCity;
+	public void setDeveloperCity(String developerCity) {
+		this.developerCity = developerCity;
 	}
 
-	public String getVendorState() {
-		return vendorState;
+	public String getDeveloperState() {
+		return developerState;
 	}
 
-	public void setVendorState(String vendorState) {
-		this.vendorState = vendorState;
+	public void setDeveloperState(String developerState) {
+		this.developerState = developerState;
 	}
 
-	public String getVendorZipCode() {
-		return vendorZipCode;
+	public String getDeveloperZipCode() {
+		return developerZipCode;
 	}
 
-	public void setVendorZipCode(String vendorZipCode) {
-		this.vendorZipCode = vendorZipCode;
+	public void setDeveloperZipCode(String developerZipCode) {
+		this.developerZipCode = developerZipCode;
 	}
 
-	public String getVendorWebsite() {
-		return vendorWebsite;
+	public String getDeveloperWebsite() {
+		return developerWebsite;
 	}
 
-	public void setVendorWebsite(String vendorWebsite) {
-		this.vendorWebsite = vendorWebsite;
+	public void setDeveloperWebsite(String developerWebsite) {
+		this.developerWebsite = developerWebsite;
 	}
 
-	public String getVendorEmail() {
-		return vendorEmail;
+	public String getDeveloperEmail() {
+		return developerEmail;
 	}
 
-	public void setVendorEmail(String vendorEmail) {
-		this.vendorEmail = vendorEmail;
+	public void setDeveloperEmail(String developerEmail) {
+		this.developerEmail = developerEmail;
 	}
 
 	public String getAdditionalSoftware() {
@@ -440,12 +440,12 @@ public class PendingCertifiedProductEntity {
 		this.cqmCriterion = cqmCriterion;
 	}
 
-	public AddressEntity getVendorAddress() {
-		return vendorAddress;
+	public AddressEntity getDeveloperAddress() {
+		return developerAddress;
 	}
 
-	public void setVendorAddress(AddressEntity vendorAddress) {
-		this.vendorAddress = vendorAddress;
+	public void setDeveloperAddress(AddressEntity developerAddress) {
+		this.developerAddress = developerAddress;
 	}
 
 	public Long getAdditionalSoftwareId() {

@@ -203,8 +203,8 @@ public class ActivityDaoTest extends TestCase {
 			assertEquals(dto.getConcept(), ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
 		}
 		
-		List<ActivityDTO> vendorResults = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
-		assertEquals(0, vendorResults.size());
+		List<ActivityDTO> developerResults = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
+		assertEquals(0, developerResults.size());
 		
 	}
 	

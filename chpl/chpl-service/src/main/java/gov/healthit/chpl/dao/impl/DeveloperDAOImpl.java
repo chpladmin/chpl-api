@@ -18,25 +18,25 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.VendorDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.VendorACBMapDTO;
-import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.dto.DeveloperACBMapDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
-import gov.healthit.chpl.entity.VendorACBMapEntity;
-import gov.healthit.chpl.entity.VendorEntity;
+import gov.healthit.chpl.entity.DeveloperACBMapEntity;
+import gov.healthit.chpl.entity.DeveloperEntity;
 
-@Repository("vendorDAO")
-public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
+@Repository("developerDAO")
+public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
-	private static final Logger logger = LogManager.getLogger(VendorDAOImpl.class);
+	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
 	@Autowired AddressDAO addressDao;
 	
 	@Override
 	@Transactional
-	public VendorDTO create(VendorDTO dto) throws EntityCreationException, EntityRetrievalException {
+	public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
 		
-		VendorEntity entity = null;
+		DeveloperEntity entity = null;
 		try {
 			if (dto.getId() != null){
 				entity = this.getEntityById(dto.getId());
@@ -48,7 +48,7 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {			
-			entity = new VendorEntity();
+			entity = new DeveloperEntity();
 
 			if(dto.getAddress() != null)
 			{
@@ -83,14 +83,14 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 			}
 			
 			create(entity);
-			return new VendorDTO(entity);
+			return new DeveloperDTO(entity);
 		}	
 	}
 
 	@Override
-	public VendorACBMapDTO createTransparencyMapping(VendorACBMapDTO dto) {
-		VendorACBMapEntity mapping = new VendorACBMapEntity();
-		mapping.setVendorId(dto.getVendorId());
+	public DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto) {
+		DeveloperACBMapEntity mapping = new DeveloperACBMapEntity();
+		mapping.getDeveloperId(dto.getDeveloperId());
 		mapping.setCertificationBodyId(dto.getAcbId());
 		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
 		mapping.setCreationDate(new Date());
@@ -99,13 +99,13 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
 		entityManager.persist(mapping);
 		entityManager.flush();
-		return new VendorACBMapDTO(mapping);
+		return new DeveloperACBMapDTO(mapping);
 	}
 	
 	@Override
 	@Transactional
-	public VendorEntity update(VendorDTO dto) throws EntityRetrievalException {
-		VendorEntity entity = this.getEntityById(dto.getId());
+	public DeveloperEntity update(DeveloperDTO dto) throws EntityRetrievalException {
+		DeveloperEntity entity = this.getEntityById(dto.getId());
 		
 		if(entity == null) {
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
@@ -149,8 +149,8 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	}
 
 	@Override
-	public VendorACBMapDTO updateTransparencyMapping(VendorACBMapDTO dto) {
-		VendorACBMapEntity mapping = getTransparencyMappingEntity(dto.getVendorId(), dto.getAcbId());
+	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto) {
+		DeveloperACBMapEntity mapping = getTransparencyMappingEntity(dto.getDeveloperId(), dto.getAcbId());
 		if(mapping == null) {
 			return null;
 		}
@@ -160,13 +160,13 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
 		entityManager.persist(mapping);
 		entityManager.flush();
-		return new VendorACBMapDTO(mapping);
+		return new DeveloperACBMapDTO(mapping);
 	}
 	
 	@Override
 	@Transactional
 	public void delete(Long id) throws EntityRetrievalException {
-		VendorEntity toDelete = getEntityById(id);
+		DeveloperEntity toDelete = getEntityById(id);
 		
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
@@ -177,8 +177,8 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	}
 	
 	@Override
-	public void deleteTransparencyMapping(Long vendorId, Long acbId) {
-		VendorACBMapEntity toDelete = getTransparencyMappingEntity(vendorId, acbId);
+	public void deleteTransparencyMapping(Long developerId, Long acbId) {
+		DeveloperACBMapEntity toDelete = getTransparencyMappingEntity(developerId, acbId);
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
@@ -189,96 +189,96 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 	}
 	
 	@Override
-	public List<VendorDTO> findAll() {
+	public List<DeveloperDTO> findAll() {
 		
-		List<VendorEntity> entities = getAllEntities();
-		List<VendorDTO> dtos = new ArrayList<>();
+		List<DeveloperEntity> entities = getAllEntities();
+		List<DeveloperDTO> dtos = new ArrayList<>();
 		
-		for (VendorEntity entity : entities) {
-			VendorDTO dto = new VendorDTO(entity);
+		for (DeveloperEntity entity : entities) {
+			DeveloperDTO dto = new DeveloperDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
 	}
 
 	@Override
-	public VendorACBMapDTO getTransparencyMapping(Long vendorId, Long acbId) {
-		VendorACBMapEntity mapping = getTransparencyMappingEntity(vendorId, acbId);
+	public DeveloperACBMapDTO getTransparencyMapping(Long developerId, Long acbId) {
+		DeveloperACBMapEntity mapping = getTransparencyMappingEntity(developerId, acbId);
 		if(mapping == null) {
 			return null;
 		}
-		return new VendorACBMapDTO(mapping);
+		return new DeveloperACBMapDTO(mapping);
 	}
 	
 	@Override
-	public VendorDTO getById(Long id) throws EntityRetrievalException {
+	public DeveloperDTO getById(Long id) throws EntityRetrievalException {
 		
-		VendorEntity entity = getEntityById(id);
-		VendorDTO dto = null;
+		DeveloperEntity entity = getEntityById(id);
+		DeveloperDTO dto = null;
 		if(entity != null) {
-			dto = new VendorDTO(entity);
+			dto = new DeveloperDTO(entity);
 		}
 		return dto;
 	}
 	
 	@Override
-	public VendorDTO getByName(String name) {
-		VendorEntity entity = getEntityByName(name);
-		VendorDTO dto = null;
+	public DeveloperDTO getByName(String name) {
+		DeveloperEntity entity = getEntityByName(name);
+		DeveloperDTO dto = null;
 		if(entity != null) {
-			dto = new VendorDTO(entity);
+			dto = new DeveloperDTO(entity);
 		}
 		return dto;
 	}
 	
-	public VendorDTO getByCertifiedProduct(CertifiedProductDTO cpDto) throws EntityRetrievalException {
+	public DeveloperDTO getByCertifiedProduct(CertifiedProductDTO cpDto) throws EntityRetrievalException {
 		if(cpDto == null || cpDto.getProductVersionId() == null) {
 			throw new EntityRetrievalException("Version ID cannot be null!");
 		}
-		Query getVendorByVersionIdQuery = entityManager.createQuery(
+		Query getDeveloperByVersionIdQuery = entityManager.createQuery(
 				"FROM ProductVersionEntity pve,"
-				+ "ProductEntity pe, VendorEntity ve " 
+				+ "ProductEntity pe, DeveloperEntity ve " 
 				+ "WHERE (NOT pve.deleted = true) "
 				+ "AND pve.id = :versionId "
 				+ "AND pve.productId = pe.id " 
-				+ "AND ve.id = pe.vendorId ", VendorEntity.class);
-		getVendorByVersionIdQuery.setParameter("versionid", cpDto.getProductVersionId());
-		Object result = getVendorByVersionIdQuery.getSingleResult();
+				+ "AND ve.id = pe.developerId ", DeveloperEntity.class);
+		getDeveloperByVersionIdQuery.setParameter("versionid", cpDto.getProductVersionId());
+		Object result = getDeveloperByVersionIdQuery.getSingleResult();
 		if(result == null) {
 			return null;
 		}
-		VendorEntity ve = (VendorEntity)result;
-		return new VendorDTO(ve);
+		DeveloperEntity ve = (DeveloperEntity)result;
+		return new DeveloperDTO(ve);
 	}
 	
-	private void create(VendorEntity entity) {
+	private void create(DeveloperEntity entity) {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
-	private void update(VendorEntity entity) {
+	private void update(DeveloperEntity entity) {
 		
 		entityManager.merge(entity);	
 		entityManager.flush();
 	}
 	
-	private List<VendorEntity> getAllEntities() {
-		List<VendorEntity> result = entityManager.createQuery( "SELECT v from VendorEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true)", VendorEntity.class).getResultList();
+	private List<DeveloperEntity> getAllEntities() {
+		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from DeveloperEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
 		return result;
 		
 	}
 
-	private VendorEntity getEntityById(Long id) throws EntityRetrievalException {
+	private DeveloperEntity getEntityById(Long id) throws EntityRetrievalException {
 		
-		VendorEntity entity = null;
+		DeveloperEntity entity = null;
 			
-		Query query = entityManager.createQuery( "SELECT v from VendorEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true) AND (vendor_id = :entityid) ", VendorEntity.class );
+		Query query = entityManager.createQuery( "SELECT v from DeveloperEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true) AND (vendor_id = :entityid) ", DeveloperEntity.class );
 		query.setParameter("entityid", id);
-		List<VendorEntity> result = query.getResultList();
+		List<DeveloperEntity> result = query.getResultList();
 		
 		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate vendor id in database.");
+			throw new EntityRetrievalException("Data error. Duplicate developer id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
@@ -286,13 +286,13 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		return entity;
 	}
 	
-	private VendorEntity getEntityByName(String name) {
+	private DeveloperEntity getEntityByName(String name) {
 		
-		VendorEntity entity = null;
+		DeveloperEntity entity = null;
 			
-		Query query = entityManager.createQuery( "SELECT v from VendorEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true) AND (v.name = :name) ", VendorEntity.class );
+		Query query = entityManager.createQuery( "SELECT v from DeveloperEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class );
 		query.setParameter("name", name);
-		List<VendorEntity> result = query.getResultList();
+		List<DeveloperEntity> result = query.getResultList();
 		
 		if(result.size() > 0) {
 			entity = result.get(0);
@@ -301,12 +301,12 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		return entity;
 	}
 	
-	private VendorACBMapEntity getTransparencyMappingEntity(Long vendorId, Long acbId) {
-		Query query = entityManager.createQuery( "FROM VendorACBMapEntity where "
+	private DeveloperACBMapEntity getTransparencyMappingEntity(Long developerId, Long acbId) {
+		Query query = entityManager.createQuery( "FROM DeveloperACBMapEntity where "
 				+ "(NOT deleted = true) "
-				+ "AND vendorId = :vendorId "
-				+ "AND certificationBodyId = :acbId", VendorACBMapEntity.class);
-		query.setParameter("vendorId", vendorId);
+				+ "AND developerId = :developerId "
+				+ "AND certificationBodyId = :acbId", DeveloperACBMapEntity.class);
+		query.setParameter("developerId", developerId);
 		query.setParameter("acbId", acbId);
 		
 		Object result = null;
@@ -319,6 +319,6 @@ public class VendorDAOImpl extends BaseDAOImpl implements VendorDAO {
 		if(result == null) {
 			return null;
 		}
-		return (VendorACBMapEntity)result;
+		return (DeveloperACBMapEntity)result;
 	}
 }

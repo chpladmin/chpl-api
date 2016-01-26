@@ -19,13 +19,13 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "vendor_contact_map", catalog = "openchpl", schema = "openchpl")
-public class VendorContactMap implements Cloneable, Serializable {
+public class DeveloperContactMap implements Cloneable, Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = 1170615946052067676L;
 	
 	@Id 
-	private VendorContactMapPK id;
+	private DeveloperContactMapPK id;
 	
 	
 	@Basic( optional = false )
@@ -50,25 +50,25 @@ public class VendorContactMap implements Cloneable, Serializable {
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
-	public VendorContactMap() {
+	public DeveloperContactMap() {
 		// Default constructor
 	} 
 
 	/** Constructor taking a given ID.
 	 * @param id to set
 	 */
-	public VendorContactMap(VendorContactMapPK id) {
+	public DeveloperContactMap(DeveloperContactMapPK id) {
 		this.id = id;
 	}
 	
 	/** Constructor taking a given ID.
 	 * @param creationDate Date object;
 	 * @param deleted Boolean object;
-	 * @param id VendorContactMapPK object;
+	 * @param id DeveloperContactMapPK object;
 	 * @param lastModifiedDate Date object;
 	 * @param lastModifiedUser Long object;
 	 */
-	public VendorContactMap(Date creationDate, Boolean deleted, VendorContactMapPK id, 					
+	public DeveloperContactMap(Date creationDate, Boolean deleted, DeveloperContactMapPK id, 					
 			Date lastModifiedDate, Long lastModifiedUser) {
 
 		this.creationDate = creationDate;
@@ -87,7 +87,7 @@ public class VendorContactMap implements Cloneable, Serializable {
 	*/
 	@Transient
 	public Class<?> getClassType() {
-		return VendorContactMap.class;
+		return DeveloperContactMap.class;
 	}
  
 
@@ -131,9 +131,9 @@ public class VendorContactMap implements Cloneable, Serializable {
 
 	 /**
 	 * Return the value associated with the column: id.
-	 * @return A VendorContactMapPK object (this.id)
+	 * @return A DeveloperContactMapPK object (this.id)
 	 */
-	public VendorContactMapPK getId() {
+	public DeveloperContactMapPK getId() {
 		return this.id;
 		
 	}
@@ -142,7 +142,7 @@ public class VendorContactMap implements Cloneable, Serializable {
 	 * Set the value related to the column: id.
 	 * @param id the id value you wish to set
 	 */
-	public void setId(final VendorContactMapPK id) {
+	public void setId(final DeveloperContactMapPK id) {
 		this.id = id;
 	}
 
@@ -212,7 +212,7 @@ public class VendorContactMap implements Cloneable, Serializable {
 			 return false;
 		}
 	
-		final VendorContactMap that = (VendorContactMap) aThat;
+		final DeveloperContactMap that = (DeveloperContactMap) aThat;
 		return this.getId().equals(that.getId());
 	}
 	

@@ -217,16 +217,16 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	@Override
-	public List<CertifiedProductDTO> getCertifiedProductsForVendor(Long vendorId) {
+	public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(Long developerId) {
 		Query getCertifiedProductsQuery = entityManager.createQuery(
 				"FROM CertifiedProductEntity cpe, ProductVersionEntity pve,"
-				+ "ProductEntity pe, VendorEntity ve " 
+				+ "ProductEntity pe, DeveloperEntity ve " 
 				+ "WHERE (NOT cpe.deleted = true) "
 				+ "AND cpe.productVersion = pve.id " 
 				+ "AND pve.productId = pe.id " 
-				+ "AND ve.id = pe.vendorId "
-				+ "AND ve.id = :vendorId", CertifiedProductEntity.class);
-		getCertifiedProductsQuery.setParameter("vendorId", vendorId);
+				+ "AND ve.id = pe.developerId "
+				+ "AND ve.id = :developerId", CertifiedProductEntity.class);
+		getCertifiedProductsQuery.setParameter("developerId", developerId);
 		List<CertifiedProductEntity> results = getCertifiedProductsQuery.getResultList();
 		
 		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());

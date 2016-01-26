@@ -131,7 +131,7 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 		List<PracticeTypeEntity> result = query.getResultList();
 		
 		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate vendor id in database.");
+			throw new EntityRetrievalException("Data error. Duplicate developer id in database.");
 		}
 		
 		if (result.size() > 0){

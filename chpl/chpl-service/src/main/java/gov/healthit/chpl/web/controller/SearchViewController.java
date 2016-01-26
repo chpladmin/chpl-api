@@ -195,10 +195,10 @@ public class SearchViewController {
 		return searchMenuManager.getProductNames();
 	}
 	
-	@RequestMapping(value="/data/vendors", method=RequestMethod.GET,
+	@RequestMapping(value="/data/developers", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getVendorNames() {
-		return searchMenuManager.getVendorNames();
+	public @ResponseBody Set<KeyValueModel> getDeveloperNames() {
+		return searchMenuManager.getDeveloperNames();
 	}
 	
 	@RequestMapping(value="/data/certification_bodies", method=RequestMethod.GET,

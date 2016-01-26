@@ -1,12 +1,12 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.VendorEntity;
+import gov.healthit.chpl.entity.DeveloperEntity;
 
 import java.util.Date;
 
-public class VendorDTO {
+public class DeveloperDTO {
 
-	private String vendorCode;
+	private String developerCode;
 	private Long id;
 	private AddressDTO address;
 	private Date creationDate;
@@ -17,11 +17,11 @@ public class VendorDTO {
 	private String website;
 	private Boolean transparencyAttestation = null;
 	
-	public VendorDTO(){}
+	public DeveloperDTO(){}
 	
-	public VendorDTO(VendorEntity entity){
+	public DeveloperDTO(DeveloperEntity entity){
 		this.id = entity.getId();
-		this.vendorCode = entity.getVendorCode();
+		this.developerCode = entity.getDeveloperCode();
 		if(entity.getAddress() != null) {
 			this.address = new AddressDTO(entity.getAddress());			
 		}
@@ -86,12 +86,12 @@ public class VendorDTO {
 		this.website = website;
 	}
 
-	public String getVendorCode() {
-		return vendorCode;
+	public String getDeveloperCode() {
+		return developerCode;
 	}
 
-	public void setVendorCode(String vendorCode) {
-		this.vendorCode = vendorCode;
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 
 	public Boolean getTransparencyAttestation() {

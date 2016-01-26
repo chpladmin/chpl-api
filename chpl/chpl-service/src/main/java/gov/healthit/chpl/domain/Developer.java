@@ -1,21 +1,21 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 
-public class Vendor {
-	private Long vendorId;
-	private String vendorCode;
+public class Developer {
+	private Long developerId;
+	private String developerCode;
 	private String name;
 	private String website;
 	private Address address;
 	private String lastModifiedDate;
 	private Boolean transparencyAttestation = null;
 	
-	public Vendor() {}
+	public Developer() {}
 	
-	public Vendor(VendorDTO dto) {
-		this.vendorId = dto.getId();
-		this.vendorCode = dto.getVendorCode();
+	public Developer(DeveloperDTO dto) {
+		this.developerId = dto.getId();
+		this.developerCode = dto.getDeveloperCode();
 		this.name = dto.getName();
 		this.website = dto.getWebsite();
 		if(dto.getAddress() != null) {
@@ -24,11 +24,11 @@ public class Vendor {
 		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
 		this.transparencyAttestation = dto.getTransparencyAttestation();
 	}
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 	public String getName() {
 		return name;
@@ -57,12 +57,12 @@ public class Vendor {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public String getVendorCode() {
-		return vendorCode;
+	public String getDeveloperCode() {
+		return developerCode;
 	}
 
-	public void setVendorCode(String vendorCode) {
-		this.vendorCode = vendorCode;
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 
 	public Boolean getTransparencyAttestation() {

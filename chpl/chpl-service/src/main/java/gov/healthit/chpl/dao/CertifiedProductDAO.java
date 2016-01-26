@@ -23,6 +23,6 @@ public interface CertifiedProductDAO {
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
 	
 	public List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds);
-	public List<CertifiedProductDTO> getCertifiedProductsForVendor(Long vendorId);
+	public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(Long vendorId);
 	public String getLargestChplNumber();
 }

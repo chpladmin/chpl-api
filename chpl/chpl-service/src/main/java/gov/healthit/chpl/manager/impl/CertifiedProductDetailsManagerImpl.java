@@ -95,7 +95,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			searchDetails.setChplProductNumber(dto.getChplProductNumber());
 		} else {
 			searchDetails.setChplProductNumber(dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
-				dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+				dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 				"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 				"." + dto.getCertifiedDateCode());
 		}
@@ -124,9 +124,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setTestingLabId(dto.getTestingLabId());
 		searchDetails.setTestingLabName(dto.getTestingLabName());
 		
-		searchDetails.getVendor().put("id", dto.getVendorId());
-		searchDetails.getVendor().put("name", dto.getVendorName());
-		searchDetails.getVendor().put("code", dto.getVendorCode());
+		searchDetails.getDeveloper().put("id", dto.getDeveloperId());
+		searchDetails.getDeveloper().put("name", dto.getDeveloperName());
+		searchDetails.getDeveloper().put("code", dto.getDeveloperCode());
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
 		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());

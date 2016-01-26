@@ -170,7 +170,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		}
 		
 		if(address == null) {
-			//if we didn't find it, create and save a new address entity before setting it on the vendor
+			//if we didn't find it, create and save a new address entity before setting it on the developer
 			address = create(addressDto);
 		}
 		
