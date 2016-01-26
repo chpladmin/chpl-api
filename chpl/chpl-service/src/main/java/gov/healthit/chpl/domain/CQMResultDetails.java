@@ -20,7 +20,6 @@ public class CQMResultDetails {
 	private Boolean success;
 	private Set<String> successVersions;
 	private Set<String> allVersions;
-	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
 	
 	public CQMResultDetails(){
 		this.successVersions = new HashSet<String>();
@@ -111,14 +110,6 @@ public class CQMResultDetails {
 
 	public void setSuccess(Boolean success) {
 		this.success = success;
-	}
-
-	public List<AdditionalSoftware> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-
-	public void setAdditionalSoftware(List<AdditionalSoftware> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
 	}
 	
 }

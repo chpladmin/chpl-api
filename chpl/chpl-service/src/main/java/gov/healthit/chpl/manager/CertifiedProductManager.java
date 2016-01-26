@@ -42,17 +42,13 @@ public interface CertifiedProductManager {
 	//		throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	//public void updateCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
 	//		throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	//public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
-	//		throws EntityCreationException, EntityRetrievalException,
-	//		JsonProcessingException;
+	public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
+			throws EntityCreationException, EntityRetrievalException,
+			JsonProcessingException;
 	public void updateAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware)
 			throws EntityCreationException, EntityRetrievalException,
 			JsonProcessingException;
 	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, List<CertificationResult> certResults)
 			throws EntityCreationException, EntityRetrievalException,
 			JsonProcessingException;
-	public void updateCqms(Long acbId, CertifiedProductDTO productDto,
-			List<CQMResultDetails> cqmResults) throws EntityCreationException,
-			EntityRetrievalException, JsonProcessingException;
-	
 }

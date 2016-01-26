@@ -15,7 +15,6 @@ public class CQMResultDTO {
 	private Long lastModifiedUser;
 	private Boolean success;
 	private Boolean deleted;
-	private List<AdditionalSoftwareDTO> additionalSoftware;
 	
 	public CQMResultDTO(){}
 	
@@ -80,14 +79,6 @@ public class CQMResultDTO {
 
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
-	}
-
-	public List<AdditionalSoftwareDTO> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-
-	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
 	}
 
 }
