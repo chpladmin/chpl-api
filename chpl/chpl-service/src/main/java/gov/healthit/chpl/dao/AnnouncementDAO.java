@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao;
 
 import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.entity.AnnouncementEntity;
 
 import java.util.List;
 
@@ -17,5 +18,9 @@ public interface AnnouncementDAO {
 	public AnnouncementDTO update(AnnouncementDTO contact, boolean includeDeleted) throws EntityRetrievalException;
 
 	public AnnouncementDTO getByIdToUpdate(Long id, boolean includeDeleted) throws EntityRetrievalException;
+
+	public List<AnnouncementDTO> findAllFuture();
+
+	List<AnnouncementEntity> getAllEntitiesFuture();
 	
 }

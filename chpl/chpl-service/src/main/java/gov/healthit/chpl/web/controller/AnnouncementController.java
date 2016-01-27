@@ -41,10 +41,15 @@ public class AnnouncementController {
 	private static final Logger logger = LogManager.getLogger(AnnouncementController.class);
 	
 	@RequestMapping(value="/", method=RequestMethod.GET,produces="application/json; charset=utf-8")
-	public @ResponseBody AnnouncementResults getAnnouncements() {
+	public @ResponseBody AnnouncementResults getAnnouncements(
+			@RequestParam(required=false, defaultValue="false") boolean future) {
 		AnnouncementResults results = new AnnouncementResults();
 		List<AnnouncementDTO> announcements = null;
-		announcements = announcementManager.getAll();
+		if(!future){
+			announcements = announcementManager.getAll();
+		}else{
+			announcements = announcementManager.getAllFuture();
+		}
 		if(announcements != null) {
 			for(AnnouncementDTO announcement : announcements) {
 				results.getAnnouncements().add(new Announcement(announcement));
@@ -118,7 +123,7 @@ public class AnnouncementController {
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {
 		
-		AnnouncementDTO toDelete = announcementManager.getById(announcementId);		
+		AnnouncementDTO toDelete = announcementManager.getById(announcementId,false);		
 		announcementManager.delete(toDelete);
 		return "{\"deletedAnnouncement\" : true }";
 	}

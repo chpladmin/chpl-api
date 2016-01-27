@@ -107,6 +107,11 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 	public void setAnnouncementDAO(AnnouncementDAO announcementDAO) {
 		this.AnnouncementDAO = announcementDAO;
 	}
+
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public List<AnnouncementDTO> getAllFuture() {
+		return AnnouncementDAO.findAllFuture();
+	}
 	
 }
 

@@ -159,6 +159,19 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 		
 	}
 	
+public List<AnnouncementDTO> findAllFuture(){
+		
+		List<AnnouncementEntity> entities = getAllEntitiesFuture();
+		List<AnnouncementDTO> announcements = new ArrayList<>();
+		
+		for (AnnouncementEntity entity : entities) {
+			AnnouncementDTO announcement = new AnnouncementDTO(entity);
+			announcements.add(announcement);
+		}
+		return announcements;
+		
+	}
+	
 	public AnnouncementDTO getById(Long announcementId, boolean isLoggedIn) throws EntityRetrievalException{
 		AnnouncementEntity entity = getEntityById(announcementId, isLoggedIn);
 		
@@ -277,6 +290,16 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 		}
 
 		return entity;
+	}
+
+	@Override
+	public List<AnnouncementEntity> getAllEntitiesFuture() {
+		List<AnnouncementEntity> result = null;
+		result = entityManager.createQuery( "from AnnouncementEntity" 
+												+ " where deleted = false"
+												+ " AND (start_date > now())", AnnouncementEntity.class).getResultList();
+		
+		return result;
 	}
 	
 }
