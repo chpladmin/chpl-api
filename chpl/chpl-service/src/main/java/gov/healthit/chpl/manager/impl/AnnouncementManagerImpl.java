@@ -113,5 +113,9 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 		return announcementDAO.findAllFuture();
 	}
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public List<AnnouncementDTO> getAllCurrentAndFuture() {
+		return announcementDAO.findAllCurrentAndFuture();
+	}
 }
 

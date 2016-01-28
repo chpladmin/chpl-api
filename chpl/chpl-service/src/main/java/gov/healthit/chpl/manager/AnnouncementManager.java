@@ -27,4 +27,6 @@ public interface AnnouncementManager {
 	public AnnouncementDTO getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException;
 
 	public List<AnnouncementDTO> getAllFuture();
+	
+	public List<AnnouncementDTO> getAllCurrentAndFuture();
 }

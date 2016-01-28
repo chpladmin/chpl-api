@@ -48,7 +48,7 @@ public class AnnouncementController {
 		if(!future){
 			announcements = announcementManager.getAll();
 		}else{
-			announcements = announcementManager.getAllFuture();
+			announcements = announcementManager.getAllCurrentAndFuture();
 		}
 		if(announcements != null) {
 			for(AnnouncementDTO announcement : announcements) {

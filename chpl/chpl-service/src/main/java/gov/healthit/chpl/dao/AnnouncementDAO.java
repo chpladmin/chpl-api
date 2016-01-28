@@ -20,6 +20,7 @@ public interface AnnouncementDAO {
 	public AnnouncementDTO getByIdToUpdate(Long id, boolean includeDeleted) throws EntityRetrievalException;
 
 	public List<AnnouncementDTO> findAllFuture();
+	public List<AnnouncementDTO> findAllCurrentAndFuture();
 
 	List<AnnouncementEntity> getAllEntitiesFuture();
 	

@@ -163,7 +163,20 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 		
 	}
 	
-public List<AnnouncementDTO> findAllFuture(){
+	public List<AnnouncementDTO> findAllCurrentAndFuture(){
+		
+		List<AnnouncementEntity> entities = getAllEntitiesCurrentAndFuture();
+		List<AnnouncementDTO> announcements = new ArrayList<>();
+		
+		for (AnnouncementEntity entity : entities) {
+			AnnouncementDTO announcement = new AnnouncementDTO(entity);
+			announcements.add(announcement);
+		}
+		return announcements;
+		
+	}
+
+	public List<AnnouncementDTO> findAllFuture(){
 		
 		List<AnnouncementEntity> entities = getAllEntitiesFuture();
 		List<AnnouncementDTO> announcements = new ArrayList<>();
@@ -306,4 +319,12 @@ public List<AnnouncementDTO> findAllFuture(){
 		return result;
 	}
 	
+	private List<AnnouncementEntity> getAllEntitiesCurrentAndFuture() {
+		List<AnnouncementEntity> result = null;
+		result = entityManager.createQuery( "from AnnouncementEntity" 
+												+ " where deleted = false"
+												+ " AND (end_date > now())", AnnouncementEntity.class).getResultList();
+		
+		return result;
+	}
 }
