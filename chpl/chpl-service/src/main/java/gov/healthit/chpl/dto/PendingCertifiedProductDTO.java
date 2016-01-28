@@ -18,8 +18,8 @@ public class PendingCertifiedProductDTO {
 	
 	private Long id;
 	private Long practiceTypeId;
-    private Long vendorId;
-	private AddressDTO vendorAddress;    
+    private Long developerId;
+	private AddressDTO developerAddress;    
     private Long productId;
     private Long productVersionId;    
     private Long certificationEditionId;    
@@ -35,7 +35,7 @@ public class PendingCertifiedProductDTO {
     private String uniqueId;    
     private String recordStatus;    
     private String practiceType;    
-    private String vendorName;    
+    private String developerName;    
     private String productName;    
     private String productVersion;    
     private String certificationEdition;    
@@ -44,12 +44,12 @@ public class PendingCertifiedProductDTO {
     private String productClassificationName;
     private String productClassificationModule;
     private Date certificationDate;
-    private String vendorStreetAddress;
-    private String vendorCity;
-    private String vendorState;
-    private String vendorZipCode;
-    private String vendorWebsite;
-    private String vendorEmail;
+    private String developerStreetAddress;
+    private String developerCity;
+    private String developerState;
+    private String developerZipCode;
+    private String developerWebsite;
+    private String developerEmail;
     private String additionalSoftware;
     private String uploadNotes;
     private String reportFileLocation;
@@ -77,38 +77,38 @@ public class PendingCertifiedProductDTO {
 			this.practiceType = details.getPracticeType().get("name").toString();
 		}
 		
-		if(details.getVendor().get("id") != null) {
-			String vendorId = details.getVendor().get("id").toString();
-			this.vendorId = new Long(vendorId);
+		if(details.getDeveloper().get("id") != null) {
+			String developerId = details.getDeveloper().get("id").toString();
+			this.developerId = new Long(developerId);
 		}
-		if(details.getVendor().get("name") != null) {
-			this.vendorName = details.getVendor().get("name").toString();
+		if(details.getDeveloper().get("name") != null) {
+			this.developerName = details.getDeveloper().get("name").toString();
 		}
-		if(details.getVendor().get("website") != null) {
-			this.vendorWebsite = details.getVendor().get("website").toString();
+		if(details.getDeveloper().get("website") != null) {
+			this.developerWebsite = details.getDeveloper().get("website").toString();
 		}
-		if(details.getVendor().get("email") != null) {
-			this.vendorEmail = details.getVendor().get("email").toString();
+		if(details.getDeveloper().get("email") != null) {
+			this.developerEmail = details.getDeveloper().get("email").toString();
 		}
 		
 		AddressDTO address = new AddressDTO();
-		if(details.getVendorAddress().get("id") != null) {
-			String addressId = details.getVendor().get("id").toString();
+		if(details.getDeveloperAddress().get("id") != null) {
+			String addressId = details.getDeveloper().get("id").toString();
 			address.setId(new Long(addressId));
 		}
-		if(details.getVendorAddress().get("line1") != null) {
-			address.setStreetLineOne(details.getVendorAddress().get("line1").toString());
+		if(details.getDeveloperAddress().get("line1") != null) {
+			address.setStreetLineOne(details.getDeveloperAddress().get("line1").toString());
 		}
-		if(details.getVendorAddress().get("city") != null) {
-			address.setCity(details.getVendorAddress().get("city").toString());
+		if(details.getDeveloperAddress().get("city") != null) {
+			address.setCity(details.getDeveloperAddress().get("city").toString());
 		}
-		if(details.getVendorAddress().get("state") != null) {
-			address.setState(details.getVendorAddress().get("state").toString());
+		if(details.getDeveloperAddress().get("state") != null) {
+			address.setState(details.getDeveloperAddress().get("state").toString());
 		}
-		if(details.getVendorAddress().get("zipcode") != null) {
-			address.setZipcode(details.getVendorAddress().get("zipcode").toString());
+		if(details.getDeveloperAddress().get("zipcode") != null) {
+			address.setZipcode(details.getDeveloperAddress().get("zipcode").toString());
 		}
-		this.vendorAddress = address;
+		this.developerAddress = address;
 		
 		if(details.getProduct().get("id") != null) {
 			String productId = details.getProduct().get("id").toString();
@@ -215,8 +215,8 @@ public class PendingCertifiedProductDTO {
 	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){		
 		this.id = entity.getId();
 		this.practiceTypeId = entity.getPracticeTypeId();
-		this.vendorId = entity.getVendorId();
-		this.vendorAddress = new AddressDTO(entity.getVendorAddress());
+		this.developerId = entity.getDeveloperId();
+		this.developerAddress = new AddressDTO(entity.getDeveloperAddress());
 		this.productId = entity.getProductId();
 		this.productVersionId = entity.getProductVersionId();
 		this.certificationEditionId = entity.getCertificationEditionId();
@@ -227,7 +227,7 @@ public class PendingCertifiedProductDTO {
 		this.uniqueId = entity.getUniqueId();
 		this.recordStatus = entity.getRecordStatus();
 		this.practiceType = entity.getPracticeType();
-		this.vendorName = entity.getVendorName();
+		this.developerName = entity.getDeveloperName();
 		this.productName = entity.getProductName();
 		this.productVersion = entity.getProductVersion();
 		this.certificationEdition = entity.getCertificationEdition();
@@ -236,12 +236,12 @@ public class PendingCertifiedProductDTO {
 		this.productClassificationName = entity.getProductClassificationName();
 		this.productClassificationModule = entity.getProductClassificationModule();
 		this.certificationDate = entity.getCertificationDate();
-		this.vendorStreetAddress = entity.getVendorStreetAddress();
-		this.vendorCity = entity.getVendorCity();
-		this.vendorState = entity.getVendorState();
-		this.vendorZipCode = entity.getVendorZipCode();
-		this.vendorWebsite = entity.getVendorWebsite();
-		this.vendorEmail = entity.getVendorEmail();
+		this.developerStreetAddress = entity.getDeveloperStreetAddress();
+		this.developerCity = entity.getDeveloperCity();
+		this.developerState = entity.getDeveloperState();
+		this.developerZipCode = entity.getDeveloperZipCode();
+		this.developerWebsite = entity.getDeveloperWebsite();
+		this.developerEmail = entity.getDeveloperEmail();
 		this.additionalSoftware = entity.getAdditionalSoftware();
 		this.uploadNotes = entity.getUploadNotes();
 		this.reportFileLocation = entity.getReportFileLocation();
@@ -285,20 +285,20 @@ public class PendingCertifiedProductDTO {
 		this.practiceTypeId = practiceTypeId;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
-	public AddressDTO getVendorAddress() {
-		return vendorAddress;
+	public AddressDTO getDeveloperAddress() {
+		return developerAddress;
 	}
 
-	public void setVendorAddress(AddressDTO vendorAddress) {
-		this.vendorAddress = vendorAddress;
+	public void setDeveloperAddress(AddressDTO developerAddress) {
+		this.developerAddress = developerAddress;
 	}
 
 	public Long getProductId() {
@@ -365,12 +365,12 @@ public class PendingCertifiedProductDTO {
 		this.practiceType = practiceType;
 	}
 
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
 
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
 
 	public String getProductName() {
@@ -437,52 +437,52 @@ public class PendingCertifiedProductDTO {
 		this.certificationDate = certificationDate;
 	}
 
-	public String getVendorStreetAddress() {
-		return vendorStreetAddress;
+	public String getDeveloperStreetAddress() {
+		return developerStreetAddress;
 	}
 
-	public void setVendorStreetAddress(String vendorStreetAddress) {
-		this.vendorStreetAddress = vendorStreetAddress;
+	public void setDeveloperStreetAddress(String developerStreetAddress) {
+		this.developerStreetAddress = developerStreetAddress;
 	}
 
-	public String getVendorCity() {
-		return vendorCity;
+	public String getDeveloperCity() {
+		return developerCity;
 	}
 
-	public void setVendorCity(String vendorCity) {
-		this.vendorCity = vendorCity;
+	public void setDeveloperCity(String developerCity) {
+		this.developerCity = developerCity;
 	}
 
-	public String getVendorState() {
-		return vendorState;
+	public String getDeveloperState() {
+		return developerState;
 	}
 
-	public void setVendorState(String vendorState) {
-		this.vendorState = vendorState;
+	public void setDeveloperState(String developerState) {
+		this.developerState = developerState;
 	}
 
-	public String getVendorZipCode() {
-		return vendorZipCode;
+	public String getDeveloperZipCode() {
+		return developerZipCode;
 	}
 
-	public void setVendorZipCode(String vendorZipCode) {
-		this.vendorZipCode = vendorZipCode;
+	public void setDeveloperZipCode(String developerZipCode) {
+		this.developerZipCode = developerZipCode;
 	}
 
-	public String getVendorWebsite() {
-		return vendorWebsite;
+	public String getDeveloperWebsite() {
+		return developerWebsite;
 	}
 
-	public void setVendorWebsite(String vendorWebsite) {
-		this.vendorWebsite = vendorWebsite;
+	public void setDeveloperWebsite(String developerWebsite) {
+		this.developerWebsite = developerWebsite;
 	}
 
-	public String getVendorEmail() {
-		return vendorEmail;
+	public String getDeveloperEmail() {
+		return developerEmail;
 	}
 
-	public void setVendorEmail(String vendorEmail) {
-		this.vendorEmail = vendorEmail;
+	public void setDeveloperEmail(String developerEmail) {
+		this.developerEmail = developerEmail;
 	}
 
 	public String getAdditionalSoftware() {

@@ -73,7 +73,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		System.out.println(detail.getPracticeType());
 		System.out.println(detail.getProduct());
 		System.out.println(detail.getTestingLabId());
-		System.out.println(detail.getVendor());
+		System.out.println(detail.getDeveloper());
 		System.out.println(detail.getVisibleOnChpl());
 		
 	}
@@ -203,10 +203,10 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 
 	@Test
 	@Transactional
-	public void testCertifiedProductDetailsVendor() throws EntityRetrievalException{
+	public void testCertifiedProductDetailsDeveloper() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals("Test Vendor 1", detail.getVendor().get("name"));
+		assertEquals("Test Developer 1", detail.getDeveloper().get("name"));
 		assertEquals(1, new Long(detail.getProduct().get("id").toString()).longValue());
 	}
 	

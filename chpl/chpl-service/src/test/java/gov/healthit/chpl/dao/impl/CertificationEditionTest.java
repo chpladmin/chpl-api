@@ -1,9 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.util.Date;
-import java.util.List;
-
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,14 +16,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.VendorDAO;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.VendorDTO;
-import gov.healthit.chpl.entity.VendorEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

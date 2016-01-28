@@ -1,17 +1,16 @@
 package gov.healthit.chpl.web.controller;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
@@ -58,13 +56,14 @@ import io.swagger.annotations.Api;
 @Api(value = "users")
 @RestController
 @RequestMapping("/users")
-public class UserManagementController extends AuthPropertiesConsumer {
+public class UserManagementController {
 	
 	@Autowired UserManager userManager;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired InvitationManager invitationManager;
 	@Autowired private Authenticator authenticator;
 	@Autowired private ActivityManager activityManager;
+	@Autowired private Environment env;
 	
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
 	private static final long VALID_INVITATION_LENGTH = 3L*24L*60L*60L*1000L;
@@ -94,7 +93,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		//send email for user to confirm email address	
 		String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Open Data CHPL. " +
 					"Please click the link below to activate your account: <br/>" +
-					getProps().getProperty("chplUrlBegin") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
+					env.getProperty("chplUrlBegin") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>The Open Data CHPL Team</p>";
@@ -207,7 +206,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 				"<p>You have been granted a new role on ONC's Open Data CHPL " +
 					"which will allow you to manage certified product listings on the CHPL. " +
 					"Please click the link below to create or update your account: <br/>" +
-					getProps().getProperty("chplUrlBegin") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
+					env.getProperty("chplUrlBegin") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>Take care,<br/> " +

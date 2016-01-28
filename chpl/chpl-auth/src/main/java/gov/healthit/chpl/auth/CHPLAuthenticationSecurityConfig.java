@@ -1,8 +1,5 @@
 package gov.healthit.chpl.auth;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -15,10 +12,13 @@ import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.jndi.JndiObjectFactoryBean;
@@ -42,40 +42,22 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
-
 @Configuration
 @EnableWebSecurity
+@PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLAuthenticationSecurityConfig extends
-		WebSecurityConfigurerAdapter {
+		WebSecurityConfigurerAdapter implements EnvironmentAware {
 	
-	
-	@Autowired
-	private JWTUserConverter userConverter;
-	
-	public static final String DEFAULT_AUTH_PROPERTIES_FILE = "environment.auth.properties";
-	
-	protected Properties props;
-	
+	@Autowired private JWTUserConverter userConverter;
+	private Environment env;
 	
 	public CHPLAuthenticationSecurityConfig() {
 		super(true);
 	}
 	
-	protected void loadProperties() throws IOException {
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_AUTH_PROPERTIES_FILE);
-		
-		if (in == null)
-		{
-			props = null;
-			throw new FileNotFoundException("Auth Environment Properties File not found in class path.");
-		}
-		else
-		{
-			props = new Properties();
-			props.load(in);
-		}
+	public void setEnvironment(Environment env) {
+		this.env = env;
 	}
 	
 	@Override
@@ -106,18 +88,8 @@ public class CHPLAuthenticationSecurityConfig extends
 	public LocalEntityManagerFactoryBean entityManagerFactory(){
 		
 		LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-		
-		if (this.props == null){
-			try {
-				this.loadProperties();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		
 		Properties jpaProps = new Properties();
-		jpaProps.put("persistenceUnitName", this.props.getProperty("authPersistenceUnitName"));
+		jpaProps.put("persistenceUnitName", this.env.getRequiredProperty("authPersistenceUnitName"));
 		
 		bean.setJpaProperties(jpaProps);
 		
@@ -153,16 +125,7 @@ public class CHPLAuthenticationSecurityConfig extends
 	public JndiObjectFactoryBean aclDataSource(){
 		
 		JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-		
-		if (this.props == null){
-			try {
-				this.loadProperties();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		bean.setJndiName(this.props.getProperty("authJndiName"));
+		bean.setJndiName(this.env.getRequiredProperty("authJndiName"));
 		return bean;
 	}
 	
@@ -175,20 +138,10 @@ public class CHPLAuthenticationSecurityConfig extends
 	
 	@Bean
 	public EhCacheFactoryBean ehCacheFactoryBean(){
-		
-		
-		if (this.props == null){
-			try {
-				this.loadProperties();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		EhCacheFactoryBean bean = new EhCacheFactoryBean();
 		bean.setCacheManager(ehCacheManagerFactoryBean().getObject());
 		//bean.setCacheName("aclCache");
-		bean.setCacheName(this.props.getProperty("authAclCacheName"));
+		bean.setCacheName(this.env.getRequiredProperty("authAclCacheName"));
 		
 		return bean;
 	}

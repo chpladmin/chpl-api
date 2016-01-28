@@ -1,18 +1,18 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.VendorACBMapEntity;
+import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 
-public class VendorACBMapDTO {
+public class DeveloperACBMapDTO {
 	private Long id;
-	private Long vendorId;
+	private Long developerId;
 	private Long acbId;
 	private Boolean transparencyAttestation;
 	
-	public VendorACBMapDTO(){}
+	public DeveloperACBMapDTO(){}
 	
-	public VendorACBMapDTO(VendorACBMapEntity entity){
+	public DeveloperACBMapDTO(DeveloperACBMapEntity entity){
 		this.id = entity.getId();
-		this.vendorId = entity.getVendorId();
+		this.developerId = entity.getDeveloperId();
 		this.acbId = entity.getCertificationBodyId();
 		this.transparencyAttestation = entity.getTransparencyAttestation();
 	}
@@ -25,12 +25,12 @@ public class VendorACBMapDTO {
 		this.id = id;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
 	public Long getAcbId() {

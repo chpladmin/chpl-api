@@ -66,11 +66,11 @@ public class AddressDaoTest extends TestCase {
 		assertNotNull(found);
 	}
 	@Test
-	public void getAddressByVendorId() {
-		Long vendorId = -1L;
+	public void getAddressByDeveloperId() {
+		Long developerId = -1L;
 		AddressDTO result = null;
 		try {
-			result = addressDao.getById(vendorId);
+			result = addressDao.getById(developerId);
 		} catch(EntityRetrievalException ex) {
 			fail("Could not find address with the id");
 		}

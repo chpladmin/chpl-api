@@ -156,19 +156,21 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		if(addressDto.getId() != null) {
 			//update the address
 			AddressDTO toUpdate = getById(addressDto.getId());
-			toUpdate.setStreetLineOne(addressDto.getStreetLineOne());
-			toUpdate.setStreetLineTwo(addressDto.getStreetLineTwo());
-			toUpdate.setCity(addressDto.getCity());
-			toUpdate.setState(addressDto.getState());
-			toUpdate.setZipcode(addressDto.getZipcode());
-			toUpdate.setCountry(addressDto.getCountry());
-			address = update(toUpdate);
+			if(toUpdate != null) {
+				toUpdate.setStreetLineOne(addressDto.getStreetLineOne());
+				toUpdate.setStreetLineTwo(addressDto.getStreetLineTwo());
+				toUpdate.setCity(addressDto.getCity());
+				toUpdate.setState(addressDto.getState());
+				toUpdate.setZipcode(addressDto.getZipcode());
+				toUpdate.setCountry(addressDto.getCountry());
+				address = update(toUpdate);
+			}
 		} else {
 			address = getEntityByValues(addressDto);
 		}
 		
 		if(address == null) {
-			//if we didn't find it, create and save a new address entity before setting it on the vendor
+			//if we didn't find it, create and save a new address entity before setting it on the developer
 			address = create(addressDto);
 		}
 		

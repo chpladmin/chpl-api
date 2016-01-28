@@ -1,9 +1,5 @@
 package gov.healthit.chpl.auth.jwt;
 
-
-
-import gov.healthit.chpl.auth.AuthPropertiesConsumer;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -16,10 +12,13 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JWTAuthorRsaJoseJImpl extends AuthPropertiesConsumer implements JWTAuthor {
+public class JWTAuthorRsaJoseJImpl implements JWTAuthor {
+	
+	@Autowired private Environment env;
 	
 	@Autowired
 	@Qualifier("RsaJose4JWebKey")
@@ -30,20 +29,17 @@ public class JWTAuthorRsaJoseJImpl extends AuthPropertiesConsumer implements JWT
 	
 	
 	@Override
-	public String createJWT(String subject, Map<String, List<String> > claims) {
-		
-		Properties jwtProps = this.getProps();
-		
+	public String createJWT(String subject, Map<String, List<String> > claims) {		
 	    // Create the Claims, which will be the content of the JWT
 	    JwtClaims claimsObj = new JwtClaims();
-	    claimsObj.setIssuer(jwtProps.getProperty("jwtIssuer"));  // who creates the token and signs it
-	    claimsObj.setAudience(jwtProps.getProperty("jwtAudience")); // to whom the token is intended to be sent
+	    claimsObj.setIssuer(env.getProperty("jwtIssuer"));  // who creates the token and signs it
+	    claimsObj.setAudience(env.getProperty("jwtAudience")); // to whom the token is intended to be sent
 	    claimsObj.setExpirationTimeMinutesInTheFuture(
-	    		Integer.parseInt(jwtProps.getProperty("jwtExpirationTimeMinutesInTheFuture"))); // time when the token will expire (from now)
+	    		Integer.parseInt(env.getProperty("jwtExpirationTimeMinutesInTheFuture"))); // time when the token will expire (from now)
 	    claimsObj.setGeneratedJwtId(); // a unique identifier for the token
 	    claimsObj.setIssuedAtToNow();  // when the token was issued/created (now)
 	    claimsObj.setNotBeforeMinutesInThePast(Integer.parseInt(
-	    		jwtProps.getProperty("jwtNotBeforeMinutesInThePast"))); // time before which the token is not yet valid (minutes ago)
+	    		env.getProperty("jwtNotBeforeMinutesInThePast"))); // time before which the token is not yet valid (minutes ago)
 	    claimsObj.setSubject(subject); // the subject/principal is whom the token is about
 	    
 	    

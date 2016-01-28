@@ -36,9 +36,9 @@ public class CertifiedProductDetailsDTO {
     private String productVersion;
     private Long productId;
     private String productName;
-    private Long vendorId;
-    private String vendorName;
-    private String vendorCode;
+    private Long developerId;
+    private String developerName;
+    private String developerCode;
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
@@ -93,9 +93,9 @@ public class CertifiedProductDetailsDTO {
     	this.reportFileLocation = entity.getReportFileLocation();
     	this.testingLabId = entity.getTestingLabId();
     	this.testingLabName = entity.getTestingLabName();
-    	this.vendorId = entity.getVendorId();
-    	this.vendorName = entity.getVendorName();
-    	this.vendorCode = entity.getVendorCode();
+    	this.developerId = entity.getDeveloperId();
+    	this.developerName = entity.getDeveloperName();
+    	this.developerCode = entity.getDeveloperCode();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.termsOfUse = entity.getTermsOfUse();
@@ -215,17 +215,17 @@ public class CertifiedProductDetailsDTO {
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
 	public String getPracticeTypeName() {
 		return practiceTypeName;
@@ -359,12 +359,12 @@ public class CertifiedProductDetailsDTO {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getVendorCode() {
-		return vendorCode;
+	public String getDeveloperCode() {
+		return developerCode;
 	}
 
-	public void setVendorCode(String vendorCode) {
-		this.vendorCode = vendorCode;
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 
 	public String getIcsCode() {

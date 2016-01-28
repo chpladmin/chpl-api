@@ -44,14 +44,14 @@ public class ProductManagerImpl implements ProductManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProductDTO> getByVendor(Long vendorId) {
-		return productDao.getByVendor(vendorId);
+	public List<ProductDTO> getByDeveloper(Long developerId) {
+		return productDao.getByDeveloper(developerId);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProductDTO> getByVendors(List<Long> vendorIds) {
-		return productDao.getByVendors(vendorIds);
+	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
+		return productDao.getByDevelopers(developerIds);
 	}
 	
 	@Override

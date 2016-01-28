@@ -104,13 +104,13 @@ public class CertifiedProductDetailsEntity {
     private String productName;
     
     @Column(name = "vendor_id")
-    private Long vendorId;
+    private Long developerId;
     
     @Column(name = "vendor_name")
-    private String vendorName;
+    private String developerName;
     
     @Column(name = "vendor_code")
-    private String vendorCode;
+    private String developerCode;
 
     @Column(name = "certification_date")
     private Date certificationDate;
@@ -303,20 +303,20 @@ public class CertifiedProductDetailsEntity {
 		this.productName = productName;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
 
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
     
 	public Date getCertificationDate() {
@@ -447,12 +447,12 @@ public class CertifiedProductDetailsEntity {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getVendorCode() {
-		return vendorCode;
+	public String getDeveloperCode() {
+		return developerCode;
 	}
 
-	public void setVendorCode(String vendorCode) {
-		this.vendorCode = vendorCode;
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 
 	public String getIcsCode() {

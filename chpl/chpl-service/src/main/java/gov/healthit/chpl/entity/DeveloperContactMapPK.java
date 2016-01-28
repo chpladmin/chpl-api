@@ -19,7 +19,7 @@ import javax.persistence.Transient;
  */
 
 @Embeddable
-public class VendorContactMapPK implements Cloneable, Serializable {
+public class DeveloperContactMapPK implements Cloneable, Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -4117814996302259798L;
@@ -38,7 +38,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@Basic( optional = false )
 	@JoinColumn(name = "vendor_id_vendor", nullable = false , insertable = false, updatable = false )
-	private VendorEntity vendorIdVendor;
+	private DeveloperEntity developerIdDeveloper;
 
  
 
@@ -49,7 +49,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	*/
 	@Transient
 	public Class<?> getClassType() {
-		return VendorContactMapPK.class;
+		return DeveloperContactMapPK.class;
 	}
  
 
@@ -73,22 +73,22 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	}
 
 	 /**
-	 * Return the value associated with the column: vendorIdVendor.
-	 * @return A Vendor object (this.vendorIdVendor)
+	 * Return the value associated with the column: developerIdDeveloper.
+	 * @return A Developer object (this.vendorIdVendor)
 	 */
-	public VendorEntity getVendorIdVendor() {
-		return this.vendorIdVendor;
+	public DeveloperEntity getDeveloperIdDeveloper() {
+		return this.developerIdDeveloper;
 		
 	}
 	
 
   
 	 /**  
-	 * Set the value related to the column: vendorIdVendor.
-	 * @param vendorIdVendor the vendorIdVendor value you wish to set
+	 * Set the value related to the column: developerIdDeveloper.
+	 * @param developerIdDeveloper the developerIdDeveloper value you wish to set
 	 */
-	public void setVendorIdVendor(final VendorEntity vendorIdVendor) {
-		this.vendorIdVendor = vendorIdVendor;
+	public void setDeveloperIdDeveloper(final DeveloperEntity developerIdDeveloper) {
+		this.developerIdDeveloper = developerIdDeveloper;
 	}
 
 
@@ -98,9 +98,9 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	* @throws CloneNotSupportedException on error
     */
     @Override
-    public VendorContactMapPK clone() throws CloneNotSupportedException {
+    public DeveloperContactMapPK clone() throws CloneNotSupportedException {
 		
-        final VendorContactMapPK copy = (VendorContactMapPK)super.clone();
+        final DeveloperContactMapPK copy = (DeveloperContactMapPK)super.clone();
 
 		return copy;
 	}
@@ -136,9 +136,9 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 			 return false;
 		}
 		
-		final VendorContactMapPK that; 
+		final DeveloperContactMapPK that; 
 		try {
-			that = (VendorContactMapPK) proxyThat;
+			that = (DeveloperContactMapPK) proxyThat;
 			if ( !(that.getClassType().equals(this.getClassType()))){
 				return false;
 			}
@@ -151,7 +151,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 		
 		boolean result = true;
 		result = result && (((getContact() == null) && (that.getContact() == null)) || (getContact() != null && getContact().getId().equals(that.getContact().getId())));	
-		result = result && (((getVendorIdVendor() == null) && (that.getVendorIdVendor() == null)) || (getVendorIdVendor() != null && getVendorIdVendor().getId().equals(that.getVendorIdVendor().getId())));	
+		result = result && (((getDeveloperIdDeveloper() == null) && (that.getDeveloperIdDeveloper() == null)) || (getDeveloperIdDeveloper() != null && getDeveloperIdDeveloper().getId().equals(that.getDeveloperIdDeveloper().getId())));	
 		return result;
 	}
 	
@@ -163,7 +163,7 @@ public class VendorContactMapPK implements Cloneable, Serializable {
 	public int hashCode() {
 	int hash = 0;
 		hash = hash + getContact().hashCode();
-		hash = hash + getVendorIdVendor().hashCode();
+		hash = hash + getDeveloperIdDeveloper().hashCode();
 	return hash;
 	}
 	

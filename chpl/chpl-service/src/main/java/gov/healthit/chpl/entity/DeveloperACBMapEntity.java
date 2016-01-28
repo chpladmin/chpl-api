@@ -16,7 +16,7 @@ import org.hibernate.annotations.GenerationTime;
 
 @Entity
 @Table(name = "acb_vendor_map")
-public class VendorACBMapEntity implements Cloneable, Serializable {
+public class DeveloperACBMapEntity implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = 555395798107190947L;
 
@@ -27,7 +27,7 @@ public class VendorACBMapEntity implements Cloneable, Serializable {
 	private Long id;
 	
 	@Column(name = "vendor_id")
-	private Long vendorId;
+	private Long developerId;
 	
 	@Column(name = "certification_body_id")
 	private Long certificationBodyId;
@@ -54,7 +54,7 @@ public class VendorACBMapEntity implements Cloneable, Serializable {
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
 
-	public VendorACBMapEntity() {
+	public DeveloperACBMapEntity() {
 		// Default constructor
 	}
 
@@ -66,12 +66,12 @@ public class VendorACBMapEntity implements Cloneable, Serializable {
 		this.id = id;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void getDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
 	public Long getCertificationBodyId() {
