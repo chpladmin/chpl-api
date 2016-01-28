@@ -48,7 +48,7 @@ public class AnnouncementController {
 		if(!future){
 			announcements = announcementManager.getAll();
 		}else{
-			announcements = announcementManager.getAllFuture();
+			announcements = announcementManager.getAllCurrentAndFuture();
 		}
 		if(announcements != null) {
 			for(AnnouncementDTO announcement : announcements) {
@@ -78,10 +78,10 @@ public class AnnouncementController {
 			toCreate.setTitle(announcementInfo.getTitle());
 		}
 		toCreate.setText(announcementInfo.getText());
-		if(StringUtils.isEmpty(announcementInfo.isPublic())) {
+		if(StringUtils.isEmpty(announcementInfo.getIsPublic())) {
 			throw new InvalidArgumentsException("A public permission is required for a new announcement");
 		}else{
-			toCreate.setPublic(announcementInfo.isPublic().booleanValue());
+			toCreate.setIsPublic(announcementInfo.getIsPublic());
 		}
 		if(StringUtils.isEmpty(announcementInfo.getStartDate())) {
 			throw new InvalidArgumentsException("A start date is required for a new announcement");
@@ -107,7 +107,7 @@ public class AnnouncementController {
 		toUpdate.setId(announcementInfo.getId());
 		toUpdate.setTitle(announcementInfo.getTitle());
 		toUpdate.setText(announcementInfo.getText());
-		toUpdate.setPublic(announcementInfo.isPublic());
+		toUpdate.setIsPublic(announcementInfo.getIsPublic());
 		toUpdate.setStartDate(announcementInfo.getStartDate());
 		toUpdate.setEndDate(announcementInfo.getEndDate());
 

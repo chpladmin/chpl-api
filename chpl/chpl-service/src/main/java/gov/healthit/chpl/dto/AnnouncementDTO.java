@@ -13,7 +13,7 @@ public class AnnouncementDTO{
 	private String text;
 	private Date startDate;
 	private Date endDate;
-	private boolean isPublic;
+	private Boolean isPublic;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
@@ -78,11 +78,11 @@ public class AnnouncementDTO{
 		this.endDate = endDate;
 	}
 
-	public Boolean isPublic() {
+	public Boolean getIsPublic() {
 		return isPublic;
 	}
 
-	public void setPublic(boolean isPublic) {
+	public void setIsPublic(Boolean isPublic) {
 		this.isPublic = isPublic;
 	}
 

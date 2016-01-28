@@ -82,6 +82,24 @@ public class ActivityController {
 		}
 	}
 	
+	@RequestMapping(value="/announcements", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForAnnoucements(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		if (lastNDays == null){
+			return getActivityEventsForAnnouncements();
+		} else {
+			return getActivityEventsForAnnouncements(lastNDays);
+		}
+	}
+	
+	@RequestMapping(value="/announcements/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		if (lastNDays == null){
+			return getActivityEventsForAnnouncements(id);
+		} else {
+			return getActivityEventsForAnnouncements(id, lastNDays);
+		}
+	}
+	
 	@RequestMapping(value="/atls", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityforATLs(@RequestParam(required=false) Integer lastNDays,
 			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
@@ -643,7 +661,41 @@ public class ActivityController {
 		return events;
 	}
 	
+	private List<ActivityEvent> getActivityEventsForAnnouncements() throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;
+		events = getActivityEventsForConcept(false, concept);
+		
+		return events;
+	}
 	
+	private List<ActivityEvent> getActivityEventsForAnnouncements(Integer lastNDays) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;
+		events = getActivityEventsForConcept(false, concept, lastNDays);
+		
+		return events;
+	}
+	
+	private List<ActivityEvent> getActivityEventsForAnnouncements(Long id) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;
+		events = getActivityEventsForObject(false, concept, id);
+		
+		return events;
+	}
+	
+	private List<ActivityEvent> getActivityEventsForAnnouncements(Long id, Integer lastNDays) throws JsonParseException, IOException{
+		
+		List<ActivityEvent> events = null;
+		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;
+		events = getActivityEventsForObject(false, concept, id, lastNDays);
+		
+		return events;
+	}
 	
 	private List<ActivityEvent> getActivityEventsForConcept(boolean showDeleted, ActivityConcept concept) throws JsonParseException, IOException{
 		return activityManager.getActivityForConcept(showDeleted, concept);

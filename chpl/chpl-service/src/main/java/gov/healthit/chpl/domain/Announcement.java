@@ -13,7 +13,7 @@ public class Announcement{
 	private String text;
 	private Date startDate;
 	private Date endDate;
-	private boolean isPublic;
+	private Boolean isPublic;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
@@ -28,7 +28,7 @@ public class Announcement{
 		this.text = dto.getText();
 		this.startDate = dto.getStartDate();
 		this.endDate = dto.getEndDate();
-		this.isPublic = dto.isPublic();
+		this.isPublic = dto.getIsPublic();
 		this.deleted = dto.getDeleted();
 		this.lastModifiedDate = dto.getLastModifiedDate();
 		this.lastModifiedUser = dto.getLastModifiedUser();
@@ -76,14 +76,6 @@ public class Announcement{
 		this.endDate = endDate;
 	}
 
-	public Boolean isPublic() {
-		return isPublic;
-	}
-
-	public void setPublic(boolean isPublic) {
-		this.isPublic = isPublic;
-	}
-
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -114,6 +106,14 @@ public class Announcement{
 
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public Boolean getIsPublic() {
+		return isPublic;
+	}
+
+	public void setIsPublic(Boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 
 }
