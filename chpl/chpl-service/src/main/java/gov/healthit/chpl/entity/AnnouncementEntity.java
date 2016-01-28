@@ -103,15 +103,11 @@ public class AnnouncementEntity {
 		this.endDate = endDate;
 	}
 
-	public void setPublic(boolean isPublic) {
-		this.isPublic = isPublic;
-	}
-	
-	public boolean getIsPublic() {
+	public Boolean getIsPublic() {
 		return isPublic;
 	}
 
-	public void seIsPublic(boolean isPublic) {
+	public void setIsPublic(Boolean isPublic) {
 		this.isPublic = isPublic;
 	}
 

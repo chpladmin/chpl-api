@@ -55,8 +55,10 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 				entity.setEndDate(dto.getEndDate());
 			}
 			
-			if(dto.isPublic() != null){
-				entity.setPublic(dto.isPublic());
+			if(dto.getIsPublic() != null){
+				entity.setIsPublic(dto.getIsPublic());
+			} else {
+				entity.setIsPublic(false);
 			}
 			
 			if(dto.getDeleted() != null) {
@@ -112,8 +114,10 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 			entity.setEndDate(dto.getEndDate());
 		}
 		
-		if(dto.isPublic() != null){
-			entity.setPublic(dto.isPublic());
+		if(dto.getIsPublic() != null){
+			entity.setIsPublic(dto.getIsPublic());
+		} else {
+			entity.setIsPublic(false);
 		}
 		
 		if(dto.getDeleted() != null) {
