@@ -37,6 +37,10 @@ import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CorrectiveActionPlanManager;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Example;
+import io.swagger.annotations.ExampleProperty;
+import io.swagger.annotations.ExternalDocs;
 
 @Api(value="corrective-action-plan")
 @RestController
@@ -48,6 +52,8 @@ public class CorrectiveActionPlanController {
 	@Autowired CorrectiveActionPlanManager capManager;
 	@Autowired CertifiedProductManager productManager;
 	
+	@ApiOperation(value="List corrective action plans for a certified product.", 
+			notes="List all corrective action plans, both open and resolved, for a certified product.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CorrectiveActionPlanResults getCorrectiveActionPlansForCertifiedProduct(
@@ -59,12 +65,19 @@ public class CorrectiveActionPlanController {
 		return results;
 	}
 	
+	@ApiOperation(value="Get corrective action plan details.", 
+			notes="Get all of the information about a specific corrective action plan. These details "
+					+ " include the presence and associated id's of any uploaded supporting "
+					+ " documentation but not the contents of those documents. Use /documentation/{capDocId} to "
+					+ " view the files.")
 	@RequestMapping(value="/{capId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CorrectiveActionPlanDetails getCorrectiveActionPlanById(@PathVariable("capId") Long capId) throws EntityRetrievalException {
 		return capManager.getPlanDetails(capId);
 	}
 	
+	@ApiOperation(value="Download CAP supporting documentation.", 
+			notes="Download a specific file that was previously uploaded to a corrective action plan.")
 	@RequestMapping(value="/documentation/{capDocId}", method=RequestMethod.GET)
 	public void getCorrectiveActionPlanDocumentationById(
 			@PathVariable("capDocId") Long capDocId, HttpServletResponse response) throws EntityRetrievalException, IOException {
@@ -104,7 +117,9 @@ public class CorrectiveActionPlanController {
 		}   
 	}
 
-	
+	@ApiOperation(value="Update a corrective action plan.", 
+			notes="The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ "authority on the ACB associated with the product and CAP.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CorrectiveActionPlanDetails update(@RequestBody(required=true) CorrectiveActionPlanDetails updateRequest) 
@@ -212,6 +227,11 @@ public class CorrectiveActionPlanController {
 		return capManager.getPlanDetails(toUpdate.getId());
 	}
 	
+	@ApiOperation(value="Add documentation to an existing CAP.", 
+			notes="Upload a file of any kind (current size limit 5MB) as supporting "
+					+ " documentation to an existing CAP. The logged in user uploading the file "
+					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ " authority on the associated ACB.")
 	@RequestMapping(value="/{capId}/documentation", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
 	public @ResponseBody String upload(@PathVariable("capId") Long correctiveActionPlanId,
@@ -244,6 +264,10 @@ public class CorrectiveActionPlanController {
 		return "{\"success\": \"true\"}";
 	}
 	
+	@ApiOperation(value="Create a new corrective action plan.", 
+			notes="The logged in user"
+					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ " authority on the associated ACB.")
 	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CorrectiveActionPlanDetails create(@RequestBody(required=true) CorrectiveActionPlanDetails createRequest) 
@@ -294,6 +318,10 @@ public class CorrectiveActionPlanController {
 		return result;
 	}
 	
+	@ApiOperation(value="Delete a corrective action plan.", 
+			notes="The logged in user"
+					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ " authority on the associated ACB.")
 	@RequestMapping(value="/{planId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteAcb(@PathVariable("planId") Long planId) 
@@ -316,6 +344,10 @@ public class CorrectiveActionPlanController {
 		return "{\"deleted\" : true }";
 	}
 	
+	@ApiOperation(value="Remove documentation from a corrective action plan.", 
+			notes="The logged in user"
+					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ " authority on the associated ACB.")
 	@RequestMapping(value="/documentation/{docId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteDocumentationById(@PathVariable("docId") Long docId) 

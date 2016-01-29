@@ -54,6 +54,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value="certified-products")
 @RestController
@@ -69,6 +70,13 @@ public class CertifiedProductController {
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
 
+	@ApiOperation(value="List all certified products", 
+			notes="Default behavior is to return all certified products in the system. "
+					+ " The optional 'versionId' parameter filters the certified products to those"
+					+ " assigned to that version. The 'editable' parameter will return only those"
+					+ " certified products that the logged in user has permission to edit as "
+					+ " determined by ACB roles and authorities. Not all information about "
+					+ " every certified product is returned. Call the /details service for more information.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
@@ -99,6 +107,8 @@ public class CertifiedProductController {
 		return products;
 	}
 	
+	@ApiOperation(value="Get all details for a specified certified product.", 
+			notes="Returns all information in the CHPL related to the specified certified product.")
 	@RequestMapping(value="/{certifiedProductId}/details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
@@ -111,6 +121,12 @@ public class CertifiedProductController {
 		return certifiedProduct;
 	}
 	
+	@ApiOperation(value="Update an existing certified product.", 
+			notes="Updates the certified product after first validating the request. The logged in"
+					+ " user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative "
+					+ " authority on the ACB that certified the product. If a different ACB is passed in"
+					+ " as part of the request, an ownership change will take place and the logged in "
+					+ " user must have ROLE_ADMIN.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
@@ -234,6 +250,9 @@ public class CertifiedProductController {
 		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
 	}
 	
+	@ApiOperation(value="List pending certified products.", 
+			notes="Pending certified products are created via CSV file upload and are left in the 'pending' state "
+					+ " until validated and approved by an appropriate ACB administrator.")
 	@RequestMapping(value="/pending", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {		
@@ -251,6 +270,8 @@ public class CertifiedProductController {
 		return results;
 	}
 	
+	@ApiOperation(value="List a specific pending certified product.", 
+			notes="")
 	@RequestMapping(value="/pending/{pcpId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId) throws EntityRetrievalException {
@@ -258,6 +279,9 @@ public class CertifiedProductController {
 		return details;
 	}
 	
+	@ApiOperation(value="Reject a pending certified product.", 
+			notes="Essentially deletes a pending certified product. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
@@ -265,6 +289,13 @@ public class CertifiedProductController {
 		return "{\"success\" : true }";
 	}
 	
+	@ApiOperation(value="Confirm a pending certified product.", 
+			notes="Creates a new certified product in the system based on all of the information "
+					+ " passed in on the request. This information may differ from what was previously "
+					+ " entered for the pending certified product during upload. It will first be validated "
+					+ " to check for errors, then a new certified product is created, and the old pending certified"
+					+ " product will be removed. ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
@@ -292,6 +323,10 @@ public class CertifiedProductController {
 		return result;
 	}
 	
+	@ApiOperation(value="Upload a file with certified products", 
+			notes="Accepts a CSV file with very specific fields to create pending certified products. "
+					+ " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB(s) specified in the file.")
 	@RequestMapping(value="/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
 	public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file) throws 

@@ -16,8 +16,6 @@ public interface AnnouncementManager {
 	
 	public AnnouncementDTO update(AnnouncementDTO announcement) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	
-	public void undelete(AnnouncementDTO announcement) throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
-
 	public void delete(AnnouncementDTO announcement) throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
 	
 	public List<AnnouncementDTO> getAll();

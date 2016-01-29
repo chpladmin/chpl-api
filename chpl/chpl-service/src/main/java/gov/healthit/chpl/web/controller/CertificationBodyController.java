@@ -42,6 +42,7 @@ import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value="acbs")
 @RestController
@@ -53,6 +54,10 @@ public class CertificationBodyController {
 	
 	private static final Logger logger = LogManager.getLogger(CertificationBodyController.class);
 	
+	@ApiOperation(value="List all certification bodies.", 
+			notes="Setting the 'editable' parameter to true will return all ACBs that the logged in user has edit permissions on."
+					+ "Setting 'showDeleted' to true will include even those ACBs that have been deleted. The logged in user must have ROLE_ADMIN "
+					+ "to see deleted ACBs. The default behavior of this service is to list all of the ACBs in the system that are not deleted.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertificationBodyResults getAcbs(
@@ -79,6 +84,9 @@ public class CertificationBodyController {
 		return results;
 	}
 	
+	@ApiOperation(value="Get details about a specific ACB.", 
+			notes="The logged in user must either have ROLE_ADMIN or have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+					+ " for the ACB with the provided ID.")
 	@RequestMapping(value="/{acbId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") Long acbId)
@@ -88,6 +96,8 @@ public class CertificationBodyController {
 		return new CertificationBody(acb);
 	}
 	
+	@ApiOperation(value="Create a new ACB.", 
+			notes="The logged in user must either have ROLE_ADMIN to create a new ACB.")
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -116,7 +126,9 @@ public class CertificationBodyController {
 		return new CertificationBody(toCreate);
 	}
 	
-
+	@ApiOperation(value="Update an existing ACB.", 
+			notes="The logged in user must either have ROLE_ADMIN or have ROLE_ACB_ADMIN " +
+				" to update an existing ACB.")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -147,7 +159,8 @@ public class CertificationBodyController {
 		return new CertificationBody(result);
 	}
 	
-	
+	@ApiOperation(value="Delete an ACB.", 
+			notes="The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{acbId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteAcb(@PathVariable("acbId") Long acbId) 
@@ -159,6 +172,9 @@ public class CertificationBodyController {
 		return "{\"deletedAcb\" : true }";
 	}
 	
+	@ApiOperation(value="Restore a deleted ACB.", 
+			notes="ACBs are unique in the CHPL in that they can be restored after a delete."
+					+ " The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{acbId}/undelete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String undeleteAcb(@PathVariable("acbId") Long acbId) 
@@ -170,6 +186,13 @@ public class CertificationBodyController {
 		return "{\"resurrectedAcb\" : true }";
 	}
 	
+	@ApiOperation(value="Add a user to an ACB.", 
+			notes="The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the "
+					+ " specified ACB. It is recommended to pass 'ADMIN' in as the 'authority' field"
+					+ " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
+					+ " Note that this method gives special permission on a specific ACB and is not the "
+					+ " equivalent of assigning the ROLE_ACB_ADMIN role. Please view /users/grant_role "
+					+ " request for more information on that.")
 	@RequestMapping(value="/add_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -192,6 +215,10 @@ public class CertificationBodyController {
 		return "{\"userAdded\" : true }";
 	}
 	
+	@ApiOperation(value="Remove user permissions from an ACB.", 
+			notes="The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the "
+					+ " specified ACB. The user specified in the request will have all authorities "
+					+ " removed that are associated with the specified ACB.")
 	@RequestMapping(value="{acbId}/remove_user/{userId}", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -211,6 +238,9 @@ public class CertificationBodyController {
 		return "{\"userDeleted\" : true }";
 	}
 	
+	@ApiOperation(value="List users with permissions on a specified ACB.", 
+			notes="The logged in user must have ROLE_ADMIN or have administrative or read authority on the "
+					+ " specified ACB.")
 	@RequestMapping(value="/{acbId}/users", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
