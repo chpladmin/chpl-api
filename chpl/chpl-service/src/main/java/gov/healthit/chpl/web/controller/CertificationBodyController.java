@@ -54,7 +54,7 @@ public class CertificationBodyController {
 	
 	private static final Logger logger = LogManager.getLogger(CertificationBodyController.class);
 	
-	@ApiOperation(value="List all certification bodies.", 
+	@ApiOperation(value="List all certification bodies (ACBs).", 
 			notes="Setting the 'editable' parameter to true will return all ACBs that the logged in user has edit permissions on."
 					+ "Setting 'showDeleted' to true will include even those ACBs that have been deleted. The logged in user must have ROLE_ADMIN "
 					+ "to see deleted ACBs. The default behavior of this service is to list all of the ACBs in the system that are not deleted.")
@@ -84,7 +84,7 @@ public class CertificationBodyController {
 		return results;
 	}
 	
-	@ApiOperation(value="Get details about a specific ACB.", 
+	@ApiOperation(value="Get details about a specific certification body (ACB).", 
 			notes="The logged in user must either have ROLE_ADMIN or have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
 					+ " for the ACB with the provided ID.")
 	@RequestMapping(value="/{acbId}", method=RequestMethod.GET,
@@ -97,7 +97,7 @@ public class CertificationBodyController {
 	}
 	
 	@ApiOperation(value="Create a new ACB.", 
-			notes="The logged in user must either have ROLE_ADMIN to create a new ACB.")
+			notes="The logged in user must have ROLE_ADMIN to create a new ACB.")
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")

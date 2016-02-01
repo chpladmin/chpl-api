@@ -119,7 +119,7 @@ public class CorrectiveActionPlanController {
 
 	@ApiOperation(value="Update a corrective action plan.", 
 			notes="The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
-					+ "authority on the ACB associated with the product and CAP.")
+					+ "authority on the ACB associated with the corrective action plan.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CorrectiveActionPlanDetails update(@RequestBody(required=true) CorrectiveActionPlanDetails updateRequest) 
