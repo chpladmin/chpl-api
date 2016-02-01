@@ -179,7 +179,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "ics_code, "
 				+ "additional_software_code, "
 				+ "certified_date_code, "
-				+ "count_corrective_action_plans"
+				+ "count_corrective_action_plans "
  
 				+ "FROM "
 				
@@ -344,7 +344,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "ics_code, "
 				+ "additional_software_code, "
 				+ "certified_date_code, "
-				+ "count_corrective_action_plans"
+				+ "count_corrective_action_plans "
 				
 				+ "FROM ( "
 
@@ -509,7 +509,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "ics_code, "
 				+ "additional_software_code, "
 				+ "certified_date_code, "
-				+ "count_corrective_action_plans"
+				+ "count_corrective_action_plans "
 
 				+ "FROM "
 

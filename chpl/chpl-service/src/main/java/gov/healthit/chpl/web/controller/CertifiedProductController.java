@@ -53,7 +53,9 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
+import io.swagger.annotations.Api;
 
+@Api(value="certified-products")
 @RestController
 @RequestMapping("/certified_products")
 public class CertifiedProductController {
@@ -115,6 +117,10 @@ public class CertifiedProductController {
 		throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, 
 		JsonProcessingException, ValidationException {
 		
+		//make sure the ui didn't send any error or warning messages back
+		updateRequest.setErrorMessages(new ArrayList<String>());
+		updateRequest.setWarningMessages(new ArrayList<String>());
+		//validate
 		CertifiedProductValidator validator = validatorFactory.getValidator(updateRequest);
 		if(validator != null) {
 			validator.validate(updateRequest);

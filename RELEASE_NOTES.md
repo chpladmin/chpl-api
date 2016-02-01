@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 0.1.1
+_12 January 2016_
+
+### New features
+* Integrated Swagger API generation
+
+### Bugs Fixed
+* Search on certifications / cqms
+* Allow editing of products with errors
+* Fixed various email content issues
+
 ## Version 0.1.0
 _5 January 2016_
 

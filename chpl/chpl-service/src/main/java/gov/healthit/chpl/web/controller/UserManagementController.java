@@ -52,7 +52,9 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
+import io.swagger.annotations.Api;
 
+@Api(value = "users")
 @RestController
 @RequestMapping("/users")
 public class UserManagementController extends AuthPropertiesConsumer {

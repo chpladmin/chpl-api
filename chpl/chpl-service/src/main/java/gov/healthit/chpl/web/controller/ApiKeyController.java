@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.domain.ApiKeyRegistration;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ApiKeyManager;
+import io.swagger.annotations.Api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 
+@Api(value="api-key")
 @RestController
 @RequestMapping("/key")
 public class ApiKeyController {
@@ -142,13 +144,13 @@ public class ApiKeyController {
 	
 	private void sendRegistrationEmail(String email, String orgName, String apiKey) throws AddressException, MessagingException{
 		
-		String subject = "OpenDataCHPL Api Key";
+		String subject = "OpenDataCHPL API Key";
 		
-		String htmlMessage = "<p>Thank you registering to use the Open Data CHPL API. Your unique API key is: " +apiKey+
-				" Each time you access data through our open APIs, you'll need to use this unique key <br/>" +
-				"For more information about how to use the API, please visit opendatachpl.org. <br/> "+
-				" -Open Data CHPL Team "+
-				"</p>";
+		String htmlMessage = "<p>Thank you for registering to use the Open Data CHPL API.</p>"
+				+ "<p>Your unique API key is: " + apiKey + " .</p>" 
+				+ "<p>You'll need to use this unique key each time you access data through our open APIs."
+				+ "<p>For more informatio about how to use the API, please visit opendatachpl.org</p>"
+				+ "<p>Thanks, <br/>Open Data CHPL Team</p>";
 		
 		SendMailUtil mailUtil = new SendMailUtil();
 		mailUtil.sendEmail(email, subject, htmlMessage);
