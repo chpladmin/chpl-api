@@ -79,7 +79,7 @@ public class CHPLConfig {
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 	
-	@Bean(name="multipartResolver") 
+	@Bean(name="multipartResolver")
 	public CommonsMultipartResolver getResolver() throws IOException{
 	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 	         
@@ -87,7 +87,7 @@ public class CHPLConfig {
 	        resolver.setMaxUploadSize(5242880);//5MB
 	         
 	        //You may also set other available properties.
-	         
+	        
 	        return resolver;
 	}
 	
