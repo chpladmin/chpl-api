@@ -15,6 +15,6 @@ public interface AdditionalSoftwareManager {
 	public CertificationResultAdditionalSoftwareMapDTO addAdditionalSoftwareCertificationResultMapping(Long additionalSoftwareId, Long certificationResultId) throws EntityCreationException;
 	public void deleteAdditionalSoftwareCertificationResultMapping(Long additionalSoftwareId, Long certificationResultId);
 	public void associateAdditionalSoftwareCertifiedProductSelf(Long additionalSoftwareId, Long certifiedProductId) throws EntityRetrievalException;
-	public List<AdditionalSoftware> getAdditionalSoftwareByCertificationResultId(Long id);
+	public List<AdditionalSoftware> getAdditionalSoftwareByCertificationResultId(Long id) throws EntityRetrievalException;
 	
 }

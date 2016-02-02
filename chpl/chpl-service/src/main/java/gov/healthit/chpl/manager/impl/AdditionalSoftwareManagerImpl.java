@@ -12,7 +12,9 @@ import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.manager.AdditionalSoftwareManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +30,9 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 	
 	@Autowired
 	private AdditionalSoftwareDAO additionalSoftwareDAO;
+	
+	@Autowired
+	private CertifiedProductManager certifiedProductManager;
 	
 	
 	@Override
@@ -71,13 +76,35 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 	}
 	
 	@Override
-	public List<AdditionalSoftware> getAdditionalSoftwareByCertificationResultId(Long id){
+	public List<AdditionalSoftware> getAdditionalSoftwareByCertificationResultId(Long id) throws EntityRetrievalException{
 		
 		List<AdditionalSoftwareDTO> dtos = additionalSoftwareDAO.findByCertificationResultId(id);
 		List<AdditionalSoftware> additionalSoftware = new ArrayList<>();
 		
-		for (AdditionalSoftwareDTO dto : dtos){
-			additionalSoftware.add(new AdditionalSoftware(dto));
+		for (AdditionalSoftwareDTO dto : dtos){	
+			
+			AdditionalSoftware sw = new AdditionalSoftware();
+			sw.setAdditionalSoftwareId(dto.getId());
+			
+			
+			sw.setCertifiedProductId(dto.getCertifiedProductId());
+			
+			CertifiedProductDTO cp = certifiedProductManager.getById(dto.getCertifiedProductId());
+			sw.setCertifiedProductCHPLId(cp.getChplProductNumber());
+			
+			
+			sw.setCertifiedProductSelf(dto.getCertifiedProductSelfId());
+			
+			CertifiedProductDTO selfCp = certifiedProductManager.getById(dto.getCertifiedProductSelfId());
+			sw.setCertifiedProductSelfCHPLId(selfCp.getChplProductNumber());
+			
+
+			sw.setJustification(dto.getJustification());
+			sw.setName(dto.getName());
+			sw.setVersion(dto.getVersion());
+			
+			
+			additionalSoftware.add(sw);
 		}
 		
 		return additionalSoftware;

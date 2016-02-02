@@ -6,20 +6,26 @@ public class AdditionalSoftware {
 
 	private Long additionalSoftwareId;
 	private Long certifiedProductId;
+	private String certifiedProductCHPLId;
 	private Long certifiedProductSelf;
+	private String certifiedProductSelfCHPLId;
 	private String justification;
 	private String name;
 	private String version;
 	
 	public AdditionalSoftware() {}
+	/*
 	public AdditionalSoftware(AdditionalSoftwareDTO additionalSoftwareDTO) {
 		this.setAdditionalSoftwareId(additionalSoftwareDTO.getId());
 		this.setCertifiedProductId(additionalSoftwareDTO.getCertifiedProductId());
+		this.setCertifiedProductCHPLId(additionalSoftwareDTO.getCertifiedProductCHPLId());
 		this.setCertifiedProductSelf(additionalSoftwareDTO.getCertifiedProductSelfId());
+		this.setCertifiedProductSelfCHPLId(additionalSoftwareDTO.getCertifiedProductSelfCHPLId());
 		this.setJustification(additionalSoftwareDTO.getJustification());
 		this.setName(additionalSoftwareDTO.getName());
 		this.setVersion(additionalSoftwareDTO.getVersion());
 	}
+	*/
 	
 	public Long getAdditionalSoftwareId() {
 		return additionalSoftwareId;
@@ -56,5 +62,17 @@ public class AdditionalSoftware {
 	}
 	public void setCertifiedProductSelf(Long certifiedProductSelf) {
 		this.certifiedProductSelf = certifiedProductSelf;
+	}
+	public String getCertifiedProductSelfCHPLId() {
+		return certifiedProductSelfCHPLId;
+	}
+	public void setCertifiedProductSelfCHPLId(String certifiedProductSelfCHPLId) {
+		this.certifiedProductSelfCHPLId = certifiedProductSelfCHPLId;
+	}
+	public String getCertifiedProductCHPLId() {
+		return certifiedProductCHPLId;
+	}
+	public void setCertifiedProductCHPLId(String certifiedProductCHPLId) {
+		this.certifiedProductCHPLId = certifiedProductCHPLId;
 	}
 }

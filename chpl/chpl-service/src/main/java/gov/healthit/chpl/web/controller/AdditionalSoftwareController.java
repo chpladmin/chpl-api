@@ -56,7 +56,7 @@ public class AdditionalSoftwareController {
 	
 	
 	@RequestMapping(value="/by_certification_result/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<AdditionalSoftware> getAddtionalSoftwareForCertificationResult(@PathVariable("id") Long id) throws JsonParseException, IOException
+	public List<AdditionalSoftware> getAddtionalSoftwareForCertificationResult(@PathVariable("id") Long id) throws JsonParseException, IOException, EntityRetrievalException
 	{
 		return additionalSoftwareManager.getAdditionalSoftwareByCertificationResultId(id);
 	}
