@@ -43,7 +43,8 @@ public interface SecuredUserManager {
 	public void removeAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException;
 	
 	public void updatePassword(UserDTO user, String encodedPassword) throws UserRetrievalException;
-	
+	public void updateFailedLoginCount(UserDTO user) throws UserRetrievalException;
+	public void updateAccountLockedStatus(UserDTO user) throws UserRetrievalException;
 	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user);
 
 	public UserDTO getBySubjectName(String userName) throws UserRetrievalException;

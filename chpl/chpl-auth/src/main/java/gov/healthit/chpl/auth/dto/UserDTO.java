@@ -20,6 +20,9 @@ public class UserDTO implements UserDetails {
 	private String phoneNumber;
 	private String title;
 	private Date signatureDate;
+	private Date complianceSignatureDate;
+	
+	private int failedLoginCount;
 	private boolean accountExpired;
 	private boolean accountLocked;
 	private boolean credentialsExpired;
@@ -38,6 +41,8 @@ public class UserDTO implements UserDetails {
 			this.phoneNumber = entity.getContact().getPhoneNumber();
 			this.title = entity.getContact().getTitle();
 			this.signatureDate = entity.getContact().getSignatureDate();
+			this.complianceSignatureDate = entity.getComplianceSignature();
+			this.failedLoginCount = entity.getFailedLoginCount();
 			this.accountExpired = !entity.isAccountNonExpired();
 			this.accountLocked = !entity.isAccountNonLocked();
 			this.accountEnabled = entity.isEnabled();
@@ -175,6 +180,26 @@ public class UserDTO implements UserDetails {
 
 	public void setSignatureDate(Date signatureDate) {
 		this.signatureDate = signatureDate;
+	}
+
+	public Date getComplianceSignatureDate() {
+		return complianceSignatureDate;
+	}
+
+	public void setComplianceSignatureDate(Date complianceSignatureDate) {
+		this.complianceSignatureDate = complianceSignatureDate;
+	}
+
+	public int getFailedLoginCount() {
+		return failedLoginCount;
+	}
+
+	public void setFailedLoginCount(int failedLoginCount) {
+		this.failedLoginCount = failedLoginCount;
+	}
+
+	public boolean isCredentialsExpired() {
+		return credentialsExpired;
 	}
 		
 }
