@@ -46,15 +46,6 @@ public class AdditionalSoftwareController {
 	}
 	
 	
-	@RequestMapping(value="/add_additional_software_cqm_result_mapping", method=RequestMethod.POST,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody String addAdditionalSoftwareCQMResultMapping(@RequestParam Long additionalSoftwareId, Long cqmResultId) throws EntityCreationException 
-	{
-		additionalSoftwareManager.addAdditionalSoftwareCQMResultMapping(additionalSoftwareId, cqmResultId);
-		return "{\"success\" : true }";
-	}
-	
-	
 	@RequestMapping(value="/delete_additional_software_certification_result_mapping", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody String deleteAdditionalSoftwareCertificationResultMapping(@RequestParam Long additionalSoftwareId, Long certificationResultId) throws EntityCreationException
@@ -64,26 +55,10 @@ public class AdditionalSoftwareController {
 	}
 	
 	
-	@RequestMapping(value="/delete_additional_software_cqm_result_mapping", method=RequestMethod.POST,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody String  deleteAdditionalSoftwareCQMResultMapping(@RequestParam Long additionalSoftwareId, Long cqmResultId) throws EntityCreationException 
-	{		
-		additionalSoftwareManager.deleteAdditionalSoftwareCQMResultMapping(additionalSoftwareId, cqmResultId);
-		return "{\"deleted\" : true }";
-	}
-	
-	
 	@RequestMapping(value="/by_certification_result/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<AdditionalSoftware> getAddtionalSoftwareForCertificationResult(@PathVariable("id") Long id) throws JsonParseException, IOException
 	{
 		return additionalSoftwareManager.getAdditionalSoftwareByCertificationResultId(id);
-	}
-	
-	
-	@RequestMapping(value="/by_cqm_result/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<AdditionalSoftware> getAddtionalSoftwareForCQMResult(@PathVariable("id") Long id) throws JsonParseException, IOException
-	{
-		return additionalSoftwareManager.getAdditionalSoftwareByCQMResultId(id);
 	}
 	
 	

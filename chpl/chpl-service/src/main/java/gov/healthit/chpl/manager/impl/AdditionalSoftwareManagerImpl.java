@@ -27,9 +27,6 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 	private CertificationResultDAO certificationResultDAO;
 	
 	@Autowired
-	private CQMResultDAO cqmResultDAO;
-	
-	@Autowired
 	private AdditionalSoftwareDAO additionalSoftwareDAO;
 	
 	
@@ -53,20 +50,6 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 		return created;
 	}
 	
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	public CQMResultAdditionalSoftwareMapDTO addAdditionalSoftwareCQMResultMapping(Long additionalSoftwareId, Long cqmResultId) throws EntityCreationException{
-		
-		CQMResultAdditionalSoftwareMapDTO dto = new CQMResultAdditionalSoftwareMapDTO();
-		dto.setAdditionalSoftwareId(additionalSoftwareId);
-		dto.setCqmResultId(cqmResultId);
-		
-		// "CQM"),
-		CQMResultAdditionalSoftwareMapDTO created = cqmResultDAO.createAdditionalSoftwareMapping(dto);
-		return created;
-		
-	}
 	
 	@Override
 	@Transactional(readOnly = false)
@@ -74,14 +57,6 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 	public void deleteAdditionalSoftwareCertificationResultMapping(Long additionalSoftwareId, Long certificationResultId){
 		
 		certificationResultDAO.deleteAdditionalSoftwareMapping(certificationResultId, additionalSoftwareId);
-	}
-	
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	public void deleteAdditionalSoftwareCQMResultMapping(Long additionalSoftwareId, Long cqmResultId){
-		
-		cqmResultDAO.deleteAdditionalSoftwareMapping(cqmResultId, additionalSoftwareId);
 	}
 	
 	@Override
@@ -99,19 +74,6 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 	public List<AdditionalSoftware> getAdditionalSoftwareByCertificationResultId(Long id){
 		
 		List<AdditionalSoftwareDTO> dtos = additionalSoftwareDAO.findByCertificationResultId(id);
-		List<AdditionalSoftware> additionalSoftware = new ArrayList<>();
-		
-		for (AdditionalSoftwareDTO dto : dtos){
-			additionalSoftware.add(new AdditionalSoftware(dto));
-		}
-		
-		return additionalSoftware;
-	}
-	
-	@Override
-	public List<AdditionalSoftware> getAdditionalSoftwareByCQMResultId(Long id){
-		
-		List<AdditionalSoftwareDTO> dtos = additionalSoftwareDAO.findByCQMResultId(id);
 		List<AdditionalSoftware> additionalSoftware = new ArrayList<>();
 		
 		for (AdditionalSoftwareDTO dto : dtos){
