@@ -783,20 +783,5 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				cqmResultDAO.delete(cqmResult.getId());
 			}
 		}
-	}
-	
-	
+	}	
 }
-
-//	
-//	@Override
-//	@Transactional(readOnly = true)
-//	public void delete(CertifiedProductDTO dto) throws EntityRetrievalException {
-//		
-//	}
-//	
-//	@Override
-//	@Transactional(readOnly = true)
-//	public void delete(Long certifiedProductId) throws EntityRetrievalException {
-//		
-//	}
