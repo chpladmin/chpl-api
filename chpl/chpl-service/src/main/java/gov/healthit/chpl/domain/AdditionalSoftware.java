@@ -14,18 +14,6 @@ public class AdditionalSoftware {
 	private String version;
 	
 	public AdditionalSoftware() {}
-	/*
-	public AdditionalSoftware(AdditionalSoftwareDTO additionalSoftwareDTO) {
-		this.setAdditionalSoftwareId(additionalSoftwareDTO.getId());
-		this.setCertifiedProductId(additionalSoftwareDTO.getCertifiedProductId());
-		this.setCertifiedProductCHPLId(additionalSoftwareDTO.getCertifiedProductCHPLId());
-		this.setCertifiedProductSelf(additionalSoftwareDTO.getCertifiedProductSelfId());
-		this.setCertifiedProductSelfCHPLId(additionalSoftwareDTO.getCertifiedProductSelfCHPLId());
-		this.setJustification(additionalSoftwareDTO.getJustification());
-		this.setName(additionalSoftwareDTO.getName());
-		this.setVersion(additionalSoftwareDTO.getVersion());
-	}
-	*/
 	
 	public Long getAdditionalSoftwareId() {
 		return additionalSoftwareId;

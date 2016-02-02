@@ -2,7 +2,6 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
-import gov.healthit.chpl.dto.CQMResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 
 public interface CQMResultDAO {

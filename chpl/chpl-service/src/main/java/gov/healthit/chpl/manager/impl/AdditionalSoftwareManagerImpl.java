@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
-import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.CQMResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.manager.AdditionalSoftwareManager;

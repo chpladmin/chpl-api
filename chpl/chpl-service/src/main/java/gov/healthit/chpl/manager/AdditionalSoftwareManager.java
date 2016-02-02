@@ -6,7 +6,6 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.CQMResultAdditionalSoftwareMapDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
 
 public interface AdditionalSoftwareManager {
