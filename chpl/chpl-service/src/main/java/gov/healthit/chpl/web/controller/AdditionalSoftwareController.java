@@ -32,7 +32,7 @@ public class AdditionalSoftwareController {
 			@RequestParam Long additionalSoftwareId,
 			@RequestParam Long certifiedProductId) throws EntityRetrievalException
 	{
-		additionalSoftwareManager.associateAdditionalSoftwareCerifiedProductSelf(additionalSoftwareId, certifiedProductId);
+		additionalSoftwareManager.associateAdditionalSoftwareCertifiedProductSelf(additionalSoftwareId, certifiedProductId);
 		return "{\"success\" : true }";
 	}
 	

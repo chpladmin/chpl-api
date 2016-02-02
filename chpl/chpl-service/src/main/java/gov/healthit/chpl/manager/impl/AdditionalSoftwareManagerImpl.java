@@ -62,7 +62,7 @@ public class AdditionalSoftwareManagerImpl implements AdditionalSoftwareManager 
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	public void associateAdditionalSoftwareCerifiedProductSelf(Long additionalSoftwareId, Long certifiedProductId) throws EntityRetrievalException{
+	public void associateAdditionalSoftwareCertifiedProductSelf(Long additionalSoftwareId, Long certifiedProductId) throws EntityRetrievalException{
 		
 		AdditionalSoftwareDTO dto = additionalSoftwareDAO.getById(additionalSoftwareId);
 		dto.setCertifiedProductSelfId(certifiedProductId);
