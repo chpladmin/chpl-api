@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +10,7 @@ import javax.mail.internet.AddressException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
@@ -52,20 +51,23 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
+import io.swagger.annotations.Api;
 
+@Api(value = "users")
 @RestController
 @RequestMapping("/users")
-public class UserManagementController extends AuthPropertiesConsumer {
+public class UserManagementController {
 	
 	@Autowired UserManager userManager;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired InvitationManager invitationManager;
 	@Autowired private Authenticator authenticator;
 	@Autowired private ActivityManager activityManager;
+	@Autowired private Environment env;
 	
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
-	private static final long VALID_INVITATION_LENGTH = 3*24*60*60*1000;
-	private static final long VALID_CONFIRMATION_LENGTH = 30*24*60*60*1000;
+	private static final long VALID_INVITATION_LENGTH = 3L*24L*60L*60L*1000L;
+	private static final long VALID_CONFIRMATION_LENGTH = 30L*24L*60L*60L*1000L;
 	
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
@@ -87,11 +89,11 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		
 		//get the invitation again to get the new hash
 		invitation = invitationManager.getById(invitation.getId());
-		
+	
 		//send email for user to confirm email address	
 		String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Open Data CHPL. " +
 					"Please click the link below to activate your account: <br/>" +
-					"http://" + getProps().getProperty("chplServer") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
+					env.getProperty("chplUrlBegin") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>The Open Data CHPL Team</p>";
@@ -102,7 +104,9 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		String activityDescription = "User "+createdUser.getSubjectName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, null, createdUser, createdUser.getId());
 		
-		return new User(createdUser);
+		User result = new User(createdUser);
+		result.setHash(invitation.getConfirmToken());
+		return result;
 	}
 	
 	@RequestMapping(value="/confirm", method= RequestMethod.POST, 
@@ -134,24 +138,38 @@ public class UserManagementController extends AuthPropertiesConsumer {
 			produces="application/json; charset=utf-8")
 	public String authorizeUser(@RequestBody AuthorizeCredentials credentials) 
 			throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
-		if(StringUtils.isEmpty(credentials.getHash()) || StringUtils.isEmpty(credentials.getUserName()) ||
-				StringUtils.isEmpty(credentials.getPassword())) {
-			throw new InvalidArgumentsException("Username, Password, and Token are all required.");
+		if(StringUtils.isEmpty(credentials.getHash())) {
+			throw new InvalidArgumentsException("Invitation hash is required.");
 		}
+		
+		gov.healthit.chpl.auth.user.User loggedInUser = Util.getCurrentUser();
+		if(loggedInUser == null && (StringUtils.isEmpty(credentials.getUserName()) ||
+				StringUtils.isEmpty(credentials.getPassword()))) {
+			throw new InvalidArgumentsException("Username and Password are required since no user is currently logged in.");
+		}
+		
 		InvitationDTO invitation = invitationManager.getByInvitationHash(credentials.getHash());
 		if(invitation == null || invitation.isOlderThan(VALID_CONFIRMATION_LENGTH)) {
 			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
 		}
 		
-		UserDTO userToUpdate = authenticator.getUser(credentials);		
-		if(userToUpdate == null) {
-			throw new UserRetrievalException("The user " + credentials.getUserName() + " could not be authenticated.");
+		String jwtToken = null;
+		if(loggedInUser == null) {
+			UserDTO userToUpdate = authenticator.getUser(credentials);		
+			if(userToUpdate == null) {
+				throw new UserRetrievalException("The user " + credentials.getUserName() + " could not be authenticated.");
+			}
+			invitationManager.updateUserFromInvitation(invitation, userToUpdate);
+			jwtToken = authenticator.getJWT(credentials);
+		} else {
+			//add authorization to the currently logged in user
+			UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
+			invitationManager.updateUserFromInvitation(invitation, userToUpdate);
+			UserDTO updatedUser = userManager.getById(loggedInUser.getId());
+			jwtToken = authenticator.getJWT(updatedUser);
 		}
 		
-		invitationManager.updateUserFromInvitation(invitation, userToUpdate);
-		
-		String jwt = authenticator.getJWT(credentials);
-		String jwtJSON = "{\"token\": \""+jwt+"\"}";
+		String jwtJSON = "{\"token\": \""+jwtToken+"\"}";
 		return jwtJSON;
 	}
 	
@@ -171,18 +189,24 @@ public class UserManagementController extends AuthPropertiesConsumer {
 		InvitationDTO createdInvite = null;
 		if(isChplAdmin) {
 			createdInvite = invitationManager.inviteAdmin(invitation.getEmailAddress(), invitation.getPermissions());
-		} else if(invitation.getAcbId() == null) {
-			createdInvite = invitationManager.inviteWithAcbRole(invitation.getEmailAddress(), invitation.getPermissions());
 		} else {
-			createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
+			if(invitation.getAcbId() == null && invitation.getTestingLabId() == null) {
+				createdInvite = invitationManager.inviteWithRolesOnly(invitation.getEmailAddress(), invitation.getPermissions());
+			} else if(invitation.getAcbId() != null && invitation.getTestingLabId() == null) {
+				createdInvite = invitationManager.inviteWithAcbAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getPermissions());
+			} else if(invitation.getAcbId() == null && invitation.getTestingLabId() != null) {
+				createdInvite = invitationManager.inviteWithAtlAccess(invitation.getEmailAddress(), invitation.getTestingLabId(), invitation.getPermissions());
+			} else {
+				createdInvite = invitationManager.inviteWithAcbAndAtlAccess(invitation.getEmailAddress(), invitation.getAcbId(), invitation.getTestingLabId(), invitation.getPermissions());
+			}
 		}
 		
 		//send email		
 		String htmlMessage = "<p>Hi,</p>" +
-				"<p>You've been invited to be an Administrator on the ONC's Open Data CHPL, " +
+				"<p>You have been granted a new role on ONC's Open Data CHPL " +
 					"which will allow you to manage certified product listings on the CHPL. " +
-					"Please click the link below to create your account: <br/>" +
-					"http://" + getProps().getProperty("chplServer") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
+					"Please click the link below to create or update your account: <br/>" +
+					env.getProperty("chplUrlBegin") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
 				"</p>" +
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>Take care,<br/> " +
@@ -293,7 +317,7 @@ public class UserManagementController extends AuthPropertiesConsumer {
 				userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
 				
 				//if they were an acb admin then they need to have all ACB access removed
-				List<CertificationBodyDTO> acbs = acbManager.getAllForUser();
+				List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
 				for(CertificationBodyDTO acb : acbs) {
 					acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
 				}

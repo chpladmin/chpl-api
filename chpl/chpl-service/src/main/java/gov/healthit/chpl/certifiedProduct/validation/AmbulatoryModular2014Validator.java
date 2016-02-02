@@ -10,17 +10,17 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 @Component("ambulatoryModular2014Validator")
 public class AmbulatoryModular2014Validator implements CertifiedProductValidator {
 
-	private static final String[] g1ComplimentaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
+	private static final String[] g1ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
 			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
 			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)", "170.314 (b)(2)",
 			"170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(5)(A)", "170.314 (e)(1)", "170.314 (e)(2)",
 			"170.314 (e)(3)"};
-	private static final String[] g2ComplimentaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
+	private static final String[] g2ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
 			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
 			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)", "170.314 (b)(2)",
 			"170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(5)(A)", "170.314 (e)(1)", "170.314 (e)(2)",
 			"170.314 (e)(3)"};
-	private static final String[] g3ComplimentaryCerts = {"170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(6)",
+	private static final String[] g3ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(6)",
 			"170.314 (a)(7)", "170.314 (a)(8)", "170.314 (b)(3)", "170.314 (b)(4)"};
 	
 	@Override
@@ -38,9 +38,9 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 		}	
 		if(hasG1Cert) {
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g1ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+			for(int i = 0; i < g1ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
 				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g1ComplimentaryCerts[i]) &&
+					if(certCriteria.getNumber().equals(g1ComplementaryCerts[i]) &&
 							certCriteria.isMeetsCriteria()) {
 						hasAtLeastOneCertPartner = true;
 					}
@@ -48,7 +48,7 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(1) exists but a required compliemtnary certification was not found.");
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(1) exists but a required complementary certification was not found.");
 			}
 		}
 		
@@ -61,9 +61,9 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 		}	
 		if(hasG2Cert) {
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g2ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+			for(int i = 0; i < g2ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
 				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g2ComplimentaryCerts[i]) &&
+					if(certCriteria.getNumber().equals(g2ComplementaryCerts[i]) &&
 							certCriteria.isMeetsCriteria()) {
 						hasAtLeastOneCertPartner = true;
 					}
@@ -71,7 +71,7 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(2) exists but a required compliemtnary certification was not found.");
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(2) exists but a required complementary certification was not found.");
 			}
 		}
 		
@@ -89,9 +89,9 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 		}	
 		if(hasG3Cert) {
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g3ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+			for(int i = 0; i < g3ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
 				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g3ComplimentaryCerts[i]) &&
+					if(certCriteria.getNumber().equals(g3ComplementaryCerts[i]) &&
 							certCriteria.isMeetsCriteria()) {
 						hasAtLeastOneCertPartner = true;
 					}
@@ -99,7 +99,7 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(3) exists but a required compliemtnary certification was not found.");
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(3) exists but a required complementary certification was not found.");
 			}
 		}
 		
@@ -130,9 +130,9 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 		}	
 		if(hasG1Cert) {
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g1ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+			for(int i = 0; i < g1ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
 				for(CertificationResult certCriteria : product.getCertificationResults()) {
-					if(certCriteria.getNumber().equals(g1ComplimentaryCerts[i]) &&
+					if(certCriteria.getNumber().equals(g1ComplementaryCerts[i]) &&
 							certCriteria.isSuccess()) {
 						hasAtLeastOneCertPartner = true;
 					}
@@ -140,7 +140,7 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(1) exists but a required compliemtnary certification was not found.");
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(1) exists but a required complementary certification was not found.");
 			}
 		}
 		
@@ -153,9 +153,9 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 		}	
 		if(hasG2Cert) {
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g2ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+			for(int i = 0; i < g2ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
 				for(CertificationResult certCriteria : product.getCertificationResults()) {
-					if(certCriteria.getNumber().equals(g2ComplimentaryCerts[i]) &&
+					if(certCriteria.getNumber().equals(g2ComplementaryCerts[i]) &&
 							certCriteria.isSuccess()) {
 						hasAtLeastOneCertPartner = true;
 					}
@@ -163,7 +163,7 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(2) exists but a required compliemtnary certification was not found.");
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(2) exists but a required complementary certification was not found.");
 			}
 		}
 		
@@ -181,9 +181,9 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 		}	
 		if(hasG3Cert) {
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g3ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+			for(int i = 0; i < g3ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
 				for(CertificationResult certCriteria : product.getCertificationResults()) {
-					if(certCriteria.getNumber().equals(g3ComplimentaryCerts[i]) &&
+					if(certCriteria.getNumber().equals(g3ComplementaryCerts[i]) &&
 							certCriteria.isSuccess()) {
 						hasAtLeastOneCertPartner = true;
 					}
@@ -191,7 +191,7 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(3) exists but a required compliemtnary certification was not found.");
+				product.getErrorMessages().add("Certification criterion 170.314 (g)(3) exists but a required complementary certification was not found.");
 			}
 		}
 		

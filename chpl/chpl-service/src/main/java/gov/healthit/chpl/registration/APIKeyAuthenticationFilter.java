@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class APIKeyAuthenticationFilter extends GenericFilterBean {
 	
+	private static final String[] ALLOWED_REQUEST_PATHS = {"/api-docs"};
+	
 	@Autowired
 	private ApiKeyManager apiKeyManager;
 	
@@ -64,7 +66,14 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 		}
 		
 		
-		if (key == null){
+		if (key == null) {
+			for(int i = 0; i < ALLOWED_REQUEST_PATHS.length; i++) {
+				if(request.getServletPath().matches(ALLOWED_REQUEST_PATHS[i])) {
+					chain.doFilter(req, res); //continue
+					return;
+				}
+			}
+			
 			// No Key. Don't continue. 
 			ErrorJSONObject errorObj = new ErrorJSONObject("API key must be presented in order to use this API");
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();

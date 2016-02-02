@@ -22,6 +22,9 @@ public class CertifiedProductDetailsEntity {
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long id;
     
+    @Column(name = "testing_lab_code")
+    private String testingLabCode;
+    
     @Column(name = "product_code")
     private String productCode;
     
@@ -40,14 +43,14 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "testing_lab_id")
     private Long testingLabId;
     
+    @Column(name = "testing_lab_name")
+    private String testingLabName;
+    
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
     
     @Column(name = "report_file_location")
     private String reportFileLocation;
-    
-    @Column(name = "quality_management_system_att")
-    private String qualityManagementSystemAtt;
     
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
@@ -101,13 +104,13 @@ public class CertifiedProductDetailsEntity {
     private String productName;
     
     @Column(name = "vendor_id")
-    private Long vendorId;
+    private Long developerId;
     
     @Column(name = "vendor_name")
-    private String vendorName;
+    private String developerName;
     
     @Column(name = "vendor_code")
-    private String vendorCode;
+    private String developerCode;
 
     @Column(name = "certification_date")
     private Date certificationDate;
@@ -135,6 +138,15 @@ public class CertifiedProductDetailsEntity {
 	
 	@Column(name = "api_documentation_url")
 	private String apiDocumentation;
+	
+	@Column(name = "ics")
+	private String ics;
+	
+	@Column(name = "sed")
+	private Boolean sedTesting;
+	
+	@Column(name = "qms")
+	private Boolean qmsTesting;
 	
 	@Column(name = "transparency_attestation")
 	private Boolean transparencyAttestation;
@@ -169,14 +181,6 @@ public class CertifiedProductDetailsEntity {
 
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 
 	public String getAcbCertificationId() {
@@ -299,20 +303,20 @@ public class CertifiedProductDetailsEntity {
 		this.productName = productName;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
 
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
     
 	public Date getCertificationDate() {
@@ -443,12 +447,12 @@ public class CertifiedProductDetailsEntity {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getVendorCode() {
-		return vendorCode;
+	public String getDeveloperCode() {
+		return developerCode;
 	}
 
-	public void setVendorCode(String vendorCode) {
-		this.vendorCode = vendorCode;
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 
 	public String getIcsCode() {
@@ -481,5 +485,45 @@ public class CertifiedProductDetailsEntity {
 
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public String getTestingLabCode() {
+		return testingLabCode;
+	}
+
+	public void setTestingLabCode(String testingLabCode) {
+		this.testingLabCode = testingLabCode;
+	}
+
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}	
 }

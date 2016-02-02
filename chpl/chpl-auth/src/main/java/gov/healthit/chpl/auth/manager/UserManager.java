@@ -21,7 +21,7 @@ public interface UserManager {
 	
 	
 	public UserDTO update(User userInfo) throws UserRetrievalException;
-	
+	public UserDTO update(UserDTO user) throws UserRetrievalException ;
 	
 	public void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 	

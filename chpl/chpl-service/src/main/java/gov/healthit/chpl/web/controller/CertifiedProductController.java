@@ -53,7 +53,9 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
+import io.swagger.annotations.Api;
 
+@Api(value="certified-products")
 @RestController
 @RequestMapping("/certified_products")
 public class CertifiedProductController {
@@ -115,6 +117,10 @@ public class CertifiedProductController {
 		throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, 
 		JsonProcessingException, ValidationException {
 		
+		//make sure the ui didn't send any error or warning messages back
+		updateRequest.setErrorMessages(new ArrayList<String>());
+		updateRequest.setWarningMessages(new ArrayList<String>());
+		//validate
 		CertifiedProductValidator validator = validatorFactory.getValidator(updateRequest);
 		if(validator != null) {
 			validator.validate(updateRequest);
@@ -139,13 +145,15 @@ public class CertifiedProductController {
 		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
-		toUpdate.setQualityManagementSystemAtt(updateRequest.getQualityManagementSystemAtt());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
 		toUpdate.setPrivacyAttestation(updateRequest.getPrivacyAttestation());
 		toUpdate.setApiDocumentation(updateRequest.getApiDocumentation());
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
+		toUpdate.setIcs(updateRequest.getIcs());
+		toUpdate.setSedTesting(updateRequest.getSedTesting());
+		toUpdate.setQmsTestig(updateRequest.getQmsTesting());
 		
 		if(updateRequest.getCertificationEdition().get("name").equals("2011") ||
 				updateRequest.getCertificationEdition().get("name").equals("2014")) {

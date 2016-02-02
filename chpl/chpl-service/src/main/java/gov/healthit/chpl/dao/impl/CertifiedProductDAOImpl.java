@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -42,7 +43,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			entity.setChplProductNumber(dto.getChplProductNumber());
 			entity.setPracticeTypeId(dto.getPracticeTypeId());
 			entity.setProductClassificationTypeId(dto.getProductClassificationTypeId());
-			entity.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
 			entity.setReportFileLocation(dto.getReportFileLocation());
 			entity.setTestingLabId(dto.getTestingLabId());
 			entity.setOtherAcb(dto.getOtherAcb());
@@ -50,6 +50,9 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			entity.setPrivacyAttestation(dto.getPrivacyAttestation());
 			entity.setTermsOfUse(dto.getTermsOfUse());
 			entity.setApiDocumentation(dto.getApiDocumentation());
+			entity.setIcs(dto.getIcs());
+			entity.setSedTesting(dto.getSedTesting());
+			entity.setQmsTesting(dto.getQmsTestig());
 			
 			if(dto.getCertificationBodyId() != null) {
 				entity.setCertificationBodyId(dto.getCertificationBodyId());
@@ -109,12 +112,14 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setCertifiedDateCode(dto.getCertifiedDateCode());
 		entity.setPracticeTypeId(dto.getPracticeTypeId());
 		entity.setProductClassificationTypeId(dto.getProductClassificationTypeId());
-		entity.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
 		entity.setReportFileLocation(dto.getReportFileLocation());
 		entity.setTestingLabId(dto.getTestingLabId());
 		entity.setOtherAcb(dto.getOtherAcb());
 		entity.setTermsOfUse(dto.getTermsOfUse());
 		entity.setApiDocumentation(dto.getApiDocumentation());
+		entity.setIcs(dto.getIcs());
+		entity.setSedTesting(dto.getSedTesting());
+		entity.setQmsTesting(dto.getQmsTestig());
 		
 		if(dto.getPrivacyAttestation() != null) {
 			entity.setPrivacyAttestation(dto.getPrivacyAttestation());
@@ -212,16 +217,16 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	@Override
-	public List<CertifiedProductDTO> getCertifiedProductsForVendor(Long vendorId) {
+	public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(Long developerId) {
 		Query getCertifiedProductsQuery = entityManager.createQuery(
 				"FROM CertifiedProductEntity cpe, ProductVersionEntity pve,"
-				+ "ProductEntity pe, VendorEntity ve " 
+				+ "ProductEntity pe, DeveloperEntity ve " 
 				+ "WHERE (NOT cpe.deleted = true) "
 				+ "AND cpe.productVersion = pve.id " 
 				+ "AND pve.productId = pe.id " 
-				+ "AND ve.id = pe.vendorId "
-				+ "AND ve.id = :vendorId", CertifiedProductEntity.class);
-		getCertifiedProductsQuery.setParameter("vendorId", vendorId);
+				+ "AND ve.id = pe.developerId "
+				+ "AND ve.id = :developerId", CertifiedProductEntity.class);
+		getCertifiedProductsQuery.setParameter("developerId", developerId);
 		List<CertifiedProductEntity> results = getCertifiedProductsQuery.getResultList();
 		
 		List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());
@@ -283,7 +288,17 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	@Override
 	public String getLargestChplNumber() {
 		Query query = entityManager.createNativeQuery( "select max(chpl_product_number) as max_num from certified_product where (NOT deleted = true)");
-		String maxNum = query.getSingleResult().toString();
+		String maxNum = null;
+		try {
+			Object result = query.getSingleResult();
+			if(result == null) {
+				maxNum = "CHP-000001";
+			} else {
+				maxNum = result.toString();
+			}
+		} catch(NoResultException nre) {
+			maxNum = "CHP-000001";
+		}
 		return maxNum;
 	}
 	

@@ -3,13 +3,13 @@ package gov.healthit.chpl.auth.controller;
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.auth.AuthPropertiesConsumer;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.LoginCredentials;
@@ -20,13 +20,15 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthenticationController extends AuthPropertiesConsumer {
+public class AuthenticationController{
 	
 	@Autowired
 	private Authenticator authenticator;
 	
 	@Autowired
 	private UserManager userManager;
+	
+	@Autowired private Environment env;
 	
 	//TODO: Create emergency "BUMP TOKENS" method which invalidates all active tokens.
 	
@@ -75,7 +77,7 @@ public class AuthenticationController extends AuthPropertiesConsumer {
 				+ "<pre>" + newPassword + "</pre>"
        			+ "<p>Click the link below to login to your account."
        			+ "<br/>" +
-    			"http://" + getProps().getProperty("chplServer") + "/#/admin" +
+       			env.getProperty("chplUrlBegin") + "/#/admin" +
        			"</p>"
        			+ "<p>Take care,<br/> " +
 				 "The Open Data CHPL Team</p>";

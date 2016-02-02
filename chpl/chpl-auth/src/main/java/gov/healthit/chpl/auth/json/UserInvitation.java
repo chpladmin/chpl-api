@@ -10,6 +10,7 @@ public class UserInvitation {
 	
 	private String emailAddress;
 	private Long acbId;
+	private Long testingLabId;
 	private List<String> permissions;
 	private String hash;
 	
@@ -20,6 +21,7 @@ public class UserInvitation {
 	public UserInvitation(InvitationDTO dto) {
 		this.emailAddress = dto.getEmail();
 		this.acbId = dto.getAcbId();
+		this.testingLabId = dto.getTestingLabId();
 		this.hash = dto.getInviteToken();
 		this.permissions = new ArrayList<String>();
 		for(InvitationPermissionDTO permission : dto.getPermissions()) {
@@ -52,6 +54,14 @@ public class UserInvitation {
 
 	public void setHash(String hash) {
 		this.hash = hash;
+	}
+
+	public Long getTestingLabId() {
+		return testingLabId;
+	}
+
+	public void setTestingLabId(Long testingLabId) {
+		this.testingLabId = testingLabId;
 	}
 	
 }

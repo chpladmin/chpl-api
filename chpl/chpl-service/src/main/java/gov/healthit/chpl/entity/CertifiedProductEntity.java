@@ -93,10 +93,6 @@ public class CertifiedProductEntity {
 	private Long productVersionId;
 	
 	@Basic( optional = true )
-	@Column( name = "quality_management_system_att", length = 2147483647  )
-	private String qualityManagementSystemAtt;
-	
-	@Basic( optional = true )
 	@Column( name = "report_file_location", length = 255  )
 	private String reportFileLocation;
 	
@@ -123,6 +119,15 @@ public class CertifiedProductEntity {
 	
 	@Column(name = "api_documentation_url")
 	private String apiDocumentation;
+	
+	@Column(name = "ics")
+	private String ics;
+	
+	@Column(name = "sed")
+	private Boolean sedTesting;
+	
+	@Column(name = "qms")
+	private Boolean qmsTesting;
 	
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -242,14 +247,6 @@ public class CertifiedProductEntity {
 		this.productVersionId = productVersionId;
 	}
 
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
-	}
-
 	public String getReportFileLocation() {
 		return reportFileLocation;
 	}
@@ -356,5 +353,29 @@ public class CertifiedProductEntity {
 
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}
 }

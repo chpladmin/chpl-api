@@ -1,31 +1,20 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Properties;
 import java.util.Set;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertifiedProductDownloadDetails;
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.domain.KeyValueModel;
-import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
-import gov.healthit.chpl.manager.SearchMenuManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,15 +22,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SearchResponse;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import gov.healthit.chpl.manager.SearchMenuManager;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.Tag;
+
+@Api
 @RestController
 public class SearchViewController {
 	
+	@Autowired Environment env;
 	
 	@Autowired
 	private SearchMenuManager searchMenuManager;
-	
-	@Autowired
-	private CertificationBodyManager certificationBodyManager;
 	
 	@Autowired
 	private CertifiedProductSearchManager certifiedProductSearchManager;
@@ -49,12 +49,9 @@ public class SearchViewController {
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
 	
-	@Autowired
-	private CertifiedProductManager cpManager;
 	
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
-	
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws EntityRetrievalException{
@@ -65,28 +62,62 @@ public class SearchViewController {
 
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="application/xml")
-	public ResponseEntity<CertifiedProductDownloadResponse> downloadSome(
-			@RequestParam(value ="numRecords", defaultValue = "10", required = false) int numRecords) throws EntityRetrievalException {
-		List<CertifiedProductDTO> someCertifiedProducts = new ArrayList<CertifiedProductDTO>();
-		
-		for(int i = 0; i < numRecords; i++) {
-			someCertifiedProducts.add(cpManager.getById(new Long(i+1)));
+	public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {	
+		String downloadFileLocation = env.getProperty("downloadFolderPath");
+		File downloadFile = new File(downloadFileLocation);
+		if(!downloadFile.exists() || !downloadFile.canRead()) {
+			response.getWriter().write("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
+			return;
 		}
 		
-		CertifiedProductDownloadResponse result = new CertifiedProductDownloadResponse();
-		for(CertifiedProductDTO cp : someCertifiedProducts) {
-			try {
-				//CertifiedProductDownloadDetails details = certifiedProductDetailsManager.getCertifiedProductDownloadDetails(cp.getId());
-				CertifiedProductDownloadDetails details = certifiedProductDetailsManager.getCertifiedProductDownloadDetails(cp.getId());
-				result.getProducts().add(details);
-			} catch(EntityRetrievalException ex) {
-				logger.error("Could not certified product details for certified product " + cp.getId());
+		if(downloadFile.isDirectory()) {
+			//find the most recent file in the directory and use that
+			File[] children = downloadFile.listFiles();
+			if(children == null || children.length == 0) {
+				response.getWriter().write("No files for download were found in directory " + downloadFileLocation);
+				return;
+			} else {
+				File newestFile = null;
+				for(int i = 0; i < children.length; i++) {
+					if(newestFile == null) {
+						newestFile = children[i];
+					} else {
+						if(children[i].lastModified() > newestFile.lastModified()) {
+							newestFile = children[i];
+						}
+					}
+				}
+				if(newestFile != null) {
+					downloadFile = newestFile;
+				}
 			}
 		}
 		
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.setContentDispositionFormData("attachment", "certified_products.xml");
-	    return new ResponseEntity<CertifiedProductDownloadResponse>(result, responseHeaders, HttpStatus.OK);
+		logger.info("Downloading " + downloadFile.getName());
+		
+		FileInputStream inputStream = new FileInputStream(downloadFile);
+
+		// set content attributes for the response
+		response.setContentType("application/xml");
+		response.setContentLength((int) downloadFile.length());
+	 
+		// set headers for the response
+		String headerKey = "Content-Disposition";
+		String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+		response.setHeader(headerKey, headerValue);
+	 
+		// get output stream of the response
+		OutputStream outStream = response.getOutputStream();
+		byte[] buffer = new byte[1024];
+		int bytesRead = -1;
+	 
+		// write bytes read from the input stream into the output stream
+		while ((bytesRead = inputStream.read(buffer)) != -1) {
+			outStream.write(buffer, 0, bytesRead);
+		}
+	 
+		inputStream.close();
+		outStream.close();
 	}
 	
 	@RequestMapping(value="/search", method=RequestMethod.GET,
@@ -164,10 +195,10 @@ public class SearchViewController {
 		return searchMenuManager.getProductNames();
 	}
 	
-	@RequestMapping(value="/data/vendors", method=RequestMethod.GET,
+	@RequestMapping(value="/data/developers", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getVendorNames() {
-		return searchMenuManager.getVendorNames();
+	public @ResponseBody Set<KeyValueModel> getDeveloperNames() {
+		return searchMenuManager.getDeveloperNames();
 	}
 	
 	@RequestMapping(value="/data/certification_bodies", method=RequestMethod.GET,

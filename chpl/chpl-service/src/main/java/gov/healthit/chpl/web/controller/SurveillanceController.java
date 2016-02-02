@@ -28,7 +28,9 @@ import gov.healthit.chpl.dto.SurveillanceCertificationResultDTO;
 import gov.healthit.chpl.dto.SurveillanceDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import io.swagger.annotations.Api;
 
+@Api(value="surveillance")
 @RestController
 @RequestMapping("/surveillance")
 public class SurveillanceController {

@@ -13,6 +13,7 @@
   <packaging>war</packaging>
   <name>chpl-service Maven Webapp</name>
   <url>http://maven.apache.org</url>
+  
   <dependencies>
     	<dependency>
 			<groupId>gov.healthit.chpl</groupId>
@@ -142,6 +143,12 @@
 			<version>5.2.1.Final</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.codehaus.castor</groupId>
+			<artifactId>castor-xml</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		
 		
 		<!-- for unit/integration testing of the dao calls -->
 
@@ -197,6 +204,21 @@
 			<artifactId>xstream</artifactId>
 			<version>1.4.8</version>
 		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-spring-web</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-core</artifactId>
+			<version>2.3.0</version>
+		</dependency>
   </dependencies>
   <build>
     <finalName>chpl-service</finalName>
@@ -210,6 +232,109 @@
 				<target>1.8</target>
 			</configuration>
 		</plugin>
+		
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>gov.healthit.chpl.app.App</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-5</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+        
+          <archive>
+            <manifest>
+              <mainClass>gov.healthit.chpl.app.App</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
 	</plugins>
   </build>
+  
+  <profiles>
+    <profile>
+        <id>environment-specific</id>
+        <activation>
+            <property>
+                <name>env</name>
+            </property>
+        </activation>
+        <build>
+        <plugins>  
+        <!-- this plugin copies the correct resource into the jar --> 
+         <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-resources-plugin</artifactId>
+	        <version>2.7</version>
+	        <executions>
+	          <execution>
+	            <id>copy-resources</id>
+	            <!-- here the phase you need -->
+	            <phase>validate</phase>
+	            <goals>
+	              <goal>copy-resources</goal>
+	            </goals>
+	            <configuration>
+	              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+	              <resources>          
+	                <resource>
+	                  <directory>src/main/resources-${env}</directory>
+	                </resource>
+	              </resources>              
+	            </configuration>            
+	          </execution>
+	        </executions>
+     	 </plugin>
+      
+          <!-- this plugin will allow files in environment-specific folders like resources-prod or resources-test
+         to be added to the resulting war's classpath under WEB-INF/classes
+         to activate the profile, simply add '-Denv=production' to your maven build command 
+         this also works fine with war:inplace and war:exploded 
+   		 -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>2.4</version>
+            <configuration>
+                <webResources>
+                    <!-- note the order of the following resource elements are important. 
+                         if there are duplicate files, the first file copied will win
+                    -->
+                    <resource>
+                        <!-- this is relative to the pom.xml directory -->                        
+                        <directory>src/main/resources-${env}</directory>
+                        <!-- override default destination at root of war -->
+                        <targetPath>WEB-INF/classes</targetPath>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <targetPath>WEB-INF/classes</targetPath>
+                    </resource>
+                </webResources>
+            </configuration>
+          </plugin>             
+        </plugins>
+        </build>
+    </profile>
+  </profiles>
 </project>

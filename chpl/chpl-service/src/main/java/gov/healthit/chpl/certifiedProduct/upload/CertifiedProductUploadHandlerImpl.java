@@ -19,7 +19,7 @@ import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.dao.VendorDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -28,7 +28,7 @@ import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 
 public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProductUploadHandler {
 	@Autowired protected PracticeTypeDAO practiceTypeDao;
-	@Autowired protected VendorDAO vendorDao;
+	@Autowired protected DeveloperDAO developerDao;
 	@Autowired protected AddressDAO addressDao;
 	@Autowired protected ProductDAO productDao;
 	@Autowired protected ProductVersionDAO versionDao;
@@ -56,7 +56,6 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 	public abstract List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
 	public abstract Long getDefaultStatusId();
 	
-	//public abstract 
 	@Override
 	public CSVRecord getRecord() {
 		return record;

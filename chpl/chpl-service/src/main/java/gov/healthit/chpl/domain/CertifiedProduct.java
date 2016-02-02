@@ -14,8 +14,8 @@ public class CertifiedProduct {
 		if(dto.getYear().equals("2011") || dto.getYear().equals("2014")) {
 			this.chplProductNumber = dto.getChplProductNumber();
 		} else {
-			this.setChplProductNumber("ATL." + dto.getCertificationBodyCode() + "." + 
-					dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+			this.setChplProductNumber(dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
+					dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 					"." + dto.getCertifiedDateCode());
 		}

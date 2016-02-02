@@ -15,9 +15,10 @@ public class CertifiedProductDetailsDTO {
 	private String additionalSoftwareCode;
 	private String certifiedDateCode;
     private Long testingLabId;
+    private String testingLabName;
+    private String testingLabCode;
     private String chplProductNumber;
     private String reportFileLocation;
-    private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Long practiceTypeId;
     private String practiceTypeName;
@@ -35,9 +36,9 @@ public class CertifiedProductDetailsDTO {
     private String productVersion;
     private Long productId;
     private String productName;
-    private Long vendorId;
-    private String vendorName;
-    private String vendorCode;
+    private Long developerId;
+    private String developerName;
+    private String developerCode;
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
@@ -47,6 +48,9 @@ public class CertifiedProductDetailsDTO {
     private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private String ics;
+	private Boolean sedTesting;
+	private Boolean qmsTesting;
 	private Boolean transparencyAttestation;
 	
     private List<CertificationResultDetailsDTO> certResults;
@@ -63,6 +67,7 @@ public class CertifiedProductDetailsDTO {
     	this();
     	
     	this.id = entity.getId();
+    	this.testingLabCode = entity.getTestingLabCode();
     	this.productCode = entity.getProductCode();
     	this.versionCode = entity.getVersionCode();
     	this.icsCode = entity.getIcsCode();
@@ -85,16 +90,19 @@ public class CertifiedProductDetailsDTO {
     	this.productName = entity.getProductName();
     	this.productVersion = entity.getProductVersion();
     	this.productVersionId = entity.getProductVersionId();
-    	this.qualityManagementSystemAtt = entity.getQualityManagementSystemAtt();
     	this.reportFileLocation = entity.getReportFileLocation();
     	this.testingLabId = entity.getTestingLabId();
-    	this.vendorId = entity.getVendorId();
-    	this.vendorName = entity.getVendorName();
-    	this.vendorCode = entity.getVendorCode();
+    	this.testingLabName = entity.getTestingLabName();
+    	this.developerId = entity.getDeveloperId();
+    	this.developerName = entity.getDeveloperName();
+    	this.developerCode = entity.getDeveloperCode();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.termsOfUse = entity.getTermsOfUse();
     	this.apiDocumentation = entity.getApiDocumentation();
+    	this.ics = entity.getIcs();
+    	this.sedTesting = entity.getSedTesting();
+    	this.qmsTesting = entity.getQmsTesting();
     	this.transparencyAttestation = entity.getTransparencyAttestation();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
@@ -128,12 +136,6 @@ public class CertifiedProductDetailsDTO {
 	}
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
@@ -213,17 +215,17 @@ public class CertifiedProductDetailsDTO {
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
 	public String getPracticeTypeName() {
 		return practiceTypeName;
@@ -357,12 +359,12 @@ public class CertifiedProductDetailsDTO {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getVendorCode() {
-		return vendorCode;
+	public String getDeveloperCode() {
+		return developerCode;
 	}
 
-	public void setVendorCode(String vendorCode) {
-		this.vendorCode = vendorCode;
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 
 	public String getIcsCode() {
@@ -395,5 +397,45 @@ public class CertifiedProductDetailsDTO {
 
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+
+	public String getTestingLabCode() {
+		return testingLabCode;
+	}
+
+	public void setTestingLabCode(String testingLabCode) {
+		this.testingLabCode = testingLabCode;
+	}
+
+	public String getIcs() {
+		return ics;
+	}
+
+	public void setIcs(String ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
 	}
 }

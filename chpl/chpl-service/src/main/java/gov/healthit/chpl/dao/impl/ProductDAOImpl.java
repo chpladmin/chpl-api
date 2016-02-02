@@ -15,7 +15,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.ProductEntity;
-import gov.healthit.chpl.entity.VendorEntity;
+import gov.healthit.chpl.entity.DeveloperEntity;
 
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
@@ -41,7 +41,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			entity = new ProductEntity();
 			entity.setName(dto.getName());
 			entity.setReportFileLocation(dto.getReportFileLocation());
-			entity.setVendorId(dto.getVendorId());
+			entity.setDeveloperId(dto.getDeveloperId());
 			
 			if(dto.getDeleted() != null) {
 				entity.setDeleted(dto.getDeleted());
@@ -84,9 +84,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			entity.setName(dto.getName());
 		}
 		
-		if(dto.getVendorId() != null)
+		if(dto.getDeveloperId() != null)
 		{
-			entity.setVendorId(dto.getVendorId());
+			entity.setDeveloperId(dto.getDeveloperId());
 		}
 				
 		if(dto.getDeleted() != null) {
@@ -151,9 +151,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		
 	}
 	
-	public List<ProductDTO> getByVendor(Long vendorId) {		
+	public List<ProductDTO> getByDeveloper(Long developerId) {		
 		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND (vendor_id = :entityid) ", ProductEntity.class );
-		query.setParameter("entityid", vendorId);
+		query.setParameter("entityid", developerId);
 		List<ProductEntity> results = query.getResultList();
 		
 		List<ProductDTO> dtoResults = new ArrayList<ProductDTO>();
@@ -163,9 +163,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return dtoResults;
 	}
 	
-	public List<ProductDTO> getByVendors(List<Long> vendorIds) {
+	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
 		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND vendor_id IN :idList ", ProductEntity.class );
-		query.setParameter("idList", vendorIds);
+		query.setParameter("idList", developerIds);
 		List<ProductEntity> results = query.getResultList();
 
 		List<ProductDTO> dtoResults = new ArrayList<ProductDTO>();
@@ -175,9 +175,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return dtoResults;
 	}
 	
-	public ProductDTO getByVendorAndName(Long vendorId, String name) {
+	public ProductDTO getByDeveloperAndName(Long developerId, String name) {
 		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND (vendor_id = :vendorId) and (name = :name)", ProductEntity.class );
-		query.setParameter("vendorId", vendorId);
+		query.setParameter("vendorId", developerId);
 		query.setParameter("name", name);
 		List<ProductEntity> results = query.getResultList();
 		
