@@ -39,6 +39,8 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 
 @Service
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
+	
+	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
 
 	@Autowired
@@ -236,9 +238,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			
 			sw.setCertifiedProductSelf(additionalSoftwareDTO.getCertifiedProductSelfId());
 			
-			CertifiedProductDTO selfCp = certifiedProductManager.getById(additionalSoftwareDTO.getCertifiedProductSelfId());
-			sw.setCertifiedProductSelfCHPLId(selfCp.getChplProductNumber());
-			
+			if (additionalSoftwareDTO.getCertifiedProductSelfId() != null){
+				CertifiedProductDTO selfCp = certifiedProductManager.getById(additionalSoftwareDTO.getCertifiedProductSelfId());
+				sw.setCertifiedProductSelfCHPLId(selfCp.getChplProductNumber());
+			}	
 
 			sw.setJustification(additionalSoftwareDTO.getJustification());
 			sw.setName(additionalSoftwareDTO.getName());
