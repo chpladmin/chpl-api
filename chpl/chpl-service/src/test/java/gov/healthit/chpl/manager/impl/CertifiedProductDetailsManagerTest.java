@@ -72,7 +72,6 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		System.out.println(detail.getId());
 		System.out.println(detail.getPracticeType());
 		System.out.println(detail.getProduct());
-		System.out.println(detail.getTestingLabId());
 		System.out.println(detail.getDeveloper());
 		System.out.println(detail.getVisibleOnChpl());
 		

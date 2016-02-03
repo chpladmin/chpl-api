@@ -43,15 +43,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		ApiKeyDTO created = apiKeyDAO.create(toCreate);
 		
 		String activityMsg = "API Key "+created.getApiKey()+" was created.";
-		
-		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
-		
-		try {
-			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(-3L));
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null, created);
-		} finally {
-			SecurityContextHolder.getContext().setAuthentication(tmp);
-		}
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null, created);
 		return created;
 		
 	}
@@ -66,14 +58,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		String activityMsg = "API Key "+toDelete.getApiKey()+" was revoked.";
 		
 		apiKeyDAO.delete(keyId);
-		
-		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
-		try {
-			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
-		} finally {
-			SecurityContextHolder.getContext().setAuthentication(tmp);
-		}
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
 	}
 	
 	@Override
@@ -86,15 +71,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		String activityMsg = "API Key "+toDelete.getApiKey()+" was revoked.";
 		
 		apiKeyDAO.delete(toDelete.getId());
-		
-		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
-		try {
-			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
-		} finally {
-			SecurityContextHolder.getContext().setAuthentication(tmp);
-		}
-		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
 	}
 
 	@Override

@@ -40,6 +40,7 @@ public class ApiKeyController {
 	@Autowired
 	private ApiKeyManager apiKeyManager;
 
+	@Autowired SendMailUtil sendMailService;
 	@Autowired private Environment env;
 	
 	@ApiOperation(value="Sign up for a new API key.", 
@@ -166,9 +167,8 @@ public class ApiKeyController {
 				+ "<p>You'll need to use this unique key each time you access data through our open APIs."
 				+ "<p>For more information about how to use the API, please visit " + env.getProperty("chplUrlBegin") + "</p>"
 				+ "<p>Thanks, <br/>Open Data CHPL Team</p>";
-		
-		SendMailUtil mailUtil = new SendMailUtil();
-		mailUtil.sendEmail(email, subject, htmlMessage);
+
+		sendMailService.sendEmail(email, subject, htmlMessage);
 	}
 	
 }

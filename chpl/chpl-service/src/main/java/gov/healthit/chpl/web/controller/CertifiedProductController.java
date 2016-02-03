@@ -155,7 +155,7 @@ public class CertifiedProductController {
 		
 		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
 		toUpdate.setId(updateRequest.getId());
-		toUpdate.setTestingLabId(updateRequest.getTestingLabId());
+		toUpdate.setTestingLabId(new Long(updateRequest.getTestingLab().get("id").toString()));
 		toUpdate.setCertificationBodyId(newAcbId);
 		toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id").toString()));
 		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
