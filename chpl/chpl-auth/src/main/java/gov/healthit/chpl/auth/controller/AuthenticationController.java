@@ -22,7 +22,11 @@ import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
 import gov.healthit.chpl.auth.user.UserConversionHelper;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import springfox.documentation.annotations.ApiIgnore;
 
+@Api(value="auth")
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController{
@@ -41,6 +45,10 @@ public class AuthenticationController{
 	
 	//TODO: Create emergency "BUMP TOKENS" method which invalidates all active tokens.
 	
+	@ApiOperation(value="Log in.", 
+			notes="Call this method to authenticate a user. The value returned is that user's "
+					+ "token which must be passed on all subsequent requests in the Authorization header. "
+					+ "Specifically, the Authorization header must have a value of 'Bearer token-that-gets-returned'.")
 	@RequestMapping(value="/authenticate", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -53,6 +61,7 @@ public class AuthenticationController{
 		return jwtJSON;
 	}
 	
+	@ApiIgnore
 	@RequestMapping(value="/keep_alive", method= RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public String keepAlive() throws JWTCreationException {
@@ -64,6 +73,9 @@ public class AuthenticationController{
 		return jwtJSON;
 	}
 	
+	@ApiOperation(value="Change password.", 
+			notes="Change the logged in user's password as long as the old password "
+					+ "passed in matches what is stored in the database.")
 	@RequestMapping(value="/change_password", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String changePassword(@RequestBody UpdatePasswordRequest request) throws UserRetrievalException {
@@ -88,6 +100,10 @@ public class AuthenticationController{
 		return "{\"passwordUpdated\" : true }";
 	}
 	
+	@ApiOperation(value="Reset a user's password.", 
+			notes="This service generates a new password, saves it to the user's account "
+					+ " and sends an email to the address associated with the user's account "
+					+ " containing the new password.")
 	@RequestMapping(value="/reset_password", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
