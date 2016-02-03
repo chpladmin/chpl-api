@@ -1,6 +1,7 @@
 authJndiName=java:comp/env/jdbc/openchpl
 authPersistenceUnitName=openchpl-test
 authAclCacheName=aclCache
+authMaximumLoginAttempts=3
 jwtAllowedClockSkew=30
 jwtIssuer=ONCCHPL
 jwtAudience=ONCCHPL

@@ -51,7 +51,9 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
+import gov.healthit.chpl.manager.TestingLabManager;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value = "users")
 @RestController
@@ -60,6 +62,7 @@ public class UserManagementController {
 	
 	@Autowired UserManager userManager;
 	@Autowired CertificationBodyManager acbManager;
+	@Autowired TestingLabManager atlManager;
 	@Autowired InvitationManager invitationManager;
 	@Autowired private Authenticator authenticator;
 	@Autowired private ActivityManager activityManager;
@@ -69,6 +72,12 @@ public class UserManagementController {
 	private static final long VALID_INVITATION_LENGTH = 3L*24L*60L*60L*1000L;
 	private static final long VALID_CONFIRMATION_LENGTH = 30L*24L*60L*60L*1000L;
 	
+	@ApiOperation(value="Create a new user account from an invitation.", 
+			notes="An individual who has been invited to the CHPL has a special hash in their invitation email. "
+					+ "That hash along with all the information needed to create a new user's account "
+					+ "can be passed in here. The account is created but cannot be used until that user "
+					+ "confirms that their email address is valid. The correct order to call invitation requests is "
+					+ "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -109,6 +118,14 @@ public class UserManagementController {
 		return result;
 	}
 	
+	@ApiOperation(value="Confirm that a user's email address is valid.", 
+			notes="When a new user accepts their invitation to the CHPL they have to provide "
+					+ "an email address. They then receive an email prompting them to confirm "
+					+ "that this email address is valid. Confirming the email address must be done "
+					+ "via this request before the user will be allowed to log in with "
+					+ "the credentials they selected. "
+					+ "The correct order to call invitation requests is "
+					+ "the following: 1) /invite 2) /create or /authorize 3) /confirm ")	
 	@RequestMapping(value="/confirm", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -130,9 +147,11 @@ public class UserManagementController {
 		return new User(createdUser);
 	}
 	
-	/*
-	 * update a user's permissions with new ones issued in an invitation
-	 */
+	@ApiOperation(value="Update an existing user account with new permissions.", 
+			notes="Adds all permissions from the invitation identified by the hash "
+					+ "to the appropriate existing user account."
+					+ "The correct order to call invitation requests is "
+					+ "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
 	@RequestMapping(value="/authorize", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -173,6 +192,14 @@ public class UserManagementController {
 		return jwtJSON;
 	}
 	
+	@ApiOperation(value="Invite a user to the CHPL.", 
+			notes="This request creates an invitation that is sent to the email address provided. "
+					+ "The recipient of this invitation can then choose to create a new account "
+					+ "or add the permissions contained within the invitation to an exisitng account "
+					+ "if they have one. Said another way, an invitation can be used to create or "
+					+ "modify CHPL user accounts."
+					+ "The correct order to call invitation requests is "
+					+ "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
 	@RequestMapping(value="/invite", method=RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -219,6 +246,8 @@ public class UserManagementController {
 		return result;
 	}	
 	
+	@ApiOperation(value="Modify user information.", 
+			notes="")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -237,7 +266,9 @@ public class UserManagementController {
 		return new User(updated);
 	}
 	
-	
+	@ApiOperation(value="Delete a user.", 
+			notes="Deletes a user account and all associated authorities on ACBs and ATLs. "
+					+ "The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{userId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteUser(@PathVariable("userId") Long userId) 
@@ -253,6 +284,7 @@ public class UserManagementController {
 		
 		//delete the acb permissions for that user
 		acbManager.deletePermissionsForUser(toDelete);
+		atlManager.deletePermissionsForUser(toDelete);
 		
 		//delete the user
 		userManager.delete(toDelete);
@@ -264,7 +296,9 @@ public class UserManagementController {
 		return "{\"deletedUser\" : true }";
 	}
 	
-
+	@ApiOperation(value="Give additional roles to a user.", 
+			notes="Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
+					+ "ROLE_ATL_ADMIN, or ROLE_ATL_STAFF roles within the system.")
 	@RequestMapping(value="/grant_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -295,6 +329,9 @@ public class UserManagementController {
 		
 	}
 	
+	@ApiOperation(value="Remove roles previously granted to a user.", 
+			notes="Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
+					+ "ROLE_ATL_ADMIN, or ROLE_ATL_STAFF roles within the system.")
 	@RequestMapping(value="/revoke_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -339,6 +376,8 @@ public class UserManagementController {
 		
 	}
 	
+	@ApiOperation(value="View users of the system.", 
+			notes="Only ROLE_ADMIN will be able to see all users.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody UserListJSONObject getUsers(){
@@ -363,6 +402,9 @@ public class UserManagementController {
 		return ulist;
 	}
 	
+	@ApiOperation(value="View a specific user's details.", 
+			notes="The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
+					+ "have ROLE_ACB_ADMIN.")
 	@RequestMapping(value="/{userName}/details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody UserInfoJSONObject getUser(@PathVariable("userName") String userName) throws UserRetrievalException {

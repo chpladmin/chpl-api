@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.impl.InvitationDAOImpl;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
@@ -26,10 +29,12 @@ import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Service
 public class UserAuthenticator implements Authenticator {
+	private static final Logger logger = LogManager.getLogger(UserAuthenticator.class);
 
 	@Autowired
 	private JWTAuthor jwtAuthor;
@@ -45,29 +50,46 @@ public class UserAuthenticator implements Authenticator {
 	
 	
 	public UserDTO getUser(LoginCredentials credentials) throws BadCredentialsException, AccountStatusException, UserRetrievalException {
-		
-		
 		UserDTO user = getUserByName(credentials.getUserName());
 		
 		if (user != null){
 			if(user.getSignatureDate() == null) {
 				throw new BadCredentialsException("Account for user " + user.getSubjectName() + " has not been confirmed.");
 			}
+			if(user.getComplianceSignatureDate() == null) {
+				throw new BadCredentialsException("Account for user " + user.getSubjectName() + " has not accepted the compliance terms and conditions.");
+			}
 			
 			if (checkPassword(credentials.getPassword(), userManager.getEncodedPassword(user))){
 				
 				try {
 					userDetailsChecker.check(user);
+					
+					//if login was successful reset failed logins to 0
+					if(user.getFailedLoginCount() > 0) {
+						try {
+							user.setFailedLoginCount(0);
+							updateFailedLogins(user);
+						} catch(UserManagementException ex) {
+							logger.error("Error adding failed login", ex);
+						}
+					}
 				} catch (AccountStatusException ex) {
 					throw ex;
 				}
 				return user;
 				
 			} else {
+				try {
+					user.setFailedLoginCount(user.getFailedLoginCount()+1);
+					updateFailedLogins(user);
+				} catch(UserManagementException ex) {
+					logger.error("Error adding failed login", ex);
+				}
 				throw new BadCredentialsException("Bad username and password combination.");
 			}
 		} else {
-			throw new BadCredentialsException("Bad username and password combination.");
+			throw new BadCredentialsException("There is no CHPL user with name " + credentials.getUserName());
 		}
 	}
 
@@ -262,6 +284,57 @@ public class UserAuthenticator implements Authenticator {
 		
 	}
 	
+	private void updateFailedLogins(UserDTO userToUpdate) throws UserRetrievalException, UserManagementException {
+		
+		Authentication authenticator = new Authentication() {
+			
+			@Override
+			public Collection<? extends GrantedAuthority> getAuthorities() {
+				List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
+				auths.add(new GrantedPermission("ROLE_USER_AUTHENTICATOR"));
+				return auths;
+			}
+
+			@Override
+			public Object getCredentials(){
+				return null;
+			}
+
+			@Override
+			public Object getDetails() {
+				return null;
+			}
+
+			@Override
+			public Object getPrincipal(){
+				return null;
+			}
+			@Override
+			public boolean isAuthenticated(){
+				return true;
+			}
+
+			@Override
+			public void setAuthenticated(boolean arg0) throws IllegalArgumentException {}
+			
+			@Override
+			public String getName(){
+				return "AUTHENTICATOR";
+			}
+			
+		};
+		
+		
+		SecurityContextHolder.getContext().setAuthentication(authenticator);
+		try {
+			userManager.updateFailedLoginCount(userToUpdate);
+		} catch(Exception ex) {
+			throw new UserManagementException("Error increasing the failed login count for user " + userToUpdate.getSubjectName(), ex);
+		} finally {
+			SecurityContextHolder.getContext().setAuthentication(null);
+		}
+	}
+
 	public JWTAuthor getJwtAuthor() {
 		return jwtAuthor;
 	}

@@ -59,6 +59,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			
 			userEntity.setFirstName(user.getFirstName());
 			userEntity.setLastName(user.getLastName());
+			userEntity.setComplianceSignature(user.getComplianceSignatureDate());
+			userEntity.setFailedLoginCount(0);
 			userEntity.setAccountEnabled(user.isAccountEnabled());
 			userEntity.setAccountExpired(user.isAccountExpired());
 			userEntity.setAccountLocked(user.isAccountLocked());
@@ -95,6 +97,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setLastName(user.getLastName());
+		userEntity.setComplianceSignature(user.getComplianceSignatureDate());
+		userEntity.setFailedLoginCount(user.getFailedLoginCount());
 		userEntity.getContact().setEmail(user.getEmail());
 		userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
 		userEntity.getContact().setSignatureDate(user.getSignatureDate());
@@ -348,6 +352,26 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 		UserEntity userEntity = this.getEntityByName(uname);
 		userEntity.setPassword(encodedPassword);
+		update(userEntity);
+		
+	}
+	
+	@Override
+	@Transactional
+	public void updateFailedLoginCount(String uname, int failedLoginCount) throws UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityByName(uname);
+		userEntity.setFailedLoginCount(failedLoginCount);
+		update(userEntity);
+		
+	}
+	
+	@Override
+	@Transactional
+	public void updateAccountLockedStatus(String uname, boolean locked) throws UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityByName(uname);
+		userEntity.setAccountLocked(locked);
 		update(userEntity);
 		
 	}

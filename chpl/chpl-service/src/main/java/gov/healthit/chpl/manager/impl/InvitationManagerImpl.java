@@ -42,6 +42,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import io.swagger.annotations.ApiOperation;
 
 @Service
 public class InvitationManagerImpl implements InvitationManager {
@@ -65,7 +66,6 @@ public class InvitationManagerImpl implements InvitationManager {
 	
 	private static final Logger logger = LogManager.getLogger(InvitationManagerImpl.class);
 
-	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")

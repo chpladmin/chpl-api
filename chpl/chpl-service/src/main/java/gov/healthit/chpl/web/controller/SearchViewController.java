@@ -32,6 +32,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Tag;
 
 @Api
@@ -52,6 +53,8 @@ public class SearchViewController {
 	
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
+	@ApiOperation(value="Get all data about a certified product.", 
+			notes="")
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws EntityRetrievalException{
@@ -60,6 +63,11 @@ public class SearchViewController {
 		return product;
 	}
 
+	@ApiOperation(value="Download the entire CHPL as XML.", 
+			notes="Once per day, the entire certified product listing is written out to an XML "
+					+ "file on the CHPL servers. This method allows any user to download that XML file. "
+					+ "It is formatted in such a way that users may import it into Microsoft Excel or any other XML "
+					+ "tool of their choosing.")
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="application/xml")
 	public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {	
@@ -120,6 +128,8 @@ public class SearchViewController {
 		outStream.close();
 	}
 	
+	@ApiOperation(value="Search the CHPL", 
+			notes="If paging parameters are not specified, the first 20 records are returned by default.")
 	@RequestMapping(value="/search", method=RequestMethod.GET,
 			produces={"application/json; charset=utf-8", "application/xml"})
 	public @ResponseBody SearchResponse simpleSearch(
@@ -157,6 +167,9 @@ public class SearchViewController {
 		
 	}
 	
+	@ApiOperation(value="Advanced search for the CHPL", 
+			notes="Search the CHPL by specifycing multiple fields of the data to search. "
+					+ "If paging fields are not specified, the first 20 records are returned by default.")
 	@RequestMapping(value="/search", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -165,48 +178,64 @@ public class SearchViewController {
 		return certifiedProductSearchManager.search(searchFilters);
 	}
 	
+	@ApiOperation(value="Get all possible classifications in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/classification_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Set<KeyValueModel> getClassificationNames() {
 		return searchMenuManager.getClassificationNames();
 	}
 	
+	@ApiOperation(value="Get all possible certificaiton editions in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/certification_editions", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Set<KeyValueModel> getEditionNames() {
 		return searchMenuManager.getEditionNames(false);
 	}
 	
+	@ApiOperation(value="Get all possible certification statuses in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/certification_statuses", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Set<KeyValueModel> getCertificationStatuses() {
 		return searchMenuManager.getCertificationStatuses();
 	}
 	
+	@ApiOperation(value="Get all possible practice types in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/practice_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Set<KeyValueModel> getPracticeTypeNames() {
 		return searchMenuManager.getPracticeTypeNames();
 	}
 	
+	@ApiOperation(value="Get all possible product names in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Set<KeyValueModel> getProductNames() {
 		return searchMenuManager.getProductNames();
 	}
 	
+	@ApiOperation(value="Get all possible developer names in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/developers", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Set<KeyValueModel> getDeveloperNames() {
 		return searchMenuManager.getDeveloperNames();
 	}
 	
+	@ApiOperation(value="Get all possible ACBs in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/certification_bodies", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Set<KeyValueModel> getCertBodyNames() {
 		return searchMenuManager.getCertBodyNames();
 	}
 	
+	@ApiOperation(value="Get all search options in the CHPL", 
+			notes="This returns all of the other /data/{something} results in one single response.")
 	@RequestMapping(value="/data/search_options", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PopulateSearchOptions getPopulateSearchData(

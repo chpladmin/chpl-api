@@ -29,6 +29,7 @@ import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.web.controller.results.AnnouncementResults;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value="announcements")
 @RestController
@@ -40,6 +41,12 @@ public class AnnouncementController {
 	
 	private static final Logger logger = LogManager.getLogger(AnnouncementController.class);
 	
+	@ApiOperation(value="Get all announcements.", 
+			notes="The announcement listing is open to anyone, however announcements may be both public and private and "
+					+ " only public announcements will be returned if a non-authenticated user calls this method. "
+					+ " Both public and private announcements will be returned to an authenticated user."
+					+ " Scheduled future announcements can be retrieved by setting the 'future' flag to true "
+					+ " and only CHPL users with ROLE_ADMIN will be granted access to that data.")
 	@RequestMapping(value="/", method=RequestMethod.GET,produces="application/json; charset=utf-8")
 	public @ResponseBody AnnouncementResults getAnnouncements(
 			@RequestParam(required=false, defaultValue="false") boolean future) {
@@ -57,7 +64,7 @@ public class AnnouncementController {
 		}
 		return results;
 	}
-	
+	@ApiOperation(value="Get a specific announcement.")
 	@RequestMapping(value="/{announcementId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") Long announcementId)
@@ -67,6 +74,8 @@ public class AnnouncementController {
 		return new Announcement(announcement);
 	}
 	
+	@ApiOperation(value="Create a new announcement.", 
+			notes="Only CHPL users with ROLE_ADMIN are able to create announcements.")
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -99,6 +108,8 @@ public class AnnouncementController {
 	}
 	
 
+	@ApiOperation(value="Change an existing announcement.", 
+			notes="Only CHPL users with ROLE_ADMIN are able to update announcements.")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -116,7 +127,8 @@ public class AnnouncementController {
 		return new Announcement(result);
 	}
 	
-	
+	@ApiOperation(value="Delete an existing announcement.", 
+			notes="Only CHPL users with ROLE_ADMIN are able to delete announcements.")
 	@RequestMapping(value="/{announcementId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteAnnouncement(@PathVariable("announcementId") Long announcementId) 
@@ -127,17 +139,5 @@ public class AnnouncementController {
 		announcementManager.delete(toDelete);
 		return "{\"deletedAnnouncement\" : true }";
 	}
-	
-	@RequestMapping(value="/{announcementId}/undelete", method= RequestMethod.POST,
-			produces="application/json; charset=utf-8")
-	public String undeleteAnnouncement(@PathVariable("announcementId") Long announcementId) 
-			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
-			UserRetrievalException {
-		
-		AnnouncementDTO toResurrect = announcementManager.getById(announcementId,true);		
-		announcementManager.undelete(toResurrect);
-		return "{\"resurrectedAnnouncement\" : true }";
-	}
-	
 }
 

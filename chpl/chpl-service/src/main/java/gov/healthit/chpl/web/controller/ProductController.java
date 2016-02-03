@@ -25,6 +25,7 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.results.ProductResults;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value="products")
 @RestController
@@ -34,6 +35,8 @@ public class ProductController {
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
 	
+	@ApiOperation(value="List all products", 
+			notes="Either list all products or optionally just all products belonging to a specific developer.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody ProductResults getAllProducts(@RequestParam(required=false) Long developerId) {
@@ -59,6 +62,8 @@ public class ProductController {
 		return results;
 	}
 	
+	@ApiOperation(value="Get information about a specific product.", 
+			notes="")
 	@RequestMapping(value="/{productId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Product getProductById(@PathVariable("productId") Long productId) throws EntityRetrievalException {
@@ -71,6 +76,14 @@ public class ProductController {
 		return result;
 	}
 	
+	@ApiOperation(value="Update a product or merge products.", 
+			notes="This method serves two purposes: to update a single product's information and to merge two products into one. "
+					+ " A user of this service should pass in a single productId to update just that product. "
+					+ " If multiple product IDs are passed in, the service performs a merge meaning that a new product "
+					+ " is created with all of the information provided and all of the versions "
+					+ " previously assigned to the productIds specified are reassigned to the newly created product. The "
+					+ " old products are then deleted. "
+					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
