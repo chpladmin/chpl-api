@@ -8,8 +8,6 @@ import java.util.Map;
 public class CertifiedProductSearchDetails {
 	
 	private Long id;
-    private Long testingLabId;
-    private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
     private String qualityManagementSystemAtt;
@@ -22,6 +20,7 @@ public class CertifiedProductSearchDetails {
 	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
+	private Map<String, Object> testingLab = new HashMap<String, Object>();
 	private Long certificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
@@ -48,12 +47,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Long getTestingLabId() {
-		return testingLabId;
-	}
-	public void setTestingLabId(Long testingLabId) {
-		this.testingLabId = testingLabId;
 	}
 	public String getChplProductNumber() {
 		return chplProductNumber;
@@ -225,12 +218,6 @@ public class CertifiedProductSearchDetails {
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
-	public String getTestingLabName() {
-		return testingLabName;
-	}
-	public void setTestingLabName(String testingLabName) {
-		this.testingLabName = testingLabName;
-	}
 	public String getIcs() {
 		return ics;
 	}
@@ -248,5 +235,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+	public Map<String, Object> getTestingLab() {
+		return testingLab;
+	}
+	public void setTestingLab(Map<String, Object> testingLab) {
+		this.testingLab = testingLab;
 	}
 }

@@ -66,6 +66,7 @@ public class UserManagementController {
 	@Autowired InvitationManager invitationManager;
 	@Autowired private Authenticator authenticator;
 	@Autowired private ActivityManager activityManager;
+	@Autowired private SendMailUtil sendMailService;
 	@Autowired private Environment env;
 	
 	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
@@ -107,8 +108,7 @@ public class UserManagementController {
 				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
 				"<p>The Open Data CHPL Team</p>";
 
-		SendMailUtil emailUtils = new SendMailUtil();
-		emailUtils.sendEmail(createdUser.getEmail(), "Confirm CHPL Administrator Account", htmlMessage);
+		sendMailService.sendEmail(createdUser.getEmail(), "Confirm CHPL Administrator Account", htmlMessage);
 		
 		String activityDescription = "User "+createdUser.getSubjectName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, null, createdUser, createdUser.getId());
@@ -239,8 +239,7 @@ public class UserManagementController {
 				"<p>Take care,<br/> " +
 				 "The Open Data CHPL Team</p>";
 
-		SendMailUtil emailUtils = new SendMailUtil();
-		emailUtils.sendEmail(createdInvite.getEmail(), "Open Data CHPL Administrator Invitation", htmlMessage);
+		sendMailService.sendEmail(createdInvite.getEmail(), "Open Data CHPL Administrator Invitation", htmlMessage);
 		
 		UserInvitation result = new UserInvitation(createdInvite);
 		return result;

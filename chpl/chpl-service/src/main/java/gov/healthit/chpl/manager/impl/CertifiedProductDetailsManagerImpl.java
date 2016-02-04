@@ -121,8 +121,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.getProduct().put("version", dto.getProductVersion());
 				
 		searchDetails.setReportFileLocation(dto.getReportFileLocation());
-		searchDetails.setTestingLabId(dto.getTestingLabId());
-		searchDetails.setTestingLabName(dto.getTestingLabName());
+		searchDetails.getTestingLab().put("id", dto.getTestingLabId());
+		searchDetails.getTestingLab().put("name", dto.getTestingLabName());
+		searchDetails.getTestingLab().put("code", dto.getTestingLabCode());
 		
 		searchDetails.getDeveloper().put("id", dto.getDeveloperId());
 		searchDetails.getDeveloper().put("name", dto.getDeveloperName());

@@ -51,12 +51,8 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			entity.setActivityObjectId(dto.getActivityObjectId());
 			entity.setCreationDate(new Date());
 			entity.setLastModifiedDate(new Date());
-			
-			if (dto.getLastModifiedUser() == null){
-				entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			} else {
-				entity.setLastModifiedUser(dto.getLastModifiedUser());
-			}
+			//user may be null because when they get an API Key they do not have to be logged in
+			entity.setLastModifiedUser(dto.getLastModifiedUser());
 			
 			entity.setDeleted(false);
 			
@@ -248,17 +244,14 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			
 			ActivityDTO result = new ActivityDTO(entity);
 			Long userId = result.getLastModifiedUser();
-			
-			if( activityByUser.containsKey(userId)){
-				
-				activityByUser.get(userId).add(result);
-				
-			} else {
-				
-				List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
-				activity.add(result);
-				activityByUser.put(userId, activity);
-				
+			if(userId != null) {
+				if( activityByUser.containsKey(userId)){
+					activityByUser.get(userId).add(result);
+				} else {
+					List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
+					activity.add(result);
+					activityByUser.put(userId, activity);
+				}
 			}
 		}
 		return activityByUser;
@@ -275,17 +268,14 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			
 			ActivityDTO result = new ActivityDTO(entity);
 			Long userId = result.getLastModifiedUser();
-			
-			if( activityByUser.containsKey(userId)){
-				
-				activityByUser.get(userId).add(result);
-				
-			} else {
-				
-				List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
-				activity.add(result);
-				activityByUser.put(userId, activity);
-				
+			if(userId != null) {
+				if( activityByUser.containsKey(userId)){
+					activityByUser.get(userId).add(result);
+				} else {
+					List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
+					activity.add(result);
+					activityByUser.put(userId, activity);
+				}
 			}
 		}
 		return activityByUser;
