@@ -112,6 +112,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "vendor_code")
     private String developerCode;
 
+    @Column(name = "vendor_website")
+    private String developerWebsite;
+    
     @Column(name = "certification_date")
     private Date certificationDate;
     
@@ -525,5 +528,13 @@ public class CertifiedProductDetailsEntity {
 
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+
+	public String getDeveloperWebsite() {
+		return developerWebsite;
+	}
+
+	public void setDeveloperWebsite(String developerWebsite) {
+		this.developerWebsite = developerWebsite;
 	}	
 }

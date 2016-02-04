@@ -74,8 +74,8 @@ public class UserManagementController {
 	private static final long VALID_CONFIRMATION_LENGTH = 30L*24L*60L*60L*1000L;
 	
 	@ApiOperation(value="Create a new user account from an invitation.", 
-			notes="An individual who has been invited to the CHPL has a special hash in their invitation email. "
-					+ "That hash along with all the information needed to create a new user's account "
+			notes="An individual who has been invited to the CHPL has a special user key in their invitation email. "
+					+ "That user key along with all the information needed to create a new user's account "
 					+ "can be passed in here. The account is created but cannot be used until that user "
 					+ "confirms that their email address is valid. The correct order to call invitation requests is "
 					+ "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
@@ -92,7 +92,7 @@ public class UserManagementController {
 		
 		InvitationDTO invitation = invitationManager.getByInvitationHash(userInfo.getHash());
 		if(invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH)) {
-			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
+			throw new InvalidArgumentsException("Provided user key is not valid in the database. The user key is valid for up to 3 days from when it is assigned.");
 		}
 		
 		UserDTO createdUser = invitationManager.createUserFromInvitation(invitation, userInfo.getUser());
@@ -135,7 +135,7 @@ public class UserManagementController {
 
 		if(invitation == null || invitation.isOlderThan(VALID_INVITATION_LENGTH))
 		{
-			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
+			throw new InvalidArgumentsException("Provided user key is not valid in the database. The user key is valid for up to 3 days from when it is assigned.");
 		}
 		
 		UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
@@ -148,7 +148,7 @@ public class UserManagementController {
 	}
 	
 	@ApiOperation(value="Update an existing user account with new permissions.", 
-			notes="Adds all permissions from the invitation identified by the hash "
+			notes="Adds all permissions from the invitation identified by the user key "
 					+ "to the appropriate existing user account."
 					+ "The correct order to call invitation requests is "
 					+ "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
@@ -158,7 +158,7 @@ public class UserManagementController {
 	public String authorizeUser(@RequestBody AuthorizeCredentials credentials) 
 			throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
 		if(StringUtils.isEmpty(credentials.getHash())) {
-			throw new InvalidArgumentsException("Invitation hash is required.");
+			throw new InvalidArgumentsException("User key is required.");
 		}
 		
 		gov.healthit.chpl.auth.user.User loggedInUser = Util.getCurrentUser();
@@ -169,7 +169,7 @@ public class UserManagementController {
 		
 		InvitationDTO invitation = invitationManager.getByInvitationHash(credentials.getHash());
 		if(invitation == null || invitation.isOlderThan(VALID_CONFIRMATION_LENGTH)) {
-			throw new InvalidArgumentsException("Provided hash is not valid in the database. The hash is valid for up to 3 days from when it is assigned.");
+			throw new InvalidArgumentsException("Provided user key is not valid in the database. The user key is valid for up to 3 days from when it is assigned.");
 		}
 		
 		String jwtToken = null;

@@ -128,6 +128,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.getDeveloper().put("id", dto.getDeveloperId());
 		searchDetails.getDeveloper().put("name", dto.getDeveloperName());
 		searchDetails.getDeveloper().put("code", dto.getDeveloperCode());
+		searchDetails.getDeveloper().put("website", dto.getDeveloperWebsite());
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
 		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());

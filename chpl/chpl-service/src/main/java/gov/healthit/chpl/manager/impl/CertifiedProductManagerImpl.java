@@ -204,6 +204,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				throw new EntityCreationException("You must provide a developer name to create a new developer.");
 			}
 			newDeveloper.setName(pendingCp.getDeveloper().get("name").toString());
+			newDeveloper.setWebsite(pendingCp.getDeveloper().get("website").toString());
 			newDeveloper.setTransparencyAttestation(pendingCp.getTransparencyAttestation() == null ? Boolean.FALSE : pendingCp.getTransparencyAttestation());
 			Map<String, Object> developerAddress = pendingCp.getDeveloperAddress();
 			if(developerAddress != null) {
