@@ -39,6 +39,7 @@ public class CertifiedProductDetailsDTO {
     private Long developerId;
     private String developerName;
     private String developerCode;
+    private String developerWebsite;
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
@@ -96,6 +97,7 @@ public class CertifiedProductDetailsDTO {
     	this.developerId = entity.getDeveloperId();
     	this.developerName = entity.getDeveloperName();
     	this.developerCode = entity.getDeveloperCode();
+    	this.developerWebsite = entity.getDeveloperWebsite();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.termsOfUse = entity.getTermsOfUse();
@@ -437,5 +439,13 @@ public class CertifiedProductDetailsDTO {
 
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+
+	public String getDeveloperWebsite() {
+		return developerWebsite;
+	}
+
+	public void setDeveloperWebsite(String developerWebsite) {
+		this.developerWebsite = developerWebsite;
 	}
 }
