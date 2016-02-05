@@ -11,6 +11,8 @@ public class CorrectiveActionPlanCertificationResult {
 	private String acbSummary;
 	private String developerSummary;
 	private String resolution;
+	private String surveillancePassRate;
+	private String surveillanceResults;
 	
 	public CorrectiveActionPlanCertificationResult() {}
 	public CorrectiveActionPlanCertificationResult(CorrectiveActionPlanCertificationResultDTO dto) {
@@ -23,6 +25,8 @@ public class CorrectiveActionPlanCertificationResult {
 		this.acbSummary = dto.getAcbSummary();
 		this.developerSummary = dto.getDeveloperSummary();
 		this.resolution = dto.getResolution();
+		this.surveillancePassRate = dto.getSurveillancePassRate();
+		this.surveillanceResults = dto.getSurveillanceResults();
 	}
 		
 	public Long getId() {
@@ -66,6 +70,18 @@ public class CorrectiveActionPlanCertificationResult {
 	}
 	public void setResolution(String resolution) {
 		this.resolution = resolution;
+	}
+	public String getSurveillancePassRate() {
+		return surveillancePassRate;
+	}
+	public void setSurveillancePassRate(String surveillancePassRate) {
+		this.surveillancePassRate = surveillancePassRate;
+	}
+	public String getSurveillanceResults() {
+		return surveillanceResults;
+	}
+	public void setSurveillanceResults(String surveillanceResults) {
+		this.surveillanceResults = surveillanceResults;
 	}
 	
 }

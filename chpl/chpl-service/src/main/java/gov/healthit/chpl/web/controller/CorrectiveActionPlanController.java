@@ -137,6 +137,9 @@ public class CorrectiveActionPlanController {
 		toUpdate.setEstimatedCompletionDate(updateRequest.getEstimatedCompletionDate());
 		toUpdate.setNoncomplainceDate(updateRequest.getNoncomplianceDate());
 		toUpdate.setResolution(updateRequest.getResolution());
+		toUpdate.setSurveillanceStartDate(updateRequest.getSurveillanceStartDate());
+		toUpdate.setSurveillanceEndDate(updateRequest.getSurveillanceEndDate());
+		toUpdate.setSurveillanceSiteCount(updateRequest.getSurveillanceSiteCount());
 		
 		//update the plan info
 		Long owningAcbId = null;
@@ -164,6 +167,8 @@ public class CorrectiveActionPlanController {
 					existingCert.setCorrectiveActionPlanId(updateRequest.getId());
 					existingCert.setDeveloperSummary(updateCert.getDeveloperSummary());
 					existingCert.setResolution(updateCert.getResolution());
+					existingCert.setSurveillancePassRate(updateCert.getSurveillancePassRate());
+					existingCert.setSurveillanceResults(updateCert.getSurveillanceResults());
 					capManager.updateCertification(owningAcbId, existingCert);
 				}
 			}
@@ -212,6 +217,8 @@ public class CorrectiveActionPlanController {
 				certToAdd.setCorrectiveActionPlanId(updateRequest.getId());
 				certToAdd.setDeveloperSummary(updateCert.getDeveloperSummary());
 				certToAdd.setResolution(updateCert.getResolution());
+				certToAdd.setSurveillancePassRate(updateCert.getSurveillancePassRate());
+				certToAdd.setSurveillanceResults(updateCert.getSurveillanceResults());
 				
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setNumber(updateCert.getCertificationCriterionNumber());
@@ -283,6 +290,9 @@ public class CorrectiveActionPlanController {
 		toCreate.setEstimatedCompletionDate(createRequest.getEstimatedCompletionDate());
 		toCreate.setNoncomplainceDate(createRequest.getNoncomplianceDate());
 		toCreate.setResolution(createRequest.getResolution());
+		toCreate.setSurveillanceStartDate(createRequest.getSurveillanceStartDate());
+		toCreate.setSurveillanceEndDate(createRequest.getSurveillanceEndDate());
+		toCreate.setSurveillanceSiteCount(createRequest.getSurveillanceSiteCount());
 		
 		Long createdPlanId = null;
 		Long acbId = null;
@@ -305,6 +315,8 @@ public class CorrectiveActionPlanController {
 				currCertToCreate.setCorrectiveActionPlanId(createdPlanId);
 				currCertToCreate.setDeveloperSummary(cert.getDeveloperSummary());
 				currCertToCreate.setResolution(cert.getResolution());
+				currCertToCreate.setSurveillancePassRate(cert.getSurveillancePassRate());
+				currCertToCreate.setSurveillanceResults(cert.getSurveillanceResults());
 				
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setId(cert.getCertificationCriterionId());

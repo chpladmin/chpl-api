@@ -55,6 +55,15 @@ public class CorrectiveActionPlanEntity {
 	@Column(name = "resolution")
 	private String resolution;
 	
+	@Column(name = "surveillance_start")
+	private Date surveillanceStartDate;
+	
+	@Column(name = "surveillance_end")
+	private Date surveillanceEndDate;
+	
+	@Column(name = "surveillance_site_count")
+	private Integer surveillanceSiteCount;
+	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -183,6 +192,30 @@ public class CorrectiveActionPlanEntity {
 
 	public void setNoncomplainceDeterminationDate(Date noncomplainceDeterminationDate) {
 		this.noncomplainceDeterminationDate = noncomplainceDeterminationDate;
+	}
+
+	public Date getSurveillanceStartDate() {
+		return surveillanceStartDate;
+	}
+
+	public void setSurveillanceStartDate(Date surveillanceStartDate) {
+		this.surveillanceStartDate = surveillanceStartDate;
+	}
+
+	public Date getSurveillanceEndDate() {
+		return surveillanceEndDate;
+	}
+
+	public void setSurveillanceEndDate(Date surveillanceEndDate) {
+		this.surveillanceEndDate = surveillanceEndDate;
+	}
+
+	public Integer getSurveillanceSiteCount() {
+		return surveillanceSiteCount;
+	}
+
+	public void setSurveillanceSiteCount(Integer surveillanceSiteCount) {
+		this.surveillanceSiteCount = surveillanceSiteCount;
 	}
 
 }

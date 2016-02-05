@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
+@Component("certifiedProduct2015Validator")
 public class CertifiedProduct2015Validator implements CertifiedProductValidator {
 
 	private static final String[] aComplimentaryCerts = {"170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)",
