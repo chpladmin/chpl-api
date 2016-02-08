@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import gov.healthit.chpl.entity.CQMResultEntity;
 
 import java.util.Date;
+import java.util.List;
 
 public class CQMResultDTO {
 	

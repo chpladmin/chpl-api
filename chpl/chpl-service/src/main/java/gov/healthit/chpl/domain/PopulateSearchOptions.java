@@ -37,7 +37,7 @@ public class PopulateSearchOptions {
 	public void setProductNames(Set<KeyValueModel> productNames) {
 		this.productNames = productNames;
 	}
-	public Set<KeyValueModel> getDeveloperNamese() {
+	public Set<KeyValueModel> getDeveloperNames() {
 		return developerNames;
 	}
 	public void setDeveloperNames(Set<KeyValueModel> developerNames) {

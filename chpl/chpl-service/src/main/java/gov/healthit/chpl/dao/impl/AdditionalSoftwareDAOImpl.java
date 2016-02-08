@@ -41,6 +41,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 			entity.setVersion(dto.getVersion());
 			entity.setCertifiedProductId(dto.getCertifiedProductId());
 			entity.setJustification(dto.getJustification());
+			entity.setCertifiedProductSelfId(dto.getCertifiedProductSelfId());
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
 			if(dto.getLastModifiedDate() != null) {
@@ -132,6 +133,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		AdditionalSoftwareEntity entity =  this.getEntityById(dto.getId());
 		
 		entity.setCertifiedProductId(dto.getCertifiedProductId());
+		entity.setCertifiedProductSelfId(dto.getCertifiedProductSelfId());
 		entity.setCreationDate(dto.getCreationDate());
 		entity.setDeleted(dto.getDeleted());
 		entity.setId(dto.getId());
@@ -145,6 +147,48 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		
 	}
 	
+	public List<AdditionalSoftwareDTO> findByCertificationResultId(Long id){
+		
+		String queryStr = "SELECT b.* FROM "
+				+ "(SELECT * FROM openchpl.certification_result_additional_software_map WHERE certification_result_id = :resultid) a "
+				+ "INNER JOIN "
+				+ "(SELECT * FROM openchpl.additional_software) b "
+				+ "ON a.additional_software_id = b.additional_software_id;";
+		
+		Query query = entityManager.createNativeQuery(queryStr, AdditionalSoftwareEntity.class);
+		query.setParameter("resultid", id);
+		
+		List<AdditionalSoftwareEntity> results = query.getResultList();
+		
+		List<AdditionalSoftwareDTO> additionalSoftware = new ArrayList<>();
+		
+		for (AdditionalSoftwareEntity entity : results){
+			additionalSoftware.add(new AdditionalSoftwareDTO(entity));
+		}
+		return additionalSoftware;
+	}
+	
+	public List<AdditionalSoftwareDTO> findByCQMResultId(Long id){
+		
+		String queryStr = "SELECT b.* FROM "
+				+ "(SELECT * FROM openchpl.cqm_result_additional_software_map WHERE cqm_result_id = :resultid) a "
+				+ "INNER JOIN "
+				+ "(SELECT * FROM openchpl.additional_software) b "
+				+ "ON a.additional_software_id = b.additional_software_id;";
+		
+		Query query = entityManager.createNativeQuery(queryStr, AdditionalSoftwareEntity.class);
+		query.setParameter("resultid", id);
+		
+		List<AdditionalSoftwareEntity> results = query.getResultList();
+		
+		List<AdditionalSoftwareDTO> additionalSoftware = new ArrayList<>();
+		
+		for (AdditionalSoftwareEntity entity : results){
+			additionalSoftware.add(new AdditionalSoftwareDTO(entity));
+		}
+		return additionalSoftware;
+		
+	}	
 	
 	private void create(AdditionalSoftwareEntity entity) {
 		
@@ -159,7 +203,6 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		entityManager.flush();
 	
 	}
-	
 	
 	private AdditionalSoftwareEntity getEntityById(Long id) throws EntityRetrievalException {
 		
@@ -180,6 +223,7 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 	}
 	
 	private AdditionalSoftwareEntity getEntityByName(String name) {
+		
 		AdditionalSoftwareEntity entity = null;
 			
 		Query query = entityManager.createQuery( "from AdditionalSoftwareEntity where (NOT deleted = true) AND (name = :name) ", AdditionalSoftwareEntity.class );
@@ -205,5 +249,5 @@ public class AdditionalSoftwareDAOImpl extends BaseDAOImpl implements Additional
 		List<AdditionalSoftwareEntity> result = entityManager.createQuery( "from AdditionalSoftwareEntity where (NOT deleted = true) ", AdditionalSoftwareEntity.class).getResultList();
 		return result;
 	}
-
+	
 }

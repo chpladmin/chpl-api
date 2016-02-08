@@ -31,12 +31,16 @@ import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 
 @Service
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
+	
+	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
 
 	@Autowired
@@ -56,6 +60,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Autowired
 	private CertificationEventDAO certificationEventDAO;
+	
+	@Autowired
+	private CertifiedProductManager certifiedProductManager;
 	
 	@Autowired
 	private EventTypeDAO eventTypeDAO;
@@ -220,8 +227,29 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		List<AdditionalSoftwareDTO> additionalSoftwareDTOs = additionalSoftwareDAO.findByCertifiedProductId(dto.getId());
 		List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
 		for (AdditionalSoftwareDTO additionalSoftwareDTO : additionalSoftwareDTOs){
-			AdditionalSoftware software = new AdditionalSoftware(additionalSoftwareDTO);
-			additionalSoftware.add(software);
+			
+			AdditionalSoftware sw = new AdditionalSoftware();
+			sw.setAdditionalSoftwareId(additionalSoftwareDTO.getId());
+			
+			
+			sw.setCertifiedProductId(additionalSoftwareDTO.getCertifiedProductId());
+			
+			CertifiedProductDTO cp = certifiedProductManager.getById(additionalSoftwareDTO.getCertifiedProductId());
+			sw.setCertifiedProductCHPLId(cp.getChplProductNumber());
+			
+			
+			sw.setCertifiedProductSelf(additionalSoftwareDTO.getCertifiedProductSelfId());
+			
+			if (additionalSoftwareDTO.getCertifiedProductSelfId() != null){
+				CertifiedProductDTO selfCp = certifiedProductManager.getById(additionalSoftwareDTO.getCertifiedProductSelfId());
+				sw.setCertifiedProductSelfCHPLId(selfCp.getChplProductNumber());
+			}	
+
+			sw.setJustification(additionalSoftwareDTO.getJustification());
+			sw.setName(additionalSoftwareDTO.getName());
+			sw.setVersion(additionalSoftwareDTO.getVersion());
+			
+			additionalSoftware.add(sw);
 			
 		}
 		
