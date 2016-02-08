@@ -103,7 +103,9 @@ public class ActivityManagerImpl implements ActivityManager {
 			dto.setActivityObjectId(objectId);
 			dto.setCreationDate(new Date());
 			dto.setLastModifiedDate(new Date());
-			dto.setLastModifiedUser(Util.getCurrentUser().getId());
+			if(Util.getCurrentUser() != null) {
+				dto.setLastModifiedUser(Util.getCurrentUser().getId());
+			}
 			dto.setDeleted(false);
 			
 			activityDAO.create(dto);

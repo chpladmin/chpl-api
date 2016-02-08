@@ -29,6 +29,7 @@ import gov.healthit.chpl.dto.SurveillanceDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value="surveillance")
 @RestController
@@ -40,6 +41,8 @@ public class SurveillanceController {
 	@Autowired SurveillanceManager surveillanceManager;
 	@Autowired CertifiedProductManager productManager;
 	
+	@ApiOperation(value="List surveillance events for a certified product.", 
+			notes="List all surveillance events, both open and resolved, for a certified product.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SurveillanceResults getSurveillancesForCertifiedProduct(
@@ -51,12 +54,17 @@ public class SurveillanceController {
 		return results;
 	}
 	
+	@ApiOperation(value="Get surveillance event details.", 
+			notes="Get all of the information about a specific surveillance event.")
 	@RequestMapping(value="/{surId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SurveillanceDetails getSurveillanceByid(@PathVariable("surId") Long surId) throws EntityRetrievalException {
 		return surveillanceManager.getSurveillanceDetails(surId);
 	}
 	
+	@ApiOperation(value="Update a surveillance event.", 
+			notes="The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ "authority on the ACB associated with the surveillance event.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SurveillanceDetails update(@RequestBody(required=true) SurveillanceDetails updateRequest) 
@@ -158,6 +166,10 @@ public class SurveillanceController {
 		return surveillanceManager.getSurveillanceDetails(toUpdate.getId());
 	}
 	
+	@ApiOperation(value="Create a new surveillance event.", 
+			notes="The logged in user"
+					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ " authority on the associated ACB.")
 	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SurveillanceDetails create(@RequestBody(required=true) SurveillanceDetails createRequest) 
@@ -202,6 +214,10 @@ public class SurveillanceController {
 		return result;
 	}
 	
+	@ApiOperation(value="Delete a surveillance event.", 
+			notes="The logged in user"
+					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ " authority on the associated ACB.")
 	@RequestMapping(value="/{surId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String delete(@PathVariable("surId") Long surId) 

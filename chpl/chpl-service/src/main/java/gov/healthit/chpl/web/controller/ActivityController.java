@@ -2,19 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
-import gov.healthit.chpl.domain.ActivityEvent;
-import gov.healthit.chpl.domain.UserActivity;
-import gov.healthit.chpl.dto.ApiKeyDTO;
-import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.manager.ApiKeyManager;
-import io.swagger.annotations.Api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -26,6 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonParseException;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.UserActivity;
+import gov.healthit.chpl.manager.ActivityManager;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @Api(value = "activity")
 @RestController
 @RequestMapping("/activity")
@@ -34,24 +32,11 @@ public class ActivityController {
 	@Autowired
 	private ActivityManager activityManager;
 	
-	@Autowired
-	private ApiKeyManager apiKeyManager;
-	
-	
-	@RequestMapping(value="/", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activity(@RequestParam(required=false) Integer lastNDays,
-			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
-		if(!Util.isUserRoleAdmin() && showDeleted){
-			throw new AccessDeniedException("Only Admin can see deleted ACB's/ATL's");
-		}else{
-			if (lastNDays == null){
-				return getActivityEvents(showDeleted);
-			} else {
-				return getActivityEvents(showDeleted, lastNDays);
-			}
-		}
-	}
-	
+	@ApiOperation(value="Get auditable data for certification bodies.", 
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+			+ "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true. "
+			+ "Those users are allowed to see activity for all certification bodies including that have been deleted. "
+			+ "The default behavior is to show all activity for non-deleted ACBs.")
 	@RequestMapping(value="/acbs", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForACBs(@RequestParam(required=false) Integer lastNDays,
 			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
@@ -67,6 +52,10 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for a specific certification body.", 
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+			+ "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
+			+ "do so if the certification body specified in the path has been deleted. ")
 	@RequestMapping(value="/acbs/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForACBById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays,
 			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
@@ -82,6 +71,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for all announcements",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+					+ "The default behavior is to return announcement activity across all dates.")
 	@RequestMapping(value="/announcements", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForAnnoucements(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		if (lastNDays == null){
@@ -91,6 +83,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for a specific announcement",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return all activity for the specified announcement across all dates.")
 	@RequestMapping(value="/announcements/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		if (lastNDays == null){
@@ -100,6 +95,11 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for testing labs.", 
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+			+ "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true. "
+			+ "Those users are allowed to see activity for all testing labs including that have been deleted. "
+			+ "The default behavior is to show all activity for non-deleted ATLs.")
 	@RequestMapping(value="/atls", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityforATLs(@RequestParam(required=false) Integer lastNDays,
 			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
@@ -115,6 +115,10 @@ public class ActivityController {
 		}
 	}
 
+	@ApiOperation(value="Get auditable data for a specific testing lab.", 
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+			+ "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
+			+ "do so if the testing lab specified in the path has been deleted. ")
 	@RequestMapping(value="/atls/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForATLById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays,
 			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
@@ -130,6 +134,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for all API keys",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return API key activity across all dates.")
 	@RequestMapping(value="/api_keys", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForApiKeys(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException {
 		
@@ -140,7 +147,9 @@ public class ActivityController {
 		}
 	}
 	
-	
+	@ApiOperation(value="Get auditable data for certified products",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return certified product activity across all dates.")
 	@RequestMapping(value="/certified_products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertifiedProducts(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -151,6 +160,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for a specific certified product",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for the specified certified product across all dates.")
 	@RequestMapping(value="/certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -161,7 +173,9 @@ public class ActivityController {
 		}
 	}
 	
-	
+	@ApiOperation(value="Get auditable data for all certifications",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for all certifications across all dates.")
 	@RequestMapping(value="/certifications", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertifications(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -172,6 +186,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for a specific certification",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for the specified certification across all dates.")
 	@RequestMapping(value="/certifications/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -182,7 +199,9 @@ public class ActivityController {
 		}
 	}
 	
-	
+	@ApiOperation(value="Get auditable data for all pending certified products",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for all pending certified products across all dates.")
 	@RequestMapping(value="/pending_certified_products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -193,6 +212,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for a specific pending certified product",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for the specified pending certified product across all dates.")
 	@RequestMapping(value="/pending_certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForPendingCertifiedProducts(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -203,6 +225,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for all products",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for all products across all dates.")
 	@RequestMapping(value="/products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForProducts(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -213,6 +238,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for a specific product",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for the specified product across all dates.")
 	@RequestMapping(value="/products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForProducts(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -223,6 +251,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data about all CHPL user accounts",
+			notes="API users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for all CHPL user across all dates.")
 	@RequestMapping(value="/users", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForUsers(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -233,6 +264,9 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data about a specific CHPL user account",
+			notes="API users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for the specified CHPL user across all dates.")
 	@RequestMapping(value="/users/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -243,7 +277,9 @@ public class ActivityController {
 		}
 	}
 	
-	
+	@ApiOperation(value="Get auditable data about all developers",
+				notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return the all developer activity across all dates.")
 	@RequestMapping(value="/developers", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForDevelopers(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -254,7 +290,9 @@ public class ActivityController {
 		}
 	}
 	
-	
+	@ApiOperation(value="Get auditable data for a specific developer",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for the specified developer across all dates.")
 	@RequestMapping(value="/developers/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForDevelopers(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		
@@ -265,7 +303,10 @@ public class ActivityController {
 		}
 	}
 	
-	
+	@ApiOperation(value="Track the actions of all users in the system",
+			notes="The authenticated user calling this method must have ROLE_ADMIN. "
+				+ "Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return the all user activity across all dates.")
 	@RequestMapping(value="/user_activities", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<UserActivity> activityByUser(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException, UserRetrievalException{
 		
@@ -276,7 +317,10 @@ public class ActivityController {
 		}
 	}
 	
-
+	@ApiOperation(value="Track the actions of a specific user in the system",
+			notes="The authenticated user calling this method must have ROLE_ADMIN. "
+				+ "Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return the specified user's activity across all dates.")
 	@RequestMapping(value="/user_activities/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
 		

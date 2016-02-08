@@ -30,7 +30,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setErrorMessages(dto.getErrorMessages());
 		this.setWarningMessages(dto.getWarningMessages());
 		this.setRecordStatus(dto.getRecordStatus());
-		this.setTestingLabId(null);
 		this.setChplProductNumber(null);
 		this.setReportFileLocation(dto.getReportFileLocation());
 		this.setQualityManagementSystemAtt(null);

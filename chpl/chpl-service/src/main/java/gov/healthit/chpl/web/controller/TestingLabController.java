@@ -42,6 +42,7 @@ import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.web.controller.results.PermittedUserResults;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value="atls")
 @RestController
@@ -53,6 +54,10 @@ public class TestingLabController {
 	
 	private static final Logger logger = LogManager.getLogger(TestingLabController.class);
 	
+	@ApiOperation(value="List all testing labs (ATLs).", 
+			notes="Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit permissions on."
+					+ "Setting 'showDeleted' to true will include even those ATLs that have been deleted. The logged in user must have ROLE_ADMIN "
+					+ "to see deleted ATLs. The default behavior of this service is to list all of the ATLs in the system that are not deleted.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody TestingLabResults getAtls(@RequestParam(required=false, defaultValue="false") boolean editable,
@@ -78,6 +83,9 @@ public class TestingLabController {
 		return results;
 	}
 	
+	@ApiOperation(value="Get details about a specific testing lab (ATL).", 
+			notes="The logged in user must have ROLE_ADMIN or have either read or"
+					+ "administrative authority on the testing lab with the ID specified.")
 	@RequestMapping(value="/{atlId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody TestingLab getAtlById(@PathVariable("atlId") Long atlId)
@@ -87,6 +95,8 @@ public class TestingLabController {
 		return new TestingLab(atl);
 	}
 	
+	@ApiOperation(value="Create a new testing lab.", 
+			notes="The logged in user must have ROLE_ADMIN to create a new testing lab.")
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -116,7 +126,9 @@ public class TestingLabController {
 		return new TestingLab(toCreate);
 	}
 	
-
+	@ApiOperation(value="Update an existing ATL.", 
+			notes="The logged in user must either have ROLE_ADMIN or have administrative "
+					+ "authority on the testing lab whose data is being updated.")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -148,7 +160,8 @@ public class TestingLabController {
 		return new TestingLab(result);
 	}
 	
-	
+	@ApiOperation(value="Delete an ATL.", 
+			notes="The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{atlId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteAtl(@PathVariable("atlId") Long atlId) 
@@ -160,6 +173,9 @@ public class TestingLabController {
 	
 	}
 	
+	@ApiOperation(value="Restore a deleted ATL.", 
+			notes="ATLs are unique in the CHPL in that they can be restored after a delete."
+					+ " The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{atlId}/undelete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String undeleteAtl(@PathVariable("atlId") Long atlId) 
@@ -171,6 +187,13 @@ public class TestingLabController {
 	
 	}
 	
+	@ApiOperation(value="Add a user to an ATL.", 
+			notes="The logged in user must have ROLE_ADMIN or ROLE_ATL_ADMIN and have administrative authority on the "
+					+ " specified ATL. It is recommended to pass 'ADMIN' in as the 'authority' field"
+					+ " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
+					+ " Note that this method gives special permission on a specific ATL and is not the "
+					+ " equivalent of assigning the ROLE_ATL_ADMIN role. Please view /users/grant_role "
+					+ " request for more information on that.")
 	@RequestMapping(value="/add_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -193,6 +216,10 @@ public class TestingLabController {
 		return "{\"userAdded\" : true }";
 	}
 	
+	@ApiOperation(value="Remove user permissions from an ATL.", 
+			notes="The logged in user must have ROLE_ADMIN or ROLE_ATL_ADMIN and have administrative authority on the "
+					+ " specified ATL. The user specified in the request will have all authorities "
+					+ " removed that are associated with the specified ATL.")
 	@RequestMapping(value="{atlId}/remove_user/{userId}", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -212,6 +239,9 @@ public class TestingLabController {
 		return "{\"userDeleted\" : true }";
 	}
 	
+	@ApiOperation(value="List users with permissions on a specified ATL.", 
+			notes="The logged in user must have ROLE_ADMIN or have administrative or read authority on the "
+					+ " specified ATL.")
 	@RequestMapping(value="/{atlId}/users", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PermittedUserResults getUsers(@PathVariable("atlId") Long atlId) throws InvalidArgumentsException, EntityRetrievalException {

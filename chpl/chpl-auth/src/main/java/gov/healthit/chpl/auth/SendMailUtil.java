@@ -19,7 +19,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-@Service
+@Service("SendMailUtil")
 public class SendMailUtil {
 	
 	private static final Logger logger = LogManager.getLogger(SendMailUtil.class);

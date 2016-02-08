@@ -190,11 +190,23 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 		
 	}
 	
+	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void updatePassword(UserDTO user, String encodedPassword) throws UserRetrievalException{
 		userDAO.updatePassword(user.getSubjectName(), encodedPassword);
 	}
 	
+	@Override
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR')")
+	public void updateFailedLoginCount(UserDTO user) throws UserRetrievalException {
+		userDAO.updateFailedLoginCount(user.getSubjectName(), user.getFailedLoginCount());
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR')")
+	public void updateAccountLockedStatus(UserDTO user) throws UserRetrievalException {
+		userDAO.updateAccountLockedStatus(user.getSubjectName(), user.isAccountLocked());
+	}
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")

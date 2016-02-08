@@ -64,17 +64,6 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void undelete(AnnouncementDTO announcement) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-		AnnouncementDTO original = announcementDAO.getByIdToUpdate(announcement.getId(), true);
-		announcement.setDeleted(false);
-		AnnouncementDTO result = announcementDAO.update(announcement, true);
-		
-		String activityMsg = "announcement " + original.getText() + " is no longer marked as deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg, original, result);	
-	}
-	
-	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(AnnouncementDTO announcement) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {

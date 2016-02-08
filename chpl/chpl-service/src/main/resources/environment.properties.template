@@ -16,6 +16,7 @@ dataSourcePassword=
 authJndiName=java:comp/env/jdbc/openchpl
 authPersistenceUnitName=openchpl
 authAclCacheName=aclCache
+authMaximumLoginAttempts=5
 keyLocation=C:\\CHPL\\keys\\JSONRsaJoseJWebKey.txt
 jwtAllowedClockSkew=30
 jwtIssuer=ONCCHPL

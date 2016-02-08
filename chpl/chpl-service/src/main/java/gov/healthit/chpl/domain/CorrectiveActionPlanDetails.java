@@ -7,7 +7,9 @@ import java.util.List;
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
+import io.swagger.annotations.ApiModel;
 
+@ApiModel(description="The details about a corrective action plan. If resolved, all fields are required.")
 public class CorrectiveActionPlanDetails {
 	
 	private Long id;

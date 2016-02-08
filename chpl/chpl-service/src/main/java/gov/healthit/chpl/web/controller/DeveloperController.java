@@ -32,6 +32,7 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 
 @Api(value = "developers")
@@ -43,6 +44,8 @@ public class DeveloperController {
 	@Autowired ProductManager productManager;
 	@Autowired CertifiedProductManager cpManager;
 	
+	@ApiOperation(value="List all developers in the system.", 
+			notes="")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody DeveloperResults getDevelopers(){
@@ -61,6 +64,8 @@ public class DeveloperController {
 		return results;
 	}
 	
+	@ApiOperation(value="Get information about a specific developer.", 
+			notes="")
 	@RequestMapping(value="/{developerId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId) throws EntityRetrievalException {
@@ -73,6 +78,14 @@ public class DeveloperController {
 		return result;
 	}
 	
+	@ApiOperation(value="Update a developer or merge developers.", 
+			notes="This method serves two purposes: to update a single developer's information and to merge two developers into one. "
+					+ " A user of this service should pass in a single developerId to update just that developer. "
+					+ " If multiple developer IDs are passed in, the service performs a merge meaning that a new developer "
+					+ " is created with all of the information provided (name, address, etc.) and all of the prodcuts "
+					+ " previously assigned to the developerId's specified are reassigned to the newly created developer. The "
+					+ " old developers are then deleted. "
+					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
