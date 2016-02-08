@@ -45,6 +45,12 @@ public class CorrectiveActionPlanCertificationEntity {
 	@Column(name = "resolution")
 	private String resolution;
 	
+	@Column(name = "surveillance_pass_rate")
+	private String surveillancePassRate;
+	
+	@Column(name ="surveillance_results")
+	private String surveillanceResults;
+	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -141,5 +147,21 @@ public class CorrectiveActionPlanCertificationEntity {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public String getSurveillancePassRate() {
+		return surveillancePassRate;
+	}
+
+	public void setSurveillancePassRate(String surveillancePassRate) {
+		this.surveillancePassRate = surveillancePassRate;
+	}
+
+	public String getSurveillanceResults() {
+		return surveillanceResults;
+	}
+
+	public void setSurveillanceResults(String surveillanceResults) {
+		this.surveillanceResults = surveillanceResults;
 	}
 }

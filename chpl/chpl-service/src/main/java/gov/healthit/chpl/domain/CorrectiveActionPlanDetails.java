@@ -22,6 +22,9 @@ public class CorrectiveActionPlanDetails {
 	private Date noncomplianceDate;
 	private Date actualCompletionDate;
 	private String resolution;
+	private Date surveillanceStartDate;
+	private Date surveillanceEndDate;
+	private Integer surveillanceSiteCount;
 	private List<CorrectiveActionPlanCertificationResult> certifications;
 	private List<CorrectiveActionPlanDocumentation> documentation;
 	
@@ -41,6 +44,9 @@ public class CorrectiveActionPlanDetails {
 		this.noncomplianceDate = dto.getNoncomplainceDate();
 		this.actualCompletionDate = dto.getActualCompletionDate();
 		this.resolution = dto.getResolution();
+		this.surveillanceStartDate = dto.getSurveillanceStartDate();
+		this.surveillanceEndDate = dto.getSurveillanceEndDate();
+		this.surveillanceSiteCount = dto.getSurveillanceSiteCount();
 	}
 	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto, List<CorrectiveActionPlanCertificationResultDTO> certDtos) {
 		this(dto);
@@ -152,5 +158,23 @@ public class CorrectiveActionPlanDetails {
 				this.documentation.add(currDoc);
 			}
 		}
+	}
+	public Date getSurveillanceStartDate() {
+		return surveillanceStartDate;
+	}
+	public void setSurveillanceStartDate(Date surveillanceStartDate) {
+		this.surveillanceStartDate = surveillanceStartDate;
+	}
+	public Date getSurveillanceEndDate() {
+		return surveillanceEndDate;
+	}
+	public void setSurveillanceEndDate(Date surveillanceEndDate) {
+		this.surveillanceEndDate = surveillanceEndDate;
+	}
+	public Integer getSurveillanceSiteCount() {
+		return surveillanceSiteCount;
+	}
+	public void setSurveillanceSiteCount(Integer surveillanceSiteCount) {
+		this.surveillanceSiteCount = surveillanceSiteCount;
 	}
 }

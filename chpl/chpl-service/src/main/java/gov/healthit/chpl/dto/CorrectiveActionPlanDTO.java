@@ -16,6 +16,9 @@ public class CorrectiveActionPlanDTO {
 	private Date actualCompletionDate;
 	private Date noncomplainceDate;
 	private String resolution;
+	private Date surveillanceStartDate;
+	private Date surveillanceEndDate;
+	private Integer surveillanceSiteCount;
 
 	public CorrectiveActionPlanDTO() {
 	}
@@ -31,6 +34,9 @@ public class CorrectiveActionPlanDTO {
 		setActualCompletionDate(entity.getActualCompletionDate());
 		setNoncomplainceDate(entity.getNoncomplainceDeterminationDate());
 		setResolution(entity.getResolution());
+		setSurveillanceStartDate(entity.getSurveillanceStartDate());
+		setSurveillanceEndDate(entity.getSurveillanceEndDate());
+		setSurveillanceSiteCount(entity.getSurveillanceSiteCount());
 	}
 
 	public Long getId() {
@@ -111,5 +117,29 @@ public class CorrectiveActionPlanDTO {
 
 	public void setNoncomplainceDate(Date noncomplainceDate) {
 		this.noncomplainceDate = noncomplainceDate;
+	}
+
+	public Date getSurveillanceStartDate() {
+		return surveillanceStartDate;
+	}
+
+	public void setSurveillanceStartDate(Date surveillanceStartDate) {
+		this.surveillanceStartDate = surveillanceStartDate;
+	}
+
+	public Date getSurveillanceEndDate() {
+		return surveillanceEndDate;
+	}
+
+	public void setSurveillanceEndDate(Date surveillanceEndDate) {
+		this.surveillanceEndDate = surveillanceEndDate;
+	}
+
+	public Integer getSurveillanceSiteCount() {
+		return surveillanceSiteCount;
+	}
+
+	public void setSurveillanceSiteCount(Integer surveillanceSiteCount) {
+		this.surveillanceSiteCount = surveillanceSiteCount;
 	}
 }
