@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -119,6 +121,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		
 		return dto;
 	}
+	
 	
 	private void create(CQMResultEntity entity) {
 		

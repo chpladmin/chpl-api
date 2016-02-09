@@ -153,7 +153,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		if(!StringUtils.isEmpty(dto.getAdditionalSoftware())) {
 			AdditionalSoftware software = new AdditionalSoftware();
 			if(dto.getAdditionalSoftwareId() != null) {
-				software.setAdditionalSoftwareid(dto.getAdditionalSoftwareId());
+				software.setAdditionalSoftwareId(dto.getAdditionalSoftwareId());
 			}
 			software.setName(dto.getAdditionalSoftware());
 			softwareList.add(software);

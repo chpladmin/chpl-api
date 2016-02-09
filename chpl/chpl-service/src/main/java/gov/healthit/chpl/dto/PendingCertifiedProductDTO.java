@@ -151,7 +151,7 @@ public class PendingCertifiedProductDTO {
 		
 		if(details.getAdditionalSoftware() != null && details.getAdditionalSoftware().size() > 0) {
 			AdditionalSoftware software = details.getAdditionalSoftware().get(0);
-			this.additionalSoftwareId = software.getAdditionalSoftwareid();
+			this.additionalSoftwareId = software.getAdditionalSoftwareId();
 		}
 		
 		if(details.getCertificationDate() != null) {

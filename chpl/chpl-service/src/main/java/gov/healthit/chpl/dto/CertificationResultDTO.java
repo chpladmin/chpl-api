@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import gov.healthit.chpl.entity.CertificationResultEntity;
 
 import java.util.Date;
+import java.util.List;
 
 public class CertificationResultDTO {
 
@@ -22,6 +23,7 @@ public class CertificationResultDTO {
 	private Boolean successful;
 	private Long testDataVersionId;
 	private Long testProcedureVersionId;
+	private List<AdditionalSoftwareDTO> additionalSoftware;
 	
 	public CertificationResultDTO(){}
 	
@@ -143,6 +145,14 @@ public class CertificationResultDTO {
 	}
 	public void setTestProcedureVersionId(Long testProcedureVersionId) {
 		this.testProcedureVersionId = testProcedureVersionId;
+	}
+
+	public List<AdditionalSoftwareDTO> getAdditionalSoftware() {
+		return additionalSoftware;
+	}
+
+	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> list) {
+		this.additionalSoftware = list;
 	}
 	
 }

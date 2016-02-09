@@ -2,6 +2,8 @@ package gov.healthit.chpl.manager;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -38,13 +40,15 @@ public interface CertifiedProductManager {
 	//		throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	//public void replaceAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
 	//		throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+	//public void updateCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
+	//		throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
 			throws EntityCreationException, EntityRetrievalException,
 			JsonProcessingException;
 	public void updateAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware)
 			throws EntityCreationException, EntityRetrievalException,
 			JsonProcessingException;
-	
+	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, List<CertificationResult> certResults)
+			throws EntityCreationException, EntityRetrievalException,
+			JsonProcessingException;
 }
