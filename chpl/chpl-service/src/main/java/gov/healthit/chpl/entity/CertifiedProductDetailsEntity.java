@@ -52,6 +52,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "report_file_location")
     private String reportFileLocation;
     
+    @Column(name = "sed_report_file_location")
+    private String sedReportFileLocation;
+    
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
     
@@ -150,6 +153,15 @@ public class CertifiedProductDetailsEntity {
 	
 	@Column(name = "qms")
 	private Boolean qmsTesting;
+	
+	@Column(name = "qms_standard")
+	private String qmsStandard;
+	
+	@Column(name = "qms_modification")
+	private String qmsModification;
+	
+	@Column(name = "product_additional_software")
+	private String productAdditionalSoftware;
 	
 	@Column(name = "transparency_attestation")
 	private Boolean transparencyAttestation;
@@ -536,5 +548,37 @@ public class CertifiedProductDetailsEntity {
 
 	public void setDeveloperWebsite(String developerWebsite) {
 		this.developerWebsite = developerWebsite;
+	}
+
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public String getQmsStandard() {
+		return qmsStandard;
+	}
+
+	public void setQmsStandard(String qmsStandard) {
+		this.qmsStandard = qmsStandard;
+	}
+
+	public String getQmsModification() {
+		return qmsModification;
+	}
+
+	public void setQmsModification(String qmsModification) {
+		this.qmsModification = qmsModification;
+	}
+
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
 	}	
 }

@@ -1,7 +1,7 @@
 package gov.healthit.chpl.dao;
 
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareMapDTO;
+import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 
 import java.util.List;
 
@@ -15,11 +15,9 @@ public interface CertificationResultDAO {
 	public List<CertificationResultDTO> findByCertifiedProductId(Long certifiedProductId);
 	public CertificationResultDTO getById(Long resultId) throws EntityRetrievalException;
 	
-	public CertificationResultAdditionalSoftwareMapDTO createAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto) throws EntityCreationException;
-	public CertificationResultAdditionalSoftwareMapDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareMapDTO dto);
-	public void deleteAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId);
-	public CertificationResultAdditionalSoftwareMapDTO getAdditionalSoftwareMapping(Long certificationResultId, Long additionalSoftwareId);
-	public List<CertificationResultAdditionalSoftwareMapDTO> getCertificationResultAdditionalSoftwareMappings(
+	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareForCertificationResult(
 			Long certificationResultId);
-	
+	public CertificationResultAdditionalSoftwareDTO addAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareDTO dto) throws EntityCreationException;
+	public CertificationResultAdditionalSoftwareDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareDTO dto);
+	public void deleteAdditionalSoftwareMapping(Long mappingId);
 }

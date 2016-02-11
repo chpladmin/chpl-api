@@ -1,5 +1,7 @@
 package gov.healthit.chpl.domain;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public class CertifiedProduct {
@@ -11,10 +13,9 @@ public class CertifiedProduct {
 	
 	public CertifiedProduct(CertifiedProductDetailsDTO dto) {
 		this.id = dto.getId();
-		if(dto.getYear().equals("2011") || dto.getYear().equals("2014")) {
-			this.chplProductNumber = dto.getChplProductNumber();
+		if(!StringUtils.isEmpty(dto.getChplProductNumber())) {
 		} else {
-			this.setChplProductNumber(dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
+			this.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
 					dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 					"." + dto.getCertifiedDateCode());

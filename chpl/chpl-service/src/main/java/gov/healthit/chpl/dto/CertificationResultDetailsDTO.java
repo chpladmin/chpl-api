@@ -10,6 +10,12 @@ public class CertificationResultDetailsDTO {
     private Boolean success;
     private String number;
     private String title;
+    private Boolean gap;
+    private Boolean sed;
+    private Boolean g1Success;
+    private Boolean g2Success;
+    private String ucdProcessSelected;
+    private String ucdProcessDetails;
     
     public CertificationResultDetailsDTO(){}
     
@@ -20,7 +26,12 @@ public class CertificationResultDetailsDTO {
     	this.success = entity.getSuccess();
     	this.number = entity.getNumber();
     	this.title = entity.getTitle();
-    	
+    	this.gap = entity.getGap();
+    	this.sed = entity.getSed();
+    	this.g1Success = entity.getG1Success();
+    	this.g2Success = entity.getG2Success();
+    	this.ucdProcessSelected = entity.getUcdProcessSelected();
+    	this.ucdProcessDetails = entity.getUcdProcessDetails();
     }
     
     
@@ -53,6 +64,54 @@ public class CertificationResultDetailsDTO {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public Boolean getGap() {
+		return gap;
+	}
+
+	public void setGap(Boolean gap) {
+		this.gap = gap;
+	}
+
+	public Boolean getSed() {
+		return sed;
+	}
+
+	public void setSed(Boolean sed) {
+		this.sed = sed;
+	}
+
+	public Boolean getG1Success() {
+		return g1Success;
+	}
+
+	public void setG1Success(Boolean g1Success) {
+		this.g1Success = g1Success;
+	}
+
+	public Boolean getG2Success() {
+		return g2Success;
+	}
+
+	public void setG2Success(Boolean g2Success) {
+		this.g2Success = g2Success;
+	}
+
+	public String getUcdProcessSelected() {
+		return ucdProcessSelected;
+	}
+
+	public void setUcdProcessSelected(String ucdProcessSelected) {
+		this.ucdProcessSelected = ucdProcessSelected;
+	}
+
+	public String getUcdProcessDetails() {
+		return ucdProcessDetails;
+	}
+
+	public void setUcdProcessDetails(String ucdProcessDetails) {
+		this.ucdProcessDetails = ucdProcessDetails;
 	}
 
 }

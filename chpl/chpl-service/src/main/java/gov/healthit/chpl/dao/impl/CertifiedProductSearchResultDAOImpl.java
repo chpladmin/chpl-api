@@ -45,25 +45,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		return dto;
 	}
-
-//	public CertifiedProductDetailsDTO getAllDetailsById(Long productId) throws EntityRetrievalException {		
-//		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity products "
-//				+ "LEFT OUTER JOIN FETCH products.additionalSoftware "
-//				+ "LEFT OUTER JOIN FETCH products.certResults "
-//				+ "LEFT OUTER JOIN FETCH products.cqmResults "
-//				+ " where products.id = :entityId", CertifiedProductDetailsEntity.class);
-//		query.setParameter("entityId", productId);
-//		
-//		Collection<CertifiedProductDetailsEntity> results = new LinkedHashSet<CertifiedProductDetailsEntity>(query.getResultList());
-//		if(results == null || results.size() == 0) {
-//			return new CertifiedProductDetailsDTO();
-//		}
-//		
-//		CertifiedProductDetailsEntity result = results.iterator().next();
-//		CertifiedProductDetailsDTO dto = new CertifiedProductDetailsDTO(result);
-//
-//		return dto;
-//	}
 	
 	@Override
 	public List<CertifiedProductDetailsDTO> search(
@@ -142,6 +123,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "testing_lab_code, "
 				+ "chpl_product_number,"
 				+ "report_file_location, "
+				+ "sed_report_file_locatoin, "
 				+ "acb_certification_id, "
 				+ "practice_type_id, "
 				+ "product_classification_type_id, "
@@ -152,9 +134,12 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "privacy_attestation, "
 				+ "terms_of_use_url, "
 				+ "api_documentation_url, "
+				+ "product_additional_software, "
 				+ "ics, "
 				+ "sed, "
 				+ "qms, "
+				+ "qms_standard, "
+				+ "qms_modification, "
 				+ "transparency_attestation, "
 				+ "year, "
 				+ "certification_body_name, "
@@ -308,6 +293,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "testing_lab_code, "
 				+ "chpl_product_number,"
 				+ "report_file_location, "
+				+ "sed_report_file_location "
 				+ "acb_certification_id, "
 				+ "practice_type_id, "
 				+ "product_classification_type_id, "
@@ -318,9 +304,12 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "privacy_attestation, "
 				+ "terms_of_use_url, "
 				+ "api_documentation_url, "
+				+ "product_additional_software, "
 				+ "ics, "
 				+ "sed, "
 				+ "qms, "
+				+ "qms_standard "
+				+ "qms_modification "
 				+ "transparency_attestation, "
 				+ "year, "
 				+ "certification_body_name, "
@@ -474,6 +463,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "certification_body_id, " 
 				+ "chpl_product_number, "
 				+ "report_file_location, "
+				+ "sed_report_file_location, "
 				+ "acb_certification_id, "
 				+ "practice_type_id, "
 				+ "product_classification_type_id, "
@@ -484,9 +474,12 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "privacy_attestation, " 
 				+ "terms_of_use_url, "
 				+ "api_documentation_url, "
+				+ "product_additional_software, "
 				+ "ics, "
 				+ "sed, "
 				+ "qms, "
+				+ "qms_standard, "
+				+ "qms_modification, "
 				+ "transparency_attestation, "
 				+ "year, "
 				+ "certification_body_name, "

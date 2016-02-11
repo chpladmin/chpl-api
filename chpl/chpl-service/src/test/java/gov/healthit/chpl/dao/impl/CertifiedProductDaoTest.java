@@ -54,12 +54,6 @@ public class CertifiedProductDaoTest {
 		assertNotNull(results);
 		assertEquals(4, results.size());
 	}
-
-	@Test
-	public void getLargedChplNumber() {
-		String largest = productDao.getLargestChplNumber();
-		assertEquals("CHP-024052", largest);
-	}
 	
 	@Test
 	public void getById() {

@@ -10,6 +10,7 @@ public class CertifiedProductSearchDetails {
 	private Long id;
     private String chplProductNumber;
     private String reportFileLocation;
+    private String sedReportFileLocation;
     private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
@@ -31,10 +32,12 @@ public class CertifiedProductSearchDetails {
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
+	private String qmsStandard;
+	private String qmsModification;
+	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
 	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
-	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
@@ -145,12 +148,6 @@ public class CertifiedProductSearchDetails {
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
 	}
-	public List<AdditionalSoftware> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-	public void setAdditionalSoftware(List<AdditionalSoftware> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
 	public Boolean getVisibleOnChpl() {
 		return visibleOnChpl;
 	}
@@ -241,5 +238,29 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setTestingLab(Map<String, Object> testingLab) {
 		this.testingLab = testingLab;
+	}
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+	public String getQmsStandard() {
+		return qmsStandard;
+	}
+	public void setQmsStandard(String qmsStandard) {
+		this.qmsStandard = qmsStandard;
+	}
+	public String getQmsModification() {
+		return qmsModification;
+	}
+	public void setQmsModification(String qmsModification) {
+		this.qmsModification = qmsModification;
+	}
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
 	}
 }

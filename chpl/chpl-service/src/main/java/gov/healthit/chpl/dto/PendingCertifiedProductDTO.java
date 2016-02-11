@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -148,12 +147,7 @@ public class PendingCertifiedProductDTO {
 		if(details.getClassificationType().get("name") != null) {
 			this.productClassificationName = details.getClassificationType().get("name").toString();
 		}
-		
-		if(details.getAdditionalSoftware() != null && details.getAdditionalSoftware().size() > 0) {
-			AdditionalSoftware software = details.getAdditionalSoftware().get(0);
-			this.additionalSoftwareId = software.getAdditionalSoftwareId();
-		}
-		
+
 		if(details.getCertificationDate() != null) {
 			this.certificationDate = new Date(details.getCertificationDate());
 		}

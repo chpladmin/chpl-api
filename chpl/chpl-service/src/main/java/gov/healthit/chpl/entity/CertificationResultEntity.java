@@ -22,7 +22,7 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "certification_result", catalog = "openchpl", schema = "openchpl")
-public class CertificationResultEntity implements Serializable {
+public class CertificationResultEntity extends AuditedEntity implements Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -9050374846030066967L;
@@ -33,14 +33,6 @@ public class CertificationResultEntity implements Serializable {
 	@Column( name = "certification_result_id", nullable = false  )
 	private Long id;
 	
-	@Basic( optional = true )
-	@Column( name = "automated_measure_capable"  )
-	private Boolean automatedMeasureCapable;
-	
-	@Basic( optional = true )
-	@Column( name = "automated_numerator"  )
-	private Boolean automatedNumerator;
-	
 	@Basic( optional = false )
 	@Column(name = "certification_criterion_id", nullable = false )
 	private Long certificationCriterionId;
@@ -49,43 +41,27 @@ public class CertificationResultEntity implements Serializable {
 	@Column(name = "certified_product_id", nullable = false )
 	private Long certifiedProductId;
 	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	private Boolean deleted;
-	
+	@Column(name = "gap")
 	private Boolean gap;
     
-	private Boolean inherited;
+	@Column(name = "sed")
+	private Boolean sed;
 	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
+	@Column(name = "g1_success")
+	private Boolean g1Success;
 	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = true )
-	@Column( name = "sed_inherited"  )
-	private Boolean sedInherited;
-	
-	@Basic( optional = true )
-	@Column( name = "sed_successful"  )
-	private Boolean sedSuccessful;
+	@Column(name = "g2_success")
+	private Boolean g2Success;
 	
 	@Basic( optional = false )
 	@Column(name = "success", nullable = false  )
 	private Boolean success;
 	
-	@Column(name = "test_data_version_id")
-	private Long testDataVersionId;
+	@Column(name = "ucd_process_selected")
+	private String ucdProcessSelected;
 	
-	@Column(name = "test_procedure_version_id")
-	private Long testProcedureVersionId;
+	@Column(name = "ucd_process_details")
+	private String ucdProcessDetails;
 	
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -109,41 +85,6 @@ public class CertificationResultEntity implements Serializable {
 		return CertificationResultEntity.class;
 	}
  
-
-	 /**
-	 * Return the value associated with the column: automatedMeasureCapable.
-	 * @return A Boolean object (this.automatedMeasureCapable)
-	 */
-	public Boolean isAutomatedMeasureCapable() {
-		return this.automatedMeasureCapable;
-		
-	}
-	
-	 /**  
-	 * Set the value related to the column: automatedMeasureCapable.
-	 * @param automatedMeasureCapable the automatedMeasureCapable value you wish to set
-	 */
-	public void setAutomatedMeasureCapable(final Boolean automatedMeasureCapable) {
-		this.automatedMeasureCapable = automatedMeasureCapable;
-	}
-
-	 /**
-	 * Return the value associated with the column: automatedNumerator.
-	 * @return A Boolean object (this.automatedNumerator)
-	 */
-	public Boolean isAutomatedNumerator() {
-		return this.automatedNumerator;
-		
-	}
-	
-	 /**  
-	 * Set the value related to the column: automatedNumerator.
-	 * @param automatedNumerator the automatedNumerator value you wish to set
-	 */
-	public void setAutomatedNumerator(final Boolean automatedNumerator) {
-		this.automatedNumerator = automatedNumerator;
-	}
-
 	 /**
 	 * Return the value associated with the column: certificationCriterion.
 	 * @return A CertificationCriterion object (this.certificationCriterion)
@@ -175,40 +116,6 @@ public class CertificationResultEntity implements Serializable {
 	 */
 	public void setCertifiedProductId(final Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
-	}
-
-	 /**
-	 * Return the value associated with the column: creationDate.
-	 * @return A Date object (this.creationDate)
-	 */
-	public Date getCreationDate() {
-		return this.creationDate;
-		
-	}
-	
-	 /**  
-	 * Set the value related to the column: creationDate.
-	 * @param creationDate the creationDate value you wish to set
-	 */
-	public void setCreationDate(final Date creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	 /**
-	 * Return the value associated with the column: deleted.
-	 * @return A Boolean object (this.deleted)
-	 */
-	public Boolean isDeleted() {
-		return this.deleted;
-		
-	}
-	
-	 /**  
-	 * Set the value related to the column: deleted.
-	 * @param deleted the deleted value you wish to set
-	 */
-	public void setDeleted(final Boolean deleted) {
-		this.deleted = deleted;
 	}
 
 	 /**
@@ -244,99 +151,6 @@ public class CertificationResultEntity implements Serializable {
 	}
 
 	 /**
-	 * Return the value associated with the column: inherited.
-	 * @return A Boolean object (this.inherited)
-	 */
-	public Boolean isInherited() {
-		return this.inherited;
-		
-	}
-	
-
-  
-	 /**  
-	 * Set the value related to the column: inherited.
-	 * @param inherited the inherited value you wish to set
-	 */
-	public void setInherited(final Boolean inherited) {
-		this.inherited = inherited;
-	}
-
-	 /**
-	 * Return the value associated with the column: lastModifiedDate.
-	 * @return A Date object (this.lastModifiedDate)
-	 */
-	public Date getLastModifiedDate() {
-		return this.lastModifiedDate;
-		
-	}
-	
-
-  
-	 /**  
-	 * Set the value related to the column: lastModifiedDate.
-	 * @param lastModifiedDate the lastModifiedDate value you wish to set
-	 */
-	public void setLastModifiedDate(final Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	 /**
-	 * Return the value associated with the column: lastModifiedUser.
-	 * @return A Long object (this.lastModifiedUser)
-	 */
-	public Long getLastModifiedUser() {
-		return this.lastModifiedUser;
-		
-	}
-  
-	 /**  
-	 * Set the value related to the column: lastModifiedUser.
-	 * @param lastModifiedUser the lastModifiedUser value you wish to set
-	 */
-	public void setLastModifiedUser(final Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
-	
-	 /**
-	 * Return the value associated with the column: sedInherited.
-	 * @return A Boolean object (this.sedInherited)
-	 */
-	public Boolean isSedInherited() {
-		return this.sedInherited;
-		
-	}
-	
-
-  
-	 /**  
-	 * Set the value related to the column: sedInherited.
-	 * @param sedInherited the sedInherited value you wish to set
-	 */
-	public void setSedInherited(final Boolean sedInherited) {
-		this.sedInherited = sedInherited;
-	}
-
-	 /**
-	 * Return the value associated with the column: sedSuccessful.
-	 * @return A Boolean object (this.sedSuccessful)
-	 */
-	public Boolean isSedSuccessful() {
-		return this.sedSuccessful;
-		
-	}
-	
-
-	 /**  
-	 * Set the value related to the column: sedSuccessful.
-	 * @param sedSuccessful the sedSuccessful value you wish to set
-	 */
-	public void setSedSuccessful(final Boolean sedSuccessful) {
-		this.sedSuccessful = sedSuccessful;
-	}
-
-
-	 /**
 	 * Return the value associated with the column: successful.
 	 * @return A Boolean object (this.successful)
 	 */
@@ -354,40 +168,51 @@ public class CertificationResultEntity implements Serializable {
 		this.success = success;
 	}
 
-	 /**
-	 * Return the value associated with the column: testDataVersion.
-	 * @return A TestDataVersion object (this.testDataVersion)
-	 */
-	public Long getTestDataVersionId() {
-		return this.testDataVersionId;
-		
-	}
-	
-
-  
-	 /**  
-	 * Set the value related to the column: testDataVersion.
-	 * @param testDataVersion the testDataVersion value you wish to set
-	 */
-	public void setTestDataVersionId(final Long testDataVersionId) {
-		this.testDataVersionId = testDataVersionId;
+	public Boolean getSed() {
+		return sed;
 	}
 
-	 /**
-	 * Return the value associated with the column: testProcedureVersion.
-	 * @return A TestProcedureVersion object (this.testProcedureVersion)
-	 */
-	public Long getTestProcedureVersionId() {
-		return this.testProcedureVersionId;
-		
+	public void setSed(Boolean sed) {
+		this.sed = sed;
+	}
+
+	public Boolean getG1Success() {
+		return g1Success;
+	}
+
+	public void setG1Success(Boolean g1Success) {
+		this.g1Success = g1Success;
+	}
+
+	public Boolean getG2Success() {
+		return g2Success;
+	}
+
+	public void setG2Success(Boolean g2Success) {
+		this.g2Success = g2Success;
+	}
+
+	public String getUcdProcessSelected() {
+		return ucdProcessSelected;
+	}
+
+	public void setUcdProcessSelected(String ucdProcessSelected) {
+		this.ucdProcessSelected = ucdProcessSelected;
+	}
+
+	public String getUcdProcessDetails() {
+		return ucdProcessDetails;
+	}
+
+	public void setUcdProcessDetails(String ucdProcessDetails) {
+		this.ucdProcessDetails = ucdProcessDetails;
 	}
 	
-	 /**  
-	 * Set the value related to the column: testProcedureVersion.
-	 * @param testProcedureVersion the testProcedureVersion value you wish to set
-	 */
-	public void setTestProcedureVersionId(Long testProcedureVersion) {
-		this.testProcedureVersionId = testProcedureVersion;
+	public Boolean getGap() {
+		return gap;
 	}
-	
+
+	public Boolean getSuccess() {
+		return success;
+	}
 }

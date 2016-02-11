@@ -23,11 +23,11 @@
 		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity</class>
 		<class>gov.healthit.chpl.entity.CQMResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationEditionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
-		<class>gov.healthit.chpl.entity.AdditionalSoftwareEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationEventEntity</class>
 		<class>gov.healthit.chpl.entity.EventTypeEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationCriterionEntity</class>

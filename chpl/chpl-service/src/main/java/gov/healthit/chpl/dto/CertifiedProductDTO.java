@@ -8,8 +8,6 @@ import java.util.Date;
 import org.springframework.util.StringUtils;
 
 public class CertifiedProductDTO {
-	
-	
 	private Long id;
 	private String productCode;
 	private String versionCode;
@@ -28,6 +26,7 @@ public class CertifiedProductDTO {
 	private Long productClassificationTypeId;
 	private Long productVersionId;
 	private String reportFileLocation;
+	private String sedReportFileLocation;
 	private Long testingLabId;
 	private Long certificationStatusId;
 	private String otherAcb;
@@ -37,7 +36,10 @@ public class CertifiedProductDTO {
 	private String apiDocumentation;
 	private String ics;
 	private Boolean sedTesting;
-	private Boolean qmsTestig;
+	private Boolean qmsTesting;
+	private String qmsStandard;
+	private String qmsModification;
+	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation = null;
 	
 	public CertifiedProductDTO(){}
@@ -54,13 +56,14 @@ public class CertifiedProductDTO {
 		this.certificationEditionId = entity.getCertificationEditionId();
 		this.chplProductNumber = entity.getChplProductNumber();
 		this.creationDate = entity.getCreationDate();
-		this.deleted = entity.isDeleted();
+		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.practiceTypeId = entity.getPracticeTypeId();
 		this.productClassificationTypeId = entity.getProductClassificationTypeId();
 		this.productVersionId = entity.getProductVersionId();
 		this.reportFileLocation = entity.getReportFileLocation();
+		this.sedReportFileLocation = entity.getSedReportFileLocation();
 		this.testingLabId = entity.getTestingLabId();		
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
@@ -70,7 +73,10 @@ public class CertifiedProductDTO {
 		this.setApiDocumentation(entity.getApiDocumentation());
 		this.setIcs(entity.getIcs());
 		this.setSedTesting(entity.getSedTesting());
-		this.setQmsTestig(entity.getQmsTesting());
+		this.setQmsTesting(entity.getQmsTesting());
+		this.setQmsStandard(entity.getQmsStandard());
+		this.setQmsModification(entity.getQmsModification());
+		this.setProductAdditionalSoftware(entity.getProductAdditionalSoftware());
 	}
 
 	
@@ -277,11 +283,43 @@ public class CertifiedProductDTO {
 		this.sedTesting = sedTesting;
 	}
 
-	public Boolean getQmsTestig() {
-		return qmsTestig;
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
 	}
 
-	public void setQmsTestig(Boolean qmsTestig) {
-		this.qmsTestig = qmsTestig;
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
+	}
+
+	public String getQmsStandard() {
+		return qmsStandard;
+	}
+
+	public void setQmsStandard(String qmsStandard) {
+		this.qmsStandard = qmsStandard;
+	}
+
+	public String getQmsModification() {
+		return qmsModification;
+	}
+
+	public void setQmsModification(String qmsModification) {
+		this.qmsModification = qmsModification;
+	}
+
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
 	}
 }

@@ -149,17 +149,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setPrivacyAttestation(false);
 		this.setUploadNotes(dto.getUploadNotes());
 		
-		List<AdditionalSoftware> softwareList = new ArrayList<AdditionalSoftware>();
-		if(!StringUtils.isEmpty(dto.getAdditionalSoftware())) {
-			AdditionalSoftware software = new AdditionalSoftware();
-			if(dto.getAdditionalSoftwareId() != null) {
-				software.setAdditionalSoftwareId(dto.getAdditionalSoftwareId());
-			}
-			software.setName(dto.getAdditionalSoftware());
-			softwareList.add(software);
-		}
-		this.setAdditionalSoftware(softwareList);
-		
 		List<CertificationResult> certList = new ArrayList<CertificationResult>();
 		for(PendingCertificationCriterionDTO certCriterion : dto.getCertificationCriterion()) {
 			CertificationResult cert = new CertificationResult();

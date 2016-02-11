@@ -35,15 +35,11 @@ import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
 import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -112,7 +108,8 @@ public class CertifiedProductController {
 	@RequestMapping(value="/{certifiedProductId}/details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-		CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+		CertifiedProductSearchDetails certifiedProduct =
+				cpdManager.getCertifiedProductDetails(certifiedProductId);
 		CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
 		if(validator != null) {
 			validator.validate(certifiedProduct);
@@ -161,6 +158,7 @@ public class CertifiedProductController {
 		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
+		toUpdate.setSedReportFileLocation(updateRequest.getSedReportFileLocation());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
@@ -169,10 +167,12 @@ public class CertifiedProductController {
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
 		toUpdate.setSedTesting(updateRequest.getSedTesting());
-		toUpdate.setQmsTestig(updateRequest.getQmsTesting());
+		toUpdate.setQmsTesting(updateRequest.getQmsTesting());
+		toUpdate.setQmsStandard(updateRequest.getQmsStandard());
+		toUpdate.setQmsModification(updateRequest.getQmsModification());
+		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
 		
-		if(updateRequest.getCertificationEdition().get("name").equals("2011") ||
-				updateRequest.getCertificationEdition().get("name").equals("2014")) {
+		if(!StringUtils.isEmpty(updateRequest.getChplProductNumber())) {
 			toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
 			toUpdate.setProductCode(null);
 			toUpdate.setVersionCode(null);
@@ -184,29 +184,17 @@ public class CertifiedProductController {
 			toUpdate.setChplProductNumber(null);
 			String chplProductId = updateRequest.getChplProductNumber();
 			String[] chplProductIdComponents = chplProductId.split("\\.");
-			if(chplProductIdComponents == null || chplProductIdComponents.length != 8) {
+			if(chplProductIdComponents == null || chplProductIdComponents.length != 9) {
 				throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
 			}
-			toUpdate.setProductCode(chplProductIdComponents[3]);
-			toUpdate.setVersionCode(chplProductIdComponents[4]);
-			toUpdate.setIcsCode(chplProductIdComponents[5]);
-			toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[6]);
-			toUpdate.setCertifiedDateCode(chplProductIdComponents[7]);
+			toUpdate.setProductCode(chplProductIdComponents[4]);
+			toUpdate.setVersionCode(chplProductIdComponents[5]);
+			toUpdate.setIcsCode(chplProductIdComponents[6]);
+			toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
+			toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
 		}
 
 		toUpdate = cpManager.update(acbId, toUpdate);
-		
-		//update additional software
-		List<AdditionalSoftwareDTO> softwareDtos = new ArrayList<AdditionalSoftwareDTO>();
-		for(AdditionalSoftware software : updateRequest.getAdditionalSoftware()) {
-			AdditionalSoftwareDTO softwareDto = new AdditionalSoftwareDTO();
-			softwareDto.setCertifiedProductId(toUpdate.getId());
-			softwareDto.setJustification(software.getJustification());
-			softwareDto.setName(software.getName());
-			softwareDto.setVersion(software.getVersion());
-			softwareDtos.add(softwareDto);
-		}
-		cpManager.updateAdditionalSoftware(acbId, toUpdate, softwareDtos);
 		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
