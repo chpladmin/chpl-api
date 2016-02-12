@@ -6,6 +6,10 @@ import java.util.GregorianCalendar;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -106,6 +110,36 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		CertificationResult cert = detail.getCertificationResults().get(0);
 		assertNotNull(cert.getAdditionalSoftware());
 		assertEquals(2, cert.getAdditionalSoftware().size());
+		
+		//check test functionality
+		assertNotNull(cert.getTestFunctionality());
+		assertEquals(1, cert.getTestFunctionality().size());
+		CertificationResultTestFunctionality tf = cert.getTestFunctionality().get(0);
+		assertNotNull(tf.getCategory());
+		assertNotNull(tf.getName());
+		
+		//check test standard
+		assertNotNull(cert.getTestStandards());
+		assertEquals(1, cert.getTestStandards().size());
+		CertificationResultTestStandard ts = cert.getTestStandards().get(0);
+		assertNotNull(ts.getTestStandardName());
+		
+		//check test procedures
+		assertNotNull(cert.getTestProcedures());
+		assertEquals(2, cert.getTestProcedures().size());
+		CertificationResultTestProcedure tp = cert.getTestProcedures().get(0);
+		assertNotNull(tp.getTestProcedureVersion());
+		
+		//check test data
+		assertNotNull(cert.getTestDataUsed());
+		assertEquals(1, cert.getTestDataUsed().size());
+		
+		//test tools
+		assertNotNull(cert.getTestToolsUsed());
+		assertEquals(1, cert.getTestToolsUsed().size());
+		CertificationResultTestTool tool = cert.getTestToolsUsed().get(0);
+		assertNotNull(tool.getTestToolName());
+		assertNotNull(tool.getTestToolVersion());
 	}
 	
 	@Test
