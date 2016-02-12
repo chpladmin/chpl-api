@@ -11,15 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
+import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
@@ -33,7 +36,8 @@ public class CertificationResultManagerImpl implements
 	@Autowired private TestStandardDAO testStandardDAO;
 	@Autowired private TestToolDAO testToolDAO;
 	@Autowired private TestProcedureDAO testProcedureDAO;
-	
+	@Autowired private TestFunctionalityDAO testFunctionalityDAO;
+
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
@@ -96,6 +100,21 @@ public class CertificationResultManagerImpl implements
 			mappingToCreate.setTestProcedureId(mapping.getTestProcedureId());
 			CertificationResultTestProcedureDTO createdMapping = certResultDAO.addTestProcedureMapping(mappingToCreate);
 			created.getTestProcedures().add(createdMapping);
+		}
+		
+		for (CertificationResultTestFunctionalityDTO mapping : toCreate.getTestFunctionality()){
+			if(mapping.getTestFunctionalityId() == null) {
+				TestFunctionalityDTO newTestFunctionality = new TestFunctionalityDTO();
+				newTestFunctionality.setName(mapping.getTestFunctionalityName());
+				newTestFunctionality.setCategory(mapping.getTestFunctionalityCategory());
+				newTestFunctionality = testFunctionalityDAO.create(newTestFunctionality);
+				mapping.setTestFunctionalityId(newTestFunctionality.getId());
+			}
+			CertificationResultTestFunctionalityDTO mappingToCreate = new CertificationResultTestFunctionalityDTO();
+			mappingToCreate.setCertificationResultId(created.getId());
+			mappingToCreate.setTestFunctionalityId(mapping.getTestFunctionalityId());
+			CertificationResultTestFunctionalityDTO createdMapping = certResultDAO.addTestFunctionalityMapping(mappingToCreate);
+			created.getTestFunctionality().add(createdMapping);
 		}
 		return created;
 	}
@@ -294,7 +313,47 @@ public class CertificationResultManagerImpl implements
 			certResultDAO.deleteTestProcedureMapping(toRemove.getId());
 		}
 		updated.setTestProcedures(certResultDAO.getTestProceduresForCertificationResult(updated.getId()));
+		
+		//update test functionality mappings
+		List<CertificationResultTestFunctionalityDTO> existingTestFunctionality = certResultDAO.getTestFunctionalityForCertificationResult(toUpdate.getId());
+		List<CertificationResultTestFunctionalityDTO> testFunctionalityToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
+		List<CertificationResultTestFunctionalityDTO> testFunctionalityToRemove = new ArrayList<CertificationResultTestFunctionalityDTO>();
+
+		for (CertificationResultTestFunctionalityDTO toUpdateMapping : toUpdate.getTestFunctionality()){
+			if(toUpdateMapping.getId() == null) {
+				if(toUpdateMapping.getId() == null) {
+					TestFunctionalityDTO testFunctionalityToCreate = new TestFunctionalityDTO();
+					testFunctionalityToCreate.setCategory(toUpdateMapping.getTestFunctionalityCategory());
+					testFunctionalityToCreate.setName(toUpdateMapping.getTestFunctionalityName());
+					testFunctionalityToCreate = testFunctionalityDAO.create(testFunctionalityToCreate);
+					toUpdateMapping.setTestFunctionalityId(testFunctionalityToCreate.getId());
+				}
+				toUpdateMapping.setCertificationResultId(toUpdate.getId());
+				testFunctionalityToAdd.add(toUpdateMapping);
+			} 
+		}
 				
+		for(CertificationResultTestFunctionalityDTO currMapping : existingTestFunctionality) {
+			boolean isInUpdate = false;
+			for (CertificationResultTestFunctionalityDTO toUpdateMapping : toUpdate.getTestFunctionality()){
+				if(toUpdateMapping.getId() != null && 
+						toUpdateMapping.getId().longValue() == currMapping.getId().longValue()) {
+					isInUpdate = true;
+				}
+			}
+			if(!isInUpdate) {
+				testFunctionalityToRemove.add(currMapping);
+			}
+		}
+					
+		for(CertificationResultTestFunctionalityDTO toAdd : testFunctionalityToAdd) {
+			certResultDAO.addTestFunctionalityMapping(toAdd);
+		}
+		for(CertificationResultTestFunctionalityDTO toRemove : testFunctionalityToRemove) {
+			certResultDAO.deleteTestFunctionalityMapping(toRemove.getId());
+		}
+		updated.setTestFunctionality(certResultDAO.getTestFunctionalityForCertificationResult(updated.getId()));
+		
 		return updated;
 	}
 
@@ -321,5 +380,10 @@ public class CertificationResultManagerImpl implements
 	@Override
 	public List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestProceduresForCertificationResult(certificationResultId);
+	}
+	
+	@Override
+	public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(Long certificationResultId) {
+		return certResultDAO.getTestFunctionalityForCertificationResult(certificationResultId);
 	}
 }

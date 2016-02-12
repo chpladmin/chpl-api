@@ -32,6 +32,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
@@ -47,6 +48,7 @@ import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
+import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
@@ -559,12 +561,26 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						oldResult.setTestProcedures(new ArrayList<CertificationResultTestProcedureDTO>());
 					} else {
 						for(CertificationResultTestProcedure newTestProcedure : newCertResult.getTestProcedures()) {
-							CertificationResultTestProcedureDTO testTool = new CertificationResultTestProcedureDTO();
-							testTool.setId(newTestProcedure.getId());
-							testTool.setTestProcedureId(newTestProcedure.getTestProcedureId());
-							testTool.setTestProcedureVersion(newTestProcedure.getTestProcedureVersion());
-							testTool.setCertificationResultId(oldResult.getId());
-							oldResult.getTestProcedures().add(testTool);
+							CertificationResultTestProcedureDTO testProcedure = new CertificationResultTestProcedureDTO();
+							testProcedure.setId(newTestProcedure.getId());
+							testProcedure.setTestProcedureId(newTestProcedure.getTestProcedureId());
+							testProcedure.setTestProcedureVersion(newTestProcedure.getTestProcedureVersion());
+							testProcedure.setCertificationResultId(oldResult.getId());
+							oldResult.getTestProcedures().add(testProcedure);
+						}
+					}
+					
+					if(newCertResult.getTestFunctionality() == null || newCertResult.getTestFunctionality().size() == 0) {
+						oldResult.setTestFunctionality(new ArrayList<CertificationResultTestFunctionalityDTO>());
+					} else {
+						for(CertificationResultTestFunctionality newTestFunctionality : newCertResult.getTestFunctionality()) {
+							CertificationResultTestFunctionalityDTO testFunctionality = new CertificationResultTestFunctionalityDTO();
+							testFunctionality.setId(newTestFunctionality.getId());
+							testFunctionality.setTestFunctionalityId(newTestFunctionality.getTestFunctionalityId());
+							testFunctionality.setTestFunctionalityName(newTestFunctionality.getName());
+							testFunctionality.setTestFunctionalityCategory(newTestFunctionality.getCategory());
+							testFunctionality.setCertificationResultId(oldResult.getId());
+							oldResult.getTestFunctionality().add(testFunctionality);
 						}
 					}
 					

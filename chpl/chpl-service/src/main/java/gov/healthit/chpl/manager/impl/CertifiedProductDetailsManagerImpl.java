@@ -25,6 +25,7 @@ import gov.healthit.chpl.domain.CertificationEvent;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
@@ -37,6 +38,7 @@ import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
+import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
@@ -223,6 +225,13 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			for(CertificationResultTestProcedureDTO currResult : testProcedure) {
 				CertificationResultTestProcedure testProcedureResult = new CertificationResultTestProcedure(currResult);
 				result.getTestProcedures().add(testProcedureResult);
+			}
+			
+			//add test functionality
+			List<CertificationResultTestFunctionalityDTO> testFunctionality = certResultManager.getTestFunctionalityForCertificationResult(certResult.getId());
+			for(CertificationResultTestFunctionalityDTO currResult : testFunctionality) {
+				CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(currResult);
+				result.getTestFunctionality().add(testFunctionalityResult);
 			}
 			
 			certificationResults.add(result);

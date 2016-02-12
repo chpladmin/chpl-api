@@ -15,7 +15,7 @@ import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.entity.TestProcedureEntity;
 
-@Repository("testToolDAO")
+@Repository("testProcedureDAO")
 public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDAO {
 	
 	@Override
