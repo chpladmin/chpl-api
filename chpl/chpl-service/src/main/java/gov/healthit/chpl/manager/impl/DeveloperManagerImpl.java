@@ -57,8 +57,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
 				if(map == null) {
 					developer.setTransparencyAttestation(Boolean.FALSE);
+					developer.setTransparencyAttestationUrl(null);
 				} else {
 					developer.setTransparencyAttestation(map.getTransparencyAttestation());
+					developer.setTransparencyAttestationUrl(map.getTransparencyAttestationUrl());
 				}
 			}
 		}
@@ -76,8 +78,10 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
 			if(map == null) {
 				developer.setTransparencyAttestation(Boolean.FALSE);
+				developer.setTransparencyAttestationUrl(null);
 			} else {
 				developer.setTransparencyAttestation(map.getTransparencyAttestation());
+				developer.setTransparencyAttestationUrl(map.getTransparencyAttestationUrl());
 			}
 		}
 		return developer;
@@ -110,9 +114,11 @@ public class DeveloperManagerImpl implements DeveloperManager {
 						developerMappingToUpdate.setAcbId(acb.getId());
 						developerMappingToUpdate.setDeveloperId(before.getId());
 						developerMappingToUpdate.setTransparencyAttestation(developer.getTransparencyAttestation());
+						developerMappingToUpdate.setTransparencyAttestationUrl(developer.getTransparencyAttestationUrl());
 						developerDao.createTransparencyMapping(developerMappingToUpdate);
 					} else {
 						existingMap.setTransparencyAttestation(developer.getTransparencyAttestation());
+						existingMap.setTransparencyAttestationUrl(developer.getTransparencyAttestationUrl());
 						developerDao.updateTransparencyMapping(existingMap);
 					}
 				}
@@ -139,6 +145,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				developerMappingToCreate.setAcbId(acb.getId());
 				developerMappingToCreate.setDeveloperId(created.getId());
 				developerMappingToCreate.setTransparencyAttestation(dto.getTransparencyAttestation());
+				developerMappingToCreate.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 				developerDao.createTransparencyMapping(developerMappingToCreate);
 			}
 		}

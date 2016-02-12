@@ -54,8 +54,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			entity.setIcs(dto.getIcs());
 			entity.setSedTesting(dto.getSedTesting());
 			entity.setQmsTesting(dto.getQmsTesting());
-			entity.setQmsStandard(dto.getQmsStandard());
-			entity.setQmsModification(dto.getQmsModification());
 			
 			if(dto.getCertificationBodyId() != null) {
 				entity.setCertificationBodyId(dto.getCertificationBodyId());
@@ -125,8 +123,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setIcs(dto.getIcs());
 		entity.setSedTesting(dto.getSedTesting());
 		entity.setQmsTesting(dto.getQmsTesting());
-		entity.setQmsStandard(dto.getQmsStandard());
-		entity.setQmsModification(dto.getQmsModification());
 		
 		if(dto.getPrivacyAttestation() != null) {
 			entity.setPrivacyAttestation(dto.getPrivacyAttestation());

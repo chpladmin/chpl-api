@@ -5,8 +5,6 @@ import java.util.Date;
 import gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity;
 
 public class CertificationResultAdditionalSoftwareDTO {
-	
-	
 	private Long id;
 	private Long certificationResultId;
 	private String name;
@@ -21,9 +19,10 @@ public class CertificationResultAdditionalSoftwareDTO {
 	public CertificationResultAdditionalSoftwareDTO(CertificationResultAdditionalSoftwareEntity entity){		
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
+		this.name = entity.getName();
+		this.version = entity.getVersion();
+		this.certifiedProductId = entity.getCertifiedProductId();
 		this.justification = entity.getJustification();
-		this.creationDate = entity.getCreationDate();
-		this.deleted = entity.getDeleted();
 	}
 
 	public Long getId() {

@@ -89,14 +89,14 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setIcs(dto.getIcs());
 			searchResult.setSedTesting(dto.getSedTesting());
 			searchResult.setQmsTesting(dto.getQmsTesting());
-			searchResult.setQmsStandard(dto.getQmsStandard());
-			searchResult.setQmsModifications(dto.getQmsModification());
 			searchResult.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 			searchResult.setTermsOfUse(dto.getTermsOfUse());
 			if(dto.getTransparencyAttestation() == null) {
 				searchResult.setTransparencyAttestation(Boolean.FALSE);
+				searchResult.setTransparencyAttestationUrl(null);
 			} else {
 				searchResult.setTransparencyAttestation(dto.getTransparencyAttestation());
+				searchResult.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 			}
 			searchResults.add(searchResult);
 		}

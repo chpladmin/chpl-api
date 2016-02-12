@@ -8,10 +8,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 public interface CertifiedProductManager {
 
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
@@ -27,6 +29,8 @@ public interface CertifiedProductManager {
 	
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDetails pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+	public void updateQmsStandards(Long acbId, CertifiedProductDTO productDto, List<CertifiedProductQmsStandardDTO> newQmsStandards)
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
 			throws EntityCreationException, EntityRetrievalException,
 			JsonProcessingException;

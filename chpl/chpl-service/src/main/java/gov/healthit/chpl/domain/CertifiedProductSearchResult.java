@@ -30,10 +30,9 @@ public class CertifiedProductSearchResult {
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
-	private String qmsStandard;
-	private String qmsModifications;
 	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	private Integer countCerts;
 	private Integer countCqms;
 	private Integer countCorrectiveActionPlans;
@@ -206,23 +205,17 @@ public class CertifiedProductSearchResult {
 	public void setSedReportFileLocation(String sedReportFileLocation) {
 		this.sedReportFileLocation = sedReportFileLocation;
 	}
-	public String getQmsStandard() {
-		return qmsStandard;
-	}
-	public void setQmsStandard(String qmsStandard) {
-		this.qmsStandard = qmsStandard;
-	}
-	public String getQmsModifications() {
-		return qmsModifications;
-	}
-	public void setQmsModifications(String qmsModifications) {
-		this.qmsModifications = qmsModifications;
-	}
 	public String getProductAdditionalSoftware() {
 		return productAdditionalSoftware;
 	}
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 	
 }

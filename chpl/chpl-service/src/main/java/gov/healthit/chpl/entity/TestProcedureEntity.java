@@ -4,24 +4,58 @@ import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public class AuditedEntity {
+
+@Entity
+@Table(name = "test_procedure")
+public class TestProcedureEntity {
+	
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Basic( optional = false )
+	@Column(name = "test_procedure_id")
+	private Long id;
+	
+	@Basic( optional = false )
+	@Column( name = "version", nullable = false  )
+	private String version;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
+	protected Date creationDate;
 	
 	@Basic( optional = false )
 	@Column( nullable = false  )
-	private Boolean deleted;
+	protected Boolean deleted;
 	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
+	protected Date lastModifiedDate;
 	
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
+	protected Long lastModifiedUser;
 	
 	public Date getCreationDate() {
 		return creationDate;

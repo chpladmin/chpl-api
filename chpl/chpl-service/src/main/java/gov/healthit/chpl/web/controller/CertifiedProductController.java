@@ -37,11 +37,13 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -168,8 +170,6 @@ public class CertifiedProductController {
 		toUpdate.setIcs(updateRequest.getIcs());
 		toUpdate.setSedTesting(updateRequest.getSedTesting());
 		toUpdate.setQmsTesting(updateRequest.getQmsTesting());
-		toUpdate.setQmsStandard(updateRequest.getQmsStandard());
-		toUpdate.setQmsModification(updateRequest.getQmsModification());
 		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
 		
 		if(!StringUtils.isEmpty(updateRequest.getChplProductNumber())) {
@@ -196,10 +196,24 @@ public class CertifiedProductController {
 
 		toUpdate = cpManager.update(acbId, toUpdate);
 		
+		//update qms standards used
+		List<CertifiedProductQmsStandardDTO> qmsStandardsToUpdate = new ArrayList<CertifiedProductQmsStandardDTO>();
+		for(CertifiedProductQmsStandard newQms : updateRequest.getQmsStandards()) {
+			CertifiedProductQmsStandardDTO dto = new CertifiedProductQmsStandardDTO();
+			dto.setId(newQms.getId());
+			dto.setApplicableCriteria(newQms.getApplicableCriteria());
+			dto.setCertifiedProductId(toUpdate.getId());
+			dto.setQmsModification(newQms.getQmsModification());
+			dto.setQmsStandardId(newQms.getQmsStandardId());
+			dto.setQmsStandardName(newQms.getQmsStandardName());
+			qmsStandardsToUpdate.add(dto);
+		}
+		cpManager.updateQmsStandards(acbId, toUpdate, qmsStandardsToUpdate);
+
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
 		
-		
+		//update CQMs
 		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();
 		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
 			if(!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null && cqm.getSuccessVersions().size() > 0) {

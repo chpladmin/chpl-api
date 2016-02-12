@@ -101,8 +101,10 @@ public class DeveloperController {
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
 			if(developerInfo.getDeveloper().getTransparencyAttestation() == null) {
 				toCreate.setTransparencyAttestation(Boolean.FALSE);
+				toCreate.setTransparencyAttestationUrl(null);
 			} else {
 				toCreate.setTransparencyAttestation(developerInfo.getDeveloper().getTransparencyAttestation());
+				toCreate.setTransparencyAttestationUrl(developerInfo.getDeveloper().getTransparencyAttestationUrl());
 			}
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
 			if(developerAddress != null) {
@@ -127,8 +129,10 @@ public class DeveloperController {
 			toUpdate.setWebsite(developerInfo.getDeveloper().getWebsite());
 			if(developerInfo.getDeveloper().getTransparencyAttestation() == null) {
 				toUpdate.setTransparencyAttestation(Boolean.FALSE);
+				toUpdate.setTransparencyAttestationUrl(null);
 			} else {
 				toUpdate.setTransparencyAttestation(developerInfo.getDeveloper().getTransparencyAttestation());
+				toUpdate.setTransparencyAttestationUrl(developerInfo.getDeveloper().getTransparencyAttestationUrl());
 			}
 			if(developerInfo.getDeveloper().getAddress() != null) {
 				AddressDTO address = new AddressDTO();

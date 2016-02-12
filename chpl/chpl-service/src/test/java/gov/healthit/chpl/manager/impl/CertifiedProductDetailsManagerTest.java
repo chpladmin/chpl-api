@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import junit.framework.TestCase;
@@ -101,10 +102,26 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
 		assertEquals(6 , detail.getCertificationResults().size());
 		
-		//TODO: check additional software
+		//check additional software
 		CertificationResult cert = detail.getCertificationResults().get(0);
 		assertNotNull(cert.getAdditionalSoftware());
 		assertEquals(2, cert.getAdditionalSoftware().size());
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsQms() throws EntityRetrievalException{
+		
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
+		assertNotNull(detail.getQmsStandards());
+		assertEquals(1 , detail.getQmsStandards().size());
+		
+		detail = certifiedProductDetailsManager.getCertifiedProductDetails(2L);
+		assertNotNull(detail.getQmsStandards());
+		assertEquals(2 , detail.getQmsStandards().size());
+		CertifiedProductQmsStandard qms = detail.getQmsStandards().get(0);
+		assertNotNull(qms.getId());
+		assertNotNull(qms.getQmsStandardName());
 	}
 	
 	@Test

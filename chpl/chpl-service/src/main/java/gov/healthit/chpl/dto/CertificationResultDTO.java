@@ -22,14 +22,33 @@ public class CertificationResultDTO {
 	private String ucdProcessDetails;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
+	
+	private List<CertificationResultTestFunctionalityDTO> testFunctionality;
+	private List<CertificationResultTestProcedureDTO> testProcedures;
+ 	private List<CertificationResultTestDataDTO> testData;
+	private List<CertificationResultTestToolDTO> testTools;
+	private List<CertificationResultTestStandardDTO> testStandards;
 	private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
 	
 	public CertificationResultDTO(){
 		additionalSoftware = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
+		testStandards = new ArrayList<CertificationResultTestStandardDTO>();
+		testTools = new ArrayList<CertificationResultTestToolDTO>();
+		testData = new ArrayList<CertificationResultTestDataDTO>();
+		testProcedures = new ArrayList<CertificationResultTestProcedureDTO>();
+		testFunctionality = new ArrayList<CertificationResultTestFunctionalityDTO>();
 	}
 	
+	public List<CertificationResultTestProcedureDTO> getTestProcedures() {
+		return testProcedures;
+	}
+
+	public void setTestProcedures(List<CertificationResultTestProcedureDTO> testProcedures) {
+		this.testProcedures = testProcedures;
+	}
+
 	public CertificationResultDTO(CertificationResultEntity entity){
-		super();
+		this();
 		this.id = entity.getId();
 		this.certificationCriterionId = entity.getCertificationCriterionId();
 		this.certifiedProductId = entity.getCertifiedProductId();
@@ -151,6 +170,38 @@ public class CertificationResultDTO {
 
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
+	}
+
+	public List<CertificationResultTestStandardDTO> getTestStandards() {
+		return testStandards;
+	}
+
+	public void setTestStandards(List<CertificationResultTestStandardDTO> testStandards) {
+		this.testStandards = testStandards;
+	}
+
+	public List<CertificationResultTestToolDTO> getTestTools() {
+		return testTools;
+	}
+
+	public void setTestTools(List<CertificationResultTestToolDTO> testTools) {
+		this.testTools = testTools;
+	}
+
+	public List<CertificationResultTestDataDTO> getTestData() {
+		return testData;
+	}
+
+	public void setTestData(List<CertificationResultTestDataDTO> testData) {
+		this.testData = testData;
+	}
+
+	public List<CertificationResultTestFunctionalityDTO> getTestFunctionality() {
+		return testFunctionality;
+	}
+
+	public void setTestFunctionality(List<CertificationResultTestFunctionalityDTO> testFunctionality) {
+		this.testFunctionality = testFunctionality;
 	}
 	
 }

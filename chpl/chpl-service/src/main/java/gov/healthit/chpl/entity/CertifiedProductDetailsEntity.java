@@ -154,17 +154,14 @@ public class CertifiedProductDetailsEntity {
 	@Column(name = "qms")
 	private Boolean qmsTesting;
 	
-	@Column(name = "qms_standard")
-	private String qmsStandard;
-	
-	@Column(name = "qms_modification")
-	private String qmsModification;
-	
 	@Column(name = "product_additional_software")
 	private String productAdditionalSoftware;
 	
 	@Column(name = "transparency_attestation")
 	private Boolean transparencyAttestation;
+	
+	@Column(name = "transparency_attestation_url")
+	private String transparencyAttestationUrl;
 	
 	public Long getId() {
 		return id;
@@ -558,27 +555,19 @@ public class CertifiedProductDetailsEntity {
 		this.sedReportFileLocation = sedReportFileLocation;
 	}
 
-	public String getQmsStandard() {
-		return qmsStandard;
-	}
-
-	public void setQmsStandard(String qmsStandard) {
-		this.qmsStandard = qmsStandard;
-	}
-
-	public String getQmsModification() {
-		return qmsModification;
-	}
-
-	public void setQmsModification(String qmsModification) {
-		this.qmsModification = qmsModification;
-	}
-
 	public String getProductAdditionalSoftware() {
 		return productAdditionalSoftware;
 	}
 
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}	
 }

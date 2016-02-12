@@ -1,5 +1,7 @@
 package gov.healthit.chpl.entity;
 
+import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +16,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "certification_result_additional_software")
-public class CertificationResultAdditionalSoftwareEntity extends AuditedEntity {
+public class CertificationResultAdditionalSoftwareEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -86,5 +88,44 @@ public class CertificationResultAdditionalSoftwareEntity extends AuditedEntity {
 		this.certifiedProductId = certifiedProductId;
 	}
 
+	@Basic( optional = false )
+	@Column( name = "creation_date", nullable = false  )
+	protected Date creationDate;
 	
+	@Basic( optional = false )
+	@Column( nullable = false  )
+	protected Boolean deleted;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_date", nullable = false  )
+	protected Date lastModifiedDate;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_user", nullable = false  )
+	protected Long lastModifiedUser;
+	
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
+	}
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
+	}
 }

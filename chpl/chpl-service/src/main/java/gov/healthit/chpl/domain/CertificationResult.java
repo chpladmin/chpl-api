@@ -15,12 +15,31 @@ public class CertificationResult {
 	private boolean g2Success;
 	private String ucdProcessSelected;
 	private String ucdProcessDetails;
+	
+	private List<CertificationResultTestFunctionality> testFunctionality;
+	private List<CertificationResultTestProcedure> testProcedures;
+	private List<CertificationResultTestData> testDataUsed;
 	private List<CertificationResultAdditionalSoftware> additionalSoftware;
+	private List<CertificationResultTestStandard> testStandards;
+	private List<CertificationResultTestTool> testToolsUsed;
 	
 	public CertificationResult(){
 		 additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+		 testStandards = new ArrayList<CertificationResultTestStandard>();
+		 testToolsUsed = new ArrayList<CertificationResultTestTool>();
+		 testDataUsed = new ArrayList<CertificationResultTestData>();
+		 testProcedures = new ArrayList<CertificationResultTestProcedure>();
+		 testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 	}
 	
+	public List<CertificationResultTestProcedure> getTestProcedures() {
+		return testProcedures;
+	}
+
+	public void setTestProcedures(List<CertificationResultTestProcedure> testProcedures) {
+		this.testProcedures = testProcedures;
+	}
+
 	public CertificationResult(CertificationResultDetailsDTO certResult) {
 		this();
 		this.setNumber(certResult.getNumber());
@@ -114,5 +133,36 @@ public class CertificationResult {
 	public void setUcdProcessDetails(String ucdProcessDetails) {
 		this.ucdProcessDetails = ucdProcessDetails;
 	}
+
+	public List<CertificationResultTestTool> getTestToolsUsed() {
+		return testToolsUsed;
+	}
+
+	public void setTestToolsUsed(List<CertificationResultTestTool> testToolsUsed) {
+		this.testToolsUsed = testToolsUsed;
+	}
+
+	public List<CertificationResultTestStandard> getTestStandards() {
+		return testStandards;
+	}
+
+	public void setTestStandards(List<CertificationResultTestStandard> testStandards) {
+		this.testStandards = testStandards;
+	}
 	
+	public List<CertificationResultTestData> getTestDataUsed() {
+		return testDataUsed;
+	}
+
+	public void setTestDataUsed(List<CertificationResultTestData> testDataUsed) {
+		this.testDataUsed = testDataUsed;
+	}
+
+	public List<CertificationResultTestFunctionality> getTestFunctionality() {
+		return testFunctionality;
+	}
+
+	public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
+		this.testFunctionality = testFunctionality;
+	}
 }

@@ -20,7 +20,9 @@
 		<class>gov.healthit.chpl.entity.DeveloperACBMapEntity</class>
 		<class>gov.healthit.chpl.entity.ProductEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
+		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
+		<class>gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity</class>

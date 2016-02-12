@@ -93,6 +93,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		mapping.getDeveloperId(dto.getDeveloperId());
 		mapping.setCertificationBodyId(dto.getAcbId());
 		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
+		mapping.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		mapping.setCreationDate(new Date());
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
@@ -156,6 +157,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 		
 		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
+		mapping.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		mapping.setLastModifiedDate(new Date());
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
 		entityManager.persist(mapping);

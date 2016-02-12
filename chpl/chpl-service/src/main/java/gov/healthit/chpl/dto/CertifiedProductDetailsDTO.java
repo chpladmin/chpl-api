@@ -55,15 +55,16 @@ public class CertifiedProductDetailsDTO {
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
-	private String qmsStandard;
-	private String qmsModification;
 	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	
+	private List<CertifiedProductQmsStandardDTO> qmsStandards;
     private List<CertificationResultDetailsDTO> certResults;
     private List<CQMResultDetailsDTO> cqmResults;
     
     public CertifiedProductDetailsDTO(){
+    	qmsStandards = new ArrayList<CertifiedProductQmsStandardDTO>();
     	certResults = new ArrayList<CertificationResultDetailsDTO>();
     	cqmResults = new ArrayList<CQMResultDetailsDTO>();
     }
@@ -110,10 +111,9 @@ public class CertifiedProductDetailsDTO {
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
-    	this.qmsStandard = entity.getQmsStandard();
-    	this.qmsModification = entity.getQmsModification();
     	this.productAdditionalSoftware = entity.getProductAdditionalSoftware();
     	this.transparencyAttestation = entity.getTransparencyAttestation();
+    	this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
@@ -468,27 +468,27 @@ public class CertifiedProductDetailsDTO {
 		this.sedReportFileLocation = sedReportFileLocation;
 	}
 
-	public String getQmsStandard() {
-		return qmsStandard;
-	}
-
-	public void setQmsStandard(String qmsStandard) {
-		this.qmsStandard = qmsStandard;
-	}
-
-	public String getQmsModification() {
-		return qmsModification;
-	}
-
-	public void setQmsModification(String qmsModification) {
-		this.qmsModification = qmsModification;
-	}
-
 	public String getProductAdditionalSoftware() {
 		return productAdditionalSoftware;
 	}
 
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public List<CertifiedProductQmsStandardDTO> getQmsStandards() {
+		return qmsStandards;
+	}
+
+	public void setQmsStandards(List<CertifiedProductQmsStandardDTO> qmsStandards) {
+		this.qmsStandards = qmsStandards;
 	}
 }

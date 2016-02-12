@@ -32,12 +32,12 @@ public class CertifiedProductSearchDetails {
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
-	private String qmsStandard;
-	private String qmsModification;
 	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
+	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
@@ -245,22 +245,22 @@ public class CertifiedProductSearchDetails {
 	public void setSedReportFileLocation(String sedReportFileLocation) {
 		this.sedReportFileLocation = sedReportFileLocation;
 	}
-	public String getQmsStandard() {
-		return qmsStandard;
-	}
-	public void setQmsStandard(String qmsStandard) {
-		this.qmsStandard = qmsStandard;
-	}
-	public String getQmsModification() {
-		return qmsModification;
-	}
-	public void setQmsModification(String qmsModification) {
-		this.qmsModification = qmsModification;
-	}
 	public String getProductAdditionalSoftware() {
 		return productAdditionalSoftware;
 	}
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+	public List<CertifiedProductQmsStandard> getQmsStandards() {
+		return qmsStandards;
+	}
+	public void setQmsStandards(List<CertifiedProductQmsStandard> qmsStandards) {
+		this.qmsStandards = qmsStandards;
 	}
 }

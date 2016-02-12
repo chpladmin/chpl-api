@@ -22,7 +22,7 @@ import javax.persistence.Transient;
 
 @Entity
 @Table(name = "certification_result", catalog = "openchpl", schema = "openchpl")
-public class CertificationResultEntity extends AuditedEntity implements Serializable {
+public class CertificationResultEntity  implements Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -9050374846030066967L;
@@ -214,5 +214,46 @@ public class CertificationResultEntity extends AuditedEntity implements Serializ
 
 	public Boolean getSuccess() {
 		return success;
+	}
+	
+	@Basic( optional = false )
+	@Column( name = "creation_date", nullable = false  )
+	protected Date creationDate;
+	
+	@Basic( optional = false )
+	@Column( nullable = false  )
+	protected Boolean deleted;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_date", nullable = false  )
+	protected Date lastModifiedDate;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_user", nullable = false  )
+	protected Long lastModifiedUser;
+	
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
+	}
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
 	}
 }
