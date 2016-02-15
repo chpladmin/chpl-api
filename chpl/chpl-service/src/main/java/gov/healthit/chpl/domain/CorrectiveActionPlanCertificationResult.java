@@ -8,11 +8,11 @@ public class CorrectiveActionPlanCertificationResult {
 	private Long certificationCriterionId;
 	private String certificationCriterionNumber;
 	private String certificationCriterionTitle;
-	private String summary;
-	private String developerExplanation;
+	private String acbSummary;
+	private String developerSummary;
 	private String resolution;
 	private Integer surveillancePassRate;
-	private Integer surveillanceSiteCount;
+	private Integer surveillanceSitesSurveilled;
 	
 	public CorrectiveActionPlanCertificationResult() {}
 	public CorrectiveActionPlanCertificationResult(CorrectiveActionPlanCertificationResultDTO dto) {
@@ -22,11 +22,11 @@ public class CorrectiveActionPlanCertificationResult {
 			this.certificationCriterionNumber = dto.getCertCriterion().getNumber();
 			this.certificationCriterionTitle = dto.getCertCriterion().getTitle();
 		}
-		this.summary = dto.getSummary();
-		this.developerExplanation = dto.getDeveloperExplanation();
+		this.acbSummary = dto.getSummary();
+		this.developerSummary = dto.getDeveloperExplanation();
 		this.resolution = dto.getResolution();
 		this.surveillancePassRate = dto.getNumSitesPassed();
-		this.surveillanceSiteCount = dto.getNumSitesTotal();
+		this.surveillanceSitesSurveilled = dto.getNumSitesTotal();
 	}
 		
 	public Long getId() {
@@ -59,17 +59,17 @@ public class CorrectiveActionPlanCertificationResult {
 	public void setResolution(String resolution) {
 		this.resolution = resolution;
 	}
-	public String getSummary() {
-		return summary;
+	public String getAcbSummary() {
+		return acbSummary;
 	}
-	public void setSummary(String summary) {
-		this.summary = summary;
+	public void setAcbSummary(String acbSummary) {
+		this.acbSummary = acbSummary;
 	}
-	public String getDeveloperExplanation() {
-		return developerExplanation;
+	public String getDeveloperSummary() {
+		return developerSummary;
 	}
-	public void setDeveloperExplanation(String developerExplanation) {
-		this.developerExplanation = developerExplanation;
+	public void setDeveloperSummary(String developerSummary) {
+		this.developerSummary = developerSummary;
 	}
 	public Integer getSurveillancePassRate() {
 		return surveillancePassRate;
@@ -77,10 +77,10 @@ public class CorrectiveActionPlanCertificationResult {
 	public void setSurveillancePassRate(Integer surveillancePassRate) {
 		this.surveillancePassRate = surveillancePassRate;
 	}
-	public Integer getSurveillanceSiteCount() {
-		return surveillanceSiteCount;
+	public Integer getSurveillanceSitesSurveilled() {
+		return surveillanceSitesSurveilled;
 	}
-	public void setSurveillanceSiteCount(Integer surveillanceSiteCount) {
-		this.surveillanceSiteCount = surveillanceSiteCount;
-	}	
+	public void setSurveillanceSitesSurveilled(Integer surveillanceSitesSurveilled) {
+		this.surveillanceSitesSurveilled = surveillanceSitesSurveilled;
+	}
 }

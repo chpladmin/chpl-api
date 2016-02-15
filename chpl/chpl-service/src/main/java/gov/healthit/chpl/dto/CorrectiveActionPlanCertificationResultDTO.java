@@ -10,8 +10,8 @@ public class CorrectiveActionPlanCertificationResultDTO {
 	private String summary;
 	private String developerExplanation;
 	private String resolution;
-	private int numSitesPassed;
-	private int numSitesTotal;
+	private Integer numSitesPassed;
+	private Integer numSitesTotal;
 	
 	public CorrectiveActionPlanCertificationResultDTO() {
 		
@@ -80,19 +80,19 @@ public class CorrectiveActionPlanCertificationResultDTO {
 		this.resolution = resolution;
 	}
 
-	public int getNumSitesPassed() {
+	public Integer getNumSitesPassed() {
 		return numSitesPassed;
 	}
 
-	public void setNumSitesPassed(int numSitesPassed) {
+	public void setNumSitesPassed(Integer numSitesPassed) {
 		this.numSitesPassed = numSitesPassed;
 	}
 
-	public int getNumSitesTotal() {
+	public Integer getNumSitesTotal() {
 		return numSitesTotal;
 	}
 
-	public void setNumSitesTotal(int numSitesTotal) {
+	public void setNumSitesTotal(Integer numSitesTotal) {
 		this.numSitesTotal = numSitesTotal;
 	}
 }
