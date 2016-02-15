@@ -24,45 +24,33 @@ public class CorrectiveActionPlanEntity {
 	@Basic( optional = false )
 	@Column(name="certified_product_id")
 	private Long certifiedProductId;
+
+	@Basic( optional = false )
+	@Column(name="surveillance_start")
+	private Date surveillanceStartDate;
+	
+	@Column(name="surveillance_end")
+	private Date surveillanceEndDate;
 	
 	@Basic( optional = false )
-	@Column(name="acb_summary")
-	private String acbSummaryDescription;
-	
-	@Basic( optional = false )
-	@Column(name = "developer_summary")
-	private String developerSummaryDescription;
-	
-	@Basic( optional = false )
-	@Column(name = "approval_date")
-	private Date approvalDate;
-	
-	@Basic( optional = false )
-	@Column(name = "effective_date")
-	private Date effectiveDate;
-	
-	@Basic( optional = false )
-	@Column(name = "completion_date_estimated")
-	private Date estimatedCompletionDate;
-	
-	@Column(name = "completion_date_actual")
-	private Date actualCompletionDate;
+	@Column(name = "surveillance_result")
+	private Boolean surveillanceResult;
 	
 	@Basic( optional = false )
 	@Column(name = "noncompliance_determination_date")
-	private Date noncomplainceDeterminationDate;
+	private Date nonComplianceDeterminationDate;
 	
-	@Column(name = "resolution")
-	private String resolution;
+	@Column(name = "approval_date")
+	private Date approvalDate;
 	
-	@Column(name = "surveillance_start")
-	private Date surveillanceStartDate;
+	@Column(name = "start_date")
+	private Date startDate;
 	
-	@Column(name = "surveillance_end")
-	private Date surveillanceEndDate;
+	@Column(name = "completion_date_required")
+	private Date requiredCompletionDate;
 	
-	@Column(name = "surveillance_site_count")
-	private Integer surveillanceSiteCount;
+	@Column(name = "completion_date_actual")
+	private Date actualCompletionDate;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -98,22 +86,6 @@ public class CorrectiveActionPlanEntity {
 		this.certifiedProductId = certifiedProductId;
 	}
 
-	public String getAcbSummaryDescription() {
-		return acbSummaryDescription;
-	}
-
-	public void setAcbSummaryDescription(String acbSummaryDescription) {
-		this.acbSummaryDescription = acbSummaryDescription;
-	}
-
-	public String getDeveloperSummaryDescription() {
-		return developerSummaryDescription;
-	}
-
-	public void setDeveloperSummaryDescription(String developerSummaryDescription) {
-		this.developerSummaryDescription = developerSummaryDescription;
-	}
-
 	public Date getApprovalDate() {
 		return approvalDate;
 	}
@@ -121,23 +93,7 @@ public class CorrectiveActionPlanEntity {
 	public void setApprovalDate(Date approvalDate) {
 		this.approvalDate = approvalDate;
 	}
-
-	public Date getEffectiveDate() {
-		return effectiveDate;
-	}
-
-	public void setEffectiveDate(Date effectiveDate) {
-		this.effectiveDate = effectiveDate;
-	}
-
-	public Date getEstimatedCompletionDate() {
-		return estimatedCompletionDate;
-	}
-
-	public void setEstimatedCompletionDate(Date estimatedCompletionDate) {
-		this.estimatedCompletionDate = estimatedCompletionDate;
-	}
-
+	
 	public Date getActualCompletionDate() {
 		return actualCompletionDate;
 	}
@@ -145,15 +101,7 @@ public class CorrectiveActionPlanEntity {
 	public void setActualCompletionDate(Date actualCompletionDate) {
 		this.actualCompletionDate = actualCompletionDate;
 	}
-
-	public String getResolution() {
-		return resolution;
-	}
-
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
-	}
-
+	
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -186,14 +134,6 @@ public class CorrectiveActionPlanEntity {
 		this.deleted = deleted;
 	}
 
-	public Date getNoncomplainceDeterminationDate() {
-		return noncomplainceDeterminationDate;
-	}
-
-	public void setNoncomplainceDeterminationDate(Date noncomplainceDeterminationDate) {
-		this.noncomplainceDeterminationDate = noncomplainceDeterminationDate;
-	}
-
 	public Date getSurveillanceStartDate() {
 		return surveillanceStartDate;
 	}
@@ -210,12 +150,35 @@ public class CorrectiveActionPlanEntity {
 		this.surveillanceEndDate = surveillanceEndDate;
 	}
 
-	public Integer getSurveillanceSiteCount() {
-		return surveillanceSiteCount;
+	public Boolean getSurveillanceResult() {
+		return surveillanceResult;
 	}
 
-	public void setSurveillanceSiteCount(Integer surveillanceSiteCount) {
-		this.surveillanceSiteCount = surveillanceSiteCount;
+	public void setSurveillanceResult(Boolean surveillanceResult) {
+		this.surveillanceResult = surveillanceResult;
 	}
 
+	public Date getNonComplianceDeterminationDate() {
+		return nonComplianceDeterminationDate;
+	}
+
+	public void setNonComplianceDeterminationDate(Date nonComplianceDeterminationDate) {
+		this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getRequiredCompletionDate() {
+		return requiredCompletionDate;
+	}
+
+	public void setRequiredCompletionDate(Date requiredCompletionDate) {
+		this.requiredCompletionDate = requiredCompletionDate;
+	}
 }

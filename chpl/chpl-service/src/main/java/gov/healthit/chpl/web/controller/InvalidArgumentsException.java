@@ -1,5 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.List;
+
 public class InvalidArgumentsException extends Exception {
 	
 	private static final long serialVersionUID = 1L;
