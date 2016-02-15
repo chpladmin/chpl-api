@@ -8,11 +8,11 @@ public class CorrectiveActionPlanCertificationResult {
 	private Long certificationCriterionId;
 	private String certificationCriterionNumber;
 	private String certificationCriterionTitle;
-	private String acbSummary;
-	private String developerSummary;
+	private String summary;
+	private String developerExplanation;
 	private String resolution;
-	private String surveillancePassRate;
-	private String surveillanceResults;
+	private Integer surveillancePassRate;
+	private Integer surveillanceSiteCount;
 	
 	public CorrectiveActionPlanCertificationResult() {}
 	public CorrectiveActionPlanCertificationResult(CorrectiveActionPlanCertificationResultDTO dto) {
@@ -22,11 +22,11 @@ public class CorrectiveActionPlanCertificationResult {
 			this.certificationCriterionNumber = dto.getCertCriterion().getNumber();
 			this.certificationCriterionTitle = dto.getCertCriterion().getTitle();
 		}
-		this.acbSummary = dto.getAcbSummary();
-		this.developerSummary = dto.getDeveloperSummary();
+		this.summary = dto.getSummary();
+		this.developerExplanation = dto.getDeveloperExplanation();
 		this.resolution = dto.getResolution();
-		this.surveillancePassRate = dto.getSurveillancePassRate();
-		this.surveillanceResults = dto.getSurveillanceResults();
+		this.surveillancePassRate = dto.getNumSitesPassed();
+		this.surveillanceSiteCount = dto.getNumSitesTotal();
 	}
 		
 	public Long getId() {
@@ -53,35 +53,34 @@ public class CorrectiveActionPlanCertificationResult {
 	public void setCertificationCriterionTitle(String certificationCriterionTitle) {
 		this.certificationCriterionTitle = certificationCriterionTitle;
 	}
-	public String getAcbSummary() {
-		return acbSummary;
-	}
-	public void setAcbSummary(String acbSummary) {
-		this.acbSummary = acbSummary;
-	}
-	public String getDeveloperSummary() {
-		return developerSummary;
-	}
-	public void setDeveloperSummary(String developerSummary) {
-		this.developerSummary = developerSummary;
-	}
 	public String getResolution() {
 		return resolution;
 	}
 	public void setResolution(String resolution) {
 		this.resolution = resolution;
 	}
-	public String getSurveillancePassRate() {
+	public String getSummary() {
+		return summary;
+	}
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+	public String getDeveloperExplanation() {
+		return developerExplanation;
+	}
+	public void setDeveloperExplanation(String developerExplanation) {
+		this.developerExplanation = developerExplanation;
+	}
+	public Integer getSurveillancePassRate() {
 		return surveillancePassRate;
 	}
-	public void setSurveillancePassRate(String surveillancePassRate) {
+	public void setSurveillancePassRate(Integer surveillancePassRate) {
 		this.surveillancePassRate = surveillancePassRate;
 	}
-	public String getSurveillanceResults() {
-		return surveillanceResults;
+	public Integer getSurveillanceSiteCount() {
+		return surveillanceSiteCount;
 	}
-	public void setSurveillanceResults(String surveillanceResults) {
-		this.surveillanceResults = surveillanceResults;
-	}
-	
+	public void setSurveillanceSiteCount(Integer surveillanceSiteCount) {
+		this.surveillanceSiteCount = surveillanceSiteCount;
+	}	
 }

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -122,21 +123,23 @@ public class CorrectiveActionPlanController {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException,
 		InvalidArgumentsException {
 		
+		List<String> capErrors = validateCAP(updateRequest);
+		if(capErrors != null && capErrors.size() > 0) {
+			throw new InvalidArgumentsException(capErrors.get(0));
+		} 
+		
 		CorrectiveActionPlanDTO toUpdate = new CorrectiveActionPlanDTO();
 		toUpdate.setId(updateRequest.getId());
-		toUpdate.setAcbSummary(updateRequest.getAcbSummary());
 		toUpdate.setActualCompletionDate(updateRequest.getActualCompletionDate());
 		toUpdate.setApprovalDate(updateRequest.getApprovalDate());
 		toUpdate.setCertifiedProductId(updateRequest.getCertifiedProductId());
-		toUpdate.setDeveloperSummary(updateRequest.getDeveloperSummary());
-		toUpdate.setEffectiveDate(updateRequest.getEffectiveDate());
-		toUpdate.setEstimatedCompletionDate(updateRequest.getEstimatedCompletionDate());
-		toUpdate.setNoncomplainceDate(updateRequest.getNoncomplianceDate());
-		toUpdate.setResolution(updateRequest.getResolution());
-		toUpdate.setSurveillanceStartDate(updateRequest.getSurveillanceStartDate());
+		toUpdate.setNonComplianceDeterminationDate(updateRequest.getNoncomplianceDate());
+		toUpdate.setRequiredCompletionDate(updateRequest.getRequiredCompletionDate());
+		toUpdate.setStartDate(updateRequest.getStartDate());
 		toUpdate.setSurveillanceEndDate(updateRequest.getSurveillanceEndDate());
-		toUpdate.setSurveillanceSiteCount(updateRequest.getSurveillanceSiteCount());
-		
+		toUpdate.setSurveillanceResult(updateRequest.getRandomizedSurveillance());
+		toUpdate.setSurveillanceStartDate(updateRequest.getSurveillanceStartDate());
+
 		//update the plan info
 		Long owningAcbId = null;
 		CorrectiveActionPlanDTO existingPlan = capManager.getPlanById(updateRequest.getId());
@@ -159,12 +162,12 @@ public class CorrectiveActionPlanController {
 			for(int j = 0; j < updateRequest.getCertifications().size(); j++) {
 				CorrectiveActionPlanCertificationResult updateCert = updateRequest.getCertifications().get(j);
 				if(existingCert.getCertCriterion().getNumber().equals(updateCert.getCertificationCriterionNumber())) {
-					existingCert.setAcbSummary(updateCert.getAcbSummary());
 					existingCert.setCorrectiveActionPlanId(updateRequest.getId());
-					existingCert.setDeveloperSummary(updateCert.getDeveloperSummary());
 					existingCert.setResolution(updateCert.getResolution());
-					existingCert.setSurveillancePassRate(updateCert.getSurveillancePassRate());
-					existingCert.setSurveillanceResults(updateCert.getSurveillanceResults());
+					existingCert.setDeveloperExplanation(updateCert.getDeveloperExplanation());
+					existingCert.setNumSitesPassed(updateCert.getSurveillancePassRate());
+					existingCert.setNumSitesTotal(updateCert.getSurveillanceSiteCount());
+					existingCert.setSummary(updateCert.getSummary());
 					capManager.updateCertification(owningAcbId, existingCert);
 				}
 			}
@@ -209,12 +212,12 @@ public class CorrectiveActionPlanController {
 			
 			if(!foundCert) {
 				CorrectiveActionPlanCertificationResultDTO certToAdd = new CorrectiveActionPlanCertificationResultDTO();
-				certToAdd.setAcbSummary(updateCert.getAcbSummary());
 				certToAdd.setCorrectiveActionPlanId(updateRequest.getId());
-				certToAdd.setDeveloperSummary(updateCert.getDeveloperSummary());
 				certToAdd.setResolution(updateCert.getResolution());
-				certToAdd.setSurveillancePassRate(updateCert.getSurveillancePassRate());
-				certToAdd.setSurveillanceResults(updateCert.getSurveillanceResults());
+				certToAdd.setDeveloperExplanation(updateCert.getDeveloperExplanation());
+				certToAdd.setNumSitesPassed(updateCert.getSurveillancePassRate());
+				certToAdd.setNumSitesTotal(updateCert.getSurveillanceSiteCount());
+				certToAdd.setSummary(updateCert.getSummary());
 				
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setNumber(updateCert.getCertificationCriterionNumber());
@@ -276,19 +279,22 @@ public class CorrectiveActionPlanController {
 	public @ResponseBody CorrectiveActionPlanDetails create(@RequestBody(required=true) CorrectiveActionPlanDetails createRequest) 
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException,
 			InvalidArgumentsException {
+		
+		List<String> capErrors = validateCAP(createRequest);
+		if(capErrors != null && capErrors.size() > 0) {
+			throw new InvalidArgumentsException(capErrors.get(0));
+		}
+		
 		CorrectiveActionPlanDTO toCreate = new CorrectiveActionPlanDTO();
-		toCreate.setAcbSummary(createRequest.getAcbSummary());
 		toCreate.setActualCompletionDate(createRequest.getActualCompletionDate());
 		toCreate.setApprovalDate(createRequest.getApprovalDate());
 		toCreate.setCertifiedProductId(createRequest.getCertifiedProductId());
-		toCreate.setDeveloperSummary(createRequest.getDeveloperSummary());
-		toCreate.setEffectiveDate(createRequest.getEffectiveDate());
-		toCreate.setEstimatedCompletionDate(createRequest.getEstimatedCompletionDate());
-		toCreate.setNoncomplainceDate(createRequest.getNoncomplianceDate());
-		toCreate.setResolution(createRequest.getResolution());
-		toCreate.setSurveillanceStartDate(createRequest.getSurveillanceStartDate());
+		toCreate.setNonComplianceDeterminationDate(createRequest.getNoncomplianceDate());
+		toCreate.setRequiredCompletionDate(createRequest.getRequiredCompletionDate());
+		toCreate.setStartDate(createRequest.getStartDate());
 		toCreate.setSurveillanceEndDate(createRequest.getSurveillanceEndDate());
-		toCreate.setSurveillanceSiteCount(createRequest.getSurveillanceSiteCount());
+		toCreate.setSurveillanceResult(createRequest.getRandomizedSurveillance());
+		toCreate.setSurveillanceStartDate(createRequest.getSurveillanceStartDate());
 		
 		Long createdPlanId = null;
 		Long acbId = null;
@@ -307,12 +313,12 @@ public class CorrectiveActionPlanController {
 		if(createRequest.getCertifications() != null && createRequest.getCertifications().size() > 0) {
 			for(CorrectiveActionPlanCertificationResult cert : createRequest.getCertifications()) {
 				CorrectiveActionPlanCertificationResultDTO currCertToCreate = new CorrectiveActionPlanCertificationResultDTO();
-				currCertToCreate.setAcbSummary(cert.getAcbSummary());
 				currCertToCreate.setCorrectiveActionPlanId(createdPlanId);
-				currCertToCreate.setDeveloperSummary(cert.getDeveloperSummary());
 				currCertToCreate.setResolution(cert.getResolution());
-				currCertToCreate.setSurveillancePassRate(cert.getSurveillancePassRate());
-				currCertToCreate.setSurveillanceResults(cert.getSurveillanceResults());
+				currCertToCreate.setDeveloperExplanation(cert.getDeveloperExplanation());
+				currCertToCreate.setNumSitesPassed(cert.getSurveillancePassRate());
+				currCertToCreate.setNumSitesTotal(cert.getSurveillanceSiteCount());
+				currCertToCreate.setSummary(cert.getSummary());
 				
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setId(cert.getCertificationCriterionId());
@@ -378,5 +384,60 @@ public class CorrectiveActionPlanController {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
 		return "{\"deleted\" : true }";
+	}
+	
+	private List<String> validateCAP(CorrectiveActionPlanDetails cap) {
+		List<String> errors = new ArrayList<String>();
+		
+		//surveillance start date, surveillance result, and noncompliance date are always required
+		if(cap.getSurveillanceStartDate() == null) {
+			errors.add("Surveillance start date is required.");
+		}
+		if(cap.getRandomizedSurveillance() == null) {
+			errors.add("Randomized surveillance (yes/no) is required.");
+		}
+		if(cap.getNoncomplianceDate() == null) {
+			errors.add("Date of determination of noncompliance is required.");
+		}
+		if(cap.getCertifications() == null || cap.getCertifications().size() == 0) {
+			errors.add("One or more certifications must be included in the corrective action plan.");
+		}
+		
+		//if surveillance end date is filled in, everything is required
+		if(cap.getSurveillanceEndDate() != null) {
+			if(cap.getActualCompletionDate() == null || cap.getApprovalDate() == null || 
+					cap.getRequiredCompletionDate() == null || cap.getStartDate() == null) {
+				errors.add("When surveillance end date is entered, all other fields are required.");
+			}
+			//check the fields for each certification
+			boolean missingField = false;
+			for(CorrectiveActionPlanCertificationResult criteria : cap.getCertifications()) {
+				if(StringUtils.isEmpty(criteria.getDeveloperExplanation()) || 
+						StringUtils.isEmpty(criteria.getResolution()) ||
+						StringUtils.isEmpty(criteria.getSummary())) {
+					missingField = true;
+				}
+			}
+			if(missingField) {
+				errors.add("When surveillance end date is entered, all fields for non-compliant criteria are required.");
+			}
+		}
+			
+		//if surveillance result is true, then the num sites passed/total are required
+		//for each cap criteria
+		if(cap.getRandomizedSurveillance() == Boolean.TRUE) {
+			boolean missingSiteInfo = false;
+			for(CorrectiveActionPlanCertificationResult criteria : cap.getCertifications()) {
+				if(criteria.getSurveillanceSiteCount() == null ||
+						criteria.getSurveillancePassRate() == null) {
+					missingSiteInfo = true;
+				}
+			}
+			
+			if(missingSiteInfo) {
+				errors.add("Since 'randomized surveillance' is true, the number of sites that passed and total number of sites are required.");
+			}
+		}
+		return errors;
 	}
 }
