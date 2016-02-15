@@ -44,10 +44,10 @@ public class CorrectiveActionPlanCertificationEntity {
 	private String resolution;
 	
 	@Column(name = "num_sites_passed")
-	private int numSitesPassed;
+	private Integer numSitesPassed;
 	
 	@Column(name ="num_sites_total")
-	private int numSitesTotal;
+	private Integer numSitesTotal;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -147,19 +147,19 @@ public class CorrectiveActionPlanCertificationEntity {
 		this.developerExplanation = developerExplanation;
 	}
 
-	public int getNumSitesPassed() {
+	public Integer getNumSitesPassed() {
 		return numSitesPassed;
 	}
 
-	public void setNumSitesPassed(int numSitesPassed) {
+	public void setNumSitesPassed(Integer numSitesPassed) {
 		this.numSitesPassed = numSitesPassed;
 	}
 
-	public int getNumSitesTotal() {
+	public Integer getNumSitesTotal() {
 		return numSitesTotal;
 	}
 
-	public void setNumSitesTotal(int numSitesTotal) {
+	public void setNumSitesTotal(Integer numSitesTotal) {
 		this.numSitesTotal = numSitesTotal;
 	}
 }
