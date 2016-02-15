@@ -101,13 +101,13 @@ public class CorrectiveActionDaoTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		CorrectiveActionPlanDTO plan = capDao.getById(0L);
-		String resolution = "This has been resolved";
-		plan.setResolution(resolution);
+		Date startDate = new Date();
+		plan.setStartDate(startDate);
 		capDao.update(plan);
 		
 		plan = capDao.getById(0L);
 		assertNotNull(plan);
-		assertEquals(resolution, plan.getResolution());
+		assertEquals(startDate, plan.getStartDate());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -117,13 +117,10 @@ public class CorrectiveActionDaoTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		CorrectiveActionPlanDTO plan = new CorrectiveActionPlanDTO();
-		plan.setAcbSummary("Some summary");
-		plan.setApprovalDate(new Date());
+		plan.setSurveillanceStartDate(new Date());
 		plan.setCertifiedProductId(1L);
-		plan.setDeveloperSummary("Developer summary");
-		plan.setEffectiveDate(new Date());
-		plan.setEstimatedCompletionDate(new Date());
-		plan.setNoncomplainceDate(new Date());
+		plan.setSurveillanceResult(Boolean.FALSE);
+		plan.setNonComplianceDeterminationDate(new Date());
 		CorrectiveActionPlanDTO createdPlan = capDao.create(plan);
 		assertNotNull(createdPlan);
 		assertNotNull(createdPlan.getId());
@@ -135,13 +132,10 @@ public class CorrectiveActionDaoTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		CorrectiveActionPlanDTO plan = new CorrectiveActionPlanDTO();
-		plan.setAcbSummary("Some summary");
-		plan.setApprovalDate(new Date());
+		plan.setSurveillanceStartDate(new Date());
 		plan.setCertifiedProductId(1L);
-		plan.setDeveloperSummary("Developer summary");
-		plan.setEffectiveDate(new Date());
-		plan.setEstimatedCompletionDate(new Date());
-		plan.setNoncomplainceDate(new Date());
+		plan.setSurveillanceResult(Boolean.FALSE);
+		plan.setNonComplianceDeterminationDate(new Date());
 		CorrectiveActionPlanDTO createdPlan = capDao.create(plan);
 		assertNotNull(createdPlan);
 		assertNotNull(createdPlan.getId());
@@ -149,10 +143,10 @@ public class CorrectiveActionDaoTest extends TestCase {
 		CertificationCriterionDTO cert = certDao.getById(1L);
 		CorrectiveActionPlanCertificationResultDTO planCert = new CorrectiveActionPlanCertificationResultDTO();
 		planCert.setId(2L);
-		planCert.setAcbSummary("cert acb summary");
+		planCert.setSummary("cert acb summary");
 		planCert.setCertCriterion(cert);
 		planCert.setCorrectiveActionPlanId(createdPlan.getId());
-		planCert.setDeveloperSummary("some dev summary");
+		planCert.setDeveloperExplanation("some dev summary");
 		planCert.setResolution("fixed!");
 		CorrectiveActionPlanCertificationResultDTO createdPlanCert = capCertDao.create(planCert);
 		assertNotNull(createdPlanCert);

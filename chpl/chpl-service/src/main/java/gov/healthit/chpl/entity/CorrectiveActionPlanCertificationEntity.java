@@ -34,22 +34,20 @@ public class CorrectiveActionPlanCertificationEntity {
 	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
 	private CertificationCriterionEntity certificationCriterion;
 	
-	@Basic( optional = false )
-	@Column(name = "acb_summary")
-	private String acbSummary;
+	@Column(name = "summary")
+	private String summary;
 	
-	@Basic( optional = false )
-	@Column(name = "developer_summary")
-	private String developerSummaryDescription;
+	@Column(name = "developer_explanation")
+	private String developerExplanation;
 	
 	@Column(name = "resolution")
 	private String resolution;
 	
-	@Column(name = "surveillance_pass_rate")
-	private String surveillancePassRate;
+	@Column(name = "num_sites_passed")
+	private int numSitesPassed;
 	
-	@Column(name ="surveillance_results")
-	private String surveillanceResults;
+	@Column(name ="num_sites_total")
+	private int numSitesTotal;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -93,22 +91,6 @@ public class CorrectiveActionPlanCertificationEntity {
 		this.certificationCriterion = certificationCriterion;
 	}
 
-	public String getAcbSummary() {
-		return acbSummary;
-	}
-
-	public void setAcbSummary(String acbSummary) {
-		this.acbSummary = acbSummary;
-	}
-
-	public String getDeveloperSummaryDescription() {
-		return developerSummaryDescription;
-	}
-
-	public void setDeveloperSummaryDescription(String developerSummaryDescription) {
-		this.developerSummaryDescription = developerSummaryDescription;
-	}
-
 	public String getResolution() {
 		return resolution;
 	}
@@ -149,19 +131,35 @@ public class CorrectiveActionPlanCertificationEntity {
 		this.deleted = deleted;
 	}
 
-	public String getSurveillancePassRate() {
-		return surveillancePassRate;
+	public String getSummary() {
+		return summary;
 	}
 
-	public void setSurveillancePassRate(String surveillancePassRate) {
-		this.surveillancePassRate = surveillancePassRate;
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 
-	public String getSurveillanceResults() {
-		return surveillanceResults;
+	public String getDeveloperExplanation() {
+		return developerExplanation;
 	}
 
-	public void setSurveillanceResults(String surveillanceResults) {
-		this.surveillanceResults = surveillanceResults;
+	public void setDeveloperExplanation(String developerExplanation) {
+		this.developerExplanation = developerExplanation;
+	}
+
+	public int getNumSitesPassed() {
+		return numSitesPassed;
+	}
+
+	public void setNumSitesPassed(int numSitesPassed) {
+		this.numSitesPassed = numSitesPassed;
+	}
+
+	public int getNumSitesTotal() {
+		return numSitesTotal;
+	}
+
+	public void setNumSitesTotal(int numSitesTotal) {
+		this.numSitesTotal = numSitesTotal;
 	}
 }
