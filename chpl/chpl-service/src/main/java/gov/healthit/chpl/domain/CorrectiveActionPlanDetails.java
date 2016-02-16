@@ -19,8 +19,8 @@ public class CorrectiveActionPlanDetails {
 	private Boolean randomizedSurveillance;
 	private Date noncomplianceDate;
 	private Date approvalDate;
-	private Date startDate;
-	private Date requiredCompletionDate;
+	private Date effectiveDate;
+	private Date estimatedCompletionDate;
 	private Date actualCompletionDate;
 	
 	private List<CorrectiveActionPlanCertificationResult> certifications;
@@ -39,8 +39,8 @@ public class CorrectiveActionPlanDetails {
 		this.randomizedSurveillance = dto.getSurveillanceResult();
 		this.noncomplianceDate = dto.getNonComplianceDeterminationDate();
 		this.approvalDate = dto.getApprovalDate();
-		this.startDate = dto.getStartDate();
-		this.requiredCompletionDate = dto.getRequiredCompletionDate();
+		this.effectiveDate = dto.getStartDate();
+		this.estimatedCompletionDate = dto.getRequiredCompletionDate();
 		this.actualCompletionDate = dto.getActualCompletionDate();
 		
 	}
@@ -141,17 +141,17 @@ public class CorrectiveActionPlanDetails {
 	public void setRandomizedSurveillance(Boolean randomizedSurveillance) {
 		this.randomizedSurveillance = randomizedSurveillance;
 	}
-	public Date getStartDate() {
-		return startDate;
+	public Date getEffectiveDate() {
+		return effectiveDate;
 	}
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
 	}
-	public Date getRequiredCompletionDate() {
-		return requiredCompletionDate;
+	public Date getEstimatedCompletionDate() {
+		return estimatedCompletionDate;
 	}
-	public void setRequiredCompletionDate(Date requiredCompletionDate) {
-		this.requiredCompletionDate = requiredCompletionDate;
+	public void setEstimatedCompletionDate(Date estimatedCompletionDate) {
+		this.estimatedCompletionDate = estimatedCompletionDate;
 	}
 	public Date getNoncomplianceDate() {
 		return noncomplianceDate;

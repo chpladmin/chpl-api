@@ -138,8 +138,8 @@ public class CorrectiveActionPlanController {
 		toUpdate.setApprovalDate(updateRequest.getApprovalDate());
 		toUpdate.setCertifiedProductId(updateRequest.getCertifiedProductId());
 		toUpdate.setNonComplianceDeterminationDate(updateRequest.getNoncomplianceDate());
-		toUpdate.setRequiredCompletionDate(updateRequest.getRequiredCompletionDate());
-		toUpdate.setStartDate(updateRequest.getStartDate());
+		toUpdate.setRequiredCompletionDate(updateRequest.getEstimatedCompletionDate());
+		toUpdate.setStartDate(updateRequest.getEffectiveDate());
 		toUpdate.setSurveillanceEndDate(updateRequest.getSurveillanceEndDate());
 		toUpdate.setSurveillanceResult(updateRequest.getRandomizedSurveillance());
 		toUpdate.setSurveillanceStartDate(updateRequest.getSurveillanceStartDate());
@@ -168,10 +168,10 @@ public class CorrectiveActionPlanController {
 				if(existingCert.getCertCriterion().getNumber().equals(updateCert.getCertificationCriterionNumber())) {
 					existingCert.setCorrectiveActionPlanId(updateRequest.getId());
 					existingCert.setResolution(updateCert.getResolution());
-					existingCert.setDeveloperExplanation(updateCert.getDeveloperExplanation());
+					existingCert.setDeveloperExplanation(updateCert.getDeveloperSummary());
 					existingCert.setNumSitesPassed(updateCert.getSurveillancePassRate());
-					existingCert.setNumSitesTotal(updateCert.getSurveillanceSiteCount());
-					existingCert.setSummary(updateCert.getSummary());
+					existingCert.setNumSitesTotal(updateCert.getSurveillanceSitesSurveilled());
+					existingCert.setSummary(updateCert.getAcbSummary());
 					capManager.updateCertification(owningAcbId, existingCert);
 				}
 			}
@@ -218,10 +218,10 @@ public class CorrectiveActionPlanController {
 				CorrectiveActionPlanCertificationResultDTO certToAdd = new CorrectiveActionPlanCertificationResultDTO();
 				certToAdd.setCorrectiveActionPlanId(updateRequest.getId());
 				certToAdd.setResolution(updateCert.getResolution());
-				certToAdd.setDeveloperExplanation(updateCert.getDeveloperExplanation());
+				certToAdd.setDeveloperExplanation(updateCert.getDeveloperSummary());
 				certToAdd.setNumSitesPassed(updateCert.getSurveillancePassRate());
-				certToAdd.setNumSitesTotal(updateCert.getSurveillanceSiteCount());
-				certToAdd.setSummary(updateCert.getSummary());
+				certToAdd.setNumSitesTotal(updateCert.getSurveillanceSitesSurveilled());
+				certToAdd.setSummary(updateCert.getAcbSummary());
 				
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setNumber(updateCert.getCertificationCriterionNumber());
@@ -294,8 +294,8 @@ public class CorrectiveActionPlanController {
 		toCreate.setApprovalDate(createRequest.getApprovalDate());
 		toCreate.setCertifiedProductId(createRequest.getCertifiedProductId());
 		toCreate.setNonComplianceDeterminationDate(createRequest.getNoncomplianceDate());
-		toCreate.setRequiredCompletionDate(createRequest.getRequiredCompletionDate());
-		toCreate.setStartDate(createRequest.getStartDate());
+		toCreate.setRequiredCompletionDate(createRequest.getEstimatedCompletionDate());
+		toCreate.setStartDate(createRequest.getEffectiveDate());
 		toCreate.setSurveillanceEndDate(createRequest.getSurveillanceEndDate());
 		toCreate.setSurveillanceResult(createRequest.getRandomizedSurveillance());
 		toCreate.setSurveillanceStartDate(createRequest.getSurveillanceStartDate());
@@ -319,10 +319,10 @@ public class CorrectiveActionPlanController {
 				CorrectiveActionPlanCertificationResultDTO currCertToCreate = new CorrectiveActionPlanCertificationResultDTO();
 				currCertToCreate.setCorrectiveActionPlanId(createdPlanId);
 				currCertToCreate.setResolution(cert.getResolution());
-				currCertToCreate.setDeveloperExplanation(cert.getDeveloperExplanation());
+				currCertToCreate.setDeveloperExplanation(cert.getDeveloperSummary());
 				currCertToCreate.setNumSitesPassed(cert.getSurveillancePassRate());
-				currCertToCreate.setNumSitesTotal(cert.getSurveillanceSiteCount());
-				currCertToCreate.setSummary(cert.getSummary());
+				currCertToCreate.setNumSitesTotal(cert.getSurveillanceSitesSurveilled());
+				currCertToCreate.setSummary(cert.getAcbSummary());
 				
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setId(cert.getCertificationCriterionId());
@@ -410,38 +410,39 @@ public class CorrectiveActionPlanController {
 		//if surveillance end date is filled in, everything is required
 		if(cap.getSurveillanceEndDate() != null) {
 			if(cap.getActualCompletionDate() == null || cap.getApprovalDate() == null || 
-					cap.getRequiredCompletionDate() == null || cap.getStartDate() == null) {
+					cap.getEstimatedCompletionDate() == null || cap.getEffectiveDate() == null) {
 				errors.add("When surveillance end date is entered, all other fields are required.");
 			}
 			//check the fields for each certification
 			boolean missingField = false;
 			for(CorrectiveActionPlanCertificationResult criteria : cap.getCertifications()) {
-				if(StringUtils.isEmpty(criteria.getDeveloperExplanation()) || 
+				if(StringUtils.isEmpty(criteria.getDeveloperSummary()) || 
 						StringUtils.isEmpty(criteria.getResolution()) ||
-						StringUtils.isEmpty(criteria.getSummary())) {
+						StringUtils.isEmpty(criteria.getAcbSummary())) {
 					missingField = true;
 				}
 			}
 			if(missingField) {
 				errors.add("When surveillance end date is entered, all fields for non-compliant criteria are required.");
 			}
-		}
 			
-		//if surveillance result is true, then the num sites passed/total are required
-		//for each cap criteria
-		if(cap.getRandomizedSurveillance() == Boolean.TRUE) {
-			boolean missingSiteInfo = false;
-			for(CorrectiveActionPlanCertificationResult criteria : cap.getCertifications()) {
-				if(criteria.getSurveillanceSiteCount() == null ||
-						criteria.getSurveillancePassRate() == null) {
-					missingSiteInfo = true;
+			//if surveillance result is true, then the num sites passed/total are required
+			//for each cap criteria
+			if(cap.getRandomizedSurveillance() == Boolean.TRUE) {
+				boolean missingSiteInfo = false;
+				for(CorrectiveActionPlanCertificationResult criteria : cap.getCertifications()) {
+					if(criteria.getSurveillanceSitesSurveilled() == null ||
+							criteria.getSurveillancePassRate() == null) {
+						missingSiteInfo = true;
+					}
+				}
+				
+				if(missingSiteInfo) {
+					errors.add("Since 'randomized surveillance' is true, the number of sites that passed and total number of sites are required.");
 				}
 			}
-			
-			if(missingSiteInfo) {
-				errors.add("Since 'randomized surveillance' is true, the number of sites that passed and total number of sites are required.");
-			}
 		}
+			
 		return errors;
 	}
 }
