@@ -590,7 +590,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		Query query = entityManager.createQuery( "SELECT tp "
 				+ "FROM CertificationResultTestProcedureEntity tp "
 				+ "LEFT OUTER JOIN FETCH tp.testProcedure "
-				+ "where (NOT tt.deleted = true) AND (tp.id = :entityid) ", 
+				+ "where (NOT tp.deleted = true) AND (tp.id = :entityid) ", 
 				CertificationResultTestProcedureEntity.class );
 		query.setParameter("entityid", id);
 		List<CertificationResultTestProcedureEntity> result = query.getResultList();

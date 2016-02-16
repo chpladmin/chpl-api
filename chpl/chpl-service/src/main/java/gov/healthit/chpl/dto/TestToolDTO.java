@@ -4,7 +4,6 @@ import gov.healthit.chpl.entity.TestToolEntity;
 
 public class TestToolDTO {
 	private Long id;
-	private Long certificationEditionId;
 	private String name;
 	private String version;
 	private String description;
@@ -13,7 +12,6 @@ public class TestToolDTO {
 	
 	public TestToolDTO(TestToolEntity entity){		
 		this.id = entity.getId();
-		this.certificationEditionId = entity.getCertificationEditionId();
 		this.name = entity.getName();
 		this.version = entity.getVersion();
 		this.description = entity.getDescription();
@@ -33,14 +31,6 @@ public class TestToolDTO {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Long getCertificationEditionId() {
-		return certificationEditionId;
-	}
-
-	public void setCertificationEditionId(Long certificationEditionId) {
-		this.certificationEditionId = certificationEditionId;
 	}
 
 	public String getVersion() {

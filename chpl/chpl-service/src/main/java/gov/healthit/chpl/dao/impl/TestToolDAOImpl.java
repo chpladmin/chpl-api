@@ -40,7 +40,6 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
-			entity.setCertificationEditionId(dto.getCertificationEditionId());
 			entity.setVersion(dto.getVersion());
 			entity.setDescription(dto.getDescription());
 			
@@ -59,7 +58,6 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 		}
 		
 		entity.setName(dto.getName());
-		entity.setCertificationEditionId(dto.getCertificationEditionId());
 		entity.setVersion(dto.getVersion());
 		entity.setDescription(dto.getDescription());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());

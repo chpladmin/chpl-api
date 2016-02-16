@@ -26,6 +26,10 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 		toCreateEntity.setQmsStandardId(toCreate.getQmsStandardId());
 		toCreateEntity.setApplicableCriteria(toCreate.getApplicableCriteria());
 		toCreateEntity.setModification(toCreate.getQmsModification());
+		toCreateEntity.setLastModifiedDate(new Date());
+		toCreateEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+		toCreateEntity.setCreationDate(new Date());
+		toCreateEntity.setDeleted(false);
 		entityManager.persist(toCreateEntity);
 		entityManager.flush();
 
@@ -41,6 +45,8 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 		}
 		curr.setApplicableCriteria(toUpdate.getApplicableCriteria());
 		curr.setModification(toUpdate.getQmsModification());
+		curr.setLastModifiedDate(new Date());
+		curr.setLastModifiedUser(Util.getCurrentUser().getId());
 		entityManager.merge(curr);
 		entityManager.flush();
 

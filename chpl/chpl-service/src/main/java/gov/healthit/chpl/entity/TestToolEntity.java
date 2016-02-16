@@ -21,9 +21,6 @@ public class TestToolEntity {
 	@Column(name = "test_tool_id")
 	private Long id;
 	
-	@Column(name = "certification_edition_id")
-	private Long certificationEditionId;
-	
 	@Column(name = "name")
 	private String name;
 	
@@ -47,14 +44,6 @@ public class TestToolEntity {
 
 	public void setVersion(String version) {
 		this.version = version;
-	}
-
-	public Long getCertificationEditionId() {
-		return certificationEditionId;
-	}
-
-	public void setCertificationEditionId(Long certificationEditionId) {
-		this.certificationEditionId = certificationEditionId;
 	}
 
 	public String getName() {

@@ -169,7 +169,7 @@ public class CertificationResultManagerImpl implements
 
 		for (CertificationResultTestStandardDTO toUpdateMapping : toUpdate.getTestStandards()){
 			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getId() == null) {
+				if(toUpdateMapping.getTestStandardId() == null) {
 					TestStandardDTO testStandardToCreate = new TestStandardDTO();
 					testStandardToCreate.setName(toUpdateMapping.getTestStandardName());
 					testStandardToCreate = testStandardDAO.create(testStandardToCreate);
@@ -209,13 +209,13 @@ public class CertificationResultManagerImpl implements
 
 		for (CertificationResultTestToolDTO toUpdateMapping : toUpdate.getTestTools()){
 			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getId() == null) {
+				if(toUpdateMapping.getTestToolId() == null) {
 					TestToolDTO testToolToCreate = new TestToolDTO();
 					testToolToCreate.setName(toUpdateMapping.getTestToolName());
 					testToolToCreate.setVersion(toUpdateMapping.getTestToolVersion());
 					testToolToCreate = testToolDAO.create(testToolToCreate);
 					toUpdateMapping.setTestToolId(testToolToCreate.getId());
-				}
+				} 
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testToolsToAdd.add(toUpdateMapping);
 			} 
@@ -282,7 +282,7 @@ public class CertificationResultManagerImpl implements
 
 		for (CertificationResultTestProcedureDTO toUpdateMapping : toUpdate.getTestProcedures()){
 			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getId() == null) {
+				if(toUpdateMapping.getTestProcedureId() == null) {
 					TestProcedureDTO testProcedureToCreate = new TestProcedureDTO();
 					testProcedureToCreate.setVersion(toUpdateMapping.getTestProcedureVersion());
 					testProcedureToCreate = testProcedureDAO.create(testProcedureToCreate);
@@ -321,7 +321,7 @@ public class CertificationResultManagerImpl implements
 
 		for (CertificationResultTestFunctionalityDTO toUpdateMapping : toUpdate.getTestFunctionality()){
 			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getId() == null) {
+				if(toUpdateMapping.getTestFunctionalityId() == null) {
 					TestFunctionalityDTO testFunctionalityToCreate = new TestFunctionalityDTO();
 					testFunctionalityToCreate.setCategory(toUpdateMapping.getTestFunctionalityCategory());
 					testFunctionalityToCreate.setName(toUpdateMapping.getTestFunctionalityName());
