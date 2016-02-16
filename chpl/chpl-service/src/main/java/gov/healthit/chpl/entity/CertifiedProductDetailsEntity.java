@@ -127,6 +127,12 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "count_corrective_action_plans")
     private Integer countCorrectiveActionPlans;
 
+    @Column(name = "count_current_corrective_action_plans")
+    private Integer countCurrentCorrectiveActionPlans;
+    
+    @Column(name = "count_closed_corrective_action_plans")
+    private Integer countClosedCorrectiveActionPlans;
+    
 	@Column(name = "visible_on_chpl")
     private Boolean visibleOnChpl;
     
@@ -536,5 +542,21 @@ public class CertifiedProductDetailsEntity {
 
 	public void setDeveloperWebsite(String developerWebsite) {
 		this.developerWebsite = developerWebsite;
+	}
+
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
 	}	
 }

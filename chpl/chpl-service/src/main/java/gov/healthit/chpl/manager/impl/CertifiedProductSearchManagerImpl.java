@@ -7,9 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
@@ -22,16 +19,6 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
 	@Autowired
 	CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-	
-	@Autowired
-	private CertificationCriterionDAO certificationCriterionDAO;
-	
-	@Autowired
-	private CQMResultDetailsDAO cqmResultDetailsDAO;
-	
-	@Autowired
-	private CertificationResultDetailsDAO certificationResultDetailsDAO;
-	
 	
 	@Transactional
 	@Override
@@ -94,6 +81,8 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
 			searchResult.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
+			searchResult.setCountCurrentCorrectiveActionPlans(dto.getCountCurrentCorrectiveActionPlans());
+			searchResult.setCountClosedCorrectiveActionPlans(dto.getCountClosedCorrectiveActionPlans());
 			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
 			searchResult.setPrivacyAttestation(dto.getPrivacyAttestation());
 			searchResult.setApiDocumentation(dto.getApiDocumentation());
