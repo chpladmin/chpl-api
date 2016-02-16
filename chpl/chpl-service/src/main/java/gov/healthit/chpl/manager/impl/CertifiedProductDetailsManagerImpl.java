@@ -175,6 +175,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setCountCerts(dto.getCountCertifications());
 		searchDetails.setCountCqms(dto.getCountCqms());
 		searchDetails.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
+		searchDetails.setCountCurrentCorrectiveActionPlans(dto.getCountCurrentCorrectiveActionPlans());
+		searchDetails.setCountClosedCorrectiveActionPlans(dto.getCountClosedCorrectiveActionPlans());
 		
 		//get qms standards
 		List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(dto.getId());

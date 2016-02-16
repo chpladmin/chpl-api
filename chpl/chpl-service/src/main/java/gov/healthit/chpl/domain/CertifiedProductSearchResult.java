@@ -36,6 +36,8 @@ public class CertifiedProductSearchResult {
 	private Integer countCerts;
 	private Integer countCqms;
 	private Integer countCorrectiveActionPlans;
+	private Integer countCurrentCorrectiveActionPlans;
+	private Integer countClosedCorrectiveActionPlans;
 	
 	public Long getId() {
 		return id;
@@ -216,6 +218,18 @@ public class CertifiedProductSearchResult {
 	}
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
 	}
 	
 }

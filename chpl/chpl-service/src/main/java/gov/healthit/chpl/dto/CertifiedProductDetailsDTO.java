@@ -47,6 +47,8 @@ public class CertifiedProductDetailsDTO {
     private Integer countCertifications;
     private Integer countCqms;
     private Integer countCorrectiveActionPlans;
+    private Integer countCurrentCorrectiveActionPlans;
+    private Integer countClosedCorrectiveActionPlans;
     private Boolean visibleOnChpl;
     private Date lastModifiedDate;
     private Boolean privacyAttestation;
@@ -119,6 +121,8 @@ public class CertifiedProductDetailsDTO {
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
     	this.countCorrectiveActionPlans = entity.getCountCorrectiveActionPlans();
+    	this.countCurrentCorrectiveActionPlans = entity.getCountCurrentCorrectiveActionPlans();
+    	this.countClosedCorrectiveActionPlans = entity.getCountClosedCorrectiveActionPlans();
     	this.lastModifiedDate = entity.getLastModifiedDate();
     }
     
@@ -490,5 +494,20 @@ public class CertifiedProductDetailsDTO {
 
 	public void setQmsStandards(List<CertifiedProductQmsStandardDTO> qmsStandards) {
 		this.qmsStandards = qmsStandards;
+	}
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
 	}
 }

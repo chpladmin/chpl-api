@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -162,7 +163,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "ics_code, "
 				+ "additional_software_code, "
 				+ "certified_date_code, "
-				+ "count_corrective_action_plans "
+				+ "count_corrective_action_plans, "
+				+ "count_current_corrective_action_plans, "
+				+ "count_closed_corrective_action_plans "
  
 				+ "FROM "
 				
@@ -219,15 +222,16 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		} else {
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
-		
-		
-		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
-			queryStr += " AND (count_corrective_action_plans > 0) ";
-		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
-			queryStr += " AND (count_corrective_action_plans = 0 ) ";
-		} // In the case of no specification, or "both" do nothing, we want all results.
-		
-		
+
+		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
+			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
+				queryStr += " AND (count_current_corrective_action_plans > 0) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
+				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
+				queryStr += " AND (count_corrective_action_plans = 0 ) ";
+			}// In the case 'ANY_CAP' we just want all the products
+		}
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
@@ -331,7 +335,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "ics_code, "
 				+ "additional_software_code, "
 				+ "certified_date_code, "
-				+ "count_corrective_action_plans "
+				+ "count_corrective_action_plans, "
+				+ "count_current_corrective_action_plans, "
+				+ "count_closed_corrective_action_plans "
 				
 				+ "FROM ( "
 
@@ -390,14 +396,16 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
 		
-		
-		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
-			queryStr += " AND (count_corrective_action_plans > 0) ";
-		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
-			queryStr += " AND (count_corrective_action_plans = 0 ) ";
-		} // In the case of no specification, or "both" do nothing, we want all results.
-		
-		
+		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
+			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
+				queryStr += " AND (count_current_corrective_action_plans > 0) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
+				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
+				queryStr += " AND (count_corrective_action_plans = 0 ) ";
+			}// In the case 'ANY_CAP' we just want all the products
+		}
+
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		String sortOrder = "ASC ";
@@ -500,7 +508,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "ics_code, "
 				+ "additional_software_code, "
 				+ "certified_date_code, "
-				+ "count_corrective_action_plans "
+				+ "count_corrective_action_plans, "
+				+ "count_current_corrective_action_plans, "
+				+ "count_closed_corrective_action_plans "
 
 				+ "FROM "
 
@@ -567,14 +577,16 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		} else {
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
-		
-		
-		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
-			queryStr += " AND (count_corrective_action_plans > 0) ";
-		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
-			queryStr += " AND (count_corrective_action_plans = 0 ) ";
-		} // In the case of no specification, or "both" do nothing, we want all results.
-		
+
+		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
+			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
+				queryStr += " AND (count_current_corrective_action_plans > 0) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
+				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
+				queryStr += " AND (count_corrective_action_plans = 0 ) ";
+			}// In the case 'ANY_CAP' we just want all the products
+		}
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
@@ -675,13 +687,15 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
 		
-		
-		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
-			queryStr += " AND (count_corrective_action_plans > 0) ";
-		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
-			queryStr += " AND (count_corrective_action_plans = 0 ) ";
-		} // In the case of no specification, or "both" do nothing, we want all results.
-		
+		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
+			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
+				queryStr += " AND (count_current_corrective_action_plans > 0) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
+				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
+				queryStr += " AND (count_corrective_action_plans = 0 ) ";
+			}// In the case 'ANY_CAP' we just want all the products
+		}
 		
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
@@ -826,12 +840,15 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
 		
-		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
-			queryStr += " AND (count_corrective_action_plans > 0) ";
-		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
-			queryStr += " AND (count_corrective_action_plans = 0 ) ";
-		} // In the case of no specification, or "both" do nothing, we want all results.
-		
+		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
+			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
+				queryStr += " AND (count_current_corrective_action_plans > 0) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
+				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
+				queryStr += " AND (count_corrective_action_plans = 0 ) ";
+			}// In the case 'ANY_CAP' we just want all the products
+		}
 		
 		Query query = entityManager.createNativeQuery(queryStr);
 		
@@ -936,14 +953,16 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		} else {
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
-		
-		
-		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
-			queryStr += " AND (count_corrective_action_plans > 0) ";
-		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
-			queryStr += " AND (count_corrective_action_plans = 0 ) ";
-		} // In the case of no specification, or "both" do nothing, we want all results.
-		
+				
+		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
+			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
+				queryStr += " AND (count_current_corrective_action_plans > 0) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
+				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
+				queryStr += " AND (count_corrective_action_plans = 0 ) ";
+			}// In the case 'ANY_CAP' we just want all the products
+		}
 		
 		Query query = entityManager.createNativeQuery(queryStr);
 		
@@ -1056,14 +1075,16 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
 		
-		
-		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
-			queryStr += " AND (count_corrective_action_plans > 0) ";
-		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
-			queryStr += " AND (count_corrective_action_plans = 0 ) ";
-		} // In the case of no specification, or "both" do nothing, we want all results.
-		
-				
+		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
+			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
+				queryStr += " AND (count_current_corrective_action_plans > 0) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
+				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
+				queryStr += " AND (count_corrective_action_plans = 0 ) ";
+			}// In the case 'ANY_CAP' we just want all the products
+		}
+			
 		Query query = entityManager.createNativeQuery(queryStr);
 		
 		if (searchRequest.getSearchTerm() != null){
@@ -1154,13 +1175,15 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (visible_on_chpl = true ) ";
 		}
 		
-		
-		if (searchRequest.getHasCAP().toLowerCase().startsWith("yes")){
-			queryStr += " AND (count_corrective_action_plans > 0) ";
-		} else if (searchRequest.getHasCAP().toLowerCase().startsWith("no")){
-			queryStr += " AND (count_corrective_action_plans = 0 ) ";
-		} // In the case of no specification, or "both" do nothing, we want all results.
-		
+		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
+			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
+				queryStr += " AND (count_current_corrective_action_plans > 0) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
+				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
+			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
+				queryStr += " AND (count_corrective_action_plans = 0 ) ";
+			}// In the case 'ANY_CAP' we just want all the products
+		}
 		
 		Query query = entityManager.createQuery(queryStr);
 		
