@@ -187,14 +187,24 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	public void testSearchHasCAP(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setHasCAP("YES");
+		searchRequest.setHasCAP("any");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(2, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.setHasCAP("current");
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.setHasCAP("closed");
+		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
-		for (CertifiedProductDetailsDTO dto : products ){
-			assertTrue(dto.getCountCorrectiveActionPlans() > 0);
-		}
-		
+		searchRequest = new SearchRequest();
+		searchRequest.setHasCAP("never");
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
 	}
 	
 	
