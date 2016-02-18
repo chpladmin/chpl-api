@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 0.3.0
+_18 February 2016_
+
+### Features added or Updated
+* Changed Corrective Action Plan/Surveillance API parameters
+* Added descriptions to API methods.
+* Changed API for certified products and certification results to match 2014 data requirements.
+* Allow multiple values for the 'hasCap' field in search.
+
 ## Version 0.2.0
 _3 February 2016_
 
