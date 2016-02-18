@@ -12,4 +12,5 @@ public interface TestProcedureDAO {
 	
 	public List<TestProcedureDTO> findAll();
 	public TestProcedureDTO getById(Long id) throws EntityRetrievalException;
+	public TestProcedureDTO getByName(String name);
 }

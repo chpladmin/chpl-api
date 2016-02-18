@@ -31,9 +31,7 @@ public class CertifiedProductSearchDetails {
 	private Boolean visibleOnChpl;
 	private String termsOfUse;
 	private String apiDocumentation;
-	private String ics;
-	private Boolean sedTesting;
-	private Boolean qmsTesting;
+	private Boolean ics;
 	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
 	private String transparencyAttestationUrl;
@@ -217,24 +215,13 @@ public class CertifiedProductSearchDetails {
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
-	public String getIcs() {
+	public Boolean getIcs() {
 		return ics;
 	}
-	public void setIcs(String ics) {
+	public void setIcs(Boolean ics) {
 		this.ics = ics;
 	}
-	public Boolean getSedTesting() {
-		return sedTesting;
-	}
-	public void setSedTesting(Boolean sedTesting) {
-		this.sedTesting = sedTesting;
-	}
-	public Boolean getQmsTesting() {
-		return qmsTesting;
-	}
-	public void setQmsTesting(Boolean qmsTesting) {
-		this.qmsTesting = qmsTesting;
-	}
+	
 	public Map<String, Object> getTestingLab() {
 		return testingLab;
 	}

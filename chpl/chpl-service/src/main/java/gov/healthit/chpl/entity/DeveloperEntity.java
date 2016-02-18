@@ -55,6 +55,12 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@JoinColumn(name = "address_id", unique=true, nullable = true)
 	private AddressEntity address;
 	
+	
+//	@Basic( optional = true )
+//	@OneToOne(optional = true, fetch = FetchType.LAZY)
+//	@JoinColumn(name = "address_id", unique=true, nullable = true)
+//	private Set<ContactEntity> contacts;
+	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -74,7 +80,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
  	
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id.developerIdDeveloper"  )
+ 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id.developerId"  )
 	@Basic( optional = false )
 	@Column( name = "vendor_id", nullable = false  )
 	private Set<DeveloperContactMap> developerContactMaps = new HashSet<DeveloperContactMap>();
@@ -267,7 +273,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	 * @param developerContactMap item to add
 	 */
 	public void addDeveloperContactMap(DeveloperContactMap developerContactMap) {
-		developerContactMap.getId().setDeveloperIdDeveloper(this);
+		developerContactMap.getId().setDeveloperId(this);
 		this.developerContactMaps.add(developerContactMap);
 	}
 

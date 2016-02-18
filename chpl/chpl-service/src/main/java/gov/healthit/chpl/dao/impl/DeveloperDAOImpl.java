@@ -20,10 +20,14 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
+import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
+import gov.healthit.chpl.entity.DeveloperContactMap;
+import gov.healthit.chpl.entity.DeveloperContactMapPK;
 import gov.healthit.chpl.entity.DeveloperEntity;
 
 @Repository("developerDAO")
@@ -83,6 +87,34 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			}
 			
 			create(entity);
+			
+			if(dto.getContacts() != null && dto.getContacts().size() > 0) {
+				for(ContactDTO contact : dto.getContacts()) {
+					DeveloperContactMap contactMap = new DeveloperContactMap();
+					contactMap.setCreationDate(new Date());
+					contactMap.setDeleted(false);
+					contactMap.setLastModifiedDate(new Date());
+					contactMap.setLastModifiedUser(Util.getCurrentUser().getId());
+					DeveloperContactMapPK contactPk = new DeveloperContactMapPK();
+					contactPk.setDeveloperId(entity);
+					ContactEntity contactEntity = new ContactEntity();
+					contactEntity.setCreationDate(new Date());
+					contactEntity.setDeleted(false);
+					contactEntity.setLastModifiedDate(new Date());
+					contactEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					contactEntity.setEmail(contact.getEmail());
+					contactEntity.setFirstName(contact.getFirstName());
+					contactEntity.setLastName(contact.getLastName());
+					contactEntity.setPhoneNumber(contact.getPhoneNumber());
+					contactEntity.setSignatureDate(contact.getSignatureDate());
+					contactEntity.setTitle(contact.getTitle());
+					contactPk.setContact(contactEntity);
+					contactMap.setId(contactPk);
+					entity.addDeveloperContactMap(contactMap);
+				}
+				update(entity);
+			}
+			
 			return new DeveloperDTO(entity);
 		}	
 	}

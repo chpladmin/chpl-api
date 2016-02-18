@@ -89,6 +89,18 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	}
 	
 	@Override
+	public TestStandardDTO getByName(String name) {
+		
+		TestStandardDTO dto = null;
+		List<TestStandardEntity> entities = getEntitiesByName(name);
+		
+		if (entities != null && entities.size() > 0){
+			dto = new TestStandardDTO(entities.get(0));
+		}
+		return dto;
+	}
+	
+	@Override
 	public List<TestStandardDTO> findAll() {
 		
 		List<TestStandardEntity> entities = getAllEntities();

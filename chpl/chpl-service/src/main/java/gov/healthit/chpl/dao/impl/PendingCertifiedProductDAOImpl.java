@@ -14,7 +14,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
@@ -35,7 +35,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		
 		entityManager.persist(toCreate);
 		
-		for(PendingCertificationCriterionEntity criterion : toCreate.getCertificationCriterion()) {
+		for(PendingCertificationResultEntity criterion : toCreate.getCertificationCriterion()) {
 			criterion.setPendingCertifiedProductId(toCreate.getId());
 			if(criterion.getLastModifiedDate() == null) {
 				criterion.setLastModifiedDate(new Date());

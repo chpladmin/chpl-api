@@ -92,6 +92,18 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 	}
 	
 	@Override
+	public TestFunctionalityDTO getByName(String name) {
+		
+		TestFunctionalityDTO dto = null;
+		List<TestFunctionalityEntity> entities = getEntitiesByName(name);
+		
+		if (entities != null && entities.size() > 0){
+			dto = new TestFunctionalityDTO(entities.get(0));
+		}
+		return dto;
+	}
+	
+	@Override
 	public List<TestFunctionalityDTO> findAll() {
 		
 		List<TestFunctionalityEntity> entities = getAllEntities();
@@ -139,5 +151,14 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		}
 		
 		return entity;
+	}
+	
+	private List<TestFunctionalityEntity> getEntitiesByName(String name) {
+		
+		TestFunctionalityEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from TestFunctionalityEntity where (NOT deleted = true) AND (name = :name) ", TestFunctionalityEntity.class );
+		query.setParameter("name", name);
+		return query.getResultList();
 	}
 }

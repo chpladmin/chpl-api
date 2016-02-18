@@ -30,7 +30,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadType;
 import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
 import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -60,7 +59,7 @@ import io.swagger.annotations.ApiOperation;
 public class CertifiedProductController {
 	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductController.class);
-
+	
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	@Autowired CertifiedProductManager cpManager;
@@ -170,8 +169,6 @@ public class CertifiedProductController {
 		toUpdate.setApiDocumentation(updateRequest.getApiDocumentation());
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
-		toUpdate.setSedTesting(updateRequest.getSedTesting());
-		toUpdate.setQmsTesting(updateRequest.getQmsTesting());
 		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
 		
 		if(!StringUtils.isEmpty(updateRequest.getChplProductNumber())) {
@@ -350,34 +347,46 @@ public class CertifiedProductController {
 				throw new InvalidArgumentsException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
 			}
 			
-			CSVRecord heading = records.get(0);
-			for(int i = 1; i < records.size(); i++) {
-				CSVRecord record = records.get(i);
+			//parse the entire file into groups of records, one group per product
+			Map<String, List<CSVRecord>> cpGroups = new HashMap<String, List<CSVRecord>>();
+			CSVRecord heading = null; 
+			String currUniqueId = null;
+			String prevUniqueId = null;
+			
+			for(int i = 0; i < records.size(); i++) {
+				CSVRecord currRecord = records.get(i);
 				
-				//some rows may be blank, we just look at the first column to see if it's empty or not
-				if(!StringUtils.isEmpty(record.get(0))) {
-					CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, record);
-				
-					//create a certified product to pass into the handler
-					try {
-						PendingCertifiedProductEntity pendingCp = handler.handle();
-						PendingCertifiedProductDTO pendingCpDto = null;
+				if(heading == null && !StringUtils.isEmpty(currRecord.get(0)) 
+						&& currRecord.get(0).equals("UNIQUE_CHPL_ID__C")) {
+					//have to find the heading first
+					heading = currRecord;
+				} else if(heading != null) {
+					//check the cp unique id
+					if(!StringUtils.isEmpty(currRecord.get(0))) {
+						currUniqueId = currRecord.get(0);
 						
-						CertifiedProductUploadType uploadType = CertifiedProductUploadType.valueOf(pendingCp.getRecordStatus().toUpperCase());
-						//if(uploadType == CertifiedProductUploadType.NEW) { 
-							if(pendingCp.getCertificationBodyId() == null) {
-								throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
-							}
-							pendingCpDto = pcpManager.createOrReplace(pendingCp.getCertificationBodyId(), pendingCp);
-						//} else {
-						//	pendingCpDto = new PendingCertifiedProductDTO(pendingCp);
-						//}
-						
-						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-						uploadedProducts.add(details);
-					} catch(EntityCreationException ex) {
-						logger.error("could not create entity at row " + i + ". Message is " + ex.getMessage());
+						if(!currUniqueId.equals(prevUniqueId)) {
+							cpGroups.put(currUniqueId, new ArrayList<CSVRecord>());
+						}
+						cpGroups.get(currUniqueId).add(currRecord);
+						prevUniqueId = currUniqueId;
 					}
+				}
+			}
+			
+			for(String cpUniqueId : cpGroups.keySet()) {
+				CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, cpGroups.get(cpUniqueId));
+				try {
+					PendingCertifiedProductEntity pendingCp = handler.handle();
+					PendingCertifiedProductDTO pendingCpDto = null;
+					if(pendingCp.getCertificationBodyId() == null) {
+						throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
+					}
+					pendingCpDto = pcpManager.createOrReplace(pendingCp.getCertificationBodyId(), pendingCp);
+					PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
+					uploadedProducts.add(details);
+				} catch(EntityCreationException ex) {
+					logger.error("could not create entity for certified product" + cpUniqueId + ". Message is " + ex.getMessage());
 				}
 			}
 		} catch(IOException ioEx) {

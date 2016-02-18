@@ -94,6 +94,18 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 	}
 	
 	@Override
+	public TestToolDTO getByName(String name ) {
+		
+		TestToolDTO dto = null;
+		List<TestToolEntity> entities = getEntitiesByName(name);
+		
+		if (entities != null && entities.size() > 0){
+			dto = new TestToolDTO(entities.get(0));
+		}
+		return dto;
+	}
+	
+	@Override
 	public List<TestToolDTO> findAll() {
 		
 		List<TestToolEntity> entities = getAllEntities();

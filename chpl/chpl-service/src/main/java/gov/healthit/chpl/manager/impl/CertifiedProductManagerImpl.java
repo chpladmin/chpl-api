@@ -279,8 +279,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setSedReportFileLocation(pendingCp.getSedReportFileLocation());
 		toCreate.setVisibleOnChpl(true);
 		toCreate.setIcs(pendingCp.getIcs());
-		toCreate.setSedTesting(pendingCp.getSedTesting());
-		toCreate.setQmsTesting(pendingCp.getQmsTesting());
 		
 		//TODO: this may have to be added to pending certified products if it's in the spreadsheet?
 		toCreate.setPrivacyAttestation(false);

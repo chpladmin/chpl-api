@@ -7,6 +7,7 @@ public class CertificationResultAdditionalSoftware {
 	private String name;
 	private String version;
 	private Long certifiedProductId;
+	
 	private String justification;
 	private Long certificationResultId;
 

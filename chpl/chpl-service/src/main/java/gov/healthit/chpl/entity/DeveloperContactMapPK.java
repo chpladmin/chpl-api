@@ -38,7 +38,7 @@ public class DeveloperContactMapPK implements Cloneable, Serializable {
 	@org.hibernate.annotations.Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
 	@Basic( optional = false )
 	@JoinColumn(name = "vendor_id_vendor", nullable = false , insertable = false, updatable = false )
-	private DeveloperEntity developerIdDeveloper;
+	private DeveloperEntity developerId;
 
  
 
@@ -76,8 +76,8 @@ public class DeveloperContactMapPK implements Cloneable, Serializable {
 	 * Return the value associated with the column: developerIdDeveloper.
 	 * @return A Developer object (this.vendorIdVendor)
 	 */
-	public DeveloperEntity getDeveloperIdDeveloper() {
-		return this.developerIdDeveloper;
+	public DeveloperEntity getDeveloperId() {
+		return this.developerId;
 		
 	}
 	
@@ -87,8 +87,8 @@ public class DeveloperContactMapPK implements Cloneable, Serializable {
 	 * Set the value related to the column: developerIdDeveloper.
 	 * @param developerIdDeveloper the developerIdDeveloper value you wish to set
 	 */
-	public void setDeveloperIdDeveloper(final DeveloperEntity developerIdDeveloper) {
-		this.developerIdDeveloper = developerIdDeveloper;
+	public void setDeveloperId(final DeveloperEntity developerId) {
+		this.developerId = developerId;
 	}
 
 
@@ -151,7 +151,7 @@ public class DeveloperContactMapPK implements Cloneable, Serializable {
 		
 		boolean result = true;
 		result = result && (((getContact() == null) && (that.getContact() == null)) || (getContact() != null && getContact().getId().equals(that.getContact().getId())));	
-		result = result && (((getDeveloperIdDeveloper() == null) && (that.getDeveloperIdDeveloper() == null)) || (getDeveloperIdDeveloper() != null && getDeveloperIdDeveloper().getId().equals(that.getDeveloperIdDeveloper().getId())));	
+		result = result && (((getDeveloperId() == null) && (that.getDeveloperId() == null)) || (getDeveloperId() != null && getDeveloperId().getId().equals(that.getDeveloperId().getId())));	
 		return result;
 	}
 	
@@ -163,7 +163,7 @@ public class DeveloperContactMapPK implements Cloneable, Serializable {
 	public int hashCode() {
 	int hash = 0;
 		hash = hash + getContact().hashCode();
-		hash = hash + getDeveloperIdDeveloper().hashCode();
+		hash = hash + getDeveloperId().hashCode();
 	return hash;
 	}
 	
