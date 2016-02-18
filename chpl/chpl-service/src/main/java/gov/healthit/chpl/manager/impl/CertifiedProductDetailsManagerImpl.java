@@ -10,33 +10,49 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
+import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
-import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationEvent;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductDownloadDetails;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
+import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
+import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
+import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
+import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 
 @Service
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
+	
+	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
 
 	@Autowired
@@ -52,10 +68,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	private CertificationResultDetailsDAO certificationResultDetailsDAO;
 	
 	@Autowired
-	private AdditionalSoftwareDAO additionalSoftwareDAO;
+	private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
+	
+	@Autowired
+	private CertificationResultManager certResultManager;
 	
 	@Autowired
 	private CertificationEventDAO certificationEventDAO;
+	
+	@Autowired
+	private CertifiedProductManager certifiedProductManager;
 	
 	@Autowired
 	private EventTypeDAO eventTypeDAO;
@@ -91,10 +113,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.getCertificationEdition().put("id", dto.getCertificationEditionId());
 		searchDetails.getCertificationEdition().put("name", dto.getYear());
 		
-		if(dto.getYear().equals("2011") || dto.getYear().equals("2014")) {
+		if(!StringUtils.isEmpty(dto.getChplProductNumber())) {
 			searchDetails.setChplProductNumber(dto.getChplProductNumber());
 		} else {
-			searchDetails.setChplProductNumber(dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
+			searchDetails.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
 				dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 				"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 				"." + dto.getCertifiedDateCode());
@@ -121,6 +143,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.getProduct().put("version", dto.getProductVersion());
 				
 		searchDetails.setReportFileLocation(dto.getReportFileLocation());
+		searchDetails.setSedReportFileLocation(dto.getSedReportFileLocation());
+		
 		searchDetails.getTestingLab().put("id", dto.getTestingLabId());
 		searchDetails.getTestingLab().put("name", dto.getTestingLabName());
 		searchDetails.getTestingLab().put("code", dto.getTestingLabCode());
@@ -136,11 +160,14 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setIcs(dto.getIcs());
 		searchDetails.setSedTesting(dto.getSedTesting());
 		searchDetails.setQmsTesting(dto.getQmsTesting());
+		searchDetails.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 		
 		if(dto.getTransparencyAttestation() == null) {
 			searchDetails.setTransparencyAttestation(Boolean.FALSE);
+			searchDetails.setTransparencyAttestationUrl(null);
 		} else {
 			searchDetails.setTransparencyAttestation(dto.getTransparencyAttestation());
+			searchDetails.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		}
 		searchDetails.setTermsOfUse(dto.getTermsOfUse());
 		searchDetails.setLastModifiedDate(dto.getLastModifiedDate().getTime());
@@ -151,11 +178,64 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setCountCurrentCorrectiveActionPlans(dto.getCountCurrentCorrectiveActionPlans());
 		searchDetails.setCountClosedCorrectiveActionPlans(dto.getCountClosedCorrectiveActionPlans());
 		
+		//get qms standards
+		List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(dto.getId());
+		List<CertifiedProductQmsStandard> qmsStandardResults = new ArrayList<CertifiedProductQmsStandard>();
+		for(CertifiedProductQmsStandardDTO qmsStandardResult : qmsStandardDTOs) {
+			CertifiedProductQmsStandard result = new CertifiedProductQmsStandard(qmsStandardResult);
+			qmsStandardResults.add(result);
+		}
+		searchDetails.setQmsStandards(qmsStandardResults);
+		
+		//get cert criteria results
 		List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		
 		for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs){
 			CertificationResult result = new CertificationResult(certResult);
+			
+			//add additional software
+			List<CertificationResultAdditionalSoftwareDTO> certResultSoftware = certResultManager.getAdditionalSoftwareMappingsForCertificationResult(certResult.getId());
+			for(CertificationResultAdditionalSoftwareDTO currResult : certResultSoftware) {
+				CertificationResultAdditionalSoftware softwareResult = new CertificationResultAdditionalSoftware(currResult);
+				result.getAdditionalSoftware().add(softwareResult);
+			}
+			
+			//add test standards
+			List<CertificationResultTestStandardDTO> testStandards = certResultManager.getTestStandardsForCertificationResult(certResult.getId());
+			for(CertificationResultTestStandardDTO currResult : testStandards) {
+				CertificationResultTestStandard testStandardResult = new CertificationResultTestStandard(currResult);
+				result.getTestStandards().add(testStandardResult);
+			}
+			
+			//add test tools
+			List<CertificationResultTestToolDTO> testTools = certResultManager.getTestToolsForCertificationResult(certResult.getId());
+			for(CertificationResultTestToolDTO currResult : testTools) {
+				CertificationResultTestTool testToolResult = new CertificationResultTestTool(currResult);
+				result.getTestToolsUsed().add(testToolResult);
+			}
+			
+			//add test data
+			List<CertificationResultTestDataDTO> testData = certResultManager.getTestDataForCertificationResult(certResult.getId());
+			for(CertificationResultTestDataDTO currResult : testData) {
+				CertificationResultTestData testDataResult = new CertificationResultTestData(currResult);
+				result.getTestDataUsed().add(testDataResult);
+			}
+			
+			//add test procedures
+			List<CertificationResultTestProcedureDTO> testProcedure = certResultManager.getTestProceduresForCertificationResult(certResult.getId());
+			for(CertificationResultTestProcedureDTO currResult : testProcedure) {
+				CertificationResultTestProcedure testProcedureResult = new CertificationResultTestProcedure(currResult);
+				result.getTestProcedures().add(testProcedureResult);
+			}
+			
+			//add test functionality
+			List<CertificationResultTestFunctionalityDTO> testFunctionality = certResultManager.getTestFunctionalityForCertificationResult(certResult.getId());
+			for(CertificationResultTestFunctionalityDTO currResult : testFunctionality) {
+				CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(currResult);
+				result.getTestFunctionality().add(testFunctionalityResult);
+			}
+			
 			certificationResults.add(result);
 		}
 		searchDetails.setCertificationResults(certificationResults);
@@ -218,17 +298,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}
 		searchDetails.setCqmResults(cqmResults);
 
-		
-		List<AdditionalSoftwareDTO> additionalSoftwareDTOs = additionalSoftwareDAO.findByCertifiedProductId(dto.getId());
-		List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
-		for (AdditionalSoftwareDTO additionalSoftwareDTO : additionalSoftwareDTOs){
-			AdditionalSoftware software = new AdditionalSoftware(additionalSoftwareDTO);
-			additionalSoftware.add(software);
-			
-		}
-		
-		searchDetails.setAdditionalSoftware(additionalSoftware);
-		
+		//TODO: add items to certification results		
 		
 		searchDetails.setCertificationEvents(getCertificationEvents(dto.getId()));
 		
@@ -241,23 +311,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
 		CertifiedProductDownloadDetails result = new CertifiedProductDownloadDetails(dto);
-		
-		//additional software
-		List<AdditionalSoftwareDTO> additionalSoftwareDTOs = additionalSoftwareDAO.findByCertifiedProductId(dto.getId());
-		if(additionalSoftwareDTOs != null && additionalSoftwareDTOs.size() > 0) {
-			StringBuffer additionalSoftwareBuf = new StringBuffer();
-			for(AdditionalSoftwareDTO currSoftware : additionalSoftwareDTOs) {
-				if(additionalSoftwareBuf.length() > 0) {
-					additionalSoftwareBuf.append(";");
-				}
-				additionalSoftwareBuf.append(currSoftware.getName());
-				if(!StringUtils.isEmpty(currSoftware.getVersion()) &&
-						!currSoftware.getVersion().equals("-1")) {
-					additionalSoftwareBuf.append(" v." + currSoftware.getVersion());
-				}
-			}
-			result.setAdditionalSoftware(additionalSoftwareBuf.toString());
-		}
 		
 		//certs, call these methods by reflection
 		List<CertificationResultDetailsDTO> certResultDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());

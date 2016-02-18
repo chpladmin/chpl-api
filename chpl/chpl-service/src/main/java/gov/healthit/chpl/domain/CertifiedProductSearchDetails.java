@@ -10,6 +10,7 @@ public class CertifiedProductSearchDetails {
 	private Long id;
     private String chplProductNumber;
     private String reportFileLocation;
+    private String sedReportFileLocation;
     private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
@@ -33,10 +34,12 @@ public class CertifiedProductSearchDetails {
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
+	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
-	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
+	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
@@ -147,12 +150,6 @@ public class CertifiedProductSearchDetails {
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
 	}
-	public List<AdditionalSoftware> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-	public void setAdditionalSoftware(List<AdditionalSoftware> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
 	public Boolean getVisibleOnChpl() {
 		return visibleOnChpl;
 	}
@@ -243,6 +240,30 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setTestingLab(Map<String, Object> testingLab) {
 		this.testingLab = testingLab;
+	}
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+	public List<CertifiedProductQmsStandard> getQmsStandards() {
+		return qmsStandards;
+	}
+	public void setQmsStandards(List<CertifiedProductQmsStandard> qmsStandards) {
+		this.qmsStandards = qmsStandards;
 	}
 	public Integer getCountCurrentCorrectiveActionPlans() {
 		return countCurrentCorrectiveActionPlans;

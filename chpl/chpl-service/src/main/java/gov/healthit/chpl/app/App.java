@@ -21,7 +21,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.AdditionalSoftwareDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -29,7 +28,6 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductDownloadDetails;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
-import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -42,7 +40,6 @@ public class App {
 	private SimpleDateFormat timestampFormat;
 	private CertifiedProductDAO certifiedProductDAO;
 	private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-    private AdditionalSoftwareDAO additionalSoftwareDAO;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private CQMResultDetailsDAO cqmResultDetailsDAO;
 	
@@ -75,7 +72,6 @@ public class App {
 		 App app = new App();
 		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
 		 app.setCertifiedProductSearchResultDAO((CertifiedProductSearchResultDAO)context.getBean("certifiedProductSearchResultDAO"));
-		 app.setAdditionalSoftwareDAO((AdditionalSoftwareDAO)context.getBean("additionalSoftwareDAO"));
 		 app.setCertificationResultDetailsDAO((CertificationResultDetailsDAO)context.getBean("certificationResultDetailsDAO"));
 		 app.setCqmResultDetailsDAO((CQMResultDetailsDAO)context.getBean("cqmResultDetailsDAO"));
         
@@ -93,21 +89,21 @@ public class App {
 				CertifiedProductDownloadDetails downloadDetails = new CertifiedProductDownloadDetails(dto);
 				
 				//additional software
-				List<AdditionalSoftwareDTO> additionalSoftwareDTOs = app.getAdditionalSoftwareDAO().findByCertifiedProductId(dto.getId());
-				if(additionalSoftwareDTOs != null && additionalSoftwareDTOs.size() > 0) {
-					StringBuffer additionalSoftwareBuf = new StringBuffer();
-					for(AdditionalSoftwareDTO currSoftware : additionalSoftwareDTOs) {
-						if(additionalSoftwareBuf.length() > 0) {
-							additionalSoftwareBuf.append(";");
-						}
-						additionalSoftwareBuf.append(currSoftware.getName());
-						if(!StringUtils.isEmpty(currSoftware.getVersion()) &&
-								!currSoftware.getVersion().equals("-1")) {
-							additionalSoftwareBuf.append(" v." + currSoftware.getVersion());
-						}
-					}
-					downloadDetails.setAdditionalSoftware(additionalSoftwareBuf.toString());
-				}
+//				List<AdditionalSoftwareDTO> additionalSoftwareDTOs = app.getAdditionalSoftwareDAO().findByCertifiedProductId(dto.getId());
+//				if(additionalSoftwareDTOs != null && additionalSoftwareDTOs.size() > 0) {
+//					StringBuffer additionalSoftwareBuf = new StringBuffer();
+//					for(AdditionalSoftwareDTO currSoftware : additionalSoftwareDTOs) {
+//						if(additionalSoftwareBuf.length() > 0) {
+//							additionalSoftwareBuf.append(";");
+//						}
+//						additionalSoftwareBuf.append(currSoftware.getName());
+//						if(!StringUtils.isEmpty(currSoftware.getVersion()) &&
+//								!currSoftware.getVersion().equals("-1")) {
+//							additionalSoftwareBuf.append(" v." + currSoftware.getVersion());
+//						}
+//					}
+//					downloadDetails.setAdditionalSoftware(additionalSoftwareBuf.toString());
+//				}
 				
 				//certs, call these methods by reflection
 				List<CertificationResultDetailsDTO> certResultDTOs = app.getCertificationResultDetailsDAO().getCertificationResultDetailsByCertifiedProductId(dto.getId());
@@ -184,15 +180,7 @@ public class App {
 	public void setCertifiedProductSearchResultDAO(CertifiedProductSearchResultDAO certifiedProductSearchResultDAO) {
 		this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
 	}
-
-	public AdditionalSoftwareDAO getAdditionalSoftwareDAO() {
-		return additionalSoftwareDAO;
-	}
-
-	public void setAdditionalSoftwareDAO(AdditionalSoftwareDAO additionalSoftwareDAO) {
-		this.additionalSoftwareDAO = additionalSoftwareDAO;
-	}
-
+	
 	public CertificationResultDetailsDAO getCertificationResultDetailsDAO() {
 		return certificationResultDetailsDAO;
 	}

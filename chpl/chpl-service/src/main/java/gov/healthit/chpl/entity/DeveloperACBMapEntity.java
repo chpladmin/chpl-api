@@ -2,6 +2,7 @@ package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,9 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 
 
 @Entity
@@ -35,24 +33,8 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 	@Column(name = "transparency_attestation")
 	private Boolean transparencyAttestation;
 	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-
-	
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	private Boolean deleted;
-
-
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
+	@Column(name = "transparency_attestation_url")
+	private String transparencyAttestationUrl;
 
 	public DeveloperACBMapEntity() {
 		// Default constructor
@@ -90,35 +72,56 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
+	} 
+	
+	@Basic( optional = false )
+	@Column( name = "creation_date", nullable = false  )
+	protected Date creationDate;
+	
+	@Basic( optional = false )
+	@Column( nullable = false  )
+	protected Boolean deleted;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_date", nullable = false  )
+	protected Date lastModifiedDate;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_user", nullable = false  )
+	protected Long lastModifiedUser;
+	
 	public Date getCreationDate() {
 		return creationDate;
 	}
-
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
-
 	public Boolean getDeleted() {
 		return deleted;
 	}
-
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
-
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}
-
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
-
 	public Long getLastModifiedUser() {
 		return lastModifiedUser;
 	}
-
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
-	} 
+	}
 }

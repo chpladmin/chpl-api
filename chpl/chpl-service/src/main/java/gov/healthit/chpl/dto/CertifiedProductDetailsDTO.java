@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
 public class CertifiedProductDetailsDTO {
@@ -19,6 +21,7 @@ public class CertifiedProductDetailsDTO {
     private String testingLabCode;
     private String chplProductNumber;
     private String reportFileLocation;
+    private String sedReportFileLocation;
     private String acbCertificationId;
     private Long practiceTypeId;
     private String practiceTypeName;
@@ -54,16 +57,18 @@ public class CertifiedProductDetailsDTO {
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
+	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	
+	private List<CertifiedProductQmsStandardDTO> qmsStandards;
     private List<CertificationResultDetailsDTO> certResults;
     private List<CQMResultDetailsDTO> cqmResults;
-    private List<AdditionalSoftwareDTO> additionalSoftware;
     
     public CertifiedProductDetailsDTO(){
+    	qmsStandards = new ArrayList<CertifiedProductQmsStandardDTO>();
     	certResults = new ArrayList<CertificationResultDetailsDTO>();
     	cqmResults = new ArrayList<CQMResultDetailsDTO>();
-    	additionalSoftware = new ArrayList<AdditionalSoftwareDTO>();
     }
     
     public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
@@ -94,6 +99,7 @@ public class CertifiedProductDetailsDTO {
     	this.productVersion = entity.getProductVersion();
     	this.productVersionId = entity.getProductVersionId();
     	this.reportFileLocation = entity.getReportFileLocation();
+    	this.sedReportFileLocation = entity.getSedReportFileLocation();
     	this.testingLabId = entity.getTestingLabId();
     	this.testingLabName = entity.getTestingLabName();
     	this.developerId = entity.getDeveloperId();
@@ -107,7 +113,9 @@ public class CertifiedProductDetailsDTO {
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
+    	this.productAdditionalSoftware = entity.getProductAdditionalSoftware();
     	this.transparencyAttestation = entity.getTransparencyAttestation();
+    	this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
@@ -316,15 +324,18 @@ public class CertifiedProductDetailsDTO {
 	public void setCqmResults(List<CQMResultDetailsDTO> cqmResults) {
 		this.cqmResults = cqmResults;
 	}
-
-	public List<AdditionalSoftwareDTO> getAdditionalSoftware() {
-		return additionalSoftware;
+	
+	public String getYearCode() {
+		if(StringUtils.isEmpty(this.getYear())) {
+			return "";
+		} else if(this.getYear().equals("2014")) {
+			return "14";
+		} else if(this.getYear().equals("2015")) {
+			return "15";
+		}
+		return "??";
 	}
-
-	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
-
+	
 	public String getProductCode() {
 		return productCode;
 	}
@@ -453,6 +464,37 @@ public class CertifiedProductDetailsDTO {
 		this.developerWebsite = developerWebsite;
 	}
 
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public List<CertifiedProductQmsStandardDTO> getQmsStandards() {
+		return qmsStandards;
+	}
+
+	public void setQmsStandards(List<CertifiedProductQmsStandardDTO> qmsStandards) {
+		this.qmsStandards = qmsStandards;
+	}
 	public Integer getCountCurrentCorrectiveActionPlans() {
 		return countCurrentCorrectiveActionPlans;
 	}

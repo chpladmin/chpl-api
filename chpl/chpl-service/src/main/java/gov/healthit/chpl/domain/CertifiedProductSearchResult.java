@@ -6,13 +6,12 @@ import java.util.Map;
 
 
 public class CertifiedProductSearchResult {
-	
-	
 	private Long id;
     private Long testingLabId;
     private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
+    private String sedReportFileLocation;
     private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
@@ -31,7 +30,9 @@ public class CertifiedProductSearchResult {
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
+	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	private Integer countCerts;
 	private Integer countCqms;
 	private Integer countCorrectiveActionPlans;
@@ -199,6 +200,24 @@ public class CertifiedProductSearchResult {
 	}
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 	public Integer getCountCurrentCorrectiveActionPlans() {
 		return countCurrentCorrectiveActionPlans;

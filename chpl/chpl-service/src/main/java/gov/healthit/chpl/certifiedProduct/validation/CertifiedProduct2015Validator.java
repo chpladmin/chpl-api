@@ -173,6 +173,21 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 			}
 		}
 		
+		//reverse g6 check
+		boolean hasG6 = hasCert("170.315 (g)(6)", allMetCerts);
+		if(hasG6) {
+			boolean hasG6ComplimentaryCerts = false;
+			for(int i = 0; i < g6CertsToCheck.length; i++) {
+				if(hasCert(g6CertsToCheck[i], allMetCerts)) {
+					hasG6ComplimentaryCerts = true;
+				}
+			}
+			
+			if(!hasG6ComplimentaryCerts) {
+				product.getErrorMessages().add("170.315 (g)(6) was found but a related required cert was not found.");
+			}
+		}
+				
 		//TODO: detailed G6 check
 		
 		//h1 plus b1

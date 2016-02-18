@@ -52,6 +52,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "report_file_location")
     private String reportFileLocation;
     
+    @Column(name = "sed_report_file_location")
+    private String sedReportFileLocation;
+    
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
     
@@ -157,8 +160,14 @@ public class CertifiedProductDetailsEntity {
 	@Column(name = "qms")
 	private Boolean qmsTesting;
 	
+	@Column(name = "product_additional_software")
+	private String productAdditionalSoftware;
+	
 	@Column(name = "transparency_attestation")
 	private Boolean transparencyAttestation;
+	
+	@Column(name = "transparency_attestation_url")
+	private String transparencyAttestationUrl;
 	
 	public Long getId() {
 		return id;
@@ -544,6 +553,29 @@ public class CertifiedProductDetailsEntity {
 		this.developerWebsite = developerWebsite;
 	}
 
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
 	public Integer getCountCurrentCorrectiveActionPlans() {
 		return countCurrentCorrectiveActionPlans;
 	}

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
@@ -49,10 +50,10 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.getCertifyingBody().put("id", dto.getCertificationBodyId());
 			searchResult.getCertifyingBody().put("name", dto.getCertificationBodyName());
 			
-			if(dto.getYear().equals("2011") || dto.getYear().equals("2014")) {
+			if(!StringUtils.isEmpty(dto.getChplProductNumber())) {
 				searchResult.setChplProductNumber(dto.getChplProductNumber());
 			} else {
-				searchResult.setChplProductNumber(dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
+				searchResult.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
 					dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 					"." + dto.getCertifiedDateCode());
@@ -72,6 +73,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.getProduct().put("version", dto.getProductVersion());
 			
 			searchResult.setReportFileLocation(dto.getReportFileLocation());
+			searchResult.setSedReportFileLocation(dto.getSedReportFileLocation());
 			searchResult.setTestingLabId(dto.getTestingLabId());
 			searchResult.setTestingLabName(dto.getTestingLabName());
 			
@@ -89,11 +91,14 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setIcs(dto.getIcs());
 			searchResult.setSedTesting(dto.getSedTesting());
 			searchResult.setQmsTesting(dto.getQmsTesting());
+			searchResult.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 			searchResult.setTermsOfUse(dto.getTermsOfUse());
 			if(dto.getTransparencyAttestation() == null) {
 				searchResult.setTransparencyAttestation(Boolean.FALSE);
+				searchResult.setTransparencyAttestationUrl(null);
 			} else {
 				searchResult.setTransparencyAttestation(dto.getTransparencyAttestation());
+				searchResult.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 			}
 			searchResults.add(searchResult);
 		}

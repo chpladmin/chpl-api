@@ -16,6 +16,7 @@ public class DeveloperDTO {
 	private String name;
 	private String website;
 	private Boolean transparencyAttestation = null;
+	private String transparencyAttestationUrl = null;
 	
 	public DeveloperDTO(){}
 	
@@ -100,6 +101,14 @@ public class DeveloperDTO {
 
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 	
 }

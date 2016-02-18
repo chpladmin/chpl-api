@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,9 +38,6 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CorrectiveActionPlanManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Example;
-import io.swagger.annotations.ExampleProperty;
-import io.swagger.annotations.ExternalDocs;
 
 @Api(value="corrective-action-plan")
 @RestController
