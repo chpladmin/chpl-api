@@ -45,6 +45,9 @@ public class PendingCertifiedProductEntity {
     @Column(name = "vendor_id")
     private Long developerId;
     
+    @Column(name = "vendor_contact_id")
+    private Long developerContactId;
+    
     @Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendor_address_id", unique=true, nullable = true)
@@ -552,5 +555,13 @@ public class PendingCertifiedProductEntity {
 
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public Long getDeveloperContactId() {
+		return developerContactId;
+	}
+
+	public void setDeveloperContactId(Long developerContactId) {
+		this.developerContactId = developerContactId;
 	}
 }

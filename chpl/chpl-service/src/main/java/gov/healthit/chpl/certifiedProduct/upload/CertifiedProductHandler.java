@@ -18,6 +18,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 	protected static final String PRACTICE_TYPE_INPATIENT = "INPATIENT";
 	protected static final String FIRST_ROW_INDICATOR = "NEW";
 	protected static final String SUBSEQUENT_ROW_INDICATOR = "SUBELEMENT";
+	protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
 	
 	public abstract PendingCertifiedProductEntity handle();
 	

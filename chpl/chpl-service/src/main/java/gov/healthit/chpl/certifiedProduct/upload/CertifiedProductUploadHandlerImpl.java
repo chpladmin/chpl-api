@@ -12,6 +12,8 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
@@ -28,9 +30,11 @@ import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 
 public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProductUploadHandler {
+	@Autowired protected CertifiedProductDAO certifiedProductDao;
 	@Autowired protected PracticeTypeDAO practiceTypeDao;
 	@Autowired protected DeveloperDAO developerDao;
 	@Autowired protected AddressDAO addressDao;
+	@Autowired protected ContactDAO contactDao;
 	@Autowired protected ProductDAO productDao;
 	@Autowired protected ProductVersionDAO versionDao;
 	@Autowired protected CertificationEditionDAO editionDao;

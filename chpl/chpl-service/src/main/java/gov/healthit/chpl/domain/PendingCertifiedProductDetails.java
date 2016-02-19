@@ -63,6 +63,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		developerMap.put("website", dto.getDeveloperWebsite());
 		developerMap.put("contactName", dto.getDeveloperContactName());
 		developerMap.put("contactPhone", dto.getDeveloperPhoneNumber());
+		developerMap.put("contactId", dto.getDeveloperContactId());
 		developerMap.put("transparencyAttestation", dto.getTransparencyAttestation());
 		
 		this.setDeveloper(developerMap);

@@ -18,7 +18,7 @@ public class PendingCertifiedProductDTO {
 	private Long id;
 	private Long practiceTypeId;
     private Long developerId;
-	private AddressDTO developerAddress;    
+	private AddressDTO developerAddress; 
     private Long productId;
     private Long productVersionId;    
     private Long certificationEditionId;    
@@ -51,6 +51,7 @@ public class PendingCertifiedProductDTO {
     private String developerEmail;
     private String developerContactName;
     private String developerPhoneNumber;
+    private Long developerContactId;
     private String reportFileLocation;
     private String sedReportFileLocation;
 	private Boolean ics;
@@ -107,6 +108,9 @@ public class PendingCertifiedProductDTO {
 		}
 		if(details.getDeveloper().get("contactPhone") != null) {
 			this.developerPhoneNumber = details.getDeveloper().get("contactPhone").toString();
+		}
+		if(details.getDeveloper().get("contactId") != null) {
+			this.developerContactId = new Long(details.getDeveloper().get("contactId").toString());
 		}
 		if(details.getDeveloper().get("transparencyAttestation") != null) {
 			this.transparencyAttestation = new Boolean(details.getDeveloper().get("transparencyAttestation").toString());
@@ -251,6 +255,7 @@ public class PendingCertifiedProductDTO {
 		this.developerEmail = entity.getDeveloperEmail();
 		this.developerContactName = entity.getDeveloperContactName();
 		this.developerPhoneNumber = entity.getDeveloperPhoneNumber();
+		this.developerContactId = entity.getDeveloperContactId();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.sedReportFileLocation = entity.getSedReportFileLocation();
 		this.ics = entity.getIcs();
@@ -599,5 +604,13 @@ public class PendingCertifiedProductDTO {
 
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public Long getDeveloperContactId() {
+		return developerContactId;
+	}
+
+	public void setDeveloperContactId(Long developerContactId) {
+		this.developerContactId = developerContactId;
 	}
 }

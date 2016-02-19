@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
+import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -26,8 +27,6 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
-import gov.healthit.chpl.entity.DeveloperContactMap;
-import gov.healthit.chpl.entity.DeveloperContactMapPK;
 import gov.healthit.chpl.entity.DeveloperEntity;
 
 @Repository("developerDAO")
@@ -35,6 +34,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
 	@Autowired AddressDAO addressDao;
+	@Autowired ContactDAO contactDao;
 	
 	@Override
 	@Transactional
@@ -57,6 +57,19 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			if(dto.getAddress() != null)
 			{
 				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
+			}
+			if(dto.getContact() != null) {
+				ContactEntity contact = null;
+				if(dto.getContact().getId() != null) {
+					Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
+					query.setParameter("entityid", dto.getContact().getId());
+					List<ContactEntity> result = query.getResultList();
+					if(result != null && result.size() > 0) {
+						entity.setContact(result.get(0));
+					}
+				} else {
+					entity.setContact(contactDao.create(dto.getContact()));
+				}
 			}
 			
 			entity.setName(dto.getName());
@@ -87,34 +100,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			}
 			
 			create(entity);
-			
-			if(dto.getContacts() != null && dto.getContacts().size() > 0) {
-				for(ContactDTO contact : dto.getContacts()) {
-					DeveloperContactMap contactMap = new DeveloperContactMap();
-					contactMap.setCreationDate(new Date());
-					contactMap.setDeleted(false);
-					contactMap.setLastModifiedDate(new Date());
-					contactMap.setLastModifiedUser(Util.getCurrentUser().getId());
-					DeveloperContactMapPK contactPk = new DeveloperContactMapPK();
-					contactPk.setDeveloperId(entity);
-					ContactEntity contactEntity = new ContactEntity();
-					contactEntity.setCreationDate(new Date());
-					contactEntity.setDeleted(false);
-					contactEntity.setLastModifiedDate(new Date());
-					contactEntity.setLastModifiedUser(Util.getCurrentUser().getId());
-					contactEntity.setEmail(contact.getEmail());
-					contactEntity.setFirstName(contact.getFirstName());
-					contactEntity.setLastName(contact.getLastName());
-					contactEntity.setPhoneNumber(contact.getPhoneNumber());
-					contactEntity.setSignatureDate(contact.getSignatureDate());
-					contactEntity.setTitle(contact.getTitle());
-					contactPk.setContact(contactEntity);
-					contactMap.setId(contactPk);
-					entity.addDeveloperContactMap(contactMap);
-				}
-				update(entity);
-			}
-			
 			return new DeveloperDTO(entity);
 		}	
 	}
@@ -154,6 +139,26 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			}
 		} else {
 			entity.setAddress(null);
+		}
+		
+		if(dto.getContact() != null) {
+			ContactEntity contact = null;
+			if(dto.getContact().getId() != null) {
+				Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
+				query.setParameter("entityid", dto.getContact().getId());
+				List<ContactEntity> result = query.getResultList();
+				if(result != null && result.size() > 0) {
+					entity.setContact(result.get(0));
+				}
+			} else {
+				try {
+					entity.setContact(contactDao.create(dto.getContact()));
+				} catch(EntityCreationException ex) {
+					logger.error("could not create contact.", ex);
+				}
+			}
+		} else {
+			entity.setContact(null);
 		}
 		
 		entity.setWebsite(dto.getWebsite());
@@ -298,7 +303,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	private List<DeveloperEntity> getAllEntities() {
-		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from DeveloperEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
+		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
 		return result;
 		
 	}
@@ -307,7 +316,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		
 		DeveloperEntity entity = null;
 			
-		Query query = entityManager.createQuery( "SELECT v from DeveloperEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true) AND (vendor_id = :entityid) ", DeveloperEntity.class );
+		Query query = entityManager.createQuery( "SELECT v from "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact"
+				+ "where (NOT v.deleted = true) AND (vendor_id = :entityid) ", DeveloperEntity.class );
 		query.setParameter("entityid", id);
 		List<DeveloperEntity> result = query.getResultList();
 		
@@ -324,7 +337,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		
 		DeveloperEntity entity = null;
 			
-		Query query = entityManager.createQuery( "SELECT v from DeveloperEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class );
+		Query query = entityManager.createQuery( "SELECT v from "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class );
 		query.setParameter("name", name);
 		List<DeveloperEntity> result = query.getResultList();
 		

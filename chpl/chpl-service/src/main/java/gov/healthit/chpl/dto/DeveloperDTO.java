@@ -1,18 +1,15 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.DeveloperContactMap;
 import gov.healthit.chpl.entity.DeveloperEntity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class DeveloperDTO {
 
 	private String developerCode;
 	private Long id;
 	private AddressDTO address;
-	private List<ContactDTO> contacts;
+	private ContactDTO contact;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
@@ -23,7 +20,6 @@ public class DeveloperDTO {
 	private String transparencyAttestationUrl = null;
 	
 	public DeveloperDTO(){
-		contacts = new ArrayList<ContactDTO>();
 	}
 	
 	public DeveloperDTO(DeveloperEntity entity){
@@ -33,11 +29,8 @@ public class DeveloperDTO {
 		if(entity.getAddress() != null) {
 			this.address = new AddressDTO(entity.getAddress());			
 		}
-		if(entity.getDeveloperContactMaps() != null && entity.getDeveloperContactMaps().size() > 0) {
-			for(DeveloperContactMap map : entity.getDeveloperContactMaps()) {
-				ContactDTO contact = new ContactDTO(map.getId().getContact());
-				this.contacts.add(contact);
-			}
+		if(entity.getContact() != null) {
+			this.contact = new ContactDTO(entity.getContact());
 		}
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
@@ -124,12 +117,11 @@ public class DeveloperDTO {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 
-	public List<ContactDTO> getContacts() {
-		return contacts;
+	public ContactDTO getContact() {
+		return contact;
 	}
 
-	public void setContacts(List<ContactDTO> contacts) {
-		this.contacts = contacts;
+	public void setContact(ContactDTO contact) {
+		this.contact = contact;
 	}
-	
 }
