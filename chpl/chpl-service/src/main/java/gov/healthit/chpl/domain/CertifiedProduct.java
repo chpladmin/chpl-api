@@ -14,6 +14,7 @@ public class CertifiedProduct {
 	public CertifiedProduct(CertifiedProductDetailsDTO dto) {
 		this.id = dto.getId();
 		if(!StringUtils.isEmpty(dto.getChplProductNumber())) {
+			this.setChplProductNumber(dto.getChplProductNumber());
 		} else {
 			this.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
 					dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
