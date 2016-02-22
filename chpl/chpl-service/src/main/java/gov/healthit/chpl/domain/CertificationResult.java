@@ -8,11 +8,11 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 public class CertificationResult {
 	private String number;
 	private String title;
-	private boolean success;
-	private boolean gap;
-	private boolean sed;
-	private boolean g1Success;
-	private boolean g2Success;
+	private Boolean success;
+	private Boolean gap;
+	private Boolean sed;
+	private Boolean g1Success;
+	private Boolean g2Success;
 	private String ucdProcessSelected;
 	private String ucdProcessDetails;
 	
@@ -45,32 +45,12 @@ public class CertificationResult {
 		this.setNumber(certResult.getNumber());
 		this.setSuccess(certResult.getSuccess());
 		this.setTitle(certResult.getTitle());
-		if(certResult.getGap() == null) {
-			this.gap = false;
-		} else {
-			this.gap = certResult.getGap().booleanValue();
-		}
-		
-		if(certResult.getSed() == null) {
-			this.sed = false;
-		} else {
-			this.sed = certResult.getSed().booleanValue();
-		}
-		
-		if(certResult.getG1Success() == null) {
-			this.g1Success = false;
-		} else {
-			this.g1Success = certResult.getG1Success();
-		}
-		
-		if(certResult.getG2Success() == null) {
-			this.g2Success = false;
-		} else {
-			this.g2Success = certResult.getG2Success();
-		}
-		
-		this.ucdProcessSelected = certResult.getUcdProcessSelected();
-		this.ucdProcessDetails = certResult.getUcdProcessDetails();
+		this.setGap(certResult.getGap() == null ? Boolean.FALSE : certResult.getGap());
+		this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
+		this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
+		this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
+		this.ucdProcessSelected = (certResult.getUcdProcessSelected() == null ? "" : certResult.getUcdProcessSelected());
+		this.ucdProcessDetails = (certResult.getUcdProcessDetails() == null ? "" : certResult.getUcdProcessDetails());
 	}
 	
 	public String getNumber() {
@@ -85,10 +65,10 @@ public class CertificationResult {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public boolean isSuccess() {
+	public Boolean isSuccess() {
 		return success;
 	}
-	public void setSuccess(boolean successful) {
+	public void setSuccess(Boolean successful) {
 		this.success = successful;
 	}
 	public List<CertificationResultAdditionalSoftware> getAdditionalSoftware() {
@@ -97,28 +77,28 @@ public class CertificationResult {
 	public void setAdditionalSoftware(List<CertificationResultAdditionalSoftware> additionalSoftware) {
 		this.additionalSoftware = additionalSoftware;
 	}
-	public boolean isGap() {
+	public Boolean isGap() {
 		return gap;
 	}
-	public void setGap(boolean gap) {
+	public void setGap(Boolean gap) {
 		this.gap = gap;
 	}
-	public boolean isSed() {
+	public Boolean isSed() {
 		return sed;
 	}
-	public void setSed(boolean sed) {
+	public void setSed(Boolean sed) {
 		this.sed = sed;
 	}
-	public boolean isG1Success() {
+	public Boolean isG1Success() {
 		return g1Success;
 	}
-	public void setG1Success(boolean g1Success) {
+	public void setG1Success(Boolean g1Success) {
 		this.g1Success = g1Success;
 	}
-	public boolean isG2Success() {
+	public Boolean isG2Success() {
 		return g2Success;
 	}
-	public void setG2Success(boolean g2Success) {
+	public void setG2Success(Boolean g2Success) {
 		this.g2Success = g2Success;
 	}
 	public String getUcdProcessSelected() {

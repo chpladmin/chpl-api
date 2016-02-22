@@ -112,11 +112,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		assertEquals(2, cert.getAdditionalSoftware().size());
 		
 		//check test functionality
-		assertNotNull(cert.getTestFunctionality());
-		assertEquals(1, cert.getTestFunctionality().size());
-		CertificationResultTestFunctionality tf = cert.getTestFunctionality().get(0);
-		assertNotNull(tf.getCategory());
-		assertNotNull(tf.getName());
+		assertNull(cert.getTestFunctionality());
 		
 		//check test standard
 		assertNotNull(cert.getTestStandards());
@@ -135,11 +131,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		assertEquals(1, cert.getTestDataUsed().size());
 		
 		//test tools
-		assertNotNull(cert.getTestToolsUsed());
-		assertEquals(1, cert.getTestToolsUsed().size());
-		CertificationResultTestTool tool = cert.getTestToolsUsed().get(0);
-		assertNotNull(tool.getTestToolName());
-		assertNotNull(tool.getTestToolVersion());
+		assertNull(cert.getTestToolsUsed());
 	}
 	
 	@Test
