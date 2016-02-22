@@ -381,7 +381,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		pendingCertifiedProduct.setDeveloperPhoneNumber(developerPhone);
 		pendingCertifiedProduct.setDeveloperContactName(developerContactName);
 		
-		//TODO: look for contact in db
+		//look for contact in db
 		ContactDTO contactToFind = new ContactDTO();
 		contactToFind.setLastName(developerContactName);
 		contactToFind.setEmail(developerEmail);
