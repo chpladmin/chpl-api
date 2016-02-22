@@ -1,5 +1,11 @@
 # Release Notes
 
+## Version 0.3.1
+_22 February 2016_
+
+### Bugs fixed
+* Added missing product number to CP manange select box
+
 ## Version 0.3.0
 _18 February 2016_
 
