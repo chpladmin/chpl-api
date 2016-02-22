@@ -1,7 +1,5 @@
 package gov.healthit.chpl.auth;
 
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,16 +45,13 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 @Configuration
 //@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
-@PropertySource("classpath:environment.auth.test.properties")
+@PropertySource("classpath:/environment.auth.test.properties")
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLAuthenticationSecurityTestConfig extends WebSecurityConfigurerAdapter 
 implements EnvironmentAware {
 	
 	private Environment env;
-	
-	@Autowired
-	private JWTUserConverter userConverter;
 	
 	@Override
 	public void setEnvironment(final Environment e) {

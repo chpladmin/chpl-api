@@ -324,7 +324,7 @@ public class CertifiedProductDownloadDetails {
 			this.chplProductNumber = dto.getChplProductNumber();
 		} else {
 			this.chplProductNumber = dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
-					dto.getVendorCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+					dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 					"." + dto.getCertifiedDateCode();
 		}
@@ -333,7 +333,7 @@ public class CertifiedProductDownloadDetails {
 		this.classificationType = dto.getProductClassificationName();
 		this.otherAcb = dto.getOtherAcb();
 		this.certificationStatus = dto.getCertificationStatusName();
-		this.developer = dto.getVendorName();
+		this.developer = dto.getDeveloperName();
 		this.product = dto.getProductName();
 		this.version = dto.getProductVersion();
 		this.certificationEdition = dto.getYear();

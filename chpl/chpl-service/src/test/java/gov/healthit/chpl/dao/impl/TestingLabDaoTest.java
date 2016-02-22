@@ -66,7 +66,7 @@ public class TestingLabDaoTest extends TestCase {
 	public void testGetAllAtls() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		List<TestingLabDTO> atls = atlDao.findAll();
+		List<TestingLabDTO> atls = atlDao.findAll(false);
 		assertNotNull(atls);
 		assertEquals(1, atls.size());
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -126,7 +126,7 @@ public class TestingLabDaoTest extends TestCase {
 	
 	@Test
 	public void testUpdateAtl() {
-		TestingLabDTO toUpdate = atlDao.findAll().get(0);
+		TestingLabDTO toUpdate = atlDao.findAll(false).get(0);
 		toUpdate.setName("UPDATED NAME");
 		
 		TestingLabDTO result = null;

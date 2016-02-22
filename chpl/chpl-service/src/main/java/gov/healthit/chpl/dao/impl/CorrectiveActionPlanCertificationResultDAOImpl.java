@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.jose4j.lang.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -57,8 +56,10 @@ public class CorrectiveActionPlanCertificationResultDAOImpl extends BaseDAOImpl 
 			entity = new CorrectiveActionPlanCertificationEntity();
 			entity.setCorrectiveActionPlan(plan);
 			entity.setCertificationCriterion(cert);
-			entity.setAcbSummary(toCreate.getAcbSummary());
-			entity.setDeveloperSummaryDescription(toCreate.getDeveloperSummary());
+			entity.setDeveloperExplanation(toCreate.getDeveloperExplanation());
+			entity.setNumSitesPassed(toCreate.getNumSitesPassed());
+			entity.setNumSitesTotal(toCreate.getNumSitesTotal());
+			entity.setSummary(toCreate.getSummary());
 			entity.setResolution(toCreate.getResolution());
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
@@ -85,8 +86,10 @@ public class CorrectiveActionPlanCertificationResultDAOImpl extends BaseDAOImpl 
 			entity.setCertificationCriterion(cert);
 		}
 		
-		entity.setAcbSummary(toUpdate.getAcbSummary());
-		entity.setDeveloperSummaryDescription(toUpdate.getDeveloperSummary());
+		entity.setDeveloperExplanation(toUpdate.getDeveloperExplanation());
+		entity.setNumSitesPassed(toUpdate.getNumSitesPassed());
+		entity.setNumSitesTotal(toUpdate.getNumSitesTotal());
+		entity.setSummary(toUpdate.getSummary());
 		entity.setResolution(toUpdate.getResolution());
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());

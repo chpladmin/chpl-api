@@ -7,23 +7,29 @@ public class CorrectiveActionPlanCertificationResultDTO {
 	private Long id;
 	private Long correctiveActionPlanId;
 	private CertificationCriterionDTO certCriterion;
-	private String acbSummary;
-	private String developerSummary;
+	private String summary;
+	private String developerExplanation;
 	private String resolution;
+	private Integer numSitesPassed;
+	private Integer numSitesTotal;
 	
 	public CorrectiveActionPlanCertificationResultDTO() {
 		
 	}
 	
 	public CorrectiveActionPlanCertificationResultDTO(CorrectiveActionPlanCertificationEntity entity) {
-		setId(entity.getId());
+		this.id = entity.getId();
 		if(entity.getCorrectiveActionPlan() != null) {
 			setCorrectiveActionPlanId(entity.getCorrectiveActionPlan().getId());
 		}
-		setAcbSummary(entity.getAcbSummary());
-		setDeveloperSummary(entity.getDeveloperSummaryDescription());
-		setResolution(entity.getResolution());
-		setCertCriterion(new CertificationCriterionDTO(entity.getCertificationCriterion()));
+		if(entity.getCertificationCriterion() != null) {
+			this.certCriterion = new CertificationCriterionDTO(entity.getCertificationCriterion());
+		}
+		this.summary = entity.getSummary();
+		this.developerExplanation = entity.getDeveloperExplanation();
+		this.resolution = entity.getResolution();
+		this.numSitesPassed = entity.getNumSitesPassed();
+		this.numSitesTotal = entity.getNumSitesTotal();
 	}
 
 	public Long getId() {
@@ -42,20 +48,28 @@ public class CorrectiveActionPlanCertificationResultDTO {
 		this.certCriterion = certCriterion;
 	}
 
-	public String getAcbSummary() {
-		return acbSummary;
+	public Long getCorrectiveActionPlanId() {
+		return correctiveActionPlanId;
 	}
 
-	public void setAcbSummary(String acbSummary) {
-		this.acbSummary = acbSummary;
+	public void setCorrectiveActionPlanId(Long correctiveActionPlanId) {
+		this.correctiveActionPlanId = correctiveActionPlanId;
 	}
 
-	public String getDeveloperSummary() {
-		return developerSummary;
+	public String getSummary() {
+		return summary;
 	}
 
-	public void setDeveloperSummary(String developerSummary) {
-		this.developerSummary = developerSummary;
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getDeveloperExplanation() {
+		return developerExplanation;
+	}
+
+	public void setDeveloperExplanation(String developerExplanation) {
+		this.developerExplanation = developerExplanation;
 	}
 
 	public String getResolution() {
@@ -66,11 +80,19 @@ public class CorrectiveActionPlanCertificationResultDTO {
 		this.resolution = resolution;
 	}
 
-	public Long getCorrectiveActionPlanId() {
-		return correctiveActionPlanId;
+	public Integer getNumSitesPassed() {
+		return numSitesPassed;
 	}
 
-	public void setCorrectiveActionPlanId(Long correctiveActionPlanId) {
-		this.correctiveActionPlanId = correctiveActionPlanId;
+	public void setNumSitesPassed(Integer numSitesPassed) {
+		this.numSitesPassed = numSitesPassed;
+	}
+
+	public Integer getNumSitesTotal() {
+		return numSitesTotal;
+	}
+
+	public void setNumSitesTotal(Integer numSitesTotal) {
+		this.numSitesTotal = numSitesTotal;
 	}
 }

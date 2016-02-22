@@ -8,34 +8,38 @@ import java.util.Map;
 public class CertifiedProductSearchDetails {
 	
 	private Long id;
-    private Long testingLabId;
-    private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
+    private String sedReportFileLocation;
     private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
     private Map<String, Object> certificationStatus = new HashMap<String, Object>();
-	private Map<String, Object> vendor = new HashMap<String, Object>();
+	private Map<String, Object> developer = new HashMap<String, Object>();
 	private Map<String, Object> product = new HashMap<String, Object>();
 	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
+	private Map<String, Object> testingLab = new HashMap<String, Object>();
 	private Long certificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
 	private Integer countCorrectiveActionPlans;
+	private Integer countCurrentCorrectiveActionPlans;
+	private Integer countClosedCorrectiveActionPlans;
 	private Boolean visibleOnChpl;
 	private String termsOfUse;
 	private String apiDocumentation;
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
+	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
-	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
+	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
@@ -48,12 +52,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Long getTestingLabId() {
-		return testingLabId;
-	}
-	public void setTestingLabId(Long testingLabId) {
-		this.testingLabId = testingLabId;
 	}
 	public String getChplProductNumber() {
 		return chplProductNumber;
@@ -91,11 +89,11 @@ public class CertifiedProductSearchDetails {
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
 	}
-	public Map<String, Object> getVendor() {
-		return vendor;
+	public Map<String, Object> getDeveloper() {
+		return developer;
 	}
-	public void setVendor(Map<String, Object> vendor) {
-		this.vendor = vendor;
+	public void setDeveloper(Map<String, Object> developer) {
+		this.developer = developer;
 	}
 	public Map<String, Object> getProduct() {
 		return product;
@@ -151,12 +149,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
-	}
-	public List<AdditionalSoftware> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-	public void setAdditionalSoftware(List<AdditionalSoftware> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
 	}
 	public Boolean getVisibleOnChpl() {
 		return visibleOnChpl;
@@ -225,12 +217,6 @@ public class CertifiedProductSearchDetails {
 	public void setTransparencyAttestation(Boolean transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
-	public String getTestingLabName() {
-		return testingLabName;
-	}
-	public void setTestingLabName(String testingLabName) {
-		this.testingLabName = testingLabName;
-	}
 	public String getIcs() {
 		return ics;
 	}
@@ -248,5 +234,47 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+	public Map<String, Object> getTestingLab() {
+		return testingLab;
+	}
+	public void setTestingLab(Map<String, Object> testingLab) {
+		this.testingLab = testingLab;
+	}
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+	public List<CertifiedProductQmsStandard> getQmsStandards() {
+		return qmsStandards;
+	}
+	public void setQmsStandards(List<CertifiedProductQmsStandard> qmsStandards) {
+		this.qmsStandards = qmsStandards;
+	}
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
 	}
 }

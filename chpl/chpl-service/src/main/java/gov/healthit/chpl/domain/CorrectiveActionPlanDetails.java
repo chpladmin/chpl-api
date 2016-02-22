@@ -7,19 +7,22 @@ import java.util.List;
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
+import io.swagger.annotations.ApiModel;
 
+@ApiModel(description="The details about a corrective action plan. If resolved, all fields are required.")
 public class CorrectiveActionPlanDetails {
 	
 	private Long id;
 	private Long certifiedProductId;
-	private String acbSummary;
-	private String developerSummary;
+	private Date surveillanceStartDate;
+	private Date surveillanceEndDate;
+	private Boolean randomizedSurveillance;
+	private Date noncomplianceDate;
 	private Date approvalDate;
 	private Date effectiveDate;
 	private Date estimatedCompletionDate;
-	private Date noncomplianceDate;
 	private Date actualCompletionDate;
-	private String resolution;
+	
 	private List<CorrectiveActionPlanCertificationResult> certifications;
 	private List<CorrectiveActionPlanDocumentation> documentation;
 	
@@ -31,14 +34,15 @@ public class CorrectiveActionPlanDetails {
 		this();
 		this.id = dto.getId();
 		this.certifiedProductId = dto.getCertifiedProductId();
-		this.acbSummary = dto.getAcbSummary();
-		this.developerSummary = dto.getDeveloperSummary();
+		this.surveillanceStartDate = dto.getSurveillanceStartDate();
+		this.surveillanceEndDate = dto.getSurveillanceEndDate();
+		this.randomizedSurveillance = dto.getSurveillanceResult();
+		this.noncomplianceDate = dto.getNonComplianceDeterminationDate();
 		this.approvalDate = dto.getApprovalDate();
-		this.effectiveDate = dto.getEffectiveDate();
-		this.estimatedCompletionDate = dto.getEstimatedCompletionDate();
-		this.noncomplianceDate = dto.getNoncomplainceDate();
+		this.effectiveDate = dto.getStartDate();
+		this.estimatedCompletionDate = dto.getRequiredCompletionDate();
 		this.actualCompletionDate = dto.getActualCompletionDate();
-		this.resolution = dto.getResolution();
+		
 	}
 	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto, List<CorrectiveActionPlanCertificationResultDTO> certDtos) {
 		this(dto);
@@ -73,42 +77,21 @@ public class CorrectiveActionPlanDetails {
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
 	}
-	public String getAcbSummary() {
-		return acbSummary;
-	}
-	public void setAcbSummary(String acbSummary) {
-		this.acbSummary = acbSummary;
-	}
-	public String getDeveloperSummary() {
-		return developerSummary;
-	}
-	public void setDeveloperSummary(String developerSummary) {
-		this.developerSummary = developerSummary;
-	}
+	
 	public Date getApprovalDate() {
 		return approvalDate;
 	}
 	public void setApprovalDate(Date approvalDate) {
 		this.approvalDate = approvalDate;
 	}
-	public Date getEffectiveDate() {
-		return effectiveDate;
-	}
-	public void setEffectiveDate(Date effectiveDate) {
-		this.effectiveDate = effectiveDate;
-	}
+	
 	public Date getActualCompletionDate() {
 		return actualCompletionDate;
 	}
 	public void setActualCompletionDate(Date actualCompletionDate) {
 		this.actualCompletionDate = actualCompletionDate;
 	}
-	public String getResolution() {
-		return resolution;
-	}
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
-	}
+	
 	public List<CorrectiveActionPlanCertificationResult> getCertifications() {
 		return certifications;
 	}
@@ -124,18 +107,7 @@ public class CorrectiveActionPlanDetails {
 			}
 		}
 	}
-	public Date getEstimatedCompletionDate() {
-		return estimatedCompletionDate;
-	}
-	public void setEstimatedCompletionDate(Date estimatedCompletionDate) {
-		this.estimatedCompletionDate = estimatedCompletionDate;
-	}
-	public Date getNoncomplianceDate() {
-		return noncomplianceDate;
-	}
-	public void setNoncomplianceDate(Date noncomplianceDate) {
-		this.noncomplianceDate = noncomplianceDate;
-	}
+	
 	public List<CorrectiveActionPlanDocumentation> getDocumentation() {
 		return documentation;
 	}
@@ -150,5 +122,41 @@ public class CorrectiveActionPlanDetails {
 				this.documentation.add(currDoc);
 			}
 		}
+	}
+	public Date getSurveillanceStartDate() {
+		return surveillanceStartDate;
+	}
+	public void setSurveillanceStartDate(Date surveillanceStartDate) {
+		this.surveillanceStartDate = surveillanceStartDate;
+	}
+	public Date getSurveillanceEndDate() {
+		return surveillanceEndDate;
+	}
+	public void setSurveillanceEndDate(Date surveillanceEndDate) {
+		this.surveillanceEndDate = surveillanceEndDate;
+	}
+	public Boolean getRandomizedSurveillance() {
+		return randomizedSurveillance;
+	}
+	public void setRandomizedSurveillance(Boolean randomizedSurveillance) {
+		this.randomizedSurveillance = randomizedSurveillance;
+	}
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
+	public Date getEstimatedCompletionDate() {
+		return estimatedCompletionDate;
+	}
+	public void setEstimatedCompletionDate(Date estimatedCompletionDate) {
+		this.estimatedCompletionDate = estimatedCompletionDate;
+	}
+	public Date getNoncomplianceDate() {
+		return noncomplianceDate;
+	}
+	public void setNoncomplianceDate(Date noncomplianceDate) {
+		this.noncomplianceDate = noncomplianceDate;
 	}
 }

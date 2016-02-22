@@ -20,7 +20,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 	private List<String> warningMessages;
 	private String uploadNotes;
 	private String recordStatus;
-	private Map<String, Object> vendorAddress;
+	private Map<String, Object> developerAddress;
 	
 	public PendingCertifiedProductDetails() {}
 	
@@ -30,7 +30,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setErrorMessages(dto.getErrorMessages());
 		this.setWarningMessages(dto.getWarningMessages());
 		this.setRecordStatus(dto.getRecordStatus());
-		this.setTestingLabId(null);
 		this.setChplProductNumber(null);
 		this.setReportFileLocation(dto.getReportFileLocation());
 		this.setQualityManagementSystemAtt(null);
@@ -51,27 +50,27 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setOtherAcb(null);
 		this.setCertificationStatus(null);
 		
-		Map<String, Object> vendorMap = new HashMap<String, Object>();
-		if(dto.getVendorId() == null) {
-			vendorMap.put("id", null);
+		Map<String, Object> developerMap = new HashMap<String, Object>();
+		if(dto.getDeveloperId() == null) {
+			developerMap.put("id", null);
 		} else {
-			vendorMap.put("id", dto.getVendorId());
+			developerMap.put("id", dto.getDeveloperId());
 		}
-		vendorMap.put("name", dto.getVendorName());
-		vendorMap.put("email", dto.getVendorEmail());
-		vendorMap.put("website", dto.getVendorWebsite());
-		this.setVendor(vendorMap);
+		developerMap.put("name", dto.getDeveloperName());
+		developerMap.put("email", dto.getDeveloperEmail());
+		developerMap.put("website", dto.getDeveloperWebsite());
+		this.setDeveloper(developerMap);
 		
-		vendorAddress = new HashMap<String, Object>();
-		if(dto.getVendorAddress() == null || dto.getVendorAddress().getId() == null) {
-			vendorAddress.put("id", null);
+		developerAddress = new HashMap<String, Object>();
+		if(dto.getDeveloperAddress() == null || dto.getDeveloperAddress().getId() == null) {
+			developerAddress.put("id", null);
 		} else {
-			vendorAddress.put("id", dto.getVendorAddress().getId());
+			developerAddress.put("id", dto.getDeveloperAddress().getId());
 		}
-		vendorAddress.put("line1", dto.getVendorStreetAddress());
-		vendorAddress.put("city", dto.getVendorCity());
-		vendorAddress.put("state", dto.getVendorState());
-		vendorAddress.put("zipcode", dto.getVendorZipCode());
+		developerAddress.put("line1", dto.getDeveloperStreetAddress());
+		developerAddress.put("city", dto.getDeveloperCity());
+		developerAddress.put("state", dto.getDeveloperState());
+		developerAddress.put("zipcode", dto.getDeveloperZipCode());
 		
 		Map<String, Object> productMap = new HashMap<String, Object>();
 		if(dto.getProductId() == null) {
@@ -150,17 +149,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setPrivacyAttestation(false);
 		this.setUploadNotes(dto.getUploadNotes());
 		
-		List<AdditionalSoftware> softwareList = new ArrayList<AdditionalSoftware>();
-		if(!StringUtils.isEmpty(dto.getAdditionalSoftware())) {
-			AdditionalSoftware software = new AdditionalSoftware();
-			if(dto.getAdditionalSoftwareId() != null) {
-				software.setAdditionalSoftwareid(dto.getAdditionalSoftwareId());
-			}
-			software.setName(dto.getAdditionalSoftware());
-			softwareList.add(software);
-		}
-		this.setAdditionalSoftware(softwareList);
-		
 		List<CertificationResult> certList = new ArrayList<CertificationResult>();
 		for(PendingCertificationCriterionDTO certCriterion : dto.getCertificationCriterion()) {
 			CertificationResult cert = new CertificationResult();
@@ -211,12 +199,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.uploadNotes = uploadNotes;
 	}
 
-	public Map<String, Object> getVendorAddress() {
-		return vendorAddress;
+	public Map<String, Object> getDeveloperAddress() {
+		return developerAddress;
 	}
 
-	public void setVendorAddress(Map<String, Object> vendorAddress) {
-		this.vendorAddress = vendorAddress;
+	public void setDeveloperAddress(Map<String, Object> developerAddress) {
+		this.developerAddress = developerAddress;
 	}
 
 	public String getRecordStatus() {

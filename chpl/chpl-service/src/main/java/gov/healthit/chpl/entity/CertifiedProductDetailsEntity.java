@@ -52,6 +52,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "report_file_location")
     private String reportFileLocation;
     
+    @Column(name = "sed_report_file_location")
+    private String sedReportFileLocation;
+    
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
     
@@ -104,14 +107,17 @@ public class CertifiedProductDetailsEntity {
     private String productName;
     
     @Column(name = "vendor_id")
-    private Long vendorId;
+    private Long developerId;
     
     @Column(name = "vendor_name")
-    private String vendorName;
+    private String developerName;
     
     @Column(name = "vendor_code")
-    private String vendorCode;
+    private String developerCode;
 
+    @Column(name = "vendor_website")
+    private String developerWebsite;
+    
     @Column(name = "certification_date")
     private Date certificationDate;
     
@@ -124,6 +130,12 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "count_corrective_action_plans")
     private Integer countCorrectiveActionPlans;
 
+    @Column(name = "count_current_corrective_action_plans")
+    private Integer countCurrentCorrectiveActionPlans;
+    
+    @Column(name = "count_closed_corrective_action_plans")
+    private Integer countClosedCorrectiveActionPlans;
+    
 	@Column(name = "visible_on_chpl")
     private Boolean visibleOnChpl;
     
@@ -148,8 +160,14 @@ public class CertifiedProductDetailsEntity {
 	@Column(name = "qms")
 	private Boolean qmsTesting;
 	
+	@Column(name = "product_additional_software")
+	private String productAdditionalSoftware;
+	
 	@Column(name = "transparency_attestation")
 	private Boolean transparencyAttestation;
+	
+	@Column(name = "transparency_attestation_url")
+	private String transparencyAttestationUrl;
 	
 	public Long getId() {
 		return id;
@@ -303,20 +321,20 @@ public class CertifiedProductDetailsEntity {
 		this.productName = productName;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
 
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
     
 	public Date getCertificationDate() {
@@ -447,12 +465,12 @@ public class CertifiedProductDetailsEntity {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getVendorCode() {
-		return vendorCode;
+	public String getDeveloperCode() {
+		return developerCode;
 	}
 
-	public void setVendorCode(String vendorCode) {
-		this.vendorCode = vendorCode;
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 
 	public String getIcsCode() {
@@ -525,5 +543,52 @@ public class CertifiedProductDetailsEntity {
 
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+
+	public String getDeveloperWebsite() {
+		return developerWebsite;
+	}
+
+	public void setDeveloperWebsite(String developerWebsite) {
+		this.developerWebsite = developerWebsite;
+	}
+
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
 	}	
 }

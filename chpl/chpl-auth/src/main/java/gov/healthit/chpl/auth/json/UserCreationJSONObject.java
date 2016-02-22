@@ -9,6 +9,7 @@ public class UserCreationJSONObject {
 	private String phoneNumber;
 	private String title = null;
 	private String password = null;
+	private Boolean complianceTermsAccepted = Boolean.FALSE;
 	
 	public String getSubjectName() {
 		return subjectName;
@@ -51,5 +52,11 @@ public class UserCreationJSONObject {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public Boolean getComplianceTermsAccepted() {
+		return complianceTermsAccepted;
+	}
+	public void setComplianceTermsAccepted(Boolean complianceTermsAccepted) {
+		this.complianceTermsAccepted = complianceTermsAccepted;
 	}
 }

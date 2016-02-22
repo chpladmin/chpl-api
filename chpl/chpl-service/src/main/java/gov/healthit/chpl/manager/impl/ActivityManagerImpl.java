@@ -103,7 +103,9 @@ public class ActivityManagerImpl implements ActivityManager {
 			dto.setActivityObjectId(objectId);
 			dto.setCreationDate(new Date());
 			dto.setLastModifiedDate(new Date());
-			dto.setLastModifiedUser(Util.getCurrentUser().getId());
+			if(Util.getCurrentUser() != null) {
+				dto.setLastModifiedUser(Util.getCurrentUser().getId());
+			}
 			dto.setDeleted(false);
 			
 			activityDAO.create(dto);
@@ -190,9 +192,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
-	public List<ActivityEvent> getAllActivity() throws JsonParseException, IOException {
+	public List<ActivityEvent> getAllActivity(boolean showDeleted) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findAll();
+		List<ActivityDTO> dtos = activityDAO.findAll(showDeleted);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -204,10 +206,10 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForObject(
+	public List<ActivityEvent> getActivityForObject(boolean showDeleted,
 			ActivityConcept concept, Long objectId) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByObjectId(objectId, concept);
+		List<ActivityDTO> dtos = activityDAO.findByObjectId(showDeleted, objectId, concept);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -220,9 +222,9 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept) throws JsonParseException, IOException {
+	public List<ActivityEvent> getActivityForConcept(boolean showDeleted, ActivityConcept concept) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByConcept(concept);
+		List<ActivityDTO> dtos = activityDAO.findByConcept(showDeleted, concept);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -234,9 +236,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
-	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays) throws JsonParseException, IOException {
+	public List<ActivityEvent> getAllActivityInLastNDays(boolean showDeleted, Integer lastNDays) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findAllInLastNDays(lastNDays);
+		List<ActivityDTO> dtos = activityDAO.findAllInLastNDays(showDeleted, lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -248,10 +250,10 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForObject(
+	public List<ActivityEvent> getActivityForObject(boolean showDeleted,
 			ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByObjectId(objectId, concept, lastNDays);
+		List<ActivityDTO> dtos = activityDAO.findByObjectId(showDeleted, objectId, concept, lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -263,9 +265,10 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException {
+	public List<ActivityEvent> getActivityForConcept(boolean showDeleted,
+			ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByConcept(concept, lastNDays);
+		List<ActivityDTO> dtos = activityDAO.findByConcept(showDeleted, concept, lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){

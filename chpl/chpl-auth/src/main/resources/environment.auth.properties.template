@@ -1,6 +1,7 @@
 authJndiName=java:comp/env/jdbc/openchpl
 authPersistenceUnitName=openchpl
 authAclCacheName=aclCache
+authMaximumLoginAttempts=5
 keyLocation=C:\\JSONRsaJoseJWebKey.txt
 jwtAllowedClockSkew=30
 jwtIssuer=ONCCHPL
@@ -14,4 +15,4 @@ smtpFrom=fromEmailAddress
 smtpUsername=yourUsername
 smtpPassword=yourPassword
 
-chplServer=serverIpOrFqdn
+chplUrlBegin=http://localhost:8080 or https://www.opendatachpl.org

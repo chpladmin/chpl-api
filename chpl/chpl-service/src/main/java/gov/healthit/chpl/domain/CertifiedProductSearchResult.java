@@ -6,19 +6,18 @@ import java.util.Map;
 
 
 public class CertifiedProductSearchResult {
-	
-	
 	private Long id;
     private Long testingLabId;
     private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
+    private String sedReportFileLocation;
     private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
     private Map<String, Object> certificationStatus = new HashMap<String, Object>();
-	private Map<String, Object> vendor = new HashMap<String, Object>();
+	private Map<String, Object> developer = new HashMap<String, Object>();
 	private Map<String, Object> product = new HashMap<String, Object>();
 	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
@@ -31,10 +30,14 @@ public class CertifiedProductSearchResult {
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
+	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	private Integer countCerts;
 	private Integer countCqms;
 	private Integer countCorrectiveActionPlans;
+	private Integer countCurrentCorrectiveActionPlans;
+	private Integer countClosedCorrectiveActionPlans;
 	
 	public Long getId() {
 		return id;
@@ -84,11 +87,11 @@ public class CertifiedProductSearchResult {
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
 	}
-	public Map<String, Object> getVendor() {
-		return vendor;
+	public Map<String, Object> getDeveloper() {
+		return developer;
 	}
-	public void setVendor(Map<String, Object> vendor) {
-		this.vendor = vendor;
+	public void setDeveloper(Map<String, Object> developer) {
+		this.developer = developer;
 	}
 	public Map<String, Object> getProduct() {
 		return product;
@@ -197,6 +200,36 @@ public class CertifiedProductSearchResult {
 	}
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
 	}
 	
 }

@@ -9,13 +9,10 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
-import gov.healthit.chpl.entity.CertificationEventEntity;
 import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
 
 @Repository("correctiveActionPlanDAO")
@@ -37,19 +34,20 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 			throw new EntityCreationException("An entity with this id already exists.");
 		} else {
 			entity = new CorrectiveActionPlanEntity();
-			entity.setAcbSummaryDescription(toCreate.getAcbSummary());
+			entity.setRequiredCompletionDate(toCreate.getRequiredCompletionDate());
 			entity.setActualCompletionDate(toCreate.getActualCompletionDate());
 			entity.setApprovalDate(toCreate.getApprovalDate());
+			entity.setStartDate(toCreate.getStartDate());
+			entity.setNonComplianceDeterminationDate(toCreate.getNonComplianceDeterminationDate());
 			entity.setCertifiedProductId(toCreate.getCertifiedProductId());
+			entity.setSurveillanceStartDate(toCreate.getSurveillanceStartDate());
+			entity.setSurveillanceEndDate(toCreate.getSurveillanceEndDate());
+			entity.setSurveillanceResult(toCreate.getSurveillanceResult());
+			
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
-			entity.setDeveloperSummaryDescription(toCreate.getDeveloperSummary());
-			entity.setEffectiveDate(toCreate.getEffectiveDate());
-			entity.setEstimatedCompletionDate(toCreate.getEstimatedCompletionDate());
-			entity.setNoncomplainceDeterminationDate(toCreate.getNoncomplainceDate());
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			entity.setResolution(toCreate.getResolution());
 			create(entity);
 			return new CorrectiveActionPlanDTO(entity);
 		}
@@ -65,16 +63,20 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		if(toUpdate.getCertifiedProductId() != null) {
 			entity.setCertifiedProductId(toUpdate.getCertifiedProductId());
 		}
-		entity.setAcbSummaryDescription(toUpdate.getAcbSummary());
+		
+		entity.setRequiredCompletionDate(toUpdate.getRequiredCompletionDate());
 		entity.setActualCompletionDate(toUpdate.getActualCompletionDate());
 		entity.setApprovalDate(toUpdate.getApprovalDate());
-		entity.setDeveloperSummaryDescription(toUpdate.getDeveloperSummary());
-		entity.setEffectiveDate(toUpdate.getEffectiveDate());
-		entity.setEstimatedCompletionDate(toUpdate.getEstimatedCompletionDate());
-		entity.setNoncomplainceDeterminationDate(toUpdate.getNoncomplainceDate());
+		entity.setStartDate(toUpdate.getStartDate());
+		entity.setNonComplianceDeterminationDate(toUpdate.getNonComplianceDeterminationDate());
+		entity.setCertifiedProductId(toUpdate.getCertifiedProductId());
+		entity.setSurveillanceStartDate(toUpdate.getSurveillanceStartDate());
+		entity.setSurveillanceEndDate(toUpdate.getSurveillanceEndDate());
+		entity.setSurveillanceResult(toUpdate.getSurveillanceResult());
+		
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		entity.setResolution(toUpdate.getResolution());
+		
 		update(entity);
 		return new CorrectiveActionPlanDTO(entity);
 	}

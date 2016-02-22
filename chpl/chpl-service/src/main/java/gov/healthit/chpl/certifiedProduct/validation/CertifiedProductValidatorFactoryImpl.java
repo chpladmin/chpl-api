@@ -23,16 +23,10 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 	@Autowired private AmbulatoryModular2014Validator ambulatoryModular2014Validator;
 	@Autowired private InpatientComplete2014Validator inpatientComplete2014Validator;
 	@Autowired private InpatientModular2014Validator inpatientModular2014Validator;
+	@Autowired private CertifiedProduct2015Validator cp2015Validator;
 	
 	@Override
-	public CertifiedProductValidator getValidator(PendingCertifiedProductDTO product) {
-		//TODO: 2015 validation
-		/*g4 and g5 are required
-		g3 is a two-way binding with column L (if you are certified to g3 you must have one or more from column L; if you are certified for anything from L you must have g3)
-		g1 and g2 - if you are certified for either g1 or g2 you must have at least one cert from column L
-		no restriction about having both g1 and g2
-*/
-		
+	public CertifiedProductValidator getValidator(PendingCertifiedProductDTO product) {		
 		if(product.getCertificationEdition().equals("2014")) {
 			if(product.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
 				if(product.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
@@ -53,6 +47,8 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 			} else {
 				logger.error("Cannot find validator for practice type '" + product.getPracticeType() + "'");
 			}
+		} else if(product.getCertificationEdition().equals("2015")) {
+			return cp2015Validator;
 		} else {
 			logger.error("Cannot find validator for certificatoin edition '" + product.getCertificationEdition() + "'.");
 		}
@@ -90,6 +86,8 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 			} else {
 				logger.error("Cannot find validator for practice type '" + product.getPracticeType() + "'");
 			}
+		} else if(productCertificationEdition != null && productCertificationEdition.equals("2015")) {
+			return cp2015Validator;
 		} else {
 			logger.info("Cannot find validator for certification edition '" + product.getCertificationEdition() + "'.");
 		}

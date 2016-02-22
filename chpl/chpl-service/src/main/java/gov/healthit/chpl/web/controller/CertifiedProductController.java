@@ -35,17 +35,15 @@ import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
 import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.AdditionalSoftware;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -54,6 +52,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value="certified-products")
 @RestController
@@ -69,6 +68,13 @@ public class CertifiedProductController {
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
 
+	@ApiOperation(value="List all certified products", 
+			notes="Default behavior is to return all certified products in the system. "
+					+ " The optional 'versionId' parameter filters the certified products to those"
+					+ " assigned to that version. The 'editable' parameter will return only those"
+					+ " certified products that the logged in user has permission to edit as "
+					+ " determined by ACB roles and authorities. Not all information about "
+					+ " every certified product is returned. Call the /details service for more information.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
@@ -99,10 +105,13 @@ public class CertifiedProductController {
 		return products;
 	}
 	
+	@ApiOperation(value="Get all details for a specified certified product.", 
+			notes="Returns all information in the CHPL related to the specified certified product.")
 	@RequestMapping(value="/{certifiedProductId}/details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-		CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+		CertifiedProductSearchDetails certifiedProduct =
+				cpdManager.getCertifiedProductDetails(certifiedProductId);
 		CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
 		if(validator != null) {
 			validator.validate(certifiedProduct);
@@ -111,6 +120,12 @@ public class CertifiedProductController {
 		return certifiedProduct;
 	}
 	
+	@ApiOperation(value="Update an existing certified product.", 
+			notes="Updates the certified product after first validating the request. The logged in"
+					+ " user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative "
+					+ " authority on the ACB that certified the product. If a different ACB is passed in"
+					+ " as part of the request, an ownership change will take place and the logged in "
+					+ " user must have ROLE_ADMIN.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
@@ -139,12 +154,15 @@ public class CertifiedProductController {
 		
 		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
 		toUpdate.setId(updateRequest.getId());
-		toUpdate.setTestingLabId(updateRequest.getTestingLabId());
+		if(updateRequest.getTestingLab() != null && !StringUtils.isEmpty(updateRequest.getTestingLab().get("id"))) {
+			toUpdate.setTestingLabId(new Long(updateRequest.getTestingLab().get("id").toString()));
+		}
 		toUpdate.setCertificationBodyId(newAcbId);
 		toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id").toString()));
 		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
+		toUpdate.setSedReportFileLocation(updateRequest.getSedReportFileLocation());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
@@ -153,10 +171,10 @@ public class CertifiedProductController {
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
 		toUpdate.setSedTesting(updateRequest.getSedTesting());
-		toUpdate.setQmsTestig(updateRequest.getQmsTesting());
+		toUpdate.setQmsTesting(updateRequest.getQmsTesting());
+		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
 		
-		if(updateRequest.getCertificationEdition().get("name").equals("2011") ||
-				updateRequest.getCertificationEdition().get("name").equals("2014")) {
+		if(!StringUtils.isEmpty(updateRequest.getChplProductNumber())) {
 			toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
 			toUpdate.setProductCode(null);
 			toUpdate.setVersionCode(null);
@@ -168,41 +186,36 @@ public class CertifiedProductController {
 			toUpdate.setChplProductNumber(null);
 			String chplProductId = updateRequest.getChplProductNumber();
 			String[] chplProductIdComponents = chplProductId.split("\\.");
-			if(chplProductIdComponents == null || chplProductIdComponents.length != 8) {
+			if(chplProductIdComponents == null || chplProductIdComponents.length != 9) {
 				throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
 			}
-			toUpdate.setProductCode(chplProductIdComponents[3]);
-			toUpdate.setVersionCode(chplProductIdComponents[4]);
-			toUpdate.setIcsCode(chplProductIdComponents[5]);
-			toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[6]);
-			toUpdate.setCertifiedDateCode(chplProductIdComponents[7]);
+			toUpdate.setProductCode(chplProductIdComponents[4]);
+			toUpdate.setVersionCode(chplProductIdComponents[5]);
+			toUpdate.setIcsCode(chplProductIdComponents[6]);
+			toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
+			toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
 		}
 
 		toUpdate = cpManager.update(acbId, toUpdate);
 		
-		//update additional software
-		List<AdditionalSoftwareDTO> softwareDtos = new ArrayList<AdditionalSoftwareDTO>();
-		for(AdditionalSoftware software : updateRequest.getAdditionalSoftware()) {
-			AdditionalSoftwareDTO softwareDto = new AdditionalSoftwareDTO();
-			softwareDto.setCertifiedProductId(toUpdate.getId());
-			softwareDto.setJustification(software.getJustification());
-			softwareDto.setName(software.getName());
-			softwareDto.setVersion(software.getVersion());
-			softwareDtos.add(softwareDto);
+		//update qms standards used
+		List<CertifiedProductQmsStandardDTO> qmsStandardsToUpdate = new ArrayList<CertifiedProductQmsStandardDTO>();
+		for(CertifiedProductQmsStandard newQms : updateRequest.getQmsStandards()) {
+			CertifiedProductQmsStandardDTO dto = new CertifiedProductQmsStandardDTO();
+			dto.setId(newQms.getId());
+			dto.setApplicableCriteria(newQms.getApplicableCriteria());
+			dto.setCertifiedProductId(toUpdate.getId());
+			dto.setQmsModification(newQms.getQmsModification());
+			dto.setQmsStandardId(newQms.getQmsStandardId());
+			dto.setQmsStandardName(newQms.getQmsStandardName());
+			qmsStandardsToUpdate.add(dto);
 		}
-		cpManager.updateAdditionalSoftware(acbId, toUpdate, softwareDtos);
-		
+		cpManager.updateQmsStandards(acbId, toUpdate, qmsStandardsToUpdate);
+
 		//update product certifications
-		Map<CertificationCriterionDTO, Boolean> newCerts = new HashMap<CertificationCriterionDTO, Boolean>();
-		for(CertificationResult certResult : updateRequest.getCertificationResults()) {
-			CertificationCriterionDTO newCert = new CertificationCriterionDTO();
-			newCert.setNumber(certResult.getNumber());
-			newCert.setTitle(certResult.getTitle());
-			newCerts.put(newCert, certResult.isSuccess());
-		}
-		cpManager.updateCertifications(acbId, toUpdate, newCerts);
+		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
 		
-		//update product cqms
+		//update CQMs
 		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();
 		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
 			if(!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null && cqm.getSuccessVersions().size() > 0) {
@@ -234,6 +247,9 @@ public class CertifiedProductController {
 		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
 	}
 	
+	@ApiOperation(value="List pending certified products.", 
+			notes="Pending certified products are created via CSV file upload and are left in the 'pending' state "
+					+ " until validated and approved by an appropriate ACB administrator.")
 	@RequestMapping(value="/pending", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {		
@@ -251,6 +267,8 @@ public class CertifiedProductController {
 		return results;
 	}
 	
+	@ApiOperation(value="List a specific pending certified product.", 
+			notes="")
 	@RequestMapping(value="/pending/{pcpId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId) throws EntityRetrievalException {
@@ -258,6 +276,9 @@ public class CertifiedProductController {
 		return details;
 	}
 	
+	@ApiOperation(value="Reject a pending certified product.", 
+			notes="Essentially deletes a pending certified product. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
@@ -265,6 +286,13 @@ public class CertifiedProductController {
 		return "{\"success\" : true }";
 	}
 	
+	@ApiOperation(value="Confirm a pending certified product.", 
+			notes="Creates a new certified product in the system based on all of the information "
+					+ " passed in on the request. This information may differ from what was previously "
+					+ " entered for the pending certified product during upload. It will first be validated "
+					+ " to check for errors, then a new certified product is created, and the old pending certified"
+					+ " product will be removed. ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
@@ -292,6 +320,10 @@ public class CertifiedProductController {
 		return result;
 	}
 	
+	@ApiOperation(value="Upload a file with certified products", 
+			notes="Accepts a CSV file with very specific fields to create pending certified products. "
+					+ " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB(s) specified in the file.")
 	@RequestMapping(value="/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
 	public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file) throws 

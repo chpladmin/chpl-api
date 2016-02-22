@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchRequest {
-	
+	public static final String CURRENT_CAP = "current";
+	public static final String CLOSED_CAP = "closed";
+	public static final String NO_CAP = "never";
+	public static final String ANY_CAP = "all";
 	
 	String searchTerm = null;
-	String vendor = null;
+	String developer = null;
 	String product = null;
 	String version = null;
 	List<String> certificationCriteria = new ArrayList<String>();
@@ -30,11 +33,11 @@ public class SearchRequest {
 	public void setSearchTerm(String searchTerm) {
 		this.searchTerm = searchTerm;
 	}
-	public String getVendor() {
-		return vendor;
+	public String getDeveloper() {
+		return developer;
 	}
-	public void setVendor(String vendor) {
-		this.vendor = vendor;
+	public void setDeveloper(String developer) {
+		this.developer = developer;
 	}
 	public String getProduct() {
 		return product;

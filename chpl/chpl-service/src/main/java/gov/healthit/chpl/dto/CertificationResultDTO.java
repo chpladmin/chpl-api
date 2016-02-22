@@ -2,64 +2,69 @@ package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.entity.CertificationResultEntity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CertificationResultDTO {
-
-	private Boolean automatedMeasureCapable;
-	private Boolean automatedNumerator;
+	
+	private Long id;
 	private Long certificationCriterionId;
 	private Long certifiedProductId;
 	private Date creationDate;
 	private Boolean deleted;
 	private Boolean gap;
-	private Long id;
-	private Boolean inherited;
+	private Boolean sed;
+	private Boolean successful;
+	private Boolean g1Success;
+	private Boolean g2Success;
+	private String ucdProcessSelected;
+	private String ucdProcessDetails;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	private Boolean sedInherited;
-	private Boolean sedSuccessful;
-	private Boolean successful;
-	private Long testDataVersionId;
-	private Long testProcedureVersionId;
 	
-	public CertificationResultDTO(){}
+	private List<CertificationResultTestFunctionalityDTO> testFunctionality;
+	private List<CertificationResultTestProcedureDTO> testProcedures;
+ 	private List<CertificationResultTestDataDTO> testData;
+	private List<CertificationResultTestToolDTO> testTools;
+	private List<CertificationResultTestStandardDTO> testStandards;
+	private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
 	
+	public CertificationResultDTO(){
+		additionalSoftware = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
+		testStandards = new ArrayList<CertificationResultTestStandardDTO>();
+		testTools = new ArrayList<CertificationResultTestToolDTO>();
+		testData = new ArrayList<CertificationResultTestDataDTO>();
+		testProcedures = new ArrayList<CertificationResultTestProcedureDTO>();
+		testFunctionality = new ArrayList<CertificationResultTestFunctionalityDTO>();
+	}
+	
+	public List<CertificationResultTestProcedureDTO> getTestProcedures() {
+		return testProcedures;
+	}
+
+	public void setTestProcedures(List<CertificationResultTestProcedureDTO> testProcedures) {
+		this.testProcedures = testProcedures;
+	}
+
 	public CertificationResultDTO(CertificationResultEntity entity){
-	
+		this();
 		this.id = entity.getId();
-		
-		this.automatedMeasureCapable = entity.isAutomatedMeasureCapable();
-		this.automatedNumerator = entity.isAutomatedNumerator();
 		this.certificationCriterionId = entity.getCertificationCriterionId();
 		this.certifiedProductId = entity.getCertifiedProductId();
 		this.creationDate = entity.getCreationDate();
 		this.gap = entity.isGap();
-		this.inherited = entity.isInherited();
+		this.sed = entity.getSed();
+		this.g1Success = entity.getG1Success();
+		this.g2Success = entity.getG2Success();
+		this.ucdProcessSelected = entity.getUcdProcessSelected();
+		this.ucdProcessDetails = entity.getUcdProcessDetails();
+		this.successful = entity.isSuccess();
+		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
-		this.sedInherited = entity.isSedInherited();
-		this.sedSuccessful = entity.isSedSuccessful();
-		this.successful = entity.isSuccess();
-		this.testDataVersionId = entity.getTestDataVersionId();
-		this.testProcedureVersionId = entity.getTestProcedureVersionId();
-		this.deleted = entity.isDeleted();
-		
 	}
 	
-	
-	public Boolean getAutomatedMeasureCapable() {
-		return automatedMeasureCapable;
-	}
-	public void setAutomatedMeasureCapable(Boolean automatedMeasureCapable) {
-		this.automatedMeasureCapable = automatedMeasureCapable;
-	}
-	public Boolean getAutomatedNumerator() {
-		return automatedNumerator;
-	}
-	public void setAutomatedNumerator(Boolean automatedNumerator) {
-		this.automatedNumerator = automatedNumerator;
-	}
 	public Long getCertificationCriterionId() {
 		return certificationCriterionId;
 	}
@@ -96,12 +101,6 @@ public class CertificationResultDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Boolean getInherited() {
-		return inherited;
-	}
-	public void setInherited(Boolean inherited) {
-		this.inherited = inherited;
-	}
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}
@@ -114,35 +113,95 @@ public class CertificationResultDTO {
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
-	public Boolean getSedInherited() {
-		return sedInherited;
-	}
-	public void setSedInherited(Boolean sedInherited) {
-		this.sedInherited = sedInherited;
-	}
-	public Boolean getSedSuccessful() {
-		return sedSuccessful;
-	}
-	public void setSedSuccessful(Boolean sedSuccessful) {
-		this.sedSuccessful = sedSuccessful;
-	}
 	public Boolean getSuccessful() {
 		return successful;
 	}
 	public void setSuccessful(Boolean successful) {
 		this.successful = successful;
 	}
-	public Long getTestDataVersionId() {
-		return testDataVersionId;
+
+	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftware() {
+		return additionalSoftware;
 	}
-	public void setTestDataVersionId(Long testDataVersionId) {
-		this.testDataVersionId = testDataVersionId;
+
+	public void setAdditionalSoftware(List<CertificationResultAdditionalSoftwareDTO> list) {
+		this.additionalSoftware = list;
 	}
-	public Long getTestProcedureVersionId() {
-		return testProcedureVersionId;
+
+	public Boolean getSed() {
+		return sed;
 	}
-	public void setTestProcedureVersionId(Long testProcedureVersionId) {
-		this.testProcedureVersionId = testProcedureVersionId;
+
+	public void setSed(Boolean sed) {
+		this.sed = sed;
+	}
+
+	public Boolean getG1Success() {
+		return g1Success;
+	}
+
+	public void setG1Success(Boolean g1Success) {
+		this.g1Success = g1Success;
+	}
+
+	public Boolean getG2Success() {
+		return g2Success;
+	}
+
+	public void setG2Success(Boolean g2Success) {
+		this.g2Success = g2Success;
+	}
+
+	public String getUcdProcessSelected() {
+		return ucdProcessSelected;
+	}
+
+	public void setUcdProcessSelected(String ucdProcessSelected) {
+		this.ucdProcessSelected = ucdProcessSelected;
+	}
+
+	public String getUcdProcessDetails() {
+		return ucdProcessDetails;
+	}
+
+	public void setUcdProcessDetails(String ucdProcessDetails) {
+		this.ucdProcessDetails = ucdProcessDetails;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
+	}
+
+	public List<CertificationResultTestStandardDTO> getTestStandards() {
+		return testStandards;
+	}
+
+	public void setTestStandards(List<CertificationResultTestStandardDTO> testStandards) {
+		this.testStandards = testStandards;
+	}
+
+	public List<CertificationResultTestToolDTO> getTestTools() {
+		return testTools;
+	}
+
+	public void setTestTools(List<CertificationResultTestToolDTO> testTools) {
+		this.testTools = testTools;
+	}
+
+	public List<CertificationResultTestDataDTO> getTestData() {
+		return testData;
+	}
+
+	public void setTestData(List<CertificationResultTestDataDTO> testData) {
+		this.testData = testData;
+	}
+
+	public List<CertificationResultTestFunctionalityDTO> getTestFunctionality() {
+		return testFunctionality;
+	}
+
+	public void setTestFunctionality(List<CertificationResultTestFunctionalityDTO> testFunctionality) {
+		this.testFunctionality = testFunctionality;
 	}
 	
 }

@@ -16,8 +16,10 @@ import gov.healthit.chpl.domain.ApiKeyRegistration;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,7 +40,14 @@ public class ApiKeyController {
 	@Autowired
 	private ApiKeyManager apiKeyManager;
 
+	@Autowired SendMailUtil sendMailService;
+	@Autowired private Environment env;
 	
+	@ApiOperation(value="Sign up for a new API key.", 
+			notes="Anyone wishing to access the methods listed in this API must have an API key. This service "
+					+ " will auto-generate a key and send it to the supplied email address. It must be included "
+					+ " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
+					+ " named 'api_key'.")
 	@RequestMapping(value="/register", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -64,6 +73,8 @@ public class ApiKeyController {
 		return "{\"keyRegistered\" : \""+apiKey+"\" }";
 	}
 	
+	@ApiOperation(value="Remove an API key.", 
+			notes="This service is only available to CHPL users with ROLE_ADMIN.")
 	@RequestMapping(value="/revoke", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -80,7 +91,8 @@ public class ApiKeyController {
 		
 	}
 	
-	
+	@ApiOperation(value="List all API keys that have been created.", 
+			notes="This service is only available to CHPL users with ROLE_ADMIN.")
 	@RequestMapping(value="/", method= RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public List<ApiKey> listKeys() {
@@ -99,6 +111,8 @@ public class ApiKeyController {
 		return keys;
 	}
 	
+	@ApiOperation(value="View the calls made per API key.", 
+			notes="This service is only available to CHPL users with ROLE_ADMIN.")
 	@RequestMapping(value="/activity", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -120,6 +134,8 @@ public class ApiKeyController {
 		
 	}
 	
+	@ApiOperation(value="View the calls made by a specific API key.", 
+			notes="This service is only available to CHPL users with ROLE_ADMIN.")
 	@RequestMapping(value="/activity/{apiKey}", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -149,11 +165,10 @@ public class ApiKeyController {
 		String htmlMessage = "<p>Thank you for registering to use the Open Data CHPL API.</p>"
 				+ "<p>Your unique API key is: " + apiKey + " .</p>" 
 				+ "<p>You'll need to use this unique key each time you access data through our open APIs."
-				+ "<p>For more informatio about how to use the API, please visit opendatachpl.org</p>"
+				+ "<p>For more information about how to use the API, please visit " + env.getProperty("chplUrlBegin") + "/#/api </p>"
 				+ "<p>Thanks, <br/>Open Data CHPL Team</p>";
-		
-		SendMailUtil mailUtil = new SendMailUtil();
-		mailUtil.sendEmail(email, subject, htmlMessage);
+
+		sendMailService.sendEmail(email, subject, htmlMessage);
 	}
 	
 }

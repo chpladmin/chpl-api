@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
 public class CertifiedProductDetailsDTO {
@@ -19,6 +21,7 @@ public class CertifiedProductDetailsDTO {
     private String testingLabCode;
     private String chplProductNumber;
     private String reportFileLocation;
+    private String sedReportFileLocation;
     private String acbCertificationId;
     private Long practiceTypeId;
     private String practiceTypeName;
@@ -36,13 +39,16 @@ public class CertifiedProductDetailsDTO {
     private String productVersion;
     private Long productId;
     private String productName;
-    private Long vendorId;
-    private String vendorName;
-    private String vendorCode;
+    private Long developerId;
+    private String developerName;
+    private String developerCode;
+    private String developerWebsite;
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
     private Integer countCorrectiveActionPlans;
+    private Integer countCurrentCorrectiveActionPlans;
+    private Integer countClosedCorrectiveActionPlans;
     private Boolean visibleOnChpl;
     private Date lastModifiedDate;
     private Boolean privacyAttestation;
@@ -51,16 +57,18 @@ public class CertifiedProductDetailsDTO {
 	private String ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
+	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	
+	private List<CertifiedProductQmsStandardDTO> qmsStandards;
     private List<CertificationResultDetailsDTO> certResults;
     private List<CQMResultDetailsDTO> cqmResults;
-    private List<AdditionalSoftwareDTO> additionalSoftware;
     
     public CertifiedProductDetailsDTO(){
+    	qmsStandards = new ArrayList<CertifiedProductQmsStandardDTO>();
     	certResults = new ArrayList<CertificationResultDetailsDTO>();
     	cqmResults = new ArrayList<CQMResultDetailsDTO>();
-    	additionalSoftware = new ArrayList<AdditionalSoftwareDTO>();
     }
     
     public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
@@ -91,11 +99,13 @@ public class CertifiedProductDetailsDTO {
     	this.productVersion = entity.getProductVersion();
     	this.productVersionId = entity.getProductVersionId();
     	this.reportFileLocation = entity.getReportFileLocation();
+    	this.sedReportFileLocation = entity.getSedReportFileLocation();
     	this.testingLabId = entity.getTestingLabId();
     	this.testingLabName = entity.getTestingLabName();
-    	this.vendorId = entity.getVendorId();
-    	this.vendorName = entity.getVendorName();
-    	this.vendorCode = entity.getVendorCode();
+    	this.developerId = entity.getDeveloperId();
+    	this.developerName = entity.getDeveloperName();
+    	this.developerCode = entity.getDeveloperCode();
+    	this.developerWebsite = entity.getDeveloperWebsite();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.termsOfUse = entity.getTermsOfUse();
@@ -103,12 +113,16 @@ public class CertifiedProductDetailsDTO {
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
+    	this.productAdditionalSoftware = entity.getProductAdditionalSoftware();
     	this.transparencyAttestation = entity.getTransparencyAttestation();
+    	this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
     	this.countCorrectiveActionPlans = entity.getCountCorrectiveActionPlans();
+    	this.countCurrentCorrectiveActionPlans = entity.getCountCurrentCorrectiveActionPlans();
+    	this.countClosedCorrectiveActionPlans = entity.getCountClosedCorrectiveActionPlans();
     	this.lastModifiedDate = entity.getLastModifiedDate();
     }
     
@@ -215,17 +229,17 @@ public class CertifiedProductDetailsDTO {
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
 	public String getPracticeTypeName() {
 		return practiceTypeName;
@@ -310,15 +324,18 @@ public class CertifiedProductDetailsDTO {
 	public void setCqmResults(List<CQMResultDetailsDTO> cqmResults) {
 		this.cqmResults = cqmResults;
 	}
-
-	public List<AdditionalSoftwareDTO> getAdditionalSoftware() {
-		return additionalSoftware;
+	
+	public String getYearCode() {
+		if(StringUtils.isEmpty(this.getYear())) {
+			return "";
+		} else if(this.getYear().equals("2014")) {
+			return "14";
+		} else if(this.getYear().equals("2015")) {
+			return "15";
+		}
+		return "??";
 	}
-
-	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
-
+	
 	public String getProductCode() {
 		return productCode;
 	}
@@ -359,12 +376,12 @@ public class CertifiedProductDetailsDTO {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getVendorCode() {
-		return vendorCode;
+	public String getDeveloperCode() {
+		return developerCode;
 	}
 
-	public void setVendorCode(String vendorCode) {
-		this.vendorCode = vendorCode;
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 
 	public String getIcsCode() {
@@ -437,5 +454,60 @@ public class CertifiedProductDetailsDTO {
 
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+
+	public String getDeveloperWebsite() {
+		return developerWebsite;
+	}
+
+	public void setDeveloperWebsite(String developerWebsite) {
+		this.developerWebsite = developerWebsite;
+	}
+
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public List<CertifiedProductQmsStandardDTO> getQmsStandards() {
+		return qmsStandards;
+	}
+
+	public void setQmsStandards(List<CertifiedProductQmsStandardDTO> qmsStandards) {
+		this.qmsStandards = qmsStandards;
+	}
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
 	}
 }

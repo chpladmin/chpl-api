@@ -18,11 +18,13 @@ import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,6 +45,8 @@ public class UserManagerImpl implements UserManager {
       symbols = tmp.toString().toCharArray();
     } 
     
+	@Autowired private Environment env;
+
 	@Autowired
 	private SecuredUserManager securedUserManager;
 	
@@ -102,13 +106,23 @@ public class UserManagerImpl implements UserManager {
 		} else {
 			userDTO.setAccountLocked(true);
 		}
+		
+		if(Boolean.TRUE.equals(userInfo.getComplianceTermsAccepted())) {
+			if(userDTO.getComplianceSignatureDate() == null) {
+				userDTO.setComplianceSignatureDate(new Date());
+			}
+		} else {
+			userDTO.setComplianceSignatureDate(null);
+		}
+		
 		userDTO.setTitle(userInfo.getTitle());
 		return securedUserManager.update(userDTO);
 	}
 	
+	@Override
 	@Transactional
-	private void update(UserDTO user) throws UserRetrievalException {	
-		securedUserManager.update(user);
+	public UserDTO update(UserDTO user) throws UserRetrievalException {	
+		return securedUserManager.update(user);
 	}
 	
 	@Transactional
@@ -174,6 +188,19 @@ public class UserManagerImpl implements UserManager {
 	@Transactional
 	public void removeAdmin(String userName) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException {
 		securedUserManager.removeAdmin(userName);
+	}
+	
+	@Override
+	@Transactional
+	public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException { 
+		securedUserManager.updateFailedLoginCount(userToUpdate);
+		String maxLoginsStr = env.getProperty("authMaximumLoginAttempts");
+		int maxLogins = Integer.parseInt(maxLoginsStr);
+		
+		if(userToUpdate.getFailedLoginCount() >= maxLogins) {
+			userToUpdate.setAccountLocked(true);
+			securedUserManager.updateAccountLockedStatus(userToUpdate);
+		}
 	}
 	
 	@Override

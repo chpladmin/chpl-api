@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity;
 
-
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -64,22 +63,6 @@ public class CertifiedProductEntity {
 	@Column( name = "chpl_product_number", length = 250  )
 	private String chplProductNumber;
 	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false)
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
 	@Basic( optional = true )
 	@Column(name = "practice_type_id", nullable = true )
 	private Long practiceTypeId;
@@ -95,6 +78,10 @@ public class CertifiedProductEntity {
 	@Basic( optional = true )
 	@Column( name = "report_file_location", length = 255  )
 	private String reportFileLocation;
+	
+	@Basic(optional = true) 
+	@Column(name = "sed_report_file_location")
+	private String sedReportFileLocation;
 	
 	@Basic( optional = true )
 	@Column(name = "testing_lab_id", nullable = true )
@@ -128,6 +115,9 @@ public class CertifiedProductEntity {
 	
 	@Column(name = "qms")
 	private Boolean qmsTesting;
+	
+	@Column(name = "product_additional_software")
+	private String productAdditionalSoftware;
 	
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -191,38 +181,6 @@ public class CertifiedProductEntity {
 		this.chplProductNumber = chplProductNumber;
 	}
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	public Boolean isDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
-
 	public Long getPracticeTypeId() {
 		return practiceTypeId;
 	}
@@ -278,11 +236,7 @@ public class CertifiedProductEntity {
 	public void setCertificationStatusId(Long certificationStatusId) {
 		this.certificationStatusId = certificationStatusId;
 	}
-
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
+	
 	public Boolean getVisibleOnChpl() {
 		return visibleOnChpl;
 	}
@@ -377,5 +331,62 @@ public class CertifiedProductEntity {
 
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	
+	@Basic( optional = false )
+	@Column( name = "creation_date", nullable = false  )
+	protected Date creationDate;
+	
+	@Basic( optional = false )
+	@Column( nullable = false  )
+	protected Boolean deleted;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_date", nullable = false  )
+	protected Date lastModifiedDate;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_user", nullable = false  )
+	protected Long lastModifiedUser;
+	
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
+	}
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
 	}
 }

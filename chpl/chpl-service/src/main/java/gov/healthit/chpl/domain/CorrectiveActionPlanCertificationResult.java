@@ -11,6 +11,8 @@ public class CorrectiveActionPlanCertificationResult {
 	private String acbSummary;
 	private String developerSummary;
 	private String resolution;
+	private Integer surveillancePassRate;
+	private Integer surveillanceSitesSurveilled;
 	
 	public CorrectiveActionPlanCertificationResult() {}
 	public CorrectiveActionPlanCertificationResult(CorrectiveActionPlanCertificationResultDTO dto) {
@@ -20,9 +22,11 @@ public class CorrectiveActionPlanCertificationResult {
 			this.certificationCriterionNumber = dto.getCertCriterion().getNumber();
 			this.certificationCriterionTitle = dto.getCertCriterion().getTitle();
 		}
-		this.acbSummary = dto.getAcbSummary();
-		this.developerSummary = dto.getDeveloperSummary();
+		this.acbSummary = dto.getSummary();
+		this.developerSummary = dto.getDeveloperExplanation();
 		this.resolution = dto.getResolution();
+		this.surveillancePassRate = dto.getNumSitesPassed();
+		this.surveillanceSitesSurveilled = dto.getNumSitesTotal();
 	}
 		
 	public Long getId() {
@@ -49,6 +53,12 @@ public class CorrectiveActionPlanCertificationResult {
 	public void setCertificationCriterionTitle(String certificationCriterionTitle) {
 		this.certificationCriterionTitle = certificationCriterionTitle;
 	}
+	public String getResolution() {
+		return resolution;
+	}
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
+	}
 	public String getAcbSummary() {
 		return acbSummary;
 	}
@@ -61,11 +71,16 @@ public class CorrectiveActionPlanCertificationResult {
 	public void setDeveloperSummary(String developerSummary) {
 		this.developerSummary = developerSummary;
 	}
-	public String getResolution() {
-		return resolution;
+	public Integer getSurveillancePassRate() {
+		return surveillancePassRate;
 	}
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
+	public void setSurveillancePassRate(Integer surveillancePassRate) {
+		this.surveillancePassRate = surveillancePassRate;
 	}
-	
+	public Integer getSurveillanceSitesSurveilled() {
+		return surveillanceSitesSurveilled;
+	}
+	public void setSurveillanceSitesSurveilled(Integer surveillanceSitesSurveilled) {
+		this.surveillanceSitesSurveilled = surveillanceSitesSurveilled;
+	}
 }

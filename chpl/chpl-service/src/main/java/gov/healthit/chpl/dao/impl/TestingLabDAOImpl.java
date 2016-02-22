@@ -33,7 +33,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 		TestingLabEntity entity = null;
 		try {
 			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
+				entity = this.getEntityById(dto.getId(), false);
 			}
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
@@ -86,7 +86,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 	@Override
 	@Transactional
 	public TestingLabDTO update(TestingLabDTO dto) throws EntityRetrievalException {
-		TestingLabEntity entity = this.getEntityById(dto.getId());
+		TestingLabEntity entity = this.getEntityById(dto.getId(), true);
 		
 		if(entity == null) {
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
@@ -116,6 +116,11 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 		}
 		
 		if(dto.getDeleted() != null) {
+			if(!dto.getDeleted()){
+				Query query2 = entityManager.createQuery("UPDATE ActivityEntity SET deleted = false WHERE activity_object_id = :acbid");
+				query2.setParameter("acbid", dto.getId());
+				query2.executeUpdate();
+			}
 			entity.setDeleted(dto.getDeleted());
 		}
 		
@@ -138,20 +143,24 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 	@Override
 	@Transactional
 	public void delete(Long id) throws EntityRetrievalException {
-		TestingLabEntity toDelete = getEntityById(id);
+		TestingLabEntity toDelete = getEntityById(id, false);
 		
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
 			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
 			update(toDelete);
+			
+			Query query = entityManager.createQuery("UPDATE ActivityEntity SET deleted = true WHERE activity_object_id = :atlid AND description NOT LIKE '%Deleted testing lab%' AND description NOT LIKE '%no longer marked as deleted%'");
+			query.setParameter("atlid", toDelete.getId());
+			query.executeUpdate();
 		}
 	}
 	
 	@Override
-	public List<TestingLabDTO> findAll() {
+	public List<TestingLabDTO> findAll(boolean showDeleted) {
 		
-		List<TestingLabEntity> entities = getAllEntities();
+		List<TestingLabEntity> entities = getAllEntities(showDeleted);
 		List<TestingLabDTO> dtos = new ArrayList<>();
 		
 		for (TestingLabEntity entity : entities) {
@@ -164,7 +173,18 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 	@Override
 	public TestingLabDTO getById(Long id) throws EntityRetrievalException {
 		
-		TestingLabEntity entity = getEntityById(id);
+		TestingLabEntity entity = getEntityById(id, false);
+		TestingLabDTO dto = null;
+		if(entity != null) {
+			dto = new TestingLabDTO(entity);
+		}
+		return dto;
+	}
+	
+	@Override
+	public TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException {
+		
+		TestingLabEntity entity = getEntityById(id, includeDeleted);
 		TestingLabDTO dto = null;
 		if(entity != null) {
 			dto = new TestingLabDTO(entity);
@@ -194,22 +214,30 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 		entityManager.flush();
 	}
 	
-	private List<TestingLabEntity> getAllEntities() {
-		List<TestingLabEntity> result = entityManager.createQuery( "SELECT atl from TestingLabEntity atl "
-				+ "LEFT OUTER JOIN FETCH atl.address "
-				+ "where (NOT atl.deleted = true)", TestingLabEntity.class).getResultList();
+	private List<TestingLabEntity> getAllEntities(boolean showDeleted) {
+		List<TestingLabEntity> result = null;
+		if(showDeleted){
+			result = entityManager.createQuery( "SELECT atl from TestingLabEntity atl "
+					+ "LEFT OUTER JOIN FETCH atl.address ", TestingLabEntity.class).getResultList();
+		}else{
+			result = entityManager.createQuery( "SELECT atl from TestingLabEntity atl "
+					+ "LEFT OUTER JOIN FETCH atl.address "
+					+ "where (NOT atl.deleted = true)", TestingLabEntity.class).getResultList();
+		}
 		return result;
-		
 	}
 
-	private TestingLabEntity getEntityById(Long id) throws EntityRetrievalException {
+	private TestingLabEntity getEntityById(Long id, boolean includeDeleted) throws EntityRetrievalException {
 		
 		TestingLabEntity entity = null;
 			
-		Query query = entityManager.createQuery( "SELECT atl from TestingLabEntity atl "
+		String queryStr = "SELECT atl from TestingLabEntity atl "
 				+ "LEFT OUTER JOIN FETCH atl.address "
-				+ "where (NOT atl.deleted = true) "
-				+ "AND (testing_lab_id = :entityid) ", TestingLabEntity.class );
+				+ "where (testing_lab_id = :entityid) ";
+		if(!includeDeleted) {
+			queryStr += " AND (NOT atl.deleted = true)";
+		}
+		Query query = entityManager.createQuery(queryStr, TestingLabEntity.class );
 		query.setParameter("entityid", id);
 		List<TestingLabEntity> result = query.getResultList();
 		

@@ -19,7 +19,7 @@ import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.dao.VendorDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
@@ -31,7 +31,7 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.VendorDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Service
@@ -68,7 +68,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	private PracticeTypeDAO practiceTypeDAO;
 	
 	@Autowired
-	private VendorDAO vendorDAO;
+	private DeveloperDAO developerDAO;
 	
 	
 	@Transactional
@@ -150,23 +150,23 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<KeyValueModel> getVendorNames() {
+	public Set<KeyValueModel> getDeveloperNames() {
 		
-		List<VendorDTO> vendorDTOs = this.vendorDAO.findAll();
-		Set<KeyValueModel> vendorNames = new HashSet<KeyValueModel>();
+		List<DeveloperDTO> developerDTOs = this.developerDAO.findAll();
+		Set<KeyValueModel> developerNames = new HashSet<KeyValueModel>();
 		
-		for (VendorDTO dto : vendorDTOs) {
-			vendorNames.add(new KeyValueModel(dto.getId(), dto.getName()));
+		for (DeveloperDTO dto : developerDTOs) {
+			developerNames.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
 		
-		return vendorNames;
+		return developerNames;
 	}
 
 	@Transactional
 	@Override
 	public Set<KeyValueModel> getCertBodyNames() {
 		
-		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll();
+		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(false);
 		Set<KeyValueModel> acbNames = new HashSet<KeyValueModel>();
 		
 		for (CertificationBodyDTO dto : dtos) {
@@ -238,7 +238,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		searchOptions.setPracticeTypeNames(this.getPracticeTypeNames());
 		searchOptions.setProductClassifications(this.getClassificationNames());
 		searchOptions.setProductNames(this.getProductNames());
-		searchOptions.setVendorNames(this.getVendorNames());
+		searchOptions.setDeveloperNames(this.getDeveloperNames());
 		searchOptions.setCqmCriterionNumbers(this.getCQMCriterionNumbers(simple));
 		searchOptions.setCertificationCriterionNumbers(this.getCertificationCriterionNumbers(simple));
 		

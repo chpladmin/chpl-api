@@ -1,0 +1,33 @@
+#chpl-service properties
+downloadFolderPath=C:\\Users\\kekey\\downloadFiles
+jndiName=java:comp/env/jdbc/openchpl
+persistenceUnitName=openchpl
+springfox.documentation.swagger.v2.path=/api-docs
+basePath=/rest
+
+#chpl-service download jar properties
+dbDriverClass=org.postgresql.Driver
+dataSourceName=java:/comp/env/jdbc/openchpl
+dataSourceConnection=jdbc:postgresql://localhost/openchpl
+dataSourceUsername=openchpl
+dataSourcePassword=
+
+#chpl-auth properties
+authJndiName=java:comp/env/jdbc/openchpl
+authPersistenceUnitName=openchpl
+authAclCacheName=aclCache
+authMaximumLoginAttempts=5
+keyLocation=C:\\CHPL\\keys\\JSONRsaJoseJWebKey.txt
+jwtAllowedClockSkew=30
+jwtIssuer=ONCCHPL
+jwtAudience=ONCCHPL
+jwtExpirationTimeMinutesInTheFuture=30
+jwtNotBeforeMinutesInThePast=4
+
+smtpHost=dev
+smtpPort=25
+smtpFrom=CHPLadmin@ainq.com
+smtpUsername=intranet/chpladmin
+smtpPassword=
+
+chplUrlBegin=http://localhost:8000

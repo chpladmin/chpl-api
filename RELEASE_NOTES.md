@@ -1,5 +1,35 @@
 # Release Notes
 
+## Version 0.3.1
+_22 February 2016_
+
+### Bugs fixed
+* Added missing product number to CP manange select box
+
+## Version 0.3.0
+_18 February 2016_
+
+### Features added or Updated
+* Changed Corrective Action Plan/Surveillance API parameters
+* Added descriptions to API methods.
+* Changed API for certified products and certification results to match 2014 data requirements.
+* Allow multiple values for the 'hasCap' field in search.
+
+## Version 0.2.0
+_3 February 2016_
+
+### Features added or Updated
+* Set up swagger API and endpoint annotations
+* Added code to create the XML download file
+* Added code to allow a currently logged in user to get additional permissions if invited (/users/authorize)
+* Adjust what happens when an ACB gets deleted. The ACB is marked as deleted and any users who were ONLY associated with that ACB (no other ACBs, no ATLs, no ADMIN role) will have their account disabled.
+* Add service to undelete ACBs and ATLs accessed by /acbs/3/undelete or /atls/3/undelete
+* Added service for announcements
+
+### Bugs Fixed
+* Allow certified products with errors to be edited and remove those errors
+* Fix email content typos
+
 ## Version 0.1.1
 _12 January 2016_
 
@@ -23,7 +53,7 @@ Features added or Updated
 
 Bugs Fixed
 * Correct CHPL number is inserted in corrective action plan documentation activity.
-* Authorizing existing users for new roles or ACBs/ATLs is fixed
+* Authorizing existing users for new roles or ACBs/ATLs is fixed 
 
 ## Version 0.0.2
 _7 December 2015_
