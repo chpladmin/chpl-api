@@ -1,11 +1,14 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -48,11 +51,10 @@ import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
-	
-	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
 
 	@Autowired
@@ -82,6 +84,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	@Autowired
 	private EventTypeDAO eventTypeDAO;
 	
+	@Autowired
+	private CertificationResultRules certRules;
 
 	private CQMCriterionDAO cqmCriterionDAO;
 	
@@ -193,47 +197,83 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs){
 			CertificationResult result = new CertificationResult(certResult);
-			
-			//add additional software
-			List<CertificationResultAdditionalSoftwareDTO> certResultSoftware = certResultManager.getAdditionalSoftwareMappingsForCertificationResult(certResult.getId());
-			for(CertificationResultAdditionalSoftwareDTO currResult : certResultSoftware) {
-				CertificationResultAdditionalSoftware softwareResult = new CertificationResultAdditionalSoftware(currResult);
-				result.getAdditionalSoftware().add(softwareResult);
+			//override optional boolean values
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
+				result.setGap(null);
+			}
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SED)) {
+				result.setSed(null);
+			}
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+				result.setG1Success(null);
+			}
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+				result.setG2Success(null);
+			}
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
+				result.setUcdProcessDetails(null);
+				result.setUcdProcessSelected(null);
 			}
 			
-			//add test standards
-			List<CertificationResultTestStandardDTO> testStandards = certResultManager.getTestStandardsForCertificationResult(certResult.getId());
-			for(CertificationResultTestStandardDTO currResult : testStandards) {
-				CertificationResultTestStandard testStandardResult = new CertificationResultTestStandard(currResult);
-				result.getTestStandards().add(testStandardResult);
+			//add all the other data
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+				List<CertificationResultAdditionalSoftwareDTO> certResultSoftware = certResultManager.getAdditionalSoftwareMappingsForCertificationResult(certResult.getId());
+				for(CertificationResultAdditionalSoftwareDTO currResult : certResultSoftware) {
+					CertificationResultAdditionalSoftware softwareResult = new CertificationResultAdditionalSoftware(currResult);
+					result.getAdditionalSoftware().add(softwareResult);
+				}
+			} else {
+				result.setAdditionalSoftware(null);
 			}
 			
-			//add test tools
-			List<CertificationResultTestToolDTO> testTools = certResultManager.getTestToolsForCertificationResult(certResult.getId());
-			for(CertificationResultTestToolDTO currResult : testTools) {
-				CertificationResultTestTool testToolResult = new CertificationResultTestTool(currResult);
-				result.getTestToolsUsed().add(testToolResult);
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+				List<CertificationResultTestStandardDTO> testStandards = certResultManager.getTestStandardsForCertificationResult(certResult.getId());
+				for(CertificationResultTestStandardDTO currResult : testStandards) {
+					CertificationResultTestStandard testStandardResult = new CertificationResultTestStandard(currResult);
+					result.getTestStandards().add(testStandardResult);
+				}
+			} else {
+				result.setTestStandards(null);
 			}
 			
-			//add test data
-			List<CertificationResultTestDataDTO> testData = certResultManager.getTestDataForCertificationResult(certResult.getId());
-			for(CertificationResultTestDataDTO currResult : testData) {
-				CertificationResultTestData testDataResult = new CertificationResultTestData(currResult);
-				result.getTestDataUsed().add(testDataResult);
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+				List<CertificationResultTestToolDTO> testTools = certResultManager.getTestToolsForCertificationResult(certResult.getId());
+				for(CertificationResultTestToolDTO currResult : testTools) {
+					CertificationResultTestTool testToolResult = new CertificationResultTestTool(currResult);
+					result.getTestToolsUsed().add(testToolResult);
+				}
+			} else {
+				result.setTestToolsUsed(null);
 			}
 			
-			//add test procedures
-			List<CertificationResultTestProcedureDTO> testProcedure = certResultManager.getTestProceduresForCertificationResult(certResult.getId());
-			for(CertificationResultTestProcedureDTO currResult : testProcedure) {
-				CertificationResultTestProcedure testProcedureResult = new CertificationResultTestProcedure(currResult);
-				result.getTestProcedures().add(testProcedureResult);
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+				List<CertificationResultTestDataDTO> testData = certResultManager.getTestDataForCertificationResult(certResult.getId());
+				for(CertificationResultTestDataDTO currResult : testData) {
+					CertificationResultTestData testDataResult = new CertificationResultTestData(currResult);
+					result.getTestDataUsed().add(testDataResult);
+				}
+			} else {
+				result.setTestDataUsed(null);
 			}
 			
-			//add test functionality
-			List<CertificationResultTestFunctionalityDTO> testFunctionality = certResultManager.getTestFunctionalityForCertificationResult(certResult.getId());
-			for(CertificationResultTestFunctionalityDTO currResult : testFunctionality) {
-				CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(currResult);
-				result.getTestFunctionality().add(testFunctionalityResult);
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)) {
+				List<CertificationResultTestProcedureDTO> testProcedure = certResultManager.getTestProceduresForCertificationResult(certResult.getId());
+				for(CertificationResultTestProcedureDTO currResult : testProcedure) {
+					CertificationResultTestProcedure testProcedureResult = new CertificationResultTestProcedure(currResult);
+					result.getTestProcedures().add(testProcedureResult);
+				}
+			} else {
+				result.setTestProcedures(null);
+			}
+			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+				List<CertificationResultTestFunctionalityDTO> testFunctionality = certResultManager.getTestFunctionalityForCertificationResult(certResult.getId());
+				for(CertificationResultTestFunctionalityDTO currResult : testFunctionality) {
+					CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(currResult);
+					result.getTestFunctionality().add(testFunctionalityResult);
+				}
+			} else {
+				result.setTestFunctionality(null);
 			}
 			
 			certificationResults.add(result);
@@ -297,8 +337,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			}
 		}
 		searchDetails.setCqmResults(cqmResults);
-
-		//TODO: add items to certification results		
 		
 		searchDetails.setCertificationEvents(getCertificationEvents(dto.getId()));
 		
