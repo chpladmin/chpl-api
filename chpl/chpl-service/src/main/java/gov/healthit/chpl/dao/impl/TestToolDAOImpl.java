@@ -142,16 +142,4 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 		
 		return entity;
 	}
-	
-	
-	private List<TestToolEntity> getEntitiesByName(String name) {
-		
-		Query query = entityManager.createQuery( "from TestToolEntity where (NOT deleted = true) AND (name = :name) ", TestToolEntity.class );
-		query.setParameter("name", name);
-		List<TestToolEntity> result = query.getResultList();
-		
-		return result;
-	}
-	
-	
 }
