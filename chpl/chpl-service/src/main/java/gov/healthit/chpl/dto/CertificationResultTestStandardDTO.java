@@ -7,6 +7,7 @@ public class CertificationResultTestStandardDTO {
 	private Long certificationResultId;
 	private Long testStandardId;
 	private String testStandardName;
+	private String testStandardNumber;
 	private Boolean deleted;
 	
 	public CertificationResultTestStandardDTO(){}
@@ -16,7 +17,8 @@ public class CertificationResultTestStandardDTO {
 		this.certificationResultId = entity.getCertificationResultId();
 		this.testStandardId = entity.getTestStandardId();
 		if(entity.getTestStandard() != null) {
-			this.testStandardName = entity.getTestStandard().getName();			
+			this.testStandardName = entity.getTestStandard().getName();
+			this.testStandardNumber = entity.getTestStandard().getNumber();
 		}
 		this.deleted = entity.getDeleted();
 	}
@@ -59,5 +61,13 @@ public class CertificationResultTestStandardDTO {
 
 	public void setTestStandardName(String testStandardName) {
 		this.testStandardName = testStandardName;
+	}
+
+	public String getTestStandardNumber() {
+		return testStandardNumber;
+	}
+
+	public void setTestStandardNumber(String testStandardNumber) {
+		this.testStandardNumber = testStandardNumber;
 	}
 }

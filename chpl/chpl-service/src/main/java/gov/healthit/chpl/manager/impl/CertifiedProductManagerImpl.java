@@ -522,6 +522,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							testStandard.setId(newTestStandard.getId());
 							testStandard.setTestStandardId(newTestStandard.getTestStandardId());
 							testStandard.setTestStandardName(newTestStandard.getTestStandardName());
+							testStandard.setTestStandardNumber(newTestStandard.getTestStandardNumber());
 							testStandard.setCertificationResultId(oldResult.getId());
 							testStandard.setDeleted(false);
 							oldResult.getTestStandards().add(testStandard);
@@ -576,6 +577,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							testFunctionality.setId(newTestFunctionality.getId());
 							testFunctionality.setTestFunctionalityId(newTestFunctionality.getTestFunctionalityId());
 							testFunctionality.setTestFunctionalityName(newTestFunctionality.getName());
+							testFunctionality.setTestFunctionalityNumber(newTestFunctionality.getNumber());
 							testFunctionality.setTestFunctionalityCategory(newTestFunctionality.getCategory());
 							testFunctionality.setCertificationResultId(oldResult.getId());
 							oldResult.getTestFunctionality().add(testFunctionality);

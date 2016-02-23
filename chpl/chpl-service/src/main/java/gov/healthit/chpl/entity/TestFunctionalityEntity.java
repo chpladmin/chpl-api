@@ -21,11 +21,12 @@ public class TestFunctionalityEntity {
 	@Column(name = "test_functionality_id")
 	private Long id;
 	
-	@Basic( optional = false )
 	@Column( name = "name", nullable = false  )
 	private String name;
 
-	@Basic( optional = false )
+	@Column(name = "number")
+	private String number;
+	
 	@Column( name = "category", nullable = false  )
 	private String category;
 	
@@ -94,5 +95,13 @@ public class TestFunctionalityEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 }

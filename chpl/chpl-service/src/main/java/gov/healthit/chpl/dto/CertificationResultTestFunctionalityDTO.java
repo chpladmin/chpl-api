@@ -7,6 +7,7 @@ public class CertificationResultTestFunctionalityDTO {
 	private Long certificationResultId;
 	private Long testFunctionalityId;
 	private String testFunctionalityName;
+	private String testFunctionalityNumber;
 	private String testFunctionalityCategory;
 	private Boolean deleted;
 	
@@ -19,6 +20,7 @@ public class CertificationResultTestFunctionalityDTO {
 		if(entity.getTestFunctionality() != null) {
 			this.testFunctionalityName = entity.getTestFunctionality().getName();
 			this.testFunctionalityCategory = entity.getTestFunctionality().getCategory();
+			this.testFunctionalityNumber = entity.getTestFunctionality().getNumber();
 		}
 		this.deleted = entity.getDeleted();
 	}
@@ -69,6 +71,14 @@ public class CertificationResultTestFunctionalityDTO {
 
 	public void setTestFunctionalityCategory(String testFunctionalityCategory) {
 		this.testFunctionalityCategory = testFunctionalityCategory;
+	}
+
+	public String getTestFunctionalityNumber() {
+		return testFunctionalityNumber;
+	}
+
+	public void setTestFunctionalityNumber(String testFunctionalityNumber) {
+		this.testFunctionalityNumber = testFunctionalityNumber;
 	}
 
 }

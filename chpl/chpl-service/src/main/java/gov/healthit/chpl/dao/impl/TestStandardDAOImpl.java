@@ -40,6 +40,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
+			entity.setNumber(dto.getNumber());
 			create(entity);
 			return new TestStandardDTO(entity);
 		}		
@@ -55,6 +56,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 		}
 		
 		entity.setName(dto.getName());
+		entity.setNumber(dto.getNumber());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
 		

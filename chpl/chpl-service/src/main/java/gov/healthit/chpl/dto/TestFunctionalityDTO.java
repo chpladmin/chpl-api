@@ -5,6 +5,7 @@ import gov.healthit.chpl.entity.TestFunctionalityEntity;
 public class TestFunctionalityDTO {
 	private Long id;
 	private String name;
+	private String number;
 	private String category;
 	
 	public TestFunctionalityDTO(){}
@@ -12,6 +13,7 @@ public class TestFunctionalityDTO {
 	public TestFunctionalityDTO(TestFunctionalityEntity entity){		
 		this.id = entity.getId();
 		this.name = entity.getName();
+		this.number = entity.getNumber();
 		this.category = entity.getCategory();
 	}
 
@@ -37,5 +39,13 @@ public class TestFunctionalityDTO {
 
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 }

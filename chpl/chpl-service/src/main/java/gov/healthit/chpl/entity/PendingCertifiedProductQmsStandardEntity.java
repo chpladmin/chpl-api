@@ -26,8 +26,11 @@ public class PendingCertifiedProductQmsStandardEntity {
     
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_certified_product_id", unique=true, nullable = true)
+	@JoinColumn(name = "pending_certified_product_id", unique=true, nullable = true, insertable = false, updatable = false)
 	private PendingCertifiedProductEntity mappedProduct;
+	
+	@Column(name="pending_certified_product_id")
+	private Long pendingCertifiedProductId;
 	
     @Column(name = "qms_standard_id")
     private Long qmsStandardId;
