@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
 public class PendingCertifiedProductDTO {
@@ -57,6 +58,7 @@ public class PendingCertifiedProductDTO {
 	private Boolean ics;
 	private String termsOfUseUrl;
 	private Boolean transparencyAttestation;
+	private String transparencyAttestationUrl;
 	
 	private List<PendingCertificationResultDTO> certificationCriterion;
 	private List<PendingCqmCriterionDTO> cqmCriterion;
@@ -114,6 +116,9 @@ public class PendingCertifiedProductDTO {
 		}
 		if(details.getDeveloper().get("transparencyAttestation") != null) {
 			this.transparencyAttestation = new Boolean(details.getDeveloper().get("transparencyAttestation").toString());
+		}
+		if(details.getDeveloper().get("transparencyAttestationUrl") != null) {
+			this.transparencyAttestationUrl = details.getDeveloper().get("transparencyAttestationUrl").toString();
 		}
 		
 		AddressDTO address = new AddressDTO();
@@ -223,7 +228,8 @@ public class PendingCertifiedProductDTO {
 		}	
 	}
 	
-	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){		
+	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){	
+		this();
 		this.id = entity.getId();
 		this.practiceTypeId = entity.getPracticeTypeId();
 		this.testingLabId = entity.getTestingLabId();
@@ -261,8 +267,16 @@ public class PendingCertifiedProductDTO {
 		this.ics = entity.getIcs();
 		this.termsOfUseUrl = entity.getTermsOfUse();
 		this.transparencyAttestation = entity.getTransparencyAttestation();
+		this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
 		
 		this.uploadDate = entity.getCreationDate();
+		
+		Set<PendingCertifiedProductQmsStandardEntity> qmsStandards = entity.getQmsStandards();
+		if(qmsStandards != null && qmsStandards.size() > 0) {
+			for(PendingCertifiedProductQmsStandardEntity qmsStandard : qmsStandards) {
+				this.qmsStandards.add(new PendingCertifiedProductQmsStandardDTO(qmsStandard));
+			}
+		}
 		
 		Set<PendingCertificationResultEntity> criterionEntities = entity.getCertificationCriterion();
 		if(criterionEntities != null && criterionEntities.size() > 0) {
@@ -612,5 +626,13 @@ public class PendingCertifiedProductDTO {
 
 	public void setDeveloperContactId(Long developerContactId) {
 		this.developerContactId = developerContactId;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 }

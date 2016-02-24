@@ -14,4 +14,6 @@ public interface CertifiedProductUploadHandler {
 	public void setRecord(List<CSVRecord> record);
 	public CSVRecord getHeading();
 	public void setHeading(CSVRecord heading);
+	public int getLastDataIndex();
+	public void setLastDataIndex(int lastDataIndex);
 }

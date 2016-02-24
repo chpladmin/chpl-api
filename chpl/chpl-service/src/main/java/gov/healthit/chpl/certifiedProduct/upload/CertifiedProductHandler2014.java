@@ -56,7 +56,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		//get the first row of the certified product
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(1);
-			if(!StringUtils.isEmpty(statusStr) && FIRST_ROW_INDICATOR.equals(statusStr)) {
+			if(!StringUtils.isEmpty(statusStr) && FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)) {
 				parseCertifiedProductDetails(record, pendingCertifiedProduct);
 			}
 		}
@@ -66,8 +66,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			for(CSVRecord record : getRecord()) {
 				String statusStr = record.get(1);
 				if(!StringUtils.isEmpty(statusStr) && 
-						(FIRST_ROW_INDICATOR.equals(statusStr) ||
-						 SUBSEQUENT_ROW_INDICATOR.equals(statusStr))) {
+						(FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr) ||
+						 SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
 					parseQms(record, pendingCertifiedProduct);
 				}
 			}
@@ -77,8 +77,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(1);
 			if(!StringUtils.isEmpty(statusStr) && 
-					(FIRST_ROW_INDICATOR.equals(statusStr) ||
-					 SUBSEQUENT_ROW_INDICATOR.equals(statusStr))) {
+					(FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr) ||
+					 SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
 				parseCqms(record, pendingCertifiedProduct);
 			}
 		}
@@ -89,7 +89,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			CSVRecord currRecord = getRecord().get(i);
 			String statusStr = currRecord.get(1);
 			if(!StringUtils.isEmpty(statusStr) && 
-					FIRST_ROW_INDICATOR.equals(statusStr)) {
+					FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)) {
 				firstRow = currRecord;
 			}
 		}
@@ -426,17 +426,17 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		
 		String hasIcsStr = record.get(colIndex++);
 		pendingCertifiedProduct.setIcs(asBoolean(hasIcsStr));
-		
+
 		//(k)(1)  url
-		pendingCertifiedProduct.setTermsOfUse(record.get(colIndex++));
+		pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(colIndex++));
 		
 		//(k)(2) attestation status
 		String k2AttestationStr = record.get(colIndex++);
 		if(!StringUtils.isEmpty(k2AttestationStr)) {
 			if("0".equals(k2AttestationStr.trim())) {
-				pendingCertifiedProduct.setTransparencyAttestation(Boolean.TRUE);
-			} else if("1".equals(k2AttestationStr.trim())) {
 				pendingCertifiedProduct.setTransparencyAttestation(Boolean.FALSE);
+			} else if("1".equals(k2AttestationStr.trim())) {
+				pendingCertifiedProduct.setTransparencyAttestation(Boolean.TRUE);
 			}
 		}
 	}
@@ -445,7 +445,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		int colIndex = 23;
 		if(!StringUtils.isEmpty(record.get(colIndex))) {
 			String qmsStandardName = record.get(colIndex++).toString();
-			QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName);
+			QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName.trim());
 			String qmsMods = record.get(colIndex).toString();
 			
 			PendingCertifiedProductQmsStandardEntity qmsEntity = new PendingCertifiedProductQmsStandardEntity();
@@ -484,9 +484,12 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		String colTitle = getHeading().get(criteriaBeginIndex).toString();
 		if(colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
 			colTitle = getHeading().get(criteriaEndIndex).toString();
-			while(!colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
+			while(criteriaEndIndex <= getLastDataIndex() && 
+					!colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
 				criteriaEndIndex++;
-				colTitle = getHeading().get(criteriaEndIndex).toString();
+				if(criteriaEndIndex <= getLastDataIndex()) {
+					colTitle = getHeading().get(criteriaEndIndex).toString();
+				}
 			}
 		} else {
 			return -1;
@@ -524,7 +527,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						break;
 					case "ADDITIONAL SOFTWARE":
 						Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).toString());
-						if(hasAdditionalSoftware != null && hasAdditionalSoftware == Boolean.TRUE) {
+						if(hasAdditionalSoftware != null && hasAdditionalSoftware.equals(Boolean.TRUE)) {
 							parseAdditionalSoftware(cert, currIndex);
 						}
 						currIndex += 4; 
@@ -579,7 +582,6 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				tfEntity.setTestFunctionalityName(tfValue);
 				TestFunctionalityDTO tf = testFunctionalityDao.getByName(tfValue);
 				if(tf != null) {
-					tfEntity.setTestFunctionalityCategory(tf.getCategory());
 					tfEntity.setTestFunctionalityId(tf.getId());
 				}
 				cert.getTestFunctionality().add(tfEntity);
@@ -705,7 +707,9 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			
 			for(int i = 0; i < versionList.length; i++) {
 				String currVersion = versionList[i];
-				
+				if(!criterionNum.startsWith("CMS")) {
+					criterionNum = "CMS" + criterionNum;
+				}
 				CQMCriterionEntity cqmEntity = cqmDao.getCMSEntityByNumberAndVersion(criterionNum, currVersion);
 				if(cqmEntity == null) {
 					throw new InvalidArgumentsException("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + currVersion);

@@ -52,11 +52,12 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 	
 	@Autowired private PendingCertifiedProductDAO pendingCpDao;
 	
-	private static final String CERTIFICATION_DATE_FORMAT = "M/d/yyyy";
+	private static final String CERTIFICATION_DATE_FORMAT = "yyyyMMdd";
 	protected SimpleDateFormat dateFormatter;
 	
 	private List<CSVRecord> record;
 	private CSVRecord heading;
+	private int lastDataIndex;
 	
 	public CertifiedProductUploadHandlerImpl() {
 		dateFormatter = new SimpleDateFormat(CERTIFICATION_DATE_FORMAT);
@@ -84,5 +85,13 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 	@Override
 	public void setHeading(CSVRecord heading) {
 		this.heading = heading;
+	}
+
+	public int getLastDataIndex() {
+		return lastDataIndex;
+	}
+
+	public void setLastDataIndex(int lastDataIndex) {
+		this.lastDataIndex = lastDataIndex;
 	}
 }

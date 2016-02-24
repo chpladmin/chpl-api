@@ -41,7 +41,6 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
 			entity.setNumber(dto.getNumber());
-			entity.setCategory(dto.getCategory());
 			
 			create(entity);
 			return new TestFunctionalityDTO(entity);
@@ -59,7 +58,6 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		
 		entity.setName(dto.getName());
 		entity.setNumber(dto.getNumber());
-		entity.setCategory(dto.getCategory());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
 		

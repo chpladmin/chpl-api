@@ -3,7 +3,13 @@ package gov.healthit.chpl.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
 
 public class PendingCertificationResultDTO {
 	private Long id;
@@ -53,6 +59,37 @@ public class PendingCertificationResultDTO {
 		this.setG2Success(entity.getG2Success());
 		this.setUcdProcessDetails(entity.getUcdProcessDetails());
 		this.setUcdProcessSelected(entity.getUcdProcessSelected());
+		
+		if(entity.getTestStandards() != null) {
+			for(PendingCertificationResultTestStandardEntity e : entity.getTestStandards()) {
+				this.getTestStandards().add(new PendingCertificationResultTestStandardDTO(e));
+			}
+		}
+		if(entity.getTestFunctionality() != null) {
+			for(PendingCertificationResultTestFunctionalityEntity e : entity.getTestFunctionality()) {
+				this.getTestFunctionality().add(new PendingCertificationResultTestFunctionalityDTO(e));
+			}
+		}
+		if(entity.getAdditionalSoftware() != null) {
+			for(PendingCertificationResultAdditionalSoftwareEntity e : entity.getAdditionalSoftware()) {
+				this.getAdditionalSoftware().add(new PendingCertificationResultAdditionalSoftwareDTO(e));
+			}
+		}
+		if(entity.getTestProcedures() != null) {
+			for(PendingCertificationResultTestProcedureEntity e : entity.getTestProcedures()) {
+				this.getTestProcedures().add(new PendingCertificationResultTestProcedureDTO(e));
+			}
+		}
+		if(entity.getTestData() != null) {
+			for(PendingCertificationResultTestDataEntity e : entity.getTestData()) {
+				this.getTestData().add(new PendingCertificationResultTestDataDTO(e));
+			}
+		}
+		if(entity.getTestTools() != null) {
+			for(PendingCertificationResultTestToolEntity e : entity.getTestTools()) {
+				this.getTestTools().add(new PendingCertificationResultTestToolDTO(e));
+			}
+		}
 	}
 	
 	public Long getId() {

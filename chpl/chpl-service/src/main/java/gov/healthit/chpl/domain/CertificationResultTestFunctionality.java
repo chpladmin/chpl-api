@@ -17,7 +17,6 @@ public class CertificationResultTestFunctionality {
 		this.id = dto.getId();
 		this.testFunctionalityId = dto.getTestFunctionalityId();
 		this.name = dto.getTestFunctionalityName();
-		this.category = dto.getTestFunctionalityCategory();
 		this.number = dto.getTestFunctionalityNumber();
 	}
 	

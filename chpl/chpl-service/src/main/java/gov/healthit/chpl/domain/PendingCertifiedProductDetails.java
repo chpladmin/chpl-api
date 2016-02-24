@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
@@ -17,6 +18,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
@@ -64,7 +66,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		developerMap.put("contactName", dto.getDeveloperContactName());
 		developerMap.put("contactPhone", dto.getDeveloperPhoneNumber());
 		developerMap.put("contactId", dto.getDeveloperContactId());
-		developerMap.put("transparencyAttestation", dto.getTransparencyAttestation());
 		
 		this.setDeveloper(developerMap);
 		
@@ -153,6 +154,20 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		
 		this.setVisibleOnChpl(false);
 		this.setPrivacyAttestation(false);
+		this.setTransparencyAttestation(dto.getTransparencyAttestation());
+		this.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+		
+		List<PendingCertifiedProductQmsStandardDTO> qmsDtos = dto.getQmsStandards();
+		if(qmsDtos != null && qmsDtos.size() > 0) {
+			for(PendingCertifiedProductQmsStandardDTO qmsDto : qmsDtos) {
+				CertifiedProductQmsStandard qms = new CertifiedProductQmsStandard();
+				qms.setApplicableCriteria(qmsDto.getApplicableCriteria());
+				qms.setQmsModification(qmsDto.getModification());
+				qms.setQmsStandardName(qmsDto.getName());
+				qms.setQmsStandardId(qmsDto.getQmsStandardId());
+				this.getQmsStandards().add(qms);
+			}
+		}
 		
 		List<CertificationResult> certList = new ArrayList<CertificationResult>();
 		for(PendingCertificationResultDTO certCriterion : dto.getCertificationCriterion()) {
@@ -167,50 +182,74 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			cert.setUcdProcessSelected(certCriterion.getUcdProcessSelected());
 			cert.setUcdProcessDetails(certCriterion.getUcdProcessDetails());
 			
-			for(PendingCertificationResultAdditionalSoftwareDTO as : certCriterion.getAdditionalSoftware()) {
-				CertificationResultAdditionalSoftware software = new CertificationResultAdditionalSoftware();
-				software.setCertifiedProductId(as.getCertifiedProductId());
-				software.setName(as.getName());
-				software.setVersion(as.getVersion());
-				software.setJustification(as.getJustification());
-				cert.getAdditionalSoftware().add(software);
+			if(certCriterion.getAdditionalSoftware() != null) {
+				for(PendingCertificationResultAdditionalSoftwareDTO as : certCriterion.getAdditionalSoftware()) {
+					CertificationResultAdditionalSoftware software = new CertificationResultAdditionalSoftware();
+					software.setCertifiedProductId(as.getCertifiedProductId());
+					software.setName(as.getName());
+					software.setVersion(as.getVersion());
+					software.setJustification(as.getJustification());
+					cert.getAdditionalSoftware().add(software);
+				}
+			} else {
+				cert.setAdditionalSoftware(null);
 			}
 			
-			for(PendingCertificationResultTestDataDTO td: certCriterion.getTestData()) {
-				CertificationResultTestData testData = new CertificationResultTestData();
-				testData.setVersion(td.getVersion());
-				testData.setAlteration(td.getAlteration());
-				cert.getTestDataUsed().add(testData);
+			if(certCriterion.getTestData() != null) {
+				for(PendingCertificationResultTestDataDTO td: certCriterion.getTestData()) {
+					CertificationResultTestData testData = new CertificationResultTestData();
+					testData.setVersion(td.getVersion());
+					testData.setAlteration(td.getAlteration());
+					cert.getTestDataUsed().add(testData);
+				}
+			} else {
+				cert.setTestDataUsed(null);
 			}
 			
-			for(PendingCertificationResultTestToolDTO tt : certCriterion.getTestTools()) {
-				CertificationResultTestTool testTool = new CertificationResultTestTool();
-				testTool.setTestToolId(tt.getTestToolId());
-				testTool.setTestToolName(tt.getName());
-				testTool.setTestToolVersion(tt.getVersion());
-				cert.getTestToolsUsed().add(testTool);
+			if(certCriterion.getTestTools() != null) {
+				for(PendingCertificationResultTestToolDTO tt : certCriterion.getTestTools()) {
+					CertificationResultTestTool testTool = new CertificationResultTestTool();
+					testTool.setTestToolId(tt.getTestToolId());
+					testTool.setTestToolName(tt.getName());
+					testTool.setTestToolVersion(tt.getVersion());
+					cert.getTestToolsUsed().add(testTool);
+				}
+			} else {
+				cert.setTestToolsUsed(null);
 			}
 			
-			for(PendingCertificationResultTestFunctionalityDTO tf : certCriterion.getTestFunctionality()) {
-				CertificationResultTestFunctionality testFunc = new CertificationResultTestFunctionality();
-				testFunc.setTestFunctionalityId(tf.getTestFunctionalityId());
-				testFunc.setName(tf.getName());
-				testFunc.setCategory(tf.getCategory());
-				cert.getTestFunctionality().add(testFunc);
+			if(certCriterion.getTestFunctionality() != null) {
+				for(PendingCertificationResultTestFunctionalityDTO tf : certCriterion.getTestFunctionality()) {
+					CertificationResultTestFunctionality testFunc = new CertificationResultTestFunctionality();
+					testFunc.setTestFunctionalityId(tf.getTestFunctionalityId());
+					testFunc.setName(tf.getName());
+					testFunc.setCategory(tf.getCategory());
+					cert.getTestFunctionality().add(testFunc);
+				}
+			} else {
+				cert.setTestFunctionality(null);
 			}
 			
-			for(PendingCertificationResultTestProcedureDTO tp : certCriterion.getTestProcedures()) {
-				CertificationResultTestProcedure testProc = new CertificationResultTestProcedure();
-				testProc.setTestProcedureId(tp.getTestProcedureId());
-				testProc.setTestProcedureVersion(tp.getVersion());
-				cert.getTestProcedures().add(testProc);
+			if(certCriterion.getTestProcedures() != null) {
+				for(PendingCertificationResultTestProcedureDTO tp : certCriterion.getTestProcedures()) {
+					CertificationResultTestProcedure testProc = new CertificationResultTestProcedure();
+					testProc.setTestProcedureId(tp.getTestProcedureId());
+					testProc.setTestProcedureVersion(tp.getVersion());
+					cert.getTestProcedures().add(testProc);
+				}
+			} else {
+				cert.setTestProcedures(null);
 			}
 			
-			for(PendingCertificationResultTestStandardDTO ts : certCriterion.getTestStandards()) {
-				CertificationResultTestStandard testStd = new CertificationResultTestStandard();
-				testStd.setTestStandardId(ts.getTestStandardId());
-				testStd.setTestStandardName(ts.getName());
-				cert.getTestStandards().add(testStd);
+			if(certCriterion.getTestStandards() != null) {
+				for(PendingCertificationResultTestStandardDTO ts : certCriterion.getTestStandards()) {
+					CertificationResultTestStandard testStd = new CertificationResultTestStandard();
+					testStd.setTestStandardId(ts.getTestStandardId());
+					testStd.setTestStandardName(ts.getName());
+					cert.getTestStandards().add(testStd);
+				}
+			} else {
+				cert.setTestStandards(null);
 			}
 			certList.add(cert);
 		}

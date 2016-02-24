@@ -6,7 +6,6 @@ public class TestFunctionalityDTO {
 	private Long id;
 	private String name;
 	private String number;
-	private String category;
 	
 	public TestFunctionalityDTO(){}
 	
@@ -14,7 +13,6 @@ public class TestFunctionalityDTO {
 		this.id = entity.getId();
 		this.name = entity.getName();
 		this.number = entity.getNumber();
-		this.category = entity.getCategory();
 	}
 
 	public Long getId() {
@@ -31,14 +29,6 @@ public class TestFunctionalityDTO {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
 	}
 
 	public String getNumber() {

@@ -77,6 +77,10 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
 	@Override
 	public List<ContactDTO> findAll() {
 		List<ContactEntity> result = this.findAllEntities();
+		if(result == null) {
+			return null;
+		}
+		
 		List<ContactDTO> dtos = new ArrayList<ContactDTO>(result.size());
 		for(ContactEntity entity : result) {
 			dtos.add(new ContactDTO(entity));
@@ -133,13 +137,21 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
 	private ContactEntity searchEntities(ContactDTO toSearch) {
 		ContactEntity entity = null;
 		
-		String contactQuery = "from ContactEntity a where (NOT deleted = true) "
-				+ " AND (first_name = :firstName) "
-				+ " AND (last_name = :lastName)";
+		String contactQuery = "from ContactEntity a where (NOT deleted = true) ";
+		if(toSearch.getFirstName() != null) {
+				contactQuery += " AND (first_name = :firstName) ";
+		}
+		if(toSearch.getLastName() != null) {
+				contactQuery += " AND (last_name = :lastName)";
+		}
 		
 		Query query = entityManager.createQuery(contactQuery, ContactEntity.class );
-		query.setParameter("firstName", toSearch.getFirstName());
-		query.setParameter("lastName", toSearch.getLastName());
+		if(toSearch.getFirstName() != null) {
+			query.setParameter("firstName", toSearch.getFirstName());
+		}
+		if(toSearch.getLastName() != null) {
+			query.setParameter("lastName", toSearch.getLastName());
+		}
 
 		List<ContactEntity> result = query.getResultList();
 		

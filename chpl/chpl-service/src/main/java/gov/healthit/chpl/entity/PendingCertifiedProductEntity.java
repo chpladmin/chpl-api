@@ -120,6 +120,9 @@ public class PendingCertifiedProductEntity {
     @Column(name = "vendor_transparency_attestation")
     private Boolean transparencyAttestation;
     
+    @Column(name = "vendor_transparency_attestation_url")
+    private String transparencyAttestationUrl;
+    
     @Column(name = "vendor_city")
     private String developerCity;
     
@@ -563,5 +566,13 @@ public class PendingCertifiedProductEntity {
 
 	public void setDeveloperContactId(Long developerContactId) {
 		this.developerContactId = developerContactId;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 }

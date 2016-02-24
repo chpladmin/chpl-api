@@ -139,6 +139,14 @@ public class PendingCertifiedProductQmsStandardEntity {
 	public void setMappedProduct(PendingCertifiedProductEntity mappedProduct) {
 		this.mappedProduct = mappedProduct;
 	}
+
+	public Long getPendingCertifiedProductId() {
+		return pendingCertifiedProductId;
+	}
+
+	public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+		this.pendingCertifiedProductId = pendingCertifiedProductId;
+	}
 	
 	
 }

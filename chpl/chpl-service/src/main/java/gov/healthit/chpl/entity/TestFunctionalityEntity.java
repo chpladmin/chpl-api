@@ -27,9 +27,6 @@ public class TestFunctionalityEntity {
 	@Column(name = "number")
 	private String number;
 	
-	@Column( name = "category", nullable = false  )
-	private String category;
-	
 	public Long getId() {
 		return id;
 	}
@@ -45,16 +42,6 @@ public class TestFunctionalityEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-
 
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
