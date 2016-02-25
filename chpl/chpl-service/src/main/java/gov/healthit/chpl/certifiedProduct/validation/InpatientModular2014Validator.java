@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.PendingCertificationCriterionDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 @Component("inpatientModular2014Validator")
@@ -31,16 +31,16 @@ public class InpatientModular2014Validator implements CertifiedProductValidator 
 		
 		//check (g)(1)
 		boolean hasG1Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.getMeetsCriteria()) {
 				hasG1Cert = true;
 			}
 		}	
 		if(hasG1Cert) {
 			boolean hasAtLeastOneCertPartner = false;
 			for(int i = 0; i < g1ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g1ComplementaryCerts[i]) && certCriteria.isMeetsCriteria()) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+					if(certCriteria.getNumber().equals(g1ComplementaryCerts[i]) && certCriteria.getMeetsCriteria()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}
@@ -53,16 +53,16 @@ public class InpatientModular2014Validator implements CertifiedProductValidator 
 		
 		//check (g)(2)
 		boolean hasG2Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.getMeetsCriteria()) {
 				hasG2Cert = true;
 			}
 		}	
 		if(hasG2Cert) {
 			boolean hasAtLeastOneCertPartner = false;
 			for(int i = 0; i < g2ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g2ComplementaryCerts[i]) && certCriteria.isMeetsCriteria()) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+					if(certCriteria.getNumber().equals(g2ComplementaryCerts[i]) && certCriteria.getMeetsCriteria()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}
@@ -80,17 +80,17 @@ public class InpatientModular2014Validator implements CertifiedProductValidator 
 		
 		//check (g)(3)
 		boolean hasG3Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(3)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(3)") && certCriteria.getMeetsCriteria()) {
 				hasG3Cert = true;
 			}
 		}	
 		if(hasG3Cert) {
 			boolean hasAtLeastOneCertPartner = false;
 			for(int i = 0; i < g3ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
 					if(certCriteria.getNumber().equals(g3ComplementaryCerts[i]) &&
-							certCriteria.isMeetsCriteria()) {
+							certCriteria.getMeetsCriteria()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}
@@ -103,8 +103,8 @@ public class InpatientModular2014Validator implements CertifiedProductValidator 
 		
 		//check (g)(4)
 		boolean hasG4Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(4)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(4)") && certCriteria.getMeetsCriteria()) {
 				hasG4Cert = true;
 			}
 		}

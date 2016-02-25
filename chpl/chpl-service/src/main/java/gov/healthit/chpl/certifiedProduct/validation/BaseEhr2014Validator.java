@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.PendingCertificationCriterionDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 @Component("baseEhrValidator")
@@ -20,11 +20,11 @@ public class BaseEhr2014Validator implements CertifiedProductValidator {
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
-		List<PendingCertificationCriterionDTO> certificationCriterion = product.getCertificationCriterion();
+		List<PendingCertificationResultDTO> certificationCriterion = product.getCertificationCriterion();
 		for(int i = 0; i < requiredCriteria.length; i++) {
 			boolean hasCert = false;
-			for(PendingCertificationCriterionDTO certCriteria : certificationCriterion) {
-				if(certCriteria.getNumber().equals(requiredCriteria[i]) && certCriteria.isMeetsCriteria()) {
+			for(PendingCertificationResultDTO certCriteria : certificationCriterion) {
+				if(certCriteria.getNumber().equals(requiredCriteria[i]) && certCriteria.getMeetsCriteria()) {
 					hasCert = true;
 				}
 			}	

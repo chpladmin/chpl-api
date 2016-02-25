@@ -94,6 +94,18 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 	}
 	
 	@Override
+	public TestToolDTO getByName(String name ) {
+		
+		TestToolDTO dto = null;
+		List<TestToolEntity> entities = getEntitiesByName(name);
+		
+		if (entities != null && entities.size() > 0){
+			dto = new TestToolDTO(entities.get(0));
+		}
+		return dto;
+	}
+	
+	@Override
 	public List<TestToolDTO> findAll() {
 		
 		List<TestToolEntity> entities = getAllEntities();
@@ -141,5 +153,14 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 		}
 		
 		return entity;
+	}
+	
+	private List<TestToolEntity> getEntitiesByName(String name) {
+		
+		Query query = entityManager.createQuery( "from TestToolEntity where (NOT deleted = true) AND (name = :name) ", TestToolEntity.class );
+		query.setParameter("name", name);
+		List<TestToolEntity> result = query.getResultList();
+		
+		return result;
 	}
 }

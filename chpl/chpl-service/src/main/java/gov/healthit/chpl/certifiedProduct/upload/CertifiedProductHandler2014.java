@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -15,14 +16,31 @@ import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.dto.QmsStandardDTO;
+import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestProcedureDTO;
+import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
@@ -35,19 +53,241 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
 		pendingCertifiedProduct.setStatus(getDefaultStatusId());
 		
-		int colIndex = 0;
-		//blank row
-		String uniqueId = getRecord().get(colIndex++);
-		if(StringUtils.isEmpty(uniqueId)) {
-			return null;
+		//get the first row of the certified product
+		for(CSVRecord record : getRecord()) {
+			String statusStr = record.get(1);
+			if(!StringUtils.isEmpty(statusStr) && FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)) {
+				parseCertifiedProductDetails(record, pendingCertifiedProduct);
+			}
 		}
+	
+		//get the QMS's for the certified product
+		if(pendingCertifiedProduct.isHasQms()) {
+			for(CSVRecord record : getRecord()) {
+				String statusStr = record.get(1);
+				if(!StringUtils.isEmpty(statusStr) && 
+						(FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr) ||
+						 SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
+					parseQms(record, pendingCertifiedProduct);
+				}
+			}
+		}
+		
+		//parse CQMs starts at index 28
+		for(CSVRecord record : getRecord()) {
+			String statusStr = record.get(1);
+			if(!StringUtils.isEmpty(statusStr) && 
+					(FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr) ||
+					 SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
+				parseCqms(record, pendingCertifiedProduct);
+			}
+		}
+		
+		//parse criteria starts at index 30
+		CSVRecord firstRow = null;
+		for(int i = 0; i < getRecord().size() && firstRow == null; i++) {
+			CSVRecord currRecord = getRecord().get(i);
+			String statusStr = currRecord.get(1);
+			if(!StringUtils.isEmpty(statusStr) && 
+					FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)) {
+				firstRow = currRecord;
+			}
+		}
+		
+		if(firstRow != null) {
+			int criteriaBeginIndex = 30;
+			int criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(5)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(6)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(7)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(8)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(9)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(10)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(11)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(12)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(13)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(14)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(15)", firstRow, criteriaBeginIndex, criteriaEndIndex));	
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(16)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(17)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(18)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(19)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (a)(20)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(5)(A)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(5)(B)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(6)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(7)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(8)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (b)(9)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (c)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (c)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (c)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (d)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (d)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (d)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (d)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (d)(5)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (d)(6)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (d)(7)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (d)(8)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (d)(9)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (e)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (e)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (e)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (f)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (f)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (f)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (f)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (f)(5)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (f)(6)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (f)(7)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (g)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (g)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (g)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (g)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (h)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (h)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+			criteriaBeginIndex = criteriaEndIndex+1;
+			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria("170.314 (h)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+		}
+
+		return pendingCertifiedProduct;
+	}
+	
+	private void parseCertifiedProductDetails(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
+		int colIndex = 0;
+		
+		String uniqueId = record.get(colIndex++);
 		pendingCertifiedProduct.setUniqueId(uniqueId);
 		
-		String recordStatus = getRecord().get(colIndex++);
+		String recordStatus = record.get(colIndex++);
 		pendingCertifiedProduct.setRecordStatus(recordStatus);
 		
 		//practice type
-		String practiceType = getRecord().get(colIndex++);
+		String practiceType = record.get(colIndex++);
 		pendingCertifiedProduct.setPracticeType(practiceType);
 		PracticeTypeDTO foundPracticeType = practiceTypeDao.getByName(practiceType);
 		if(foundPracticeType != null) {
@@ -55,13 +295,13 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		}
 		
 		//developer, product, version
-		String developer = getRecord().get(colIndex++);
-		String product = getRecord().get(colIndex++);
-		String productVersion = getRecord().get(colIndex++);
+		String developer = record.get(colIndex++);
+		String product = record.get(colIndex++);
+		String productVersion = record.get(colIndex++);
 		pendingCertifiedProduct.setDeveloperName(developer);
 		pendingCertifiedProduct.setProductName(product);
 		pendingCertifiedProduct.setProductVersion(productVersion);
-		
+
 		DeveloperDTO foundDeveloper = developerDao.getByName(developer);
 		if(foundDeveloper != null) {
 			pendingCertifiedProduct.setDeveloperId(foundDeveloper.getId());
@@ -77,10 +317,10 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 					pendingCertifiedProduct.setProductVersionId(foundVersion.getId());
 				}
 			}
-		}		
+		}	
 		
 		//certification year
-		String certificaitonYear = getRecord().get(colIndex++);
+		String certificaitonYear = record.get(colIndex++);
 		pendingCertifiedProduct.setCertificationEdition(certificaitonYear);
 		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
 		if(foundEdition != null) {
@@ -88,50 +328,68 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		}
 		
 		//acb certification id
-		pendingCertifiedProduct.setAcbCertificationId(getRecord().get(colIndex++));
+		pendingCertifiedProduct.setAcbCertificationId(record.get(colIndex++));	
 		
 		//certification body
-		String acbName = getRecord().get(colIndex++);
+		String acbName = record.get(colIndex++);
 		pendingCertifiedProduct.setCertificationBodyName(acbName);
 		CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
 		if(foundAcb != null) {
 			pendingCertifiedProduct.setCertificationBodyId(foundAcb.getId());
 		}
 		
+		//testing lab
+		String atlName = record.get(colIndex++);
+		pendingCertifiedProduct.setTestingLabName(atlName);
+		TestingLabDTO foundAtl = atlDao.getByName(acbName);
+		if(foundAtl != null) {
+			pendingCertifiedProduct.setTestingLabId(foundAtl.getId());
+		}	
+		
 		//product classification
-		String classification = getRecord().get(colIndex++);
+		String classification = record.get(colIndex++);
 		pendingCertifiedProduct.setProductClassificationName(classification);
 		ProductClassificationTypeDTO foundClassification = classificationDao.getByName(classification);
 		if(foundClassification != null) {
 			pendingCertifiedProduct.setProductClassificationId(foundClassification.getId());
 		}
-		
-		//TODO: column 10 is some sort of "module", what is that?
-		String module = getRecord().get(colIndex++);
-		pendingCertifiedProduct.setProductClassificationModule(module);
-		
+	
 		//certification date
-		String dateStr = getRecord().get(colIndex++);
+		String dateStr = record.get(colIndex++);
 		try {
 			Date certificationDate = dateFormatter.parse(dateStr);
 			pendingCertifiedProduct.setCertificationDate(certificationDate);
 		} catch(ParseException ex) {
 			pendingCertifiedProduct.setCertificationDate(null);
-		}
+		}		
 		
 		//developer address info
-		String developerStreetAddress = getRecord().get(colIndex++);
-		String developerState = getRecord().get(colIndex++);
-		String developerCity = getRecord().get(colIndex++);
-		String developerZipcode = getRecord().get(colIndex++);
-		String developerWebsite = getRecord().get(colIndex++);
-		String developerEmail = getRecord().get(colIndex++);
+		String developerStreetAddress = record.get(colIndex++);
+		String developerState = record.get(colIndex++);
+		String developerCity = record.get(colIndex++);
+		String developerZipcode = record.get(colIndex++);
+		String developerWebsite = record.get(colIndex++);
+		String developerEmail = record.get(colIndex++);
+		String developerPhone = record.get(colIndex++);
+		String developerContactName = record.get(colIndex++);
 		pendingCertifiedProduct.setDeveloperStreetAddress(developerStreetAddress);
 		pendingCertifiedProduct.setDeveloperCity(developerCity);
 		pendingCertifiedProduct.setDeveloperState(developerState);
 		pendingCertifiedProduct.setDeveloperZipCode(developerZipcode);
 		pendingCertifiedProduct.setDeveloperWebsite(developerWebsite);
-		pendingCertifiedProduct.setDeveloperEmail(developerEmail);
+		pendingCertifiedProduct.setDeveloperEmail(developerEmail);	
+		pendingCertifiedProduct.setDeveloperPhoneNumber(developerPhone);
+		pendingCertifiedProduct.setDeveloperContactName(developerContactName);
+		
+		//look for contact in db
+		ContactDTO contactToFind = new ContactDTO();
+		contactToFind.setLastName(developerContactName);
+		contactToFind.setEmail(developerEmail);
+		contactToFind.setPhoneNumber(developerPhone);
+		ContactDTO foundContact = contactDao.getByValues(contactToFind);
+		if(foundContact != null) {
+			pendingCertifiedProduct.setDeveloperContactId(foundContact.getId());
+		}
 		
 		AddressDTO toFind = new AddressDTO();
 		toFind.setStreetLineOne(developerStreetAddress);
@@ -147,988 +405,273 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				addressEntity = null;
 			}
 			pendingCertifiedProduct.setDeveloperAddress(addressEntity);
-		}
-		
-		//additional software
-		String additionalSoftware = getRecord().get(colIndex++);
-		//not querying the database for this because each row is unique to a certified product,
-		//so we will have to insert a row for this no matter what if it gets confirmed and moved 
-		//into the certified_product table
-		pendingCertifiedProduct.setAdditionalSoftware(additionalSoftware);
-		
-		//notes (field 19) - only for record status of update or delete
-		String notes = getRecord().get(colIndex++);
-		pendingCertifiedProduct.setUploadNotes(notes);
+		}		
 		
 		//report file location
-		pendingCertifiedProduct.setReportFileLocation(getRecord().get(colIndex++));
+		pendingCertifiedProduct.setReportFileLocation(record.get(colIndex++));	
 		
-		//the three new (optional) fields
-		if(getHeading().size() == CertifiedProductUploadHandlerFactoryImpl.NUM_FIELDS_2014_EXTENDED) {
-			pendingCertifiedProduct.setIcs(getRecord().get(colIndex++));
-			
-			String sedData = getRecord().get(colIndex++);
-			if(!StringUtils.isEmpty(sedData)) {
-				sedData = sedData.trim();
-				if(sedData.equalsIgnoreCase("TRUE") || sedData.equals("1")) {
-					pendingCertifiedProduct.setSedTesting(Boolean.TRUE);
-				}
-			}
-			if(pendingCertifiedProduct.getSedTesting() == null) {
-				pendingCertifiedProduct.setSedTesting(Boolean.FALSE);
-			}
-			
-			String qmsData = getRecord().get(colIndex++);
-			if(!StringUtils.isEmpty(qmsData)) {
-				qmsData = qmsData.trim();
-				if(qmsData.equalsIgnoreCase("TRUE") || qmsData.equals("1")) {
-					pendingCertifiedProduct.setQmsTesting(Boolean.TRUE);
-				}
-			}
-			if(pendingCertifiedProduct.getQmsTesting() == null) {
-				pendingCertifiedProduct.setQmsTesting(Boolean.FALSE);
-			}
+		//sed report link
+		pendingCertifiedProduct.setSedReportFileLocation(record.get(colIndex++));
+		
+		String hasQmsStr = record.get(colIndex++);
+		Boolean hasQms = asBoolean(hasQmsStr);
+		if(hasQms != null) {
+			pendingCertifiedProduct.setHasQms(hasQms.booleanValue());
 		}
 		
-		//skip 2011 certifications
-		colIndex += 45;
+		//qms standards
+		colIndex++;
+		//qms modification
+		colIndex++;
 		
-		//skip NQF criterion for 2014
-		colIndex += 59;
+		String hasIcsStr = record.get(colIndex++);
+		pendingCertifiedProduct.setIcs(asBoolean(hasIcsStr));
 
-		//more certification criterion
-		//starts at column DV
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(1)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(2)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(3)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(4)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(5)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(6)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(7)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(8)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(9)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(10)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(11)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(12)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(13)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(14)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(15)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(16)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(17)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(18)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(19)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (a)(20)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(1)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(2)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(3)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(4)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			if(pendingCertifiedProduct.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
-				pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(5)(A)", colIndex++));
-			} else if(pendingCertifiedProduct.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_INPATIENT)) {
-				pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(5)(B)", colIndex++));
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(6)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(7)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(8)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (b)(9)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (c)(1)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (c)(2)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (c)(3)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(1)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(2)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(3)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(4)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(5)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(6)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(7)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(8)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (d)(9)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (e)(1)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (e)(2)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (e)(3)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(1)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(2)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(3)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(4)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(5)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(6)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (f)(7)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (g)(1)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (g)(2)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (g)(3)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (g)(4)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (h)(1)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (h)(2)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			pendingCertifiedProduct.getCertificationCriterion().add(handleCertificationCriterion("170.314 (h)(3)", colIndex++));
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		//ends on GA
+		//(k)(1)  url
+		pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(colIndex++));
 		
-		//CMS criterion
-		//begins on GB
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS2", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS9V1", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}	
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS22", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}	
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS26V1", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}		
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS30", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}		
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS31", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}		
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS32", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}	
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS50", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS52", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS53", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS55", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}		
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS56", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}	
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS60", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS61", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS62", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS64", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS65", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS66", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS68", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS69", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS71", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS72", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS73", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS74", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS75", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS77", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS78", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS90", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS91", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}		
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS100", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS102", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS104", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS105", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS107", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS108", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS109", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS110", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS111", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS113", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS114", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS117", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS122", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS123", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS124", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS125", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS126", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS127", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS128", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS129", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS130", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS131", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS132", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS133", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS134", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS135", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS136", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS137", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS138", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS139", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS140", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS141", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS142", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS143", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS144", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS145", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS146", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS147", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS148", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS149", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS153", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS154", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS155", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS156", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS157", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS158", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS159", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS160", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS161", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS163", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS164", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS165", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS166", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS167", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS169", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS171", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS172", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS177", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS178", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS179", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS182", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS185", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS188", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		try {
-			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion("CMS190", colIndex++);
-			for(PendingCqmCriterionEntity entity : criterion) {
-				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
-					pendingCertifiedProduct.getCqmCriterion().add(entity);
-				}
-			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
-		
-		return pendingCertifiedProduct;
+		//(k)(2) attestation status
+		String k2AttestationStr = record.get(colIndex++);
+		if(!StringUtils.isEmpty(k2AttestationStr)) {
+			if("0".equals(k2AttestationStr.trim())) {
+				pendingCertifiedProduct.setTransparencyAttestation(Boolean.FALSE);
+			} else if("1".equals(k2AttestationStr.trim())) {
+				pendingCertifiedProduct.setTransparencyAttestation(Boolean.TRUE);
+			}
+		}
 	}
-
+	
+	private void parseQms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
+		int colIndex = 23;
+		if(!StringUtils.isEmpty(record.get(colIndex))) {
+			String qmsStandardName = record.get(colIndex++).toString();
+			QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName.trim());
+			String qmsMods = record.get(colIndex).toString();
+			
+			PendingCertifiedProductQmsStandardEntity qmsEntity = new PendingCertifiedProductQmsStandardEntity();
+			qmsEntity.setMappedProduct(pendingCertifiedProduct);
+			qmsEntity.setModification(qmsMods);
+			qmsEntity.setName(qmsStandardName);
+			if(qmsStandard != null) {
+				qmsEntity.setQmsStandardId(qmsStandard.getId());
+			}
+			pendingCertifiedProduct.getQmsStandards().add(qmsEntity);
+		}
+	}
+	
+	private void parseCqms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
+		int cqmNameIndex = 28;
+		int cqmVersionIndex = 29;
+		
+		String cqmName = record.get(cqmNameIndex);
+		String cqmVersions = record.get(cqmVersionIndex);
+		
+		try {
+			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion(cqmName, cqmVersions);
+			for(PendingCqmCriterionEntity entity : criterion) {
+				if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
+					pendingCertifiedProduct.getCqmCriterion().add(entity);
+				}
+			}
+		} catch(InvalidArgumentsException ex) { 
+			logger.error(ex.getMessage()); 
+		}
+	}
+	
+	private int getCriteriaEndIndex(int beginIndex) {
+		int criteriaBeginIndex = beginIndex;
+		int criteriaEndIndex = criteriaBeginIndex+1;
+		String colTitle = getHeading().get(criteriaBeginIndex).toString();
+		if(colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
+			colTitle = getHeading().get(criteriaEndIndex).toString();
+			while(criteriaEndIndex <= getLastDataIndex() && 
+					!colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
+				criteriaEndIndex++;
+				if(criteriaEndIndex <= getLastDataIndex()) {
+					colTitle = getHeading().get(criteriaEndIndex).toString();
+				}
+			}
+		} else {
+			return -1;
+		}
+		return criteriaEndIndex-1;
+	}
+	
+	private PendingCertificationResultEntity parseCriteria(String criteriaNumber, CSVRecord firstRow, int beginIndex, int endIndex) {
+		int currIndex = beginIndex;
+		PendingCertificationResultEntity cert = null;
+		try {
+			cert = getCertificationResult(criteriaNumber, firstRow.get(currIndex++).toString());
+			
+			while(currIndex <= endIndex) {
+				String colTitle = getHeading().get(currIndex).toString();
+				if(!StringUtils.isEmpty(colTitle)) {
+					colTitle = colTitle.trim().toUpperCase();
+					switch(colTitle) {
+					case "GAP":
+						cert.setGap(asBoolean(firstRow.get(currIndex++).toString()));
+						break;
+					case "STANDARD TESTED AGAINST":
+						parseTestStandards(cert, currIndex);
+						currIndex++;
+						break;
+					case "FUNCTIONALITY TESTED":
+						parseTestFunctionality(cert, currIndex);
+						currIndex++;
+						break;
+					case "MEASURE SUCCESSFULLY TESTED FOR G1":
+						cert.setG1Success(asBoolean(firstRow.get(currIndex++).toString()));
+						break;
+					case "MEASURE SUCCESSFULLY TESTED FOR G2":
+						cert.setG2Success(asBoolean(firstRow.get(currIndex++).toString()));
+						break;
+					case "ADDITIONAL SOFTWARE":
+						Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).toString());
+						if(hasAdditionalSoftware != null && hasAdditionalSoftware.equals(Boolean.TRUE)) {
+							parseAdditionalSoftware(cert, currIndex);
+						}
+						currIndex += 4; 
+						break;
+					case "TEST TOOL NAME":
+						parseTestTools(cert, currIndex);
+						currIndex += 2;
+					case "TEST PROCEDURE VERSION":
+						parseTestProcedures(cert, currIndex);
+						currIndex++;
+						break;
+					case "TEST DATA VERSION":
+						parseTestData(cert, currIndex);
+						currIndex += 3;
+						break;
+					case "SED":
+						cert.setSed(asBoolean(firstRow.get(currIndex++).toString()));
+						break;
+					case "UCD PROCESS SELECTED":
+						cert.setUcdProcessSelected(firstRow.get(currIndex++).toString());
+						break;
+					case "UCD PROCESS DETAILS":
+						cert.setUcdProcessDetails(firstRow.get(currIndex++).toString());
+						break;
+					}
+				}
+			}						
+		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
+		return cert;
+	}
+	
+	private void parseTestStandards(PendingCertificationResultEntity cert, int tsColumn) {
+		for(CSVRecord row : getRecord()) {
+			String tsValue = row.get(tsColumn).toString();
+			if(!StringUtils.isEmpty(tsValue)) {
+				PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
+				tsEntity.setTestStandardName(tsValue);
+				TestStandardDTO ts = testStandardDao.getByName(tsValue);
+				if(ts != null) {
+					tsEntity.setTestStandardId(ts.getId());
+				}
+				cert.getTestStandards().add(tsEntity);
+			}
+		}
+	}
+	
+	private void parseTestFunctionality(PendingCertificationResultEntity cert, int tfColumn) {
+		for(CSVRecord row : getRecord()) {
+			String tfValue = row.get(tfColumn).toString();
+			if(!StringUtils.isEmpty(tfColumn)) {
+				PendingCertificationResultTestFunctionalityEntity tfEntity = new PendingCertificationResultTestFunctionalityEntity();
+				tfEntity.setTestFunctionalityName(tfValue);
+				TestFunctionalityDTO tf = testFunctionalityDao.getByName(tfValue);
+				if(tf != null) {
+					tfEntity.setTestFunctionalityId(tf.getId());
+				}
+				cert.getTestFunctionality().add(tfEntity);
+			}
+		}
+	}
+	
+	private void parseAdditionalSoftware(PendingCertificationResultEntity cert, int asColumnBegin) {
+		int cpSourceColumn = asColumnBegin+1;
+		int nonCpSourceColumn = asColumnBegin+2;
+		
+		for(CSVRecord row : getRecord()) {
+			String cpSourceValue = row.get(cpSourceColumn).toString();
+			if(!StringUtils.isEmpty(cpSourceValue)) {
+				PendingCertificationResultAdditionalSoftwareEntity asEntity = new PendingCertificationResultAdditionalSoftwareEntity();
+				asEntity.setChplId(cpSourceValue);
+				if(cpSourceValue.startsWith("CHP-")) {
+					CertifiedProductDTO cp = certifiedProductDao.getByChplNumber(cpSourceValue);
+					if(cp != null) {
+						asEntity.setCertifiedProductId(cp.getId());
+					}
+				} else {
+					try {
+						CertifiedProductDetailsDTO cpd = certifiedProductDao.getByChplUniqueId(cpSourceValue);
+						if(cpd != null) {
+							asEntity.setCertifiedProductId(cpd.getId());
+						}
+					} catch(EntityRetrievalException ex) {
+						logger.error(ex.getMessage(), ex);
+					}
+				}
+				
+			} 
+			String nonCpSourceValue = row.get(nonCpSourceColumn).toString();
+			if(!StringUtils.isEmpty(nonCpSourceValue)) {
+				PendingCertificationResultAdditionalSoftwareEntity asEntity = new PendingCertificationResultAdditionalSoftwareEntity();
+				asEntity.setSoftwareName(nonCpSourceValue);
+				asEntity.setSoftwareVersion(row.get(nonCpSourceColumn+1).toString());
+				cert.getAdditionalSoftware().add(asEntity);
+			}
+		}
+	}
+	
+	private void parseTestProcedures(PendingCertificationResultEntity cert, int tpColumn) {
+		for(CSVRecord row : getRecord()) {
+			String tpValue = row.get(tpColumn).toString();
+			if(!StringUtils.isEmpty(tpValue)) {
+				PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
+				tpEntity.setTestProcedureVersion(tpValue);
+				TestProcedureDTO tp = testProcedureDao.getByName(tpValue);
+				if(tp != null) {
+					tpEntity.setTestProcedureId(tp.getId());
+				}
+				cert.getTestProcedures().add(tpEntity);
+			}
+		}
+	}
+	
+	private void parseTestData(PendingCertificationResultEntity cert, int tdColumnBegin) {
+		for(CSVRecord row : getRecord()) {
+			String tdVersionValue = row.get(tdColumnBegin).toString();
+			if(!StringUtils.isEmpty(tdVersionValue)) {
+				PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
+				tdEntity.setVersion(tdVersionValue);
+				Boolean hasAlteration = asBoolean(row.get(tdColumnBegin+1).toString());
+				if(hasAlteration != null && hasAlteration == Boolean.TRUE) {
+					tdEntity.setAlteration(row.get(tdColumnBegin+2).toString());
+				}
+				cert.getTestData().add(tdEntity);
+			}
+		}
+	}
+	
+	private void parseTestTools(PendingCertificationResultEntity cert, int toolColumnBegin) {
+		for(CSVRecord row : getRecord()) {
+			String testToolName = row.get(toolColumnBegin).toString();
+			String testToolVersion = row.get(toolColumnBegin+1).toString();
+			if(!StringUtils.isEmpty(testToolName)) {
+				PendingCertificationResultTestToolEntity ttEntity = new PendingCertificationResultTestToolEntity();
+				ttEntity.setTestToolName(testToolName);
+				ttEntity.setTestToolVersion(testToolVersion);
+				TestToolDTO testTool = testToolDao.getByName(testToolName);
+				if(testTool != null) {
+					ttEntity.setTestToolId(testTool.getId());
+				}
+				cert.getTestTools().add(ttEntity);
+			}
+		}
+	}
+	
 	public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 		for (CQMCriterion criterion : allCqms) {
@@ -1147,9 +690,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	 * @return
 	 * @throws InvalidArgumentsException
 	 */
-	protected List<PendingCqmCriterionEntity> handleCqmCmsCriterion(String criterionNum, int column) throws InvalidArgumentsException {
-		String version = getRecord().get(column);
-		if(version != null) {
+	protected List<PendingCqmCriterionEntity> handleCqmCmsCriterion(String criterionNum, String version) throws InvalidArgumentsException {
+		if(!StringUtils.isEmpty(version)) {
 			version = version.trim();
 		}
 		
@@ -1165,7 +707,9 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			
 			for(int i = 0; i < versionList.length; i++) {
 				String currVersion = versionList[i];
-				
+				if(!criterionNum.startsWith("CMS")) {
+					criterionNum = "CMS" + criterionNum;
+				}
 				CQMCriterionEntity cqmEntity = cqmDao.getCMSEntityByNumberAndVersion(criterionNum, currVersion);
 				if(cqmEntity == null) {
 					throw new InvalidArgumentsException("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + currVersion);

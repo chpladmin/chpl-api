@@ -45,6 +45,9 @@ public class PendingCertifiedProductEntity {
     @Column(name = "vendor_id")
     private Long developerId;
     
+    @Column(name = "vendor_contact_id")
+    private Long developerContactId;
+    
     @Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendor_address_id", unique=true, nullable = true)
@@ -65,8 +68,8 @@ public class PendingCertifiedProductEntity {
     @Column(name = "product_classification_id")
     private Long productClassificationId;
     
-    @Column(name = "additional_software_id")
-    private Long additionalSoftwareId;
+    @Column(name = "testing_lab_id")
+    private Long testingLabId;
     
 	@Basic(optional = false) 
 	@Column( name = "certification_status_id" , nullable = false)
@@ -83,6 +86,9 @@ public class PendingCertifiedProductEntity {
     
     @Column(name = "practice_type")
     private String practiceType;
+    
+    @Column(name = "testing_lab_name")
+    private String testingLabName;
     
     @Column(name="vendor_name")
     private String developerName;
@@ -104,16 +110,18 @@ public class PendingCertifiedProductEntity {
     
     @Column(name = "product_classification_name")
     private String productClassificationName;
-    
-    //TODO: no field for this one
-    @Column(name = "product_classification_module")
-    private String productClassificationModule;
-    
+
     @Column(name = "certification_date")
     private Date certificationDate;
     
     @Column(name = "vendor_street_address")
     private String developerStreetAddress;
+    
+    @Column(name = "vendor_transparency_attestation")
+    private Boolean transparencyAttestation;
+    
+    @Column(name = "vendor_transparency_attestation_url")
+    private String transparencyAttestationUrl;
     
     @Column(name = "vendor_city")
     private String developerCity;
@@ -127,38 +135,44 @@ public class PendingCertifiedProductEntity {
     @Column(name = "vendor_website")
     private String developerWebsite;
     
-    //TODO: maps to nothing
     @Column(name = "vendor_email")
     private String developerEmail;
+
+    @Column(name = "vendor_contact_name")
+    private String developerContactName;
     
-    @Column(name = "additional_software")
-    private String additionalSoftware;
-    
-    //TODO: maps to nothing
-    @Column(name = "upload_notes")
-    private String uploadNotes;
+    @Column(name = "vendor_phone")
+    private String developerPhoneNumber;
     
     @Column(name = "test_report_url")
     private String reportFileLocation;
     
+    @Column(name = "sed_report_file_location")
+    private String sedReportFileLocation;
+
 	@Column(name = "ics")
-	private String ics;
+	private Boolean ics;
 	
-	@Column(name = "sed")
-	private Boolean sedTesting;
-	
-	@Column(name = "qms")
-	private Boolean qmsTesting;
+	@Column(name = "terms_of_use_url")
+	private String termsOfUse;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
-	private Set<PendingCertificationCriterionEntity> certificationCriterion;
+	private Set<PendingCertificationResultEntity> certificationCriterion;
     
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCqmCriterionEntity> cqmCriterion;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
+	@Basic( optional = false )
+	@Column( name = "pending_certified_product_id", nullable = false  )
+	private Set<PendingCertifiedProductQmsStandardEntity> qmsStandards;
+	
+	@Transient
+	private boolean hasQms;
 	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
@@ -177,14 +191,16 @@ public class PendingCertifiedProductEntity {
 	private Boolean deleted;
 	
 	public PendingCertifiedProductEntity() {
-		certificationCriterion = new HashSet<PendingCertificationCriterionEntity>();
+		certificationCriterion = new HashSet<PendingCertificationResultEntity>();
 		cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
+		qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
 	} 
 
 	public PendingCertifiedProductEntity(Long id) {
 		this.id = id;
-		certificationCriterion = new HashSet<PendingCertificationCriterionEntity>();
+		certificationCriterion = new HashSet<PendingCertificationResultEntity>();
 		cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
+		qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
 	}
 	
 	@Transient
@@ -336,14 +352,6 @@ public class PendingCertifiedProductEntity {
 		this.productClassificationName = productClassificationName;
 	}
 
-	public String getProductClassificationModule() {
-		return productClassificationModule;
-	}
-
-	public void setProductClassificationModule(String productClassificationModule) {
-		this.productClassificationModule = productClassificationModule;
-	}
-
 	public Date getCertificationDate() {
 		return certificationDate;
 	}
@@ -400,22 +408,6 @@ public class PendingCertifiedProductEntity {
 		this.developerEmail = developerEmail;
 	}
 
-	public String getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-
-	public void setAdditionalSoftware(String additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
-
-	public String getUploadNotes() {
-		return uploadNotes;
-	}
-
-	public void setUploadNotes(String uploadNotes) {
-		this.uploadNotes = uploadNotes;
-	}
-
 	public String getReportFileLocation() {
 		return reportFileLocation;
 	}
@@ -424,11 +416,11 @@ public class PendingCertifiedProductEntity {
 		this.reportFileLocation = reportFileLocation;
 	}
 
-	public Set<PendingCertificationCriterionEntity> getCertificationCriterion() {
+	public Set<PendingCertificationResultEntity> getCertificationCriterion() {
 		return certificationCriterion;
 	}
 
-	public void setCertificationCriterion(Set<PendingCertificationCriterionEntity> certificationCriterion) {
+	public void setCertificationCriterion(Set<PendingCertificationResultEntity> certificationCriterion) {
 		this.certificationCriterion = certificationCriterion;
 	}
 
@@ -446,14 +438,6 @@ public class PendingCertifiedProductEntity {
 
 	public void setDeveloperAddress(AddressEntity developerAddress) {
 		this.developerAddress = developerAddress;
-	}
-
-	public Long getAdditionalSoftwareId() {
-		return additionalSoftwareId;
-	}
-
-	public void setAdditionalSoftwareId(Long additionalSoftwareId) {
-		this.additionalSoftwareId = additionalSoftwareId;
 	}
 
 	public Date getLastModifiedDate() {
@@ -496,27 +480,99 @@ public class PendingCertifiedProductEntity {
 		this.status = status;
 	}
 
-	public String getIcs() {
+	public Boolean getIcs() {
 		return ics;
 	}
 
-	public void setIcs(String ics) {
+	public void setIcs(Boolean ics) {
 		this.ics = ics;
 	}
 
-	public Boolean getSedTesting() {
-		return sedTesting;
+	public Long getTestingLabId() {
+		return testingLabId;
 	}
 
-	public void setSedTesting(Boolean sedTesting) {
-		this.sedTesting = sedTesting;
+	public void setTestingLabId(Long testingLabId) {
+		this.testingLabId = testingLabId;
 	}
 
-	public Boolean getQmsTesting() {
-		return qmsTesting;
+	public String getTestingLabName() {
+		return testingLabName;
 	}
 
-	public void setQmsTesting(Boolean qmsTesting) {
-		this.qmsTesting = qmsTesting;
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+
+	public String getDeveloperContactName() {
+		return developerContactName;
+	}
+
+	public void setDeveloperContactName(String developerContactName) {
+		this.developerContactName = developerContactName;
+	}
+
+	public String getDeveloperPhoneNumber() {
+		return developerPhoneNumber;
+	}
+
+	public void setDeveloperPhoneNumber(String developerPhoneNumber) {
+		this.developerPhoneNumber = developerPhoneNumber;
+	}
+
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public Set<PendingCertifiedProductQmsStandardEntity> getQmsStandards() {
+		return qmsStandards;
+	}
+
+	public void setQmsStandards(Set<PendingCertifiedProductQmsStandardEntity> qmsStandards) {
+		this.qmsStandards = qmsStandards;
+	}
+
+	public boolean isHasQms() {
+		return hasQms;
+	}
+
+	public void setHasQms(boolean hasQms) {
+		this.hasQms = hasQms;
+	}
+
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+
+	public Boolean getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public Long getDeveloperContactId() {
+		return developerContactId;
+	}
+
+	public void setDeveloperContactId(Long developerContactId) {
+		this.developerContactId = developerContactId;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 }

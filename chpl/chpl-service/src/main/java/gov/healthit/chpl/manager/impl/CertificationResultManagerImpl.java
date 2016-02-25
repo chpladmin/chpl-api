@@ -106,7 +106,6 @@ public class CertificationResultManagerImpl implements
 			if(mapping.getTestFunctionalityId() == null) {
 				TestFunctionalityDTO newTestFunctionality = new TestFunctionalityDTO();
 				newTestFunctionality.setName(mapping.getTestFunctionalityName());
-				newTestFunctionality.setCategory(mapping.getTestFunctionalityCategory());
 				newTestFunctionality = testFunctionalityDAO.create(newTestFunctionality);
 				mapping.setTestFunctionalityId(newTestFunctionality.getId());
 			}
@@ -170,10 +169,13 @@ public class CertificationResultManagerImpl implements
 		for (CertificationResultTestStandardDTO toUpdateMapping : toUpdate.getTestStandards()){
 			if(toUpdateMapping.getId() == null) {
 				if(toUpdateMapping.getTestStandardId() == null) {
-					TestStandardDTO testStandardToCreate = new TestStandardDTO();
-					testStandardToCreate.setName(toUpdateMapping.getTestStandardName());
-					testStandardToCreate = testStandardDAO.create(testStandardToCreate);
-					toUpdateMapping.setTestStandardId(testStandardToCreate.getId());
+					TestStandardDTO testStd = testStandardDAO.getByName(toUpdateMapping.getTestStandardName());
+					if(testStd == null) {
+						TestStandardDTO testStandardToCreate = new TestStandardDTO();
+						testStandardToCreate.setName(toUpdateMapping.getTestStandardName());
+						testStd = testStandardDAO.create(testStandardToCreate);
+					}
+					toUpdateMapping.setTestStandardId(testStd.getId());
 				}
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testStandardsToAdd.add(toUpdateMapping);
@@ -322,11 +324,13 @@ public class CertificationResultManagerImpl implements
 		for (CertificationResultTestFunctionalityDTO toUpdateMapping : toUpdate.getTestFunctionality()){
 			if(toUpdateMapping.getId() == null) {
 				if(toUpdateMapping.getTestFunctionalityId() == null) {
-					TestFunctionalityDTO testFunctionalityToCreate = new TestFunctionalityDTO();
-					testFunctionalityToCreate.setCategory(toUpdateMapping.getTestFunctionalityCategory());
-					testFunctionalityToCreate.setName(toUpdateMapping.getTestFunctionalityName());
-					testFunctionalityToCreate = testFunctionalityDAO.create(testFunctionalityToCreate);
-					toUpdateMapping.setTestFunctionalityId(testFunctionalityToCreate.getId());
+					TestFunctionalityDTO testFunc = testFunctionalityDAO.getByName(toUpdateMapping.getTestFunctionalityName());
+					if(testFunc == null) {
+						TestFunctionalityDTO testFunctionalityToCreate = new TestFunctionalityDTO();
+						testFunctionalityToCreate.setName(toUpdateMapping.getTestFunctionalityName());
+						testFunc = testFunctionalityDAO.create(testFunctionalityToCreate);
+					}
+					toUpdateMapping.setTestFunctionalityId(testFunc.getId());
 				}
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testFunctionalityToAdd.add(toUpdateMapping);

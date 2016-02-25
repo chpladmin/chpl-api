@@ -40,7 +40,7 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
-			entity.setCategory(dto.getCategory());
+			entity.setNumber(dto.getNumber());
 			
 			create(entity);
 			return new TestFunctionalityDTO(entity);
@@ -57,7 +57,7 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		}
 		
 		entity.setName(dto.getName());
-		entity.setCategory(dto.getCategory());
+		entity.setNumber(dto.getNumber());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
 		
@@ -87,6 +87,18 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		
 		if (entity != null){
 			dto = new TestFunctionalityDTO(entity);
+		}
+		return dto;
+	}
+	
+	@Override
+	public TestFunctionalityDTO getByName(String name) {
+		
+		TestFunctionalityDTO dto = null;
+		List<TestFunctionalityEntity> entities = getEntitiesByName(name);
+		
+		if (entities != null && entities.size() > 0){
+			dto = new TestFunctionalityDTO(entities.get(0));
 		}
 		return dto;
 	}
@@ -139,5 +151,14 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		}
 		
 		return entity;
+	}
+	
+	private List<TestFunctionalityEntity> getEntitiesByName(String name) {
+		
+		TestFunctionalityEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from TestFunctionalityEntity where (NOT deleted = true) AND (name = :name) ", TestFunctionalityEntity.class );
+		query.setParameter("name", name);
+		return query.getResultList();
 	}
 }

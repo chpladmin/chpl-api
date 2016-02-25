@@ -26,20 +26,8 @@ import org.hibernate.proxy.HibernateProxy;
  */
 
 @Entity
-@Table(name = "contact", catalog = "openchpl", schema = "openchpl")
+@Table(name = "contact")
 public class ContactEntity implements Cloneable, Serializable {
-
-	/** Serial Version UID. */
-	private static final long serialVersionUID = -4922450713586410718L;
-
-	/** Use a WeakHashMap so entries will be garbage collected once all entities 
-		referring to a saved hash are garbage collected themselves. */
-	private static final Map<Serializable, Long> SAVED_HASHES =
-		Collections.synchronizedMap(new WeakHashMap<Serializable, Long>());
-	
-	/** hashCode temporary storage. */
-	private volatile Long hashCode;
-
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
@@ -98,14 +86,6 @@ public class ContactEntity implements Cloneable, Serializable {
 	 */
 	public ContactEntity(Long id) {
 		this.id = id;
-	}
-	
-	/** Return the type of this class. Useful for when dealing with proxies.
-	* @return Defining class.
-	*/
-	@Transient
-	public Class<?> getClassType() {
-		return ContactEntity.class;
 	}
  
 
@@ -180,22 +160,6 @@ public class ContactEntity implements Cloneable, Serializable {
 	public Long getId() {
 		return this.id;
 		
-	}
-	
-	 /**  
-	 * Set the value related to the column: id.
-	 * @param id the id value you wish to set
-	 */
-	public void setId(final Long id) {
-		// If we've just been persisted and hashCode has been
-		// returned then make sure other entities with this
-		// ID return the already returned hash code
-		if ( (this.id == null || this.id == 0L) &&
-				(id != null) &&
-				(this.hashCode != null) ) {
-		SAVED_HASHES.put( id, this.hashCode );
-		}
-		this.id = id;
 	}
 
 	 /**
@@ -299,116 +263,4 @@ public class ContactEntity implements Cloneable, Serializable {
 	public void setTitle(final String title) {
 		this.title = title;
 	}
-	
-
-	/** Provides toString implementation.
-	 * @see java.lang.Object#toString()
-	 * @return String representation of this class.
-	 */
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		
-		sb.append("creationDate: " + this.getCreationDate() + ", ");
-		sb.append("deleted: " + this.isDeleted() + ", ");
-		sb.append("email: " + this.getEmail() + ", ");
-		sb.append("firstName: " + this.getFirstName() + ", ");
-		sb.append("id: " + this.getId() + ", ");
-		sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
-		sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
-		sb.append("lastName: " + this.getLastName() + ", ");
-		sb.append("phoneNumber: " + this.getPhoneNumber() + ", ");
-		sb.append("signatureDate: " + this.getSignatureDate() + ", ");
-		sb.append("title: " + this.getTitle() + ", ");
-		return sb.toString();		
-	}
-
-
-	/** Equals implementation. 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * @param aThat Object to compare with
-	 * @return true/false
-	 */
-	@Override
-	public boolean equals(final Object aThat) {
-		Object proxyThat = aThat;
-		
-		if ( this == aThat ) {
-			 return true;
-		}
-
-		
-		if (aThat instanceof HibernateProxy) {
- 			// narrow down the proxy to the class we are dealing with.
- 			try {
-				proxyThat = ((HibernateProxy) aThat).getHibernateLazyInitializer().getImplementation(); 
-			} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		   	}
-		}
-		if (aThat == null)  {
-			 return false;
-		}
-		
-		final ContactEntity that; 
-		try {
-			that = (ContactEntity) proxyThat;
-			if ( !(that.getClassType().equals(this.getClassType()))){
-				return false;
-			}
-		} catch (org.hibernate.ObjectNotFoundException e) {
-				return false;
-		} catch (ClassCastException e) {
-				return false;
-		}
-		
-		
-		boolean result = true;
-		result = result && (((this.getId() == null) && ( that.getId() == null)) || (this.getId() != null  && this.getId().equals(that.getId())));
-		result = result && (((getCreationDate() == null) && (that.getCreationDate() == null)) || (getCreationDate() != null && getCreationDate().equals(that.getCreationDate())));
-		result = result && (((isDeleted() == null) && (that.isDeleted() == null)) || (isDeleted() != null && isDeleted().equals(that.isDeleted())));
-		result = result && (((getEmail() == null) && (that.getEmail() == null)) || (getEmail() != null && getEmail().equals(that.getEmail())));
-		result = result && (((getFirstName() == null) && (that.getFirstName() == null)) || (getFirstName() != null && getFirstName().equals(that.getFirstName())));
-		result = result && (((getLastModifiedDate() == null) && (that.getLastModifiedDate() == null)) || (getLastModifiedDate() != null && getLastModifiedDate().equals(that.getLastModifiedDate())));
-		result = result && (((getLastModifiedUser() == null) && (that.getLastModifiedUser() == null)) || (getLastModifiedUser() != null && getLastModifiedUser().equals(that.getLastModifiedUser())));
-		result = result && (((getLastName() == null) && (that.getLastName() == null)) || (getLastName() != null && getLastName().equals(that.getLastName())));
-		result = result && (((getPhoneNumber() == null) && (that.getPhoneNumber() == null)) || (getPhoneNumber() != null && getPhoneNumber().equals(that.getPhoneNumber())));
-		result = result && (((getSignatureDate() == null) && (that.getSignatureDate() == null)) || (getSignatureDate() != null && getSignatureDate().equals(that.getSignatureDate())));
-		result = result && (((getTitle() == null) && (that.getTitle() == null)) || (getTitle() != null && getTitle().equals(that.getTitle())));
-		return result;
-	}
-	
-	/** Calculate the hashcode.
-	 * @see java.lang.Object#hashCode()
-	 * @return a calculated number
-	 */
-	@Override
-	public int hashCode() {
-		if ( this.hashCode == null ) {
-			synchronized ( this ) {
-				if ( this.hashCode == null ) {
-					Long newHashCode = null;
-
-					if ( getId() != null ) {
-					newHashCode = SAVED_HASHES.get( getId() );
-					}
-					
-					if ( newHashCode == null ) {
-						if ( getId() != null && getId() != 0L) {
-							newHashCode = getId();
-						} else {
-							newHashCode = (long) super.hashCode();
-
-						}
-					}
-					
-					this.hashCode = newHashCode;
-				}
-			}
-		}
-		return (int) (this.hashCode & 0xffffff);
-	}
-	
-
-	
 }

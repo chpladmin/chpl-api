@@ -21,13 +21,11 @@ public class TestFunctionalityEntity {
 	@Column(name = "test_functionality_id")
 	private Long id;
 	
-	@Basic( optional = false )
 	@Column( name = "name", nullable = false  )
 	private String name;
 
-	@Basic( optional = false )
-	@Column( name = "category", nullable = false  )
-	private String category;
+	@Column(name = "number")
+	private String number;
 	
 	public Long getId() {
 		return id;
@@ -44,16 +42,6 @@ public class TestFunctionalityEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-
 
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -94,5 +82,13 @@ public class TestFunctionalityEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 }

@@ -7,6 +7,7 @@ public class CertificationResultAdditionalSoftware {
 	private String name;
 	private String version;
 	private Long certifiedProductId;
+	private String certifiedProductNumber;
 	private String justification;
 	private Long certificationResultId;
 
@@ -69,6 +70,14 @@ public class CertificationResultAdditionalSoftware {
 
 	public void setCertificationResultId(Long certificationResultId) {
 		this.certificationResultId = certificationResultId;
+	}
+
+	public String getCertifiedProductNumber() {
+		return certifiedProductNumber;
+	}
+
+	public void setCertifiedProductNumber(String certifiedProductNumber) {
+		this.certifiedProductNumber = certifiedProductNumber;
 	}
 
 }

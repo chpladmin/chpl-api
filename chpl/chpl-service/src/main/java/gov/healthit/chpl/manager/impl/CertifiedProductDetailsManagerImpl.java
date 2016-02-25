@@ -162,8 +162,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());
 		searchDetails.setApiDocumentation(dto.getApiDocumentation());
 		searchDetails.setIcs(dto.getIcs());
-		searchDetails.setSedTesting(dto.getSedTesting());
-		searchDetails.setQmsTesting(dto.getQmsTesting());
 		searchDetails.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 		
 		if(dto.getTransparencyAttestation() == null) {

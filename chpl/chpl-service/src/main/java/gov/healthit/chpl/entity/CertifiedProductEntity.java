@@ -108,7 +108,7 @@ public class CertifiedProductEntity {
 	private String apiDocumentation;
 	
 	@Column(name = "ics")
-	private String ics;
+	private Boolean ics;
 	
 	@Column(name = "sed")
 	private Boolean sedTesting;
@@ -309,11 +309,11 @@ public class CertifiedProductEntity {
 		this.apiDocumentation = apiDocumentation;
 	}
 
-	public String getIcs() {
+	public Boolean getIcs() {
 		return ics;
 	}
 
-	public void setIcs(String ics) {
+	public void setIcs(Boolean ics) {
 		this.ics = ics;
 	}
 

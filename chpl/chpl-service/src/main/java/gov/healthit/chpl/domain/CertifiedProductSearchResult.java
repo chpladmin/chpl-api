@@ -27,7 +27,7 @@ public class CertifiedProductSearchResult {
 	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
-	private String ics;
+	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
 	private String productAdditionalSoftware;
@@ -183,10 +183,10 @@ public class CertifiedProductSearchResult {
 	public void setTestingLabName(String testingLabName) {
 		this.testingLabName = testingLabName;
 	}
-	public String getIcs() {
+	public Boolean getIcs() {
 		return ics;
 	}
-	public void setIcs(String ics) {
+	public void setIcs(Boolean ics) {
 		this.ics = ics;
 	}
 	public Boolean getSedTesting() {

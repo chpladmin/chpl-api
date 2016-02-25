@@ -87,6 +87,18 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 	}
 	
 	@Override
+	public QmsStandardDTO getByName(String name) {
+		
+		QmsStandardDTO dto = null;
+		List<QmsStandardEntity> entities = getEntitiesByName(name);
+		
+		if (entities != null && entities.size() > 0){
+			dto = new QmsStandardDTO(entities.get(0));
+		}
+		return dto;
+	}
+	
+	@Override
 	public List<QmsStandardDTO> findAll() {
 		
 		List<QmsStandardEntity> entities = getAllEntities();

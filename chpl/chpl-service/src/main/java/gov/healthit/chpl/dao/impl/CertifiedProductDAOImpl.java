@@ -207,6 +207,31 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dto;
 	}
 	
+	public CertifiedProductDTO getByChplNumber(String chplProductNumber) {
+		CertifiedProductDTO dto = null;
+		CertifiedProductEntity entity = getEntityByChplNumber(chplProductNumber);
+		
+		if (entity != null){
+			dto = new CertifiedProductDTO(entity);
+		}
+		return dto;
+	}
+	
+	public CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException {
+		CertifiedProductDetailsDTO dto = null;
+		String[] idParts = chplUniqueId.split(".");
+		if(idParts.length < 9) {
+			throw new EntityRetrievalException("CHPL ID must have 9 parts separated by '.'");
+		}
+		CertifiedProductDetailsEntity entity = getEntityByUniqueIdParts(idParts[0], idParts[1], idParts[2], 
+				idParts[3], idParts[4], idParts[5], idParts[6], idParts[7], idParts[8]);
+		
+		if (entity != null){
+			dto = new CertifiedProductDetailsDTO(entity);
+		}
+		return dto;
+	}
+
 	public List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds) {
 		Query query = entityManager.createQuery( "from CertifiedProductEntity where (NOT deleted = true) and product_version_id IN :idList", CertifiedProductEntity.class );
 		query.setParameter("idList", versionIds);
@@ -326,4 +351,55 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return entity;
 	}
 	
+	private CertifiedProductEntity getEntityByChplNumber(String chplProductNumber) {
+		
+		CertifiedProductEntity entity = null;
+		
+		Query query = entityManager.createQuery( "from CertifiedProductEntity where (chplProductNumber = :chplProductNumber) ", CertifiedProductEntity.class );
+		query.setParameter("chplProductNumber", chplProductNumber);
+		List<CertifiedProductEntity> result = query.getResultList();
+		
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		
+		return entity;
+	}
+	
+	private CertifiedProductDetailsEntity getEntityByUniqueIdParts(String year, String atlCode, String acbCode, 
+			String developerCode, String productCode, String versionCode, String icsCode, 
+			String additionalSoftwareCode, String certifiedDateCode) {
+		
+		CertifiedProductDetailsEntity entity = null;
+		
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where "
+				+ "year = :year AND "
+				+ "testingLabCode = :atlCode AND "
+				+ "certificationBodyCode = :acbCode AND "
+				+ "developerCode = :developerCode AND "
+				+ "productCode = :productCode AND "
+				+ "versionCode = :versionCode AND "
+				+ "icsCode = :icsCode AND "
+				+ "additionalSoftwareCode = :additionalSoftwareCode AND "
+				+ "certifiedDateCode = :certifiedDateCode", 
+				CertifiedProductDetailsEntity.class );
+		
+		query.setParameter("year", year);
+		query.setParameter("atlCode", atlCode);
+		query.setParameter("acbCode", acbCode);
+		query.setParameter("developerCode", developerCode);
+		query.setParameter("productCode", productCode);
+		query.setParameter("versionCode", versionCode);
+		query.setParameter("icsCode", icsCode);
+		query.setParameter("additionalSoftwareCode", additionalSoftwareCode);
+		query.setParameter("certifiedDateCode", certifiedDateCode);
+		
+		List<CertifiedProductDetailsEntity> result = query.getResultList();
+		
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		
+		return entity;
+	}
 }

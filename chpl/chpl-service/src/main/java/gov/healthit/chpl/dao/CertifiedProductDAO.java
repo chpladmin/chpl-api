@@ -16,7 +16,9 @@ public interface CertifiedProductDAO {
 	public List<CertifiedProductDetailsDTO> findAll();
 	
 	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException;
-
+	public CertifiedProductDTO getByChplNumber(String chplProductNumber);
+	public CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException;
+	
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId);
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionIds(List<Long> versionIds);
 	public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds);

@@ -21,9 +21,11 @@ public class TestStandardEntity {
 	@Column(name = "test_standard_id")
 	private Long id;
 	
-	@Basic( optional = false )
 	@Column( name = "name", nullable = false  )
 	private String name;
+	
+	@Column( name = "number", nullable = false  )
+	private String number;
 	
 	public Long getId() {
 		return id;
@@ -80,5 +82,13 @@ public class TestStandardEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 }
