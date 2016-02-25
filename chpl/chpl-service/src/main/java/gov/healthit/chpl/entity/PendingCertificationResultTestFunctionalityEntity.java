@@ -26,11 +26,8 @@ public class PendingCertificationResultTestFunctionalityEntity {
 	@Column(name = "test_functionality_id")
 	private Long testFunctionalityId;
 	
-	@Column(name = "test_functionality_name")
-	private String testFunctionalityName;
-	
-	@Column(name = "test_functionality_category")
-	private String testFunctionalityCategory;
+	@Column(name = "test_functionality_number")
+	private String testFunctionalityNumber;
 	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
@@ -105,20 +102,11 @@ public class PendingCertificationResultTestFunctionalityEntity {
 		this.testFunctionalityId = testFunctionalityId;
 	}
 
-	public String getTestFunctionalityName() {
-		return testFunctionalityName;
+	public String getTestFunctionalityNumber() {
+		return testFunctionalityNumber;
 	}
 
-	public void setTestFunctionalityName(String testFunctionalityName) {
-		this.testFunctionalityName = testFunctionalityName;
+	public void setTestFunctionalityNumber(String testFunctionalityName) {
+		this.testFunctionalityNumber = testFunctionalityName;
 	}
-
-	public String getTestFunctionalityCategory() {
-		return testFunctionalityCategory;
-	}
-
-	public void setTestFunctionalityCategory(String testFunctionalityCategory) {
-		this.testFunctionalityCategory = testFunctionalityCategory;
-	}
-
 }

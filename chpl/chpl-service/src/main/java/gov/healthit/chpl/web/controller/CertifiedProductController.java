@@ -311,7 +311,7 @@ public class CertifiedProductController {
 		}
 		
 		Long acbId = new Long(acbIdStr);
-		CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pendingCp);
+		CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
 		pcpManager.confirm(pendingCp.getId());
 		
 		CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());

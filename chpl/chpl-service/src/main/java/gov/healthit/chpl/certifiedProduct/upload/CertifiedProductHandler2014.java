@@ -341,7 +341,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		//testing lab
 		String atlName = record.get(colIndex++);
 		pendingCertifiedProduct.setTestingLabName(atlName);
-		TestingLabDTO foundAtl = atlDao.getByName(acbName);
+		TestingLabDTO foundAtl = atlDao.getByName(atlName);
 		if(foundAtl != null) {
 			pendingCertifiedProduct.setTestingLabId(foundAtl.getId());
 		}	
@@ -564,8 +564,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			String tsValue = row.get(tsColumn).toString();
 			if(!StringUtils.isEmpty(tsValue)) {
 				PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
-				tsEntity.setTestStandardName(tsValue);
-				TestStandardDTO ts = testStandardDao.getByName(tsValue);
+				tsEntity.setTestStandardNumber(tsValue);
+				TestStandardDTO ts = testStandardDao.getByNumber(tsValue);
 				if(ts != null) {
 					tsEntity.setTestStandardId(ts.getId());
 				}
@@ -579,8 +579,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			String tfValue = row.get(tfColumn).toString();
 			if(!StringUtils.isEmpty(tfColumn)) {
 				PendingCertificationResultTestFunctionalityEntity tfEntity = new PendingCertificationResultTestFunctionalityEntity();
-				tfEntity.setTestFunctionalityName(tfValue);
-				TestFunctionalityDTO tf = testFunctionalityDao.getByName(tfValue);
+				tfEntity.setTestFunctionalityNumber(tfValue);
+				TestFunctionalityDTO tf = testFunctionalityDao.getByNumber(tfValue);
 				if(tf != null) {
 					tfEntity.setTestFunctionalityId(tf.getId());
 				}

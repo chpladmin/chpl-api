@@ -8,6 +8,13 @@ import java.util.Set;
 
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -114,12 +121,6 @@ public class PendingCertifiedProductDTO {
 		if(details.getDeveloper().get("contactId") != null) {
 			this.developerContactId = new Long(details.getDeveloper().get("contactId").toString());
 		}
-		if(details.getDeveloper().get("transparencyAttestation") != null) {
-			this.transparencyAttestation = new Boolean(details.getDeveloper().get("transparencyAttestation").toString());
-		}
-		if(details.getDeveloper().get("transparencyAttestationUrl") != null) {
-			this.transparencyAttestationUrl = details.getDeveloper().get("transparencyAttestationUrl").toString();
-		}
 		
 		AddressDTO address = new AddressDTO();
 		if(details.getDeveloperAddress().get("id") != null) {
@@ -190,13 +191,89 @@ public class PendingCertifiedProductDTO {
 		this.sedReportFileLocation = details.getSedReportFileLocation();
 		this.ics = details.getIcs();
 		this.termsOfUseUrl = details.getTermsOfUse();
+		this.transparencyAttestation = details.getTransparencyAttestation();
+		this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
 		
+		List<CertifiedProductQmsStandard> qmsStandards = details.getQmsStandards();
+		if(qmsStandards != null && qmsStandards.size() > 0) {
+			for(CertifiedProductQmsStandard qms : qmsStandards) {
+				PendingCertifiedProductQmsStandardDTO qmsDto = new PendingCertifiedProductQmsStandardDTO();
+				qmsDto.setApplicableCriteria(qms.getApplicableCriteria());
+				qmsDto.setModification(qms.getQmsModification());
+				qmsDto.setQmsStandardId(qms.getQmsStandardId());
+				qmsDto.setName(qms.getQmsStandardName());
+				this.qmsStandards.add(qmsDto);
+			}
+		}
 		List<CertificationResult> certificationResults = details.getCertificationResults();
 		for(CertificationResult crResult : certificationResults) {
 			PendingCertificationResultDTO certDto = new PendingCertificationResultDTO();
 			certDto.setNumber(crResult.getNumber());
 			certDto.setTitle(crResult.getTitle());
 			certDto.setMeetsCriteria(crResult.isSuccess());
+			certDto.setGap(crResult.isGap());
+			certDto.setG1Success(crResult.isG1Success());
+			certDto.setG2Success(crResult.isG2Success());
+			certDto.setSed(crResult.isSed());
+			certDto.setUcdProcessDetails(crResult.getUcdProcessDetails());
+			certDto.setUcdProcessSelected(crResult.getUcdProcessSelected());
+			
+			if(crResult.getAdditionalSoftware() != null && crResult.getAdditionalSoftware().size() > 0) {
+				for(CertificationResultAdditionalSoftware software : crResult.getAdditionalSoftware()) {
+					PendingCertificationResultAdditionalSoftwareDTO as = new PendingCertificationResultAdditionalSoftwareDTO();
+					as.setCertifiedProductId(software.getCertifiedProductId());
+					as.setChplId(software.getCertifiedProductNumber());
+					as.setJustification(software.getJustification());
+					as.setName(software.getName());
+					as.setVersion(software.getVersion());
+					certDto.getAdditionalSoftware().add(as);
+				}
+			}
+			
+			if(crResult.getTestDataUsed() != null && crResult.getTestDataUsed().size() > 0) {
+				for(CertificationResultTestData testData : crResult.getTestDataUsed()) {
+					PendingCertificationResultTestDataDTO testDto = new PendingCertificationResultTestDataDTO();
+					testDto.setAlteration(testData.getAlteration());
+					testDto.setVersion(testDto.getVersion());
+					certDto.getTestData().add(testDto);
+				}
+			}
+			
+			if(crResult.getTestFunctionality() != null && crResult.getTestFunctionality().size() > 0) {
+				for(CertificationResultTestFunctionality func : crResult.getTestFunctionality()) {
+					PendingCertificationResultTestFunctionalityDTO funcDto = new PendingCertificationResultTestFunctionalityDTO();
+					funcDto.setNumber(func.getNumber());
+					funcDto.setTestFunctionalityId(func.getTestFunctionalityId());
+					certDto.getTestFunctionality().add(funcDto);
+				}
+			}
+			
+			if(crResult.getTestProcedures() != null && crResult.getTestProcedures().size() > 0) {
+				for(CertificationResultTestProcedure proc : crResult.getTestProcedures()) {
+					PendingCertificationResultTestProcedureDTO procDto = new PendingCertificationResultTestProcedureDTO();
+					procDto.setTestProcedureId(proc.getTestProcedureId());
+					procDto.setVersion(proc.getTestProcedureVersion());
+					certDto.getTestProcedures().add(procDto);
+				}
+			}
+			
+			if(crResult.getTestStandards() != null && crResult.getTestStandards().size() > 0) {
+				for(CertificationResultTestStandard std : crResult.getTestStandards()) {
+					PendingCertificationResultTestStandardDTO stdDto = new PendingCertificationResultTestStandardDTO();
+					stdDto.setNumber(std.getTestStandardNumber());
+					stdDto.setTestStandardId(std.getTestStandardId());
+					certDto.getTestStandards().add(stdDto);
+				}
+			}
+			
+			if(crResult.getTestToolsUsed() != null && crResult.getTestToolsUsed().size() > 0) {
+				for(CertificationResultTestTool tool : crResult.getTestToolsUsed()) {
+					PendingCertificationResultTestToolDTO toolDto = new PendingCertificationResultTestToolDTO();
+					toolDto.setName(tool.getTestToolName());
+					toolDto.setVersion(tool.getTestToolVersion());
+					toolDto.setTestToolId(tool.getTestToolId());
+				}
+			}
 			this.certificationCriterion.add(certDto);
 		}
 		List<CQMResultDetails> cqmResults = details.getCqmResults();

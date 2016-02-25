@@ -124,7 +124,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "testing_lab_code, "
 				+ "chpl_product_number,"
 				+ "report_file_location, "
-				+ "sed_report_file_locatoin, "
+				+ "sed_report_file_location, "
 				+ "acb_certification_id, "
 				+ "practice_type_id, "
 				+ "product_classification_type_id, "

@@ -6,8 +6,7 @@ public class PendingCertificationResultTestFunctionalityDTO {
 	private Long id;
 	private Long pendingCertificationResultId;
 	private Long testFunctionalityId;
-	private String name;
-	private String category;
+	private String number;
 	
 	public PendingCertificationResultTestFunctionalityDTO() {}
 	
@@ -15,8 +14,7 @@ public class PendingCertificationResultTestFunctionalityDTO {
 		this.setId(entity.getId());
 		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
 		this.setTestFunctionalityId(entity.getTestFunctionalityId());
-		this.setName(entity.getTestFunctionalityName());
-		this.setCategory(entity.getTestFunctionalityCategory());
+		this.setNumber(entity.getTestFunctionalityNumber());
 	}
 	
 	public Long getId() {
@@ -42,19 +40,11 @@ public class PendingCertificationResultTestFunctionalityDTO {
 		this.testFunctionalityId = testFunctionalityId;
 	}
 
-	public String getName() {
-		return name;
+	public String getNumber() {
+		return number;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
+	public void setNumber(String number) {
+		this.number = number;
 	}
 }

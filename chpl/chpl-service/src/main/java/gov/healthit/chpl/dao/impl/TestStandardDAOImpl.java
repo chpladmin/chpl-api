@@ -91,10 +91,10 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	}
 	
 	@Override
-	public TestStandardDTO getByName(String name) {
+	public TestStandardDTO getByNumber(String name) {
 		
 		TestStandardDTO dto = null;
-		List<TestStandardEntity> entities = getEntitiesByName(name);
+		List<TestStandardEntity> entities = getEntitiesByNumber(name);
 		
 		if (entities != null && entities.size() > 0){
 			dto = new TestStandardDTO(entities.get(0));
@@ -153,10 +153,10 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	}
 	
 	
-	private List<TestStandardEntity> getEntitiesByName(String name) {
+	private List<TestStandardEntity> getEntitiesByNumber(String number) {
 		
-		Query query = entityManager.createQuery( "from TestStandardEntity where (NOT deleted = true) AND (name = :name) ", TestStandardEntity.class );
-		query.setParameter("name", name);
+		Query query = entityManager.createQuery( "from TestStandardEntity where (NOT deleted = true) AND (number = :number) ", TestStandardEntity.class );
+		query.setParameter("number", number);
 		List<TestStandardEntity> result = query.getResultList();
 		
 		return result;

@@ -92,10 +92,10 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 	}
 	
 	@Override
-	public TestFunctionalityDTO getByName(String name) {
+	public TestFunctionalityDTO getByNumber(String number) {
 		
 		TestFunctionalityDTO dto = null;
-		List<TestFunctionalityEntity> entities = getEntitiesByName(name);
+		List<TestFunctionalityEntity> entities = getEntitiesByNumber(number);
 		
 		if (entities != null && entities.size() > 0){
 			dto = new TestFunctionalityDTO(entities.get(0));
@@ -153,12 +153,12 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		return entity;
 	}
 	
-	private List<TestFunctionalityEntity> getEntitiesByName(String name) {
+	private List<TestFunctionalityEntity> getEntitiesByNumber(String number) {
 		
 		TestFunctionalityEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from TestFunctionalityEntity where (NOT deleted = true) AND (name = :name) ", TestFunctionalityEntity.class );
-		query.setParameter("name", name);
+		Query query = entityManager.createQuery( "from TestFunctionalityEntity where (NOT deleted = true) AND (number = :number) ", TestFunctionalityEntity.class );
+		query.setParameter("number", number);
 		return query.getResultList();
 	}
 }
