@@ -234,7 +234,7 @@ public class PendingCertifiedProductDTO {
 				for(CertificationResultTestData testData : crResult.getTestDataUsed()) {
 					PendingCertificationResultTestDataDTO testDto = new PendingCertificationResultTestDataDTO();
 					testDto.setAlteration(testData.getAlteration());
-					testDto.setVersion(testDto.getVersion());
+					testDto.setVersion(testData.getVersion());
 					certDto.getTestData().add(testDto);
 				}
 			}

@@ -26,13 +26,15 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
 			String headingValue = heading.get(i);
 			if(StringUtils.isEmpty(headingValue)) {
 				lastDataIndex = i-1;
+			} else if(i == heading.size()-1) {
+				lastDataIndex = i;
 			}
 		}
 		
 		if((lastDataIndex+1) == NUM_FIELDS_2014) {
 			handler = handler2014;
 		} else {
-			throw new InvalidArgumentsException("Expected " + NUM_FIELDS_2014 + " fields in the record but found " + heading.size());
+			throw new InvalidArgumentsException("Expected " + NUM_FIELDS_2014 + " fields in the record but found " + (lastDataIndex+1));
 		}
 		
 		handler.setRecord(cpRecords);

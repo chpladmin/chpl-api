@@ -63,10 +63,11 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		developerMap.put("name", dto.getDeveloperName());
 		developerMap.put("email", dto.getDeveloperEmail());
 		developerMap.put("website", dto.getDeveloperWebsite());
-		developerMap.put("contactName", dto.getDeveloperContactName());
-		developerMap.put("contactPhone", dto.getDeveloperPhoneNumber());
-		developerMap.put("contactId", dto.getDeveloperContactId());
-		
+		Contact developerContact = new Contact();
+		developerContact.setLastName(dto.getDeveloperContactName());
+		developerContact.setEmail(dto.getDeveloperEmail());
+		developerContact.setPhoneNumber(dto.getDeveloperPhoneNumber());
+		developerMap.put("contact", developerContact);
 		this.setDeveloper(developerMap);
 		
 		developerAddress = new HashMap<String, Object>();

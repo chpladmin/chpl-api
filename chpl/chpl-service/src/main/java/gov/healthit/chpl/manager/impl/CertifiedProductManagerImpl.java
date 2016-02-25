@@ -205,7 +205,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setDeleted(false);
 		toCreate.setLastModifiedDate(new Date());
 		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-
+		toCreate.setPrivacyAttestation(Boolean.FALSE);
+		
 		if(pendingCp.getCertificationBodyId() == null) {
 			throw new EntityCreationException("ACB ID must be specified.");
 		}
@@ -230,6 +231,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			toCreate.setCertificationStatusId(statusDto.getId());
 		}
 		
+		DeveloperDTO developer = null;
 		if(pendingCp.getDeveloperId() == null) {
 			DeveloperDTO newDeveloper = new DeveloperDTO();
 			if(!StringUtils.isEmpty(pendingCp.getDeveloperName())) {
@@ -247,9 +249,25 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			developerContact.setEmail(pendingCp.getDeveloperEmail());
 			
 			//create the dev, address, and contact
-			newDeveloper = developerManager.create(newDeveloper);
-			pendingCp.setDeveloperId(newDeveloper.getId());
-		} 
+			developer = developerManager.create(newDeveloper);
+			pendingCp.setDeveloperId(developer.getId());
+		} else {
+			developer = developerDao.getById(pendingCp.getDeveloperId());
+			boolean needsUpdate = false;
+			if(developer.getTransparencyAttestation() == null && pendingCp.getTransparencyAttestation() != null || 
+				(!developer.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation()))) {
+				developer.setTransparencyAttestation(pendingCp.getTransparencyAttestation());
+				needsUpdate = true;
+			}
+			if(developer.getTransparencyAttestationUrl() == null && pendingCp.getTransparencyAttestationUrl() != null || 
+				(!developer.getTransparencyAttestationUrl().equals(pendingCp.getTransparencyAttestationUrl()))) {
+				developer.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
+				needsUpdate = true;
+			}
+			if(needsUpdate) {
+				developerManager.update(developer);
+			}
+		}
 		
 		if(pendingCp.getProductId() == null) {
 			ProductDTO newProduct = new ProductDTO();
@@ -277,10 +295,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setProductVersionId(pendingCp.getProductVersionId());
 		
 		String uniqueId = pendingCp.getUniqueId();
-		String[] uniqueIdParts = uniqueId.split(".");
+		String[] uniqueIdParts = uniqueId.split("\\.");
 		if(uniqueIdParts == null || uniqueIdParts.length != 9) {
 			throw new EntityCreationException("The unique CHPL ID provided must have 9 parts separated by '.'");
 		}
+		//TOOD: validate that these pieces match up with data
+
 		toCreate.setProductCode(uniqueIdParts[4]);
 		toCreate.setVersionCode(uniqueIdParts[5]);
 		toCreate.setIcsCode(uniqueIdParts[6]);
@@ -343,7 +363,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					for(PendingCertificationResultTestDataDTO testData : certResult.getTestData()) {
 						CertificationResultTestDataDTO testDto = new CertificationResultTestDataDTO();
 						testDto.setAlteration(testData.getAlteration());
-						testDto.setVersion(testDto.getVersion());
+						testDto.setVersion(testData.getVersion());
 						testDto.setCertificationResultId(createdCert.getId());
 						certDao.addTestDataMapping(testDto);
 					}
@@ -369,7 +389,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							TestProcedureDTO tp = new TestProcedureDTO();
 							tp.setVersion(proc.getVersion());
 							tp = testProcDao.create(tp);
-							proc.setTestProcedureId(tp.getId());
+							procDto.setTestProcedureId(tp.getId());
 						} else {
 							procDto.setTestProcedureId(proc.getTestProcedureId());
 						}
@@ -417,24 +437,26 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		//are successful
 		if(pendingCp.getCqmCriterion() != null && pendingCp.getCqmCriterion().size() > 0) {
 			for(PendingCqmCriterionDTO cqmResult : pendingCp.getCqmCriterion()) {
-				CQMCriterionDTO criterion = null;
-				if(cqmResult.getCmsId().startsWith("CMS")) {
-					criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmResult.getVersion());
-					
-					if(criterion == null) {
-						throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getCmsId() + 
-								"and version " + cqmResult.getVersion() + ".");
+				if(cqmResult.isMeetsCriteria() && !StringUtils.isEmpty(cqmResult.getVersion())) {
+					CQMCriterionDTO criterion = null;
+					if(cqmResult.getCmsId().startsWith("CMS")) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmResult.getVersion());
+						
+						if(criterion == null) {
+							throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getCmsId() + 
+									" and version " + cqmResult.getVersion() + ".");
+						}
+						
+						CQMResultDTO cqmResultToCreate = new CQMResultDTO();
+						cqmResultToCreate.setCqmCriterionId(criterion.getId());
+						cqmResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
+						cqmResultToCreate.setCreationDate(new Date());
+						cqmResultToCreate.setDeleted(false);
+						cqmResultToCreate.setLastModifiedDate(new Date());
+						cqmResultToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
+						cqmResultToCreate.setSuccess(cqmResult.isMeetsCriteria());
+						cqmResultDAO.create(cqmResultToCreate);
 					}
-					
-					CQMResultDTO cqmResultToCreate = new CQMResultDTO();
-					cqmResultToCreate.setCqmCriterionId(criterion.getId());
-					cqmResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
-					cqmResultToCreate.setCreationDate(new Date());
-					cqmResultToCreate.setDeleted(false);
-					cqmResultToCreate.setLastModifiedDate(new Date());
-					cqmResultToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-					cqmResultToCreate.setSuccess(cqmResult.isMeetsCriteria());
-					cqmResultDAO.create(cqmResultToCreate);
 				}
 			}
 		}

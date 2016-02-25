@@ -59,7 +59,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			entity.setCreationDate(result.getCreationDate());
+			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
 			
 			create(entity);

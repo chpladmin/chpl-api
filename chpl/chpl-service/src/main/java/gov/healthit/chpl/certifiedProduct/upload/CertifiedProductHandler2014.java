@@ -281,14 +281,14 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		int colIndex = 0;
 		
 		String uniqueId = record.get(colIndex++);
-		pendingCertifiedProduct.setUniqueId(uniqueId);
+		pendingCertifiedProduct.setUniqueId(uniqueId.trim());
 		
 		String recordStatus = record.get(colIndex++);
 		pendingCertifiedProduct.setRecordStatus(recordStatus);
 		
 		//practice type
 		String practiceType = record.get(colIndex++);
-		pendingCertifiedProduct.setPracticeType(practiceType);
+		pendingCertifiedProduct.setPracticeType(practiceType.trim());
 		PracticeTypeDTO foundPracticeType = practiceTypeDao.getByName(practiceType);
 		if(foundPracticeType != null) {
 			pendingCertifiedProduct.setPracticeTypeId(foundPracticeType.getId());
@@ -298,21 +298,21 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		String developer = record.get(colIndex++);
 		String product = record.get(colIndex++);
 		String productVersion = record.get(colIndex++);
-		pendingCertifiedProduct.setDeveloperName(developer);
-		pendingCertifiedProduct.setProductName(product);
-		pendingCertifiedProduct.setProductVersion(productVersion);
+		pendingCertifiedProduct.setDeveloperName(developer.trim());
+		pendingCertifiedProduct.setProductName(product.trim());
+		pendingCertifiedProduct.setProductVersion(productVersion.trim());
 
-		DeveloperDTO foundDeveloper = developerDao.getByName(developer);
+		DeveloperDTO foundDeveloper = developerDao.getByName(developer.trim());
 		if(foundDeveloper != null) {
 			pendingCertifiedProduct.setDeveloperId(foundDeveloper.getId());
 			
 			//product
-			ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product);
+			ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product.trim());
 			if(foundProduct != null) {
 				pendingCertifiedProduct.setProductId(foundProduct.getId());
 				
 				//version
-				ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(), productVersion);
+				ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(), productVersion.trim());
 				if(foundVersion != null) {
 					pendingCertifiedProduct.setProductVersionId(foundVersion.getId());
 				}
@@ -321,35 +321,35 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		
 		//certification year
 		String certificaitonYear = record.get(colIndex++);
-		pendingCertifiedProduct.setCertificationEdition(certificaitonYear);
-		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
+		pendingCertifiedProduct.setCertificationEdition(certificaitonYear.trim());
+		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear.trim());
 		if(foundEdition != null) {
 			pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
 		}
 		
 		//acb certification id
-		pendingCertifiedProduct.setAcbCertificationId(record.get(colIndex++));	
+		pendingCertifiedProduct.setAcbCertificationId(record.get(colIndex++).trim());	
 		
 		//certification body
 		String acbName = record.get(colIndex++);
-		pendingCertifiedProduct.setCertificationBodyName(acbName);
-		CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
+		pendingCertifiedProduct.setCertificationBodyName(acbName.trim());
+		CertificationBodyDTO foundAcb = acbDao.getByName(acbName.trim());
 		if(foundAcb != null) {
 			pendingCertifiedProduct.setCertificationBodyId(foundAcb.getId());
 		}
 		
 		//testing lab
 		String atlName = record.get(colIndex++);
-		pendingCertifiedProduct.setTestingLabName(atlName);
-		TestingLabDTO foundAtl = atlDao.getByName(atlName);
+		pendingCertifiedProduct.setTestingLabName(atlName.trim());
+		TestingLabDTO foundAtl = atlDao.getByName(atlName.trim());
 		if(foundAtl != null) {
 			pendingCertifiedProduct.setTestingLabId(foundAtl.getId());
 		}	
 		
 		//product classification
 		String classification = record.get(colIndex++);
-		pendingCertifiedProduct.setProductClassificationName(classification);
-		ProductClassificationTypeDTO foundClassification = classificationDao.getByName(classification);
+		pendingCertifiedProduct.setProductClassificationName(classification.trim());
+		ProductClassificationTypeDTO foundClassification = classificationDao.getByName(classification.trim());
 		if(foundClassification != null) {
 			pendingCertifiedProduct.setProductClassificationId(foundClassification.getId());
 		}
@@ -364,14 +364,14 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		}		
 		
 		//developer address info
-		String developerStreetAddress = record.get(colIndex++);
-		String developerState = record.get(colIndex++);
-		String developerCity = record.get(colIndex++);
-		String developerZipcode = record.get(colIndex++);
-		String developerWebsite = record.get(colIndex++);
-		String developerEmail = record.get(colIndex++);
-		String developerPhone = record.get(colIndex++);
-		String developerContactName = record.get(colIndex++);
+		String developerStreetAddress = record.get(colIndex++).trim();
+		String developerState = record.get(colIndex++).trim();
+		String developerCity = record.get(colIndex++).trim();
+		String developerZipcode = record.get(colIndex++).trim();
+		String developerWebsite = record.get(colIndex++).trim();
+		String developerEmail = record.get(colIndex++).trim();
+		String developerPhone = record.get(colIndex++).trim();
+		String developerContactName = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setDeveloperStreetAddress(developerStreetAddress);
 		pendingCertifiedProduct.setDeveloperCity(developerCity);
 		pendingCertifiedProduct.setDeveloperState(developerState);
@@ -428,7 +428,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		pendingCertifiedProduct.setIcs(asBoolean(hasIcsStr));
 
 		//(k)(1)  url
-		pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(colIndex++));
+		pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(colIndex++).trim());
 		
 		//(k)(2) attestation status
 		String k2AttestationStr = record.get(colIndex++);
@@ -450,8 +450,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			
 			PendingCertifiedProductQmsStandardEntity qmsEntity = new PendingCertifiedProductQmsStandardEntity();
 			qmsEntity.setMappedProduct(pendingCertifiedProduct);
-			qmsEntity.setModification(qmsMods);
-			qmsEntity.setName(qmsStandardName);
+			qmsEntity.setModification(qmsMods.trim());
+			qmsEntity.setName(qmsStandardName.trim());
 			if(qmsStandard != null) {
 				qmsEntity.setQmsStandardId(qmsStandard.getId());
 			}
@@ -463,8 +463,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		int cqmNameIndex = 28;
 		int cqmVersionIndex = 29;
 		
-		String cqmName = record.get(cqmNameIndex);
-		String cqmVersions = record.get(cqmVersionIndex);
+		String cqmName = record.get(cqmNameIndex).trim();
+		String cqmVersions = record.get(cqmVersionIndex).trim();
 		
 		try {
 			List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion(cqmName, cqmVersions);
