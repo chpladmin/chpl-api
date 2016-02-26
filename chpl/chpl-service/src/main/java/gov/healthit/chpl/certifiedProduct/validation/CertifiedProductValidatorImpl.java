@@ -58,10 +58,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The ACB code provided does not match the assigned ACB code '" + certificationBody.getAcbCode() + "'.");
 			}
 			
-			DeveloperDTO developer = developerDao.getById(product.getDeveloperId());
-			if(!developerCode.matches("X+") && 
-				!developer.getDeveloperCode().equals(developerCode)) {
-				product.getErrorMessages().add("The developer code provided does not match the assigned developer code '" + developer.getDeveloperCode() + "'.");
+			if(product.getDeveloperId() != null) {
+				DeveloperDTO developer = developerDao.getById(product.getDeveloperId());
+				if(developer != null) {
+					if(!developerCode.matches("X+") && 
+						!developer.getDeveloperCode().equals(developerCode)) {
+						product.getErrorMessages().add("The developer code provided does not match the assigned developer code '" + developer.getDeveloperCode() + "'.");
+					}
+				}
 			}
 		} catch(EntityRetrievalException ex) {
 			product.getErrorMessages().add(ex.getMessage());
