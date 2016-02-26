@@ -232,7 +232,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				result.setTestStandards(null);
 			}
 			
-			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
 				List<CertificationResultUcdProcessDTO> ucdProcesses = certResultManager.getUcdProcessesForCertificationResult(certResult.getId());
 				for(CertificationResultUcdProcessDTO currResult : ucdProcesses) {
 					CertificationResultUcdProcess ucdResult = new CertificationResultUcdProcess(currResult);

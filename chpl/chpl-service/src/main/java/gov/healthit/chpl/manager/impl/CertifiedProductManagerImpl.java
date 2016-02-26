@@ -364,6 +364,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							ucdDto.setUcdProcessId(ucd.getUcdProcessId());
 						}
 						ucdDto.setCertificationResultId(createdCert.getId());
+						ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
 						certDao.addUcdProcessMapping(ucdDto);
 					}
 				}
