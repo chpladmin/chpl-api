@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
@@ -64,6 +65,17 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					if(!developerCode.matches("X+") && 
 						!developer.getDeveloperCode().equals(developerCode)) {
 						product.getErrorMessages().add("The developer code provided does not match the assigned developer code '" + developer.getDeveloperCode() + "'.");
+					}
+					//check transparency attestation and url for warnings
+					if( (developer.getTransparencyAttestation() == null && product.getTransparencyAttestation() != null) ||
+						(developer.getTransparencyAttestation() != null && product.getTransparencyAttestation() == null) || 
+						(!developer.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
+						product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
+					}
+					if( (StringUtils.isEmpty(developer.getTransparencyAttestationUrl()) && !StringUtils.isEmpty(product.getTransparencyAttestationUrl())) ||
+						(!StringUtils.isEmpty(developer.getTransparencyAttestationUrl()) && StringUtils.isEmpty(product.getTransparencyAttestationUrl())) ||
+						(!developer.getTransparencyAttestationUrl().equals(product.getTransparencyAttestationUrl())) ) {
+						product.getWarningMessages().add("The transparency attestation URL for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 					}
 				}
 			}
