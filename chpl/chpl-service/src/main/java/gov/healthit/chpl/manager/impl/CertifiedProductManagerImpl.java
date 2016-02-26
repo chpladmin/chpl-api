@@ -1,5 +1,4 @@
 package gov.healthit.chpl.manager.impl;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,12 +29,10 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
-import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
-import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -43,9 +40,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
@@ -81,8 +76,6 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
@@ -118,6 +111,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired TestToolDAO testToolDao;
 	@Autowired TestStandardDAO testStandardDao;
 	@Autowired TestProcedureDAO testProcDao;
+	
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -296,11 +290,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		
 		String uniqueId = pendingCp.getUniqueId();
 		String[] uniqueIdParts = uniqueId.split("\\.");
-		if(uniqueIdParts == null || uniqueIdParts.length != 9) {
-			throw new EntityCreationException("The unique CHPL ID provided must have 9 parts separated by '.'");
-		}
-		//TOOD: validate that these pieces match up with data
-
 		toCreate.setProductCode(uniqueIdParts[4]);
 		toCreate.setVersionCode(uniqueIdParts[5]);
 		toCreate.setIcsCode(uniqueIdParts[6]);

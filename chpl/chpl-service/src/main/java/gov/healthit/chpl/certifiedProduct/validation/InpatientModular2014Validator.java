@@ -25,6 +25,7 @@ public class InpatientModular2014Validator extends CertifiedProductValidatorImpl
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
+		super.validate(product);
 		//TODO:
 		//One less than all the mandatory Inpatient certification criteria must be
 		//met. i think i don't need to check this?
