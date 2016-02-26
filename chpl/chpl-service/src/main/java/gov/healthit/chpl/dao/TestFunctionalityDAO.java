@@ -12,5 +12,5 @@ public interface TestFunctionalityDAO {
 	
 	public List<TestFunctionalityDTO> findAll();
 	public TestFunctionalityDTO getById(Long id) throws EntityRetrievalException;
-	public TestFunctionalityDTO getByName(String name);
+	public TestFunctionalityDTO getByNumber(String name);
 }

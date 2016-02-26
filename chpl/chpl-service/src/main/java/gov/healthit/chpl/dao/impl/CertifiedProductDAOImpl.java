@@ -219,7 +219,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	
 	public CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException {
 		CertifiedProductDetailsDTO dto = null;
-		String[] idParts = chplUniqueId.split(".");
+		String[] idParts = chplUniqueId.split("\\.");
 		if(idParts.length < 9) {
 			throw new EntityRetrievalException("CHPL ID must have 9 parts separated by '.'");
 		}

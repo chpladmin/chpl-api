@@ -6,7 +6,7 @@ public class PendingCertificationResultTestStandardDTO {
 	private Long id;
 	private Long pendingCertificationResultId;
 	private Long testStandardId;
-	private String name;
+	private String number;
 	
 	public PendingCertificationResultTestStandardDTO() {}
 	
@@ -14,7 +14,7 @@ public class PendingCertificationResultTestStandardDTO {
 		this.setId(entity.getId());
 		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
 		this.setTestStandardId(entity.getTestStandardId());
-		this.setName(entity.getTestStandardName());
+		this.setNumber(entity.getTestStandardNumber());
 	}
 	
 	public Long getId() {
@@ -40,11 +40,11 @@ public class PendingCertificationResultTestStandardDTO {
 		this.testStandardId = testStandardId;
 	}
 
-	public String getName() {
-		return name;
+	public String getNumber() {
+		return number;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setNumber(String name) {
+		this.number = name;
 	}
 }

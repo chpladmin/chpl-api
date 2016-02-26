@@ -8,7 +8,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 @Component("ambulatoryModular2014Validator")
-public class AmbulatoryModular2014Validator implements CertifiedProductValidator {
+public class AmbulatoryModular2014Validator extends CertifiedProductValidatorImpl {
 
 	private static final String[] g1ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
 			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
@@ -25,6 +25,7 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
+		super.validate(product);
 		//TODO:
 		//One less than all the mandatory Ambulatory certification criteria must be
 		//met. i think i don't need to check this?

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
@@ -152,6 +153,15 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				}
 			} else {
 				try {
+					if(StringUtils.isEmpty(dto.getContact().getFirstName())) {
+						dto.getContact().setFirstName("");
+					}
+					if(StringUtils.isEmpty(dto.getContact().getEmail())) {
+						dto.getContact().setEmail("");
+					}
+					if(StringUtils.isEmpty(dto.getContact().getPhoneNumber())) {
+						dto.getContact().setPhoneNumber("");
+					}
 					entity.setContact(contactDao.create(dto.getContact()));
 				} catch(EntityCreationException ex) {
 					logger.error("could not create contact.", ex);
