@@ -32,6 +32,7 @@ import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
@@ -40,6 +41,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -54,6 +56,7 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -68,6 +71,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
@@ -76,6 +80,7 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
@@ -111,6 +116,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired TestToolDAO testToolDao;
 	@Autowired TestStandardDAO testStandardDao;
 	@Autowired TestProcedureDAO testProcDao;
+	@Autowired UcdProcessDAO ucdDao;
 	
 	
 	@Autowired
@@ -332,8 +338,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				certResultToCreate.setG1Success(certResult.getG1Success());
 				certResultToCreate.setG2Success(certResult.getG2Success());
 				certResultToCreate.setSed(certResult.getSed());
-				certResultToCreate.setUcdProcessSelected(certResult.getUcdProcessSelected());
-				certResultToCreate.setUcdProcessDetails(certResult.getUcdProcessDetails());
 				CertificationResultDTO createdCert = certDao.create(certResultToCreate);
 				
 				if(certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
@@ -345,6 +349,22 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						as.setVersion(software.getVersion());
 						as.setCertificationResultId(createdCert.getId());
 						certDao.addAdditionalSoftwareMapping(as);
+					}
+				}
+				
+				if(certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
+					for(PendingCertificationResultUcdProcessDTO ucd : certResult.getUcdProcesses()) {
+						CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
+						if(ucd.getUcdProcessId() == null) {
+							UcdProcessDTO newUcd = new UcdProcessDTO();
+							newUcd.setName(ucd.getUcdProcessName());
+							newUcd = ucdDao.create(newUcd);
+							ucdDto.setUcdProcessId(newUcd.getId());
+						} else {
+							ucdDto.setUcdProcessId(ucd.getUcdProcessId());
+						}
+						ucdDto.setCertificationResultId(createdCert.getId());
+						certDao.addUcdProcessMapping(ucdDto);
 					}
 				}
 				
@@ -620,12 +640,20 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					} else {
 						oldResult.setSed(null);
 					}
-					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.UCD_FIELDS)) {
-						oldResult.setUcdProcessDetails(newCertResult.getUcdProcessDetails());
-						oldResult.setUcdProcessSelected(newCertResult.getUcdProcessSelected());
+					
+					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.UCD_FIELDS) ||
+							newCertResult.getUcdProcesses() == null || newCertResult.getUcdProcesses().size() == 0) {
+						oldResult.setUcdProcesses(new ArrayList<CertificationResultUcdProcessDTO>());
 					} else {
-						oldResult.setUcdProcessDetails(null);
-						oldResult.setUcdProcessSelected(null);
+						for(CertificationResultUcdProcess newUcdProcess : newCertResult.getUcdProcesses()) {
+							CertificationResultUcdProcessDTO ucd = new CertificationResultUcdProcessDTO();
+							ucd.setId(newUcdProcess.getId());
+							ucd.setCertificationResultId(oldResult.getId());
+							ucd.setUcdProcessDetails(newUcdProcess.getUcdProcessDetails());
+							ucd.setUcdProcessId(newUcdProcess.getUcdProcessId());
+							ucd.setUcdProcessName(newUcdProcess.getUcdProcessName());
+							oldResult.getUcdProcesses().add(ucd);
+						}
 					}
 
 					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE) || 

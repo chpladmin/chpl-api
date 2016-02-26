@@ -10,6 +10,7 @@ import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntit
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity;
 
 public class PendingCertificationResultDTO {
 	private Long id;
@@ -22,9 +23,8 @@ public class PendingCertificationResultDTO {
 	private Boolean sed;
 	private Boolean g1Success;
 	private Boolean g2Success;
-	private String ucdProcessSelected;
-	private String ucdProcessDetails;
 	
+	private List<PendingCertificationResultUcdProcessDTO> ucdProcesses;
 	private List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware;
 	private List<PendingCertificationResultTestDataDTO> testData;
 	private List<PendingCertificationResultTestFunctionalityDTO> testFunctionality;
@@ -33,6 +33,7 @@ public class PendingCertificationResultDTO {
 	private List<PendingCertificationResultTestToolDTO> testTools;
 	
 	public PendingCertificationResultDTO() {
+		ucdProcesses = new ArrayList<PendingCertificationResultUcdProcessDTO>();
 		additionalSoftware = new ArrayList<PendingCertificationResultAdditionalSoftwareDTO>();
 		testData = new ArrayList<PendingCertificationResultTestDataDTO>();
 		testFunctionality = new ArrayList<PendingCertificationResultTestFunctionalityDTO>();
@@ -57,8 +58,12 @@ public class PendingCertificationResultDTO {
 		this.setSed(entity.getSed());
 		this.setG1Success(entity.getG1Success());
 		this.setG2Success(entity.getG2Success());
-		this.setUcdProcessDetails(entity.getUcdProcessDetails());
-		this.setUcdProcessSelected(entity.getUcdProcessSelected());
+		
+		if(entity.getUcdProcesses() != null) {
+			for(PendingCertificationResultUcdProcessEntity e : entity.getUcdProcesses()) {
+				this.getUcdProcesses().add(new PendingCertificationResultUcdProcessDTO(e));
+			}
+		}
 		
 		if(entity.getTestStandards() != null) {
 			for(PendingCertificationResultTestStandardEntity e : entity.getTestStandards()) {
@@ -165,22 +170,6 @@ public class PendingCertificationResultDTO {
 		this.g2Success = g2Success;
 	}
 
-	public String getUcdProcessSelected() {
-		return ucdProcessSelected;
-	}
-
-	public void setUcdProcessSelected(String ucdProcessSelected) {
-		this.ucdProcessSelected = ucdProcessSelected;
-	}
-
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
-	}
-
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
-	}
-
 	public List<PendingCertificationResultAdditionalSoftwareDTO> getAdditionalSoftware() {
 		return additionalSoftware;
 	}
@@ -227,6 +216,14 @@ public class PendingCertificationResultDTO {
 
 	public void setTestTools(List<PendingCertificationResultTestToolDTO> testTools) {
 		this.testTools = testTools;
+	}
+
+	public List<PendingCertificationResultUcdProcessDTO> getUcdProcesses() {
+		return ucdProcesses;
+	}
+
+	public void setUcdProcesses(List<PendingCertificationResultUcdProcessDTO> ucdProcesses) {
+		this.ucdProcesses = ucdProcesses;
 	}
 	
 	

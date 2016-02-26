@@ -129,8 +129,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 					certResult.setSed(null);
 				}
 				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
-					certResult.setUcdProcessDetails(null);
-					certResult.setUcdProcessSelected(null);
+					certResult.setUcdProcesses(null);
 				}
 				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
 					certResult.setAdditionalSoftware(null);

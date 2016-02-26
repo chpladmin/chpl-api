@@ -29,6 +29,7 @@ import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
@@ -39,6 +40,7 @@ import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntit
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
@@ -547,10 +549,14 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						cert.setSed(asBoolean(firstRow.get(currIndex++).toString()));
 						break;
 					case "UCD PROCESS SELECTED":
-						cert.setUcdProcessSelected(firstRow.get(currIndex++).toString());
-						break;
-					case "UCD PROCESS DETAILS":
-						cert.setUcdProcessDetails(firstRow.get(currIndex++).toString());
+						PendingCertificationResultUcdProcessEntity ucd = new PendingCertificationResultUcdProcessEntity();
+						ucd.setUcdProcessName(firstRow.get(currIndex++).toString());
+						ucd.setUcdProcessDetails(firstRow.get(currIndex++).toString());
+						UcdProcessDTO dto = ucdDao.getByName(ucd.getUcdProcessName());
+						if(dto != null) {
+							ucd.setUcdProcessId(dto.getId());
+						}
+						cert.getUcdProcesses().add(ucd);
 						break;
 					}
 				}
