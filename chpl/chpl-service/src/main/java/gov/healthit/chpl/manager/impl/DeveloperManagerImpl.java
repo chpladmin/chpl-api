@@ -126,7 +126,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		}
 		DeveloperDTO after = new DeveloperDTO(result);
 		after.setTransparencyAttestation(developer.getTransparencyAttestation());
-		
+		after.setTransparencyAttestationUrl(developer.getTransparencyAttestationUrl());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", before, after);
 		
 		return after;
