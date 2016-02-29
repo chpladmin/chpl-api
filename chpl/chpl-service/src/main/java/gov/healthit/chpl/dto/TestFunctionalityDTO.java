@@ -5,14 +5,14 @@ import gov.healthit.chpl.entity.TestFunctionalityEntity;
 public class TestFunctionalityDTO {
 	private Long id;
 	private String name;
-	private String category;
+	private String number;
 	
 	public TestFunctionalityDTO(){}
 	
 	public TestFunctionalityDTO(TestFunctionalityEntity entity){		
 		this.id = entity.getId();
 		this.name = entity.getName();
-		this.category = entity.getCategory();
+		this.number = entity.getNumber();
 	}
 
 	public Long getId() {
@@ -31,11 +31,11 @@ public class TestFunctionalityDTO {
 		this.name = name;
 	}
 
-	public String getCategory() {
-		return category;
+	public String getNumber() {
+		return number;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setNumber(String number) {
+		this.number = number;
 	}
 }

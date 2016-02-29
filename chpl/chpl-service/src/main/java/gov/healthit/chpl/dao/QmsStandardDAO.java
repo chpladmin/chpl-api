@@ -12,4 +12,5 @@ public interface QmsStandardDAO {
 	
 	public List<QmsStandardDTO> findAll();
 	public QmsStandardDTO getById(Long id) throws EntityRetrievalException;
+	public QmsStandardDTO getByName(String name) ;
 }

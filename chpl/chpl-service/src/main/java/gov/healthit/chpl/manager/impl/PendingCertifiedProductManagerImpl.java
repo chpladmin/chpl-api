@@ -5,8 +5,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
@@ -44,16 +45,19 @@ import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service
-public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport implements PendingCertifiedProductManager {
+public class PendingCertifiedProductManagerImpl implements PendingCertifiedProductManager {
+	private static final Logger logger = LogManager.getLogger(PendingCertifiedProductManagerImpl.class);
 
+	@Autowired private CertificationResultRules certRules;
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
 	
@@ -73,17 +77,6 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	public void setup() {
 		loadCQMCriteria();
 	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	@PostFilter("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
-			+ "(hasPermission(filterObject, read) or hasPermission(filterObject, admin)))")
-	public List<PendingCertifiedProductDTO> getAll() {
-		List<PendingCertifiedProductDTO> all = pcpDao.findAll();
-		validate(all);
-		return all;
-	}
 
 	@Override
 	@Transactional(readOnly = true)
@@ -93,6 +86,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	public List<PendingCertifiedProductDTO> getPending() {
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
 		List<PendingCertifiedProductDTO> products = pcpDao.findByStatus(statusDto.getId());
+		updateCertResults(products);
 		validate(products);
 		
 		return products;
@@ -104,12 +98,59 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin))")	
 	public PendingCertifiedProductDetails getById(Long id) throws EntityRetrievalException {
 		PendingCertifiedProductDTO dto = pcpDao.findById(id);
+		updateCertResults(dto);
 		validate(dto);
 
 		PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(dto);
 		addAllVersionsToCmsCriterion(pcpDetails);
 		
 		return pcpDetails;
+	}
+	
+	private void updateCertResults(PendingCertifiedProductDTO dto) {
+		List<PendingCertifiedProductDTO> products = new ArrayList<PendingCertifiedProductDTO>();
+		products.add(dto);
+		updateCertResults(products);
+	}
+	
+	private void updateCertResults(List<PendingCertifiedProductDTO> products) {
+		for(PendingCertifiedProductDTO product : products) {
+			for(PendingCertificationResultDTO certResult : product.getCertificationCriterion()) {
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
+					certResult.setGap(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+					certResult.setG1Success(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+					certResult.setG2Success(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SED)) {
+					certResult.setSed(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
+					certResult.setUcdProcesses(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+					certResult.setAdditionalSoftware(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+					certResult.setTestFunctionality(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+					certResult.setTestStandards(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+					certResult.setTestData(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)) {
+					certResult.setTestProcedures(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+					certResult.setTestTools(null);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -156,6 +197,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		
 		//insert the record
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
+		updateCertResults(pendingCpDto);
 		//add appropriate ACLs
 		//who already has access to this ACB?
 		CertificationBodyDTO acb = acbManager.getById(acbId);
@@ -407,14 +449,18 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	private void validate(List<PendingCertifiedProductDTO> products) {
 		for(PendingCertifiedProductDTO dto : products) {
 			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
-			validator.validate(dto);
+			if(validator != null) {
+				validator.validate(dto);
+			}
 		}
 	}
 	
 	private void validate(PendingCertifiedProductDTO... products) {
 		for(PendingCertifiedProductDTO dto : products) {
 			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
-			validator.validate(dto);
+			if(validator != null) {
+				validator.validate(dto);
+			}
 		}
 	}
 	

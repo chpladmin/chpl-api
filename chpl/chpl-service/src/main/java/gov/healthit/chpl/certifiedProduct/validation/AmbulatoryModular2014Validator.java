@@ -4,11 +4,11 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.PendingCertificationCriterionDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 @Component("ambulatoryModular2014Validator")
-public class AmbulatoryModular2014Validator implements CertifiedProductValidator {
+public class AmbulatoryModular2014Validator extends CertifiedProductValidatorImpl {
 
 	private static final String[] g1ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
 			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
@@ -25,23 +25,24 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
+		super.validate(product);
 		//TODO:
 		//One less than all the mandatory Ambulatory certification criteria must be
 		//met. i think i don't need to check this?
 		
 		//check (g)(1)
 		boolean hasG1Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.getMeetsCriteria()) {
 				hasG1Cert = true;
 			}
 		}	
 		if(hasG1Cert) {
 			boolean hasAtLeastOneCertPartner = false;
 			for(int i = 0; i < g1ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
 					if(certCriteria.getNumber().equals(g1ComplementaryCerts[i]) &&
-							certCriteria.isMeetsCriteria()) {
+							certCriteria.getMeetsCriteria()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}
@@ -54,17 +55,17 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 		
 		//check (g)(2)
 		boolean hasG2Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.getMeetsCriteria()) {
 				hasG2Cert = true;
 			}
 		}	
 		if(hasG2Cert) {
 			boolean hasAtLeastOneCertPartner = false;
 			for(int i = 0; i < g2ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
 					if(certCriteria.getNumber().equals(g2ComplementaryCerts[i]) &&
-							certCriteria.isMeetsCriteria()) {
+							certCriteria.getMeetsCriteria()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}
@@ -82,17 +83,17 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 		
 		//check (g)(3)
 		boolean hasG3Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(3)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(3)") && certCriteria.getMeetsCriteria()) {
 				hasG3Cert = true;
 			}
 		}	
 		if(hasG3Cert) {
 			boolean hasAtLeastOneCertPartner = false;
 			for(int i = 0; i < g3ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
 					if(certCriteria.getNumber().equals(g3ComplementaryCerts[i]) &&
-							certCriteria.isMeetsCriteria()) {
+							certCriteria.getMeetsCriteria()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}
@@ -105,8 +106,8 @@ public class AmbulatoryModular2014Validator implements CertifiedProductValidator
 		
 		//check (g)(4)
 		boolean hasG4Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(4)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(4)") && certCriteria.getMeetsCriteria()) {
 				hasG4Cert = true;
 			}
 		}

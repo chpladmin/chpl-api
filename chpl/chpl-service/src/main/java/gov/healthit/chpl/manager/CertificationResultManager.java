@@ -11,6 +11,7 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 
 public interface CertificationResultManager {
 	
@@ -20,6 +21,7 @@ public interface CertificationResultManager {
 	
 	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(
 			Long certificationResultId);
+	public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId);

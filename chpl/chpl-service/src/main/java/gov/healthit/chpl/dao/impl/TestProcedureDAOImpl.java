@@ -90,6 +90,18 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 	}
 	
 	@Override
+	public TestProcedureDTO getByName(String versionName) {
+		
+		TestProcedureDTO dto = null;
+		List<TestProcedureEntity> entities = getEntitiesByVersion(versionName);
+		
+		if (entities != null && entities.size() > 0){
+			dto = new TestProcedureDTO(entities.get(0));
+		}
+		return dto;
+	}
+	
+	@Override
 	public List<TestProcedureDTO> findAll() {
 		
 		List<TestProcedureEntity> entities = getAllEntities();
@@ -137,5 +149,14 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 		}
 		
 		return entity;
+	}
+	
+	private List<TestProcedureEntity> getEntitiesByVersion(String versionName) {
+		
+		TestProcedureEntity entity = null;
+			
+		Query query = entityManager.createQuery( "from TestProcedureEntity where (NOT deleted = true) AND (version = :versionName) ", TestProcedureEntity.class );
+		query.setParameter("versionName", versionName);
+		return query.getResultList();
 	}
 }

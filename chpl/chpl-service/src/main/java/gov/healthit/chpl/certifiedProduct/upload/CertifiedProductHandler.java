@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
@@ -16,6 +16,9 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler.class);
 	protected static final String PRACTICE_TYPE_AMBULATORY = "AMBULATORY";
 	protected static final String PRACTICE_TYPE_INPATIENT = "INPATIENT";
+	protected static final String FIRST_ROW_INDICATOR = "NEW";
+	protected static final String SUBSEQUENT_ROW_INDICATOR = "SUBELEMENT";
+	protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
 	
 	public abstract PendingCertifiedProductEntity handle();
 	
@@ -34,19 +37,20 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 	 * @return
 	 * @throws InvalidArgumentsException
 	 */
-	protected PendingCertificationCriterionEntity handleCertificationCriterion(String criterionName, int column) throws InvalidArgumentsException {
+	protected PendingCertificationResultEntity getCertificationResult(String criterionName, String columnValue) throws InvalidArgumentsException {
 		CertificationCriterionEntity certEntity = certDao.getEntityByName(criterionName);
 		if(certEntity == null) {
 			throw new InvalidArgumentsException("Could not find a certification criterion matching " + criterionName);
 		}
 		
-		PendingCertificationCriterionEntity result = new PendingCertificationCriterionEntity();		
+		PendingCertificationResultEntity result = new PendingCertificationResultEntity();		
 		result.setMappedCriterion(certEntity);
-		result.setMeetsCriteria(asBoolean(getRecord().get(column)));		
+		result.setMeetsCriteria(asBoolean(columnValue));		
 		return result;
 	}
 	
-	protected boolean asBoolean(String value) {
+	
+	protected Boolean asBoolean(String value) {
 		value = value.trim();
 		
 		if(StringUtils.isEmpty(value)) {
@@ -58,6 +62,6 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 			result = true;
 		}
 		
-		return result;
+		return new Boolean(result);
 	}
 }

@@ -6,6 +6,7 @@ public class CertificationResultTestStandard {
 	private Long id;
 	private Long testStandardId;
 	private String testStandardName;
+	private String testStandardNumber;
 
 	public CertificationResultTestStandard() {
 		super();
@@ -15,6 +16,7 @@ public class CertificationResultTestStandard {
 		this.id = dto.getId();
 		this.testStandardId = dto.getTestStandardId();
 		this.testStandardName = dto.getTestStandardName();
+		this.testStandardNumber = dto.getTestStandardNumber();
 	}
 	
 	public Long getId() {
@@ -39,6 +41,14 @@ public class CertificationResultTestStandard {
 
 	public void setTestStandardName(String testStandardName) {
 		this.testStandardName = testStandardName;
+	}
+
+	public String getTestStandardNumber() {
+		return testStandardNumber;
+	}
+
+	public void setTestStandardNumber(String testStandardNumber) {
+		this.testStandardNumber = testStandardNumber;
 	}
 
 }

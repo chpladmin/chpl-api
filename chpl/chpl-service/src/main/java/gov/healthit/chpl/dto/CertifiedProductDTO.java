@@ -34,7 +34,7 @@ public class CertifiedProductDTO {
 	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
-	private String ics;
+	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
 	private String productAdditionalSoftware;
@@ -263,11 +263,11 @@ public class CertifiedProductDTO {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 
-	public String getIcs() {
+	public Boolean getIcs() {
 		return ics;
 	}
 
-	public void setIcs(String ics) {
+	public void setIcs(Boolean ics) {
 		this.ics = ics;
 	}
 

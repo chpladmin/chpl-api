@@ -8,6 +8,7 @@ public class Developer {
 	private String name;
 	private String website;
 	private Address address;
+	private Contact contact;
 	private String lastModifiedDate;
 	private Boolean transparencyAttestation = null;
 	private String transparencyAttestationUrl = null;
@@ -21,6 +22,9 @@ public class Developer {
 		this.website = dto.getWebsite();
 		if(dto.getAddress() != null) {
 			this.address = new Address(dto.getAddress());
+		}
+		if(dto.getContact() != null) {
+			this.contact = new Contact(dto.getContact());
 		}
 		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
 		this.transparencyAttestation = dto.getTransparencyAttestation();
@@ -81,5 +85,13 @@ public class Developer {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public Contact getContact() {
+		return contact;
+	}
+
+	public void setContact(Contact contact) {
+		this.contact = contact;
 	}
 }

@@ -40,6 +40,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
+			entity.setNumber(dto.getNumber());
 			create(entity);
 			return new TestStandardDTO(entity);
 		}		
@@ -55,6 +56,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 		}
 		
 		entity.setName(dto.getName());
+		entity.setNumber(dto.getNumber());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
 		
@@ -84,6 +86,18 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 		
 		if (entity != null){
 			dto = new TestStandardDTO(entity);
+		}
+		return dto;
+	}
+	
+	@Override
+	public TestStandardDTO getByNumber(String name) {
+		
+		TestStandardDTO dto = null;
+		List<TestStandardEntity> entities = getEntitiesByNumber(name);
+		
+		if (entities != null && entities.size() > 0){
+			dto = new TestStandardDTO(entities.get(0));
 		}
 		return dto;
 	}
@@ -139,10 +153,10 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	}
 	
 	
-	private List<TestStandardEntity> getEntitiesByName(String name) {
+	private List<TestStandardEntity> getEntitiesByNumber(String number) {
 		
-		Query query = entityManager.createQuery( "from TestStandardEntity where (NOT deleted = true) AND (name = :name) ", TestStandardEntity.class );
-		query.setParameter("name", name);
+		Query query = entityManager.createQuery( "from TestStandardEntity where (NOT deleted = true) AND (number = :number) ", TestStandardEntity.class );
+		query.setParameter("number", number);
 		List<TestStandardEntity> result = query.getResultList();
 		
 		return result;

@@ -20,7 +20,7 @@ import javax.persistence.Transient;
  */
 
 @Entity
-@Table(name = "product_classification_type", catalog = "openchpl", schema = "openchpl")
+@Table(name = "product_classification_type")
 public class ProductClassificationTypeEntity implements Serializable {
 
 	/** Serial Version UID. */

@@ -12,4 +12,5 @@ public interface TestToolDAO {
 	
 	public List<TestToolDTO> findAll();
 	public TestToolDTO getById(Long id) throws EntityRetrievalException;
+	public TestToolDTO getByName(String name );
 }

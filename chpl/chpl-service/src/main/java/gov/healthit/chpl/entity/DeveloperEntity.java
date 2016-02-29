@@ -2,8 +2,6 @@ package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -13,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -55,6 +52,11 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@JoinColumn(name = "address_id", unique=true, nullable = true)
 	private AddressEntity address;
 	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "contact_id", unique=true, nullable = true)
+	private ContactEntity contact;
+	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -73,11 +75,6 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@NotNull
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
- 	
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id.developerIdDeveloper"  )
-	@Basic( optional = false )
-	@Column( name = "vendor_id", nullable = false  )
-	private Set<DeveloperContactMap> developerContactMaps = new HashSet<DeveloperContactMap>();
  	
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -252,34 +249,6 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		this.name = name;
 	}
 	
-
-	 /**
-	 * Return the value associated with the column: vendorContactMap.
-	 * @return A Set&lt;DeveloperContactMap&gt; object (this.vendorContactMap)
-	 */
-	public Set<DeveloperContactMap> getDeveloperContactMaps() {
-		return this.developerContactMaps;
-		
-	}
-	
-	/**
-	 * Adds a bi-directional link of type DeveloperContactMap to the developerContactMaps set.
-	 * @param developerContactMap item to add
-	 */
-	public void addDeveloperContactMap(DeveloperContactMap developerContactMap) {
-		developerContactMap.getId().setDeveloperIdDeveloper(this);
-		this.developerContactMaps.add(developerContactMap);
-	}
-
-  
-	 /**  
-	 * Set the value related to the column: vendorContactMap.
-	 * @param developerContactMap the vendorContactMap value you wish to set
-	 */
-	public void setDeveloperContactMaps(final Set<DeveloperContactMap> developerContactMap) {
-		this.developerContactMaps = developerContactMap;
-	}
-
 	 /**
 	 * Return the value associated with the column: website.
 	 * @return A String object (this.website)
@@ -324,5 +293,13 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
 	public void setDeveloperCode(String developerCode) {
 		this.developerCode = developerCode;
+	}
+
+	public ContactEntity getContact() {
+		return contact;
+	}
+
+	public void setContact(ContactEntity contact) {
+		this.contact = contact;
 	}
 }

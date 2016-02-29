@@ -152,7 +152,7 @@ public class CertifiedProductDetailsEntity {
 	private String apiDocumentation;
 	
 	@Column(name = "ics")
-	private String ics;
+	private Boolean ics;
 	
 	@Column(name = "sed")
 	private Boolean sedTesting;
@@ -521,11 +521,11 @@ public class CertifiedProductDetailsEntity {
 		this.testingLabName = testingLabName;
 	}
 
-	public String getIcs() {
+	public Boolean getIcs() {
 		return ics;
 	}
 
-	public void setIcs(String ics) {
+	public void setIcs(Boolean ics) {
 		this.ics = ics;
 	}
 

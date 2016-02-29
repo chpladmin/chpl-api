@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.PendingCertificationCriterionDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 @Component("certifiedProduct2015Validator")
@@ -46,8 +46,8 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		List<String> allMetCerts = new ArrayList<String>();
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getMeetsCriteria()) {
 				allMetCerts.add(certCriteria.getNumber());
 			}
 		}
@@ -76,8 +76,8 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 		if(meetsE2Criterion || meetsE3Criterion) {
 			for(int i = 0; i < e2Ore3ComplimentaryCerts.length; i++) {
 				boolean hasComplimentaryCert = false;
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(e2Ore3ComplimentaryCerts[i]) && certCriteria.isMeetsCriteria()) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+					if(certCriteria.getNumber().equals(e2Ore3ComplimentaryCerts[i]) && certCriteria.getMeetsCriteria()) {
 						hasComplimentaryCert = true;
 					}
 				}
@@ -96,8 +96,8 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 		if(meetsG7Criterion || meetsG8Criterion || meetsG9Criterion) {
 			for(int i = 0; i < g7Org8Org9ComplimentaryCerts.length; i++) {
 				boolean hasComplimentaryCert = false;
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g7Org8Org9ComplimentaryCerts[i]) && certCriteria.isMeetsCriteria()) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+					if(certCriteria.getNumber().equals(g7Org8Org9ComplimentaryCerts[i]) && certCriteria.getMeetsCriteria()) {
 						hasComplimentaryCert = true;
 					}
 				}
