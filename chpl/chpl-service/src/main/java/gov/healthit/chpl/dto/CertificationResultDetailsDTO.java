@@ -14,8 +14,6 @@ public class CertificationResultDetailsDTO {
     private Boolean sed;
     private Boolean g1Success;
     private Boolean g2Success;
-    private String ucdProcessSelected;
-    private String ucdProcessDetails;
     
     public CertificationResultDetailsDTO(){}
     
@@ -30,8 +28,6 @@ public class CertificationResultDetailsDTO {
     	this.sed = entity.getSed();
     	this.g1Success = entity.getG1Success();
     	this.g2Success = entity.getG2Success();
-    	this.ucdProcessSelected = entity.getUcdProcessSelected();
-    	this.ucdProcessDetails = entity.getUcdProcessDetails();
     }
     
     
@@ -97,21 +93,4 @@ public class CertificationResultDetailsDTO {
 	public void setG2Success(Boolean g2Success) {
 		this.g2Success = g2Success;
 	}
-
-	public String getUcdProcessSelected() {
-		return ucdProcessSelected;
-	}
-
-	public void setUcdProcessSelected(String ucdProcessSelected) {
-		this.ucdProcessSelected = ucdProcessSelected;
-	}
-
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
-	}
-
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
-	}
-
 }

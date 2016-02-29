@@ -21,9 +21,11 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -117,6 +119,14 @@ public class DeveloperController {
 				toCreateAddress.setCountry(developerAddress.getCountry());
 				toCreate.setAddress(toCreateAddress);
 			}
+			Contact developerContact = developerInfo.getDeveloper().getContact();
+			ContactDTO toCreateContact = new ContactDTO();
+			toCreateContact.setEmail(developerContact.getEmail());
+			toCreateContact.setFirstName(developerContact.getFirstName());
+			toCreateContact.setLastName(developerContact.getLastName());
+			toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
+			toCreateContact.setTitle(developerContact.getTitle());
+			toCreate.setContact(toCreateContact);
 			result = developerManager.merge(developerInfo.getDeveloperIds(), toCreate);
 			//re-query because the developer code isn't filled in otherwise
 			result = developerManager.getById(result.getId());
@@ -144,6 +154,16 @@ public class DeveloperController {
 				address.setZipcode(developerInfo.getDeveloper().getAddress().getZipcode());
 				address.setCountry(developerInfo.getDeveloper().getAddress().getCountry());
 				toUpdate.setAddress(address);
+			}
+			if(developerInfo.getDeveloper().getContact() != null) {
+				Contact developerContact = developerInfo.getDeveloper().getContact();
+				ContactDTO toUpdateContact = new ContactDTO();
+				toUpdateContact.setEmail(developerContact.getEmail());
+				toUpdateContact.setFirstName(developerContact.getFirstName());
+				toUpdateContact.setLastName(developerContact.getLastName());
+				toUpdateContact.setPhoneNumber(developerContact.getPhoneNumber());
+				toUpdateContact.setTitle(developerContact.getTitle());
+				toUpdate.setContact(toUpdateContact);
 			}
 			result = developerManager.update(toUpdate);
 		}

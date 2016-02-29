@@ -19,6 +19,7 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.CertificationResultEntity;
 import gov.healthit.chpl.entity.CertificationResultTestDataEntity;
@@ -26,6 +27,7 @@ import gov.healthit.chpl.entity.CertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.CertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.CertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.CertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.CertificationResultUcdProcessEntity;
 
 @Repository(value="certificationResultDAO")
 public class CertificationResultDAOImpl extends BaseDAOImpl implements CertificationResultDAO {
@@ -53,13 +55,11 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			entity.setSed(result.getSed());
 			entity.setG1Success(result.getG1Success());
 			entity.setG2Success(result.getG2Success());
-			entity.setUcdProcessSelected(result.getUcdProcessSelected());
-			entity.setUcdProcessDetails(result.getUcdProcessDetails());
 			entity.setSuccess(result.getSuccessful());
 			
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			entity.setCreationDate(result.getCreationDate());
+			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
 			
 			create(entity);
@@ -79,8 +79,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		entity.setSed(result.getSed());
 		entity.setG1Success(result.getG1Success());
 		entity.setG2Success(result.getG2Success());
-		entity.setUcdProcessSelected(result.getUcdProcessSelected());
-		entity.setUcdProcessDetails(result.getUcdProcessDetails());
 		entity.setSuccess(result.getSuccessful());
 		
 		if(result.getDeleted() != null) {
@@ -200,6 +198,77 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		return result;
 	}
 
+	/******************************************************
+	 * UCD Details for Certification Results
+	 * 
+	 *******************************************************/
+	
+	@Override
+	public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId){
+		
+		List<CertificationResultUcdProcessEntity> entities = getUcdProcessesForCertification(certificationResultId);
+		List<CertificationResultUcdProcessDTO> dtos = new ArrayList<CertificationResultUcdProcessDTO>();
+
+		for(CertificationResultUcdProcessEntity entity : entities) {
+			dtos.add(new CertificationResultUcdProcessDTO(entity));
+		}
+		return dtos;
+	}
+	
+	public CertificationResultUcdProcessDTO addUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityCreationException {
+		CertificationResultUcdProcessEntity mapping = new CertificationResultUcdProcessEntity();
+		mapping.setCertificationResultId(dto.getCertificationResultId());
+		mapping.setUcdProcessId(dto.getUcdProcessId());
+		mapping.setUcdProcessDetails(dto.getUcdProcessDetails());
+		mapping.setCreationDate(new Date());
+		mapping.setDeleted(false);
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		
+		return new CertificationResultUcdProcessDTO(mapping);
+	}
+	
+	public void deleteUcdProcessMapping(Long mappingId){
+		CertificationResultUcdProcessEntity toDelete = getCertificationResultUcdProcessById(mappingId);
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(toDelete);
+			entityManager.flush();
+		}
+	}
+	
+	private CertificationResultUcdProcessEntity getCertificationResultUcdProcessById(Long id) {
+		CertificationResultUcdProcessEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT up "
+				+ "FROM CertificationResultUcdProcessEntity up "
+				+ "LEFT OUTER JOIN FETCH up.ucdProcess "
+				+ "where (NOT up.deleted = true) AND (certification_result_ucd_process_id = :id) ", 
+				CertificationResultUcdProcessEntity.class );
+		query.setParameter("id", id);
+		List<CertificationResultUcdProcessEntity> result = query.getResultList();
+
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		return entity;
+	}
+	
+	private List<CertificationResultUcdProcessEntity> getUcdProcessesForCertification(Long certificationResultId){
+		Query query = entityManager.createQuery( "SELECT up "
+				+ "FROM CertificationResultUcdProcessEntity up "
+				+ "LEFT OUTER JOIN FETCH up.ucdProcess "
+				+ "where (NOT up.deleted = true) AND (certification_result_id = :certificationResultId) ", 
+				CertificationResultUcdProcessEntity.class );
+		query.setParameter("certificationResultId", certificationResultId);
+		
+		return query.getResultList();
+	}
+	
 	/******************************************************
 	 * Additional Software for Certification Results
 	 * 

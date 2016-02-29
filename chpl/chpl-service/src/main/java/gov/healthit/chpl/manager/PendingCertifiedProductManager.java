@@ -20,7 +20,6 @@ import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 
 
 public interface PendingCertifiedProductManager {
-	public List<PendingCertifiedProductDTO> getAll();
 	public PendingCertifiedProductDetails getById(Long id) throws EntityRetrievalException;
 	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb);
 	public List<PendingCertifiedProductDetails> getDetailsByAcb(CertificationBodyDTO acb);

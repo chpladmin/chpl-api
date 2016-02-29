@@ -12,10 +12,20 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
+import gov.healthit.chpl.entity.CertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
 @Repository(value="pendingCertifiedProductDAO")
@@ -24,28 +34,106 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 	@Override
 	@Transactional
 	public PendingCertifiedProductDTO create(PendingCertifiedProductEntity toCreate) {		
-		if(toCreate.getLastModifiedDate() == null) {
-			toCreate.setLastModifiedDate(new Date());
-		}		
-		if(toCreate.getLastModifiedUser() == null) {
-			toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-		}
+		toCreate.setLastModifiedDate(new Date());
+		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
 		toCreate.setCreationDate(new Date());
 		toCreate.setDeleted(false);
 		
 		entityManager.persist(toCreate);
 		
-		for(PendingCertificationCriterionEntity criterion : toCreate.getCertificationCriterion()) {
+		for(PendingCertifiedProductQmsStandardEntity qmsStandard : toCreate.getQmsStandards()) {
+			qmsStandard.setPendingCertifiedProductId(toCreate.getId());
+			qmsStandard.setLastModifiedDate(new Date());	
+			qmsStandard.setLastModifiedUser(Util.getCurrentUser().getId());
+			qmsStandard.setCreationDate(new Date());
+			qmsStandard.setDeleted(false);
+			entityManager.persist(qmsStandard);
+		}
+		
+		for(PendingCertificationResultEntity criterion : toCreate.getCertificationCriterion()) {
 			criterion.setPendingCertifiedProductId(toCreate.getId());
-			if(criterion.getLastModifiedDate() == null) {
-				criterion.setLastModifiedDate(new Date());
-			}		
-			if(criterion.getLastModifiedUser() == null) {
-				criterion.setLastModifiedUser(Util.getCurrentUser().getId());
-			}
+			criterion.setLastModifiedDate(new Date());	
+			criterion.setLastModifiedUser(Util.getCurrentUser().getId());
 			criterion.setCreationDate(new Date());
 			criterion.setDeleted(false);
 			entityManager.persist(criterion);
+			
+			if(criterion.getUcdProcesses() != null && criterion.getUcdProcesses().size() > 0) {
+				for(PendingCertificationResultUcdProcessEntity ucd : criterion.getUcdProcesses()) {
+					ucd.setPendingCertificationResultId(criterion.getId());
+					ucd.setLastModifiedDate(new Date());	
+					ucd.setLastModifiedUser(Util.getCurrentUser().getId());
+					ucd.setCreationDate(new Date());
+					ucd.setDeleted(false);
+					entityManager.persist(ucd);
+				}				
+			}
+			
+			if(criterion.getTestStandards() != null && criterion.getTestStandards().size() > 0) {
+				for(PendingCertificationResultTestStandardEntity tsEntity : criterion.getTestStandards()) {
+					tsEntity.setPendingCertificationResultId(criterion.getId());
+					tsEntity.setLastModifiedDate(new Date());	
+					tsEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					tsEntity.setCreationDate(new Date());
+					tsEntity.setDeleted(false);
+					entityManager.persist(tsEntity);
+				}
+			}
+			if(criterion.getTestFunctionality() != null && criterion.getTestFunctionality().size() > 0) {
+				for(PendingCertificationResultTestFunctionalityEntity tfEntity : criterion.getTestFunctionality()) {
+					tfEntity.setPendingCertificationResultId(criterion.getId());
+					tfEntity.setLastModifiedDate(new Date());	
+					tfEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					tfEntity.setCreationDate(new Date());
+					tfEntity.setDeleted(false);
+					entityManager.persist(tfEntity);
+				}
+			}
+			
+			if(criterion.getAdditionalSoftware() != null && criterion.getAdditionalSoftware().size() > 0) {
+				for(PendingCertificationResultAdditionalSoftwareEntity asEntity : criterion.getAdditionalSoftware()) {
+					asEntity.setPendingCertificationResultId(criterion.getId());
+					asEntity.setLastModifiedDate(new Date());	
+					asEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					asEntity.setCreationDate(new Date());
+					asEntity.setDeleted(false);
+					entityManager.persist(asEntity);
+				}
+			}
+			
+			if(criterion.getTestProcedures() != null && criterion.getTestProcedures().size() > 0) {
+				for(PendingCertificationResultTestProcedureEntity tpEntity : criterion.getTestProcedures()) {
+					tpEntity.setPendingCertificationResultId(criterion.getId());
+					tpEntity.setLastModifiedDate(new Date());	
+					tpEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					tpEntity.setCreationDate(new Date());
+					tpEntity.setDeleted(false);
+					entityManager.persist(tpEntity);
+				}
+			}
+			
+			if(criterion.getTestData() != null && criterion.getTestData().size() > 0) {
+				for(PendingCertificationResultTestDataEntity tdEntity : criterion.getTestData()) {
+					tdEntity.setPendingCertificationResultId(criterion.getId());
+					tdEntity.setLastModifiedDate(new Date());	
+					tdEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					tdEntity.setCreationDate(new Date());
+					tdEntity.setDeleted(false);
+					entityManager.persist(tdEntity);
+				}
+			}
+			
+			if(criterion.getTestTools() != null && criterion.getTestTools().size() > 0) {
+				for(PendingCertificationResultTestToolEntity ttEntity : criterion.getTestTools()) {
+					ttEntity.setPendingCertificationResultId(criterion.getId());
+					ttEntity.setLastModifiedDate(new Date());	
+					ttEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					ttEntity.setCreationDate(new Date());
+					ttEntity.setDeleted(false);
+					entityManager.persist(ttEntity);
+				}
+			}
+			
 		}
 		
 		for(PendingCqmCriterionEntity cqm : toCreate.getCqmCriterion()) {
@@ -151,8 +239,9 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 	
 	private List<PendingCertifiedProductEntity> getAllEntities() {
 		
-		List<PendingCertifiedProductEntity> result = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
-				+ " WHERE (not pcp.deleted = true)", PendingCertifiedProductEntity.class).getResultList();
+		List<PendingCertifiedProductEntity> result = entityManager.createQuery( 
+				"SELECT pcp from PendingCertifiedProductEntity pcp " 
+				+ "WHERE (not pcp.deleted = true)", PendingCertifiedProductEntity.class).getResultList();
 		return result;
 		
 	}

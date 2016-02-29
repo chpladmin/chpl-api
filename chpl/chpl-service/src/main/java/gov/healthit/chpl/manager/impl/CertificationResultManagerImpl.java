@@ -15,6 +15,7 @@ import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -22,10 +23,12 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 
 @Service
@@ -37,6 +40,7 @@ public class CertificationResultManagerImpl implements
 	@Autowired private TestToolDAO testToolDAO;
 	@Autowired private TestProcedureDAO testProcedureDAO;
 	@Autowired private TestFunctionalityDAO testFunctionalityDAO;
+	@Autowired private UcdProcessDAO ucdDao;
 
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -46,6 +50,14 @@ public class CertificationResultManagerImpl implements
 	@Transactional(readOnly = false)
 	public CertificationResultDTO create(Long acbId, CertificationResultDTO toCreate) throws EntityRetrievalException, EntityCreationException {
 		CertificationResultDTO created = certResultDAO.create(toCreate);
+		
+		if(toCreate.getUcdProcesses() != null && toCreate.getUcdProcesses().size() > 0) {
+			for(CertificationResultUcdProcessDTO ucdMapping : toCreate.getUcdProcesses()) {
+				ucdMapping.setCertificationResultId(created.getId());
+				CertificationResultUcdProcessDTO createdMapping = certResultDAO.addUcdProcessMapping(ucdMapping);
+				created.getUcdProcesses().add(createdMapping);	
+			}
+		}
 		
 		for (CertificationResultAdditionalSoftwareDTO asMapping : toCreate.getAdditionalSoftware()){
 			asMapping.setCertificationResultId(created.getId());
@@ -106,7 +118,6 @@ public class CertificationResultManagerImpl implements
 			if(mapping.getTestFunctionalityId() == null) {
 				TestFunctionalityDTO newTestFunctionality = new TestFunctionalityDTO();
 				newTestFunctionality.setName(mapping.getTestFunctionalityName());
-				newTestFunctionality.setCategory(mapping.getTestFunctionalityCategory());
 				newTestFunctionality = testFunctionalityDAO.create(newTestFunctionality);
 				mapping.setTestFunctionalityId(newTestFunctionality.getId());
 			}
@@ -127,6 +138,50 @@ public class CertificationResultManagerImpl implements
 	@Transactional(readOnly = false)
 	public CertificationResultDTO update(Long acbId, CertificationResultDTO toUpdate) throws EntityRetrievalException, EntityCreationException {
 		CertificationResultDTO updated = certResultDAO.update(toUpdate);
+		
+		//update ucd processes
+		List<CertificationResultUcdProcessDTO> existingUcdProcesses = certResultDAO.getUcdProcessesForCertificationResult(toUpdate.getId());
+		List<CertificationResultUcdProcessDTO> ucdProcessesToAdd = new ArrayList<CertificationResultUcdProcessDTO>();
+		List<CertificationResultUcdProcessDTO> ucdProcessesToRemove = new ArrayList<CertificationResultUcdProcessDTO>();
+
+		for (CertificationResultUcdProcessDTO toUpdateMapping : toUpdate.getUcdProcesses()){
+			if(toUpdateMapping.getId() == null) {
+				if(toUpdateMapping.getUcdProcessId() == null) {
+					UcdProcessDTO ucdProc = ucdDao.getByName(toUpdateMapping.getUcdProcessName());
+					if(ucdProc == null) {
+						UcdProcessDTO ucdToCreate = new UcdProcessDTO();
+						ucdToCreate.setName(toUpdateMapping.getUcdProcessName());
+						ucdProc = ucdDao.create(ucdToCreate);
+					}
+					toUpdateMapping.setUcdProcessId(ucdProc.getId());
+				}
+				toUpdateMapping.setCertificationResultId(toUpdate.getId());
+				toUpdateMapping.setUcdProcessDetails(toUpdateMapping.getUcdProcessDetails());
+				ucdProcessesToAdd.add(toUpdateMapping);
+			} 
+		}
+				
+		for(CertificationResultUcdProcessDTO currMapping : existingUcdProcesses) {
+			boolean isInUpdate = false;
+			for (CertificationResultUcdProcessDTO toUpdateMapping : toUpdate.getUcdProcesses()){
+				if(toUpdateMapping.getId() != null && 
+						toUpdateMapping.getId().longValue() == currMapping.getId().longValue()) {
+					isInUpdate = true;
+				}
+			}
+			if(!isInUpdate) {
+				ucdProcessesToRemove.add(currMapping);
+			}
+		}
+					
+		for(CertificationResultUcdProcessDTO toAdd : ucdProcessesToAdd) {
+			certResultDAO.addUcdProcessMapping(toAdd);
+		}
+		for(CertificationResultUcdProcessDTO toRemove : ucdProcessesToRemove) {
+			certResultDAO.deleteUcdProcessMapping(toRemove.getId());
+		}
+		updated.setUcdProcesses(certResultDAO.getUcdProcessesForCertificationResult(updated.getId()));
+		
 		
 		//update additional software mappings
 		List<CertificationResultAdditionalSoftwareDTO> existingMappings = certResultDAO.getAdditionalSoftwareForCertificationResult(toUpdate.getId());
@@ -170,10 +225,13 @@ public class CertificationResultManagerImpl implements
 		for (CertificationResultTestStandardDTO toUpdateMapping : toUpdate.getTestStandards()){
 			if(toUpdateMapping.getId() == null) {
 				if(toUpdateMapping.getTestStandardId() == null) {
-					TestStandardDTO testStandardToCreate = new TestStandardDTO();
-					testStandardToCreate.setName(toUpdateMapping.getTestStandardName());
-					testStandardToCreate = testStandardDAO.create(testStandardToCreate);
-					toUpdateMapping.setTestStandardId(testStandardToCreate.getId());
+					TestStandardDTO testStd = testStandardDAO.getByNumber(toUpdateMapping.getTestStandardNumber());
+					if(testStd == null) {
+						TestStandardDTO testStandardToCreate = new TestStandardDTO();
+						testStandardToCreate.setNumber(toUpdateMapping.getTestStandardNumber());
+						testStd = testStandardDAO.create(testStandardToCreate);
+					}
+					toUpdateMapping.setTestStandardId(testStd.getId());
 				}
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testStandardsToAdd.add(toUpdateMapping);
@@ -322,11 +380,13 @@ public class CertificationResultManagerImpl implements
 		for (CertificationResultTestFunctionalityDTO toUpdateMapping : toUpdate.getTestFunctionality()){
 			if(toUpdateMapping.getId() == null) {
 				if(toUpdateMapping.getTestFunctionalityId() == null) {
-					TestFunctionalityDTO testFunctionalityToCreate = new TestFunctionalityDTO();
-					testFunctionalityToCreate.setCategory(toUpdateMapping.getTestFunctionalityCategory());
-					testFunctionalityToCreate.setName(toUpdateMapping.getTestFunctionalityName());
-					testFunctionalityToCreate = testFunctionalityDAO.create(testFunctionalityToCreate);
-					toUpdateMapping.setTestFunctionalityId(testFunctionalityToCreate.getId());
+					TestFunctionalityDTO testFunc = testFunctionalityDAO.getByNumber(toUpdateMapping.getTestFunctionalityNumber());
+					if(testFunc == null) {
+						TestFunctionalityDTO testFunctionalityToCreate = new TestFunctionalityDTO();
+						testFunctionalityToCreate.setNumber(toUpdateMapping.getTestFunctionalityNumber());
+						testFunc = testFunctionalityDAO.create(testFunctionalityToCreate);
+					}
+					toUpdateMapping.setTestFunctionalityId(testFunc.getId());
 				}
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testFunctionalityToAdd.add(toUpdateMapping);
@@ -362,6 +422,10 @@ public class CertificationResultManagerImpl implements
 		return certResultDAO.getAdditionalSoftwareForCertificationResult(certificationResultId);
 	}
 	
+	@Override
+	public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId) {
+		return certResultDAO.getUcdProcessesForCertificationResult(certificationResultId);
+	}
 	@Override
 	public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId){
 		return certResultDAO.getTestStandardsForCertificationResult(certificationResultId);

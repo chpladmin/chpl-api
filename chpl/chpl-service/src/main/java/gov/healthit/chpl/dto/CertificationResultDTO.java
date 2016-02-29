@@ -18,11 +18,10 @@ public class CertificationResultDTO {
 	private Boolean successful;
 	private Boolean g1Success;
 	private Boolean g2Success;
-	private String ucdProcessSelected;
-	private String ucdProcessDetails;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	
+	private List<CertificationResultUcdProcessDTO> ucdProcesses;
 	private List<CertificationResultTestFunctionalityDTO> testFunctionality;
 	private List<CertificationResultTestProcedureDTO> testProcedures;
  	private List<CertificationResultTestDataDTO> testData;
@@ -31,6 +30,7 @@ public class CertificationResultDTO {
 	private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
 	
 	public CertificationResultDTO(){
+		ucdProcesses = new ArrayList<CertificationResultUcdProcessDTO>();
 		additionalSoftware = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
 		testStandards = new ArrayList<CertificationResultTestStandardDTO>();
 		testTools = new ArrayList<CertificationResultTestToolDTO>();
@@ -57,8 +57,6 @@ public class CertificationResultDTO {
 		this.sed = entity.getSed();
 		this.g1Success = entity.getG1Success();
 		this.g2Success = entity.getG2Success();
-		this.ucdProcessSelected = entity.getUcdProcessSelected();
-		this.ucdProcessDetails = entity.getUcdProcessDetails();
 		this.successful = entity.isSuccess();
 		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -152,22 +150,6 @@ public class CertificationResultDTO {
 		this.g2Success = g2Success;
 	}
 
-	public String getUcdProcessSelected() {
-		return ucdProcessSelected;
-	}
-
-	public void setUcdProcessSelected(String ucdProcessSelected) {
-		this.ucdProcessSelected = ucdProcessSelected;
-	}
-
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
-	}
-
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
-	}
-
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
 	}
@@ -202,6 +184,14 @@ public class CertificationResultDTO {
 
 	public void setTestFunctionality(List<CertificationResultTestFunctionalityDTO> testFunctionality) {
 		this.testFunctionality = testFunctionality;
+	}
+
+	public List<CertificationResultUcdProcessDTO> getUcdProcesses() {
+		return ucdProcesses;
+	}
+
+	public void setUcdProcesses(List<CertificationResultUcdProcessDTO> ucdProcesses) {
+		this.ucdProcesses = ucdProcesses;
 	}
 	
 }

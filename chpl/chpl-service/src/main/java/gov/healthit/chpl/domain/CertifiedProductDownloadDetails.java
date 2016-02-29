@@ -43,7 +43,7 @@ public class CertifiedProductDownloadDetails {
 	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
-	private String ics;
+	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
 	private Boolean transparencyAttestation;
@@ -2718,11 +2718,11 @@ public class CertifiedProductDownloadDetails {
 		this.testingLabName = testingLabName;
 	}
 
-	public String getIcs() {
+	public Boolean getIcs() {
 		return ics;
 	}
 
-	public void setIcs(String ics) {
+	public void setIcs(Boolean ics) {
 		this.ics = ics;
 	}
 

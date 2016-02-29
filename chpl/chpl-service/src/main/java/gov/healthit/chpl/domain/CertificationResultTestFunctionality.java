@@ -6,7 +6,7 @@ public class CertificationResultTestFunctionality {
 	private Long id;
 	private Long testFunctionalityId;
 	private String name;
-	private String category;
+	private String number;
 
 	public CertificationResultTestFunctionality() {
 		super();
@@ -16,7 +16,7 @@ public class CertificationResultTestFunctionality {
 		this.id = dto.getId();
 		this.testFunctionalityId = dto.getTestFunctionalityId();
 		this.name = dto.getTestFunctionalityName();
-		this.category = dto.getTestFunctionalityCategory();
+		this.number = dto.getTestFunctionalityNumber();
 	}
 	
 	public Long getId() {
@@ -43,12 +43,12 @@ public class CertificationResultTestFunctionality {
 		this.name = name;
 	}
 
-	public String getCategory() {
-		return category;
+	public String getNumber() {
+		return number;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setNumber(String number) {
+		this.number = number;
 	}
 
 }

@@ -34,6 +34,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 				} else if(product.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
 					return ambulatoryComplete2014Validator;
 				} else {
+					product.getErrorMessages().add("Cannot determine if the 2014 Ambulatory product is Modular or Complete so it cannot be validated.");
 					logger.error("Cannot find validator for 2014, ambulatory, and classification '" + product.getProductClassificationName() + "'.");
 				}
 			} else if(product.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_INPATIENT)) {
@@ -42,14 +43,17 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 				} else if(product.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
 					return inpatientComplete2014Validator;
 				} else {
+					product.getErrorMessages().add("Cannot determine if the 2014 Inpatient product is Modular or Complete so it cannot be validated.");
 					logger.error("Cannot find validator for 2014, inpatient, and classification '" + product.getProductClassificationName() + "'.");
 				}
 			} else {
+				product.getErrorMessages().add("This 2014 product is neither Ambulatory nor Inpatient so it cannot be validated.");
 				logger.error("Cannot find validator for practice type '" + product.getPracticeType() + "'");
 			}
 		} else if(product.getCertificationEdition().equals("2015")) {
 			return cp2015Validator;
 		} else {
+			product.getErrorMessages().add("Cannot determine if this product is from 2014 or 2015 so it cannot be validated.");
 			logger.error("Cannot find validator for certificatoin edition '" + product.getCertificationEdition() + "'.");
 		}
 		return null;
@@ -63,6 +67,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 			String productClassificationName = product.getClassificationType().get("name").toString();
 			
 			if(StringUtils.isEmpty(practiceTypeName) || StringUtils.isEmpty(productClassificationName)) {
+				product.getErrorMessages().add("Cannot determine if this product is Ambulatory or Inpatient so it cannot be validated.");
 				logger.error("Cannot validate a product that doesn't have practice type and/or classification specified.");
 				return null;
 			}
@@ -73,6 +78,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 				} else if(productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
 					return ambulatoryComplete2014Validator;
 				} else {
+					product.getErrorMessages().add("Cannot determine if the 2014 Ambulatory product is Modular or Complete so it cannot be validated.");
 					logger.error("Cannot find validator for 2014, ambulatory, and classification '" + productClassificationName + "'.");
 				}
 			} else if(practiceTypeName.equalsIgnoreCase(PRACTICE_TYPE_INPATIENT)) {
@@ -81,14 +87,17 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 				} else if(productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_COMPLETE)) {
 					return inpatientComplete2014Validator;
 				} else {
+					product.getErrorMessages().add("Cannot determine if the 2014 Inpatient product is Modular or Complete so it cannot be validated.");
 					logger.error("Cannot find validator for 2014, inpatient, and classification '" + productClassificationName + "'.");
 				}
 			} else {
+				product.getErrorMessages().add("This 2014 product is not Inpatient or Ambulatory so it cannot be validated.");
 				logger.error("Cannot find validator for practice type '" + product.getPracticeType() + "'");
 			}
 		} else if(productCertificationEdition != null && productCertificationEdition.equals("2015")) {
 			return cp2015Validator;
 		} else {
+			product.getErrorMessages().add("The product is not listed as 2014 or 2015 so it cannot be validated.");
 			logger.info("Cannot find validator for certification edition '" + product.getCertificationEdition() + "'.");
 		}
 		return null;

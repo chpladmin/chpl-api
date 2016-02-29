@@ -46,12 +46,6 @@ public class CertificationResultDetailsEntity {
 	@Column(name = "g2_success")
 	private Boolean g2Success;
 	
-	@Column(name = "ucd_process_selected")
-	private String ucdProcessSelected;
-	
-	@Column(name = "ucd_process_details")
-	private String ucdProcessDetails;
-	
 	public Long getId() {
 		return id;
 	}
@@ -131,21 +125,4 @@ public class CertificationResultDetailsEntity {
 	public void setG2Success(Boolean g2Success) {
 		this.g2Success = g2Success;
 	}
-
-	public String getUcdProcessSelected() {
-		return ucdProcessSelected;
-	}
-
-	public void setUcdProcessSelected(String ucdProcessSelected) {
-		this.ucdProcessSelected = ucdProcessSelected;
-	}
-
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
-	}
-
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
-	}
-
 }

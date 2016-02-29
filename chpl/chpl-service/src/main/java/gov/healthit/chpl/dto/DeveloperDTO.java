@@ -9,6 +9,7 @@ public class DeveloperDTO {
 	private String developerCode;
 	private Long id;
 	private AddressDTO address;
+	private ContactDTO contact;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
@@ -18,13 +19,18 @@ public class DeveloperDTO {
 	private Boolean transparencyAttestation = null;
 	private String transparencyAttestationUrl = null;
 	
-	public DeveloperDTO(){}
+	public DeveloperDTO(){
+	}
 	
 	public DeveloperDTO(DeveloperEntity entity){
+		this();
 		this.id = entity.getId();
 		this.developerCode = entity.getDeveloperCode();
 		if(entity.getAddress() != null) {
 			this.address = new AddressDTO(entity.getAddress());			
+		}
+		if(entity.getContact() != null) {
+			this.contact = new ContactDTO(entity.getContact());
 		}
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
@@ -110,5 +116,12 @@ public class DeveloperDTO {
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
-	
+
+	public ContactDTO getContact() {
+		return contact;
+	}
+
+	public void setContact(ContactDTO contact) {
+		this.contact = contact;
+	}
 }

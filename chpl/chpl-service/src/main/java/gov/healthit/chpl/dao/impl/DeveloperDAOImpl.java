@@ -13,16 +13,20 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
+import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
+import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperEntity;
 
@@ -31,6 +35,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
 	@Autowired AddressDAO addressDao;
+	@Autowired ContactDAO contactDao;
 	
 	@Override
 	@Transactional
@@ -53,6 +58,19 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			if(dto.getAddress() != null)
 			{
 				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
+			}
+			if(dto.getContact() != null) {
+				ContactEntity contact = null;
+				if(dto.getContact().getId() != null) {
+					Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
+					query.setParameter("entityid", dto.getContact().getId());
+					List<ContactEntity> result = query.getResultList();
+					if(result != null && result.size() > 0) {
+						entity.setContact(result.get(0));
+					}
+				} else {
+					entity.setContact(contactDao.create(dto.getContact()));
+				}
 			}
 			
 			entity.setName(dto.getName());
@@ -122,6 +140,35 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			}
 		} else {
 			entity.setAddress(null);
+		}
+		
+		if(dto.getContact() != null) {
+			ContactEntity contact = null;
+			if(dto.getContact().getId() != null) {
+				Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
+				query.setParameter("entityid", dto.getContact().getId());
+				List<ContactEntity> result = query.getResultList();
+				if(result != null && result.size() > 0) {
+					entity.setContact(result.get(0));
+				}
+			} else {
+				try {
+					if(StringUtils.isEmpty(dto.getContact().getFirstName())) {
+						dto.getContact().setFirstName("");
+					}
+					if(StringUtils.isEmpty(dto.getContact().getEmail())) {
+						dto.getContact().setEmail("");
+					}
+					if(StringUtils.isEmpty(dto.getContact().getPhoneNumber())) {
+						dto.getContact().setPhoneNumber("");
+					}
+					entity.setContact(contactDao.create(dto.getContact()));
+				} catch(EntityCreationException ex) {
+					logger.error("could not create contact.", ex);
+				}
+			}
+		} else {
+			entity.setContact(null);
 		}
 		
 		entity.setWebsite(dto.getWebsite());
@@ -266,7 +313,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	private List<DeveloperEntity> getAllEntities() {
-		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from DeveloperEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
+		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
 		return result;
 		
 	}
@@ -275,7 +326,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		
 		DeveloperEntity entity = null;
 			
-		Query query = entityManager.createQuery( "SELECT v from DeveloperEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true) AND (vendor_id = :entityid) ", DeveloperEntity.class );
+		Query query = entityManager.createQuery( "SELECT v from "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "where (NOT v.deleted = true) AND (vendor_id = :entityid) ", DeveloperEntity.class );
 		query.setParameter("entityid", id);
 		List<DeveloperEntity> result = query.getResultList();
 		
@@ -292,7 +347,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		
 		DeveloperEntity entity = null;
 			
-		Query query = entityManager.createQuery( "SELECT v from DeveloperEntity v LEFT OUTER JOIN FETCH v.address where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class );
+		Query query = entityManager.createQuery( "SELECT v from "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class );
 		query.setParameter("name", name);
 		List<DeveloperEntity> result = query.getResultList();
 		
