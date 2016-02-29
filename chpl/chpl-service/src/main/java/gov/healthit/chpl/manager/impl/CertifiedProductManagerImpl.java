@@ -281,7 +281,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			pendingCp.setProductId(newProduct.getId());
 		} 
 		
-		String productVersionId = null;
 		if(pendingCp.getProductVersionId() == null) {
 			ProductVersionDTO newVersion = new ProductVersionDTO();
 			if(pendingCp.getProductVersion() == null) {
