@@ -1,5 +1,11 @@
 # Release Notes
 
+## Version 0.3.2
+_29 February 2016_
+
+### Features added
+* Added ability to do new 2014 upload files
+
 ## Version 0.3.1
 _22 February 2016_
 
