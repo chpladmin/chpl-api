@@ -30,6 +30,7 @@
 		<class>gov.healthit.chpl.entity.CertificationResultTestFunctionalityEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultTestStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultTestToolEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationResultUcdProcessEntity</class>
 		
 		<class>gov.healthit.chpl.entity.CQMResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationEditionEntity</class>
@@ -48,6 +49,8 @@
 		<class>gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity</class>
+		
 		<class>gov.healthit.chpl.entity.ActivityEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity</class>
@@ -58,6 +61,8 @@
 		<class>gov.healthit.chpl.entity.TestStandardEntity</class>
 		<class>gov.healthit.chpl.entity.TestToolEntity</class>
 		<class>gov.healthit.chpl.entity.TestFunctionalityEntity</class>
+		<class>gov.healthit.chpl.entity.UcdProcessEntity</class>
+		
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

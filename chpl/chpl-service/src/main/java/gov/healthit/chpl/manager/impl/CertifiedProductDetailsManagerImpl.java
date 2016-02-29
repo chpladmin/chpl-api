@@ -32,6 +32,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductDownloadDetails;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -45,6 +46,7 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
@@ -208,10 +210,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
 				result.setG2Success(null);
 			}
-			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
-				result.setUcdProcessDetails(null);
-				result.setUcdProcessSelected(null);
-			}
 			
 			//add all the other data
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
@@ -232,6 +230,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				}
 			} else {
 				result.setTestStandards(null);
+			}
+			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
+				List<CertificationResultUcdProcessDTO> ucdProcesses = certResultManager.getUcdProcessesForCertificationResult(certResult.getId());
+				for(CertificationResultUcdProcessDTO currResult : ucdProcesses) {
+					CertificationResultUcdProcess ucdResult = new CertificationResultUcdProcess(currResult);
+					result.getUcdProcesses().add(ucdResult);
+				}
+			} else {
+				result.setUcdProcesses(null);
 			}
 			
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {

@@ -49,12 +49,6 @@ public class PendingCertificationResultEntity {
 	@Column(name = "g2_success")
 	private Boolean g2Success;
 	
-	@Column(name = "ucd_process_selected")
-	private String ucdProcessSelected;
-	
-	@Column(name = "ucd_process_details")
-	private String ucdProcessDetails;
-	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -70,6 +64,11 @@ public class PendingCertificationResultEntity {
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
+	@Basic( optional = false )
+	@Column( name = "pending_certification_result_id", nullable = false  )
+	private Set<PendingCertificationResultUcdProcessEntity> ucdProcesses;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
@@ -103,6 +102,7 @@ public class PendingCertificationResultEntity {
 	
 	
 	public PendingCertificationResultEntity() {
+		ucdProcesses = new HashSet<PendingCertificationResultUcdProcessEntity>();
 		testStandards = new HashSet<PendingCertificationResultTestStandardEntity>();
 		testFunctionality = new HashSet<PendingCertificationResultTestFunctionalityEntity>();
 		additionalSoftware = new HashSet<PendingCertificationResultAdditionalSoftwareEntity>();
@@ -207,22 +207,6 @@ public class PendingCertificationResultEntity {
 		this.g2Success = g2Success;
 	}
 
-	public String getUcdProcessSelected() {
-		return ucdProcessSelected;
-	}
-
-	public void setUcdProcessSelected(String ucdProcessSelected) {
-		this.ucdProcessSelected = ucdProcessSelected;
-	}
-
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
-	}
-
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
-	}
-
 	public Set<PendingCertificationResultTestStandardEntity> getTestStandards() {
 		return testStandards;
 	}
@@ -270,4 +254,13 @@ public class PendingCertificationResultEntity {
 	public void setTestTools(Set<PendingCertificationResultTestToolEntity> testTools) {
 		this.testTools = testTools;
 	}
+
+	public Set<PendingCertificationResultUcdProcessEntity> getUcdProcesses() {
+		return ucdProcesses;
+	}
+
+	public void setUcdProcesses(Set<PendingCertificationResultUcdProcessEntity> ucdProcesses) {
+		this.ucdProcesses = ucdProcesses;
+	}
+
 }

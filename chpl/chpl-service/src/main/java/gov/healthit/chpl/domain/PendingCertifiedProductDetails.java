@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
@@ -17,6 +16,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
@@ -189,8 +189,16 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			cert.setSed(certCriterion.getSed());
 			cert.setG1Success(certCriterion.getG1Success());
 			cert.setG2Success(certCriterion.getG2Success());
-			cert.setUcdProcessSelected(certCriterion.getUcdProcessSelected());
-			cert.setUcdProcessDetails(certCriterion.getUcdProcessDetails());
+			
+			if(certCriterion.getUcdProcesses() != null && certCriterion.getUcdProcesses().size() > 0) {
+				for(PendingCertificationResultUcdProcessDTO ucdDto : certCriterion.getUcdProcesses()) {
+					CertificationResultUcdProcess ucd = new CertificationResultUcdProcess();
+					ucd.setUcdProcessId(ucdDto.getUcdProcessId());
+					ucd.setUcdProcessName(ucdDto.getUcdProcessName());
+					ucd.setUcdProcessDetails(ucdDto.getUcdProcessDetails());
+					cert.getUcdProcesses().add(ucd);
+				}
+			}
 			
 			if(certCriterion.getAdditionalSoftware() != null) {
 				for(PendingCertificationResultAdditionalSoftwareDTO as : certCriterion.getAdditionalSoftware()) {

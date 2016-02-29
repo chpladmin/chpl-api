@@ -13,9 +13,8 @@ public class CertificationResult {
 	private Boolean sed;
 	private Boolean g1Success;
 	private Boolean g2Success;
-	private String ucdProcessSelected;
-	private String ucdProcessDetails;
 	
+	private List<CertificationResultUcdProcess> ucdProcesses;
 	private List<CertificationResultTestFunctionality> testFunctionality;
 	private List<CertificationResultTestProcedure> testProcedures;
 	private List<CertificationResultTestData> testDataUsed;
@@ -24,6 +23,7 @@ public class CertificationResult {
 	private List<CertificationResultTestTool> testToolsUsed;
 	
 	public CertificationResult(){
+			ucdProcesses = new ArrayList<CertificationResultUcdProcess>();
 		 additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
 		 testStandards = new ArrayList<CertificationResultTestStandard>();
 		 testToolsUsed = new ArrayList<CertificationResultTestTool>();
@@ -49,8 +49,6 @@ public class CertificationResult {
 		this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
 		this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
 		this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
-		this.ucdProcessSelected = (certResult.getUcdProcessSelected() == null ? "" : certResult.getUcdProcessSelected());
-		this.ucdProcessDetails = (certResult.getUcdProcessDetails() == null ? "" : certResult.getUcdProcessDetails());
 	}
 	
 	public String getNumber() {
@@ -101,18 +99,6 @@ public class CertificationResult {
 	public void setG2Success(Boolean g2Success) {
 		this.g2Success = g2Success;
 	}
-	public String getUcdProcessSelected() {
-		return ucdProcessSelected;
-	}
-	public void setUcdProcessSelected(String ucdProcessSelected) {
-		this.ucdProcessSelected = ucdProcessSelected;
-	}
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
-	}
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
-	}
 
 	public List<CertificationResultTestTool> getTestToolsUsed() {
 		return testToolsUsed;
@@ -144,5 +130,13 @@ public class CertificationResult {
 
 	public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
 		this.testFunctionality = testFunctionality;
+	}
+
+	public List<CertificationResultUcdProcess> getUcdProcesses() {
+		return ucdProcesses;
+	}
+
+	public void setUcdProcesses(List<CertificationResultUcdProcess> ucdProcesses) {
+		this.ucdProcesses = ucdProcesses;
 	}
 }

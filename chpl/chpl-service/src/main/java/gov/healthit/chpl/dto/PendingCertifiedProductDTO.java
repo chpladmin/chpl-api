@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
@@ -215,8 +216,16 @@ public class PendingCertifiedProductDTO {
 			certDto.setG1Success(crResult.isG1Success());
 			certDto.setG2Success(crResult.isG2Success());
 			certDto.setSed(crResult.isSed());
-			certDto.setUcdProcessDetails(crResult.getUcdProcessDetails());
-			certDto.setUcdProcessSelected(crResult.getUcdProcessSelected());
+			
+			if(crResult.getUcdProcesses() != null && crResult.getUcdProcesses().size() > 0) {
+				for(CertificationResultUcdProcess ucd : crResult.getUcdProcesses()) {
+					PendingCertificationResultUcdProcessDTO ucdDto = new PendingCertificationResultUcdProcessDTO();
+					ucdDto.setUcdProcessId(ucd.getUcdProcessId());
+					ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
+					ucdDto.setUcdProcessName(ucd.getUcdProcessName());
+					certDto.getUcdProcesses().add(ucdDto);
+				}
+			}
 			
 			if(crResult.getAdditionalSoftware() != null && crResult.getAdditionalSoftware().size() > 0) {
 				for(CertificationResultAdditionalSoftware software : crResult.getAdditionalSoftware()) {

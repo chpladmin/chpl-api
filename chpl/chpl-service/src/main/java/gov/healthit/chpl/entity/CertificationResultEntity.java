@@ -57,12 +57,6 @@ public class CertificationResultEntity  implements Serializable {
 	@Column(name = "success", nullable = false  )
 	private Boolean success;
 	
-	@Column(name = "ucd_process_selected")
-	private String ucdProcessSelected;
-	
-	@Column(name = "ucd_process_details")
-	private String ucdProcessDetails;
-	
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -192,22 +186,6 @@ public class CertificationResultEntity  implements Serializable {
 		this.g2Success = g2Success;
 	}
 
-	public String getUcdProcessSelected() {
-		return ucdProcessSelected;
-	}
-
-	public void setUcdProcessSelected(String ucdProcessSelected) {
-		this.ucdProcessSelected = ucdProcessSelected;
-	}
-
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
-	}
-
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
-	}
-	
 	public Boolean getGap() {
 		return gap;
 	}

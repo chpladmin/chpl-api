@@ -23,6 +23,7 @@ import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntit
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
@@ -56,6 +57,17 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 			criterion.setCreationDate(new Date());
 			criterion.setDeleted(false);
 			entityManager.persist(criterion);
+			
+			if(criterion.getUcdProcesses() != null && criterion.getUcdProcesses().size() > 0) {
+				for(PendingCertificationResultUcdProcessEntity ucd : criterion.getUcdProcesses()) {
+					ucd.setPendingCertificationResultId(criterion.getId());
+					ucd.setLastModifiedDate(new Date());	
+					ucd.setLastModifiedUser(Util.getCurrentUser().getId());
+					ucd.setCreationDate(new Date());
+					ucd.setDeleted(false);
+					entityManager.persist(ucd);
+				}				
+			}
 			
 			if(criterion.getTestStandards() != null && criterion.getTestStandards().size() > 0) {
 				for(PendingCertificationResultTestStandardEntity tsEntity : criterion.getTestStandards()) {
