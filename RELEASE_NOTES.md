@@ -1,5 +1,15 @@
 # Release Notes
 
+## Next Version
+_Date TBD_
+
+### Features added
+* Add validation to 2014 products
+* Update Download file generation
+
+### Bugs fixed
+* Fix null value in announcement activity
+
 ## Version 0.3.2
 _29 February 2016_
 
