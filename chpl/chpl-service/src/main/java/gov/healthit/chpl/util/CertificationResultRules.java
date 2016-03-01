@@ -21,7 +21,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-@Component
+@Component("certificationResultRules")
 public class CertificationResultRules {
 	public static final String GAP = "gap";
 	public static final String STANDARDS_TESTED = "standardsTested";
