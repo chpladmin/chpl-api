@@ -10,27 +10,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-
-import javax.xml.transform.stream.StreamResult;
-
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertifiedProductDownloadDetails;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 @Component("app")
 public class App {
@@ -38,10 +32,8 @@ public class App {
 	private static final Logger logger = LogManager.getLogger(App.class);
 
 	private SimpleDateFormat timestampFormat;
+	private CertifiedProductDetailsManager cpdManager;
 	private CertifiedProductDAO certifiedProductDAO;
-	private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-    private CertificationResultDetailsDAO certificationResultDetailsDAO;
-    private CQMResultDetailsDAO cqmResultDetailsDAO;
 	
     public App() {
     	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -70,10 +62,8 @@ public class App {
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		 System.out.println(context.getClassLoader());
 		 App app = new App();
+		 app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
 		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-		 app.setCertifiedProductSearchResultDAO((CertifiedProductSearchResultDAO)context.getBean("certifiedProductSearchResultDAO"));
-		 app.setCertificationResultDetailsDAO((CertificationResultDetailsDAO)context.getBean("certificationResultDetailsDAO"));
-		 app.setCqmResultDetailsDAO((CQMResultDetailsDAO)context.getBean("cqmResultDetailsDAO"));
         
         CertifiedProductDownloadResponse result = new CertifiedProductDownloadResponse();
         
@@ -85,43 +75,9 @@ public class App {
 		//	CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
 			try {
 				
-				CertifiedProductDetailsDTO dto = app.getCertifiedProductSearchResultDAO().getById(currProduct.getId());
-				CertifiedProductDownloadDetails downloadDetails = new CertifiedProductDownloadDetails(dto);
+				CertifiedProductSearchDetails product = app.getCpdManager().getCertifiedProductDetails(currProduct.getId());
+				result.getProducts().add(product);
 				
-				//additional software
-//				List<AdditionalSoftwareDTO> additionalSoftwareDTOs = app.getAdditionalSoftwareDAO().findByCertifiedProductId(dto.getId());
-//				if(additionalSoftwareDTOs != null && additionalSoftwareDTOs.size() > 0) {
-//					StringBuffer additionalSoftwareBuf = new StringBuffer();
-//					for(AdditionalSoftwareDTO currSoftware : additionalSoftwareDTOs) {
-//						if(additionalSoftwareBuf.length() > 0) {
-//							additionalSoftwareBuf.append(";");
-//						}
-//						additionalSoftwareBuf.append(currSoftware.getName());
-//						if(!StringUtils.isEmpty(currSoftware.getVersion()) &&
-//								!currSoftware.getVersion().equals("-1")) {
-//							additionalSoftwareBuf.append(" v." + currSoftware.getVersion());
-//						}
-//					}
-//					downloadDetails.setAdditionalSoftware(additionalSoftwareBuf.toString());
-//				}
-				
-				//certs, call these methods by reflection
-				List<CertificationResultDetailsDTO> certResultDTOs = app.getCertificationResultDetailsDAO().getCertificationResultDetailsByCertifiedProductId(dto.getId());
-				for (CertificationResultDetailsDTO certResult : certResultDTOs){
-					downloadDetails.setCertificationSuccess(certResult.getNumber(), certResult.getSuccess().booleanValue());
-				}
-				
-				//cqm results
-				List<CQMResultDetailsDTO> cqmResultDTOs = app.getCqmResultDetailsDAO().getCQMResultDetailsByCertifiedProductId(dto.getId());
-				for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs) { 
-					if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
-						downloadDetails.addCmsVersion(cqmResultDTO.getCmsId(), cqmResultDTO.getVersion());
-					} else if(dto.getYear().equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getNqfNumber())) {
-						downloadDetails.setNqfSuccess(cqmResultDTO.getNqfNumber(), cqmResultDTO.getSuccess().booleanValue());
-					}
-				}	
-				
-				result.getProducts().add(downloadDetails);
 			} catch(EntityRetrievalException ex) {
 				//logger.error("Could not certified product details for certified product " + currProduct.getId());
 			}
@@ -173,35 +129,19 @@ public class App {
 		this.certifiedProductDAO = certifiedProductDAO;
 	}
 
-	public CertifiedProductSearchResultDAO getCertifiedProductSearchResultDAO() {
-		return certifiedProductSearchResultDAO;
-	}
-
-	public void setCertifiedProductSearchResultDAO(CertifiedProductSearchResultDAO certifiedProductSearchResultDAO) {
-		this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
-	}
-	
-	public CertificationResultDetailsDAO getCertificationResultDetailsDAO() {
-		return certificationResultDetailsDAO;
-	}
-
-	public void setCertificationResultDetailsDAO(CertificationResultDetailsDAO certificationResultDetailsDAO) {
-		this.certificationResultDetailsDAO = certificationResultDetailsDAO;
-	}
-
-	public CQMResultDetailsDAO getCqmResultDetailsDAO() {
-		return cqmResultDetailsDAO;
-	}
-
-	public void setCqmResultDetailsDAO(CQMResultDetailsDAO cqmResultDetailsDAO) {
-		this.cqmResultDetailsDAO = cqmResultDetailsDAO;
-	}
-
 	public SimpleDateFormat getTimestampFormat() {
 		return timestampFormat;
 	}
 
 	public void setTimestampFormat(SimpleDateFormat timestampFormat) {
 		this.timestampFormat = timestampFormat;
+	}
+
+	public CertifiedProductDetailsManager getCpdManager() {
+		return cpdManager;
+	}
+
+	public void setCpdManager(CertifiedProductDetailsManager cpdManager) {
+		this.cpdManager = cpdManager;
 	}
 }

@@ -40,7 +40,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 		if(!StringUtils.isEmpty(announcement.getText())) {
 			activityMsg = "Created announcement: " + announcement.getText(); 
 		} else {
-			activityMsg = "Created empty announcement.";
+			activityMsg = "Created empty announcement";
 		}
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg, null, result);
