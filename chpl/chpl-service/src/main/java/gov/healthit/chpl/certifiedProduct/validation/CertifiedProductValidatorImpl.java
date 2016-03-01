@@ -3,6 +3,7 @@ package gov.healthit.chpl.certifiedProduct.validation;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -25,6 +26,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	@Autowired CertificationEditionDAO certEditionDao;
 	@Autowired CertificationBodyDAO acbDao;
 	@Autowired DeveloperDAO developerDao;
+	
+	Pattern urlRegex;
+	
+	public CertifiedProductValidatorImpl() {
+		urlRegex = Pattern.compile(URL_PATTERN);
+	}
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
@@ -120,11 +127,42 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		} catch (ParseException pex) {
 			product.getErrorMessages().add("Could not parse the certification date part of the product id: " + certifiedDateCode);
 		}
+		
+		validateDemographics(product);
 	}
 	@Override
 	public void validate(CertifiedProductSearchDetails product) {
 		//TODO: not sure if we should do the same validation here or not
 	}
 	
-
+	private void validateDemographics(PendingCertifiedProductDTO product) {
+		if(product.getProductVersionId() == null) {
+			product.getErrorMessages().add("Version is required but was not found.");
+		}
+		if(product.getCertificationEditionId() == null && StringUtils.isEmpty(product.getCertificationEdition())) {
+			product.getErrorMessages().add("Certification edition is required but was not found.");
+		}
+		if(StringUtils.isEmpty(product.getAcbCertificationId())) {
+			product.getErrorMessages().add("CHPL certification ID is required but was not found.");
+		}
+		if(product.getCertificationDate() == null) {
+			product.getErrorMessages().add("Certification date was not found.");
+		} else if(product.getCertificationDate().getTime() > new Date().getTime()) {
+			product.getErrorMessages().add("Certification date occurs in the future.");
+		}
+		if(product.getCertificationBodyId() == null) {
+			product.getErrorMessages().add("ACB ID is required but was not found.");
+		}
+		if(product.getPracticeTypeId() == null) {
+			product.getErrorMessages().add("Practice setting is required but was not found.");
+		}
+		if(product.getProductClassificationId() == null) {
+			product.getErrorMessages().add("Product classification is required but was not found.");
+		}
+		if(StringUtils.isEmpty(product.getReportFileLocation())) {
+			product.getErrorMessages().add("Test Report URL is required but was not found.");
+		} else if(!urlRegex.matcher(product.getReportFileLocation()).matches()) {
+			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
+		}
+	}
 }

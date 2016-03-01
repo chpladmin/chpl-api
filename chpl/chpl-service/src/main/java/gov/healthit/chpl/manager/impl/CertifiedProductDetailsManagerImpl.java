@@ -1,21 +1,17 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
@@ -33,7 +29,6 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
-import gov.healthit.chpl.domain.CertifiedProductDownloadDetails;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -52,18 +47,14 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
-@Service
+@Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
 
 	@Autowired
 	private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-	
-	@Autowired
-	private CertificationCriterionDAO certificationCriterionDAO;
 	
 	@Autowired
 	private CQMResultDetailsDAO cqmResultDetailsDAO;
@@ -79,9 +70,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Autowired
 	private CertificationEventDAO certificationEventDAO;
-	
-	@Autowired
-	private CertifiedProductManager certifiedProductManager;
 	
 	@Autowired
 	private EventTypeDAO eventTypeDAO;
@@ -347,32 +335,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setCertificationEvents(getCertificationEvents(dto.getId()));
 		
 		return searchDetails;
-	}
-	
-	@Override
-	@Transactional
-	public CertifiedProductDownloadDetails getCertifiedProductDownloadDetails(Long certifiedProductId) throws EntityRetrievalException {
-		
-		CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
-		CertifiedProductDownloadDetails result = new CertifiedProductDownloadDetails(dto);
-		
-		//certs, call these methods by reflection
-		List<CertificationResultDetailsDTO> certResultDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
-		for (CertificationResultDetailsDTO certResult : certResultDTOs){
-			result.setCertificationSuccess(certResult.getNumber(), certResult.getSuccess().booleanValue());
-		}
-		
-		//cqm results
-		List<CQMResultDetailsDTO> cqmResultDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(dto.getId());
-		for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs) { 
-			if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
-				result.addCmsVersion(cqmResultDTO.getCmsId(), cqmResultDTO.getVersion());
-			} else if(dto.getYear().equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getNqfNumber())) {
-				result.setNqfSuccess(cqmResultDTO.getNqfNumber(), cqmResultDTO.getSuccess().booleanValue());
-			}
-		}	
-		
-		return result;
 	}
 	
 	public List<CQMCriterion> getCqmCriteria() {

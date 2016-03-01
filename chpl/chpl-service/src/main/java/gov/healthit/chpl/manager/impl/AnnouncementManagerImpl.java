@@ -17,6 +17,7 @@ import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -35,9 +36,12 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 		// Create the announcement itself
 		AnnouncementDTO result = announcementDAO.create(announcement);
 		
-		logger.debug("Created announcement " + result);
-		
-		String activityMsg = "Created Announcement " + result.getText();
+		String activityMsg;
+		if(!StringUtils.isEmpty(announcement.getText())) {
+			activityMsg = "Created announcement: " + announcement.getText(); 
+		} else {
+			activityMsg = "Created empty announcement";
+		}
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg, null, result);
 		
