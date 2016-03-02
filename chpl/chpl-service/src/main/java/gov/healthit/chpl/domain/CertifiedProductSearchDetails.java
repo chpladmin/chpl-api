@@ -38,6 +38,7 @@ public class CertifiedProductSearchDetails {
 	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
+	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
@@ -263,5 +264,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
 		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+	public List<CertifiedProductTargetedUser> getTargetedUsers() {
+		return targetedUsers;
+	}
+	public void setTargetedUsers(List<CertifiedProductTargetedUser> targetedUsers) {
+		this.targetedUsers = targetedUsers;
 	}
 }

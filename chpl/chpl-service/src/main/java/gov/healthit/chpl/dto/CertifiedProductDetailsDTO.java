@@ -62,11 +62,13 @@ public class CertifiedProductDetailsDTO {
 	private String transparencyAttestationUrl;
 	
 	private List<CertifiedProductQmsStandardDTO> qmsStandards;
+	private List<TargetedUserDTO> targetedUsers;
     private List<CertificationResultDetailsDTO> certResults;
     private List<CQMResultDetailsDTO> cqmResults;
     
     public CertifiedProductDetailsDTO(){
     	qmsStandards = new ArrayList<CertifiedProductQmsStandardDTO>();
+    	targetedUsers = new ArrayList<TargetedUserDTO>();
     	certResults = new ArrayList<CertificationResultDetailsDTO>();
     	cqmResults = new ArrayList<CQMResultDetailsDTO>();
     }
@@ -509,5 +511,13 @@ public class CertifiedProductDetailsDTO {
 
 	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
 		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+
+	public List<TargetedUserDTO> getTargetedUsers() {
+		return targetedUsers;
+	}
+
+	public void setTargetedUsers(List<TargetedUserDTO> targetedUsers) {
+		this.targetedUsers = targetedUsers;
 	}
 }

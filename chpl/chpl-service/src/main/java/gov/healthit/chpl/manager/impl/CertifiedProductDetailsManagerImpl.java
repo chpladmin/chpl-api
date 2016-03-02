@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
@@ -31,6 +32,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
@@ -44,6 +46,7 @@ import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -64,6 +67,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Autowired
 	private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
+	
+	@Autowired CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
 	
 	@Autowired
 	private CertificationResultManager certResultManager;
@@ -178,6 +183,15 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			qmsStandardResults.add(result);
 		}
 		searchDetails.setQmsStandards(qmsStandardResults);
+		
+		//get targeted users
+		List<CertifiedProductTargetedUserDTO> targetedUserDtos = certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(dto.getId());
+		List<CertifiedProductTargetedUser> targetedUserResults = new ArrayList<CertifiedProductTargetedUser>();
+		for(CertifiedProductTargetedUserDTO targetedUserDto : targetedUserDtos) {
+			CertifiedProductTargetedUser result = new CertifiedProductTargetedUser(targetedUserDto);
+			targetedUserResults.add(result);
+		}
+		searchDetails.setTargetedUsers(targetedUserResults);
 		
 		//get cert criteria results
 		List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());

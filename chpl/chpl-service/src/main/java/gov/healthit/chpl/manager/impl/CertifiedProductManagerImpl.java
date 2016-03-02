@@ -24,11 +24,13 @@ import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
+import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
+import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
@@ -61,6 +63,7 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
@@ -78,6 +81,7 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
+import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
@@ -102,7 +106,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired CertificationResultDAO certDao;
 	@Autowired CertificationCriterionDAO certCriterionDao;
 	@Autowired QmsStandardDAO qmsDao;
+	@Autowired TargetedUserDAO targetedUserDao;
 	@Autowired CertifiedProductQmsStandardDAO cpQmsDao;
+	@Autowired CertifiedProductTargetedUserDAO cpTargetedUserDao;
 	@Autowired CQMResultDAO cqmResultDAO;
 	@Autowired CQMCriterionDAO cqmCriterionDao;
 	@Autowired CertificationBodyDAO acbDao;
@@ -580,6 +586,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductQmsStandardDTO toAdd : qmsToAdd) {
 			cpQmsDao.createCertifiedProductQms(toAdd);
 		}
+		
 		for(CertifiedProductQmsStandardDTO toRemove : qmsToRemove) {
 			cpQmsDao.deleteCertifiedProductQms(toRemove.getId());
 		}	
@@ -590,6 +597,63 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		{
 			List<CertifiedProductQmsStandardDTO> afterQms = cpQmsDao.getQmsStandardsByCertifiedProductId(productDto.getId());
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "QMS Standards Used for "+productDto.getChplProductNumberForActivity() + " were updated." , beforeQms , afterQms);
+		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateTargetedUsers(Long acbId, CertifiedProductDTO productDto, List<CertifiedProductTargetedUserDTO> newTargetedUsers)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
+		List<CertifiedProductTargetedUserDTO> beforeTUs = cpTargetedUserDao.getTargetedUsersByCertifiedProductId(productDto.getId());
+		
+		List<CertifiedProductTargetedUserDTO> tusToAdd = new ArrayList<CertifiedProductTargetedUserDTO>();
+		List<CertifiedProductTargetedUserDTO> tusToRemove = new ArrayList<CertifiedProductTargetedUserDTO>();
+		
+		for (CertifiedProductTargetedUserDTO newTu : newTargetedUsers){
+			TargetedUserDTO tu = targetedUserDao.getByName(newTu.getTargetedUserName());
+			if(tu == null) {
+				TargetedUserDTO toCreate = new TargetedUserDTO();
+				toCreate.setName(newTu.getTargetedUserName());
+				tu = targetedUserDao.create(toCreate);
+			}
+			if(newTu.getId() == null) {
+				newTu.setTargetedUserId(tu.getId());
+				tusToAdd.add(newTu);
+			} 
+		}
+		
+		for(CertifiedProductTargetedUserDTO currTu : beforeTUs) {
+			boolean isInUpdate = false;
+			for (CertifiedProductTargetedUserDTO newTu : newTargetedUsers){
+				if(newTu.getId() != null && 
+						newTu.getId().longValue() == currTu.getId().longValue()) {
+					isInUpdate = true;
+				}
+			}
+			if(!isInUpdate) {
+				tusToRemove.add(currTu);
+			}
+		}
+			
+		for(CertifiedProductTargetedUserDTO toAdd : tusToAdd) {
+			cpTargetedUserDao.createCertifiedProductTargetedUser(toAdd);
+		}
+		
+		for(CertifiedProductTargetedUserDTO toRemove : tusToRemove) {
+			cpTargetedUserDao.deleteCertifiedProductTargetedUser(toRemove.getId());
+		}	
+		
+		//only put in activity if something changed
+		if( (tusToAdd != null && tusToAdd.size() > 0) ||
+				(tusToRemove != null && tusToRemove.size() > 0) )
+		{
+			List<CertifiedProductTargetedUserDTO> afterTus = cpTargetedUserDao.getTargetedUsersByCertifiedProductId(productDto.getId());
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Targeted Users for "+productDto.getChplProductNumberForActivity() + " were updated." , beforeTUs , afterTus);
 		}
 	}
 	
