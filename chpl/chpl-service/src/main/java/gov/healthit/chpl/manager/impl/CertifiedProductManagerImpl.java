@@ -211,7 +211,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setDeleted(false);
 		toCreate.setLastModifiedDate(new Date());
 		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-		toCreate.setPrivacyAttestation(Boolean.FALSE);
 		
 		if(pendingCp.getCertificationBodyId() == null) {
 			throw new EntityCreationException("ACB ID must be specified.");

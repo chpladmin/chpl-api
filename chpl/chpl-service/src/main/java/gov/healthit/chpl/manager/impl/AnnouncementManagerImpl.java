@@ -36,13 +36,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 		// Create the announcement itself
 		AnnouncementDTO result = announcementDAO.create(announcement);
 		
-		String activityMsg;
-		if(!StringUtils.isEmpty(announcement.getText())) {
-			activityMsg = "Created announcement: " + announcement.getText(); 
-		} else {
-			activityMsg = "Created empty announcement";
-		}
-		
+		String activityMsg = "Created announcement: " + announcement.getTitle(); 
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg, null, result);
 		
 		return result;

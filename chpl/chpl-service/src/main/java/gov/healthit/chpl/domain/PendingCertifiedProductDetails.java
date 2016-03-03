@@ -38,7 +38,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setChplProductNumber(dto.getUniqueId());
 		this.setReportFileLocation(dto.getReportFileLocation());
 		this.setSedReportFileLocation(dto.getSedReportFileLocation());
-		this.setQualityManagementSystemAtt(null);
 		this.setAcbCertificationId(dto.getAcbCertificationId());
 		this.setIcs(dto.getIcs());
 		
@@ -163,7 +162,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		}
 		
 		this.setVisibleOnChpl(false);
-		this.setPrivacyAttestation(false);
 		this.setTransparencyAttestation(dto.getTransparencyAttestation());
 		this.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		

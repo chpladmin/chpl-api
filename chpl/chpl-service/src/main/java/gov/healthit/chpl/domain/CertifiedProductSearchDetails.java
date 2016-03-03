@@ -11,7 +11,6 @@ public class CertifiedProductSearchDetails {
     private String chplProductNumber;
     private String reportFileLocation;
     private String sedReportFileLocation;
-    private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
@@ -35,10 +34,8 @@ public class CertifiedProductSearchDetails {
 	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
 	private String transparencyAttestationUrl;
-	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
-	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
@@ -63,12 +60,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
@@ -174,12 +165,6 @@ public class CertifiedProductSearchDetails {
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
 	}
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
-	}
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
-	}
 	public List<String> getWarningMessages() {
 		return warningMessages;
 	}
@@ -264,11 +249,5 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
 		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
-	}
-	public List<CertifiedProductTargetedUser> getTargetedUsers() {
-		return targetedUsers;
-	}
-	public void setTargetedUsers(List<CertifiedProductTargetedUser> targetedUsers) {
-		this.targetedUsers = targetedUsers;
 	}
 }

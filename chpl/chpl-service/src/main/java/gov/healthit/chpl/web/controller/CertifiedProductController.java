@@ -168,7 +168,6 @@ public class CertifiedProductController {
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
-		toUpdate.setPrivacyAttestation(updateRequest.getPrivacyAttestation());
 		toUpdate.setApiDocumentation(updateRequest.getApiDocumentation());
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
@@ -211,18 +210,6 @@ public class CertifiedProductController {
 			qmsStandardsToUpdate.add(dto);
 		}
 		cpManager.updateQmsStandards(acbId, toUpdate, qmsStandardsToUpdate);
-
-		//update targeted users
-		List<CertifiedProductTargetedUserDTO> targetedUsersToUpdate = new ArrayList<CertifiedProductTargetedUserDTO>();
-		for(CertifiedProductTargetedUser newTu : updateRequest.getTargetedUsers()) {
-			CertifiedProductTargetedUserDTO dto = new CertifiedProductTargetedUserDTO();
-			dto.setId(newTu.getId());
-			dto.setCertifiedProductId(toUpdate.getId());
-			dto.setTargetedUserId(newTu.getTargetedUserId());
-			dto.setTargetedUserName(newTu.getTargetedUserName());
-			targetedUsersToUpdate.add(dto);
-		}
-		cpManager.updateTargetedUsers(acbId, toUpdate, targetedUsersToUpdate);
 		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());

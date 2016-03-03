@@ -154,7 +154,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.getDeveloper().put("website", dto.getDeveloperWebsite());
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
-		searchDetails.setPrivacyAttestation(dto.getPrivacyAttestation());
 		searchDetails.setApiDocumentation(dto.getApiDocumentation());
 		searchDetails.setIcs(dto.getIcs());
 		searchDetails.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
@@ -183,15 +182,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			qmsStandardResults.add(result);
 		}
 		searchDetails.setQmsStandards(qmsStandardResults);
-		
-		//get targeted users
-		List<CertifiedProductTargetedUserDTO> targetedUserDtos = certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(dto.getId());
-		List<CertifiedProductTargetedUser> targetedUserResults = new ArrayList<CertifiedProductTargetedUser>();
-		for(CertifiedProductTargetedUserDTO targetedUserDto : targetedUserDtos) {
-			CertifiedProductTargetedUser result = new CertifiedProductTargetedUser(targetedUserDto);
-			targetedUserResults.add(result);
-		}
-		searchDetails.setTargetedUsers(targetedUserResults);
 		
 		//get cert criteria results
 		List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());

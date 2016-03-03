@@ -51,7 +51,6 @@ public class CertifiedProductDetailsDTO {
     private Integer countClosedCorrectiveActionPlans;
     private Boolean visibleOnChpl;
     private Date lastModifiedDate;
-    private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
 	private Boolean ics;
@@ -109,7 +108,6 @@ public class CertifiedProductDetailsDTO {
     	this.developerCode = entity.getDeveloperCode();
     	this.developerWebsite = entity.getDeveloperWebsite();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
-    	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.termsOfUse = entity.getTermsOfUse();
     	this.apiDocumentation = entity.getApiDocumentation();
     	this.ics = entity.getIcs();
@@ -295,15 +293,7 @@ public class CertifiedProductDetailsDTO {
 	public void setCertificationStatusName(String certificationStatusName) {
 		this.certificationStatusName = certificationStatusName;
 	}
-
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
-	}
-
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
-	}
-
+	
 	public Integer getCountCorrectiveActionPlans() {
 		return countCorrectiveActionPlans;
 	}
