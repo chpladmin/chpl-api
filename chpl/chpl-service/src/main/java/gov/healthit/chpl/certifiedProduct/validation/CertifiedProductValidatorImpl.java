@@ -70,9 +70,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			if(product.getDeveloperId() != null) {
 				DeveloperDTO developer = developerDao.getById(product.getDeveloperId());
 				if(developer != null) {
-					if(!developerCode.matches("X+") && 
-						!developer.getDeveloperCode().equals(developerCode)) {
-						product.getErrorMessages().add("The developer code provided does not match the assigned developer code '" + developer.getDeveloperCode() + "'.");
+					if(!developer.getDeveloperCode().equals(developerCode)) {
+						product.getErrorMessages().add("The developer code '" + developerCode + "' does not match the assigned developer code for " + product.getDeveloperName() + ": '" + developer.getDeveloperCode() + "'.");
 					}
 					if(certificationBody != null) {
 						DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(), certificationBody.getId());
@@ -92,6 +91,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						(!developer.getTransparencyAttestationUrl().equals(product.getTransparencyAttestationUrl())) ) {
 						product.getWarningMessages().add("The transparency attestation URL for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 					}
+				}
+			} else if(!developerCode.matches("X+")){
+				DeveloperDTO developerByCode = developerDao.getByCode(developerCode);
+				if(developerByCode == null) {
+					product.getErrorMessages().add("The developer code " + developerCode + " does not match any developer in the system. New developers should use the code 'XXXX'.");
+				} else {
+					product.getErrorMessages().add("The developer code " + developerCode + " is for '" + developerByCode.getName() + "' which does not match the developer name in the upload file '" + product.getDeveloperName() + "'");
 				}
 			}
 		} catch(EntityRetrievalException ex) {
@@ -144,9 +150,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	}
 	
 	private void validateDemographics(PendingCertifiedProductDTO product) {
-		if(product.getProductVersionId() == null) {
-			product.getErrorMessages().add("Version is required but was not found.");
-		}
 		if(product.getCertificationEditionId() == null && StringUtils.isEmpty(product.getCertificationEdition())) {
 			product.getErrorMessages().add("Certification edition is required but was not found.");
 		}

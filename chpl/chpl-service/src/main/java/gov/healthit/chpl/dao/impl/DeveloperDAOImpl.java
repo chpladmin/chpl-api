@@ -280,6 +280,16 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		return dto;
 	}
 	
+	@Override
+	public DeveloperDTO getByCode(String code) {
+		DeveloperEntity entity = getEntityByCode(code);
+		DeveloperDTO dto = null;
+		if(entity != null) {
+			dto = new DeveloperDTO(entity);
+		}
+		return dto;
+	}
+	
 	public DeveloperDTO getByCertifiedProduct(CertifiedProductDTO cpDto) throws EntityRetrievalException {
 		if(cpDto == null || cpDto.getProductVersionId() == null) {
 			throw new EntityRetrievalException("Version ID cannot be null!");
@@ -362,6 +372,25 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		return entity;
 	}
 	
+	private DeveloperEntity getEntityByCode(String code) {
+		
+		DeveloperEntity entity = null;
+			
+		Query query = entityManager.createQuery( "SELECT v from "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class );
+		query.setParameter("code", code);
+		List<DeveloperEntity> result = query.getResultList();
+		
+		if(result.size() > 0) {
+			entity = result.get(0);
+		}
+
+		return entity;
+	}
+
 	private DeveloperACBMapEntity getTransparencyMappingEntity(Long developerId, Long acbId) {
 		Query query = entityManager.createQuery( "FROM DeveloperACBMapEntity where "
 				+ "(NOT deleted = true) "
