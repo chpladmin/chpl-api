@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -72,6 +73,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					if(!developerCode.matches("X+") && 
 						!developer.getDeveloperCode().equals(developerCode)) {
 						product.getErrorMessages().add("The developer code provided does not match the assigned developer code '" + developer.getDeveloperCode() + "'.");
+					}
+					if(certificationBody != null) {
+						DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(), certificationBody.getId());
+						developer.setTransparencyAttestation(mapping.getTransparencyAttestation());
+						developer.setTransparencyAttestationUrl(mapping.getTransparencyAttestationUrl());
 					}
 					//check transparency attestation and url for warnings
 					if( (developer.getTransparencyAttestation() == null && product.getTransparencyAttestation() != null) ||

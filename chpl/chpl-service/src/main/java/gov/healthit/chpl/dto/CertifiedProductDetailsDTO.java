@@ -51,7 +51,6 @@ public class CertifiedProductDetailsDTO {
     private Integer countClosedCorrectiveActionPlans;
     private Boolean visibleOnChpl;
     private Date lastModifiedDate;
-    private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
 	private Boolean ics;
@@ -62,11 +61,13 @@ public class CertifiedProductDetailsDTO {
 	private String transparencyAttestationUrl;
 	
 	private List<CertifiedProductQmsStandardDTO> qmsStandards;
+	private List<TargetedUserDTO> targetedUsers;
     private List<CertificationResultDetailsDTO> certResults;
     private List<CQMResultDetailsDTO> cqmResults;
     
     public CertifiedProductDetailsDTO(){
     	qmsStandards = new ArrayList<CertifiedProductQmsStandardDTO>();
+    	targetedUsers = new ArrayList<TargetedUserDTO>();
     	certResults = new ArrayList<CertificationResultDetailsDTO>();
     	cqmResults = new ArrayList<CQMResultDetailsDTO>();
     }
@@ -107,7 +108,6 @@ public class CertifiedProductDetailsDTO {
     	this.developerCode = entity.getDeveloperCode();
     	this.developerWebsite = entity.getDeveloperWebsite();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
-    	this.privacyAttestation = entity.getPrivacyAttestation();
     	this.termsOfUse = entity.getTermsOfUse();
     	this.apiDocumentation = entity.getApiDocumentation();
     	this.ics = entity.getIcs();
@@ -293,15 +293,7 @@ public class CertifiedProductDetailsDTO {
 	public void setCertificationStatusName(String certificationStatusName) {
 		this.certificationStatusName = certificationStatusName;
 	}
-
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
-	}
-
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
-	}
-
+	
 	public Integer getCountCorrectiveActionPlans() {
 		return countCorrectiveActionPlans;
 	}
@@ -509,5 +501,13 @@ public class CertifiedProductDetailsDTO {
 
 	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
 		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+
+	public List<TargetedUserDTO> getTargetedUsers() {
+		return targetedUsers;
+	}
+
+	public void setTargetedUsers(List<TargetedUserDTO> targetedUsers) {
+		this.targetedUsers = targetedUsers;
 	}
 }

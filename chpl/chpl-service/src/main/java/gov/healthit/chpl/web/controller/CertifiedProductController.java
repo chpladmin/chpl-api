@@ -39,11 +39,13 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -166,7 +168,6 @@ public class CertifiedProductController {
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
-		toUpdate.setPrivacyAttestation(updateRequest.getPrivacyAttestation());
 		toUpdate.setApiDocumentation(updateRequest.getApiDocumentation());
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
@@ -209,7 +210,7 @@ public class CertifiedProductController {
 			qmsStandardsToUpdate.add(dto);
 		}
 		cpManager.updateQmsStandards(acbId, toUpdate, qmsStandardsToUpdate);
-
+		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
 		

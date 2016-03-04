@@ -11,7 +11,6 @@ public class CertifiedProductSearchDetails {
     private String chplProductNumber;
     private String reportFileLocation;
     private String sedReportFileLocation;
-    private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
@@ -35,7 +34,6 @@ public class CertifiedProductSearchDetails {
 	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation;
 	private String transparencyAttestationUrl;
-	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
@@ -62,12 +60,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
@@ -172,12 +164,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
-	}
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
-	}
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
 	}
 	public List<String> getWarningMessages() {
 		return warningMessages;
