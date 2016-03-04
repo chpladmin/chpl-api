@@ -76,8 +76,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					}
 					if(certificationBody != null) {
 						DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(), certificationBody.getId());
-						developer.setTransparencyAttestation(mapping.getTransparencyAttestation());
-						developer.setTransparencyAttestationUrl(mapping.getTransparencyAttestationUrl());
+						if(mapping != null) {
+							developer.setTransparencyAttestation(mapping.getTransparencyAttestation());
+							developer.setTransparencyAttestationUrl(mapping.getTransparencyAttestationUrl());
+						}
 					}
 					//check transparency attestation and url for warnings
 					if( (developer.getTransparencyAttestation() == null && product.getTransparencyAttestation() != null) ||
