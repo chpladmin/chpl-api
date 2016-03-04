@@ -239,7 +239,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		DeveloperDTO developer = null;
 		if(pendingCp.getDeveloperId() == null) {
 			DeveloperDTO newDeveloper = new DeveloperDTO();
-			if(!StringUtils.isEmpty(pendingCp.getDeveloperName())) {
+			if(StringUtils.isEmpty(pendingCp.getDeveloperName())) {
 				throw new EntityCreationException("You must provide a developer name to create a new developer.");
 			}
 			newDeveloper.setName(pendingCp.getDeveloperName());
