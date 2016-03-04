@@ -20,7 +20,7 @@ public class CQMResultDetails {
 	private Boolean success;
 	private Set<String> successVersions;
 	private Set<String> allVersions;
-	
+
 	public CQMResultDetails(){
 		this.successVersions = new HashSet<String>();
 		this.allVersions = new HashSet<String>();

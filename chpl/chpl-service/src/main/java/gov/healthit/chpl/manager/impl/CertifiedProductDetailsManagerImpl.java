@@ -285,7 +285,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			boolean existingCms = false;
 			//for a CMS, first check to see if we already have an object with the same CMS id
 			//so we can just add to it's success versions. 
-			if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+			if(!dto.getYear().equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
 				for(CQMResultDetails result : cqmResults) {
 					if(cqmResultDTO.getCmsId().equals(result.getCmsId())) {
 						existingCms = true;
@@ -301,7 +301,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				result.setNumber(cqmResultDTO.getNumber());
 				result.setTitle(cqmResultDTO.getTitle());
 				result.setTypeId(cqmResultDTO.getCqmCriterionTypeId());
-				if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+				if(!dto.getYear().equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
 					result.getSuccessVersions().add(cqmResultDTO.getVersion());
 				} else {
 					result.setSuccess(cqmResultDTO.getSuccess());
@@ -311,9 +311,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}	
 		
 		//now add allVersions for CMSs
-		if (dto.getYear().startsWith("2014")){
-			List<CQMCriterion> cqms2014 = getAvailableCQMVersions();
-			for(CQMCriterion cqm : cqms2014) {
+		if (!dto.getYear().startsWith("2011")){
+			List<CQMCriterion> cqms = getAvailableCQMVersions();
+			for(CQMCriterion cqm : cqms) {
 				boolean cqmExists = false;
 				for(CQMResultDetails details : cqmResults) {
 					if(cqm.getCmsId().equals(details.getCmsId())) {
