@@ -345,7 +345,7 @@ public class CertifiedProductController {
 		
 		if(!file.getContentType().equalsIgnoreCase("text/csv") &&
 				!file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-			throw new InvalidArgumentsException("File must be a CSV or Excel document.");
+			throw new InvalidArgumentsException("File must be a CSV document.");
 		}
 		
 		List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
