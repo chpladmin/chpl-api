@@ -33,6 +33,7 @@
 		<class>gov.healthit.chpl.entity.CertificationResultUcdProcessEntity</class>
 		
 		<class>gov.healthit.chpl.entity.CQMResultDetailsEntity</class>
+		<class>gov.healthit.chpl.entity.CQMResultCriteriaEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationEditionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>

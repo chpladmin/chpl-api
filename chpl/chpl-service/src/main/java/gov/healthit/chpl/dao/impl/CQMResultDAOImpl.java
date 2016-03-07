@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -16,12 +14,8 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
-import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.entity.CQMResultCriteriaEntity;
 import gov.healthit.chpl.entity.CQMResultEntity;
-import gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity;
-import gov.healthit.chpl.entity.CertificationResultTestDataEntity;
 
 @Repository(value="cqmResultDAO")
 public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
@@ -105,6 +99,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 	@Override
 	public void delete(Long cqmResultId) {
 		// TODO: How to delete this without leaving orphans
+		deleteMappingsForCqmResult(cqmResultId);
 		Query query = entityManager.createQuery("UPDATE CQMResultEntity SET deleted = true WHERE cqm_result_id = :resultid");
 		query.setParameter("resultid", cqmResultId);
 		query.executeUpdate();
@@ -112,6 +107,10 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 	
 	@Override
 	public void deleteByCertifiedProductId(Long productId) {
+		List<CQMResultDTO> cqmResults = findByCertifiedProductId(productId);
+		for(CQMResultDTO cqmResult : cqmResults) {
+			deleteMappingsForCqmResult(cqmResult.getId());
+		}
 		Query query = entityManager.createQuery("UPDATE CQMResultEntity SET deleted = true WHERE certified_product_id = :productId");
 		query.setParameter("productId", productId);
 		query.executeUpdate();
@@ -127,6 +126,13 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 			entityManager.persist(toDelete);
 			entityManager.flush();
 		}
+	}
+	
+	@Override
+	public void deleteMappingsForCqmResult(Long cqmResultId){
+		Query query = entityManager.createQuery("UPDATE CQMResultCriteriaEntity SET deleted = true WHERE cqm_result_id = :resultid");
+		query.setParameter("resultid", cqmResultId);
+		query.executeUpdate();
 	}
 	
 	@Override
