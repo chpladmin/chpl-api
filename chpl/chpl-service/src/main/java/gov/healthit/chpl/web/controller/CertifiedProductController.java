@@ -211,6 +211,18 @@ public class CertifiedProductController {
 		}
 		cpManager.updateQmsStandards(acbId, toUpdate, qmsStandardsToUpdate);
 		
+		//update targeted users
+		List<CertifiedProductTargetedUserDTO> targetedUsersToUpdate = new ArrayList<CertifiedProductTargetedUserDTO>();
+		for(CertifiedProductTargetedUser newTu : updateRequest.getTargetedUsers()) {
+			CertifiedProductTargetedUserDTO dto = new CertifiedProductTargetedUserDTO();
+			dto.setId(newTu.getId());
+			dto.setCertifiedProductId(toUpdate.getId());
+			dto.setTargetedUserId(newTu.getTargetedUserId());
+			dto.setTargetedUserName(newTu.getTargetedUserName());
+			targetedUsersToUpdate.add(dto);
+		}
+		cpManager.updateTargetedUsers(acbId, toUpdate, targetedUsersToUpdate);
+		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
 		

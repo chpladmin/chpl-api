@@ -183,6 +183,15 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}
 		searchDetails.setQmsStandards(qmsStandardResults);
 		
+		//get targeted users
+		List<CertifiedProductTargetedUserDTO> targetedUserDtos = certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(dto.getId());
+		List<CertifiedProductTargetedUser> targetedUserResults = new ArrayList<CertifiedProductTargetedUser>();
+		for(CertifiedProductTargetedUserDTO targetedUserDto : targetedUserDtos) {
+			CertifiedProductTargetedUser result = new CertifiedProductTargetedUser(targetedUserDto);
+			targetedUserResults.add(result);
+		}
+		searchDetails.setTargetedUsers(targetedUserResults);
+		
 		//get cert criteria results
 		List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();

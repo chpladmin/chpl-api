@@ -35,6 +35,8 @@ public class CertifiedProductSearchDetails {
 	private Boolean transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long lastModifiedDate;
+	
+	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
@@ -249,5 +251,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
 		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+	public List<CertifiedProductTargetedUser> getTargetedUsers() {
+		return targetedUsers;
+	}
+	public void setTargetedUsers(List<CertifiedProductTargetedUser> targetedUsers) {
+		this.targetedUsers = targetedUsers;
 	}
 }
