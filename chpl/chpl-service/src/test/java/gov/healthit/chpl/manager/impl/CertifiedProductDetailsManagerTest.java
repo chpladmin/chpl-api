@@ -195,6 +195,16 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	
 	@Test
 	@Transactional
+	public void testCertifiedProductTargetedUsers() throws EntityRetrievalException{
+		
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
+		assertNotNull(detail.getTargetedUsers());
+		assertEquals(1, detail.getTargetedUsers().size());
+		assertEquals("Pediatrics", detail.getTargetedUsers().get(0).getTargetedUserName());
+	}
+	
+	@Test
+	@Transactional
 	public void testCertifiedProductDetailsCountCQMs() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
