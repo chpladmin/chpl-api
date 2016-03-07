@@ -1,84 +1,57 @@
 package gov.healthit.chpl.dto;
 
+import gov.healthit.chpl.entity.CQMResultCriteriaEntity;
 import gov.healthit.chpl.entity.CQMResultEntity;
 
 import java.util.Date;
-import java.util.List;
 
 public class CQMResultCriteriaDTO {
 	
 	private Long id;
-	private Long cqmCriterionId;
-	private Long certifiedProductId;
-	private Date creationDate;
-	private Date lastModifiedDate;
-	private Long lastModifiedUser;
-	private Boolean success;
-	private Boolean deleted;
+	private Long cqmResultId;
+	private Long criterionId;
+	private CertificationCriterionDTO criterion;
 	
 	public CQMResultCriteriaDTO(){}
 	
-	public CQMResultCriteriaDTO(CQMResultEntity entity){
+	public CQMResultCriteriaDTO(CQMResultCriteriaEntity entity){
 		
 		this.id = entity.getId();
-		this.cqmCriterionId = entity.getCqmCriterionId();
-		this.certifiedProductId = entity.getCertifiedProductId();
-		this.creationDate = entity.getCreationDate();
-		this.lastModifiedDate = entity.getLastModifiedDate();
-		this.lastModifiedUser = entity.getLastModifiedUser();
-		this.success = entity.isSuccess();
-		this.deleted = entity.isDeleted();
+		this.cqmResultId = entity.getCqmResultId();
+		this.criterionId = entity.getCertificationCriterionId();
+		if(entity.getCertCriteria() != null) {
+			this.criterion = new CertificationCriterionDTO(entity.getCertCriteria());
+		}
 	}
 	
-	public Long getCqmCriterionId() {
-		return cqmCriterionId;
-	}
-	public void setCqmCriterionId(Long cqmCriterionId) {
-		this.cqmCriterionId = cqmCriterionId;
-	}
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
-	public Boolean getSuccess() {
-		return success;
-	}
-	public void setSuccess(Boolean success) {
-		this.success = success;
+
+	public Long getCqmResultId() {
+		return cqmResultId;
 	}
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
+	public void setCqmResultId(Long cqmResultId) {
+		this.cqmResultId = cqmResultId;
 	}
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
+	public Long getCriterionId() {
+		return criterionId;
 	}
 
+	public void setCriterionId(Long criterionId) {
+		this.criterionId = criterionId;
+	}
+
+	public CertificationCriterionDTO getCriterion() {
+		return criterion;
+	}
+
+	public void setCriterion(CertificationCriterionDTO criterion) {
+		this.criterion = criterion;
+	}
 }

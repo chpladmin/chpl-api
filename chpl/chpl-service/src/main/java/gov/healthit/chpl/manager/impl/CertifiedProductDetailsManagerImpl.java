@@ -334,6 +334,12 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				}
 			}
 		}
+		
+		//now add criteria mappings to all of our cqms
+		for(CQMResultDetails cqmResult : cqmResults) {
+			
+		}
+		
 		searchDetails.setCqmResults(cqmResults);
 		
 		searchDetails.setCertificationEvents(getCertificationEvents(dto.getId()));
