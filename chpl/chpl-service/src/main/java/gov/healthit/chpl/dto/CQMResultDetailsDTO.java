@@ -1,5 +1,9 @@
 package gov.healthit.chpl.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.healthit.chpl.domain.CQMResultCriteria;
 import gov.healthit.chpl.entity.CQMResultDetailsEntity;
 
 public class CQMResultDetailsDTO {
@@ -16,10 +20,14 @@ public class CQMResultDetailsDTO {
 	private Long cqmVersionId;
 	private String version;
 	
-	public CQMResultDetailsDTO(){}
+	private List<CQMResultCriteriaDTO> criteria;
+	
+	public CQMResultDetailsDTO(){
+		criteria = new ArrayList<CQMResultCriteriaDTO>();
+	}
 	
 	public CQMResultDetailsDTO(CQMResultDetailsEntity entity){
-		
+		this();
 		this.id = entity.getId();
 		this.success = entity.getSuccess();
 		this.cqmCriterionId = entity.getCqmCriterionId();
@@ -101,6 +109,14 @@ public class CQMResultDetailsDTO {
 
 	public void setDomain(String domain) {
 		this.domain = domain;
+	}
+
+	public List<CQMResultCriteriaDTO> getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(List<CQMResultCriteriaDTO> criteria) {
+		this.criteria = criteria;
 	}
 	
 }

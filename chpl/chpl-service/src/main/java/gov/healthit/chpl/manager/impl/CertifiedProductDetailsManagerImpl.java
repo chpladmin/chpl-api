@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CQMCriterionDAO;
+import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
@@ -20,6 +21,7 @@ import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.domain.CQMResultCriteria;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationEvent;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -34,6 +36,7 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
@@ -61,6 +64,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Autowired
 	private CQMResultDetailsDAO cqmResultDetailsDAO;
+	
+	@Autowired private CQMResultDAO cqmResultDao;
 	
 	@Autowired
 	private CertificationResultDetailsDAO certificationResultDetailsDAO;
@@ -294,7 +299,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			boolean existingCms = false;
 			//for a CMS, first check to see if we already have an object with the same CMS id
 			//so we can just add to it's success versions. 
-			if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+			if(!dto.getYear().equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
 				for(CQMResultDetails result : cqmResults) {
 					if(cqmResultDTO.getCmsId().equals(result.getCmsId())) {
 						existingCms = true;
@@ -305,12 +310,13 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			
 			if(!existingCms) {
 				CQMResultDetails result = new CQMResultDetails();
+				result.setId(cqmResultDTO.getId());
 				result.setCmsId(cqmResultDTO.getCmsId());
 				result.setNqfNumber(cqmResultDTO.getNqfNumber());
 				result.setNumber(cqmResultDTO.getNumber());
 				result.setTitle(cqmResultDTO.getTitle());
 				result.setTypeId(cqmResultDTO.getCqmCriterionTypeId());
-				if(dto.getYear().equals("2014") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+				if(!dto.getYear().equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
 					result.getSuccessVersions().add(cqmResultDTO.getVersion());
 				} else {
 					result.setSuccess(cqmResultDTO.getSuccess());
@@ -320,9 +326,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}	
 		
 		//now add allVersions for CMSs
-		if (dto.getYear().startsWith("2014")){
-			List<CQMCriterion> cqms2014 = getAvailableCQMVersions();
-			for(CQMCriterion cqm : cqms2014) {
+		if (!dto.getYear().startsWith("2011")){
+			List<CQMCriterion> cqms = getAvailableCQMVersions();
+			for(CQMCriterion cqm : cqms) {
 				boolean cqmExists = false;
 				for(CQMResultDetails details : cqmResults) {
 					if(cqm.getCmsId().equals(details.getCmsId())) {
@@ -343,6 +349,25 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				}
 			}
 		}
+		
+		//now add criteria mappings to all of our cqms
+		for(CQMResultDetails cqmResult : cqmResults) {
+			if(cqmResult.isSuccess() && cqmResult.getId() != null) {
+				List<CQMResultCriteriaDTO> criteria = cqmResultDao.getCriteriaForCqmResult(cqmResult.getId());
+				if(criteria != null && criteria.size() > 0) {
+					for(CQMResultCriteriaDTO criteriaDTO : criteria) {
+						CQMResultCriteria c = new CQMResultCriteria();
+						c.setCriteriaId(criteriaDTO.getCriterionId());
+						c.setId(criteriaDTO.getId());
+						if(criteriaDTO.getCriterion() != null) {
+							c.setCriteriaNumber(criteriaDTO.getCriterion().getNumber());
+						}
+						cqmResult.getCriteria().add(c);
+					}
+				}
+			}
+		}
+		
 		searchDetails.setCqmResults(cqmResults);
 		
 		searchDetails.setCertificationEvents(getCertificationEvents(dto.getId()));
