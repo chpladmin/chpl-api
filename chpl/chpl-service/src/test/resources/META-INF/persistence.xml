@@ -22,6 +22,7 @@
 		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity</class>
+		<class>gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity</class>
@@ -58,6 +59,7 @@
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanDocumentationEntity</class>
 		<class>gov.healthit.chpl.entity.ApiKeyEntity</class>
 		<class>gov.healthit.chpl.entity.ApiKeyActivityEntity</class>
+		<class>gov.healthit.chpl.entity.TargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.TestProcedureEntity</class>
 		<class>gov.healthit.chpl.entity.TestStandardEntity</class>
 		<class>gov.healthit.chpl.entity.TestToolEntity</class>
