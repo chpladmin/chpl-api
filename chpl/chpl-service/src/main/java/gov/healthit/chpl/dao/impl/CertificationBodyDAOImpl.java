@@ -50,6 +50,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 			
 			entity.setName(dto.getName());
 			entity.setWebsite(dto.getWebsite());
+			entity.setAcbCode(dto.getAcbCode());
 			
 			if(dto.getDeleted() != null) {
 				entity.setDeleted(dto.getDeleted());
@@ -103,6 +104,10 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		entity.setWebsite(dto.getWebsite());
 		if(dto.getName() != null) {
 			entity.setName(dto.getName());
+		}
+		
+		if(dto.getAcbCode() != null) {
+			entity.setAcbCode(dto.getAcbCode());
 		}
 		
 		if(dto.getDeleted() != null) {
