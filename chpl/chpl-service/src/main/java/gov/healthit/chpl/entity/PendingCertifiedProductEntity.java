@@ -18,6 +18,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 
 /** 
  * Object mapping for hibernate-handled table: certified_product.
@@ -118,7 +120,8 @@ public class PendingCertifiedProductEntity {
     private String developerStreetAddress;
     
     @Column(name = "vendor_transparency_attestation")
-    private Boolean transparencyAttestation;
+	@Type(type = "gov.healthit.chpl.entity.PostgresEnumType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
+	private AttestationType transparencyAttestation;
     
     @Column(name = "vendor_transparency_attestation_url")
     private String transparencyAttestationUrl;
@@ -552,11 +555,11 @@ public class PendingCertifiedProductEntity {
 		this.termsOfUse = termsOfUse;
 	}
 
-	public Boolean getTransparencyAttestation() {
+	public AttestationType getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(AttestationType transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 

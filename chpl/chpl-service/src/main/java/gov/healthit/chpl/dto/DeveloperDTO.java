@@ -16,8 +16,7 @@ public class DeveloperDTO {
 	private Long lastModifiedUser;
 	private String name;
 	private String website;
-	private Boolean transparencyAttestation = null;
-	private String transparencyAttestationUrl = null;
+	private String transparencyAttestation;
 	
 	public DeveloperDTO(){
 	}
@@ -101,20 +100,12 @@ public class DeveloperDTO {
 		this.developerCode = developerCode;
 	}
 
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
-	}
-
-	public String getTransparencyAttestationUrl() {
-		return transparencyAttestationUrl;
-	}
-
-	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 
 	public ContactDTO getContact() {

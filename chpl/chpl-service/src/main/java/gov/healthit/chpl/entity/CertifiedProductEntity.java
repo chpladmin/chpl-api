@@ -104,6 +104,9 @@ public class CertifiedProductEntity {
 	@Column(name = "api_documentation_url")
 	private String apiDocumentation;
 	
+	@Column(name = "transparency_attestation_url")
+	private String transparencyAttestationUrl;
+	
 	@Column(name = "ics")
 	private Boolean ics;
 	
@@ -377,5 +380,13 @@ public class CertifiedProductEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 }

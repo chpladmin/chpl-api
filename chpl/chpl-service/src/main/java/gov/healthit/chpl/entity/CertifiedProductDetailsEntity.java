@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity;
 
 
+import java.awt.Transparency;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -8,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 
 @Entity
@@ -161,7 +164,8 @@ public class CertifiedProductDetailsEntity {
 	private String productAdditionalSoftware;
 	
 	@Column(name = "transparency_attestation")
-	private Boolean transparencyAttestation;
+	@Type(type = "gov.healthit.chpl.entity.PostgresEnumType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
+	private AttestationType transparencyAttestation;
 	
 	@Column(name = "transparency_attestation_url")
 	private String transparencyAttestationUrl;
@@ -486,11 +490,11 @@ public class CertifiedProductDetailsEntity {
 		this.apiDocumentation = apiDocumentation;
 	}
 
-	public Boolean getTransparencyAttestation() {
+	public AttestationType getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(AttestationType transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 

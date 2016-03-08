@@ -33,6 +33,7 @@ public class CertifiedProductDTO {
 	private Boolean visibleOnChpl;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private String transparencyAttestationUrl;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
@@ -61,6 +62,7 @@ public class CertifiedProductDTO {
 		this.productVersionId = entity.getProductVersionId();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.sedReportFileLocation = entity.getSedReportFileLocation();
+		this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
 		this.testingLabId = entity.getTestingLabId();		
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
@@ -291,5 +293,13 @@ public class CertifiedProductDTO {
 
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 }

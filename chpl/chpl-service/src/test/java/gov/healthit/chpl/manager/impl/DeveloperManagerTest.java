@@ -68,7 +68,7 @@ public class DeveloperManagerTest extends TestCase {
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
 		assertNotNull(developer.getTransparencyAttestation());
-		assertTrue(developer.getTransparencyAttestation());
+		assertEquals("Affirmative", developer.getTransparencyAttestation());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 }

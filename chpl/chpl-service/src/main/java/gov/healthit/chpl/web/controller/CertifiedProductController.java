@@ -172,6 +172,7 @@ public class CertifiedProductController {
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
 		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
+		toUpdate.setTransparencyAttestationUrl(updateRequest.getTransparencyAttestationUrl());
 		
 		if(!StringUtils.isEmpty(updateRequest.getChplProductNumber())) {
 			toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());

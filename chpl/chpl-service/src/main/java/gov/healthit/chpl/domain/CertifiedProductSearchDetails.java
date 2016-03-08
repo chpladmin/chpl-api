@@ -32,7 +32,7 @@ public class CertifiedProductSearchDetails {
 	private String apiDocumentation;
 	private Boolean ics;
 	private String productAdditionalSoftware;
-	private Boolean transparencyAttestation;
+	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long lastModifiedDate;
 	
@@ -197,10 +197,10 @@ public class CertifiedProductSearchDetails {
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
 	}
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 	public Boolean getIcs() {

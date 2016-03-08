@@ -77,7 +77,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(), certificationBody.getId());
 						if(mapping != null) {
 							developer.setTransparencyAttestation(mapping.getTransparencyAttestation());
-							developer.setTransparencyAttestationUrl(mapping.getTransparencyAttestationUrl());
 						}
 					}
 					//check transparency attestation and url for warnings
@@ -85,11 +84,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						(developer.getTransparencyAttestation() != null && product.getTransparencyAttestation() == null) || 
 						(!developer.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
 						product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
-					}
-					if( (StringUtils.isEmpty(developer.getTransparencyAttestationUrl()) && !StringUtils.isEmpty(product.getTransparencyAttestationUrl())) ||
-						(!StringUtils.isEmpty(developer.getTransparencyAttestationUrl()) && StringUtils.isEmpty(product.getTransparencyAttestationUrl())) ||
-						(!developer.getTransparencyAttestationUrl().equals(product.getTransparencyAttestationUrl())) ) {
-						product.getWarningMessages().add("The transparency attestation URL for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 					}
 				}
 			} else if(!developerCode.matches("X+")){
@@ -103,6 +97,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		} catch(EntityRetrievalException ex) {
 			product.getErrorMessages().add(ex.getMessage());
 		}
+		
 		if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
 			product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
 		} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {

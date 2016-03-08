@@ -255,14 +255,14 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	@Transactional
 	public void testCertifiedProductDetailsTransparencyAttestation() throws EntityRetrievalException{
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertTrue(detail.getTransparencyAttestation());
+		assertEquals("Affirmative", detail.getTransparencyAttestation());
 	}
 	
 	@Test
 	@Transactional
 	public void testCertifiedProductDetailsTransparencyAttestationFalse() throws EntityRetrievalException{
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(4L);
-		assertFalse(detail.getTransparencyAttestation());
+		assertNull(detail.getTransparencyAttestation());
 	}
 }
 

@@ -162,14 +162,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setApiDocumentation(dto.getApiDocumentation());
 		searchDetails.setIcs(dto.getIcs());
 		searchDetails.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
-		
-		if(dto.getTransparencyAttestation() == null) {
-			searchDetails.setTransparencyAttestation(Boolean.FALSE);
-			searchDetails.setTransparencyAttestationUrl(null);
-		} else {
-			searchDetails.setTransparencyAttestation(dto.getTransparencyAttestation());
-			searchDetails.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
-		}
+		searchDetails.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+		searchDetails.setTransparencyAttestation(dto.getTransparencyAttestation());
+
 		searchDetails.setTermsOfUse(dto.getTermsOfUse());
 		searchDetails.setLastModifiedDate(dto.getLastModifiedDate().getTime());
 		

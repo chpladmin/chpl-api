@@ -56,11 +56,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			for(DeveloperDTO developer : allDevelopers) {
 				DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
 				if(map == null) {
-					developer.setTransparencyAttestation(Boolean.FALSE);
-					developer.setTransparencyAttestationUrl(null);
+					developer.setTransparencyAttestation(null);
 				} else {
 					developer.setTransparencyAttestation(map.getTransparencyAttestation());
-					developer.setTransparencyAttestationUrl(map.getTransparencyAttestationUrl());
 				}
 			}
 		}
@@ -77,11 +75,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			CertificationBodyDTO acb = availableAcbs.get(0);
 			DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
 			if(map == null) {
-				developer.setTransparencyAttestation(Boolean.FALSE);
-				developer.setTransparencyAttestationUrl(null);
+				developer.setTransparencyAttestation(null);
 			} else {
 				developer.setTransparencyAttestation(map.getTransparencyAttestation());
-				developer.setTransparencyAttestationUrl(map.getTransparencyAttestationUrl());
 			}
 		}
 		return developer;
@@ -114,19 +110,19 @@ public class DeveloperManagerImpl implements DeveloperManager {
 						developerMappingToUpdate.setAcbId(acb.getId());
 						developerMappingToUpdate.setDeveloperId(before.getId());
 						developerMappingToUpdate.setTransparencyAttestation(developer.getTransparencyAttestation());
-						developerMappingToUpdate.setTransparencyAttestationUrl(developer.getTransparencyAttestationUrl());
 						developerDao.createTransparencyMapping(developerMappingToUpdate);
 					} else {
 						existingMap.setTransparencyAttestation(developer.getTransparencyAttestation());
-						existingMap.setTransparencyAttestationUrl(developer.getTransparencyAttestationUrl());
 						developerDao.updateTransparencyMapping(existingMap);
 					}
 				}
 			}
 		}
 		DeveloperDTO after = new DeveloperDTO(result);
-		after.setTransparencyAttestation(developer.getTransparencyAttestation());
-		after.setTransparencyAttestationUrl(developer.getTransparencyAttestationUrl());
+		
+		if(!isChplAdmin) {
+			after.setTransparencyAttestation(developer.getTransparencyAttestation());
+		}
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", before, after);
 		
 		return after;
@@ -145,7 +141,6 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				developerMappingToCreate.setAcbId(acb.getId());
 				developerMappingToCreate.setDeveloperId(created.getId());
 				developerMappingToCreate.setTransparencyAttestation(dto.getTransparencyAttestation());
-				developerMappingToCreate.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 				developerDao.createTransparencyMapping(developerMappingToCreate);
 			}
 		}

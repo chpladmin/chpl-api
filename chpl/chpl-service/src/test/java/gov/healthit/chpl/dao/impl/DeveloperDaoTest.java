@@ -8,12 +8,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -24,6 +26,7 @@ import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.DeveloperEntity;
 import junit.framework.TestCase;
@@ -206,5 +209,25 @@ public class DeveloperDaoTest extends TestCase {
 			fail("could not find developer!");
 			System.out.println(ex.getStackTrace());
 		}
+	}
+	
+	@Test
+	@Transactional
+	public void createDeveloperAcbMap() {
+		SecurityContextHolder.getContext().setAuthentication(authUser);
+		DeveloperDTO developer = developerDao.findAll().get(0);
+		
+		DeveloperACBMapDTO dto = new DeveloperACBMapDTO();
+		dto.setAcbId(-3L);
+		dto.setDeveloperId(developer.getId());
+		dto.setTransparencyAttestation("N/A");
+		DeveloperACBMapDTO createdMapping = developerDao.createTransparencyMapping(dto);
+		
+		assertNotNull(createdMapping);
+		
+		dto = developerDao.getTransparencyMapping(developer.getId(), -3L);
+		assertNotNull(dto);
+		assertEquals("N/A", dto.getTransparencyAttestation());
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 }

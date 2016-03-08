@@ -32,6 +32,7 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.AddressEntity;
+import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
@@ -436,9 +437,11 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		String k2AttestationStr = record.get(colIndex++);
 		if(!StringUtils.isEmpty(k2AttestationStr)) {
 			if("0".equals(k2AttestationStr.trim())) {
-				pendingCertifiedProduct.setTransparencyAttestation(Boolean.FALSE);
+				pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Negative);
 			} else if("1".equals(k2AttestationStr.trim())) {
-				pendingCertifiedProduct.setTransparencyAttestation(Boolean.TRUE);
+				pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Affirmative);
+			} else if("2".equals(k2AttestationStr.trim())) {
+				pendingCertifiedProduct.setTransparencyAttestation(AttestationType.NA);
 			}
 		}
 	}
