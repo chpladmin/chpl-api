@@ -32,9 +32,11 @@ public class CertifiedProductSearchDetails {
 	private String apiDocumentation;
 	private Boolean ics;
 	private String productAdditionalSoftware;
-	private Boolean transparencyAttestation;
+	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long lastModifiedDate;
+	
+	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
@@ -195,10 +197,10 @@ public class CertifiedProductSearchDetails {
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
 	}
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 	public Boolean getIcs() {
@@ -249,5 +251,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
 		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+	public List<CertifiedProductTargetedUser> getTargetedUsers() {
+		return targetedUsers;
+	}
+	public void setTargetedUsers(List<CertifiedProductTargetedUser> targetedUsers) {
+		this.targetedUsers = targetedUsers;
 	}
 }

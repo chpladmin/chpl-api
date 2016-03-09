@@ -87,11 +87,6 @@ public class AnnouncementController {
 			toCreate.setTitle(announcementInfo.getTitle());
 		}
 		toCreate.setText(announcementInfo.getText());
-		if(StringUtils.isEmpty(announcementInfo.getIsPublic())) {
-			throw new InvalidArgumentsException("A public permission is required for a new announcement");
-		}else{
-			toCreate.setIsPublic(announcementInfo.getIsPublic());
-		}
 		if(StringUtils.isEmpty(announcementInfo.getStartDate())) {
 			throw new InvalidArgumentsException("A start date is required for a new announcement");
 		}else{

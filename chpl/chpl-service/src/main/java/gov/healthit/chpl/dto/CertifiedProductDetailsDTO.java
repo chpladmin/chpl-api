@@ -57,7 +57,7 @@ public class CertifiedProductDetailsDTO {
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
 	private String productAdditionalSoftware;
-	private Boolean transparencyAttestation;
+	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	
 	private List<CertifiedProductQmsStandardDTO> qmsStandards;
@@ -114,7 +114,9 @@ public class CertifiedProductDetailsDTO {
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
     	this.productAdditionalSoftware = entity.getProductAdditionalSoftware();
-    	this.transparencyAttestation = entity.getTransparencyAttestation();
+    	if(entity.getTransparencyAttestation() != null) {
+    		this.transparencyAttestation = entity.getTransparencyAttestation().toString();
+    	}
     	this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
@@ -400,11 +402,11 @@ public class CertifiedProductDetailsDTO {
 		this.apiDocumentation = apiDocumentation;
 	}
 
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 

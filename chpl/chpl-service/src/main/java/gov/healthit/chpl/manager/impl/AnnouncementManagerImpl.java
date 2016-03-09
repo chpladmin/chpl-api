@@ -51,10 +51,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 
 		result = announcementDAO.update(announcement, false);
 
-		logger.debug("Updated announcement " + announcement);
-
-		String activityMsg = "Updated announcement " + announcement.getText();
-
+		String activityMsg = "Updated announcement: " + announcement.getTitle();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg, toUpdate, result);
 
 		return result;
@@ -69,7 +66,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 		//mark the announcement deleted
 		announcementDAO.delete(announcement.getId());
 		//log announcement delete activity
-		String activityMsg = "Deleted announcement " + announcement.getText();
+		String activityMsg = "Deleted announcement: " + announcement.getTitle();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, announcement.getId(), activityMsg, announcement, null);
 	}
 	

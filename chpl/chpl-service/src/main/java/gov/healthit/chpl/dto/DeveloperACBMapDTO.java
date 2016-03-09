@@ -6,8 +6,7 @@ public class DeveloperACBMapDTO {
 	private Long id;
 	private Long developerId;
 	private Long acbId;
-	private Boolean transparencyAttestation;
-	private String transparencyAttestationUrl;
+	private String transparencyAttestation;
 	
 	public DeveloperACBMapDTO(){}
 	
@@ -15,8 +14,9 @@ public class DeveloperACBMapDTO {
 		this.id = entity.getId();
 		this.developerId = entity.getDeveloperId();
 		this.acbId = entity.getCertificationBodyId();
-		this.transparencyAttestation = entity.getTransparencyAttestation();
-		this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+		if(entity.getTransparencyAttestation() != null) {
+			this.transparencyAttestation = entity.getTransparencyAttestation().toString();
+		}
 	}
 	
 	
@@ -43,19 +43,11 @@ public class DeveloperACBMapDTO {
 		this.acbId = acbId;
 	}
 
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
-	}
-
-	public String getTransparencyAttestationUrl() {
-		return transparencyAttestationUrl;
-	}
-
-	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 }

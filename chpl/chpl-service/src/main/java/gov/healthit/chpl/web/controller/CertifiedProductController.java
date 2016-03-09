@@ -172,6 +172,7 @@ public class CertifiedProductController {
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
 		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
+		toUpdate.setTransparencyAttestationUrl(updateRequest.getTransparencyAttestationUrl());
 		
 		if(!StringUtils.isEmpty(updateRequest.getChplProductNumber())) {
 			toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
@@ -210,6 +211,18 @@ public class CertifiedProductController {
 			qmsStandardsToUpdate.add(dto);
 		}
 		cpManager.updateQmsStandards(acbId, toUpdate, qmsStandardsToUpdate);
+		
+		//update targeted users
+		List<CertifiedProductTargetedUserDTO> targetedUsersToUpdate = new ArrayList<CertifiedProductTargetedUserDTO>();
+		for(CertifiedProductTargetedUser newTu : updateRequest.getTargetedUsers()) {
+			CertifiedProductTargetedUserDTO dto = new CertifiedProductTargetedUserDTO();
+			dto.setId(newTu.getId());
+			dto.setCertifiedProductId(toUpdate.getId());
+			dto.setTargetedUserId(newTu.getTargetedUserId());
+			dto.setTargetedUserName(newTu.getTargetedUserName());
+			targetedUsersToUpdate.add(dto);
+		}
+		cpManager.updateTargetedUsers(acbId, toUpdate, targetedUsersToUpdate);
 		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
@@ -333,7 +346,7 @@ public class CertifiedProductController {
 		
 		if(!file.getContentType().equalsIgnoreCase("text/csv") &&
 				!file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-			throw new InvalidArgumentsException("File must be a CSV or Excel document.");
+			throw new InvalidArgumentsException("File must be a CSV document.");
 		}
 		
 		List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();

@@ -10,8 +10,7 @@ public class Developer {
 	private Address address;
 	private Contact contact;
 	private String lastModifiedDate;
-	private Boolean transparencyAttestation = null;
-	private String transparencyAttestationUrl = null;
+	private String transparencyAttestation;
 	
 	public Developer() {}
 	
@@ -28,7 +27,6 @@ public class Developer {
 		}
 		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
 		this.transparencyAttestation = dto.getTransparencyAttestation();
-		this.transparencyAttestationUrl = dto.getTransparencyAttestationUrl();
 	}
 	public Long getDeveloperId() {
 		return developerId;
@@ -71,20 +69,12 @@ public class Developer {
 		this.developerCode = developerCode;
 	}
 
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
-	}
-
-	public String getTransparencyAttestationUrl() {
-		return transparencyAttestationUrl;
-	}
-
-	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 
 	public Contact getContact() {

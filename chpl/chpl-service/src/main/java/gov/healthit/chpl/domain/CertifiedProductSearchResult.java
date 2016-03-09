@@ -29,7 +29,7 @@ public class CertifiedProductSearchResult {
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
 	private String productAdditionalSoftware;
-	private Boolean transparencyAttestation;
+	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Integer countCerts;
 	private Integer countCqms;
@@ -157,10 +157,10 @@ public class CertifiedProductSearchResult {
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
 	}
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 	public String getTestingLabName() {

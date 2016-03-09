@@ -235,7 +235,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			CertificationStatusDTO statusDto = statusDao.getByStatusName("Active");
 			toCreate.setCertificationStatusId(statusDto.getId());
 		}
-		
+		toCreate.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
+
 		DeveloperDTO developer = null;
 		if(pendingCp.getDeveloperId() == null) {
 			DeveloperDTO newDeveloper = new DeveloperDTO();
@@ -244,8 +245,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 			newDeveloper.setName(pendingCp.getDeveloperName());
 			newDeveloper.setWebsite(pendingCp.getDeveloperWebsite());
-			newDeveloper.setTransparencyAttestation(pendingCp.getTransparencyAttestation() == null ? Boolean.FALSE : pendingCp.getTransparencyAttestation());
-			newDeveloper.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
+			newDeveloper.setTransparencyAttestation(pendingCp.getTransparencyAttestation() == null ? null : pendingCp.getTransparencyAttestation());
 			AddressDTO developerAddress = pendingCp.getDeveloperAddress();
 			newDeveloper.setAddress(developerAddress);
 			ContactDTO developerContact = new ContactDTO();
@@ -262,11 +262,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			if(developer.getTransparencyAttestation() == null && pendingCp.getTransparencyAttestation() != null || 
 				(!developer.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation()))) {
 				developer.setTransparencyAttestation(pendingCp.getTransparencyAttestation());
-				needsUpdate = true;
-			}
-			if(developer.getTransparencyAttestationUrl() == null && pendingCp.getTransparencyAttestationUrl() != null || 
-				(!developer.getTransparencyAttestationUrl().equals(pendingCp.getTransparencyAttestationUrl()))) {
-				developer.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
 				needsUpdate = true;
 			}
 			if(needsUpdate) {

@@ -65,7 +65,7 @@ public class PendingCertifiedProductDTO {
     private String sedReportFileLocation;
 	private Boolean ics;
 	private String termsOfUseUrl;
-	private Boolean transparencyAttestation;
+	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	
 	private List<PendingCertificationResultDTO> certificationCriterion;
@@ -352,7 +352,9 @@ public class PendingCertifiedProductDTO {
 		this.sedReportFileLocation = entity.getSedReportFileLocation();
 		this.ics = entity.getIcs();
 		this.termsOfUseUrl = entity.getTermsOfUse();
-		this.transparencyAttestation = entity.getTransparencyAttestation();
+		if(entity.getTransparencyAttestation() != null) {
+			this.transparencyAttestation = entity.getTransparencyAttestation().toString();
+		}
 		this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
 		
 		this.uploadDate = entity.getCreationDate();
@@ -698,11 +700,11 @@ public class PendingCertifiedProductDTO {
 		this.termsOfUseUrl = termsOfUseUrl;
 	}
 
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 

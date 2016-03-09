@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
@@ -72,14 +73,26 @@ public class CHPLTestConfig implements EnvironmentAware {
 	}
 	
 	
-	//we need this because dbunit deletes everything from the db to start with
-	//and the table "user" is declared as "user" and not user (since user is a reserved word
-	//and perhaps not the best choice of table name). The syntax "delete from user" is invalid
-	//but "delete from "user"" is valid. we need the table names escaped.
 	@Bean
 	public DatabaseConfigBean databaseConfig() {
 		DatabaseConfigBean bean = new DatabaseConfigBean();
+		//we need this because dbunit deletes everything from the db to start with
+		//and the table "user" is declared as "user" and not user (since user is a reserved word
+		//and perhaps not the best choice of table name). The syntax "delete from user" is invalid
+		//but "delete from "user"" is valid. we need the table names escaped.
 		bean.setEscapePattern("\"?\"");
+		
+		//dbunit has limited support for postgres enum types so we have to tell
+		//it about any enum type names here
+		PostgresqlDataTypeFactory factory = new PostgresqlDataTypeFactory(){
+			  public boolean isEnumType(String sqlTypeName) {
+			    if(sqlTypeName.equalsIgnoreCase("attestation")){
+			      return true;
+			    }
+			    return false;
+			  }
+			};
+		bean.setDatatypeFactory(factory);
 		return bean;
 	}
 	
