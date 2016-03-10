@@ -63,6 +63,16 @@ public class TestingLabDaoTest extends TestCase {
 	}
 
 	@Test
+	public void testGetMaxAtlCode() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		String maxCode = atlDao.getMaxCode();
+		assertNotNull(maxCode);
+		assertEquals("01", maxCode);
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
 	public void testGetAllAtls() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 

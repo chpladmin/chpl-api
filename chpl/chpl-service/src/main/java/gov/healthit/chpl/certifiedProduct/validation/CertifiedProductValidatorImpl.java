@@ -10,12 +10,14 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -23,6 +25,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
+	@Autowired CertifiedProductDAO cpDao;
 	@Autowired TestingLabDAO atlDao;
 	@Autowired CertificationEditionDAO certEditionDao;
 	@Autowired CertificationBodyDAO acbDao;
@@ -36,6 +39,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
+		//make sure the unique id is really uniqiue
+		try {
+			CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(product.getUniqueId());
+			if(dup != null) {
+				product.getErrorMessages().add("The id " + product.getUniqueId() + " must be unique among all other certified products but one already exists with this ID.");
+			}
+		} catch(EntityRetrievalException ex) {}
+		
 		String uniqueId = product.getUniqueId();
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		if(uniqueIdParts == null || uniqueIdParts.length != 9) {

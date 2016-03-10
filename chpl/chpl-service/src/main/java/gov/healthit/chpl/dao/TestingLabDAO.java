@@ -15,4 +15,5 @@ public interface TestingLabDAO {
 	public TestingLabDTO getById(Long id) throws EntityRetrievalException;
 	public TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 	public TestingLabDTO getByName(String name);
+	public String getMaxCode();
 }
