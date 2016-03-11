@@ -16,7 +16,7 @@ public interface CertificationBodyDAO {
 	public CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 
 	public CertificationBodyDTO getByName(String name);
-
+	public String getMaxCode();
 	public CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
 	
 }

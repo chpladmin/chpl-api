@@ -11,6 +11,9 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 import java.util.List;
+import java.util.regex.Pattern;
+
+import javax.validation.constraints.AssertFalse;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,9 +40,10 @@ public class CertifiedProductDaoTest {
 
 	@Autowired
 	private CertifiedProductDAO productDao;
+	static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
 
 	private static JWTAuthenticatedUser authUser;
-
+	private static Pattern urlPattern = Pattern.compile(URL_PATTERN);
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		authUser = new JWTAuthenticatedUser();
@@ -48,6 +52,16 @@ public class CertifiedProductDaoTest {
 		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 
+	@Test
+	public void testUrlPattern() {
+		String badUrl = "www.google.com";
+		
+		assertEquals(false, urlPattern.matcher(badUrl).matches());
+		
+		String goodUrl = "http://www.google.com";
+		assertEquals(true, urlPattern.matcher(goodUrl).matches());
+	}
+	
 	@Test
 	public void getAllCertifiedProducts() {
 		List<CertifiedProductDetailsDTO> results = productDao.findAll();

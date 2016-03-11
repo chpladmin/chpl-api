@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -135,8 +137,8 @@ public class CertifiedProductController {
 		JsonProcessingException, ValidationException {
 		
 		//make sure the ui didn't send any error or warning messages back
-		updateRequest.setErrorMessages(new ArrayList<String>());
-		updateRequest.setWarningMessages(new ArrayList<String>());
+		updateRequest.setErrorMessages(new HashSet<String>());
+		updateRequest.setWarningMessages(new HashSet<String>());
 		//validate
 		CertifiedProductValidator validator = validatorFactory.getValidator(updateRequest);
 		if(validator != null) {
@@ -339,14 +341,14 @@ public class CertifiedProductController {
 	@RequestMapping(value="/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
 	public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file) throws 
-			InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
+			ValidationException, MaxUploadSizeExceededException {
 		if (file.isEmpty()) {
-			throw new InvalidArgumentsException("You cannot upload an empty file!");
+			throw new ValidationException("You cannot upload an empty file!");
 		}
 		
 		if(!file.getContentType().equalsIgnoreCase("text/csv") &&
 				!file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-			throw new InvalidArgumentsException("File must be a CSV document.");
+			throw new ValidationException("File must be a CSV document.");
 		}
 		
 		List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
@@ -359,7 +361,7 @@ public class CertifiedProductController {
 			
 			List<CSVRecord> records = parser.getRecords();
 			if(records.size() <= 1) {
-				throw new InvalidArgumentsException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
+				throw new ValidationException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
 			}
 			
 			//parse the entire file into groups of records, one group per product
@@ -389,24 +391,46 @@ public class CertifiedProductController {
 				}
 			}
 					
+			Set<String> handlerErrors = new HashSet<String>();
+			List<PendingCertifiedProductEntity> cpsToAdd = new ArrayList<PendingCertifiedProductEntity>();
 			for(String cpUniqueId : cpGroups.keySet()) {
-				CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, cpGroups.get(cpUniqueId));
 				try {
+					CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, cpGroups.get(cpUniqueId));
 					PendingCertifiedProductEntity pendingCp = handler.handle();
-					PendingCertifiedProductDTO pendingCpDto = null;
-					if(pendingCp.getCertificationBodyId() == null) {
-						throw new IllegalArgumentException("Could not find certifying body with name " + pendingCp.getCertificationBodyName() + ". Aborting upload.");
-					}
-					pendingCpDto = pcpManager.createOrReplace(pendingCp.getCertificationBodyId(), pendingCp);
-					PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-					uploadedProducts.add(details);
-				} catch(EntityCreationException ex) {
-					logger.error("could not create entity for certified product" + cpUniqueId + ". Message is " + ex.getMessage());
+					cpsToAdd.add(pendingCp);
+				}
+				catch(InvalidArgumentsException ex) {
+					handlerErrors.add(ex.getMessage());
 				}
 			}
+			if(handlerErrors.size() > 0) {
+				throw new ValidationException(handlerErrors, null);
+			}
+			
+			Set<String> allErrors = new HashSet<String>();
+			for(PendingCertifiedProductEntity cpToAdd : cpsToAdd) {
+				if(cpToAdd.getErrorMessages() != null && cpToAdd.getErrorMessages().size() > 0) {
+					allErrors.addAll(cpToAdd.getErrorMessages());
+				}
+			}
+			if(allErrors.size() > 0) {
+				throw new ValidationException(allErrors, null);
+			} else {
+				for(PendingCertifiedProductEntity cpToAdd : cpsToAdd) {
+					try {
+						PendingCertifiedProductDTO pendingCpDto = pcpManager.createOrReplace(cpToAdd.getCertificationBodyId(), cpToAdd);
+						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
+						uploadedProducts.add(details);
+					} catch(EntityCreationException ex) {
+						logger.error("Error creating pending certified product: " + cpToAdd.getUniqueId());
+					} catch(EntityRetrievalException ex) {
+						logger.error("Error retreiving pending certified product.", ex);
+					}
+				}				
+			}
 		} catch(IOException ioEx) {
-			logger.error("Could not get input stream for uploaded file " + file.getName());
-			throw new IOException("Could not get input stream for uploaded file " + file.getName());
+			logger.error("Could not get input stream for uploaded file " + file.getName());			
+			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
 		} finally {
 			 try { parser.close(); } catch(Exception ignore) {}
 			try { reader.close(); } catch(Exception ignore) {}

@@ -2,8 +2,10 @@ package gov.healthit.chpl.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CertifiedProductSearchDetails {
 	
@@ -42,8 +44,8 @@ public class CertifiedProductSearchDetails {
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
 	
-	private List<String> warningMessages = new ArrayList<String>();
-	private List<String> errorMessages = new ArrayList<String>();
+	private Set<String> warningMessages = new HashSet<String>();
+	private Set<String> errorMessages = new HashSet<String>();
 	
 	public Long getId() {
 		return id;
@@ -167,16 +169,16 @@ public class CertifiedProductSearchDetails {
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
 	}
-	public List<String> getWarningMessages() {
+	public Set<String> getWarningMessages() {
 		return warningMessages;
 	}
-	public void setWarningMessages(List<String> warningMessages) {
+	public void setWarningMessages(Set<String> warningMessages) {
 		this.warningMessages = warningMessages;
 	}
-	public List<String> getErrorMessages() {
+	public Set<String> getErrorMessages() {
 		return errorMessages;
 	}
-	public void setErrorMessages(List<String> errorMessages) {
+	public void setErrorMessages(Set<String> errorMessages) {
 		this.errorMessages = errorMessages;
 	}
 	public Integer getCountCorrectiveActionPlans() {

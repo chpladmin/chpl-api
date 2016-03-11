@@ -77,6 +77,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -319,6 +320,23 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				qmsDto.setApplicableCriteria(qms.getApplicableCriteria());
 				qmsDto.setQmsModification(qmsDto.getQmsModification());
 				cpQmsDao.createCertifiedProductQms(qmsDto);
+			}
+		}
+		
+		//targeted users
+		if(pendingCp.getTargetedUsers() != null && pendingCp.getTargetedUsers().size() > 0) {
+			for(PendingCertifiedProductTargetedUserDTO tu : pendingCp.getTargetedUsers()) {
+				CertifiedProductTargetedUserDTO tuDto = new CertifiedProductTargetedUserDTO();
+				if(tu.getTargetedUserId() == null) {
+					TargetedUserDTO toAdd = new TargetedUserDTO();
+					toAdd.setName(tu.getName());
+					toAdd = targetedUserDao.create(toAdd);
+					tuDto.setTargetedUserId(toAdd.getId());
+				} else {
+					tuDto.setTargetedUserId(tu.getTargetedUserId());
+				}
+				tuDto.setCertifiedProductId(newCertifiedProduct.getId());
+				cpTargetedUserDao.createCertifiedProductTargetedUser(tuDto);
 			}
 		}
 		

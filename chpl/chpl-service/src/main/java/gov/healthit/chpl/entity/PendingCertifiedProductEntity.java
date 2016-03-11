@@ -1,8 +1,10 @@
 package gov.healthit.chpl.entity;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -31,6 +33,9 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "pending_certified_product")
 public class PendingCertifiedProductEntity {
+	
+	@Transient
+	private List<String> errorMessages = new ArrayList<String>();
 	
 	/**
 	 * fields we generate mostly from spreadsheet values
@@ -577,5 +582,13 @@ public class PendingCertifiedProductEntity {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public List<String> getErrorMessages() {
+		return errorMessages;
+	}
+
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
 	}
 }

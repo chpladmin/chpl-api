@@ -103,7 +103,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 			}
 		}
 		if(!hasG4) {
-			product.getErrorMessages().add("(g)(4) is required but was not found.");
+			product.getErrorMessages().add("Required certification criteria 170.314 (g)(4) was not found.");
 		}
 		
 		//g3 check
