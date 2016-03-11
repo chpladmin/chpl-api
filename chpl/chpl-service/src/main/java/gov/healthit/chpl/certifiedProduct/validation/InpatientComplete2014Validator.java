@@ -35,7 +35,7 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 				}
 			}	
 			if(!hasCert) {
-				product.getWarningMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
+				product.getErrorMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
 			}
 		}		
 		
@@ -111,7 +111,7 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 				}
 			}	
 			if(!hasCert) {
-				product.getWarningMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
+				product.getErrorMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
 			}
 		}		
 		

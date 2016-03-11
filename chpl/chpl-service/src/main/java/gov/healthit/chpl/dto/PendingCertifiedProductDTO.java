@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
+import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -34,8 +36,8 @@ public class PendingCertifiedProductDTO {
     private Long certificationBodyId;    
     private Long productClassificationId;
     private Long testingLabId;
-    private List<String> errorMessages;
-    private List<String> warningMessages;
+    private Set<String> errorMessages;
+    private Set<String> warningMessages;
     
     /**
     * fields directly from the spreadsheet
@@ -71,15 +73,17 @@ public class PendingCertifiedProductDTO {
 	private List<PendingCertificationResultDTO> certificationCriterion;
 	private List<PendingCqmCriterionDTO> cqmCriterion;
 	private List<PendingCertifiedProductQmsStandardDTO> qmsStandards;
+	private List<PendingCertifiedProductTargetedUserDTO> targetedUsers; 
 	
 	private Date uploadDate;
 	
 	public PendingCertifiedProductDTO(){
-		this.errorMessages = new ArrayList<String>();	
-		this.warningMessages = new ArrayList<String>();
+		this.errorMessages = new HashSet<String>();	
+		this.warningMessages = new HashSet<String>();
 		this.certificationCriterion = new ArrayList<PendingCertificationResultDTO>();
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
 		this.qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
+		this.targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
 	}
 	
 	public PendingCertifiedProductDTO(PendingCertifiedProductDetails details) {
@@ -206,6 +210,17 @@ public class PendingCertifiedProductDTO {
 				this.qmsStandards.add(qmsDto);
 			}
 		}
+		
+		List<CertifiedProductTargetedUser> targetedUsers = details.getTargetedUsers();
+		if(targetedUsers != null && targetedUsers.size() > 0) {
+			for(CertifiedProductTargetedUser tu : targetedUsers) {
+				PendingCertifiedProductTargetedUserDTO tuDto = new PendingCertifiedProductTargetedUserDTO();
+				tuDto.setTargetedUserId(tu.getTargetedUserId());
+				tuDto.setName(tu.getTargetedUserName());
+				this.targetedUsers.add(tuDto);
+			}
+		}
+		
 		List<CertificationResult> certificationResults = details.getCertificationResults();
 		for(CertificationResult crResult : certificationResults) {
 			PendingCertificationResultDTO certDto = new PendingCertificationResultDTO();
@@ -620,19 +635,19 @@ public class PendingCertifiedProductDTO {
 		this.uploadDate = uploadDate;
 	}
 
-	public List<String> getErrorMessages() {
+	public Set<String> getErrorMessages() {
 		return errorMessages;
 	}
 
-	public void setErrorMessages(List<String> errorMessages) {
+	public void setErrorMessages(Set<String> errorMessages) {
 		this.errorMessages = errorMessages;
 	}
 
-	public List<String> getWarningMessages() {
+	public Set<String> getWarningMessages() {
 		return warningMessages;
 	}
 
-	public void setWarningMessages(List<String> warningMessages) {
+	public void setWarningMessages(Set<String> warningMessages) {
 		this.warningMessages = warningMessages;
 	}
 
@@ -722,5 +737,13 @@ public class PendingCertifiedProductDTO {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public List<PendingCertifiedProductTargetedUserDTO> getTargetedUsers() {
+		return targetedUsers;
+	}
+
+	public void setTargetedUsers(List<PendingCertifiedProductTargetedUserDTO> targetedUsers) {
+		this.targetedUsers = targetedUsers;
 	}
 }

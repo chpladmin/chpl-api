@@ -15,10 +15,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="pending_certification_result")
 public class PendingCertificationResultEntity {
+	
+	@Transient 
+	private boolean hasAdditionalSoftware;
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -261,6 +265,14 @@ public class PendingCertificationResultEntity {
 
 	public void setUcdProcesses(Set<PendingCertificationResultUcdProcessEntity> ucdProcesses) {
 		this.ucdProcesses = ucdProcesses;
+	}
+
+	public boolean isHasAdditionalSoftware() {
+		return hasAdditionalSoftware;
+	}
+
+	public void setHasAdditionalSoftware(boolean hasAdditionalSoftware) {
+		this.hasAdditionalSoftware = hasAdditionalSoftware;
 	}
 
 }

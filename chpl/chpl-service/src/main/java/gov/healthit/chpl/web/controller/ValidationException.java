@@ -1,48 +1,50 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ValidationException extends Exception {
-	private List<String> errorMessages;
-	private List<String> warningMessages;
+	private Set<String> errorMessages;
+	private Set<String> warningMessages;
 	
 	private static final long serialVersionUID = 1L;
 	public ValidationException() { 
 		super(); 
-		errorMessages = new ArrayList<String>();
-		warningMessages = new ArrayList<String>();
+		errorMessages = new HashSet<String>();
+		warningMessages = new HashSet<String>();
 	}
 	public ValidationException(String message) { 
 		super(message);
-		errorMessages = new ArrayList<String>();
-		warningMessages = new ArrayList<String>();
+		errorMessages = new HashSet<String>();
+		errorMessages.add(message);
+		warningMessages = new HashSet<String>();
 	}
 	public ValidationException(String message, Throwable cause) { 
 		super(message, cause); 
-		errorMessages = new ArrayList<String>();
-		warningMessages = new ArrayList<String>();
+		errorMessages = new HashSet<String>();
+		errorMessages.add(message);
+		warningMessages = new HashSet<String>();
 	}
 	public ValidationException(Throwable cause) { 
 		super(cause);
-		errorMessages = new ArrayList<String>();
-		warningMessages = new ArrayList<String>();
+		errorMessages = new HashSet<String>();
+		warningMessages = new HashSet<String>();
 	}
-	public ValidationException(List<String> errorMessages, List<String> warningMessages) {
+	public ValidationException(Set<String> errorMessages, Set<String> warningMessages) {
 		super();
 		this.errorMessages = errorMessages;
 		this.warningMessages = warningMessages;
 	}
-	public List<String> getErrorMessages() {
+	public Set<String> getErrorMessages() {
 		return errorMessages;
 	}
-	public void setErrorMessages(List<String> errorMessages) {
+	public void setErrorMessages(Set<String> errorMessages) {
 		this.errorMessages = errorMessages;
 	}
-	public List<String> getWarningMessages() {
+	public Set<String> getWarningMessages() {
 		return warningMessages;
 	}
-	public void setWarningMessages(List<String> warningMessages) {
+	public void setWarningMessages(Set<String> warningMessages) {
 		this.warningMessages = warningMessages;
 	}
 
