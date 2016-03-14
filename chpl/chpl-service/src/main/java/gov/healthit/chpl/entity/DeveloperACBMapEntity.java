@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 
 @Entity
 @Table(name = "acb_vendor_map")
@@ -31,10 +33,8 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 	private Long certificationBodyId;
 	
 	@Column(name = "transparency_attestation")
-	private Boolean transparencyAttestation;
-	
-	@Column(name = "transparency_attestation_url")
-	private String transparencyAttestationUrl;
+	@Type(type = "gov.healthit.chpl.entity.PostgresEnumType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
+	private AttestationType transparencyAttestation;
 
 	public DeveloperACBMapEntity() {
 		// Default constructor
@@ -64,20 +64,12 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 		this.certificationBodyId = certificationBodyId;
 	}
 
-	public Boolean getTransparencyAttestation() {
+	public AttestationType getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(AttestationType transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
-	}
-
-	public String getTransparencyAttestationUrl() {
-		return transparencyAttestationUrl;
-	}
-
-	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
-		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 
 	public void setDeveloperId(Long developerId) {

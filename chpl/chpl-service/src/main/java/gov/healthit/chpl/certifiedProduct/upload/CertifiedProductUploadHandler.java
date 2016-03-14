@@ -6,9 +6,10 @@ import org.apache.commons.csv.CSVRecord;
 
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 public interface CertifiedProductUploadHandler {
-	public PendingCertifiedProductEntity handle();
+	public PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
 	public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
 	public List<CSVRecord> getRecord();
 	public void setRecord(List<CSVRecord> record);

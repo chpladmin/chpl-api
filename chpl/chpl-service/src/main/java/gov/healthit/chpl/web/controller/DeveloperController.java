@@ -101,13 +101,8 @@ public class DeveloperController {
 			toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
 			toCreate.setName(developerInfo.getDeveloper().getName());
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
-			if(developerInfo.getDeveloper().getTransparencyAttestation() == null) {
-				toCreate.setTransparencyAttestation(Boolean.FALSE);
-				toCreate.setTransparencyAttestationUrl(null);
-			} else {
-				toCreate.setTransparencyAttestation(developerInfo.getDeveloper().getTransparencyAttestation());
-				toCreate.setTransparencyAttestationUrl(developerInfo.getDeveloper().getTransparencyAttestationUrl());
-			}
+			toCreate.setTransparencyAttestation(developerInfo.getDeveloper().getTransparencyAttestation());
+			
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
 			if(developerAddress != null) {
 				AddressDTO toCreateAddress = new AddressDTO();
@@ -137,13 +132,8 @@ public class DeveloperController {
 			toUpdate.setId(developerInfo.getDeveloperIds().get(0));
 			toUpdate.setName(developerInfo.getDeveloper().getName());
 			toUpdate.setWebsite(developerInfo.getDeveloper().getWebsite());
-			if(developerInfo.getDeveloper().getTransparencyAttestation() == null) {
-				toUpdate.setTransparencyAttestation(Boolean.FALSE);
-				toUpdate.setTransparencyAttestationUrl(null);
-			} else {
-				toUpdate.setTransparencyAttestation(developerInfo.getDeveloper().getTransparencyAttestation());
-				toUpdate.setTransparencyAttestationUrl(developerInfo.getDeveloper().getTransparencyAttestationUrl());
-			}
+			toUpdate.setTransparencyAttestation(developerInfo.getDeveloper().getTransparencyAttestation());
+			
 			if(developerInfo.getDeveloper().getAddress() != null) {
 				AddressDTO address = new AddressDTO();
 				address.setId(developerInfo.getDeveloper().getAddress().getAddressId());

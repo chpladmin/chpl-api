@@ -50,6 +50,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 			
 			entity.setName(dto.getName());
 			entity.setWebsite(dto.getWebsite());
+			entity.setAcbCode(dto.getAcbCode());
 			
 			if(dto.getDeleted() != null) {
 				entity.setDeleted(dto.getDeleted());
@@ -103,6 +104,10 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		entity.setWebsite(dto.getWebsite());
 		if(dto.getName() != null) {
 			entity.setName(dto.getName());
+		}
+		
+		if(dto.getAcbCode() != null) {
+			entity.setAcbCode(dto.getAcbCode());
 		}
 		
 		if(dto.getDeleted() != null) {
@@ -187,6 +192,19 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 			dto = new CertificationBodyDTO(entity);
 		}
 		return dto;
+	}
+	
+	public String getMaxCode() {
+		String maxCode = null;
+		Query query = entityManager.createQuery( "SELECT acb.acbCode "
+				+ "from CertificationBodyEntity acb "
+				+ "ORDER BY acb.acbCode DESC", String.class );
+		List<String> result = query.getResultList();
+		
+		if(result != null && result.size() > 0) {
+			maxCode = result.get(0);
+		}
+		return maxCode;
 	}
 	
 	private void create(CertificationBodyEntity acb) {

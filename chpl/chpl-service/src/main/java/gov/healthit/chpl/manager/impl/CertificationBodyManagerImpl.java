@@ -66,6 +66,21 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		//assign a code
+		String maxCode = certificationBodyDAO.getMaxCode();
+		int maxCodeValue = Integer.parseInt(maxCode);
+		int nextCodeValue = maxCodeValue + 1;
+		
+		String nextAcbCode = "";
+		if(nextCodeValue < 10) {
+			nextAcbCode = "0" + nextCodeValue;
+		} else if(nextCodeValue > 99) {
+			throw new EntityCreationException("Cannot create a 2-digit ACB code since there are more than 99 ACBs in the system.");
+		} else {
+			nextAcbCode = nextCodeValue + "";
+		}
+		acb.setAcbCode(nextAcbCode);
+		
 		// Create the ACB itself
 		CertificationBodyDTO result = certificationBodyDAO.create(acb);
 

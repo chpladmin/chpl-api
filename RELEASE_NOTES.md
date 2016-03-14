@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 0.4.0
+_14 March 2016_
+
+### Features added
+* Add validation to 2014 products
+* Update Download file generation
+* Made Transparency Attestation an ENUM, URL per product
+* Added "targeted users" to Certified Product
+* Restrict uploads to CSV only
+* Added CQM mappings to Certified Product
+* Generate ATL/ACB codes if ATL/ACB is created
+
+### Bugs fixed
+* Fix null value in announcement activity
+
 ## Version 0.3.2
 _29 February 2016_
 

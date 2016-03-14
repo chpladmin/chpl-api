@@ -2,8 +2,10 @@ package gov.healthit.chpl.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CertifiedProductSearchDetails {
 	
@@ -11,7 +13,6 @@ public class CertifiedProductSearchDetails {
     private String chplProductNumber;
     private String reportFileLocation;
     private String sedReportFileLocation;
-    private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
@@ -33,17 +34,18 @@ public class CertifiedProductSearchDetails {
 	private String apiDocumentation;
 	private Boolean ics;
 	private String productAdditionalSoftware;
-	private Boolean transparencyAttestation;
+	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
-	private Boolean privacyAttestation;
 	private Long lastModifiedDate;
+	
+	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
 	
-	private List<String> warningMessages = new ArrayList<String>();
-	private List<String> errorMessages = new ArrayList<String>();
+	private Set<String> warningMessages = new HashSet<String>();
+	private Set<String> errorMessages = new HashSet<String>();
 	
 	public Long getId() {
 		return id;
@@ -62,12 +64,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
@@ -173,22 +169,16 @@ public class CertifiedProductSearchDetails {
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
 	}
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
-	}
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
-	}
-	public List<String> getWarningMessages() {
+	public Set<String> getWarningMessages() {
 		return warningMessages;
 	}
-	public void setWarningMessages(List<String> warningMessages) {
+	public void setWarningMessages(Set<String> warningMessages) {
 		this.warningMessages = warningMessages;
 	}
-	public List<String> getErrorMessages() {
+	public Set<String> getErrorMessages() {
 		return errorMessages;
 	}
-	public void setErrorMessages(List<String> errorMessages) {
+	public void setErrorMessages(Set<String> errorMessages) {
 		this.errorMessages = errorMessages;
 	}
 	public Integer getCountCorrectiveActionPlans() {
@@ -209,10 +199,10 @@ public class CertifiedProductSearchDetails {
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
 	}
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 	public Boolean getIcs() {
@@ -263,5 +253,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
 		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+	public List<CertifiedProductTargetedUser> getTargetedUsers() {
+		return targetedUsers;
+	}
+	public void setTargetedUsers(List<CertifiedProductTargetedUser> targetedUsers) {
+		this.targetedUsers = targetedUsers;
 	}
 }

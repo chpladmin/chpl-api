@@ -9,14 +9,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 //NOTE: WE ONLY NEED THE DAO METHODS FOR THIS 
 
 @Configuration
 @EnableTransactionManagement(proxyTargetClass=true)
-@ComponentScan(basePackages = {"gov.healthit.chpl.dao.**", "gov.healthit.chpl.entity.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+@ComponentScan(basePackages = {
+		"org.springframework.security.**",
+		"gov.healthit.chpl.util.**",
+		"gov.healthit.chpl.auth.dao.**",
+		"gov.healthit.chpl.dao.**", 
+		"gov.healthit.chpl.entity.**",
+		"gov.healthit.chpl.auth.manager.**",
+		"gov.healthit.chpl.manager.**"}, 
+	lazyInit=true,
+	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class AppConfig {
 	
 	public static final String DEFAULT_PROPERTIES_FILE = "environment.properties";

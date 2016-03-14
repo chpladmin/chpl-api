@@ -60,6 +60,20 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public TestingLabDTO create(TestingLabDTO atl) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		String maxCode = testingLabDAO.getMaxCode();
+		int maxCodeValue = Integer.parseInt(maxCode);
+		int nextCodeValue = maxCodeValue + 1;
+		
+		String nextAtlCode = "";
+		if(nextCodeValue < 10) {
+			nextAtlCode = "0" + nextCodeValue;
+		} else if(nextCodeValue > 99) {
+			throw new EntityCreationException("Cannot create a 2-digit ATL code since there are more than 99 ATLs in the system.");
+		} else {
+			nextAtlCode = nextCodeValue + "";
+		}
+		atl.setTestingLabCode(nextAtlCode);
+		
 		// Create the atl itself
 		TestingLabDTO result = testingLabDAO.create(atl);
 

@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
@@ -110,8 +111,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		DeveloperACBMapEntity mapping = new DeveloperACBMapEntity();
 		mapping.getDeveloperId(dto.getDeveloperId());
 		mapping.setCertificationBodyId(dto.getAcbId());
-		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
-		mapping.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+		mapping.setTransparencyAttestation(AttestationType.getValue(dto.getTransparencyAttestation()));
 		mapping.setCreationDate(new Date());
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
@@ -203,8 +203,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			return null;
 		}
 		
-		mapping.setTransparencyAttestation(dto.getTransparencyAttestation());
-		mapping.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+		mapping.setTransparencyAttestation(AttestationType.getValue(dto.getTransparencyAttestation()));
 		mapping.setLastModifiedDate(new Date());
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
 		entityManager.persist(mapping);
@@ -273,6 +272,16 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	@Override
 	public DeveloperDTO getByName(String name) {
 		DeveloperEntity entity = getEntityByName(name);
+		DeveloperDTO dto = null;
+		if(entity != null) {
+			dto = new DeveloperDTO(entity);
+		}
+		return dto;
+	}
+	
+	@Override
+	public DeveloperDTO getByCode(String code) {
+		DeveloperEntity entity = getEntityByCode(code);
 		DeveloperDTO dto = null;
 		if(entity != null) {
 			dto = new DeveloperDTO(entity);
@@ -362,6 +371,25 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		return entity;
 	}
 	
+	private DeveloperEntity getEntityByCode(String code) {
+		
+		DeveloperEntity entity = null;
+			
+		Query query = entityManager.createQuery( "SELECT v from "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class );
+		query.setParameter("code", code);
+		List<DeveloperEntity> result = query.getResultList();
+		
+		if(result.size() > 0) {
+			entity = result.get(0);
+		}
+
+		return entity;
+	}
+
 	private DeveloperACBMapEntity getTransparencyMappingEntity(Long developerId, Long acbId) {
 		Query query = entityManager.createQuery( "FROM DeveloperACBMapEntity where "
 				+ "(NOT deleted = true) "

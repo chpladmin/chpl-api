@@ -2,8 +2,10 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CQMResultCriteria;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
@@ -178,11 +180,27 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		cqmSuccessCount = 0;
 		for(CQMResultDetails cqmDetail : detail.getCqmResults()) {
+			if(cqmDetail.getId() != null && cqmDetail.getId() == 4L) {
+				List<CQMResultCriteria> criteriaMapping = cqmDetail.getCriteria();
+				assertNotNull(criteriaMapping);
+				assertEquals(1, criteriaMapping.size());
+				assertEquals(66, criteriaMapping.get(0).getCriteriaId().longValue());
+			}
 			if(cqmDetail.isSuccess()) {
 				cqmSuccessCount++;
 			}
 		}
 		assertEquals(2 ,cqmSuccessCount);
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductTargetedUsers() throws EntityRetrievalException{
+		
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
+		assertNotNull(detail.getTargetedUsers());
+		assertEquals(1, detail.getTargetedUsers().size());
+		assertEquals("Pediatrics", detail.getTargetedUsers().get(0).getTargetedUserName());
 	}
 	
 	@Test
@@ -237,14 +255,14 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	@Transactional
 	public void testCertifiedProductDetailsTransparencyAttestation() throws EntityRetrievalException{
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertTrue(detail.getTransparencyAttestation());
+		assertEquals("Affirmative", detail.getTransparencyAttestation());
 	}
 	
 	@Test
 	@Transactional
 	public void testCertifiedProductDetailsTransparencyAttestationFalse() throws EntityRetrievalException{
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(4L);
-		assertFalse(detail.getTransparencyAttestation());
+		assertNull(detail.getTransparencyAttestation());
 	}
 }
 

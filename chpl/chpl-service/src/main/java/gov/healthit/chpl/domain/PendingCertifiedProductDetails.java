@@ -19,12 +19,10 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
-	
-	private List<String> errorMessages;
-	private List<String> warningMessages;
 	private String recordStatus;
 	private Map<String, Object> developerAddress;
 	
@@ -38,7 +36,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setChplProductNumber(dto.getUniqueId());
 		this.setReportFileLocation(dto.getReportFileLocation());
 		this.setSedReportFileLocation(dto.getSedReportFileLocation());
-		this.setQualityManagementSystemAtt(null);
 		this.setAcbCertificationId(dto.getAcbCertificationId());
 		this.setIcs(dto.getIcs());
 		
@@ -163,7 +160,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		}
 		
 		this.setVisibleOnChpl(false);
-		this.setPrivacyAttestation(false);
 		this.setTransparencyAttestation(dto.getTransparencyAttestation());
 		this.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		
@@ -176,6 +172,16 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				qms.setQmsStandardName(qmsDto.getName());
 				qms.setQmsStandardId(qmsDto.getQmsStandardId());
 				this.getQmsStandards().add(qms);
+			}
+		}
+		
+		List<PendingCertifiedProductTargetedUserDTO> tuDtos = dto.getTargetedUsers();
+		if(tuDtos != null && tuDtos.size() > 0) {
+			for(PendingCertifiedProductTargetedUserDTO tuDto : tuDtos) {
+				CertifiedProductTargetedUser tu = new CertifiedProductTargetedUser();
+				tu.setTargetedUserId(tuDto.getTargetedUserId());
+				tu.setTargetedUserName(tuDto.getName());
+				this.getTargetedUsers().add(tu);
 			}
 		}
 		
@@ -318,21 +324,5 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
 	public void setRecordStatus(String recordStatus) {
 		this.recordStatus = recordStatus;
-	}
-
-	public List<String> getErrorMessages() {
-		return errorMessages;
-	}
-
-	public void setErrorMessages(List<String> errorMessages) {
-		this.errorMessages = errorMessages;
-	}
-
-	public List<String> getWarningMessages() {
-		return warningMessages;
-	}
-
-	public void setWarningMessages(List<String> warningMessages) {
-		this.warningMessages = warningMessages;
 	}
 }

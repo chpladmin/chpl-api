@@ -1,8 +1,10 @@
 package gov.healthit.chpl.entity;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -18,6 +20,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 
 /** 
  * Object mapping for hibernate-handled table: certified_product.
@@ -29,6 +33,9 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "pending_certified_product")
 public class PendingCertifiedProductEntity {
+	
+	@Transient
+	private List<String> errorMessages = new ArrayList<String>();
 	
 	/**
 	 * fields we generate mostly from spreadsheet values
@@ -118,7 +125,8 @@ public class PendingCertifiedProductEntity {
     private String developerStreetAddress;
     
     @Column(name = "vendor_transparency_attestation")
-    private Boolean transparencyAttestation;
+	@Type(type = "gov.healthit.chpl.entity.PostgresEnumType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
+	private AttestationType transparencyAttestation;
     
     @Column(name = "vendor_transparency_attestation_url")
     private String transparencyAttestationUrl;
@@ -552,11 +560,11 @@ public class PendingCertifiedProductEntity {
 		this.termsOfUse = termsOfUse;
 	}
 
-	public Boolean getTransparencyAttestation() {
+	public AttestationType getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(AttestationType transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 
@@ -574,5 +582,13 @@ public class PendingCertifiedProductEntity {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public List<String> getErrorMessages() {
+		return errorMessages;
+	}
+
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
 	}
 }

@@ -20,6 +20,7 @@ public interface DeveloperDAO {
 	
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException;
 	public DeveloperDTO getByName(String name);
+	public DeveloperDTO getByCode(String code);
 	public DeveloperDTO getByCertifiedProduct(CertifiedProductDTO cpDto) throws EntityRetrievalException;
 	
 	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);

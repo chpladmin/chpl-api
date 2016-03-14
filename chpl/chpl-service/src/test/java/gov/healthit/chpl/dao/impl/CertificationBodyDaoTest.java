@@ -61,6 +61,16 @@ public class CertificationBodyDaoTest extends TestCase {
 	}
 
 	@Test
+	public void testGetMaxAcbCode() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		String maxCode = acbDao.getMaxCode();
+		assertNotNull(maxCode);
+		assertEquals("07", maxCode);
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
 	public void testGetAllAcbs() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 

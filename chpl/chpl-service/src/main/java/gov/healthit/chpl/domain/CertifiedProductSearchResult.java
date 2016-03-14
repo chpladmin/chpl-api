@@ -12,7 +12,6 @@ public class CertifiedProductSearchResult {
     private String chplProductNumber;
     private String reportFileLocation;
     private String sedReportFileLocation;
-    private String qualityManagementSystemAtt;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
@@ -24,14 +23,13 @@ public class CertifiedProductSearchResult {
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	private Long certificationDate;
 	private Boolean visibleOnChpl;
-	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
 	private String productAdditionalSoftware;
-	private Boolean transparencyAttestation;
+	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Integer countCerts;
 	private Integer countCqms;
@@ -62,12 +60,6 @@ public class CertifiedProductSearchResult {
 	}
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
@@ -147,12 +139,6 @@ public class CertifiedProductSearchResult {
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
 	}
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
-	}
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
-	}
 	public Integer getCountCorrectiveActionPlans() {
 		return countCorrectiveActionPlans;
 	}
@@ -171,10 +157,10 @@ public class CertifiedProductSearchResult {
 	public void setApiDocumentation(String apiDocumentation) {
 		this.apiDocumentation = apiDocumentation;
 	}
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 	public String getTestingLabName() {

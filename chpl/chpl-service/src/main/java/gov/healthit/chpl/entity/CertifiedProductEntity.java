@@ -97,15 +97,15 @@ public class CertifiedProductEntity {
 	
 	@Column(name = "visible_on_chpl")
 	private Boolean visibleOnChpl;
-
-	@Column(name = "privacy_attestation")
-	private Boolean privacyAttestation;
 	
 	@Column(name = "terms_of_use_url")
 	private String termsOfUse;
 	
 	@Column(name = "api_documentation_url")
 	private String apiDocumentation;
+	
+	@Column(name = "transparency_attestation_url")
+	private String transparencyAttestationUrl;
 	
 	@Column(name = "ics")
 	private Boolean ics;
@@ -245,14 +245,6 @@ public class CertifiedProductEntity {
 		this.visibleOnChpl = visibleOnChpl;
 	}
 
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
-	}
-
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
-	}
-
 	public String getProductCode() {
 		return productCode;
 	}
@@ -388,5 +380,13 @@ public class CertifiedProductEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 }

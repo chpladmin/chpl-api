@@ -17,6 +17,7 @@ import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -35,10 +36,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 		// Create the announcement itself
 		AnnouncementDTO result = announcementDAO.create(announcement);
 		
-		logger.debug("Created announcement " + result);
-		
-		String activityMsg = "Created Announcement " + result.getText();
-		
+		String activityMsg = "Created announcement: " + announcement.getTitle(); 
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg, null, result);
 		
 		return result;
@@ -53,10 +51,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 
 		result = announcementDAO.update(announcement, false);
 
-		logger.debug("Updated announcement " + announcement);
-
-		String activityMsg = "Updated announcement " + announcement.getText();
-
+		String activityMsg = "Updated announcement: " + announcement.getTitle();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg, toUpdate, result);
 
 		return result;
@@ -71,7 +66,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 		//mark the announcement deleted
 		announcementDAO.delete(announcement.getId());
 		//log announcement delete activity
-		String activityMsg = "Deleted announcement " + announcement.getText();
+		String activityMsg = "Deleted announcement: " + announcement.getTitle();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, announcement.getId(), activityMsg, announcement, null);
 	}
 	

@@ -31,9 +31,9 @@ public class CertifiedProductDTO {
 	private Long certificationStatusId;
 	private String otherAcb;
 	private Boolean visibleOnChpl;
-	private Boolean privacyAttestation;
 	private String termsOfUse;
 	private String apiDocumentation;
+	private String transparencyAttestationUrl;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
@@ -62,11 +62,11 @@ public class CertifiedProductDTO {
 		this.productVersionId = entity.getProductVersionId();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.sedReportFileLocation = entity.getSedReportFileLocation();
+		this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
 		this.testingLabId = entity.getTestingLabId();		
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
 		this.setVisibleOnChpl(entity.getVisibleOnChpl());
-		this.setPrivacyAttestation(entity.getPrivacyAttestation());
 		this.setTermsOfUse(entity.getTermsOfUse());
 		this.setApiDocumentation(entity.getApiDocumentation());
 		this.setIcs(entity.getIcs());
@@ -191,14 +191,6 @@ public class CertifiedProductDTO {
 		this.visibleOnChpl = visibleOnChpl;
 	}
 
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
-	}
-
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
-	}
-
 	public String getProductCode() {
 		return productCode;
 	}
@@ -301,5 +293,13 @@ public class CertifiedProductDTO {
 
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 }

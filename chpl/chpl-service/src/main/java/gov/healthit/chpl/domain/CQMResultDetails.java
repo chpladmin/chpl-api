@@ -7,10 +7,12 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 
 public class CQMResultDetails {
 	
+	private Long id;
 	private String number;
 	private String cmsId;
 	private String title;
@@ -20,13 +22,17 @@ public class CQMResultDetails {
 	private Boolean success;
 	private Set<String> successVersions;
 	private Set<String> allVersions;
+	private List<CQMResultCriteria> criteria;
 	
 	public CQMResultDetails(){
 		this.successVersions = new HashSet<String>();
 		this.allVersions = new HashSet<String>();
+		this.criteria = new ArrayList<CQMResultCriteria>();
 	}
 	
 	public CQMResultDetails(CQMResultDetailsDTO dto){
+		this();
+		this.id = dto.getId();
 		this.number = dto.getNumber();
 		this.cmsId = dto.getCmsId();
 		this.title = dto.getTitle();
@@ -34,13 +40,22 @@ public class CQMResultDetails {
 		this.typeId = dto.getCqmCriterionTypeId();
 		this.domain = dto.getDomain();
 		
-		this.successVersions = new HashSet<String>();
-		this.allVersions = new HashSet<String>();
-		
 		if(!StringUtils.isEmpty(dto.getCmsId())) {
 			this.getSuccessVersions().add(dto.getVersion());
 		} else if(!StringUtils.isEmpty(dto.getNqfNumber())) {
 			this.setSuccess(dto.getSuccess());
+		}
+		
+		if(dto.getCriteria() != null && dto.getCriteria().size() > 0) {
+			for(CQMResultCriteriaDTO criteriaDTO : dto.getCriteria()) {
+				CQMResultCriteria criteria = new CQMResultCriteria();
+				criteria.setCriteriaId(criteriaDTO.getCqmResultId());
+				criteria.setId(criteriaDTO.getId());
+				if(criteriaDTO.getCriterion() != null) {
+					criteria.setCriteriaNumber(criteriaDTO.getCriterion().getNumber());
+				}
+				this.criteria.add(criteria);
+			}
 		}
 	}
 	
@@ -110,6 +125,22 @@ public class CQMResultDetails {
 
 	public void setSuccess(Boolean success) {
 		this.success = success;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public List<CQMResultCriteria> getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(List<CQMResultCriteria> criteria) {
+		this.criteria = criteria;
 	}
 	
 }
