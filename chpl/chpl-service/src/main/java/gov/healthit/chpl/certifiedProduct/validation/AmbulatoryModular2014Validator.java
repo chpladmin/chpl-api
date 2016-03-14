@@ -35,7 +35,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 			
 			if(!hasG1Complement) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(1) exists but no required related certification was not found.");
+				product.getErrorMessages().add("(g)(1) was found without a required related certification.");
 			}
 		}
 		
@@ -57,7 +57,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 			
 			if(!hasG2Complement) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(2) exists but no required related certification was not found.");
+				product.getErrorMessages().add("(g)(2) was found without a required related certification.");
 			}
 		}
 		
@@ -88,7 +88,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(1) exists but no required related certification was not found.");
+				product.getErrorMessages().add("(g)(1) was found without a required related certification.");
 			}
 		}
 		
@@ -110,7 +110,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(2) exists but no required related certification was not found.");
+				product.getErrorMessages().add("(g)(2) was found without a required related certification.");
 			}
 		}
 		
