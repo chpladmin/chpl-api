@@ -39,16 +39,19 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -173,6 +176,7 @@ public class CertifiedProductController {
 		toUpdate.setApiDocumentation(updateRequest.getApiDocumentation());
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
+		toUpdate.setAccessibilityCertified(updateRequest.getAccessibilityCertified());
 		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
 		toUpdate.setTransparencyAttestationUrl(updateRequest.getTransparencyAttestationUrl());
 		
@@ -225,6 +229,17 @@ public class CertifiedProductController {
 			targetedUsersToUpdate.add(dto);
 		}
 		cpManager.updateTargetedUsers(acbId, toUpdate, targetedUsersToUpdate);
+		
+		List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardsToUpdate = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+		for(CertifiedProductAccessibilityStandard newStd : updateRequest.getAccessibilityStandards()) {
+			CertifiedProductAccessibilityStandardDTO dto = new CertifiedProductAccessibilityStandardDTO();
+			dto.setId(newStd.getId());
+			dto.setCertifiedProductId(toUpdate.getId());
+			dto.setAccessibilityStandardId(newStd.getAccessibilityStandardId());
+			dto.setAccessibilityStandardName(newStd.getAccessibilityStandardName());
+			accessibilityStandardsToUpdate.add(dto);
+		}
+		cpManager.updateAccessibilityStandards(acbId, toUpdate, accessibilityStandardsToUpdate);
 		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());

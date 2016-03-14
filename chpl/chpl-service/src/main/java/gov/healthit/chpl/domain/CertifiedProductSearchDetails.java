@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,8 @@ public class CertifiedProductSearchDetails {
     private String chplProductNumber;
     private String reportFileLocation;
     private String sedReportFileLocation;
+    private String sedIntendedUserDescription;
+    private Date sedTestingEnd;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
@@ -33,11 +36,13 @@ public class CertifiedProductSearchDetails {
 	private String termsOfUse;
 	private String apiDocumentation;
 	private Boolean ics;
+	private Boolean accessibilityCertified;
 	private String productAdditionalSoftware;
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long lastModifiedDate;
 	
+	private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
@@ -259,5 +264,29 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setTargetedUsers(List<CertifiedProductTargetedUser> targetedUsers) {
 		this.targetedUsers = targetedUsers;
+	}
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+	public List<CertifiedProductAccessibilityStandard> getAccessibilityStandards() {
+		return accessibilityStandards;
+	}
+	public void setAccessibilityStandards(List<CertifiedProductAccessibilityStandard> accessibilityStandards) {
+		this.accessibilityStandards = accessibilityStandards;
+	}
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 }

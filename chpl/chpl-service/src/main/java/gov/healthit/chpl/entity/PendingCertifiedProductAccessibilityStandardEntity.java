@@ -15,13 +15,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_certified_product_targeted_user")
-public class PendingCertifiedProductTargetedUserEntity {
+@Table(name = "pending_certified_product_accessibility_standard")
+public class PendingCertifiedProductAccessibilityStandardEntity {
 	
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column( name = "pending_certified_product_targeted_user_id", nullable = false  )
+	@Column( name = "pending_certified_product_accessibility_standard_id", nullable = false  )
 	private Long id;
     
 	@Basic( optional = true )
@@ -32,10 +32,10 @@ public class PendingCertifiedProductTargetedUserEntity {
 	@Column(name="pending_certified_product_id")
 	private Long pendingCertifiedProductId;
 	
-    @Column(name = "targeted_user_id")
-    private Long targetedUserId;
+    @Column(name = "accessibility_standard_ud")
+    private Long accessibilityStandardId;
     
-    @Column(name = "targeted_user_name")
+    @Column(name = "accessibility_standard_name")
     private String name;
     
 	@Basic( optional = false )
@@ -118,13 +118,11 @@ public class PendingCertifiedProductTargetedUserEntity {
 		this.pendingCertifiedProductId = pendingCertifiedProductId;
 	}
 
-	public Long getTargetedUserId() {
-		return targetedUserId;
+	public Long getAccessibilityStandardId() {
+		return accessibilityStandardId;
 	}
 
-	public void setTargetedUserId(Long targetedUserId) {
-		this.targetedUserId = targetedUserId;
+	public void setAccessibilityStandardId(Long accessibilityStandardId) {
+		this.accessibilityStandardId = accessibilityStandardId;
 	}
-	
-	
 }

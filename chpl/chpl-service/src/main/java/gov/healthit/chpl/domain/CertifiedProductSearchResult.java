@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,8 @@ public class CertifiedProductSearchResult {
     private String chplProductNumber;
     private String reportFileLocation;
     private String sedReportFileLocation;
+    private String sedIntendedUserDescription;
+    private Date sedTestingEnd;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
@@ -28,6 +31,7 @@ public class CertifiedProductSearchResult {
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
+	private Boolean accessibilityCertified;
 	private String productAdditionalSoftware;
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
@@ -216,6 +220,24 @@ public class CertifiedProductSearchResult {
 	}
 	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
 		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 	
 }

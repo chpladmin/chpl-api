@@ -74,6 +74,8 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setReportFileLocation(dto.getReportFileLocation());
 			searchResult.setSedReportFileLocation(dto.getSedReportFileLocation());
+			searchResult.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
+			searchResult.setSedTestingEnd(dto.getSedTestingEnd());
 			searchResult.setTestingLabId(dto.getTestingLabId());
 			searchResult.setTestingLabName(dto.getTestingLabName());
 			
@@ -90,6 +92,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setIcs(dto.getIcs());
 			searchResult.setSedTesting(dto.getSedTesting());
 			searchResult.setQmsTesting(dto.getQmsTesting());
+			searchResult.setAccessibilityCertified(dto.getAccessibilityCertified());
 			searchResult.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 			searchResult.setTermsOfUse(dto.getTermsOfUse());
 			searchResult.setTransparencyAttestation(dto.getTransparencyAttestation());

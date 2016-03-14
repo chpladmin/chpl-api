@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -22,6 +23,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
@@ -44,7 +46,9 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
@@ -60,6 +64,7 @@ import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
@@ -75,6 +80,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
@@ -108,8 +114,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired CertificationCriterionDAO certCriterionDao;
 	@Autowired QmsStandardDAO qmsDao;
 	@Autowired TargetedUserDAO targetedUserDao;
+	@Autowired AccessibilityStandardDAO asDao;
 	@Autowired CertifiedProductQmsStandardDAO cpQmsDao;
 	@Autowired CertifiedProductTargetedUserDAO cpTargetedUserDao;
+	@Autowired CertifiedProductAccessibilityStandardDAO cpAccStdDao;
 	@Autowired CQMResultDAO cqmResultDAO;
 	@Autowired CQMCriterionDAO cqmCriterionDao;
 	@Autowired CertificationBodyDAO acbDao;
@@ -206,6 +214,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setSedReportFileLocation(pendingCp.getSedReportFileLocation());
 		toCreate.setVisibleOnChpl(true);
 		toCreate.setIcs(pendingCp.getIcs());
+		toCreate.setAccessibilityCertified(pendingCp.getAccessibilityCertified());
 		toCreate.setPracticeTypeId(pendingCp.getPracticeTypeId());
 		toCreate.setProductClassificationTypeId(pendingCp.getProductClassificationId());
 		toCreate.setCreationDate(new Date());
@@ -340,6 +349,23 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 		}
 		
+		//accessibility standards
+		if(pendingCp.getAccessibilityStandards() != null && pendingCp.getAccessibilityStandards().size() > 0) {
+			for(PendingCertifiedProductAccessibilityStandardDTO as : pendingCp.getAccessibilityStandards()) {
+				CertifiedProductAccessibilityStandardDTO asDto = new CertifiedProductAccessibilityStandardDTO();
+				if(as.getAccessibilityStandardId() == null) {
+					AccessibilityStandardDTO toAdd = new AccessibilityStandardDTO();
+					toAdd.setName(as.getName());
+					toAdd = asDao.create(toAdd);
+					asDto.setAccessibilityStandardId(toAdd.getId());
+				} else {
+					asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
+				}
+				asDto.setCertifiedProductId(newCertifiedProduct.getId());
+				cpAccStdDao.createCertifiedProductAccessibilityStandard(asDto);
+			}
+		}
+				
 		//certs
 		if(pendingCp.getCertificationCriterion() != null && pendingCp.getCertificationCriterion().size() > 0) {
 			for(PendingCertificationResultDTO certResult : pendingCp.getCertificationCriterion()) {
@@ -666,6 +692,63 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		{
 			List<CertifiedProductTargetedUserDTO> afterTus = cpTargetedUserDao.getTargetedUsersByCertifiedProductId(productDto.getId());
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Targeted Users for "+productDto.getChplProductNumberForActivity() + " were updated." , beforeTUs , afterTus);
+		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateAccessibilityStandards(Long acbId, CertifiedProductDTO productDto, List<CertifiedProductAccessibilityStandardDTO> newStandards)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
+		List<CertifiedProductAccessibilityStandardDTO> beforeStds = cpAccStdDao.getAccessibilityStandardsByCertifiedProductId(productDto.getId());
+		
+		List<CertifiedProductAccessibilityStandardDTO> stdsToAdd = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+		List<CertifiedProductAccessibilityStandardDTO> stdsToRemove = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+		
+		for (CertifiedProductAccessibilityStandardDTO newStd : newStandards){
+			AccessibilityStandardDTO as = asDao.getByName(newStd.getAccessibilityStandardName());
+			if(as == null) {
+				AccessibilityStandardDTO toCreate = new AccessibilityStandardDTO();
+				toCreate.setName(newStd.getAccessibilityStandardName());
+				as = asDao.create(toCreate);
+			}
+			if(newStd.getId() == null) {
+				newStd.setAccessibilityStandardId(as.getId());
+				stdsToAdd.add(newStd);
+			} 
+		}
+		
+		for(CertifiedProductAccessibilityStandardDTO currStd : beforeStds) {
+			boolean isInUpdate = false;
+			for (CertifiedProductAccessibilityStandardDTO newStd : newStandards){
+				if(newStd.getId() != null && 
+						newStd.getId().longValue() == currStd.getId().longValue()) {
+					isInUpdate = true;
+				}
+			}
+			if(!isInUpdate) {
+				stdsToRemove.add(currStd);
+			}
+		}
+			
+		for(CertifiedProductAccessibilityStandardDTO toAdd : stdsToAdd) {
+			cpAccStdDao.createCertifiedProductAccessibilityStandard(toAdd);
+		}
+		
+		for(CertifiedProductAccessibilityStandardDTO toRemove : stdsToRemove) {
+			cpAccStdDao.deleteCertifiedProductAccessibilityStandards(toRemove.getId());
+		}	
+		
+		//only put in activity if something changed
+		if( (stdsToAdd != null && stdsToAdd.size() > 0) ||
+				(stdsToRemove != null && stdsToRemove.size() > 0) )
+		{
+			List<CertifiedProductAccessibilityStandardDTO> afterStds = cpAccStdDao.getAccessibilityStandardsByCertifiedProductId(productDto.getId());
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Accessibility Standards for "+productDto.getChplProductNumberForActivity() + " were updated." , beforeStds , afterStds);
 		}
 	}
 	
