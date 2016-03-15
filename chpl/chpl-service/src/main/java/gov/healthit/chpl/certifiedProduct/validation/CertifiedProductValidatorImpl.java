@@ -68,14 +68,23 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The first part of the CHPL ID must match the certification year of the product.");
 			}
 			
-			TestingLabDTO testingLab = atlDao.getById(product.getTestingLabId());
-			if(!testingLab.getTestingLabCode().equals(atlCode)) {
-				product.getErrorMessages().add("The testing lab code provided does not match the assigned testing lab code '" + testingLab.getTestingLabCode() + "'.");
+			if(product.getTestingLabId() == null) {
+				product.getErrorMessages().add("No testing lab was found matching the name '" + product.getTestingLabName() + "'");
+			} else {
+				TestingLabDTO testingLab = atlDao.getById(product.getTestingLabId());
+				if(!testingLab.getTestingLabCode().equals(atlCode)) {
+					product.getErrorMessages().add("The testing lab code provided does not match the assigned testing lab code '" + testingLab.getTestingLabCode() + "'.");
+				}
 			}
 			
-			CertificationBodyDTO certificationBody = acbDao.getById(product.getCertificationBodyId());
-			if(!certificationBody.getAcbCode().equals(acbCode)) {
-				product.getErrorMessages().add("The ACB code provided does not match the assigned ACB code '" + certificationBody.getAcbCode() + "'.");
+			CertificationBodyDTO certificationBody = null;
+			if(product.getCertificationBodyId() == null) {
+				product.getErrorMessages().add("No certification body was found matching the name '" + product.getCertificationBodyName() + "'.");
+			} else {
+				certificationBody = acbDao.getById(product.getCertificationBodyId());
+				if(!certificationBody.getAcbCode().equals(acbCode)) {
+					product.getErrorMessages().add("The ACB code provided does not match the assigned ACB code '" + certificationBody.getAcbCode() + "'.");
+				}
 			}
 			
 			if(product.getDeveloperId() != null) {
