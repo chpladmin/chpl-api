@@ -125,6 +125,12 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
 					certResult.setG2Success(null);
 				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+					certResult.setApiDocumentation(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+					certResult.setPrivacySecurityFramework(null);
+				}
 				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SED)) {
 					certResult.setSed(null);
 				}

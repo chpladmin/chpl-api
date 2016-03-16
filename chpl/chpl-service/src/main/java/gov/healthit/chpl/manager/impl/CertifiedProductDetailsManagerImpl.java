@@ -215,6 +215,12 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
 				result.setG2Success(null);
 			}
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+				result.setApiDocumentation(null);
+			}
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+				result.setPrivacySecurityFramework(null);
+			}
 			
 			//add all the other data
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {

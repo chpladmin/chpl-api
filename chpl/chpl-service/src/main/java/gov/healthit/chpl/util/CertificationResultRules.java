@@ -24,8 +24,10 @@ import org.xml.sax.SAXException;
 @Component("certificationResultRules")
 public class CertificationResultRules {
 	public static final String GAP = "gap";
+	public static final String PRIVACY_SECURITY = "privacySecurity";
 	public static final String STANDARDS_TESTED = "standardsTested";
 	public static final String FUNCTIONALITY_TESTED = "functionalityTested";
+	public static final String API_DOCUMENTATION = "apiDocumentation";
 	public static final String G1_SUCCESS = "g1";
 	public static final String G2_SUCCESS = "g2";
 	public static final String ADDITIONAL_SOFTWARE = "additionalSoftware";

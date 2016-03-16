@@ -881,6 +881,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					} else {
 						oldResult.setSed(null);
 					}
+					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+						oldResult.setApiDocumentation(newCertResult.getApiDocumentation());
+					} else {
+						oldResult.setApiDocumentation(null);
+					}
+					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+						oldResult.setPrivacySecurityFramework(newCertResult.getPrivacySecurityFramework());
+					} else {
+						oldResult.setPrivacySecurityFramework(null);
+					}
 					
 					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.UCD_FIELDS) ||
 							newCertResult.getUcdProcesses() == null || newCertResult.getUcdProcesses().size() == 0) {
