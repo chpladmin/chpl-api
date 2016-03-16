@@ -25,6 +25,8 @@ public class PendingCertificationResultDTO {
 	private Boolean sed;
 	private Boolean g1Success;
 	private Boolean g2Success;
+	private String apiDocumentation;
+	private String privacySecurityFramework;
 	
 	private List<PendingCertificationResultUcdProcessDTO> ucdProcesses;
 	private List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware;
@@ -64,6 +66,8 @@ public class PendingCertificationResultDTO {
 		this.setSed(entity.getSed());
 		this.setG1Success(entity.getG1Success());
 		this.setG2Success(entity.getG2Success());
+		this.apiDocumentation = entity.getApiDocumentation();
+		this.privacySecurityFramework = entity.getPrivacySecurityFramework();
 		
 		if(entity.getUcdProcesses() != null) {
 			for(PendingCertificationResultUcdProcessEntity e : entity.getUcdProcesses()) {
@@ -258,6 +262,22 @@ public class PendingCertificationResultDTO {
 
 	public void setTestTasks(List<PendingCertificationResultTestTaskDTO> testTasks) {
 		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 	
 	

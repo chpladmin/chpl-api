@@ -13,8 +13,10 @@ import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -195,6 +197,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			cert.setSed(certCriterion.getSed());
 			cert.setG1Success(certCriterion.getG1Success());
 			cert.setG2Success(certCriterion.getG2Success());
+			cert.setApiDocumentation(certCriterion.getApiDocumentation());
+			cert.setPrivacySecurityFramework(certCriterion.getPrivacySecurityFramework());
 			
 			if(certCriterion.getUcdProcesses() != null && certCriterion.getUcdProcesses().size() > 0) {
 				for(PendingCertificationResultUcdProcessDTO ucdDto : certCriterion.getUcdProcesses()) {
@@ -274,6 +278,49 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setTestStandards(null);
 			}
+			
+			if(certCriterion.getTestParticipants() != null) {
+				for(PendingCertificationResultTestParticipantDTO pt : certCriterion.getTestParticipants()) {
+					CertificationResultTestParticipant part = new CertificationResultTestParticipant();
+					part.setAge(pt.getAge());
+					part.setAssistiveTechnologyNeeds(pt.getAssistiveTechnologyNeeds());
+					part.setComputerExperienceMonths(pt.getComputerExperienceMonths());
+					part.setEducationTypeId(pt.getEducationTypeId());
+					if(pt.getEducationType() != null) {
+						part.setEducationTypeName(pt.getEducationType().getName());
+					}
+					part.setGender(pt.getGender());
+					part.setOccupation(pt.getOccupation());
+					part.setProductExperienceMonths(pt.getProductExperienceMonths());
+					part.setProfessionalExperienceMonths(pt.getProfessionalExperienceMonths());
+					cert.getTestParticipants().add(part);
+				}
+			} else {
+				cert.setTestParticipants(null);
+			}
+			
+			if(certCriterion.getTestTasks() != null) {
+				for(PendingCertificationResultTestTaskDTO tt : certCriterion.getTestTasks()) {
+					CertificationResultTestTask task = new CertificationResultTestTask();
+					task.setDescription(tt.getDescription());
+					task.setTaskErrors(tt.getTaskErrors());
+					task.setTaskErrorsStddev(tt.getTaskErrorsStddev());
+					task.setTaskPathDeviationObserved(tt.getTaskPathDeviationObserved());
+					task.setTaskPathDeviationOptimal(tt.getTaskPathDeviationOptimal());
+					task.setTaskRating(tt.getTaskRating());
+					task.setTaskRatingScale(tt.getTaskRatingScale());
+					task.setTaskSuccessAverage(tt.getTaskSuccessAverage());
+					task.setTaskSuccessStddev(tt.getTaskSuccessStddev());
+					task.setTaskTimeAvg(tt.getTaskTimeAvg());
+					task.setTaskTimeDeviationObservedAvg(tt.getTaskTimeDeviationObservedAvg());
+					task.setTaskTimeDeviationOptimalAvg(tt.getTaskTimeDeviationOptimalAvg());
+					task.setTaskTimeStddev(tt.getTaskTimeStddev());
+					cert.getTestTasks().add(task);
+				}
+			} else {
+				cert.setTestTasks(null);
+			}
+			
 			certList.add(cert);
 		}
 		this.setCertificationResults(certList);

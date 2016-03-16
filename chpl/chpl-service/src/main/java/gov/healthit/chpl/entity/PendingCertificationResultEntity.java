@@ -53,6 +53,12 @@ public class PendingCertificationResultEntity {
 	@Column(name = "g2_success")
 	private Boolean g2Success;
 	
+	@Column(name = "api_documentation")
+	private String apiDocumentation;
+	
+	@Column(name = "privacy_security_framework")
+	private String privacySecurityFramework;
+	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -300,6 +306,22 @@ public class PendingCertificationResultEntity {
 
 	public void setTestTasks(Set<PendingCertificationResultTestTaskEntity> testTasks) {
 		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 
 }

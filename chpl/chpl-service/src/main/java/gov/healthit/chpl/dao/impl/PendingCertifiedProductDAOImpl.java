@@ -20,8 +20,10 @@ import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEnti
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestParticipantEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -134,6 +136,27 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 				}
 			}
 			
+			if(criterion.getTestParticipants() != null && criterion.getTestParticipants().size() > 0) {
+				for(PendingCertificationResultTestParticipantEntity ttEntity : criterion.getTestParticipants()) {
+					ttEntity.setPendingCertificationResultId(criterion.getId());
+					ttEntity.setLastModifiedDate(new Date());	
+					ttEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					ttEntity.setCreationDate(new Date());
+					ttEntity.setDeleted(false);
+					entityManager.persist(ttEntity);
+				}
+			}
+			
+			if(criterion.getTestTasks() != null && criterion.getTestTasks().size() > 0) {
+				for(PendingCertificationResultTestTaskEntity ttEntity : criterion.getTestTasks()) {
+					ttEntity.setPendingCertificationResultId(criterion.getId());
+					ttEntity.setLastModifiedDate(new Date());	
+					ttEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					ttEntity.setCreationDate(new Date());
+					ttEntity.setDeleted(false);
+					entityManager.persist(ttEntity);
+				}
+			}
 		}
 		
 		for(PendingCqmCriterionEntity cqm : toCreate.getCqmCriterion()) {

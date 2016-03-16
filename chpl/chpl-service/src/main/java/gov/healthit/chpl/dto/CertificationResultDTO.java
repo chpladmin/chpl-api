@@ -18,6 +18,8 @@ public class CertificationResultDTO {
 	private Boolean successful;
 	private Boolean g1Success;
 	private Boolean g2Success;
+	private String apiDocumentation;
+	private String privacySecurityFramework;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	
@@ -61,6 +63,8 @@ public class CertificationResultDTO {
 		this.sed = entity.getSed();
 		this.g1Success = entity.getG1Success();
 		this.g2Success = entity.getG2Success();
+		this.apiDocumentation = entity.getApiDocumentation();
+		this.privacySecurityFramework = entity.getPrivacySecurityFramework();
 		this.successful = entity.isSuccess();
 		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -212,6 +216,22 @@ public class CertificationResultDTO {
 
 	public void setTestTasks(List<CertificationResultTestTaskDTO> testTasks) {
 		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 	
 }

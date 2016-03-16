@@ -9,6 +9,7 @@ public class PendingCertificationResultTestParticipantDTO {
 	private String gender;
 	private Integer age;
 	private Long educationTypeId;
+	private EducationTypeDTO educationType;
 	private String occupation;
 	private Integer professionalExperienceMonths;
 	private Integer computerExperienceMonths;
@@ -24,6 +25,9 @@ public class PendingCertificationResultTestParticipantDTO {
 		this.age = entity.getAge();
 		this.gender = entity.getGender();
 		this.educationTypeId = entity.getEducationTypeId();
+		if(entity.getEducation() != null) {
+			this.educationType = new EducationTypeDTO(entity.getEducation());
+		}
 		this.occupation = entity.getOccupation();
 		this.professionalExperienceMonths = entity.getProfessionalExperienceMonths();
 		this.computerExperienceMonths = entity.getComputerExperienceMonths();
@@ -116,5 +120,13 @@ public class PendingCertificationResultTestParticipantDTO {
 
 	public void setAssistiveTechnologyNeeds(String assistiveTechnologyNeeds) {
 		this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
+	}
+
+	public EducationTypeDTO getEducationType() {
+		return educationType;
+	}
+
+	public void setEducationType(EducationTypeDTO educationType) {
+		this.educationType = educationType;
 	}
 }

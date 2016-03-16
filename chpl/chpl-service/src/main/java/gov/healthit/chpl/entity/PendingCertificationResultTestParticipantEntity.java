@@ -5,9 +5,12 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -35,6 +38,10 @@ public class PendingCertificationResultTestParticipantEntity {
 
 	@Column( name = "education_type_id", nullable = false  )
 	private Long educationTypeId;
+	
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "education_type_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private EducationTypeEntity education;
 	
 	@Column(name = "occupation")
 	private String occupation;
@@ -186,5 +193,13 @@ public class PendingCertificationResultTestParticipantEntity {
 
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
+	}
+
+	public EducationTypeEntity getEducation() {
+		return education;
+	}
+
+	public void setEducation(EducationTypeEntity education) {
+		this.education = education;
 	}
 }
