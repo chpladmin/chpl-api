@@ -33,8 +33,10 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
+import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
+import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -42,8 +44,10 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
@@ -59,8 +63,10 @@ import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.CertificationResultTestParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -71,13 +77,16 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
@@ -89,8 +98,11 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.dto.TestTaskDTO;
+import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -132,7 +144,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired TestStandardDAO testStandardDao;
 	@Autowired TestProcedureDAO testProcDao;
 	@Autowired UcdProcessDAO ucdDao;
-	
+	@Autowired TestParticipantDAO testParticipantDao;
+	@Autowired TestTaskDAO testTaskDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -368,6 +381,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				
 		//certs
 		if(pendingCp.getCertificationCriterion() != null && pendingCp.getCertificationCriterion().size() > 0) {
+			
+			//participants and tasks are re-used across multiple certifications within the same product
+			List<TestParticipantDTO> testParticipantsAdded = new ArrayList<TestParticipantDTO>();
+			List<TestTaskDTO> testTasksAdded = new ArrayList<TestTaskDTO>();
+			
 			for(PendingCertificationResultDTO certResult : pendingCp.getCertificationCriterion()) {
 				CertificationCriterionDTO criterion = certCriterionDao.getByName(certResult.getNumber());
 				if(criterion == null) {
@@ -479,7 +497,71 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							logger.error("Could not insert test tool with null id. Name was " + tool.getName());
 
 						}
-						
+					}
+				}
+				
+				if(certResult.getTestParticipants() != null && certResult.getTestParticipants().size() > 0) {
+					for(PendingCertificationResultTestParticipantDTO part : certResult.getTestParticipants()) {
+						//have we already added this one?
+						TestParticipantDTO existingTp = null;
+						for(TestParticipantDTO tp : testParticipantsAdded) {
+							if(part.getUniqueId().equals(tp.getPendingUniqueId())) {
+								existingTp = tp;
+							}
+						}
+						if(existingTp == null) {
+							TestParticipantDTO tp = new TestParticipantDTO();
+							tp.setAge(part.getAge());
+							tp.setAssistiveTechnologyNeeds(part.getAssistiveTechnologyNeeds());
+							tp.setComputerExperienceMonths(part.getComputerExperienceMonths());
+							tp.setEducationTypeId(part.getEducationTypeId());
+							tp.setGender(part.getGender());
+							tp.setOccupation(part.getOccupation());
+							tp.setProductExperienceMonths(part.getProductExperienceMonths());
+							tp.setProfessionalExperienceMonths(part.getProfessionalExperienceMonths());
+							existingTp = testParticipantDao.create(tp);
+							existingTp.setPendingUniqueId(part.getUniqueId());
+							testParticipantsAdded.add(existingTp);
+						}
+						CertificationResultTestParticipantDTO partDto = new CertificationResultTestParticipantDTO();
+						partDto.setTestParticipantId(existingTp.getId());
+						partDto.setCertificationResultId(createdCert.getId());
+						certDao.addTestParticipantMapping(partDto);
+					}
+				}
+				
+				if(certResult.getTestTasks() != null && certResult.getTestTasks().size() > 0) {
+					for(PendingCertificationResultTestTaskDTO task : certResult.getTestTasks()) {
+						//have we already added this one?
+						TestTaskDTO existingTt = null;
+						for(TestTaskDTO tt : testTasksAdded) {
+							if(task.getUniqueId().equals(tt.getPendingUniqueId())) {
+								existingTt = tt;
+							}
+						}
+						if(existingTt == null) {
+							TestTaskDTO tt = new TestTaskDTO();
+							tt.setDescription(task.getDescription());
+							tt.setTaskErrors(task.getTaskErrors());
+							tt.setTaskErrorsStddev(task.getTaskErrorsStddev());
+							tt.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved());
+							tt.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal());
+							tt.setTaskRating(task.getTaskRating());
+							tt.setTaskRatingScale(task.getTaskRatingScale());
+							tt.setTaskSuccessAverage(task.getTaskSuccessAverage());
+							tt.setTaskSuccessStddev(task.getTaskSuccessStddev());
+							tt.setTaskTimeAvg(task.getTaskTimeAvg());
+							tt.setTaskTimeDeviationObservedAvg(task.getTaskPathDeviationObserved());
+							tt.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg());
+							tt.setTaskTimeStddev(task.getTaskTimeStddev());
+							existingTt = testTaskDao.create(tt);
+							existingTt.setPendingUniqueId(task.getUniqueId());
+							testTasksAdded.add(existingTt);
+						}
+						CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
+						taskDto.setTestTaskId(existingTt.getId());
+						taskDto.setCertificationResultId(createdCert.getId());
+						certDao.addTestTaskMapping(taskDto);
 					}
 				}
 			}
@@ -920,6 +1002,59 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							testFunctionality.setTestFunctionalityNumber(newTestFunctionality.getNumber());
 							testFunctionality.setCertificationResultId(oldResult.getId());
 							oldResult.getTestFunctionality().add(testFunctionality);
+						}
+					}
+					
+					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.TEST_PARTICIPANT) ||
+							newCertResult.getTestParticipants() == null || newCertResult.getTestParticipants().size() == 0) {
+						oldResult.setTestParticipants(new ArrayList<CertificationResultTestParticipantDTO>());
+					} else {
+						for(CertificationResultTestParticipant newTestParticipant : newCertResult.getTestParticipants()) {
+							CertificationResultTestParticipantDTO testParticipant = new CertificationResultTestParticipantDTO();
+							testParticipant.setId(newTestParticipant.getId());
+							testParticipant.setTestParticipantId(newTestParticipant.getTestParticipantId());
+							testParticipant.setCertificationResultId(oldResult.getId());
+							TestParticipantDTO tp = new TestParticipantDTO();
+							tp.setAge(newTestParticipant.getAge());
+							tp.setGender(newTestParticipant.getGender());
+							tp.setAssistiveTechnologyNeeds(newTestParticipant.getAssistiveTechnologyNeeds());
+							tp.setComputerExperienceMonths(newTestParticipant.getComputerExperienceMonths());
+							tp.setEducationTypeId(newTestParticipant.getEducationTypeId());
+							EducationTypeDTO et = new EducationTypeDTO();
+							et.setId(newTestParticipant.getEducationTypeId());
+							et.setName(newTestParticipant.getEducationTypeName());
+							tp.setEducationType(et);
+							tp.setOccupation(newTestParticipant.getOccupation());
+							tp.setProductExperienceMonths(newTestParticipant.getProductExperienceMonths());
+							tp.setProfessionalExperienceMonths(newTestParticipant.getProfessionalExperienceMonths());
+							oldResult.getTestParticipants().add(testParticipant);
+						}
+					}
+					
+					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.TEST_TASK) ||
+							newCertResult.getTestTasks() == null || newCertResult.getTestTasks().size() == 0) {
+						oldResult.setTestTasks(new ArrayList<CertificationResultTestTaskDTO>());
+					} else {
+						for(CertificationResultTestTask newTestTask : newCertResult.getTestTasks()) {
+							CertificationResultTestTaskDTO testTask = new CertificationResultTestTaskDTO();
+							testTask.setId(newTestTask.getId());
+							testTask.setTestTaskId(newTestTask.getTestTaskId());
+							testTask.setCertificationResultId(oldResult.getId());
+							TestTaskDTO tt = new TestTaskDTO();
+							tt.setDescription(newTestTask.getDescription());
+							tt.setTaskErrors(newTestTask.getTaskErrors());
+							tt.setTaskErrorsStddev(newTestTask.getTaskErrorsStddev());
+							tt.setTaskPathDeviationObserved(newTestTask.getTaskPathDeviationObserved());
+							tt.setTaskPathDeviationOptimal(newTestTask.getTaskPathDeviationOptimal());
+							tt.setTaskRating(newTestTask.getTaskRating());
+							tt.setTaskRatingScale(newTestTask.getTaskRatingScale());
+							tt.setTaskSuccessAverage(newTestTask.getTaskSuccessAverage());
+							tt.setTaskSuccessStddev(newTestTask.getTaskSuccessStddev());
+							tt.setTaskTimeAvg(newTestTask.getTaskTimeAvg());
+							tt.setTaskTimeDeviationObservedAvg(newTestTask.getTaskTimeDeviationObservedAvg());
+							tt.setTaskTimeDeviationOptimalAvg(newTestTask.getTaskTimeDeviationOptimalAvg());
+							tt.setTaskTimeStddev(newTestTask.getTaskTimeStddev());
+							oldResult.getTestTasks().add(testTask);
 						}
 					}
 					

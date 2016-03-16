@@ -28,8 +28,10 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -43,8 +45,10 @@ import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.CertificationResultTestParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -281,6 +285,26 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				}
 			} else {
 				result.setTestFunctionality(null);
+			}
+			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PARTICIPANT)) {
+				List<CertificationResultTestParticipantDTO> testParticipant = certResultManager.getTestParticipantsForCertificationResult(certResult.getId());
+				for(CertificationResultTestParticipantDTO currResult : testParticipant) {
+					CertificationResultTestParticipant testParticipantResult = new CertificationResultTestParticipant(currResult);
+					result.getTestParticipants().add(testParticipantResult);
+				}
+			} else {
+				result.setTestParticipants(null);
+			}
+			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
+				List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
+				for(CertificationResultTestTaskDTO currResult : testTask) {
+					CertificationResultTestTask testTaskResult = new CertificationResultTestTask(currResult);
+					result.getTestTasks().add(testTaskResult);
+				}
+			} else {
+				result.setTestTasks(null);
 			}
 			
 			certificationResults.add(result);

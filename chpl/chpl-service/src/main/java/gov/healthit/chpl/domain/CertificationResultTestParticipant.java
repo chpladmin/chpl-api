@@ -1,47 +1,56 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.entity.TestParticipantEntity;
+import gov.healthit.chpl.dto.CertificationResultTestParticipantDTO;
 
-public class TestParticipantDTO {
-
+public class CertificationResultTestParticipant {
 	private Long id;
+	private Long testParticipantId;
 	private String gender;
 	private Integer age;
 	private Long educationTypeId;
-	private EducationTypeDTO educationType;
+	private String educationTypeName;
 	private String occupation;
 	private Integer professionalExperienceMonths;
 	private Integer computerExperienceMonths;
 	private Integer productExperienceMonths;
 	private String assistiveTechnologyNeeds;
+
+	public CertificationResultTestParticipant() {
+		super();
+	}
 	
-	private String pendingUniqueId;
-	
-	public TestParticipantDTO(){}
-	
-	public TestParticipantDTO(TestParticipantEntity entity)
-	{
-		if(entity != null) {
-			this.id = entity.getId();
-			this.age = entity.getAge();
-			this.gender = entity.getGender();
-			this.educationTypeId = entity.getEducationTypeId();
-			if(entity.getEducation() != null) {
-				this.educationType = new EducationTypeDTO(entity.getEducation());
+	public CertificationResultTestParticipant(CertificationResultTestParticipantDTO dto) {
+		this.id = dto.getId();
+		this.testParticipantId = dto.getTestParticipantId();
+		if(dto.getTestParticipant() != null) {
+			this.age = dto.getTestParticipant().getAge();
+			this.gender = dto.getTestParticipant().getGender();
+			this.educationTypeId = dto.getTestParticipant().getEducationTypeId();
+			if(dto.getTestParticipant().getEducationType() != null) {
+				this.educationTypeName = dto.getTestParticipant().getEducationType().getName();
 			}
-			this.occupation = entity.getOccupation();
-			this.professionalExperienceMonths = entity.getProductExperienceMonths();
-			this.computerExperienceMonths = entity.getComputerExperienceMonths();
-			this.productExperienceMonths = entity.getProductExperienceMonths();
-			this.assistiveTechnologyNeeds = entity.getAssistiveTechnologyNeeds();
+			this.occupation = dto.getTestParticipant().getOccupation();
+			this.professionalExperienceMonths = dto.getTestParticipant().getProductExperienceMonths();
+			this.computerExperienceMonths = dto.getTestParticipant().getComputerExperienceMonths();
+			this.productExperienceMonths = dto.getTestParticipant().getProductExperienceMonths();
+			this.assistiveTechnologyNeeds = dto.getTestParticipant().getAssistiveTechnologyNeeds();
 		}
 	}
 	
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getTestParticipantId() {
+		return testParticipantId;
+	}
+
+	public void setTestParticipantId(Long testParticipantId) {
+		this.testParticipantId = testParticipantId;
 	}
 
 	public String getGender() {
@@ -66,14 +75,6 @@ public class TestParticipantDTO {
 
 	public void setEducationTypeId(Long educationTypeId) {
 		this.educationTypeId = educationTypeId;
-	}
-
-	public EducationTypeDTO getEducationType() {
-		return educationType;
-	}
-
-	public void setEducationType(EducationTypeDTO educationType) {
-		this.educationType = educationType;
 	}
 
 	public String getOccupation() {
@@ -116,12 +117,12 @@ public class TestParticipantDTO {
 		this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
 	}
 
-	public String getPendingUniqueId() {
-		return pendingUniqueId;
+	public String getEducationTypeName() {
+		return educationTypeName;
 	}
 
-	public void setPendingUniqueId(String pendingUniqueId) {
-		this.pendingUniqueId = pendingUniqueId;
+	public void setEducationTypeName(String educationTypeName) {
+		this.educationTypeName = educationTypeName;
 	}
 
 }
