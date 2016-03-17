@@ -14,8 +14,8 @@ public class CertificationResultTestTaskDTO {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.testTaskId = entity.getTestTaskId();
-		if(entity.getTestTaskEntity() != null) {
-			this.testTask = new TestTaskDTO(entity.getTestTaskEntity());
+		if(entity.getTestTask() != null) {
+			this.testTask = new TestTaskDTO(entity.getTestTask());
 		}
 	}
 

@@ -38,6 +38,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setChplProductNumber(dto.getUniqueId());
 		this.setReportFileLocation(dto.getReportFileLocation());
 		this.setSedReportFileLocation(dto.getSedReportFileLocation());
+		this.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
+		this.setSedTestingEnd(dto.getSedTestingEnd());
 		this.setAcbCertificationId(dto.getAcbCertificationId());
 		this.setIcs(dto.getIcs());
 		

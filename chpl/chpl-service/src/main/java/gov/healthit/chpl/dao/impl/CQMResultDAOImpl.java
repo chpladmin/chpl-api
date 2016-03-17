@@ -21,7 +21,7 @@ import gov.healthit.chpl.entity.CQMResultEntity;
 public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 
 	@Override
-	public void create(CQMResultDTO cqmResult) throws EntityCreationException {
+	public CQMResultDTO create(CQMResultDTO cqmResult) throws EntityCreationException {
 		
 		CQMResultEntity entity = null;
 		try {
@@ -47,8 +47,8 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 			entity.setDeleted(false);
 			
 			create(entity);	
+			return new CQMResultDTO(entity);
 		}
-		
 	}
 	
 	@Override

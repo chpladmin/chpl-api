@@ -55,7 +55,9 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
+import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
@@ -1084,68 +1086,114 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
+	public void updateCqms(Long acbId, CertifiedProductDTO productDto, List<CQMResultDetailsDTO> cqmResults)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
-		
 		Boolean dataHasChanged = false;
-		
 		List<CQMResultDTO> beforeCQMs = cqmResultDAO.findByCertifiedProductId(productDto.getId());
 		
 		// Handle NQFs and Additions:
-		for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
+		for (CQMResultDetailsDTO currCqm : cqmResults){
 			
-			Boolean isNQF = (cqm.getKey().getCmsId() == null);
+			Boolean isNQF = (currCqm.getCmsId() == null);
 			if (isNQF){
 				for (CQMResultDTO beforeCQM : beforeCQMs){
 					
 					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
 					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
 					
-					if ((beforeCriterionDTO.getCmsId() == null) && (beforeCriterionDTO.getNqfNumber().equals(cqm.getKey().getNqfNumber()) ) ){
-						beforeCQM.setSuccess(cqm.getValue());
+					if ((beforeCriterionDTO.getCmsId() == null) && (beforeCriterionDTO.getNqfNumber().equals(currCqm.getNqfNumber()) ) ){
+						beforeCQM.setSuccess(currCqm.getSuccess());
 						cqmResultDAO.update(beforeCQM);
 						dataHasChanged = true;
 						break;
 					}
 				}
 			} else {
-				
-				Boolean found = false;
-				
-				for (CQMResultDTO beforeCQM : beforeCQMs){
-					
-					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
+				CQMResultDTO foundCqm = null;
+				for (int i = 0; i < beforeCQMs.size() && foundCqm == null; i++) {
+					CQMResultDTO beforeCqm = beforeCQMs.get(i);
+					Long beforeCQMCriterionID = beforeCqm.getCqmCriterionId();
 					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
 					
-					if (beforeCriterionDTO.getCmsId().equals(cqm.getKey().getCmsId()) && 
-							beforeCriterionDTO.getCqmVersion().equals(cqm.getKey().getCqmVersion())) {
-						found = true;
-						break;
+					if (beforeCriterionDTO.getCmsId().equals(currCqm.getCmsId()) && 
+							beforeCriterionDTO.getCqmVersion().equals(currCqm.getVersion())) {
+						foundCqm = beforeCqm;
 					}
 				}
-				if (!found){
-					
+				
+				if (foundCqm == null){
 					CQMCriterionDTO criterion = null;
-					if(StringUtils.isEmpty(cqm.getKey().getCmsId())) {
-						criterion = cqmCriterionDao.getNQFByNumber(cqm.getKey().getNumber());
-					} else if(cqm.getKey().getCmsId().startsWith("CMS")) {
-						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqm.getKey().getCmsId(), cqm.getKey().getCqmVersion());
+					if(StringUtils.isEmpty(currCqm.getCmsId())) {
+						criterion = cqmCriterionDao.getNQFByNumber(currCqm.getNumber());
+					} else if(currCqm.getCmsId().startsWith("CMS")) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(currCqm.getCmsId(), currCqm.getVersion());
 					}
 					if(criterion == null) {
-						throw new EntityRetrievalException("Could not find CQM with number " + cqm.getKey().getCmsId() + " and version " + cqm.getKey().getCqmVersion());
+						throw new EntityRetrievalException("Could not find CQM with number " + currCqm.getCmsId() + " and version " + currCqm.getVersion());
 					}
 					
 					CQMResultDTO newCQMResult = new CQMResultDTO();
-					
 					newCQMResult.setCertifiedProductId(productDto.getId());
 					newCQMResult.setCqmCriterionId(criterion.getId());
 					newCQMResult.setCreationDate(new Date());
 					newCQMResult.setDeleted(false);
 					newCQMResult.setSuccess(true);
-					cqmResultDAO.create(newCQMResult);
+					CQMResultDTO created = cqmResultDAO.create(newCQMResult);
+					if(currCqm.getCriteria() != null && currCqm.getCriteria().size() > 0) {
+						for(CQMResultCriteriaDTO criteria : currCqm.getCriteria()) {
+							criteria.setCqmResultId(created.getId());
+							Long mappedCriterionId = findCqmCriterionId(criteria);
+							criteria.setCriterionId(mappedCriterionId);
+							cqmResultDAO.createCriteriaMapping(criteria);
+						}
+					}
 					dataHasChanged = true;
+				} else {
+					//update an existing cqm 
+					//need to compare current and found cqm in case there are differences
+					List<CQMResultCriteriaDTO> existingCriteria = cqmResultDAO.getCriteriaForCqmResult(foundCqm.getId());
+					List<CQMResultCriteriaDTO> toAdd = new ArrayList<CQMResultCriteriaDTO>();
+					List<CQMResultCriteriaDTO> toRemove = new ArrayList<CQMResultCriteriaDTO>();
+					
+					for(CQMResultCriteriaDTO existing : existingCriteria) {
+						boolean exists = false;
+						for(CQMResultCriteriaDTO passedIn : currCqm.getCriteria()) {
+							if(existing.getCriterion().getNumber().equals(passedIn.getCriterion().getNumber())) {
+								exists = true;
+							}
+						}
+						if(!exists) {
+							toRemove.add(existing);
+						}
+					}
+					
+					for(CQMResultCriteriaDTO passedIn : currCqm.getCriteria()) {
+						boolean exists = false;
+						for(CQMResultCriteriaDTO existing : existingCriteria) {
+							if(existing.getCriterion().getNumber().equals(passedIn.getCriterion().getNumber())) {
+								exists = true;
+							}
+						}
+						if(!exists) {
+							toAdd.add(passedIn);
+						}
+					}
+					
+					for(CQMResultCriteriaDTO currToAdd : toAdd) {
+						currToAdd.setCqmResultId(foundCqm.getId());
+						Long mappedCriterionId = findCqmCriterionId(currToAdd);
+						currToAdd.setCriterionId(mappedCriterionId);
+						cqmResultDAO.createCriteriaMapping(currToAdd);
+					}
+					for(CQMResultCriteriaDTO currToRemove : toRemove) {
+						cqmResultDAO.deleteCriteriaMapping(currToRemove.getId());
+					}
+					
+					if(toAdd.size() > 0 || toRemove.size() > 0) {
+						dataHasChanged = true;
+					}
 				}
 			}
 		}
@@ -1160,11 +1208,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				isDeletion = false;
 			} else {
 							
-				for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
+				for (CQMResultDetailsDTO cqm : cqmResults){
 					
-					Boolean cqmIsNQF = (cqm.getKey().getCmsId() == null);
+					Boolean cqmIsNQF = (cqm.getCmsId() == null);
 					if (!cqmIsNQF){
-						if (cqm.getKey().getCmsId().equals(criterion.getCmsId())){
+						if (cqm.getCmsId().equals(criterion.getCmsId())){
 							isDeletion = false;
 							break;
 						}
@@ -1195,5 +1243,24 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				cqmResultDAO.delete(cqmResult.getId());
 			}
 		}
-	}	
+	}
+	
+	private Long findCqmCriterionId(CQMResultCriteriaDTO cqm) throws EntityRetrievalException {
+		if(cqm.getCriterionId() != null) {
+			return cqm.getCriterionId();
+		}
+		if(cqm.getCriterion() != null && 
+				!StringUtils.isEmpty(cqm.getCriterion().getNumber())) {
+			CertificationCriterionDTO cert = certCriterionDao.getByName(cqm.getCriterion().getNumber());
+			if(cert != null) {
+				return cert.getId();
+			} else {
+				throw new EntityRetrievalException("Could not find certification criteria with number " + cqm.getCriterion().getNumber());
+			}
+		} else if(cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
+			return cqm.getCriterion().getId();
+		} else {
+			throw new EntityRetrievalException("A criteria id or number must be provided.");
+		}
+	}
 }

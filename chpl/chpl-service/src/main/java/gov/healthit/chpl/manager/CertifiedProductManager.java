@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -38,7 +39,7 @@ public interface CertifiedProductManager {
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;	
 	public void updateAccessibilityStandards(Long acbId, CertifiedProductDTO productDto, List<CertifiedProductAccessibilityStandardDTO> newAccStandards)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;		
-	public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
+	public void updateCqms(Long acbId, CertifiedProductDTO productDto, List<CQMResultDetailsDTO> cqmResults)
 			throws EntityCreationException, EntityRetrievalException,
 			JsonProcessingException;
 	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, List<CertificationResult> certResults)

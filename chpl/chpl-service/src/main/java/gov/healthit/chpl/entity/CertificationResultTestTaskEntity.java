@@ -34,7 +34,7 @@ public class CertificationResultTestTaskEntity {
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private TestTaskEntity testTaskEntity;
+	private TestTaskEntity testTask;
 	
 	public Long getId() {
 		return id;
@@ -101,11 +101,11 @@ public class CertificationResultTestTaskEntity {
 		this.testTaskId = testTaskId;
 	}
 
-	public TestTaskEntity getTestTaskEntity() {
-		return testTaskEntity;
+	public TestTaskEntity getTestTask() {
+		return testTask;
 	}
 
-	public void setTestTaskEntity(TestTaskEntity testTaskEntity) {
-		this.testTaskEntity = testTaskEntity;
+	public void setTestTask(TestTaskEntity testTaskEntity) {
+		this.testTask = testTaskEntity;
 	}
 }

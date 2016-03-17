@@ -29,12 +29,12 @@ public class CertifiedProductAccessibilityStandardEntity {
 	private Long certifiedProductId;
 
 	@Basic( optional = false )
-	@Column( name = "accessibility_standard_ud", nullable = false  )
+	@Column( name = "accessibility_standard_id", nullable = false  )
 	private Long accessibilityStandardId;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "accessibility_standard_ud", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "accessibility_standard_id", unique=true, nullable = true, insertable=false, updatable=false)
 	private AccessibilityStandardEntity accessibilityStandard;
 	
 	public Long getId() {
@@ -59,7 +59,7 @@ public class CertifiedProductAccessibilityStandardEntity {
 	protected Date creationDate;
 	
 	@Basic( optional = false )
-	@Column( nullable = false  )
+	@Column( name = "deleted", nullable = false  )
 	protected Boolean deleted;
 	
 	@Basic( optional = false )

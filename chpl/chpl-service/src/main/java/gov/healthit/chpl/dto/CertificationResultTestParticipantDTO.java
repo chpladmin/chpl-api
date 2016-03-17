@@ -14,8 +14,8 @@ public class CertificationResultTestParticipantDTO {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.testParticipantId = entity.getTestParticipantId();
-		if(entity.getTestParticipantEntity() != null) {
-			this.testParticipant = new TestParticipantDTO(entity.getTestParticipantEntity());
+		if(entity.getTestParticipant() != null) {
+			this.testParticipant = new TestParticipantDTO(entity.getTestParticipant());
 		}
 	}
 
