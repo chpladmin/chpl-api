@@ -11,6 +11,8 @@ public class CertificationResultAdditionalSoftwareDTO {
 	private String version;
 	private Long certifiedProductId;
 	private String justification;
+	private String grouping;
+	
 	private Date creationDate;
 	private Boolean deleted;
 	
@@ -23,6 +25,7 @@ public class CertificationResultAdditionalSoftwareDTO {
 		this.version = entity.getVersion();
 		this.certifiedProductId = entity.getCertifiedProductId();
 		this.justification = entity.getJustification();
+		this.grouping = entity.getGrouping();
 	}
 
 	public Long getId() {
@@ -87,5 +90,13 @@ public class CertificationResultAdditionalSoftwareDTO {
 
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
+	}
+
+	public String getGrouping() {
+		return grouping;
+	}
+
+	public void setGrouping(String grouping) {
+		this.grouping = grouping;
 	}
 }

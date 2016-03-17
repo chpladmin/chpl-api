@@ -408,6 +408,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						as.setJustification(software.getJustification());
 						as.setName(software.getName());
 						as.setVersion(software.getVersion());
+						as.setGrouping(software.getGrouping());
 						as.setCertificationResultId(createdCert.getId());
 						certDao.addAdditionalSoftwareMapping(as);
 					}

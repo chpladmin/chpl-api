@@ -40,6 +40,9 @@ public class CertificationResultAdditionalSoftwareEntity {
 	@Column(name = "justification")
 	private String justification;
 
+	@Column(name = "grouping")
+	private String grouping;
+	
 	public Long getId() {
 		return id;
 	}
@@ -127,5 +130,13 @@ public class CertificationResultAdditionalSoftwareEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getGrouping() {
+		return grouping;
+	}
+
+	public void setGrouping(String grouping) {
+		this.grouping = grouping;
 	}
 }

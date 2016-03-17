@@ -303,6 +303,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		mapping.setName(dto.getName());
 		mapping.setVersion(dto.getVersion());
 		mapping.setJustification(dto.getJustification());
+		mapping.setGrouping(dto.getGrouping());
 		mapping.setCreationDate(new Date());
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
@@ -323,6 +324,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		mapping.setName(dto.getName());
 		mapping.setVersion(dto.getVersion());
 		mapping.setJustification(dto.getJustification());
+		mapping.setGrouping(dto.getGrouping());
 		if(dto.getDeleted() != null) {
 			mapping.setDeleted(dto.getDeleted());
 		}

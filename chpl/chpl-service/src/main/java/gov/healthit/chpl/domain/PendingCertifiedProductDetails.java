@@ -217,6 +217,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 					software.setName(as.getName());
 					software.setVersion(as.getVersion());
 					software.setJustification(as.getJustification());
+					software.setGrouping(as.getGrouping());
 					cert.getAdditionalSoftware().add(software);
 				}
 			} else {
