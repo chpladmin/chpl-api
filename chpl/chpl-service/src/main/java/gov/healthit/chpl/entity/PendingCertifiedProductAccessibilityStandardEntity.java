@@ -32,7 +32,7 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
 	@Column(name="pending_certified_product_id")
 	private Long pendingCertifiedProductId;
 	
-    @Column(name = "accessibility_standard_ud")
+    @Column(name = "accessibility_standard_id")
     private Long accessibilityStandardId;
     
     @Column(name = "accessibility_standard_name")
