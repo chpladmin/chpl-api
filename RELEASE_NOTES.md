@@ -1,5 +1,41 @@
 # Release Notes
 
+## Version 0.4.0
+_14 March 2016_
+
+### Features added
+* Add validation to 2014 products
+* Update Download file generation
+* Made Transparency Attestation an ENUM, URL per product
+* Added "targeted users" to Certified Product
+* Restrict uploads to CSV only
+* Added CQM mappings to Certified Product
+* Generate ATL/ACB codes if ATL/ACB is created
+
+### Bugs fixed
+* Fix null value in announcement activity
+
+## Version 0.3.2
+_29 February 2016_
+
+### Features added
+* Added ability to do new 2014 upload files
+
+## Version 0.3.1
+_22 February 2016_
+
+### Bugs fixed
+* Added missing product number to CP manange select box
+
+## Version 0.3.0
+_18 February 2016_
+
+### Features added or Updated
+* Changed Corrective Action Plan/Surveillance API parameters
+* Added descriptions to API methods.
+* Changed API for certified products and certification results to match 2014 data requirements.
+* Allow multiple values for the 'hasCap' field in search.
+
 ## Version 0.2.0
 _3 February 2016_
 
