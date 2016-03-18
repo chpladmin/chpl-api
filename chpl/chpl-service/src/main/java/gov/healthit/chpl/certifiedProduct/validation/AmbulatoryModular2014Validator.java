@@ -10,8 +10,18 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 @Component("ambulatoryModular2014Validator")
 public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validator {
 
-	private static final String[] g1ComplementaryCerts = {"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
-	private static final String[] g2ComplementaryCerts = {"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
+	private static final String[] g1ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
+			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
+			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)", "170.314 (a)(18)", 
+			"170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(2)",
+			"170.314 (b)(3)", "170.314 (b)(4)", "170.314 (e)(1)",
+			"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
+	private static final String[] g2ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
+			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
+			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)",
+			"170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(2)",
+			"170.314 (b)(3)", "170.314 (b)(4)", "170.314 (e)(1)",
+			"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
