@@ -43,6 +43,11 @@ public class CertificationResultAdditionalSoftwareEntity {
 	@Column(name = "grouping")
 	private String grouping;
 	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certified_product_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private CertifiedProductDetailsEntity certifiedProduct;
+	
 	public Long getId() {
 		return id;
 	}
@@ -138,5 +143,13 @@ public class CertificationResultAdditionalSoftwareEntity {
 
 	public void setGrouping(String grouping) {
 		this.grouping = grouping;
+	}
+
+	public CertifiedProductDetailsEntity getCertifiedProduct() {
+		return certifiedProduct;
+	}
+
+	public void setCertifiedProduct(CertifiedProductDetailsEntity certifiedProduct) {
+		this.certifiedProduct = certifiedProduct;
 	}
 }

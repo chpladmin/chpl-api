@@ -2,6 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.util.Date;
 
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity;
 
 public class CertificationResultAdditionalSoftwareDTO {
@@ -10,6 +11,7 @@ public class CertificationResultAdditionalSoftwareDTO {
 	private String name;
 	private String version;
 	private Long certifiedProductId;
+	private String certifiedProductNumber;
 	private String justification;
 	private String grouping;
 	
@@ -26,6 +28,11 @@ public class CertificationResultAdditionalSoftwareDTO {
 		this.certifiedProductId = entity.getCertifiedProductId();
 		this.justification = entity.getJustification();
 		this.grouping = entity.getGrouping();
+		if(this.certifiedProductId != null && entity.getCertifiedProduct() != null) {
+			CertifiedProductDetailsDTO detailsDto = new CertifiedProductDetailsDTO(entity.getCertifiedProduct());
+			CertifiedProduct cp = new CertifiedProduct(detailsDto);
+			this.certifiedProductNumber = cp.getChplProductNumber();
+		}
 	}
 
 	public Long getId() {
@@ -98,5 +105,13 @@ public class CertificationResultAdditionalSoftwareDTO {
 
 	public void setGrouping(String grouping) {
 		this.grouping = grouping;
+	}
+
+	public String getCertifiedProductNumber() {
+		return certifiedProductNumber;
+	}
+
+	public void setCertifiedProductNumber(String certifiedProductNumber) {
+		this.certifiedProductNumber = certifiedProductNumber;
 	}
 }

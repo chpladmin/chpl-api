@@ -920,6 +920,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							software.setId(newAdditionalSoftware.getId());
 							software.setCertificationResultId(oldResult.getId());
 							software.setJustification(newAdditionalSoftware.getJustification());
+							software.setGrouping(newAdditionalSoftware.getGrouping());
 							if(newAdditionalSoftware.getCertifiedProductId() == null && 
 									!StringUtils.isEmpty(newAdditionalSoftware.getCertifiedProductNumber())) {
 								//look up the certified product

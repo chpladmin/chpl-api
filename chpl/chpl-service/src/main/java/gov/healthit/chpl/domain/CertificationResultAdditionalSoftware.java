@@ -23,6 +23,7 @@ public class CertificationResultAdditionalSoftware {
 		this.certifiedProductId = dto.getCertifiedProductId();
 		this.justification = dto.getJustification();
 		this.certificationResultId = dto.getCertificationResultId();
+		this.certifiedProductNumber = dto.getCertifiedProductNumber();
 		this.grouping = dto.getGrouping();
 	}
 	
