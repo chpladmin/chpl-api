@@ -10,7 +10,8 @@ public class CertificationResultAdditionalSoftware {
 	private String certifiedProductNumber;
 	private String justification;
 	private Long certificationResultId;
-
+	private String grouping;
+	
 	public CertificationResultAdditionalSoftware() {
 		super();
 	}
@@ -22,6 +23,8 @@ public class CertificationResultAdditionalSoftware {
 		this.certifiedProductId = dto.getCertifiedProductId();
 		this.justification = dto.getJustification();
 		this.certificationResultId = dto.getCertificationResultId();
+		this.certifiedProductNumber = dto.getCertifiedProductNumber();
+		this.grouping = dto.getGrouping();
 	}
 	
 	public String getJustification() {
@@ -78,6 +81,14 @@ public class CertificationResultAdditionalSoftware {
 
 	public void setCertifiedProductNumber(String certifiedProductNumber) {
 		this.certifiedProductNumber = certifiedProductNumber;
+	}
+
+	public String getGrouping() {
+		return grouping;
+	}
+
+	public void setGrouping(String grouping) {
+		this.grouping = grouping;
 	}
 
 }

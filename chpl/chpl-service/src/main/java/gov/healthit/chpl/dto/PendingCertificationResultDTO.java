@@ -7,8 +7,10 @@ import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEnti
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestParticipantEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity;
 
@@ -23,6 +25,8 @@ public class PendingCertificationResultDTO {
 	private Boolean sed;
 	private Boolean g1Success;
 	private Boolean g2Success;
+	private String apiDocumentation;
+	private String privacySecurityFramework;
 	
 	private List<PendingCertificationResultUcdProcessDTO> ucdProcesses;
 	private List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware;
@@ -31,6 +35,8 @@ public class PendingCertificationResultDTO {
 	private List<PendingCertificationResultTestProcedureDTO> testProcedures;
 	private List<PendingCertificationResultTestStandardDTO> testStandards;
 	private List<PendingCertificationResultTestToolDTO> testTools;
+	private List<PendingCertificationResultTestParticipantDTO> testParticipants;
+	private List<PendingCertificationResultTestTaskDTO> testTasks;
 	
 	public PendingCertificationResultDTO() {
 		ucdProcesses = new ArrayList<PendingCertificationResultUcdProcessDTO>();
@@ -40,6 +46,8 @@ public class PendingCertificationResultDTO {
 		testProcedures = new ArrayList<PendingCertificationResultTestProcedureDTO>();
 		testStandards = new ArrayList<PendingCertificationResultTestStandardDTO>();
 		testTools = new ArrayList<PendingCertificationResultTestToolDTO>();
+		testParticipants = new ArrayList<PendingCertificationResultTestParticipantDTO>();
+		testTasks = new ArrayList<PendingCertificationResultTestTaskDTO>();
 	}
 	
 	public PendingCertificationResultDTO(PendingCertificationResultEntity entity) {
@@ -58,6 +66,8 @@ public class PendingCertificationResultDTO {
 		this.setSed(entity.getSed());
 		this.setG1Success(entity.getG1Success());
 		this.setG2Success(entity.getG2Success());
+		this.apiDocumentation = entity.getApiDocumentation();
+		this.privacySecurityFramework = entity.getPrivacySecurityFramework();
 		
 		if(entity.getUcdProcesses() != null) {
 			for(PendingCertificationResultUcdProcessEntity e : entity.getUcdProcesses()) {
@@ -93,6 +103,18 @@ public class PendingCertificationResultDTO {
 		if(entity.getTestTools() != null) {
 			for(PendingCertificationResultTestToolEntity e : entity.getTestTools()) {
 				this.getTestTools().add(new PendingCertificationResultTestToolDTO(e));
+			}
+		}
+		
+		if(entity.getTestParticipants() != null) {
+			for(PendingCertificationResultTestParticipantEntity e : entity.getTestParticipants()) {
+				this.getTestParticipants().add(new PendingCertificationResultTestParticipantDTO(e));
+			}
+		}
+		
+		if(entity.getTestTasks() != null) {
+			for(PendingCertificationResultTestTaskEntity e : entity.getTestTasks()) {
+				this.getTestTasks().add(new PendingCertificationResultTestTaskDTO(e));
 			}
 		}
 	}
@@ -224,6 +246,38 @@ public class PendingCertificationResultDTO {
 
 	public void setUcdProcesses(List<PendingCertificationResultUcdProcessDTO> ucdProcesses) {
 		this.ucdProcesses = ucdProcesses;
+	}
+
+	public List<PendingCertificationResultTestParticipantDTO> getTestParticipants() {
+		return testParticipants;
+	}
+
+	public void setTestParticipants(List<PendingCertificationResultTestParticipantDTO> testParticipants) {
+		this.testParticipants = testParticipants;
+	}
+
+	public List<PendingCertificationResultTestTaskDTO> getTestTasks() {
+		return testTasks;
+	}
+
+	public void setTestTasks(List<PendingCertificationResultTestTaskDTO> testTasks) {
+		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 	
 	

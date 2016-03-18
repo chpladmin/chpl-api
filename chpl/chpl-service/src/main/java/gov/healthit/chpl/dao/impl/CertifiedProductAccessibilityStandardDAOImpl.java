@@ -14,6 +14,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
+import gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity;
 
 @Repository(value="certifiedProductAccessibilityStandardDao")
 public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl 
@@ -65,9 +66,9 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
 	
 	private CertifiedProductAccessibilityStandardEntity getEntityById(Long id) throws EntityRetrievalException {
 		CertifiedProductAccessibilityStandardEntity entity = null;
-		Query query = entityManager.createQuery( "SELECT as from CertifiedProductAccessibilityStandardEntity as "
-				+ "LEFT OUTER JOIN FETCH as.accessibilityStandard "
-				+ "where (NOT as.deleted = true) AND (id = :entityid) ", 
+		Query query = entityManager.createQuery( "SELECT accStd from CertifiedProductAccessibilityStandardEntity accStd "
+				+ "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
+				+ "where (NOT accStd.deleted = true) AND (accStd.id = :entityid) ", 
 				CertifiedProductAccessibilityStandardEntity.class );
 
 		query.setParameter("entityid", id);
@@ -79,9 +80,11 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
 	}
 	
 	private List<CertifiedProductAccessibilityStandardEntity> getEntitiesByCertifiedProductId(Long productId) throws EntityRetrievalException {
-		Query query = entityManager.createQuery( "SELECT as from CertifiedProductAccessibilityStandardEntity as "
-				+ "LEFT OUTER JOIN FETCH as.accessibilityStandard "
-				+ "where (NOT as.deleted = true) AND (certified_product_id = :entityid) ", 
+		Query query = entityManager.createQuery( "SELECT accStd from "
+				+ "CertifiedProductAccessibilityStandardEntity accStd "
+				+ "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
+				+ "where (NOT accStd.deleted = true) AND "
+				+ "(certified_product_id = :entityid) ", 
 				CertifiedProductAccessibilityStandardEntity.class );
 
 		query.setParameter("entityid", productId);

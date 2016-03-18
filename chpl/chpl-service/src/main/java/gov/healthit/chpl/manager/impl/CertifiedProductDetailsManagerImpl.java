@@ -15,6 +15,7 @@ import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
+import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
@@ -28,10 +29,13 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
@@ -43,10 +47,13 @@ import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.CertificationResultTestParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
@@ -74,6 +81,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
 	
 	@Autowired CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
+	@Autowired CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
 	
 	@Autowired
 	private CertificationResultManager certResultManager;
@@ -148,6 +156,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				
 		searchDetails.setReportFileLocation(dto.getReportFileLocation());
 		searchDetails.setSedReportFileLocation(dto.getSedReportFileLocation());
+		searchDetails.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
+		searchDetails.setSedTestingEnd(dto.getSedTestingEnd());
 		
 		searchDetails.getTestingLab().put("id", dto.getTestingLabId());
 		searchDetails.getTestingLab().put("name", dto.getTestingLabName());
@@ -192,6 +202,15 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}
 		searchDetails.setTargetedUsers(targetedUserResults);
 		
+		//get accessibility standards
+		List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardDtos = certifiedProductAsDao.getAccessibilityStandardsByCertifiedProductId(dto.getId());
+		List<CertifiedProductAccessibilityStandard> accessibilityStandardResults = new ArrayList<CertifiedProductAccessibilityStandard>();
+		for(CertifiedProductAccessibilityStandardDTO accessibilityStandardDto : accessibilityStandardDtos) {
+			CertifiedProductAccessibilityStandard result = new CertifiedProductAccessibilityStandard(accessibilityStandardDto);
+			accessibilityStandardResults.add(result);
+		}
+		searchDetails.setAccessibilityStandards(accessibilityStandardResults);
+				
 		//get cert criteria results
 		List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
@@ -210,6 +229,12 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			}
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
 				result.setG2Success(null);
+			}
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+				result.setApiDocumentation(null);
+			}
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+				result.setPrivacySecurityFramework(null);
 			}
 			
 			//add all the other data
@@ -281,6 +306,26 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				}
 			} else {
 				result.setTestFunctionality(null);
+			}
+			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PARTICIPANT)) {
+				List<CertificationResultTestParticipantDTO> testParticipant = certResultManager.getTestParticipantsForCertificationResult(certResult.getId());
+				for(CertificationResultTestParticipantDTO currResult : testParticipant) {
+					CertificationResultTestParticipant testParticipantResult = new CertificationResultTestParticipant(currResult);
+					result.getTestParticipants().add(testParticipantResult);
+				}
+			} else {
+				result.setTestParticipants(null);
+			}
+			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
+				List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
+				for(CertificationResultTestTaskDTO currResult : testTask) {
+					CertificationResultTestTask testTaskResult = new CertificationResultTestTask(currResult);
+					result.getTestTasks().add(testTaskResult);
+				}
+			} else {
+				result.setTestTasks(null);
 			}
 			
 			certificationResults.add(result);

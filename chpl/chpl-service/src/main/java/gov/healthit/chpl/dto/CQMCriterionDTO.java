@@ -2,7 +2,9 @@ package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CQMCriterionDTO {
 
@@ -22,10 +24,11 @@ public class CQMCriterionDTO {
 	private String title;
 	private Boolean retired;
 	
-	public CQMCriterionDTO(){}
+	public CQMCriterionDTO(){
+	}
 	
 	public CQMCriterionDTO(CQMCriterionEntity entity){
-		
+		this();
 		this.cmsId = entity.getCmsId();
 		this.cqmCriterionTypeId = entity.getCqmCriterionTypeId();
 		this.cqmDomain = entity.getCqmDomain();
@@ -135,5 +138,4 @@ public class CQMCriterionDTO {
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
-	
 }

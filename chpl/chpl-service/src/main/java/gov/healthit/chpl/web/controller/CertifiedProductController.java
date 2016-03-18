@@ -37,6 +37,7 @@ import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
 import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CQMResultCriteria;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
@@ -45,6 +46,9 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
+import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -170,6 +174,8 @@ public class CertifiedProductController {
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
 		toUpdate.setSedReportFileLocation(updateRequest.getSedReportFileLocation());
+		toUpdate.setSedIntendedUserDescription(updateRequest.getSedIntendedUserDescription());
+		toUpdate.setSedTestingEnd(updateRequest.getSedTestingEnd());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
@@ -245,29 +251,41 @@ public class CertifiedProductController {
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
 		
 		//update CQMs
-		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();
+		List<CQMResultDetailsDTO> cqmDtos = new ArrayList<CQMResultDetailsDTO>();
 		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
 			if(!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null && cqm.getSuccessVersions().size() > 0) {
 				for(String version : cqm.getSuccessVersions()) {
-					CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+					CQMResultDetailsDTO cqmDto = new CQMResultDetailsDTO();
 					cqmDto.setNqfNumber(cqm.getNqfNumber());
 					cqmDto.setCmsId(cqm.getCmsId());
 					cqmDto.setNumber(cqm.getNumber());
 					cqmDto.setCmsId(cqm.getCmsId());
 					cqmDto.setNqfNumber(cqm.getNqfNumber());
 					cqmDto.setTitle(cqm.getTitle());
-					cqmDto.setCqmVersion(version);
-					cqmDtos.put(cqmDto, Boolean.TRUE);
+					cqmDto.setVersion(version);
+					cqmDto.setSuccess(Boolean.TRUE);
+					if(cqm.getCriteria() != null && cqm.getCriteria().size() > 0) {
+						for(CQMResultCriteria criteria : cqm.getCriteria()) {
+							CQMResultCriteriaDTO dto = new CQMResultCriteriaDTO();
+							dto.setCriterionId(criteria.getCriteriaId());
+							CertificationCriterionDTO certDto = new CertificationCriterionDTO();
+							certDto.setNumber(criteria.getCriteriaNumber());
+							dto.setCriterion(certDto);
+							cqmDto.getCriteria().add(dto);
+						}
+					}
+					cqmDtos.add(cqmDto);
 				}
 			} else if(StringUtils.isEmpty(cqm.getCmsId())) {
-				CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+				CQMResultDetailsDTO cqmDto = new CQMResultDetailsDTO();
 				cqmDto.setNqfNumber(cqm.getNqfNumber());
 				cqmDto.setCmsId(cqm.getCmsId());
 				cqmDto.setNumber(cqm.getNumber());
 				cqmDto.setCmsId(cqm.getCmsId());
 				cqmDto.setNqfNumber(cqm.getNqfNumber());
 				cqmDto.setTitle(cqm.getTitle());
-				cqmDtos.put(cqmDto, cqm.isSuccess());
+				cqmDto.setSuccess(cqm.isSuccess());
+				cqmDtos.add(cqmDto);
 			}
 		}
 		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
