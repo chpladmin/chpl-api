@@ -1041,6 +1041,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							tp.setOccupation(newTestParticipant.getOccupation());
 							tp.setProductExperienceMonths(newTestParticipant.getProductExperienceMonths());
 							tp.setProfessionalExperienceMonths(newTestParticipant.getProfessionalExperienceMonths());
+							testParticipant.setTestParticipant(tp);
 							oldResult.getTestParticipants().add(testParticipant);
 						}
 					}
@@ -1068,6 +1069,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							tt.setTaskTimeDeviationObservedAvg(newTestTask.getTaskTimeDeviationObservedAvg());
 							tt.setTaskTimeDeviationOptimalAvg(newTestTask.getTaskTimeDeviationOptimalAvg());
 							tt.setTaskTimeStddev(newTestTask.getTaskTimeStddev());
+							testTask.setTestTask(tt);
 							oldResult.getTestTasks().add(testTask);
 						}
 					}

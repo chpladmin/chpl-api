@@ -233,7 +233,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
 				result.setApiDocumentation(null);
 			}
-			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
 				result.setPrivacySecurityFramework(null);
 			}
 			

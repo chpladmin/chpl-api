@@ -36,8 +36,8 @@ public class CertificationResultRules {
 	public static final String TEST_DATA = "testData";
 	public static final String SED = "sed";
 	public static final String UCD_FIELDS = "ucd";
-	public static final String TEST_PARTICIPANT = "testParticipant";
-	public static final String TEST_TASK = "testTask";
+	public static final String TEST_PARTICIPANT = "participant";
+	public static final String TEST_TASK = "task";
 
 	private static final Logger logger = LogManager.getLogger(CertificationResultRules.class);
 

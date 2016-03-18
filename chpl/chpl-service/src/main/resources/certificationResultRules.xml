@@ -4,10 +4,10 @@
 		<number>170.314 (a)(1)</number>
 		<properties>
 			<gap>true</gap>
-			<privacySecurity>false</privacySecurity>
+			<privacySecurity>true</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
-			<apiDocumentation>false</apiDocumentation>
+			<apiDocumentation>true</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -16,8 +16,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
