@@ -13,25 +13,25 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Service
@@ -39,9 +39,6 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
-	
-	@Autowired
-	private CertifiedProductDAO certifiedProductDAO;
 	
 	@Autowired
 	private CQMCriterionDAO cqmCriterionDAO;
@@ -55,11 +52,10 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Autowired
 	private CertificationStatusDAO certificationStatusDao;
 	
-	@Autowired
-	private ProductClassificationTypeDAO productClassificationTypeDAO;
+	@Autowired private EducationTypeDAO educationTypeDao;
 	
 	@Autowired
-	private ProductVersionDAO productVersionDAO;
+	private ProductClassificationTypeDAO productClassificationTypeDAO;
 	
 	@Autowired
 	private ProductDAO productDAO;
@@ -174,6 +170,20 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		}
 		
 		return acbNames;
+	}
+	
+	@Transactional
+	@Override
+	public Set<KeyValueModel> getEducationTypes() {
+		
+		List<EducationTypeDTO> dtos = this.educationTypeDao.getAll();
+		Set<KeyValueModel> educationTypes = new HashSet<KeyValueModel>();
+		
+		for (EducationTypeDTO dto : dtos) {
+			educationTypes.add(new KeyValueModel(dto.getId(), dto.getName()));
+		}
+		
+		return educationTypes;
 	}
 	
 	@Transactional

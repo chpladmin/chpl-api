@@ -24,8 +24,10 @@ import org.xml.sax.SAXException;
 @Component("certificationResultRules")
 public class CertificationResultRules {
 	public static final String GAP = "gap";
+	public static final String PRIVACY_SECURITY = "privacySecurity";
 	public static final String STANDARDS_TESTED = "standardsTested";
 	public static final String FUNCTIONALITY_TESTED = "functionalityTested";
+	public static final String API_DOCUMENTATION = "apiDocumentation";
 	public static final String G1_SUCCESS = "g1";
 	public static final String G2_SUCCESS = "g2";
 	public static final String ADDITIONAL_SOFTWARE = "additionalSoftware";
@@ -34,6 +36,8 @@ public class CertificationResultRules {
 	public static final String TEST_DATA = "testData";
 	public static final String SED = "sed";
 	public static final String UCD_FIELDS = "ucd";
+	public static final String TEST_PARTICIPANT = "participant";
+	public static final String TEST_TASK = "task";
 
 	private static final Logger logger = LogManager.getLogger(CertificationResultRules.class);
 

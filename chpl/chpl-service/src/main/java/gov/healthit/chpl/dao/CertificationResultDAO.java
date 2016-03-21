@@ -3,8 +3,10 @@ package gov.healthit.chpl.dao;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.CertificationResultTestParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
@@ -51,5 +53,13 @@ public interface CertificationResultDAO {
 	public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId);
 	public CertificationResultUcdProcessDTO addUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityCreationException;
 	public void deleteUcdProcessMapping(Long mappingId);
+	
+	public List<CertificationResultTestParticipantDTO> getTestParticipantsForCertificationResult(Long certificationResultId);
+	public CertificationResultTestParticipantDTO addTestParticipantMapping(CertificationResultTestParticipantDTO dto) throws EntityCreationException;
+	public void deleteTestParticipantMapping(Long mappingId);
+	
+	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);
+	public CertificationResultTestTaskDTO addTestTaskMapping(CertificationResultTestTaskDTO dto) throws EntityCreationException;
+	public void deleteTestTaskMapping(Long mappingId);
 }
 

@@ -154,6 +154,16 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	
 	@Test
 	@Transactional
+	public void testCertifiedProductDetailsAccessibilityStandards() throws EntityRetrievalException{
+		
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
+		assertNotNull(detail.getAccessibilityStandards());
+		assertEquals(0 , detail.getAccessibilityStandards().size());
+		
+	}
+	
+	@Test
+	@Transactional
 	public void testCertifiedProductDetailsCountCerts() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);

@@ -16,12 +16,15 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
 public class PendingCertifiedProductDTO {
@@ -65,7 +68,10 @@ public class PendingCertifiedProductDTO {
     private Long developerContactId;
     private String reportFileLocation;
     private String sedReportFileLocation;
+    private String sedIntendedUserDescription;
+    private Date sedTestingEnd;
 	private Boolean ics;
+	private Boolean accessibilityCertified;
 	private String termsOfUseUrl;
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
@@ -74,6 +80,7 @@ public class PendingCertifiedProductDTO {
 	private List<PendingCqmCriterionDTO> cqmCriterion;
 	private List<PendingCertifiedProductQmsStandardDTO> qmsStandards;
 	private List<PendingCertifiedProductTargetedUserDTO> targetedUsers; 
+	private List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards;
 	
 	private Date uploadDate;
 	
@@ -84,6 +91,7 @@ public class PendingCertifiedProductDTO {
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
 		this.qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
 		this.targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
+		this.accessibilityStandards = new ArrayList<PendingCertifiedProductAccessibilityStandardDTO>();
 	}
 	
 	public PendingCertifiedProductDTO(PendingCertifiedProductDetails details) {
@@ -194,7 +202,10 @@ public class PendingCertifiedProductDTO {
 		this.acbCertificationId = details.getAcbCertificationId(); 
 		this.reportFileLocation = details.getReportFileLocation();
 		this.sedReportFileLocation = details.getSedReportFileLocation();
+		this.sedIntendedUserDescription = details.getSedIntendedUserDescription();
+		this.sedTestingEnd = details.getSedTestingEnd();
 		this.ics = details.getIcs();
+		this.accessibilityCertified = details.getAccessibilityCertified();
 		this.termsOfUseUrl = details.getTermsOfUse();
 		this.transparencyAttestation = details.getTransparencyAttestation();
 		this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
@@ -218,6 +229,16 @@ public class PendingCertifiedProductDTO {
 				tuDto.setTargetedUserId(tu.getTargetedUserId());
 				tuDto.setName(tu.getTargetedUserName());
 				this.targetedUsers.add(tuDto);
+			}
+		}
+		
+		List<CertifiedProductAccessibilityStandard> accStds = details.getAccessibilityStandards();
+		if(accStds != null && accStds.size() > 0) {
+			for(CertifiedProductAccessibilityStandard as : accStds) {
+				PendingCertifiedProductAccessibilityStandardDTO asDto = new PendingCertifiedProductAccessibilityStandardDTO();
+				asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
+				asDto.setName(as.getAccessibilityStandardName());
+				this.accessibilityStandards.add(asDto);
 			}
 		}
 		
@@ -365,7 +386,10 @@ public class PendingCertifiedProductDTO {
 		this.developerContactId = entity.getDeveloperContactId();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.sedReportFileLocation = entity.getSedReportFileLocation();
+		this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
+		this.sedTestingEnd = entity.getSedTestingEnd();
 		this.ics = entity.getIcs();
+		this.accessibilityCertified = entity.getAccessibilityCertified();
 		this.termsOfUseUrl = entity.getTermsOfUse();
 		if(entity.getTransparencyAttestation() != null) {
 			this.transparencyAttestation = entity.getTransparencyAttestation().toString();
@@ -378,6 +402,20 @@ public class PendingCertifiedProductDTO {
 		if(qmsStandards != null && qmsStandards.size() > 0) {
 			for(PendingCertifiedProductQmsStandardEntity qmsStandard : qmsStandards) {
 				this.qmsStandards.add(new PendingCertifiedProductQmsStandardDTO(qmsStandard));
+			}
+		}
+		
+		Set<PendingCertifiedProductTargetedUserEntity> targetedUsers = entity.getTargetedUsers();
+		if(targetedUsers != null && targetedUsers.size() > 0) {
+			for(PendingCertifiedProductTargetedUserEntity tu : targetedUsers) {
+				this.targetedUsers.add(new PendingCertifiedProductTargetedUserDTO(tu));
+			}
+		}
+		
+		Set<PendingCertifiedProductAccessibilityStandardEntity> accStds = entity.getAccessibilityStandards();
+		if(accStds != null && accStds.size() > 0) {
+			for(PendingCertifiedProductAccessibilityStandardEntity as : accStds) {
+				this.accessibilityStandards.add(new PendingCertifiedProductAccessibilityStandardDTO(as));
 			}
 		}
 		
@@ -745,5 +783,37 @@ public class PendingCertifiedProductDTO {
 
 	public void setTargetedUsers(List<PendingCertifiedProductTargetedUserDTO> targetedUsers) {
 		this.targetedUsers = targetedUsers;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public List<PendingCertifiedProductAccessibilityStandardDTO> getAccessibilityStandards() {
+		return accessibilityStandards;
+	}
+
+	public void setAccessibilityStandards(List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards) {
+		this.accessibilityStandards = accessibilityStandards;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 }

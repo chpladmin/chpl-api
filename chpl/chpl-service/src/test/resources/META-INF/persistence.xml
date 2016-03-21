@@ -14,15 +14,18 @@
 		<class>gov.healthit.chpl.entity.CertificationBodyEntity</class>
 		<class>gov.healthit.chpl.entity.TestingLabEntity</class>
 		<class>gov.healthit.chpl.entity.AddressEntity</class>
+		<class>gov.healthit.chpl.entity.AccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.ContactEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperACBMapEntity</class>
 		<class>gov.healthit.chpl.entity.ProductEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
 		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>
+		<class>gov.healthit.chpl.entity.AccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity</class>
+		<class>gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity</class>
@@ -32,6 +35,8 @@
 		<class>gov.healthit.chpl.entity.CertificationResultTestStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultTestToolEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultUcdProcessEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationResultTestParticipantEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationResultTestTaskEntity</class>
 		
 		<class>gov.healthit.chpl.entity.CQMResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CQMResultCriteriaEntity</class>
@@ -43,6 +48,8 @@
 		<class>gov.healthit.chpl.entity.CertificationCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCqmCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity</class>
@@ -52,6 +59,8 @@
 		<class>gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCertificationResultTestParticipantEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity</class>		
 		
 		<class>gov.healthit.chpl.entity.ActivityEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanEntity</class>
@@ -65,6 +74,9 @@
 		<class>gov.healthit.chpl.entity.TestToolEntity</class>
 		<class>gov.healthit.chpl.entity.TestFunctionalityEntity</class>
 		<class>gov.healthit.chpl.entity.UcdProcessEntity</class>
+		<class>gov.healthit.chpl.entity.TestParticipantEntity</class>
+		<class>gov.healthit.chpl.entity.TestTaskEntity</class>
+		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
 		
 		<properties>
 			<property name="hibernate.show_sql" value="true" />

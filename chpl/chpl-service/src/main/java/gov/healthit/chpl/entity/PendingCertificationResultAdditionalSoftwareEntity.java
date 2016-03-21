@@ -38,6 +38,9 @@ public class PendingCertificationResultAdditionalSoftwareEntity {
 	@Column(name = "justification")
 	private String justification;
 	
+	@Column(name = "grouping")
+	private String grouping;
+	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -141,6 +144,14 @@ public class PendingCertificationResultAdditionalSoftwareEntity {
 
 	public void setJustification(String justification) {
 		this.justification = justification;
+	}
+
+	public String getGrouping() {
+		return grouping;
+	}
+
+	public void setGrouping(String grouping) {
+		this.grouping = grouping;
 	}
 	
 	
