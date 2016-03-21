@@ -10,6 +10,7 @@ import gov.healthit.chpl.dto.ProductDTO;
 
 public interface ProductManager {
 	public ProductDTO getById(Long id) throws EntityRetrievalException;
+	public List<ProductDTO> getByIds(List<Long> idList);
 	public List<ProductDTO> getAll();
 	public List<ProductDTO> getByDeveloper(Long developerId);
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds);

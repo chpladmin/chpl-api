@@ -37,6 +37,12 @@ public class ProductManagerImpl implements ProductManager {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public List<ProductDTO> getByIds(List<Long> idList) {
+		return productDao.getByIds(idList);
+	}
+
+	@Override
 	@Transactional(readOnly = true) 
 	public List<ProductDTO> getAll() {
 		return productDao.findAll();
