@@ -1,6 +1,6 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.CertificationResultTestParticipantDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 
 public class CertificationResultTestParticipant {
 	private Long id;
@@ -19,7 +19,7 @@ public class CertificationResultTestParticipant {
 		super();
 	}
 	
-	public CertificationResultTestParticipant(CertificationResultTestParticipantDTO dto) {
+	public CertificationResultTestParticipant(CertificationResultTestTaskParticipantDTO dto) {
 		this.id = dto.getId();
 		this.testParticipantId = dto.getTestParticipantId();
 		if(dto.getTestParticipant() != null) {

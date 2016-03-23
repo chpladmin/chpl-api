@@ -37,7 +37,7 @@ import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
 import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CQMResultCriteria;
+import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
@@ -179,7 +179,6 @@ public class CertifiedProductController {
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
-		toUpdate.setApiDocumentation(updateRequest.getApiDocumentation());
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
 		toUpdate.setAccessibilityCertified(updateRequest.getAccessibilityCertified());
@@ -265,11 +264,11 @@ public class CertifiedProductController {
 					cqmDto.setVersion(version);
 					cqmDto.setSuccess(Boolean.TRUE);
 					if(cqm.getCriteria() != null && cqm.getCriteria().size() > 0) {
-						for(CQMResultCriteria criteria : cqm.getCriteria()) {
+						for(CQMResultCertification criteria : cqm.getCriteria()) {
 							CQMResultCriteriaDTO dto = new CQMResultCriteriaDTO();
-							dto.setCriterionId(criteria.getCriteriaId());
+							dto.setCriterionId(criteria.getCertificationId());
 							CertificationCriterionDTO certDto = new CertificationCriterionDTO();
-							certDto.setNumber(criteria.getCriteriaNumber());
+							certDto.setNumber(criteria.getCertificationNumber());
 							dto.setCriterion(certDto);
 							cqmDto.getCriteria().add(dto);
 						}

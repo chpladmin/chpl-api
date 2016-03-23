@@ -592,7 +592,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	private void parseTestFunctionality(PendingCertificationResultEntity cert, int tfColumn) {
 		for(CSVRecord row : getRecord()) {
 			String tfValue = row.get(tfColumn).toString();
-			if(!StringUtils.isEmpty(tfColumn)) {
+			if(!StringUtils.isEmpty(tfValue)) {
 				PendingCertificationResultTestFunctionalityEntity tfEntity = new PendingCertificationResultTestFunctionalityEntity();
 				tfEntity.setTestFunctionalityNumber(tfValue);
 				TestFunctionalityDTO tf = testFunctionalityDao.getByNumber(tfValue);

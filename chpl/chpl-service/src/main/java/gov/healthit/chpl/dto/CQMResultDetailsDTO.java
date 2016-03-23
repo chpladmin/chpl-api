@@ -3,7 +3,7 @@ package gov.healthit.chpl.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.domain.CQMResultCriteria;
+import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.entity.CQMResultDetailsEntity;
 
 public class CQMResultDetailsDTO {

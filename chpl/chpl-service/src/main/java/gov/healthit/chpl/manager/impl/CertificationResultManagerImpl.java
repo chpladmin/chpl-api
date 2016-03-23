@@ -24,7 +24,7 @@ import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.CertificationResultTestParticipantDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
@@ -200,6 +200,12 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultAdditionalSoftwareDTO> mappingsToAdd = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
 		List<CertificationResultAdditionalSoftwareDTO> mappingsToRemove = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
 
+		for (CertificationResultAdditionalSoftwareDTO toUpdateMapping : toUpdate.getAdditionalSoftware()){
+			if(toUpdateMapping.getId() != null) {
+				certResultDAO.updateAdditionalSoftwareMapping(toUpdateMapping);
+			}
+		}
+		
 		for (CertificationResultAdditionalSoftwareDTO toUpdateMapping : toUpdate.getAdditionalSoftware()){
 			if(toUpdateMapping.getId() == null) {
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
@@ -425,64 +431,7 @@ public class CertificationResultManagerImpl implements
 			certResultDAO.deleteTestFunctionalityMapping(toRemove.getId());
 		}
 		updated.setTestFunctionality(certResultDAO.getTestFunctionalityForCertificationResult(updated.getId()));
-		
-		//update test participant mappings
-		List<CertificationResultTestParticipantDTO> existingTestParticipants = certResultDAO.getTestParticipantsForCertificationResult(toUpdate.getId());
-		List<CertificationResultTestParticipantDTO> testParticipantsToAdd = new ArrayList<CertificationResultTestParticipantDTO>();
-		List<CertificationResultTestParticipantDTO> testParticipantsToRemove = new ArrayList<CertificationResultTestParticipantDTO>();
 
-		for (CertificationResultTestParticipantDTO toUpdateMapping : toUpdate.getTestParticipants()){
-			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getTestParticipantId() == null && toUpdateMapping.getTestParticipant() != null) {
-					TestParticipantDTO testParticipantToCreate = new TestParticipantDTO();
-					testParticipantToCreate.setAge(toUpdateMapping.getTestParticipant().getAge());
-					testParticipantToCreate.setAssistiveTechnologyNeeds(toUpdateMapping.getTestParticipant().getAssistiveTechnologyNeeds());
-					testParticipantToCreate.setComputerExperienceMonths(toUpdateMapping.getTestParticipant().getComputerExperienceMonths());
-					testParticipantToCreate.setGender(toUpdateMapping.getTestParticipant().getGender());
-					testParticipantToCreate.setOccupation(toUpdateMapping.getTestParticipant().getOccupation());
-					testParticipantToCreate.setProductExperienceMonths(toUpdateMapping.getTestParticipant().getProductExperienceMonths());
-					testParticipantToCreate.setProfessionalExperienceMonths(toUpdateMapping.getTestParticipant().getProfessionalExperienceMonths());
-					if(toUpdateMapping.getTestParticipant().getEducationTypeId() != null) {
-						testParticipantToCreate.setEducationTypeId(toUpdateMapping.getTestParticipant().getEducationTypeId());
-					} else if(toUpdateMapping.getTestParticipant().getEducationType() != null) {
-						EducationTypeDTO et = toUpdateMapping.getTestParticipant().getEducationType();
-						if(et.getId() != null) {
-							testParticipantToCreate.setEducationTypeId(et.getId());
-						} else if(!StringUtils.isEmpty(et.getName())) {
-							EducationTypeDTO foundET = educationTypeDAO.getByName(et.getName());
-							if(foundET != null) {
-								testParticipantToCreate.setEducationTypeId(foundET.getId());
-							}
-						}
-					}
-					testParticipantToCreate = testParticipantDAO.create(testParticipantToCreate);
-					toUpdateMapping.setTestParticipantId(testParticipantToCreate.getId());
-				}
-				toUpdateMapping.setCertificationResultId(toUpdate.getId());
-				testParticipantsToAdd.add(toUpdateMapping);
-			} 
-		}
-				
-		for(CertificationResultTestParticipantDTO currMapping : existingTestParticipants) {
-			boolean isInUpdate = false;
-			for (CertificationResultTestParticipantDTO toUpdateMapping : toUpdate.getTestParticipants()){
-				if(toUpdateMapping.getId() != null && 
-						toUpdateMapping.getId().longValue() == currMapping.getId().longValue()) {
-					isInUpdate = true;
-				}
-			}
-			if(!isInUpdate) {
-				testParticipantsToRemove.add(currMapping);
-			}
-		}
-					
-		for(CertificationResultTestParticipantDTO toAdd : testParticipantsToAdd) {
-			certResultDAO.addTestParticipantMapping(toAdd);
-		}
-		for(CertificationResultTestParticipantDTO toRemove : testParticipantsToRemove) {
-			certResultDAO.deleteTestParticipantMapping(toRemove.getId());
-		}
-		updated.setTestParticipants(certResultDAO.getTestParticipantsForCertificationResult(updated.getId()));
 			
 		//update test task mappings
 		List<CertificationResultTestTaskDTO> existingTestTasks = certResultDAO.getTestTasksForCertificationResult(toUpdate.getId());
@@ -511,7 +460,68 @@ public class CertificationResultManagerImpl implements
 				}
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testTasksToAdd.add(toUpdateMapping);
-			} 
+			}
+			
+			//TODO
+//			if(toUpdateMapping.getTaskParticipants() != null && toUpdateMapping.getTaskParticipants().size() > 0) {
+//				//update test participant mappings
+//				List<CertificationResultTestTaskParticipantDTO> existingTestParticipants = certResultDAO.getTestParticipantsForTask(toUpdate.getId());
+//				List<CertificationResultTestTaskParticipantDTO> testParticipantsToAdd = new ArrayList<CertificationResultTestTaskParticipantDTO>();
+//				List<CertificationResultTestTaskParticipantDTO> testParticipantsToRemove = new ArrayList<CertificationResultTestTaskParticipantDTO>();
+//
+//				for (CertificationResultTestTaskParticipantDTO toUpdateMapping : toUpdate.getTestParticipants()){
+//					if(toUpdateMapping.getId() == null) {
+//						if(toUpdateMapping.getTestParticipantId() == null && toUpdateMapping.getTestParticipant() != null) {
+//							TestParticipantDTO testParticipantToCreate = new TestParticipantDTO();
+//							testParticipantToCreate.setAge(toUpdateMapping.getTestParticipant().getAge());
+//							testParticipantToCreate.setAssistiveTechnologyNeeds(toUpdateMapping.getTestParticipant().getAssistiveTechnologyNeeds());
+//							testParticipantToCreate.setComputerExperienceMonths(toUpdateMapping.getTestParticipant().getComputerExperienceMonths());
+//							testParticipantToCreate.setGender(toUpdateMapping.getTestParticipant().getGender());
+//							testParticipantToCreate.setOccupation(toUpdateMapping.getTestParticipant().getOccupation());
+//							testParticipantToCreate.setProductExperienceMonths(toUpdateMapping.getTestParticipant().getProductExperienceMonths());
+//							testParticipantToCreate.setProfessionalExperienceMonths(toUpdateMapping.getTestParticipant().getProfessionalExperienceMonths());
+//							if(toUpdateMapping.getTestParticipant().getEducationTypeId() != null) {
+//								testParticipantToCreate.setEducationTypeId(toUpdateMapping.getTestParticipant().getEducationTypeId());
+//							} else if(toUpdateMapping.getTestParticipant().getEducationType() != null) {
+//								EducationTypeDTO et = toUpdateMapping.getTestParticipant().getEducationType();
+//								if(et.getId() != null) {
+//									testParticipantToCreate.setEducationTypeId(et.getId());
+//								} else if(!StringUtils.isEmpty(et.getName())) {
+//									EducationTypeDTO foundET = educationTypeDAO.getByName(et.getName());
+//									if(foundET != null) {
+//										testParticipantToCreate.setEducationTypeId(foundET.getId());
+//									}
+//								}
+//							}
+//							testParticipantToCreate = testParticipantDAO.create(testParticipantToCreate);
+//							toUpdateMapping.setTestParticipantId(testParticipantToCreate.getId());
+//						}
+//						toUpdateMapping.setCertificationResultId(toUpdate.getId());
+//						testParticipantsToAdd.add(toUpdateMapping);
+//					} 
+//				}
+//						
+//				for(CertificationResultTestTaskParticipantDTO currMapping : existingTestParticipants) {
+//					boolean isInUpdate = false;
+//					for (CertificationResultTestTaskParticipantDTO toUpdateMapping : toUpdate.getTestParticipants()){
+//						if(toUpdateMapping.getId() != null && 
+//								toUpdateMapping.getId().longValue() == currMapping.getId().longValue()) {
+//							isInUpdate = true;
+//						}
+//					}
+//					if(!isInUpdate) {
+//						testParticipantsToRemove.add(currMapping);
+//					}
+//				}
+//							
+//				for(CertificationResultTestTaskParticipantDTO toAdd : testParticipantsToAdd) {
+//					certResultDAO.addTestParticipantMapping(toAdd);
+//				}
+//				for(CertificationResultTestTaskParticipantDTO toRemove : testParticipantsToRemove) {
+//					certResultDAO.deleteTestParticipantMapping(toRemove.getId());
+//				}
+//				updated.setTestParticipants(certResultDAO.getTestParticipantsForCertificationResult(updated.getId()));
+//			}
 		}
 				
 		for(CertificationResultTestTaskDTO currMapping : existingTestTasks) {
@@ -568,11 +578,6 @@ public class CertificationResultManagerImpl implements
 	}
 	
 	@Override
-	public List<CertificationResultTestParticipantDTO> getTestParticipantsForCertificationResult(Long certificationResultId) {
-		return certResultDAO.getTestParticipantsForCertificationResult(certificationResultId);
-	}
-	
-	@Override
 	public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestFunctionalityForCertificationResult(certificationResultId);
 	}
@@ -580,5 +585,10 @@ public class CertificationResultManagerImpl implements
 	@Override
 	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestTasksForCertificationResult(certificationResultId);
+	}
+	
+	@Override
+	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForTask(Long certificationResultTaskId) {
+		return certResultDAO.getTestParticipantsForTask(certificationResultTaskId);
 	}
 }

@@ -1,10 +1,9 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.PendingCertificationResultTestParticipantEntity;
+import gov.healthit.chpl.entity.PendingTestParticipantEntity;
 
-public class PendingCertificationResultTestParticipantDTO {
+public class PendingTestParticipantDTO {
 	private Long id;
-	private Long pendingCertificationResultId;
 	private String uniqueId;
 	private String gender;
 	private Integer age;
@@ -16,11 +15,10 @@ public class PendingCertificationResultTestParticipantDTO {
 	private Integer productExperienceMonths;
 	private String assistiveTechnologyNeeds;
 	
-	public PendingCertificationResultTestParticipantDTO() {}
+	public PendingTestParticipantDTO() {}
 	
-	public PendingCertificationResultTestParticipantDTO(PendingCertificationResultTestParticipantEntity entity) {
+	public PendingTestParticipantDTO(PendingTestParticipantEntity entity) {
 		this.setId(entity.getId());
-		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
 		this.uniqueId = entity.getUniqueId();
 		this.age = entity.getAge();
 		this.gender = entity.getGender();
@@ -40,14 +38,6 @@ public class PendingCertificationResultTestParticipantDTO {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
-
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
 	}
 
 	public String getUniqueId() {

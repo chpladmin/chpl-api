@@ -30,7 +30,6 @@ public class CertificationResultDTO {
 	private List<CertificationResultTestToolDTO> testTools;
 	private List<CertificationResultTestStandardDTO> testStandards;
 	private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
-	private List<CertificationResultTestParticipantDTO> testParticipants;
 	private List<CertificationResultTestTaskDTO> testTasks;
 	
 	public CertificationResultDTO(){
@@ -41,7 +40,6 @@ public class CertificationResultDTO {
 		testData = new ArrayList<CertificationResultTestDataDTO>();
 		testProcedures = new ArrayList<CertificationResultTestProcedureDTO>();
 		testFunctionality = new ArrayList<CertificationResultTestFunctionalityDTO>();
-		testParticipants = new ArrayList<CertificationResultTestParticipantDTO>();
 		testTasks = new ArrayList<CertificationResultTestTaskDTO>();
 	}
 	
@@ -200,14 +198,6 @@ public class CertificationResultDTO {
 
 	public void setUcdProcesses(List<CertificationResultUcdProcessDTO> ucdProcesses) {
 		this.ucdProcesses = ucdProcesses;
-	}
-
-	public List<CertificationResultTestParticipantDTO> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(List<CertificationResultTestParticipantDTO> testParticipants) {
-		this.testParticipants = testParticipants;
 	}
 
 	public List<CertificationResultTestTaskDTO> getTestTasks() {

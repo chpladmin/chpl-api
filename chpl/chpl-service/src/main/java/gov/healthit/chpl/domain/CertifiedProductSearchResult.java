@@ -27,7 +27,6 @@ public class CertifiedProductSearchResult {
 	private Long certificationDate;
 	private Boolean visibleOnChpl;
 	private String termsOfUse;
-	private String apiDocumentation;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
@@ -154,12 +153,6 @@ public class CertifiedProductSearchResult {
 	}
 	public void setTermsOfUse(String termsOfUse) {
 		this.termsOfUse = termsOfUse;
-	}
-	public String getApiDocumentation() {
-		return apiDocumentation;
-	}
-	public void setApiDocumentation(String apiDocumentation) {
-		this.apiDocumentation = apiDocumentation;
 	}
 	public String getTransparencyAttestation() {
 		return transparencyAttestation;

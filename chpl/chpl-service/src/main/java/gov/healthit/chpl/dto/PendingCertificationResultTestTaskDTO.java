@@ -1,44 +1,36 @@
 package gov.healthit.chpl.dto;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultTestTaskParticipantEntity;
 
 public class PendingCertificationResultTestTaskDTO {
 	private Long id;
 	private Long pendingCertificationResultId;
-	private String uniqueId;
-	private String description;
-	private Float taskSuccessAverage;
-	private Float taskSuccessStddev;
-	private Integer taskPathDeviationObserved;
-	private Integer taskPathDeviationOptimal;
-	private Long taskTimeAvg;
-	private Integer taskTimeStddev;
-	private Integer taskTimeDeviationObservedAvg;
-	private Integer taskTimeDeviationOptimalAvg;
-	private Float taskErrors;
-	private Float taskErrorsStddev;
-	private String taskRatingScale;
-	private Float taskRating;
+	private Long pendingTestTaskId;
+	private PendingTestTaskDTO pendingTestTask;
+	private Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants;
 	
-	public PendingCertificationResultTestTaskDTO() {}
+	public PendingCertificationResultTestTaskDTO() {
+		taskParticipants = new HashSet<PendingCertificationResultTestTaskParticipantDTO>();
+	}
 	
 	public PendingCertificationResultTestTaskDTO(PendingCertificationResultTestTaskEntity entity) {
+		this();
 		this.setId(entity.getId());
-		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
-		this.uniqueId = entity.getUniqueId();
-		this.description = entity.getDescription();
-		this.taskSuccessAverage = entity.getTaskSuccessAverage();
-		this.taskSuccessStddev = entity.getTaskSuccessStddev();
-		this.taskPathDeviationObserved = entity.getTaskPathDeviationObserved();
-		this.taskPathDeviationOptimal = entity.getTaskPathDeviationOptimal();
-		this.taskTimeAvg = entity.getTaskTimeAvg();
-		this.taskTimeStddev = entity.getTaskTimeStddev();
-		this.taskTimeDeviationObservedAvg = entity.getTaskTimeDeviationObservedAvg();
-		this.taskTimeDeviationOptimalAvg = entity.getTaskTimeDeviationOptimalAvg();
-		this.taskErrors = entity.getTaskErrors();
-		this.taskErrorsStddev = entity.getTaskErrorsStddev();
-		this.taskRatingScale = entity.getTaskRatingScale();
-		this.taskRating = entity.getTaskRating();
+		this.pendingCertificationResultId = entity.getPendingCertificationResultId();
+		this.pendingTestTaskId = entity.getPendingTestTaskId();
+		if(entity.getTestTask() != null) {
+			pendingTestTask = new PendingTestTaskDTO(entity.getTestTask());
+		}
+		if(entity.getTestParticipants() != null) {
+			for(PendingCertificationResultTestTaskParticipantEntity partEntity : entity.getTestParticipants()) {
+				PendingCertificationResultTestTaskParticipantDTO partDto = new PendingCertificationResultTestTaskParticipantDTO(partEntity);
+				this.taskParticipants.add(partDto);
+			}
+		}
 	}
 	
 	public Long getId() {
@@ -56,115 +48,27 @@ public class PendingCertificationResultTestTaskDTO {
 		this.pendingCertificationResultId = pendingCertificationResultId;
 	}
 
-	public String getUniqueId() {
-		return uniqueId;
+	public Long getPendingTestTaskId() {
+		return pendingTestTaskId;
 	}
 
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
+	public void setPendingTestTaskId(Long pendingTestTaskId) {
+		this.pendingTestTaskId = pendingTestTaskId;
 	}
 
-	public String getDescription() {
-		return description;
+	public PendingTestTaskDTO getPendingTestTask() {
+		return pendingTestTask;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setPendingTestTask(PendingTestTaskDTO pendingTestTask) {
+		this.pendingTestTask = pendingTestTask;
 	}
 
-	public Float getTaskSuccessAverage() {
-		return taskSuccessAverage;
+	public Set<PendingCertificationResultTestTaskParticipantDTO> getTaskParticipants() {
+		return taskParticipants;
 	}
 
-	public void setTaskSuccessAverage(Float taskSuccessAverage) {
-		this.taskSuccessAverage = taskSuccessAverage;
-	}
-
-	public Float getTaskSuccessStddev() {
-		return taskSuccessStddev;
-	}
-
-	public void setTaskSuccessStddev(Float taskSuccessStddev) {
-		this.taskSuccessStddev = taskSuccessStddev;
-	}
-
-	public Integer getTaskPathDeviationObserved() {
-		return taskPathDeviationObserved;
-	}
-
-	public void setTaskPathDeviationObserved(Integer taskPathDeviationObserved) {
-		this.taskPathDeviationObserved = taskPathDeviationObserved;
-	}
-
-	public Integer getTaskPathDeviationOptimal() {
-		return taskPathDeviationOptimal;
-	}
-
-	public void setTaskPathDeviationOptimal(Integer taskPathDeviationOptimal) {
-		this.taskPathDeviationOptimal = taskPathDeviationOptimal;
-	}
-
-	public Long getTaskTimeAvg() {
-		return taskTimeAvg;
-	}
-
-	public void setTaskTimeAvg(Long taskTimeAvg) {
-		this.taskTimeAvg = taskTimeAvg;
-	}
-
-	public Integer getTaskTimeStddev() {
-		return taskTimeStddev;
-	}
-
-	public void setTaskTimeStddev(Integer taskTimeStddev) {
-		this.taskTimeStddev = taskTimeStddev;
-	}
-
-	public Integer getTaskTimeDeviationObservedAvg() {
-		return taskTimeDeviationObservedAvg;
-	}
-
-	public void setTaskTimeDeviationObservedAvg(Integer taskTimeDeviationObservedAvg) {
-		this.taskTimeDeviationObservedAvg = taskTimeDeviationObservedAvg;
-	}
-
-	public Integer getTaskTimeDeviationOptimalAvg() {
-		return taskTimeDeviationOptimalAvg;
-	}
-
-	public void setTaskTimeDeviationOptimalAvg(Integer taskTimeDeviationOptimalAvg) {
-		this.taskTimeDeviationOptimalAvg = taskTimeDeviationOptimalAvg;
-	}
-
-	public Float getTaskErrors() {
-		return taskErrors;
-	}
-
-	public void setTaskErrors(Float taskErrors) {
-		this.taskErrors = taskErrors;
-	}
-
-	public Float getTaskErrorsStddev() {
-		return taskErrorsStddev;
-	}
-
-	public void setTaskErrorsStddev(Float taskErrorsStddev) {
-		this.taskErrorsStddev = taskErrorsStddev;
-	}
-
-	public String getTaskRatingScale() {
-		return taskRatingScale;
-	}
-
-	public void setTaskRatingScale(String taskRatingScale) {
-		this.taskRatingScale = taskRatingScale;
-	}
-
-	public Float getTaskRating() {
-		return taskRating;
-	}
-
-	public void setTaskRating(Float taskRating) {
-		this.taskRating = taskRating;
+	public void setTaskParticipants(Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants) {
+		this.taskParticipants = taskParticipants;
 	}
 }

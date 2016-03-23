@@ -9,19 +9,24 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestParticipantDTO;
+import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
+import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
@@ -42,6 +47,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setSedTestingEnd(dto.getSedTestingEnd());
 		this.setAcbCertificationId(dto.getAcbCertificationId());
 		this.setIcs(dto.getIcs());
+		this.setAccessibilityCertified(dto.getAccessibilityCertified());
 		
 		Map<String, Object> classificationTypeMap = new HashMap<String, Object>();
 		if(dto.getProductClassificationId() == null) {
@@ -189,6 +195,16 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			}
 		}
 		
+		List<PendingCertifiedProductAccessibilityStandardDTO> asDtos = dto.getAccessibilityStandards();
+		if(asDtos != null && asDtos.size() > 0) {
+			for(PendingCertifiedProductAccessibilityStandardDTO asDto : asDtos) {
+				CertifiedProductAccessibilityStandard as = new CertifiedProductAccessibilityStandard();
+				as.setAccessibilityStandardId(asDto.getAccessibilityStandardId());
+				as.setAccessibilityStandardName(asDto.getName());
+				this.getAccessibilityStandards().add(as);
+			}
+		}
+		
 		List<CertificationResult> certList = new ArrayList<CertificationResult>();
 		for(PendingCertificationResultDTO certCriterion : dto.getCertificationCriterion()) {
 			CertificationResult cert = new CertificationResult();
@@ -216,6 +232,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				for(PendingCertificationResultAdditionalSoftwareDTO as : certCriterion.getAdditionalSoftware()) {
 					CertificationResultAdditionalSoftware software = new CertificationResultAdditionalSoftware();
 					software.setCertifiedProductId(as.getCertifiedProductId());
+					software.setCertifiedProductNumber(as.getChplId());
 					software.setName(as.getName());
 					software.setVersion(as.getVersion());
 					software.setJustification(as.getJustification());
@@ -282,43 +299,47 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				cert.setTestStandards(null);
 			}
 			
-			if(certCriterion.getTestParticipants() != null) {
-				for(PendingCertificationResultTestParticipantDTO pt : certCriterion.getTestParticipants()) {
-					CertificationResultTestParticipant part = new CertificationResultTestParticipant();
-					part.setAge(pt.getAge());
-					part.setAssistiveTechnologyNeeds(pt.getAssistiveTechnologyNeeds());
-					part.setComputerExperienceMonths(pt.getComputerExperienceMonths());
-					part.setEducationTypeId(pt.getEducationTypeId());
-					if(pt.getEducationType() != null) {
-						part.setEducationTypeName(pt.getEducationType().getName());
-					}
-					part.setGender(pt.getGender());
-					part.setOccupation(pt.getOccupation());
-					part.setProductExperienceMonths(pt.getProductExperienceMonths());
-					part.setProfessionalExperienceMonths(pt.getProfessionalExperienceMonths());
-					cert.getTestParticipants().add(part);
-				}
-			} else {
-				cert.setTestParticipants(null);
-			}
-			
 			if(certCriterion.getTestTasks() != null) {
-				for(PendingCertificationResultTestTaskDTO tt : certCriterion.getTestTasks()) {
-					CertificationResultTestTask task = new CertificationResultTestTask();
-					task.setDescription(tt.getDescription());
-					task.setTaskErrors(tt.getTaskErrors());
-					task.setTaskErrorsStddev(tt.getTaskErrorsStddev());
-					task.setTaskPathDeviationObserved(tt.getTaskPathDeviationObserved());
-					task.setTaskPathDeviationOptimal(tt.getTaskPathDeviationOptimal());
-					task.setTaskRating(tt.getTaskRating());
-					task.setTaskRatingScale(tt.getTaskRatingScale());
-					task.setTaskSuccessAverage(tt.getTaskSuccessAverage());
-					task.setTaskSuccessStddev(tt.getTaskSuccessStddev());
-					task.setTaskTimeAvg(tt.getTaskTimeAvg());
-					task.setTaskTimeDeviationObservedAvg(tt.getTaskTimeDeviationObservedAvg());
-					task.setTaskTimeDeviationOptimalAvg(tt.getTaskTimeDeviationOptimalAvg());
-					task.setTaskTimeStddev(tt.getTaskTimeStddev());
-					cert.getTestTasks().add(task);
+				for(PendingCertificationResultTestTaskDTO ttDto : certCriterion.getTestTasks()) {
+					if(ttDto.getPendingTestTask() != null) {
+						PendingTestTaskDTO tt = ttDto.getPendingTestTask();
+						CertificationResultTestTask task = new CertificationResultTestTask();
+						task.setDescription(tt.getDescription());
+						task.setTaskErrors(tt.getTaskErrors());
+						task.setTaskErrorsStddev(tt.getTaskErrorsStddev());
+						task.setTaskPathDeviationObserved(tt.getTaskPathDeviationObserved());
+						task.setTaskPathDeviationOptimal(tt.getTaskPathDeviationOptimal());
+						task.setTaskRating(tt.getTaskRating());
+						task.setTaskRatingScale(tt.getTaskRatingScale());
+						task.setTaskSuccessAverage(tt.getTaskSuccessAverage());
+						task.setTaskSuccessStddev(tt.getTaskSuccessStddev());
+						task.setTaskTimeAvg(tt.getTaskTimeAvg());
+						task.setTaskTimeDeviationObservedAvg(tt.getTaskTimeDeviationObservedAvg());
+						task.setTaskTimeDeviationOptimalAvg(tt.getTaskTimeDeviationOptimalAvg());
+						task.setTaskTimeStddev(tt.getTaskTimeStddev());
+						
+						if(ttDto.getTaskParticipants() != null) {
+							for(PendingCertificationResultTestTaskParticipantDTO ptDto : ttDto.getTaskParticipants()) {
+								if(ptDto.getTestParticipant() != null) {
+									PendingTestParticipantDTO pt = ptDto.getTestParticipant();
+									CertificationResultTestParticipant part = new CertificationResultTestParticipant();
+									part.setAge(pt.getAge());
+									part.setAssistiveTechnologyNeeds(pt.getAssistiveTechnologyNeeds());
+									part.setComputerExperienceMonths(pt.getComputerExperienceMonths());
+									part.setEducationTypeId(pt.getEducationTypeId());
+									if(pt.getEducationType() != null) {
+										part.setEducationTypeName(pt.getEducationType().getName());
+									}
+									part.setGender(pt.getGender());
+									part.setOccupation(pt.getOccupation());
+									part.setProductExperienceMonths(pt.getProductExperienceMonths());
+									part.setProfessionalExperienceMonths(pt.getProfessionalExperienceMonths());
+									task.getTestParticipants().add(part);
+								}
+							}
+						}
+						cert.getTestTasks().add(task);
+					}
 				}
 			} else {
 				cert.setTestTasks(null);
@@ -330,30 +351,42 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		
 		//set cqm results
 		List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
-		for(PendingCqmCriterionDTO cqmCriterion : dto.getCqmCriterion()) {
+		for(PendingCqmCriterionDTO pendingCqm : dto.getCqmCriterion()) {
 			boolean existingCms = false;
-			if(!StringUtils.isEmpty(cqmCriterion.getCmsId())) {
+			if(!StringUtils.isEmpty(pendingCqm.getCmsId())) {
 				for(CQMResultDetails result : cqmResults) {
-					if(dto.getCertificationEdition().equals("2014") && result.getCmsId().equals(cqmCriterion.getCmsId())) {
+					if(!dto.getCertificationEdition().equals("2011") && result.getCmsId().equals(pendingCqm.getCmsId())) {
 						existingCms = true;
-						result.getSuccessVersions().add(cqmCriterion.getVersion());
+						result.getSuccessVersions().add(pendingCqm.getVersion());
 					}
 				}
 			}
 			
 			if(!existingCms) {
 				CQMResultDetails cqm = new CQMResultDetails();
-				cqm.setCmsId(cqmCriterion.getCmsId());
-				cqm.setNqfNumber(cqmCriterion.getNqfNumber());
-				cqm.setNumber(cqmCriterion.getCqmNumber());
-				cqm.setTitle(cqmCriterion.getTitle());
-				cqm.setTypeId(cqmCriterion.getTypeId());
-				cqm.setDomain(cqmCriterion.getDomain());
-				if(dto.getCertificationEdition().equals("2014") && !StringUtils.isEmpty(cqmCriterion.getCmsId())) {
-					cqm.getSuccessVersions().add(cqmCriterion.getVersion());
-				} else if(!StringUtils.isEmpty(cqmCriterion.getNqfNumber())) {
-					cqm.setSuccess(cqmCriterion.isMeetsCriteria());
+				cqm.setCmsId(pendingCqm.getCmsId());
+				cqm.setNqfNumber(pendingCqm.getNqfNumber());
+				cqm.setNumber(pendingCqm.getCqmNumber());
+				cqm.setTitle(pendingCqm.getTitle());
+				cqm.setTypeId(pendingCqm.getTypeId());
+				cqm.setDomain(pendingCqm.getDomain());
+				if(!dto.getCertificationEdition().equals("2011") && !StringUtils.isEmpty(pendingCqm.getCmsId())) {
+					cqm.getSuccessVersions().add(pendingCqm.getVersion());
+				} else if(!StringUtils.isEmpty(pendingCqm.getNqfNumber())) {
+					cqm.setSuccess(pendingCqm.isMeetsCriteria());
 				}
+				//now add criteria mappings to all of our cqms
+				List<PendingCqmCertificationCriterionDTO> criteria = pendingCqm.getCertifications();
+				if(criteria != null && criteria.size() > 0) {
+					for(PendingCqmCertificationCriterionDTO criteriaDTO : criteria) {
+						CQMResultCertification c = new CQMResultCertification();
+						c.setCertificationId(criteriaDTO.getCertificationId());
+						c.setCertificationNumber(criteriaDTO.getCertificationCriteriaNumber());
+						c.setId(criteriaDTO.getId());
+						cqm.getCriteria().add(c);
+					}
+				}
+				
 				cqmResults.add(cqm);
 			}
 		}

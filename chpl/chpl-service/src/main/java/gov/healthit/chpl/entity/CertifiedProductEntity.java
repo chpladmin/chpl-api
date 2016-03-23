@@ -109,9 +109,6 @@ public class CertifiedProductEntity {
 	@Column(name = "terms_of_use_url")
 	private String termsOfUse;
 	
-	@Column(name = "api_documentation_url")
-	private String apiDocumentation;
-	
 	@Column(name = "transparency_attestation_url")
 	private String transparencyAttestationUrl;
 	
@@ -302,14 +299,6 @@ public class CertifiedProductEntity {
 
 	public void setTermsOfUse(String termsOfUse) {
 		this.termsOfUse = termsOfUse;
-	}
-
-	public String getApiDocumentation() {
-		return apiDocumentation;
-	}
-
-	public void setApiDocumentation(String apiDocumentation) {
-		this.apiDocumentation = apiDocumentation;
 	}
 
 	public Boolean getIcs() {

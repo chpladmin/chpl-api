@@ -113,11 +113,6 @@ public class PendingCertificationResultEntity {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultTestParticipantEntity> testParticipants;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultTestTaskEntity> testTasks;
 	
 	public PendingCertificationResultEntity() {
@@ -128,7 +123,6 @@ public class PendingCertificationResultEntity {
 		testProcedures = new HashSet<PendingCertificationResultTestProcedureEntity>();
 		testData = new HashSet<PendingCertificationResultTestDataEntity>();
 		testTools = new HashSet<PendingCertificationResultTestToolEntity>();
-		testParticipants = new HashSet<PendingCertificationResultTestParticipantEntity>();
 		testTasks = new HashSet<PendingCertificationResultTestTaskEntity>();
 	}
 	
@@ -291,15 +285,7 @@ public class PendingCertificationResultEntity {
 	public void setHasAdditionalSoftware(boolean hasAdditionalSoftware) {
 		this.hasAdditionalSoftware = hasAdditionalSoftware;
 	}
-
-	public Set<PendingCertificationResultTestParticipantEntity> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(Set<PendingCertificationResultTestParticipantEntity> testParticipants) {
-		this.testParticipants = testParticipants;
-	}
-
+	
 	public Set<PendingCertificationResultTestTaskEntity> getTestTasks() {
 		return testTasks;
 	}
