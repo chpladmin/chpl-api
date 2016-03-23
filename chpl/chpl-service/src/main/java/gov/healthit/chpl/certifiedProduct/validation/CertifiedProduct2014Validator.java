@@ -30,6 +30,15 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 			"170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(16)", "170.314 (a)(18)", "170.314 (a)(19)", 
 			"170.314 (a)(20)", "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(9)"};
 	
+	
+	public String[] getG1ComplimentaryCerts() {
+		return g1ComplementaryCerts;
+	}
+	
+	public String[] getG2ComplimentaryCerts() {
+		return g2ComplementaryCerts;
+	}
+	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		super.validate(product);
@@ -53,46 +62,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 			if(!hasOneCqmWithVersion) {
 				product.getErrorMessages().add("At least one CQM/version is required but was not found.");
 			}
-		}
-		
-		//g1 check
-		boolean hasG1 = false;
-		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-			if(cert.getNumber().equals("170.314 (g)(1)") && cert.getMeetsCriteria()) {
-				hasG1 = true;
-			}
-		}
-		boolean hasG1Complement = false;
-		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-			for(int i = 0; i < g1ComplementaryCerts.length; i++) {
-				if(cert.getNumber().equals(g1ComplementaryCerts[i]) && cert.getMeetsCriteria()) {
-					hasG1Complement = true;
-				}
-			}
-		}
-		
-		if(hasG1 && !hasG1Complement) {
-			product.getErrorMessages().add("(g)(1) was found without a required related certification.");
-		}
-		
-		//g2 check
-		boolean hasG2 = false;
-		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-			if(cert.getNumber().equals("170.314 (g)(2)") && cert.getMeetsCriteria()) {
-				hasG2 = true;
-			}
-		}
-		boolean hasG2Complement = false;
-		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-			for(int i = 0; i < g2ComplementaryCerts.length; i++) {
-				if(cert.getNumber().equals(g2ComplementaryCerts[i]) && cert.getMeetsCriteria()) {
-					hasG2Complement = true;
-				}
-			}
-		}
-		
-		if(hasG2 && !hasG2Complement) {
-			product.getErrorMessages().add("(g)(2) was found without a required related certification.");
 		}
 				
 		//g4 check

@@ -90,9 +90,9 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 		}
 		
 		//check for (g)(7) or (g)(8) or (g)(9) certs
-		boolean meetsG7Criterion = hasCert("170.315 (g)(7)", allMetCerts);;
-		boolean meetsG8Criterion = hasCert("170.315 (g)(8)", allMetCerts);;
-		boolean meetsG9Criterion = hasCert("170.315 (g)(9)", allMetCerts);;	
+		boolean meetsG7Criterion = hasCert("170.315 (g)(7)", allMetCerts);
+		boolean meetsG8Criterion = hasCert("170.315 (g)(8)", allMetCerts);
+		boolean meetsG9Criterion = hasCert("170.315 (g)(9)", allMetCerts);	
 		if(meetsG7Criterion || meetsG8Criterion || meetsG9Criterion) {
 			for(int i = 0; i < g7Org8Org9ComplimentaryCerts.length; i++) {
 				boolean hasComplimentaryCert = false;
@@ -112,7 +112,7 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 			boolean meetsD10Criterion = hasCert("170.315 (d)(10)", allMetCerts);
 			if( (!meetsD2Criterion && !meetsD10Criterion) || 
 				(meetsD2Criterion && meetsD10Criterion) ) {
-				product.getErrorMessages().add("Certification criterion 170.315 (g)(7) or 170.315 (g)(8) or 170.315 (g)(9) was found so EITHER 170.315 (d)(2) OR 170.315 (d)(10) is required.");
+				product.getErrorMessages().add("Certification criterion 170.315 (g)(7) or 170.315 (g)(8) or 170.315 (g)(9) was found so EITHER 170.315 (d)(2) OR 170.315 (d)(10) is required (not both).");
 			}
 		}
 		

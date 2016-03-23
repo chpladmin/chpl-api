@@ -37,6 +37,7 @@ import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
 import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -57,6 +58,7 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -77,6 +79,7 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired PendingCertifiedProductManager pcpManager;
 	@Autowired CertificationBodyManager acbManager;
+	@Autowired ActivityManager activityManager;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
 
 	@ApiOperation(value="List all certified products", 
@@ -155,12 +158,15 @@ public class CertifiedProductController {
 			throw new ValidationException(updateRequest.getErrorMessages(), updateRequest.getWarningMessages());
 		}
 		
-		CertifiedProductDTO existingProduct = cpManager.getById(updateRequest.getId());
-		Long acbId = existingProduct.getCertificationBodyId();
+		CertifiedProductSearchDetails existingProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		Long acbId = new Long(existingProduct.getCertifyingBody().get("id").toString());
 		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id").toString());
 		
 		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
 			cpManager.changeOwnership(updateRequest.getId(), newAcbId);
+			CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Changed ACB ownership.", existingProduct, changedProduct);
+			existingProduct = changedProduct;
 		}
 		
 		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
@@ -289,8 +295,11 @@ public class CertifiedProductController {
 		}
 		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
 		
+		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
+		
 		//search for the product by id to get it with all the updates
-		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
+		return changedProduct;
 	}
 	
 	@ApiOperation(value="List pending certified products.", 

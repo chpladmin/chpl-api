@@ -646,10 +646,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false) 
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
 		CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
 		toUpdate.setCertificationBodyId(acbId);
-		return update(acbId, toUpdate);
+		return cpDao.update(toUpdate);
 	}
 	
 	@Override
@@ -669,11 +668,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ ")")
 	@Transactional(readOnly = false)
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		CertifiedProductDTO before = cpDao.getById(dto.getId());
-		CertifiedProductDTO result = cpDao.update(dto);
-		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), "Updated " + result.getChplProductNumberForActivity() , before , result);
+		CertifiedProductDTO result = cpDao.update(dto);		
 		return result;
 	}	
 	
@@ -687,7 +682,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		List<CertifiedProductQmsStandardDTO> beforeQms = cpQmsDao.getQmsStandardsByCertifiedProductId(productDto.getId());
-		
 		List<CertifiedProductQmsStandardDTO> qmsToAdd = new ArrayList<CertifiedProductQmsStandardDTO>();
 		List<CertifiedProductQmsStandardDTO> qmsToRemove = new ArrayList<CertifiedProductQmsStandardDTO>();
 		
@@ -724,14 +718,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductQmsStandardDTO toRemove : qmsToRemove) {
 			cpQmsDao.deleteCertifiedProductQms(toRemove.getId());
 		}	
-		
-		//only put in activity if something changed
-		if( (qmsToAdd != null && qmsToAdd.size() > 0) ||
-				(qmsToRemove != null && qmsToRemove.size() > 0) )
-		{
-			List<CertifiedProductQmsStandardDTO> afterQms = cpQmsDao.getQmsStandardsByCertifiedProductId(productDto.getId());
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "QMS Standards Used for "+productDto.getChplProductNumberForActivity() + " were updated." , beforeQms , afterQms);
-		}
 	}
 	
 	@Override
@@ -744,7 +730,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		List<CertifiedProductTargetedUserDTO> beforeTUs = cpTargetedUserDao.getTargetedUsersByCertifiedProductId(productDto.getId());
-		
 		List<CertifiedProductTargetedUserDTO> tusToAdd = new ArrayList<CertifiedProductTargetedUserDTO>();
 		List<CertifiedProductTargetedUserDTO> tusToRemove = new ArrayList<CertifiedProductTargetedUserDTO>();
 		
@@ -781,14 +766,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductTargetedUserDTO toRemove : tusToRemove) {
 			cpTargetedUserDao.deleteCertifiedProductTargetedUser(toRemove.getId());
 		}	
-		
-		//only put in activity if something changed
-		if( (tusToAdd != null && tusToAdd.size() > 0) ||
-				(tusToRemove != null && tusToRemove.size() > 0) )
-		{
-			List<CertifiedProductTargetedUserDTO> afterTus = cpTargetedUserDao.getTargetedUsersByCertifiedProductId(productDto.getId());
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Targeted Users for "+productDto.getChplProductNumberForActivity() + " were updated." , beforeTUs , afterTus);
-		}
 	}
 	
 	@Override
@@ -801,7 +778,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		List<CertifiedProductAccessibilityStandardDTO> beforeStds = cpAccStdDao.getAccessibilityStandardsByCertifiedProductId(productDto.getId());
-		
 		List<CertifiedProductAccessibilityStandardDTO> stdsToAdd = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
 		List<CertifiedProductAccessibilityStandardDTO> stdsToRemove = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
 		
@@ -838,14 +814,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductAccessibilityStandardDTO toRemove : stdsToRemove) {
 			cpAccStdDao.deleteCertifiedProductAccessibilityStandards(toRemove.getId());
 		}	
-		
-		//only put in activity if something changed
-		if( (stdsToAdd != null && stdsToAdd.size() > 0) ||
-				(stdsToRemove != null && stdsToRemove.size() > 0) )
-		{
-			List<CertifiedProductAccessibilityStandardDTO> afterStds = cpAccStdDao.getAccessibilityStandardsByCertifiedProductId(productDto.getId());
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Accessibility Standards for "+productDto.getChplProductNumberForActivity() + " were updated." , beforeStds , afterStds);
-		}
 	}
 	
 	/**
@@ -1090,8 +1058,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				}
 			}
 		}
-		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity() + " were updated." , before , after);
 	}
 	
 	@Override
@@ -1102,9 +1068,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = false)
 	public void updateCqms(Long acbId, CertifiedProductDTO productDto, List<CQMResultDetailsDTO> cqmResults)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
-		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
-		Boolean dataHasChanged = false;
 		List<CQMResultDTO> beforeCQMs = cqmResultDAO.findByCertifiedProductId(productDto.getId());
 		
 		// Handle NQFs and Additions:
@@ -1120,7 +1083,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					if ((beforeCriterionDTO.getCmsId() == null) && (beforeCriterionDTO.getNqfNumber().equals(currCqm.getNqfNumber()) ) ){
 						beforeCQM.setSuccess(currCqm.getSuccess());
 						cqmResultDAO.update(beforeCQM);
-						dataHasChanged = true;
 						break;
 					}
 				}
@@ -1163,7 +1125,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							cqmResultDAO.createCriteriaMapping(criteria);
 						}
 					}
-					dataHasChanged = true;
 				} else {
 					//update an existing cqm 
 					//need to compare current and found cqm in case there are differences
@@ -1204,10 +1165,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					for(CQMResultCriteriaDTO currToRemove : toRemove) {
 						cqmResultDAO.deleteCriteriaMapping(currToRemove.getId());
 					}
-					
-					if(toAdd.size() > 0 || toRemove.size() > 0) {
-						dataHasChanged = true;
-					}
 				}
 			}
 		}
@@ -1235,17 +1192,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 			if (isDeletion){
 				deleteCqmResult(productDto.getId(), criterion.getId());
-				dataHasChanged = true;
 			}
-			
 		}
-		
-		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		
-		if (dataHasChanged){
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity()+" were updated." , before , after);
-		}
-		
 	}
 	
 	private void deleteCqmResult(Long certifiedProductId, Long cqmId){
