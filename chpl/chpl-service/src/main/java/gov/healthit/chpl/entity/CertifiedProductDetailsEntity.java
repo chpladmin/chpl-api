@@ -1,7 +1,5 @@
 package gov.healthit.chpl.entity;
 
-
-import java.awt.Transparency;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -58,6 +56,14 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "sed_report_file_location")
     private String sedReportFileLocation;
     
+	@Basic(optional = true) 
+    @Column(name = "sed_intended_user_description")
+    private String sedIntendedUserDescription;
+
+	@Basic(optional = true) 
+    @Column(name = "sed_testing_end")
+    private Date sedTestingEnd;
+	
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
     
@@ -159,6 +165,9 @@ public class CertifiedProductDetailsEntity {
 	
 	@Column(name = "qms")
 	private Boolean qmsTesting;
+	
+	@Column(name = "accessibility_certified")
+	private Boolean accessibilityCertified;
 	
 	@Column(name = "product_additional_software")
 	private String productAdditionalSoftware;
@@ -583,5 +592,29 @@ public class CertifiedProductDetailsEntity {
 
 	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
 		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}	
 }

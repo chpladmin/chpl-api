@@ -1,8 +1,10 @@
 package gov.healthit.chpl.entity;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -31,6 +33,9 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "pending_certified_product")
 public class PendingCertifiedProductEntity {
+	
+	@Transient
+	private List<String> errorMessages = new ArrayList<String>();
 	
 	/**
 	 * fields we generate mostly from spreadsheet values
@@ -153,8 +158,17 @@ public class PendingCertifiedProductEntity {
     @Column(name = "sed_report_file_location")
     private String sedReportFileLocation;
 
+    @Column(name = "sed_intended_user_description")
+    private String sedIntendedUserDescription;
+
+    @Column(name = "sed_testing_end")
+    private Date sedTestingEnd;
+	
 	@Column(name = "ics")
 	private Boolean ics;
+	
+	@Column(name = "accessibility_certified")
+	private Boolean accessibilityCertified;
 	
 	@Column(name = "terms_of_use_url")
 	private String termsOfUse;
@@ -173,6 +187,16 @@ public class PendingCertifiedProductEntity {
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCertifiedProductQmsStandardEntity> qmsStandards;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
+	@Basic( optional = false )
+	@Column( name = "pending_certified_product_id", nullable = false  )
+	private Set<PendingCertifiedProductTargetedUserEntity> targetedUsers;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
+	@Basic( optional = false )
+	@Column( name = "pending_certified_product_id", nullable = false  )
+	private Set<PendingCertifiedProductAccessibilityStandardEntity> accessibilityStandards;
 	
 	@Transient
 	private boolean hasQms;
@@ -197,13 +221,13 @@ public class PendingCertifiedProductEntity {
 		certificationCriterion = new HashSet<PendingCertificationResultEntity>();
 		cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
 		qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
+		targetedUsers = new HashSet<PendingCertifiedProductTargetedUserEntity>();
+		accessibilityStandards = new HashSet<PendingCertifiedProductAccessibilityStandardEntity>();
 	} 
 
 	public PendingCertifiedProductEntity(Long id) {
+		this();
 		this.id = id;
-		certificationCriterion = new HashSet<PendingCertificationResultEntity>();
-		cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
-		qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
 	}
 	
 	@Transient
@@ -577,5 +601,53 @@ public class PendingCertifiedProductEntity {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public List<String> getErrorMessages() {
+		return errorMessages;
+	}
+
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public Set<PendingCertifiedProductTargetedUserEntity> getTargetedUsers() {
+		return targetedUsers;
+	}
+
+	public void setTargetedUsers(Set<PendingCertifiedProductTargetedUserEntity> targetedUsers) {
+		this.targetedUsers = targetedUsers;
+	}
+
+	public Set<PendingCertifiedProductAccessibilityStandardEntity> getAccessibilityStandards() {
+		return accessibilityStandards;
+	}
+
+	public void setAccessibilityStandards(Set<PendingCertifiedProductAccessibilityStandardEntity> accessibilityStandards) {
+		this.accessibilityStandards = accessibilityStandards;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 }

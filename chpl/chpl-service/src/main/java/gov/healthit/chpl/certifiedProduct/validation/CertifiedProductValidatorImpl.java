@@ -10,12 +10,14 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -23,6 +25,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
+	@Autowired CertifiedProductDAO cpDao;
 	@Autowired TestingLabDAO atlDao;
 	@Autowired CertificationEditionDAO certEditionDao;
 	@Autowired CertificationBodyDAO acbDao;
@@ -36,6 +39,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
+		//make sure the unique id is really uniqiue
+		try {
+			CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(product.getUniqueId());
+			if(dup != null) {
+				product.getErrorMessages().add("The id " + product.getUniqueId() + " must be unique among all other certified products but one already exists with this ID.");
+			}
+		} catch(EntityRetrievalException ex) {}
+		
 		String uniqueId = product.getUniqueId();
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		if(uniqueIdParts == null || uniqueIdParts.length != 9) {
@@ -57,14 +68,23 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The first part of the CHPL ID must match the certification year of the product.");
 			}
 			
-			TestingLabDTO testingLab = atlDao.getById(product.getTestingLabId());
-			if(!testingLab.getTestingLabCode().equals(atlCode)) {
-				product.getErrorMessages().add("The testing lab code provided does not match the assigned testing lab code '" + testingLab.getTestingLabCode() + "'.");
+			if(product.getTestingLabId() == null) {
+				product.getErrorMessages().add("No testing lab was found matching the name '" + product.getTestingLabName() + "'");
+			} else {
+				TestingLabDTO testingLab = atlDao.getById(product.getTestingLabId());
+				if(!testingLab.getTestingLabCode().equals(atlCode)) {
+					product.getErrorMessages().add("The testing lab code provided does not match the assigned testing lab code '" + testingLab.getTestingLabCode() + "'.");
+				}
 			}
 			
-			CertificationBodyDTO certificationBody = acbDao.getById(product.getCertificationBodyId());
-			if(!certificationBody.getAcbCode().equals(acbCode)) {
-				product.getErrorMessages().add("The ACB code provided does not match the assigned ACB code '" + certificationBody.getAcbCode() + "'.");
+			CertificationBodyDTO certificationBody = null;
+			if(product.getCertificationBodyId() == null) {
+				product.getErrorMessages().add("No certification body was found matching the name '" + product.getCertificationBodyName() + "'.");
+			} else {
+				certificationBody = acbDao.getById(product.getCertificationBodyId());
+				if(!certificationBody.getAcbCode().equals(acbCode)) {
+					product.getErrorMessages().add("The ACB code provided does not match the assigned ACB code '" + certificationBody.getAcbCode() + "'.");
+				}
 			}
 			
 			if(product.getDeveloperId() != null) {
@@ -167,8 +187,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		if(StringUtils.isEmpty(product.getReportFileLocation())) {
 			product.getErrorMessages().add("Test Report URL is required but was not found.");
-		} else if(!urlRegex.matcher(product.getReportFileLocation()).matches()) {
+		} else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {
 			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
+		}
+		
+		if(urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
+			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
 		}
 	}
 }

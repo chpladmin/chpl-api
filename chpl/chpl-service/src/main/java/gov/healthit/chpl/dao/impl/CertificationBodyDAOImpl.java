@@ -194,6 +194,19 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		return dto;
 	}
 	
+	public String getMaxCode() {
+		String maxCode = null;
+		Query query = entityManager.createQuery( "SELECT acb.acbCode "
+				+ "from CertificationBodyEntity acb "
+				+ "ORDER BY acb.acbCode DESC", String.class );
+		List<String> result = query.getResultList();
+		
+		if(result != null && result.size() > 0) {
+			maxCode = result.get(0);
+		}
+		return maxCode;
+	}
+	
 	private void create(CertificationBodyEntity acb) {
 		
 		entityManager.persist(acb);

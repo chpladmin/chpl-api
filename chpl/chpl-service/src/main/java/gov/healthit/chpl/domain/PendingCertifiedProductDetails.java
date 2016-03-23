@@ -13,18 +13,18 @@ import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
-	
-	private List<String> errorMessages;
-	private List<String> warningMessages;
 	private String recordStatus;
 	private Map<String, Object> developerAddress;
 	
@@ -38,6 +38,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setChplProductNumber(dto.getUniqueId());
 		this.setReportFileLocation(dto.getReportFileLocation());
 		this.setSedReportFileLocation(dto.getSedReportFileLocation());
+		this.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
+		this.setSedTestingEnd(dto.getSedTestingEnd());
 		this.setAcbCertificationId(dto.getAcbCertificationId());
 		this.setIcs(dto.getIcs());
 		
@@ -177,6 +179,16 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			}
 		}
 		
+		List<PendingCertifiedProductTargetedUserDTO> tuDtos = dto.getTargetedUsers();
+		if(tuDtos != null && tuDtos.size() > 0) {
+			for(PendingCertifiedProductTargetedUserDTO tuDto : tuDtos) {
+				CertifiedProductTargetedUser tu = new CertifiedProductTargetedUser();
+				tu.setTargetedUserId(tuDto.getTargetedUserId());
+				tu.setTargetedUserName(tuDto.getName());
+				this.getTargetedUsers().add(tu);
+			}
+		}
+		
 		List<CertificationResult> certList = new ArrayList<CertificationResult>();
 		for(PendingCertificationResultDTO certCriterion : dto.getCertificationCriterion()) {
 			CertificationResult cert = new CertificationResult();
@@ -187,6 +199,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			cert.setSed(certCriterion.getSed());
 			cert.setG1Success(certCriterion.getG1Success());
 			cert.setG2Success(certCriterion.getG2Success());
+			cert.setApiDocumentation(certCriterion.getApiDocumentation());
+			cert.setPrivacySecurityFramework(certCriterion.getPrivacySecurityFramework());
 			
 			if(certCriterion.getUcdProcesses() != null && certCriterion.getUcdProcesses().size() > 0) {
 				for(PendingCertificationResultUcdProcessDTO ucdDto : certCriterion.getUcdProcesses()) {
@@ -205,6 +219,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 					software.setName(as.getName());
 					software.setVersion(as.getVersion());
 					software.setJustification(as.getJustification());
+					software.setGrouping(as.getGrouping());
 					cert.getAdditionalSoftware().add(software);
 				}
 			} else {
@@ -266,6 +281,49 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setTestStandards(null);
 			}
+			
+			if(certCriterion.getTestParticipants() != null) {
+				for(PendingCertificationResultTestParticipantDTO pt : certCriterion.getTestParticipants()) {
+					CertificationResultTestParticipant part = new CertificationResultTestParticipant();
+					part.setAge(pt.getAge());
+					part.setAssistiveTechnologyNeeds(pt.getAssistiveTechnologyNeeds());
+					part.setComputerExperienceMonths(pt.getComputerExperienceMonths());
+					part.setEducationTypeId(pt.getEducationTypeId());
+					if(pt.getEducationType() != null) {
+						part.setEducationTypeName(pt.getEducationType().getName());
+					}
+					part.setGender(pt.getGender());
+					part.setOccupation(pt.getOccupation());
+					part.setProductExperienceMonths(pt.getProductExperienceMonths());
+					part.setProfessionalExperienceMonths(pt.getProfessionalExperienceMonths());
+					cert.getTestParticipants().add(part);
+				}
+			} else {
+				cert.setTestParticipants(null);
+			}
+			
+			if(certCriterion.getTestTasks() != null) {
+				for(PendingCertificationResultTestTaskDTO tt : certCriterion.getTestTasks()) {
+					CertificationResultTestTask task = new CertificationResultTestTask();
+					task.setDescription(tt.getDescription());
+					task.setTaskErrors(tt.getTaskErrors());
+					task.setTaskErrorsStddev(tt.getTaskErrorsStddev());
+					task.setTaskPathDeviationObserved(tt.getTaskPathDeviationObserved());
+					task.setTaskPathDeviationOptimal(tt.getTaskPathDeviationOptimal());
+					task.setTaskRating(tt.getTaskRating());
+					task.setTaskRatingScale(tt.getTaskRatingScale());
+					task.setTaskSuccessAverage(tt.getTaskSuccessAverage());
+					task.setTaskSuccessStddev(tt.getTaskSuccessStddev());
+					task.setTaskTimeAvg(tt.getTaskTimeAvg());
+					task.setTaskTimeDeviationObservedAvg(tt.getTaskTimeDeviationObservedAvg());
+					task.setTaskTimeDeviationOptimalAvg(tt.getTaskTimeDeviationOptimalAvg());
+					task.setTaskTimeStddev(tt.getTaskTimeStddev());
+					cert.getTestTasks().add(task);
+				}
+			} else {
+				cert.setTestTasks(null);
+			}
+			
 			certList.add(cert);
 		}
 		this.setCertificationResults(certList);
@@ -316,21 +374,5 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
 	public void setRecordStatus(String recordStatus) {
 		this.recordStatus = recordStatus;
-	}
-
-	public List<String> getErrorMessages() {
-		return errorMessages;
-	}
-
-	public void setErrorMessages(List<String> errorMessages) {
-		this.errorMessages = errorMessages;
-	}
-
-	public List<String> getWarningMessages() {
-		return warningMessages;
-	}
-
-	public void setWarningMessages(List<String> warningMessages) {
-		this.warningMessages = warningMessages;
 	}
 }

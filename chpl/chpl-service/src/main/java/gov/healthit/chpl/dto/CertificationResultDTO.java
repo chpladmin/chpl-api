@@ -18,6 +18,8 @@ public class CertificationResultDTO {
 	private Boolean successful;
 	private Boolean g1Success;
 	private Boolean g2Success;
+	private String apiDocumentation;
+	private String privacySecurityFramework;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	
@@ -28,6 +30,8 @@ public class CertificationResultDTO {
 	private List<CertificationResultTestToolDTO> testTools;
 	private List<CertificationResultTestStandardDTO> testStandards;
 	private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
+	private List<CertificationResultTestParticipantDTO> testParticipants;
+	private List<CertificationResultTestTaskDTO> testTasks;
 	
 	public CertificationResultDTO(){
 		ucdProcesses = new ArrayList<CertificationResultUcdProcessDTO>();
@@ -37,6 +41,8 @@ public class CertificationResultDTO {
 		testData = new ArrayList<CertificationResultTestDataDTO>();
 		testProcedures = new ArrayList<CertificationResultTestProcedureDTO>();
 		testFunctionality = new ArrayList<CertificationResultTestFunctionalityDTO>();
+		testParticipants = new ArrayList<CertificationResultTestParticipantDTO>();
+		testTasks = new ArrayList<CertificationResultTestTaskDTO>();
 	}
 	
 	public List<CertificationResultTestProcedureDTO> getTestProcedures() {
@@ -57,6 +63,8 @@ public class CertificationResultDTO {
 		this.sed = entity.getSed();
 		this.g1Success = entity.getG1Success();
 		this.g2Success = entity.getG2Success();
+		this.apiDocumentation = entity.getApiDocumentation();
+		this.privacySecurityFramework = entity.getPrivacySecurityFramework();
 		this.successful = entity.isSuccess();
 		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -192,6 +200,38 @@ public class CertificationResultDTO {
 
 	public void setUcdProcesses(List<CertificationResultUcdProcessDTO> ucdProcesses) {
 		this.ucdProcesses = ucdProcesses;
+	}
+
+	public List<CertificationResultTestParticipantDTO> getTestParticipants() {
+		return testParticipants;
+	}
+
+	public void setTestParticipants(List<CertificationResultTestParticipantDTO> testParticipants) {
+		this.testParticipants = testParticipants;
+	}
+
+	public List<CertificationResultTestTaskDTO> getTestTasks() {
+		return testTasks;
+	}
+
+	public void setTestTasks(List<CertificationResultTestTaskDTO> testTasks) {
+		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 	
 }

@@ -57,6 +57,12 @@ public class CertificationResultEntity  implements Serializable {
 	@Column(name = "success", nullable = false  )
 	private Boolean success;
 	
+	@Column(name = "api_documentation")
+	private String apiDocumentation;
+	
+	@Column(name = "privacy_security_framework")
+	private String privacySecurityFramework;
+	
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -233,5 +239,21 @@ public class CertificationResultEntity  implements Serializable {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 }

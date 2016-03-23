@@ -1,0 +1,13 @@
+package gov.healthit.chpl.dao;
+
+import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
+
+import java.util.List;
+
+public interface CertifiedProductAccessibilityStandardDAO {
+	
+	public List<CertifiedProductAccessibilityStandardDTO> getAccessibilityStandardsByCertifiedProductId(Long certifiedProductId) throws EntityRetrievalException;
+	public CertifiedProductAccessibilityStandardDTO createCertifiedProductAccessibilityStandard(CertifiedProductAccessibilityStandardDTO toCreate) throws EntityCreationException;
+	public CertifiedProductAccessibilityStandardDTO deleteCertifiedProductAccessibilityStandards(Long id) throws EntityRetrievalException;
+
+}
