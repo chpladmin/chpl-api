@@ -24,7 +24,6 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.manager.ProductManager;
-import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +34,6 @@ import io.swagger.annotations.ApiOperation;
 public class CertificationIdController {
 	
 	@Autowired ProductManager productManager;
-	@Autowired ProductVersionManager versionManager;
 
 	@ApiOperation(value="Retrieves an EHR Certification ID for a collection of products.",
 			notes="Calculates the details of a collection of products in order to retrieve an EHR Certification ID.")
@@ -74,7 +72,7 @@ public class CertificationIdController {
 		results.setMetPercentages(percents);
 		results.setMetCounts(counts);
 		
-		percents.put("criteria", 100);
+		percents.put("criteria", 10*productDtos.size());
 		counts.put("criteria", 1);
 		percents.put("cqmDomains", 100);
 		counts.put("cqmDomains", 1);
@@ -89,7 +87,7 @@ public class CertificationIdController {
 		}
 		results.setProducts(resultProducts);
 
-		results.setEhrCertificationId("TESTCERTID");
+		results.setEhrCertificationId("TESTCERTID" + productDtos.size());
 
 		return results;
 	}
