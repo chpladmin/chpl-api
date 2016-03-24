@@ -835,7 +835,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, List<CertificationResult> newCertResults)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
-		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
 		List<CertificationResultDTO> oldCertificationResults = certDao.findByCertifiedProductId(productDto.getId());
 		
 		for (CertificationResultDTO oldResult : oldCertificationResults){
