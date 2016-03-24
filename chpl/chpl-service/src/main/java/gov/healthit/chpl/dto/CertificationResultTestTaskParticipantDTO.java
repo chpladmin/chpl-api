@@ -5,7 +5,6 @@ import gov.healthit.chpl.entity.CertificationResultTestTaskParticipantEntity;
 public class CertificationResultTestTaskParticipantDTO {
 	private Long id;
 	private Long certTestTaskId;
-	private CertificationResultTestTaskDTO certTestTask;
 	private Long testParticipantId;
 	private TestParticipantDTO testParticipant;
 	
@@ -14,9 +13,6 @@ public class CertificationResultTestTaskParticipantDTO {
 	public CertificationResultTestTaskParticipantDTO(CertificationResultTestTaskParticipantEntity entity){		
 		this.id = entity.getId();
 		this.certTestTaskId = entity.getCertificationResultTestTaskId();
-		if(entity.getCertTestTask() != null) {
-			this.certTestTask = new CertificationResultTestTaskDTO(entity.getCertTestTask());
-		}
 		this.testParticipantId = entity.getTestParticipantId();
 		if(entity.getTestParticipant() != null) {
 			this.testParticipant = new TestParticipantDTO(entity.getTestParticipant());
@@ -54,14 +50,4 @@ public class CertificationResultTestTaskParticipantDTO {
 	public void setCertTestTaskId(Long certTestTaskId) {
 		this.certTestTaskId = certTestTaskId;
 	}
-
-	public CertificationResultTestTaskDTO getCertTestTask() {
-		return certTestTask;
-	}
-
-	public void setCertTestTask(CertificationResultTestTaskDTO certTestTask) {
-		this.certTestTask = certTestTask;
-	}
-	
-	
 }

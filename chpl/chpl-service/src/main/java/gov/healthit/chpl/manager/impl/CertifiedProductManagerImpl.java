@@ -94,6 +94,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingTestTaskDTO;
@@ -401,6 +402,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				certResultToCreate.setG1Success(certResult.getG1Success());
 				certResultToCreate.setG2Success(certResult.getG2Success());
 				certResultToCreate.setSed(certResult.getSed());
+				certResultToCreate.setApiDocumentation(certResult.getApiDocumentation());
+				certResultToCreate.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
 				CertificationResultDTO createdCert = certDao.create(certResultToCreate);
 				
 				if(certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
@@ -585,25 +588,28 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		//we only insert successful ones, but all of the ones in the pendingDTO 
 		//are successful
 		if(pendingCp.getCqmCriterion() != null && pendingCp.getCqmCriterion().size() > 0) {
-			for(PendingCqmCriterionDTO cqmResult : pendingCp.getCqmCriterion()) {
-				if(cqmResult.isMeetsCriteria() && !StringUtils.isEmpty(cqmResult.getVersion())) {
+			for(PendingCqmCriterionDTO pendingCqm : pendingCp.getCqmCriterion()) {
+				if(pendingCqm.isMeetsCriteria() && !StringUtils.isEmpty(pendingCqm.getVersion())) {
 					CQMCriterionDTO criterion = null;
-					if(cqmResult.getCmsId().startsWith("CMS")) {
-						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmResult.getVersion());
+					if(pendingCqm.getCmsId().startsWith("CMS")) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(pendingCqm.getCmsId(), pendingCqm.getVersion());
 						
 						if(criterion == null) {
-							throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getCmsId() + 
-									" and version " + cqmResult.getVersion() + ".");
+							throw new EntityCreationException("Could not find a CQM with number " + pendingCqm.getCmsId() + 
+									" and version " + pendingCqm.getVersion() + ".");
 						}
 						
 						CQMResultDTO cqmResultToCreate = new CQMResultDTO();
 						cqmResultToCreate.setCqmCriterionId(criterion.getId());
 						cqmResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
-						cqmResultToCreate.setCreationDate(new Date());
-						cqmResultToCreate.setDeleted(false);
-						cqmResultToCreate.setLastModifiedDate(new Date());
-						cqmResultToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-						cqmResultToCreate.setSuccess(cqmResult.isMeetsCriteria());
+						cqmResultToCreate.setSuccess(pendingCqm.isMeetsCriteria());
+						if(pendingCqm.getCertifications() != null) {
+							for(PendingCqmCertificationCriterionDTO cert : pendingCqm.getCertifications()) {
+								CQMResultCriteriaDTO certDto = new CQMResultCriteriaDTO();
+								certDto.setCriterionId(cert.getCertificationId());
+								cqmResultToCreate.getCriteria().add(certDto);
+							}
+						}
 						cqmResultDAO.create(cqmResultToCreate);
 					}
 				}

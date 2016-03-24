@@ -879,7 +879,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 				+ "FROM CertificationResultTestTaskParticipantEntity tp "
 				+ "LEFT OUTER JOIN FETCH tp.certTestTask "
 				+ "LEFT OUTER JOIN FETCH tp.testParticipant "
-				+ "where (NOT tp.deleted = true) AND (certificationResultTestTaskId = :taskId) ", 
+				+ "where (NOT tp.deleted = true) AND (tp.certificationResultTestTaskId = :taskId) ", 
 				CertificationResultTestTaskParticipantEntity.class );
 		query.setParameter("taskId", taskId);
 		

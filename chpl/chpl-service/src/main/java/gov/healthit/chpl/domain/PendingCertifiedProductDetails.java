@@ -304,6 +304,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 					if(ttDto.getPendingTestTask() != null) {
 						PendingTestTaskDTO tt = ttDto.getPendingTestTask();
 						CertificationResultTestTask task = new CertificationResultTestTask();
+						task.setUniqueId(tt.getUniqueId());
 						task.setDescription(tt.getDescription());
 						task.setTaskErrors(tt.getTaskErrors());
 						task.setTaskErrorsStddev(tt.getTaskErrorsStddev());
@@ -323,6 +324,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 								if(ptDto.getTestParticipant() != null) {
 									PendingTestParticipantDTO pt = ptDto.getTestParticipant();
 									CertificationResultTestParticipant part = new CertificationResultTestParticipant();
+									part.setUniqueId(pt.getUniqueId());
 									part.setAge(pt.getAge());
 									part.setAssistiveTechnologyNeeds(pt.getAssistiveTechnologyNeeds());
 									part.setComputerExperienceMonths(pt.getComputerExperienceMonths());

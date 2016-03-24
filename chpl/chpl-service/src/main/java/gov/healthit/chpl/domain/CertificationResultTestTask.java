@@ -7,6 +7,7 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 
 public class CertificationResultTestTask {
 	private Long id;
+	private String uniqueId;
 	private Long testTaskId;
 	private String description;
 	private Float taskSuccessAverage;
@@ -175,5 +176,13 @@ public class CertificationResultTestTask {
 
 	public void setTestParticipants(List<CertificationResultTestParticipant> testParticipants) {
 		this.testParticipants = testParticipants;
+	}
+
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 }

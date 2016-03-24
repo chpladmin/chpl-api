@@ -4,6 +4,7 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 
 public class CertificationResultTestParticipant {
 	private Long id;
+	private String uniqueId;
 	private Long testParticipantId;
 	private String gender;
 	private Integer age;
@@ -123,6 +124,14 @@ public class CertificationResultTestParticipant {
 
 	public void setEducationTypeName(String educationTypeName) {
 		this.educationTypeName = educationTypeName;
+	}
+
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 
 }
