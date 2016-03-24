@@ -110,9 +110,8 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 			
 			boolean meetsD2Criterion = hasCert("170.315 (d)(2)", allMetCerts);
 			boolean meetsD10Criterion = hasCert("170.315 (d)(10)", allMetCerts);
-			if( (!meetsD2Criterion && !meetsD10Criterion) || 
-				(meetsD2Criterion && meetsD10Criterion) ) {
-				product.getErrorMessages().add("Certification criterion 170.315 (g)(7) or 170.315 (g)(8) or 170.315 (g)(9) was found so EITHER 170.315 (d)(2) OR 170.315 (d)(10) is required (not both).");
+			if(!meetsD2Criterion && !meetsD10Criterion) {
+				product.getErrorMessages().add("Certification criterion 170.315 (g)(7) or 170.315 (g)(8) or 170.315 (g)(9) was found so 170.315 (d)(2) or 170.315 (d)(10) is also required.");
 			}
 		}
 		

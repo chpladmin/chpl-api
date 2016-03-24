@@ -54,13 +54,12 @@ public interface CertificationResultDAO {
 	public CertificationResultUcdProcessDTO addUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityCreationException;
 	public void deleteUcdProcessMapping(Long mappingId);
 	
-//	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForCertificationResult(Long certificationResultId);
-//	public CertificationResultTestTaskParticipantDTO addTestParticipantMapping(CertificationResultTestTaskParticipantDTO dto) throws EntityCreationException;
-//	public void deleteTestParticipantMapping(Long mappingId);
-	
 	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForTask(Long taskId);
 	public CertificationResultTestTaskDTO addTestTaskMapping(CertificationResultTestTaskDTO dto) throws EntityCreationException;
 	public void deleteTestTaskMapping(Long mappingId);
+	
+	public CertificationResultTestTaskParticipantDTO addTestParticipantMapping(CertificationResultTestTaskParticipantDTO dto) throws EntityCreationException;
+	public void deleteTestParticipantMapping(Long mappingId);
 }
 

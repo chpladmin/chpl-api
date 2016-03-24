@@ -220,9 +220,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
 				result.setGap(null);
 			}
-			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SED)) {
-				result.setSed(null);
-			}
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
 				result.setG1Success(null);
 			}
@@ -265,6 +262,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				}
 			} else {
 				result.setUcdProcesses(null);
+				result.setSed(null);
 			}
 			
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
