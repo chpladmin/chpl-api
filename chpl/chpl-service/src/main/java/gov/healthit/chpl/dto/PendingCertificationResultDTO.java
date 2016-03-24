@@ -7,7 +7,6 @@ import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEnti
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestParticipantEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity;
@@ -35,7 +34,6 @@ public class PendingCertificationResultDTO {
 	private List<PendingCertificationResultTestProcedureDTO> testProcedures;
 	private List<PendingCertificationResultTestStandardDTO> testStandards;
 	private List<PendingCertificationResultTestToolDTO> testTools;
-	private List<PendingCertificationResultTestParticipantDTO> testParticipants;
 	private List<PendingCertificationResultTestTaskDTO> testTasks;
 	
 	public PendingCertificationResultDTO() {
@@ -46,7 +44,6 @@ public class PendingCertificationResultDTO {
 		testProcedures = new ArrayList<PendingCertificationResultTestProcedureDTO>();
 		testStandards = new ArrayList<PendingCertificationResultTestStandardDTO>();
 		testTools = new ArrayList<PendingCertificationResultTestToolDTO>();
-		testParticipants = new ArrayList<PendingCertificationResultTestParticipantDTO>();
 		testTasks = new ArrayList<PendingCertificationResultTestTaskDTO>();
 	}
 	
@@ -106,15 +103,10 @@ public class PendingCertificationResultDTO {
 			}
 		}
 		
-		if(entity.getTestParticipants() != null) {
-			for(PendingCertificationResultTestParticipantEntity e : entity.getTestParticipants()) {
-				this.getTestParticipants().add(new PendingCertificationResultTestParticipantDTO(e));
-			}
-		}
-		
 		if(entity.getTestTasks() != null) {
 			for(PendingCertificationResultTestTaskEntity e : entity.getTestTasks()) {
-				this.getTestTasks().add(new PendingCertificationResultTestTaskDTO(e));
+				PendingCertificationResultTestTaskDTO taskDto = new PendingCertificationResultTestTaskDTO(e);
+				this.getTestTasks().add(taskDto);
 			}
 		}
 	}
@@ -246,14 +238,6 @@ public class PendingCertificationResultDTO {
 
 	public void setUcdProcesses(List<PendingCertificationResultUcdProcessDTO> ucdProcesses) {
 		this.ucdProcesses = ucdProcesses;
-	}
-
-	public List<PendingCertificationResultTestParticipantDTO> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(List<PendingCertificationResultTestParticipantDTO> testParticipants) {
-		this.testParticipants = testParticipants;
 	}
 
 	public List<PendingCertificationResultTestTaskDTO> getTestTasks() {

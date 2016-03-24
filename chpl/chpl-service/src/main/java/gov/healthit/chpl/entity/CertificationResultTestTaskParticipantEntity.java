@@ -15,20 +15,26 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "certification_result_test_participant")
-public class CertificationResultTestParticipantEntity {
+@Table(name = "certification_result_test_task_participant")
+public class CertificationResultTestTaskParticipantEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "certification_result_test_participant_id")
+	@Column(name = "certification_result_test_task_participant_id")
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column( name = "certification_result_id", nullable = false  )
-	private Long certificationResultId;
+	@Column(name = "certification_result_test_task_id", nullable = false )	
+	private Long certificationResultTestTaskId;
+
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_result_test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private CertificationResultTestTaskEntity certTestTask;
 	
-	@Column(name = "test_participant_id")
+	@Basic( optional = false )
+	@Column(name = "test_participant_id", nullable = false )	
 	private Long testParticipantId;
 	
 	@Basic( optional = true )
@@ -42,14 +48,6 @@ public class CertificationResultTestParticipantEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getCertificationResultId() {
-		return certificationResultId;
-	}
-
-	public void setCertificationResultId(Long certificationResultId) {
-		this.certificationResultId = certificationResultId;
 	}
 
 	@Basic( optional = false )
@@ -107,5 +105,21 @@ public class CertificationResultTestParticipantEntity {
 
 	public void setTestParticipant(TestParticipantEntity testParticipantEntity) {
 		this.testParticipant = testParticipantEntity;
+	}
+
+	public Long getCertificationResultTestTaskId() {
+		return certificationResultTestTaskId;
+	}
+
+	public void setCertificationResultTestTaskId(Long certificationResultTestTaskId) {
+		this.certificationResultTestTaskId = certificationResultTestTaskId;
+	}
+
+	public CertificationResultTestTaskEntity getCertTestTask() {
+		return certTestTask;
+	}
+
+	public void setCertTestTask(CertificationResultTestTaskEntity certTestTask) {
+		this.certTestTask = certTestTask;
 	}
 }

@@ -1,9 +1,10 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.CertificationResultTestParticipantDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 
 public class CertificationResultTestParticipant {
 	private Long id;
+	private String uniqueId;
 	private Long testParticipantId;
 	private String gender;
 	private Integer age;
@@ -19,7 +20,7 @@ public class CertificationResultTestParticipant {
 		super();
 	}
 	
-	public CertificationResultTestParticipant(CertificationResultTestParticipantDTO dto) {
+	public CertificationResultTestParticipant(CertificationResultTestTaskParticipantDTO dto) {
 		this.id = dto.getId();
 		this.testParticipantId = dto.getTestParticipantId();
 		if(dto.getTestParticipant() != null) {
@@ -123,6 +124,14 @@ public class CertificationResultTestParticipant {
 
 	public void setEducationTypeName(String educationTypeName) {
 		this.educationTypeName = educationTypeName;
+	}
+
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 
 }

@@ -5,7 +5,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CQMResultCriteria;
+import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
@@ -191,10 +191,10 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		cqmSuccessCount = 0;
 		for(CQMResultDetails cqmDetail : detail.getCqmResults()) {
 			if(cqmDetail.getId() != null && cqmDetail.getId() == 4L) {
-				List<CQMResultCriteria> criteriaMapping = cqmDetail.getCriteria();
+				List<CQMResultCertification> criteriaMapping = cqmDetail.getCriteria();
 				assertNotNull(criteriaMapping);
 				assertEquals(1, criteriaMapping.size());
-				assertEquals(66, criteriaMapping.get(0).getCriteriaId().longValue());
+				assertEquals(66, criteriaMapping.get(0).getCertificationId().longValue());
 			}
 			if(cqmDetail.isSuccess()) {
 				cqmSuccessCount++;

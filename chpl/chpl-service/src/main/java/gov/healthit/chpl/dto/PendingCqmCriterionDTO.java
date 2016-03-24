@@ -1,5 +1,9 @@
 package gov.healthit.chpl.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.healthit.chpl.entity.PendingCqmCertificationCriteriaEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
 public class PendingCqmCriterionDTO {
@@ -16,9 +20,14 @@ public class PendingCqmCriterionDTO {
 	private Long typeId;
 	private String domain;
 	
-	public PendingCqmCriterionDTO() {} 
+	private List<PendingCqmCertificationCriterionDTO> certifications;
+	
+	public PendingCqmCriterionDTO() {
+		certifications = new ArrayList<PendingCqmCertificationCriterionDTO>();
+	} 
 	
 	public PendingCqmCriterionDTO(PendingCqmCriterionEntity entity) {
+		this();
 		this.setId(entity.getId());
 		this.setCqmCriterionId(entity.getMappedCriterion().getId());
 		this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
@@ -31,6 +40,13 @@ public class PendingCqmCriterionDTO {
 		this.setVersion(entity.getMappedCriterion().getCqmVersion());
 		this.setTypeId(entity.getMappedCriterion().getCqmCriterionTypeId());
 		this.setDomain(entity.getMappedCriterion().getCqmDomain());
+		
+		if(entity.getCertifications() != null && entity.getCertifications().size() > 0) {
+			for(PendingCqmCertificationCriteriaEntity certEntity : entity.getCertifications()) {
+				PendingCqmCertificationCriterionDTO cert = new PendingCqmCertificationCriterionDTO(certEntity);
+				this.certifications.add(cert);
+			}
+		}
 	}
 
 	public Long getId() {
@@ -119,5 +135,13 @@ public class PendingCqmCriterionDTO {
 
 	public void setDomain(String domain) {
 		this.domain = domain;
+	}
+
+	public List<PendingCqmCertificationCriterionDTO> getCertifications() {
+		return certifications;
+	}
+
+	public void setCertifications(List<PendingCqmCertificationCriterionDTO> certifications) {
+		this.certifications = certifications;
 	}
 }

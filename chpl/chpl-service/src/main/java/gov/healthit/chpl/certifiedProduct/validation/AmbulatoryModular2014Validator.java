@@ -10,18 +10,45 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 @Component("ambulatoryModular2014Validator")
 public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validator {
 
-	private static final String[] g1ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
-			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
-			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)", "170.314 (a)(18)", 
-			"170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(2)",
-			"170.314 (b)(3)", "170.314 (b)(4)", "170.314 (e)(1)",
-			"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
-	private static final String[] g2ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
-			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
-			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)",
-			"170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(2)",
-			"170.314 (b)(3)", "170.314 (b)(4)", "170.314 (e)(1)",
-			"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
+	private static final String[] g1ComplementaryCerts = {"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
+	private static final String[] g2ComplementaryCerts = {"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
+	
+	@Override
+	public String[] getG1ComplimentaryCerts() {
+		String[] certs = super.getG1ComplimentaryCerts();
+		String[] allCerts = new String[certs.length + g1ComplementaryCerts.length];
+		
+		int allCertIndex = 0;
+
+		for(int j = 0; j < certs.length; j++) {
+			allCerts[allCertIndex] = new String(certs[j]);
+			allCertIndex++;
+		}
+		for(int j = 0; j < g1ComplementaryCerts.length; j++) {
+			allCerts[allCertIndex] = new String(g1ComplementaryCerts[j]);
+			allCertIndex++;
+		}
+		return allCerts;
+	}
+	
+	@Override
+	public String[] getG2ComplimentaryCerts() {
+		String[] certs = super.getG2ComplimentaryCerts();
+		String[] allCerts = new String[certs.length + g2ComplementaryCerts.length];
+		
+		int allCertIndex = 0;
+		for(int j = 0; j < certs.length; j++) {
+			allCerts[allCertIndex] = new String(certs[j]);
+			allCertIndex++;
+		}
+			
+		for(int j = 0; j < g2ComplementaryCerts.length; j++) {
+			allCerts[allCertIndex] = new String(g2ComplementaryCerts[j]);
+			allCertIndex++;
+		}
+		
+		return allCerts;
+	}
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
@@ -35,10 +62,11 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 		}	
 		if(hasG1Cert) {
+			String[] g1Certs = getG1ComplimentaryCerts();
 			boolean hasG1Complement = false;
-			for(int i = 0; i < g1ComplementaryCerts.length && !hasG1Complement; i++) {
+			for(int i = 0; i < g1Certs.length && !hasG1Complement; i++) {
 				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g1ComplementaryCerts[i]) && certCriteria.getMeetsCriteria()) {
+					if(certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.getMeetsCriteria()) {
 						hasG1Complement = true;
 					}
 				}
@@ -57,10 +85,11 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 		}	
 		if(hasG2Cert) {
+			String[] g2Certs = getG2ComplimentaryCerts();
 			boolean hasG2Complement = false;
-			for(int i = 0; i < g2ComplementaryCerts.length && !hasG2Complement; i++) {
+			for(int i = 0; i < g2Certs.length && !hasG2Complement; i++) {
 				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g2ComplementaryCerts[i]) && certCriteria.getMeetsCriteria()) {
+					if(certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.getMeetsCriteria()) {
 						hasG2Complement = true;
 					}
 				}
@@ -88,10 +117,11 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 		}	
 		if(hasG1Cert) {
+			String[] g1Certs = getG1ComplimentaryCerts();
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g1ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+			for(int i = 0; i < g1Certs.length && !hasAtLeastOneCertPartner; i++) {
 				for(CertificationResult certCriteria : product.getCertificationResults()) {
-					if(certCriteria.getNumber().equals(g1ComplementaryCerts[i]) && certCriteria.isSuccess()) {
+					if(certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.isSuccess()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}
@@ -110,10 +140,11 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 		}	
 		if(hasG2Cert) {
+			String[] g2Certs = getG2ComplimentaryCerts();
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g2ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+			for(int i = 0; i < g2Certs.length && !hasAtLeastOneCertPartner; i++) {
 				for(CertificationResult certCriteria : product.getCertificationResults()) {
-					if(certCriteria.getNumber().equals(g2ComplementaryCerts[i]) && certCriteria.isSuccess()) {
+					if(certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.isSuccess()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}

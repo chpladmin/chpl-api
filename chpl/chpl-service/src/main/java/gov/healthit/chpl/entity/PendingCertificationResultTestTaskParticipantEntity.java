@@ -15,36 +15,34 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
-@Table(name="pending_certification_result_test_task")
-public class PendingCertificationResultTestTaskEntity {
+@Table(name="pending_certification_result_test_task_participant")
+public class PendingCertificationResultTestTaskParticipantEntity {
 		
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "pending_certification_result_test_task_id", nullable = false  )
+	@Column( name = "pending_certification_result_test_task_participant_id", nullable = false  )
 	private Long id;
 
 	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
-	private Long pendingCertificationResultId;
+	@Column(name = "pending_certification_result_test_task_id", nullable = false )	
+	private Long pendingCertificationResultTestTaskId;
 
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "pending_certification_result_test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private PendingCertificationResultTestTaskEntity certTestTask;
+	
 	@Basic( optional = false )
-	@Column(name = "pending_test_task_id", nullable = false )	
-	private Long pendingTestTaskId;
+	@Column(name = "pending_test_participant_id", nullable = false )	
+	private Long pendingTestParticipantId;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private PendingTestTaskEntity testTask;
+	@JoinColumn(name = "pending_test_participant_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private PendingTestParticipantEntity testParticipant;
 	
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultTestTaskId"  )
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_test_task_id", nullable = false  )
-	private Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants = new HashSet<PendingCertificationResultTestTaskParticipantEntity>();
-	
- 	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -102,35 +100,35 @@ public class PendingCertificationResultTestTaskEntity {
 		this.deleted = deleted;
 	}
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
+	public Long getPendingCertificationResultTestTaskId() {
+		return pendingCertificationResultTestTaskId;
 	}
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
+	public void setPendingCertificationResultTestTaskId(Long pendingCertificationResultTestTaskId) {
+		this.pendingCertificationResultTestTaskId = pendingCertificationResultTestTaskId;
 	}
 
-	public Long getPendingTestTaskId() {
-		return pendingTestTaskId;
+	public PendingCertificationResultTestTaskEntity getCertTestTask() {
+		return certTestTask;
 	}
 
-	public void setPendingTestTaskId(Long pendingTestTaskId) {
-		this.pendingTestTaskId = pendingTestTaskId;
+	public void setCertTestTask(PendingCertificationResultTestTaskEntity certTestTask) {
+		this.certTestTask = certTestTask;
+	}
+	
+	public Long getPendingTestParticipantId() {
+		return pendingTestParticipantId;
 	}
 
-	public PendingTestTaskEntity getTestTask() {
-		return testTask;
+	public void setPendingTestParticipantId(Long pendingTestParticipantId) {
+		this.pendingTestParticipantId = pendingTestParticipantId;
 	}
 
-	public void setTestTask(PendingTestTaskEntity testTask) {
-		this.testTask = testTask;
+	public PendingTestParticipantEntity getTestParticipant() {
+		return testParticipant;
 	}
 
-	public Set<PendingCertificationResultTestTaskParticipantEntity> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants) {
-		this.testParticipants = testParticipants;
+	public void setTestParticipant(PendingTestParticipantEntity testParticipant) {
+		this.testParticipant = testParticipant;
 	}
 }

@@ -14,18 +14,14 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="pending_certification_result_test_participant")
-public class PendingCertificationResultTestParticipantEntity {
+@Table(name="pending_test_participant")
+public class PendingTestParticipantEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "pending_certification_result_test_participant_id", nullable = false  )
+	@Column( name = "pending_test_participant_id", nullable = false  )
 	private Long id;
-
-	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
-	private Long pendingCertificationResultId;
-
+	
 	@Basic(optional = false) 
 	@Column(name = "test_participant_unique_id", nullable = false) 
 	private String uniqueId;
@@ -113,14 +109,6 @@ public class PendingCertificationResultTestParticipantEntity {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
-	}
-
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
-
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
 	}
 
 	public String getGender() {

@@ -105,7 +105,7 @@ public class UserManagementController {
 					"Please click the link below to activate your account: <br/>" +
 					env.getProperty("chplUrlBegin") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
 				"</p>" +
-				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
+				"<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>" +
 				"<p>The CHPL Team</p>";
 
 		sendMailService.sendEmail(createdUser.getEmail(), "Confirm CHPL Administrator Account", htmlMessage);
@@ -235,7 +235,7 @@ public class UserManagementController {
 					"Please click the link below to create or update your account: <br/>" +
 					env.getProperty("chplUrlBegin") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
 				"</p>" +
-				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
+				"<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>" +
 				"<p>Take care,<br/> " +
 				 "The CHPL Team</p>";
 
