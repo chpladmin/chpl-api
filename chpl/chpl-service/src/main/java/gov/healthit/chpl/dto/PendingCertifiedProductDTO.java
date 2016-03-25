@@ -277,6 +277,7 @@ public class PendingCertifiedProductDTO {
 					as.setJustification(software.getJustification());
 					as.setName(software.getName());
 					as.setVersion(software.getVersion());
+					as.setGrouping(software.getGrouping());
 					certDto.getAdditionalSoftware().add(as);
 				}
 			}
