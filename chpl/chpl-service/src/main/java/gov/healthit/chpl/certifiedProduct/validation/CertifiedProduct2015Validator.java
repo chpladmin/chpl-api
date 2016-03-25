@@ -312,7 +312,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						} else {
 							for(CertificationResultTestTask task : certCriteria.getTestTasks()) {
 								if(task.getTestParticipants() == null || task.getTestParticipants().size() < 10) {
-									product.getErrorMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
+									product.getWarningMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
 								}
 							}
 						}

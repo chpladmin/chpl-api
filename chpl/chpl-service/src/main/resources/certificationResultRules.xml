@@ -16,8 +16,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
@@ -36,8 +36,8 @@
 			<testData>false</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
@@ -116,8 +116,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>		
 	<certificationResult>
@@ -136,8 +136,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
@@ -156,8 +156,8 @@
 			<testData>false</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
@@ -316,8 +316,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
@@ -356,8 +356,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
@@ -376,8 +376,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
@@ -396,8 +396,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
@@ -456,8 +456,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
@@ -476,8 +476,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
@@ -596,8 +596,8 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
-			<task>false</task>
-			<participant>false</participant>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
