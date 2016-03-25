@@ -5,6 +5,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -115,6 +116,21 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		}
 		if(product.getClassificationType() == null || product.getClassificationType().get("id") == null) {
 			product.getErrorMessages().add("Product classification is required but was not found.");
+		}
+		
+		//check sed/ucd/tasks
+		for(CertificationResult cert : product.getCertificationResults()) {
+			if(cert.isSed() != null && cert.isSed().booleanValue() == true) {
+				for(CertificationResult certCriteria : product.getCertificationResults()) {
+					if (certCriteria.getTestTasks() != null && certCriteria.getTestTasks().size() > 0){
+						for(CertificationResultTestTask task : certCriteria.getTestTasks()) {
+							if(task.getTestParticipants() == null || task.getTestParticipants().size() < 5) {
+								product.getWarningMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 5 participants.");
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		// check cqms

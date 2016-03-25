@@ -885,10 +885,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						oldResult.setPrivacySecurityFramework(null);
 					}
 					
+					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.SED)) {
+						oldResult.setSed(newCertResult.isSed());
+					} else {
+						oldResult.setPrivacySecurityFramework(null);
+					}
+					
 					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.UCD_FIELDS) ||
 							newCertResult.getUcdProcesses() == null || newCertResult.getUcdProcesses().size() == 0) {
 						oldResult.setUcdProcesses(new ArrayList<CertificationResultUcdProcessDTO>());
-						oldResult.setSed(Boolean.FALSE);
 					} else {
 						for(CertificationResultUcdProcess newUcdProcess : newCertResult.getUcdProcesses()) {
 							CertificationResultUcdProcessDTO ucd = new CertificationResultUcdProcessDTO();
