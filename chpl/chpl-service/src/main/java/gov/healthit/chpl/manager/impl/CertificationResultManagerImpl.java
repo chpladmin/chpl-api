@@ -148,11 +148,6 @@ public class CertificationResultManagerImpl implements
 			+ ")")
 	@Transactional(readOnly = false)
 	public CertificationResultDTO update(Long acbId, CertificationResultDTO toUpdate) throws EntityRetrievalException, EntityCreationException {
-		if(toUpdate.getUcdProcesses() != null && toUpdate.getUcdProcesses().size() > 0) {
-			toUpdate.setSed(Boolean.TRUE);
-		} else {
-			toUpdate.setSed(Boolean.FALSE);
-		}
 		CertificationResultDTO updated = certResultDAO.update(toUpdate);
 		
 		List<CertificationResultUcdProcessDTO> sed = updateSed(toUpdate);
