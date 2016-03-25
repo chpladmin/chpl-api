@@ -179,12 +179,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(product.getCertificationBodyId() == null) {
 			product.getErrorMessages().add("ACB ID is required but was not found.");
 		}
-		if(product.getPracticeTypeId() == null) {
-			product.getErrorMessages().add("Practice setting is required but was not found.");
-		}
-		if(product.getProductClassificationId() == null) {
-			product.getErrorMessages().add("Product classification is required but was not found.");
-		}
 		if(StringUtils.isEmpty(product.getReportFileLocation())) {
 			product.getErrorMessages().add("Test Report URL is required but was not found.");
 		} else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {

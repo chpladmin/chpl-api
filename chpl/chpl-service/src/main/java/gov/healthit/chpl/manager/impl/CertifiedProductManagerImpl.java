@@ -709,7 +709,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			if(newQmsStandard.getId() == null) {
 				newQmsStandard.setQmsStandardId(qms.getId());
 				qmsToAdd.add(newQmsStandard);
-			} 
+			} else {
+				//it exists so update it
+				cpQmsDao.updateCertifiedProductQms(newQmsStandard);
+			}
 		}
 		
 		for(CertifiedProductQmsStandardDTO currQms : beforeQms) {
