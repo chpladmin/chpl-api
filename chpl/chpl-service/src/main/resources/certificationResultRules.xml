@@ -4,8 +4,10 @@
 		<number>170.314 (a)(1)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -14,14 +16,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(2)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -30,14 +36,18 @@
 			<testData>false</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
 		<number>170.314 (a)(3)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -46,14 +56,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
 		<number>170.314 (a)(4)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -62,14 +76,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(5)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -78,14 +96,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(6)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -94,14 +116,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>		
 	<certificationResult>
 		<number>170.314 (a)(7)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -110,14 +136,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(8)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -126,14 +156,18 @@
 			<testData>false</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
 		<number>170.314 (a)(9)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -142,14 +176,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>		
 	<certificationResult>
 		<number>170.314 (a)(10)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -158,14 +196,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>		
 	<certificationResult>
 		<number>170.314 (a)(11)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -174,14 +216,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(12)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -190,14 +236,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(13)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -206,14 +256,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
 		<number>170.314 (a)(14)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -222,14 +276,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(15)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -238,14 +296,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(16)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -254,14 +316,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
 		<number>170.314 (a)(17)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -270,14 +336,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
 		<number>170.314 (a)(18)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -286,14 +356,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(19)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -302,14 +376,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (a)(20)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -318,14 +396,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (b)(1)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -334,14 +416,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>	
 	<certificationResult>
 		<number>170.314 (b)(2)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -350,14 +436,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (b)(3)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -366,14 +456,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (b)(4)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -382,14 +476,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (b)(5)(A)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -398,14 +496,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (b)(5)(B)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -414,14 +516,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (b)(6)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -430,14 +536,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (b)(7)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -446,14 +556,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (b)(8)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -462,14 +576,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (b)(9)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -478,14 +596,18 @@
 			<testData>true</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (c)(1)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -494,14 +616,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (c)(2)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -510,14 +636,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (c)(3)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -526,14 +656,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (d)(1)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -542,14 +676,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (d)(2)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -558,14 +696,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (d)(3)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -574,14 +716,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (d)(4)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -590,14 +736,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (d)(5)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -606,14 +756,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (d)(6)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -622,14 +776,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (d)(7)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -638,14 +796,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (d)(8)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -654,14 +816,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (d)(9)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -670,14 +836,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (e)(1)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -686,14 +856,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (e)(2)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -702,14 +876,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (e)(3)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>true</g1>
 			<g2>true</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -718,14 +896,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (f)(1)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -734,14 +916,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (f)(2)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -750,14 +936,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (f)(3)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -766,14 +956,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (f)(4)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -782,14 +976,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (f)(5)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -798,14 +996,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (f)(6)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -814,14 +1016,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (f)(7)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -830,14 +1036,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (g)(1)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -846,14 +1056,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (g)(2)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -862,14 +1076,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (g)(3)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -878,14 +1096,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (g)(4)</number>
 		<properties>
 			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -894,14 +1116,18 @@
 			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (h)(1)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -910,14 +1136,18 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (h)(2)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -926,14 +1156,19 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
 	<certificationResult>
 		<number>170.314 (h)(3)</number>
 		<properties>
 			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
+			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
 			<g1>false</g1>
 			<g2>false</g2>
 			<additionalSoftware>true</additionalSoftware>
@@ -942,6 +1177,1210 @@
 			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
 		</properties>
 	</certificationResult>
+	
+	<certificationResult>
+		<number>170.315 (a)(1)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (a)(2)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>	
+	<certificationResult>
+		<number>170.315 (a)(3)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>	
+	<certificationResult>
+		<number>170.315 (a)(4)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (a)(5)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (a)(6)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>		
+	<certificationResult>
+		<number>170.315 (a)(7)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (a)(8)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>	
+	<certificationResult>
+		<number>170.315 (a)(9)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>		
+	<certificationResult>
+		<number>170.315 (a)(10)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>		
+	<certificationResult>
+		<number>170.315 (a)(11)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (a)(12)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (a)(13)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>	
+	<certificationResult>
+		<number>170.315 (a)(14)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (a)(15)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (b)(1)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>	
+	<certificationResult>
+		<number>170.315 (b)(2)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (b)(3)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>true</sed>
+			<ucd>true</ucd>
+			<task>true</task>
+			<participant>true</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (b)(4)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (b)(5)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (b)(6)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (b)(7)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (b)(8)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (b)(9)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (c)(1)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (c)(2)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (c)(3)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (c)(4)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(1)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(2)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(3)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(4)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(5)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(6)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(7)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(8)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(9)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(10)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (d)(11)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (e)(1)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (e)(2)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (e)(3)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (f)(1)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (f)(2)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (f)(3)</number>
+		<properties>
+			<gap>true</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (f)(4)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (f)(5)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (f)(6)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (f)(7)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (g)(1)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (g)(2)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (g)(3)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (g)(4)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (g)(5)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (g)(6)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>false</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (g)(7)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>false</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>true</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (g)(8)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>true</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>false</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>false</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (g)(9)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>true</functionalityTested>
+			<apiDocumentation>true</apiDocumentation>
+			<g1>true</g1>
+			<g2>true</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (h)(1)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	<certificationResult>
+		<number>170.315 (h)(2)</number>
+		<properties>
+			<gap>false</gap>
+			<privacySecurity>true</privacySecurity>
+			<standardsTested>true</standardsTested>
+			<functionalityTested>false</functionalityTested>
+			<apiDocumentation>false</apiDocumentation>
+			<g1>false</g1>
+			<g2>false</g2>
+			<additionalSoftware>true</additionalSoftware>
+			<testTool>true</testTool>
+			<testProcedure>true</testProcedure>
+			<testData>true</testData>
+			<sed>false</sed>
+			<ucd>false</ucd>
+			<task>false</task>
+			<participant>false</participant>
+		</properties>
+	</certificationResult>
+	
 </certificationResults>

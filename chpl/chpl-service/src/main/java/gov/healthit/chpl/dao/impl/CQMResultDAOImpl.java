@@ -21,7 +21,7 @@ import gov.healthit.chpl.entity.CQMResultEntity;
 public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 
 	@Override
-	public void create(CQMResultDTO cqmResult) throws EntityCreationException {
+	public CQMResultDTO create(CQMResultDTO cqmResult) throws EntityCreationException {
 		
 		CQMResultEntity entity = null;
 		try {
@@ -43,12 +43,19 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 			
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setLastModifiedDate(new Date());
-			entity.setCreationDate(cqmResult.getCreationDate());
+			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
-			
 			create(entity);	
+			
+			if(cqmResult.getCriteria() != null) {
+				for(CQMResultCriteriaDTO certDto : cqmResult.getCriteria()) {
+					certDto.setCqmResultId(entity.getId());
+					createCriteriaMapping(certDto);
+				}
+			}
+			
+			return new CQMResultDTO(entity);
 		}
-		
 	}
 	
 	@Override

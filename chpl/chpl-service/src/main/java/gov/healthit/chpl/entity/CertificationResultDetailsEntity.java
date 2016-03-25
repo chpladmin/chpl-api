@@ -46,6 +46,12 @@ public class CertificationResultDetailsEntity {
 	@Column(name = "g2_success")
 	private Boolean g2Success;
 	
+	@Column(name = "api_documentation")
+	private String apiDocumentation;
+	
+	@Column(name = "privacy_security_framework")
+	private String privacySecurityFramework;
+	
 	public Long getId() {
 		return id;
 	}
@@ -124,5 +130,21 @@ public class CertificationResultDetailsEntity {
 
 	public void setG2Success(Boolean g2Success) {
 		this.g2Success = g2Success;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 }

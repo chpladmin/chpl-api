@@ -1,8 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -22,6 +23,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
@@ -31,8 +33,10 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
+import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
+import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -40,14 +44,19 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
+import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
@@ -57,15 +66,19 @@ import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -73,18 +86,26 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
+import gov.healthit.chpl.dto.PendingTestParticipantDTO;
+import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -108,8 +129,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired CertificationCriterionDAO certCriterionDao;
 	@Autowired QmsStandardDAO qmsDao;
 	@Autowired TargetedUserDAO targetedUserDao;
+	@Autowired AccessibilityStandardDAO asDao;
 	@Autowired CertifiedProductQmsStandardDAO cpQmsDao;
 	@Autowired CertifiedProductTargetedUserDAO cpTargetedUserDao;
+	@Autowired CertifiedProductAccessibilityStandardDAO cpAccStdDao;
 	@Autowired CQMResultDAO cqmResultDAO;
 	@Autowired CQMCriterionDAO cqmCriterionDao;
 	@Autowired CertificationBodyDAO acbDao;
@@ -124,7 +147,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired TestStandardDAO testStandardDao;
 	@Autowired TestProcedureDAO testProcDao;
 	@Autowired UcdProcessDAO ucdDao;
-	
+	@Autowired TestParticipantDAO testParticipantDao;
+	@Autowired TestTaskDAO testTaskDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -206,6 +230,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setSedReportFileLocation(pendingCp.getSedReportFileLocation());
 		toCreate.setVisibleOnChpl(true);
 		toCreate.setIcs(pendingCp.getIcs());
+		toCreate.setAccessibilityCertified(pendingCp.getAccessibilityCertified());
 		toCreate.setPracticeTypeId(pendingCp.getPracticeTypeId());
 		toCreate.setProductClassificationTypeId(pendingCp.getProductClassificationId());
 		toCreate.setCreationDate(new Date());
@@ -340,8 +365,30 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 		}
 		
+		//accessibility standards
+		if(pendingCp.getAccessibilityStandards() != null && pendingCp.getAccessibilityStandards().size() > 0) {
+			for(PendingCertifiedProductAccessibilityStandardDTO as : pendingCp.getAccessibilityStandards()) {
+				CertifiedProductAccessibilityStandardDTO asDto = new CertifiedProductAccessibilityStandardDTO();
+				if(as.getAccessibilityStandardId() == null) {
+					AccessibilityStandardDTO toAdd = new AccessibilityStandardDTO();
+					toAdd.setName(as.getName());
+					toAdd = asDao.create(toAdd);
+					asDto.setAccessibilityStandardId(toAdd.getId());
+				} else {
+					asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
+				}
+				asDto.setCertifiedProductId(newCertifiedProduct.getId());
+				cpAccStdDao.createCertifiedProductAccessibilityStandard(asDto);
+			}
+		}
+				
 		//certs
 		if(pendingCp.getCertificationCriterion() != null && pendingCp.getCertificationCriterion().size() > 0) {
+			
+			//participants and tasks are re-used across multiple certifications within the same product
+			List<TestParticipantDTO> testParticipantsAdded = new ArrayList<TestParticipantDTO>();
+			List<TestTaskDTO> testTasksAdded = new ArrayList<TestTaskDTO>();
+			
 			for(PendingCertificationResultDTO certResult : pendingCp.getCertificationCriterion()) {
 				CertificationCriterionDTO criterion = certCriterionDao.getByName(certResult.getNumber());
 				if(criterion == null) {
@@ -354,7 +401,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				certResultToCreate.setGap(certResult.getGap());
 				certResultToCreate.setG1Success(certResult.getG1Success());
 				certResultToCreate.setG2Success(certResult.getG2Success());
-				certResultToCreate.setSed(certResult.getSed());
+				if(certResult.getSed() == null) {
+					if(certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
+						certResultToCreate.setSed(Boolean.TRUE);
+					} else {
+						certResultToCreate.setSed(Boolean.FALSE);
+					}
+				} else {
+					certResultToCreate.setSed(certResult.getSed());
+				}
+				certResultToCreate.setApiDocumentation(certResult.getApiDocumentation());
+				certResultToCreate.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
 				CertificationResultDTO createdCert = certDao.create(certResultToCreate);
 				
 				if(certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
@@ -364,6 +421,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						as.setJustification(software.getJustification());
 						as.setName(software.getName());
 						as.setVersion(software.getVersion());
+						as.setGrouping(software.getGrouping());
 						as.setCertificationResultId(createdCert.getId());
 						certDao.addAdditionalSoftwareMapping(as);
 					}
@@ -453,7 +511,82 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							logger.error("Could not insert test tool with null id. Name was " + tool.getName());
 
 						}
+					}
+				}
+				
+				if(certResult.getTestTasks() != null && certResult.getTestTasks().size() > 0) {
+					for(PendingCertificationResultTestTaskDTO certTask : certResult.getTestTasks()) {
+						//have we already added this one?
+						TestTaskDTO existingTt = null;
+						for(TestTaskDTO tt : testTasksAdded) {
+							if(certTask.getPendingTestTask() != null && 
+								certTask.getPendingTestTask().getUniqueId().equals(tt.getPendingUniqueId())) {
+								existingTt = tt;
+							}
+						}
+						if(existingTt == null && certTask.getPendingTestTask() != null) {
+							PendingTestTaskDTO pendingTask = certTask.getPendingTestTask();
+							TestTaskDTO tt = new TestTaskDTO();
+							tt.setDescription(pendingTask.getDescription());
+							tt.setTaskErrors(pendingTask.getTaskErrors());
+							tt.setTaskErrorsStddev(pendingTask.getTaskErrorsStddev());
+							tt.setTaskPathDeviationObserved(pendingTask.getTaskPathDeviationObserved());
+							tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
+							tt.setTaskRating(pendingTask.getTaskRating());
+							tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
+							tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
+							tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
+							tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
+							tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskPathDeviationObserved());
+							tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
+							tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
+							
+							//add test task
+							existingTt = testTaskDao.create(tt);
+							existingTt.setPendingUniqueId(pendingTask.getUniqueId());
+							testTasksAdded.add(existingTt);
+						}
+						//add mapping from cert result to test task
+						CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
+						taskDto.setTestTaskId(existingTt.getId());
+						taskDto.setCertificationResultId(createdCert.getId());
+							
+						if(certTask.getTaskParticipants() != null) {
+							for(PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask.getTaskParticipants()) {
+								PendingTestParticipantDTO certPart = certTaskPart.getTestParticipant();
+								if(certPart != null) {
+									TestParticipantDTO existingPart = null;
+									for(TestParticipantDTO currPart : testParticipantsAdded) {
+										if(currPart.getPendingUniqueId().equals(certPart.getUniqueId())) {
+											existingPart = currPart;
+										}
+									}
+									if(existingPart == null) {
+										TestParticipantDTO tp = new TestParticipantDTO();
+										tp.setAge(certPart.getAge());
+										tp.setAssistiveTechnologyNeeds(certPart.getAssistiveTechnologyNeeds());
+										tp.setComputerExperienceMonths(certPart.getComputerExperienceMonths());
+										tp.setEducationTypeId(certPart.getEducationTypeId());
+										tp.setGender(certPart.getGender());
+										tp.setOccupation(certPart.getOccupation());
+										tp.setProductExperienceMonths(certPart.getProductExperienceMonths());
+										tp.setProfessionalExperienceMonths(certPart.getProfessionalExperienceMonths());
+										
+										//add participant
+										existingPart = testParticipantDao.create(tp);
+										existingPart.setPendingUniqueId(certPart.getUniqueId());
+										testParticipantsAdded.add(existingPart);
+									}
+									
+									CertificationResultTestTaskParticipantDTO certPartDto = new CertificationResultTestTaskParticipantDTO();
+									certPartDto.setTestParticipantId(existingPart.getId());
+									certPartDto.setCertTestTaskId(taskDto.getId());
+									taskDto.getTaskParticipants().add(certPartDto);
+								}
+							}
+						}
 						
+						certDao.addTestTaskMapping(taskDto);
 					}
 				}
 			}
@@ -463,25 +596,28 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		//we only insert successful ones, but all of the ones in the pendingDTO 
 		//are successful
 		if(pendingCp.getCqmCriterion() != null && pendingCp.getCqmCriterion().size() > 0) {
-			for(PendingCqmCriterionDTO cqmResult : pendingCp.getCqmCriterion()) {
-				if(cqmResult.isMeetsCriteria() && !StringUtils.isEmpty(cqmResult.getVersion())) {
+			for(PendingCqmCriterionDTO pendingCqm : pendingCp.getCqmCriterion()) {
+				if(pendingCqm.isMeetsCriteria() && !StringUtils.isEmpty(pendingCqm.getVersion())) {
 					CQMCriterionDTO criterion = null;
-					if(cqmResult.getCmsId().startsWith("CMS")) {
-						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmResult.getVersion());
+					if(pendingCqm.getCmsId().startsWith("CMS")) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(pendingCqm.getCmsId(), pendingCqm.getVersion());
 						
 						if(criterion == null) {
-							throw new EntityCreationException("Could not find a CQM with number " + cqmResult.getCmsId() + 
-									" and version " + cqmResult.getVersion() + ".");
+							throw new EntityCreationException("Could not find a CQM with number " + pendingCqm.getCmsId() + 
+									" and version " + pendingCqm.getVersion() + ".");
 						}
 						
 						CQMResultDTO cqmResultToCreate = new CQMResultDTO();
 						cqmResultToCreate.setCqmCriterionId(criterion.getId());
 						cqmResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
-						cqmResultToCreate.setCreationDate(new Date());
-						cqmResultToCreate.setDeleted(false);
-						cqmResultToCreate.setLastModifiedDate(new Date());
-						cqmResultToCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-						cqmResultToCreate.setSuccess(cqmResult.isMeetsCriteria());
+						cqmResultToCreate.setSuccess(pendingCqm.isMeetsCriteria());
+						if(pendingCqm.getCertifications() != null) {
+							for(PendingCqmCertificationCriterionDTO cert : pendingCqm.getCertifications()) {
+								CQMResultCriteriaDTO certDto = new CQMResultCriteriaDTO();
+								certDto.setCriterionId(cert.getCertificationId());
+								cqmResultToCreate.getCriteria().add(certDto);
+							}
+						}
 						cqmResultDAO.create(cqmResultToCreate);
 					}
 				}
@@ -524,10 +660,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false) 
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
 		CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
 		toUpdate.setCertificationBodyId(acbId);
-		return update(acbId, toUpdate);
+		return cpDao.update(toUpdate);
 	}
 	
 	@Override
@@ -547,11 +682,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ ")")
 	@Transactional(readOnly = false)
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		CertifiedProductDTO before = cpDao.getById(dto.getId());
-		CertifiedProductDTO result = cpDao.update(dto);
-		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), "Updated " + result.getChplProductNumberForActivity() , before , result);
+		CertifiedProductDTO result = cpDao.update(dto);		
 		return result;
 	}	
 	
@@ -565,7 +696,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		List<CertifiedProductQmsStandardDTO> beforeQms = cpQmsDao.getQmsStandardsByCertifiedProductId(productDto.getId());
-		
 		List<CertifiedProductQmsStandardDTO> qmsToAdd = new ArrayList<CertifiedProductQmsStandardDTO>();
 		List<CertifiedProductQmsStandardDTO> qmsToRemove = new ArrayList<CertifiedProductQmsStandardDTO>();
 		
@@ -579,7 +709,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			if(newQmsStandard.getId() == null) {
 				newQmsStandard.setQmsStandardId(qms.getId());
 				qmsToAdd.add(newQmsStandard);
-			} 
+			} else {
+				//it exists so update it
+				cpQmsDao.updateCertifiedProductQms(newQmsStandard);
+			}
 		}
 		
 		for(CertifiedProductQmsStandardDTO currQms : beforeQms) {
@@ -602,14 +735,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductQmsStandardDTO toRemove : qmsToRemove) {
 			cpQmsDao.deleteCertifiedProductQms(toRemove.getId());
 		}	
-		
-		//only put in activity if something changed
-		if( (qmsToAdd != null && qmsToAdd.size() > 0) ||
-				(qmsToRemove != null && qmsToRemove.size() > 0) )
-		{
-			List<CertifiedProductQmsStandardDTO> afterQms = cpQmsDao.getQmsStandardsByCertifiedProductId(productDto.getId());
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "QMS Standards Used for "+productDto.getChplProductNumberForActivity() + " were updated." , beforeQms , afterQms);
-		}
 	}
 	
 	@Override
@@ -622,7 +747,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		List<CertifiedProductTargetedUserDTO> beforeTUs = cpTargetedUserDao.getTargetedUsersByCertifiedProductId(productDto.getId());
-		
 		List<CertifiedProductTargetedUserDTO> tusToAdd = new ArrayList<CertifiedProductTargetedUserDTO>();
 		List<CertifiedProductTargetedUserDTO> tusToRemove = new ArrayList<CertifiedProductTargetedUserDTO>();
 		
@@ -659,14 +783,54 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductTargetedUserDTO toRemove : tusToRemove) {
 			cpTargetedUserDao.deleteCertifiedProductTargetedUser(toRemove.getId());
 		}	
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateAccessibilityStandards(Long acbId, CertifiedProductDTO productDto, List<CertifiedProductAccessibilityStandardDTO> newStandards)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
-		//only put in activity if something changed
-		if( (tusToAdd != null && tusToAdd.size() > 0) ||
-				(tusToRemove != null && tusToRemove.size() > 0) )
-		{
-			List<CertifiedProductTargetedUserDTO> afterTus = cpTargetedUserDao.getTargetedUsersByCertifiedProductId(productDto.getId());
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Targeted Users for "+productDto.getChplProductNumberForActivity() + " were updated." , beforeTUs , afterTus);
+		List<CertifiedProductAccessibilityStandardDTO> beforeStds = cpAccStdDao.getAccessibilityStandardsByCertifiedProductId(productDto.getId());
+		List<CertifiedProductAccessibilityStandardDTO> stdsToAdd = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+		List<CertifiedProductAccessibilityStandardDTO> stdsToRemove = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+		
+		for (CertifiedProductAccessibilityStandardDTO newStd : newStandards){
+			AccessibilityStandardDTO as = asDao.getByName(newStd.getAccessibilityStandardName());
+			if(as == null) {
+				AccessibilityStandardDTO toCreate = new AccessibilityStandardDTO();
+				toCreate.setName(newStd.getAccessibilityStandardName());
+				as = asDao.create(toCreate);
+			}
+			if(newStd.getId() == null) {
+				newStd.setAccessibilityStandardId(as.getId());
+				stdsToAdd.add(newStd);
+			} 
 		}
+		
+		for(CertifiedProductAccessibilityStandardDTO currStd : beforeStds) {
+			boolean isInUpdate = false;
+			for (CertifiedProductAccessibilityStandardDTO newStd : newStandards){
+				if(newStd.getId() != null && 
+						newStd.getId().longValue() == currStd.getId().longValue()) {
+					isInUpdate = true;
+				}
+			}
+			if(!isInUpdate) {
+				stdsToRemove.add(currStd);
+			}
+		}
+			
+		for(CertifiedProductAccessibilityStandardDTO toAdd : stdsToAdd) {
+			cpAccStdDao.createCertifiedProductAccessibilityStandard(toAdd);
+		}
+		
+		for(CertifiedProductAccessibilityStandardDTO toRemove : stdsToRemove) {
+			cpAccStdDao.deleteCertifiedProductAccessibilityStandards(toRemove.getId());
+		}	
 	}
 	
 	/**
@@ -682,7 +846,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, List<CertificationResult> newCertResults)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
-		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
 		List<CertificationResultDTO> oldCertificationResults = certDao.findByCertifiedProductId(productDto.getId());
 		
 		for (CertificationResultDTO oldResult : oldCertificationResults){
@@ -711,10 +874,21 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					} else {
 						oldResult.setG2Success(null);
 					}
+					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+						oldResult.setApiDocumentation(newCertResult.getApiDocumentation());
+					} else {
+						oldResult.setApiDocumentation(null);
+					}
+					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+						oldResult.setPrivacySecurityFramework(newCertResult.getPrivacySecurityFramework());
+					} else {
+						oldResult.setPrivacySecurityFramework(null);
+					}
+					
 					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.SED)) {
 						oldResult.setSed(newCertResult.isSed());
 					} else {
-						oldResult.setSed(null);
+						oldResult.setPrivacySecurityFramework(null);
 					}
 					
 					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.UCD_FIELDS) ||
@@ -730,6 +904,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							ucd.setUcdProcessName(newUcdProcess.getUcdProcessName());
 							oldResult.getUcdProcesses().add(ucd);
 						}
+						oldResult.setSed(Boolean.TRUE);
 					}
 
 					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE) || 
@@ -742,6 +917,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							software.setId(newAdditionalSoftware.getId());
 							software.setCertificationResultId(oldResult.getId());
 							software.setJustification(newAdditionalSoftware.getJustification());
+							software.setGrouping(newAdditionalSoftware.getGrouping());
 							if(newAdditionalSoftware.getCertifiedProductId() == null && 
 									!StringUtils.isEmpty(newAdditionalSoftware.getCertifiedProductNumber())) {
 								//look up the certified product
@@ -840,13 +1016,68 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						}
 					}
 					
+					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.TEST_TASK) ||
+							newCertResult.getTestTasks() == null || newCertResult.getTestTasks().size() == 0) {
+						oldResult.setTestTasks(new ArrayList<CertificationResultTestTaskDTO>());
+					} else {
+						for(CertificationResultTestTask newTestTask : newCertResult.getTestTasks()) {
+							CertificationResultTestTaskDTO testTask = new CertificationResultTestTaskDTO();
+							testTask.setId(newTestTask.getId());
+							testTask.setTestTaskId(newTestTask.getTestTaskId());
+							testTask.setCertificationResultId(oldResult.getId());
+							TestTaskDTO tt = new TestTaskDTO();
+							tt.setId(newTestTask.getTestTaskId());
+							tt.setDescription(newTestTask.getDescription());
+							tt.setTaskErrors(newTestTask.getTaskErrors());
+							tt.setTaskErrorsStddev(newTestTask.getTaskErrorsStddev());
+							tt.setTaskPathDeviationObserved(newTestTask.getTaskPathDeviationObserved());
+							tt.setTaskPathDeviationOptimal(newTestTask.getTaskPathDeviationOptimal());
+							tt.setTaskRating(newTestTask.getTaskRating());
+							tt.setTaskRatingScale(newTestTask.getTaskRatingScale());
+							tt.setTaskSuccessAverage(newTestTask.getTaskSuccessAverage());
+							tt.setTaskSuccessStddev(newTestTask.getTaskSuccessStddev());
+							tt.setTaskTimeAvg(newTestTask.getTaskTimeAvg());
+							tt.setTaskTimeDeviationObservedAvg(newTestTask.getTaskTimeDeviationObservedAvg());
+							tt.setTaskTimeDeviationOptimalAvg(newTestTask.getTaskTimeDeviationOptimalAvg());
+							tt.setTaskTimeStddev(newTestTask.getTaskTimeStddev());
+							testTask.setTestTask(tt);
+							
+							if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.TEST_PARTICIPANT) ||
+									newTestTask.getTestParticipants() == null || newTestTask.getTestParticipants().size() == 0) {
+								testTask.setTaskParticipants(new HashSet<CertificationResultTestTaskParticipantDTO>());
+							} else {
+								for(CertificationResultTestParticipant newTestParticipant : newTestTask.getTestParticipants()) {
+									CertificationResultTestTaskParticipantDTO testParticipant = new CertificationResultTestTaskParticipantDTO();
+									testParticipant.setId(newTestParticipant.getId());
+									testParticipant.setTestParticipantId(newTestParticipant.getTestParticipantId());
+									testParticipant.setCertTestTaskId(newTestTask.getId());
+									TestParticipantDTO tp = new TestParticipantDTO();
+									tp.setId(newTestParticipant.getTestParticipantId());
+									tp.setAge(newTestParticipant.getAge());
+									tp.setGender(newTestParticipant.getGender());
+									tp.setAssistiveTechnologyNeeds(newTestParticipant.getAssistiveTechnologyNeeds());
+									tp.setComputerExperienceMonths(newTestParticipant.getComputerExperienceMonths());
+									tp.setEducationTypeId(newTestParticipant.getEducationTypeId());
+									EducationTypeDTO et = new EducationTypeDTO();
+									et.setId(newTestParticipant.getEducationTypeId());
+									et.setName(newTestParticipant.getEducationTypeName());
+									tp.setEducationType(et);
+									tp.setOccupation(newTestParticipant.getOccupation());
+									tp.setProductExperienceMonths(newTestParticipant.getProductExperienceMonths());
+									tp.setProfessionalExperienceMonths(newTestParticipant.getProfessionalExperienceMonths());
+									testParticipant.setTestParticipant(tp);
+									testTask.getTaskParticipants().add(testParticipant);
+								}
+							}
+							oldResult.getTestTasks().add(testTask);
+						}
+					}
+					
 					certResultManager.update(acbId, oldResult);
 					break;
 				}
 			}
 		}
-		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity() + " were updated." , before , after);
 	}
 	
 	@Override
@@ -855,68 +1086,105 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
+	public void updateCqms(Long acbId, CertifiedProductDTO productDto, List<CQMResultDetailsDTO> cqmResults)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
-		CertifiedProductSearchDetails before = detailsManager.getCertifiedProductDetails(productDto.getId());
-		
-		Boolean dataHasChanged = false;
-		
 		List<CQMResultDTO> beforeCQMs = cqmResultDAO.findByCertifiedProductId(productDto.getId());
 		
 		// Handle NQFs and Additions:
-		for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
+		for (CQMResultDetailsDTO currCqm : cqmResults){
 			
-			Boolean isNQF = (cqm.getKey().getCmsId() == null);
+			Boolean isNQF = (currCqm.getCmsId() == null);
 			if (isNQF){
 				for (CQMResultDTO beforeCQM : beforeCQMs){
 					
 					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
 					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
 					
-					if ((beforeCriterionDTO.getCmsId() == null) && (beforeCriterionDTO.getNqfNumber().equals(cqm.getKey().getNqfNumber()) ) ){
-						beforeCQM.setSuccess(cqm.getValue());
+					if ((beforeCriterionDTO.getCmsId() == null) && (beforeCriterionDTO.getNqfNumber().equals(currCqm.getNqfNumber()) ) ){
+						beforeCQM.setSuccess(currCqm.getSuccess());
 						cqmResultDAO.update(beforeCQM);
-						dataHasChanged = true;
 						break;
 					}
 				}
 			} else {
-				
-				Boolean found = false;
-				
-				for (CQMResultDTO beforeCQM : beforeCQMs){
-					
-					Long beforeCQMCriterionID = beforeCQM.getCqmCriterionId();
+				CQMResultDTO foundCqm = null;
+				for (int i = 0; i < beforeCQMs.size() && foundCqm == null; i++) {
+					CQMResultDTO beforeCqm = beforeCQMs.get(i);
+					Long beforeCQMCriterionID = beforeCqm.getCqmCriterionId();
 					CQMCriterionDTO beforeCriterionDTO = cqmCriterionDao.getById(beforeCQMCriterionID);
 					
-					if (beforeCriterionDTO.getCmsId().equals(cqm.getKey().getCmsId()) && 
-							beforeCriterionDTO.getCqmVersion().equals(cqm.getKey().getCqmVersion())) {
-						found = true;
-						break;
+					if (beforeCriterionDTO.getCmsId().equals(currCqm.getCmsId()) && 
+							beforeCriterionDTO.getCqmVersion().equals(currCqm.getVersion())) {
+						foundCqm = beforeCqm;
 					}
 				}
-				if (!found){
-					
+				
+				if (foundCqm == null){
 					CQMCriterionDTO criterion = null;
-					if(StringUtils.isEmpty(cqm.getKey().getCmsId())) {
-						criterion = cqmCriterionDao.getNQFByNumber(cqm.getKey().getNumber());
-					} else if(cqm.getKey().getCmsId().startsWith("CMS")) {
-						criterion = cqmCriterionDao.getCMSByNumberAndVersion(cqm.getKey().getCmsId(), cqm.getKey().getCqmVersion());
+					if(StringUtils.isEmpty(currCqm.getCmsId())) {
+						criterion = cqmCriterionDao.getNQFByNumber(currCqm.getNumber());
+					} else if(currCqm.getCmsId().startsWith("CMS")) {
+						criterion = cqmCriterionDao.getCMSByNumberAndVersion(currCqm.getCmsId(), currCqm.getVersion());
 					}
 					if(criterion == null) {
-						throw new EntityRetrievalException("Could not find CQM with number " + cqm.getKey().getCmsId() + " and version " + cqm.getKey().getCqmVersion());
+						throw new EntityRetrievalException("Could not find CQM with number " + currCqm.getCmsId() + " and version " + currCqm.getVersion());
 					}
 					
 					CQMResultDTO newCQMResult = new CQMResultDTO();
-					
 					newCQMResult.setCertifiedProductId(productDto.getId());
 					newCQMResult.setCqmCriterionId(criterion.getId());
 					newCQMResult.setCreationDate(new Date());
 					newCQMResult.setDeleted(false);
 					newCQMResult.setSuccess(true);
-					cqmResultDAO.create(newCQMResult);
-					dataHasChanged = true;
+					CQMResultDTO created = cqmResultDAO.create(newCQMResult);
+					if(currCqm.getCriteria() != null && currCqm.getCriteria().size() > 0) {
+						for(CQMResultCriteriaDTO criteria : currCqm.getCriteria()) {
+							criteria.setCqmResultId(created.getId());
+							Long mappedCriterionId = findCqmCriterionId(criteria);
+							criteria.setCriterionId(mappedCriterionId);
+							cqmResultDAO.createCriteriaMapping(criteria);
+						}
+					}
+				} else {
+					//update an existing cqm 
+					//need to compare current and found cqm in case there are differences
+					List<CQMResultCriteriaDTO> existingCriteria = cqmResultDAO.getCriteriaForCqmResult(foundCqm.getId());
+					List<CQMResultCriteriaDTO> toAdd = new ArrayList<CQMResultCriteriaDTO>();
+					List<CQMResultCriteriaDTO> toRemove = new ArrayList<CQMResultCriteriaDTO>();
+					
+					for(CQMResultCriteriaDTO existing : existingCriteria) {
+						boolean exists = false;
+						for(CQMResultCriteriaDTO passedIn : currCqm.getCriteria()) {
+							if(existing.getCriterion().getNumber().equals(passedIn.getCriterion().getNumber())) {
+								exists = true;
+							}
+						}
+						if(!exists) {
+							toRemove.add(existing);
+						}
+					}
+					
+					for(CQMResultCriteriaDTO passedIn : currCqm.getCriteria()) {
+						boolean exists = false;
+						for(CQMResultCriteriaDTO existing : existingCriteria) {
+							if(existing.getCriterion().getNumber().equals(passedIn.getCriterion().getNumber())) {
+								exists = true;
+							}
+						}
+						if(!exists) {
+							toAdd.add(passedIn);
+						}
+					}
+					
+					for(CQMResultCriteriaDTO currToAdd : toAdd) {
+						currToAdd.setCqmResultId(foundCqm.getId());
+						Long mappedCriterionId = findCqmCriterionId(currToAdd);
+						currToAdd.setCriterionId(mappedCriterionId);
+						cqmResultDAO.createCriteriaMapping(currToAdd);
+					}
+					for(CQMResultCriteriaDTO currToRemove : toRemove) {
+						cqmResultDAO.deleteCriteriaMapping(currToRemove.getId());
+					}
 				}
 			}
 		}
@@ -931,11 +1199,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				isDeletion = false;
 			} else {
 							
-				for (Map.Entry<CQMCriterionDTO, Boolean> cqm : cqmResults.entrySet()){
+				for (CQMResultDetailsDTO cqm : cqmResults){
 					
-					Boolean cqmIsNQF = (cqm.getKey().getCmsId() == null);
+					Boolean cqmIsNQF = (cqm.getCmsId() == null);
 					if (!cqmIsNQF){
-						if (cqm.getKey().getCmsId().equals(criterion.getCmsId())){
+						if (cqm.getCmsId().equals(criterion.getCmsId())){
 							isDeletion = false;
 							break;
 						}
@@ -944,17 +1212,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 			if (isDeletion){
 				deleteCqmResult(productDto.getId(), criterion.getId());
-				dataHasChanged = true;
 			}
-			
 		}
-		
-		CertifiedProductSearchDetails after = detailsManager.getCertifiedProductDetails(productDto.getId());
-		
-		if (dataHasChanged){
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, productDto.getId(), "Certifications for "+productDto.getChplProductNumberForActivity()+" were updated." , before , after);
-		}
-		
 	}
 	
 	private void deleteCqmResult(Long certifiedProductId, Long cqmId){
@@ -966,5 +1225,24 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				cqmResultDAO.delete(cqmResult.getId());
 			}
 		}
-	}	
+	}
+	
+	private Long findCqmCriterionId(CQMResultCriteriaDTO cqm) throws EntityRetrievalException {
+		if(cqm.getCriterionId() != null) {
+			return cqm.getCriterionId();
+		}
+		if(cqm.getCriterion() != null && 
+				!StringUtils.isEmpty(cqm.getCriterion().getNumber())) {
+			CertificationCriterionDTO cert = certCriterionDao.getByName(cqm.getCriterion().getNumber());
+			if(cert != null) {
+				return cert.getId();
+			} else {
+				throw new EntityRetrievalException("Could not find certification criteria with number " + cqm.getCriterion().getNumber());
+			}
+		} else if(cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
+			return cqm.getCriterion().getId();
+		} else {
+			throw new EntityRetrievalException("A criteria id or number must be provided.");
+		}
+	}
 }

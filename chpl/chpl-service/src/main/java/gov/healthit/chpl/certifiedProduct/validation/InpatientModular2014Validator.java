@@ -10,12 +10,46 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 @Component("inpatientModular2014Validator")
 public class InpatientModular2014Validator extends CertifiedProduct2014Validator {
 
-	private static final String[] g1ComplementaryCerts = {"170.314 (b)(5)(B)", "170.314 (a)(16)", "170.314 (a)(17)",
-			"170.314 (b)(6)"};
-	
-	private static final String[] g2ComplementaryCerts = {"170.314 (b)(5)(B)","170.314 (a)(16)", "170.314 (a)(17)",
-			"170.314 (b)(6)"};
+	private static final String[] g1ComplementaryCerts = {"170.314 (b)(5)(B)", "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(6)"};
+	private static final String[] g2ComplementaryCerts = {"170.314 (b)(5)(B)","170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(6)"};
 		
+	@Override
+	public String[] getG1ComplimentaryCerts() {
+		String[] certs = super.getG1ComplimentaryCerts();
+		String[] allCerts = new String[certs.length + g1ComplementaryCerts.length];
+		
+		int allCertIndex = 0;
+
+		for(int j = 0; j < certs.length; j++) {
+			allCerts[allCertIndex] = new String(certs[j]);
+			allCertIndex++;
+		}
+		for(int j = 0; j < g1ComplementaryCerts.length; j++) {
+			allCerts[allCertIndex] = new String(g1ComplementaryCerts[j]);
+			allCertIndex++;
+		}
+		return allCerts;
+	}
+	
+	@Override
+	public String[] getG2ComplimentaryCerts() {
+		String[] certs = super.getG2ComplimentaryCerts();
+		String[] allCerts = new String[certs.length + g2ComplementaryCerts.length];
+		
+		int allCertIndex = 0;
+		for(int j = 0; j < certs.length; j++) {
+			allCerts[allCertIndex] = new String(certs[j]);
+			allCertIndex++;
+		}
+			
+		for(int j = 0; j < g2ComplementaryCerts.length; j++) {
+			allCerts[allCertIndex] = new String(g2ComplementaryCerts[j]);
+			allCertIndex++;
+		}
+		
+		return allCerts;
+	}
+	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		super.validate(product);
@@ -28,10 +62,11 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
 			}
 		}	
 		if(hasG1Cert) {
+			String[] g1Certs = getG1ComplimentaryCerts();
 			boolean hasG1Complement = false;
-			for(int i = 0; i < g1ComplementaryCerts.length && !hasG1Complement; i++) {
+			for(int i = 0; i < g1Certs.length && !hasG1Complement; i++) {
 				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g1ComplementaryCerts[i]) && certCriteria.getMeetsCriteria()) {
+					if(certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.getMeetsCriteria()) {
 						hasG1Complement = true;
 					}
 				}
@@ -50,10 +85,11 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
 			}
 		}	
 		if(hasG2Cert) {
+			String[] g2Certs = getG2ComplimentaryCerts();
 			boolean hasG2Complement = false;
-			for(int i = 0; i < g2ComplementaryCerts.length && !hasG2Complement; i++) {
+			for(int i = 0; i < g2Certs.length && !hasG2Complement; i++) {
 				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g2ComplementaryCerts[i]) && certCriteria.getMeetsCriteria()) {
+					if(certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.getMeetsCriteria()) {
 						hasG2Complement = true;
 					}
 				}
@@ -81,10 +117,11 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
 			}
 		}	
 		if(hasG1Cert) {
+			String[] g1Certs = getG1ComplimentaryCerts();
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g1ComplementaryCerts.length && !hasAtLeastOneCertPartner; i++) {
+			for(int i = 0; i < g1Certs.length && !hasAtLeastOneCertPartner; i++) {
 				for(CertificationResult certCriteria : product.getCertificationResults()) {
-					if(certCriteria.getNumber().equals(g1ComplementaryCerts[i]) && certCriteria.isSuccess()) {
+					if(certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.isSuccess()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}
@@ -103,10 +140,11 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
 			}
 		}	
 		if(hasG2Cert) {
+			String[] g2Certs = getG2ComplimentaryCerts();
 			boolean hasG2Complement = false;
-			for(int i = 0; i < g2ComplementaryCerts.length && !hasG2Complement; i++) {
+			for(int i = 0; i < g2Certs.length && !hasG2Complement; i++) {
 				for(CertificationResult certCriteria : product.getCertificationResults()) {
-					if(certCriteria.getNumber().equals(g2ComplementaryCerts[i]) && certCriteria.isSuccess()) {
+					if(certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.isSuccess()) {
 						hasG2Complement = true;
 					}
 				}

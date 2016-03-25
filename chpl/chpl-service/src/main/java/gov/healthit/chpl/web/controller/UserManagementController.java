@@ -101,12 +101,12 @@ public class UserManagementController {
 		invitation = invitationManager.getById(invitation.getId());
 	
 		//send email for user to confirm email address	
-		String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's Open Data CHPL. " +
+		String htmlMessage = "<p>Thank you for setting up your administrator account on ONC's CHPL. " +
 					"Please click the link below to activate your account: <br/>" +
 					env.getProperty("chplUrlBegin") + "/#/registration/confirm-user/" + invitation.getConfirmToken() +
 				"</p>" +
-				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
-				"<p>The Open Data CHPL Team</p>";
+				"<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>" +
+				"<p>The CHPL Team</p>";
 
 		sendMailService.sendEmail(createdUser.getEmail(), "Confirm CHPL Administrator Account", htmlMessage);
 		
@@ -230,16 +230,16 @@ public class UserManagementController {
 		
 		//send email		
 		String htmlMessage = "<p>Hi,</p>" +
-				"<p>You have been granted a new role on ONC's Open Data CHPL " +
+				"<p>You have been granted a new role on ONC's CHPL " +
 					"which will allow you to manage certified product listings on the CHPL. " +
 					"Please click the link below to create or update your account: <br/>" +
 					env.getProperty("chplUrlBegin") + "/#/registration/create-user/"+ createdInvite.getInviteToken() +
 				"</p>" +
-				"<p>If you have any questions, please contact Scott Purnell-Saunders at Scott.Purnell-Saunders@hhs.gov.</p>" +
+				"<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>" +
 				"<p>Take care,<br/> " +
-				 "The Open Data CHPL Team</p>";
+				 "The CHPL Team</p>";
 
-		sendMailService.sendEmail(createdInvite.getEmail(), "Open Data CHPL Administrator Invitation", htmlMessage);
+		sendMailService.sendEmail(createdInvite.getEmail(), "CHPL Administrator Invitation", htmlMessage);
 		
 		UserInvitation result = new UserInvitation(createdInvite);
 		return result;

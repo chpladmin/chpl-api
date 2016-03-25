@@ -10,6 +10,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO {
 	private String name;
 	private String version;
 	private String justification;
+	private String grouping;
 	
 	public PendingCertificationResultAdditionalSoftwareDTO() {}
 	
@@ -21,6 +22,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO {
 		this.setName(entity.getSoftwareName());
 		this.setVersion(entity.getSoftwareVersion());
 		this.setJustification(entity.getJustification());
+		this.setGrouping(entity.getGrouping());
 	}
 	
 	public Long getId() {
@@ -76,5 +78,13 @@ public class PendingCertificationResultAdditionalSoftwareDTO {
 
 	public void setJustification(String justification) {
 		this.justification = justification;
+	}
+
+	public String getGrouping() {
+		return grouping;
+	}
+
+	public void setGrouping(String grouping) {
+		this.grouping = grouping;
 	}
 }

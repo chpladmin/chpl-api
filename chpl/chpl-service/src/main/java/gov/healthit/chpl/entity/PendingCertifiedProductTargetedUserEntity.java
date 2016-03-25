@@ -21,7 +21,7 @@ public class PendingCertifiedProductTargetedUserEntity {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column( name = "pending_certified_product_qms_standard_id", nullable = false  )
+	@Column( name = "pending_certified_product_targeted_user_id", nullable = false  )
 	private Long id;
     
 	@Basic( optional = true )

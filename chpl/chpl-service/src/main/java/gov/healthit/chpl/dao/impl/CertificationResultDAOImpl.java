@@ -16,16 +16,20 @@ import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.CertificationResultEntity;
 import gov.healthit.chpl.entity.CertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.CertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.CertificationResultTestTaskParticipantEntity;
 import gov.healthit.chpl.entity.CertificationResultTestProcedureEntity;
 import gov.healthit.chpl.entity.CertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.CertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.CertificationResultTestToolEntity;
 import gov.healthit.chpl.entity.CertificationResultUcdProcessEntity;
 
@@ -56,6 +60,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			entity.setG1Success(result.getG1Success());
 			entity.setG2Success(result.getG2Success());
 			entity.setSuccess(result.getSuccessful());
+			entity.setApiDocumentation(result.getApiDocumentation());
+			entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
 			
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -80,6 +86,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		entity.setG1Success(result.getG1Success());
 		entity.setG2Success(result.getG2Success());
 		entity.setSuccess(result.getSuccessful());
+		entity.setApiDocumentation(result.getApiDocumentation());
+		entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
 		
 		if(result.getDeleted() != null) {
 			entity.setDeleted(result.getDeleted());
@@ -295,6 +303,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		mapping.setName(dto.getName());
 		mapping.setVersion(dto.getVersion());
 		mapping.setJustification(dto.getJustification());
+		mapping.setGrouping(dto.getGrouping());
 		mapping.setCreationDate(new Date());
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
@@ -310,11 +319,13 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		if(mapping == null) {
 			return null;
 		}
+
 		mapping.setCertificationResultId(dto.getCertificationResultId());
 		mapping.setCertifiedProductId(dto.getCertifiedProductId());
 		mapping.setName(dto.getName());
 		mapping.setVersion(dto.getVersion());
 		mapping.setJustification(dto.getJustification());
+		mapping.setGrouping(dto.getGrouping());
 		if(dto.getDeleted() != null) {
 			mapping.setDeleted(dto.getDeleted());
 		}
@@ -762,4 +773,239 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		}
 		return result;
 	}
+	
+	/******************************************************
+	 * Test Task
+	 * 
+	 *******************************************************/
+	
+	@Override
+	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId){
+		
+		List<CertificationResultTestTaskEntity> entities = getTestTasksForCertification(certificationResultId);
+		List<CertificationResultTestTaskDTO> dtos = new ArrayList<CertificationResultTestTaskDTO>();
+		
+		for (CertificationResultTestTaskEntity entity : entities){
+			CertificationResultTestTaskDTO dto = new CertificationResultTestTaskDTO(entity);
+			dtos.add(dto);	
+		}
+		return dtos;
+	}
+	
+	@Override
+	public CertificationResultTestTaskDTO addTestTaskMapping(CertificationResultTestTaskDTO dto) throws EntityCreationException {
+		CertificationResultTestTaskEntity mapping = new CertificationResultTestTaskEntity();
+		mapping.setCertificationResultId(dto.getCertificationResultId());
+		mapping.setTestTaskId(dto.getTestTaskId());
+		mapping.setCreationDate(new Date());
+		mapping.setDeleted(false);
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		
+		if(dto.getTaskParticipants() != null && dto.getTaskParticipants().size() > 0) {
+			for(CertificationResultTestTaskParticipantDTO certPartDto : dto.getTaskParticipants()) {
+				certPartDto.setCertTestTaskId(mapping.getId());
+				addTestParticipantMapping(certPartDto);
+			}
+		}
+		return new CertificationResultTestTaskDTO(mapping);
+	}
+
+	@Override
+	public void deleteTestTaskMapping(Long mappingId){
+		CertificationResultTestTaskEntity toDelete = getCertificationResultTestTaskById(mappingId);
+		if(toDelete != null) {
+			if(toDelete.getTestParticipants() != null && toDelete.getTestParticipants().size() > 0) {
+				for(CertificationResultTestTaskParticipantEntity partToDelete : toDelete.getTestParticipants()) {
+					partToDelete.setDeleted(true);
+					partToDelete.setLastModifiedDate(new Date());
+					partToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+					entityManager.persist(partToDelete);
+					entityManager.flush();
+				}
+			}
+			
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(toDelete);
+			entityManager.flush();
+		}
+	}
+	
+	private CertificationResultTestTaskEntity getCertificationResultTestTaskById(Long id) {
+		CertificationResultTestTaskEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT tp "
+				+ "FROM CertificationResultTestTaskEntity tp "
+				+ "LEFT OUTER JOIN FETCH tp.testTask "
+				+ "where (NOT tp.deleted = true) AND (tp.id = :entityid) ", 
+				CertificationResultTestTaskEntity.class );
+		query.setParameter("entityid", id);
+		List<CertificationResultTestTaskEntity> result = query.getResultList();
+
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		return entity;
+	}
+	
+	private List<CertificationResultTestTaskEntity> getTestTasksForCertification(Long certificationResultId){
+		Query query = entityManager.createQuery( "SELECT tp "
+				+ "FROM CertificationResultTestTaskEntity tp "
+				+ "LEFT OUTER JOIN FETCH tp.testTask "
+				+ "where (NOT tp.deleted = true) AND (certification_result_id = :certificationResultId) ", 
+				CertificationResultTestTaskEntity.class );
+		query.setParameter("certificationResultId", certificationResultId);
+		
+		List<CertificationResultTestTaskEntity> result = query.getResultList();
+		if(result == null) {
+			return null;
+		}
+		return result;
+	}
+	
+	@Override
+	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForTask(Long taskId) {
+		Query query = entityManager.createQuery( "SELECT tp "
+				+ "FROM CertificationResultTestTaskParticipantEntity tp "
+				+ "LEFT OUTER JOIN FETCH tp.certTestTask "
+				+ "LEFT OUTER JOIN FETCH tp.testParticipant "
+				+ "where (NOT tp.deleted = true) AND (tp.certificationResultTestTaskId = :taskId) ", 
+				CertificationResultTestTaskParticipantEntity.class );
+		query.setParameter("taskId", taskId);
+		
+		List<CertificationResultTestTaskParticipantEntity> result = query.getResultList();
+		if(result == null) {
+			return null;
+		}
+		
+		List<CertificationResultTestTaskParticipantDTO> toReturn = new ArrayList<CertificationResultTestTaskParticipantDTO>();
+		for(CertificationResultTestTaskParticipantEntity curr : result) {
+			toReturn.add(new CertificationResultTestTaskParticipantDTO(curr));
+		}
+		return toReturn;
+	}
+
+	private CertificationResultTestTaskParticipantEntity getCertificationResultTestTaskParticipantById(Long id) {
+		CertificationResultTestTaskParticipantEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT tp "
+				+ "FROM CertificationResultTestTaskParticipantEntity tp "
+				+ "LEFT OUTER JOIN FETCH tp.testParticipant "
+				+ "where (NOT tp.deleted = true) AND (tp.id = :entityid) ", 
+				CertificationResultTestTaskParticipantEntity.class );
+		query.setParameter("entityid", id);
+		List<CertificationResultTestTaskParticipantEntity> result = query.getResultList();
+
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		return entity;
+	}
+	
+	public CertificationResultTestTaskParticipantDTO addTestParticipantMapping(CertificationResultTestTaskParticipantDTO dto) throws EntityCreationException {
+		CertificationResultTestTaskParticipantEntity mapping = new CertificationResultTestTaskParticipantEntity();
+		mapping.setCertificationResultTestTaskId(dto.getCertTestTaskId());
+		mapping.setTestParticipantId(dto.getTestParticipantId());
+		mapping.setCreationDate(new Date());
+		mapping.setDeleted(false);
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		
+		return new CertificationResultTestTaskParticipantDTO(mapping);
+	}
+	
+	@Override
+	public void deleteTestParticipantMapping(Long mappingId){
+		CertificationResultTestTaskParticipantEntity toDelete = getCertificationResultTestTaskParticipantById(mappingId);
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(toDelete);
+			entityManager.flush();
+		}
+	}
+//	
+//	/******************************************************
+//	 * Test Participant
+//	 * 
+//	 *******************************************************/
+//	
+//	@Override
+//	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForCertificationResult(Long certificationResultId){
+//		
+//		List<CertificationResultTestTaskParticipantEntity> entities = getTestParticipantsForCertification(certificationResultId);
+//		List<CertificationResultTestTaskParticipantDTO> dtos = new ArrayList<CertificationResultTestTaskParticipantDTO>();
+//		
+//		for (CertificationResultTestTaskParticipantEntity entity : entities){
+//			CertificationResultTestTaskParticipantDTO dto = new CertificationResultTestTaskParticipantDTO(entity);
+//			dtos.add(dto);	
+//		}
+//		return dtos;
+//	}
+//	
+//	@Override
+//	public CertificationResultTestTaskParticipantDTO addTestParticipantMapping(CertificationResultTestTaskParticipantDTO dto) throws EntityCreationException {
+//		CertificationResultTestTaskParticipantEntity mapping = new CertificationResultTestTaskParticipantEntity();
+//		mapping.setCertificationResultId(dto.getCertificationResultId());
+//		mapping.setTestParticipantId(dto.getTestParticipantId());
+//		mapping.setCreationDate(new Date());
+//		mapping.setDeleted(false);
+//		mapping.setLastModifiedDate(new Date());
+//		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+//		entityManager.persist(mapping);
+//		entityManager.flush();
+//		
+//		return new CertificationResultTestTaskParticipantDTO(mapping);
+//	}
+//
+//	@Override
+//	public void deleteTestParticipantMapping(Long mappingId){
+//		CertificationResultTestTaskParticipantEntity toDelete = getCertificationResultTestParticipantById(mappingId);
+//		if(toDelete != null) {
+//			toDelete.setDeleted(true);
+//			toDelete.setLastModifiedDate(new Date());
+//			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+//			entityManager.persist(toDelete);
+//			entityManager.flush();
+//		}
+//	}
+//	
+//	private CertificationResultTestTaskParticipantEntity getCertificationResultTestParticipantById(Long id) {
+//		CertificationResultTestTaskParticipantEntity entity = null;
+//		
+//		Query query = entityManager.createQuery( "SELECT tp "
+//				+ "FROM CertificationResultTestParticipantEntity tp "
+//				+ "LEFT OUTER JOIN FETCH tp.testParticipant "
+//				+ "where (NOT tp.deleted = true) AND (tp.id = :entityid) ", 
+//				CertificationResultTestTaskParticipantEntity.class );
+//		query.setParameter("entityid", id);
+//		List<CertificationResultTestTaskParticipantEntity> result = query.getResultList();
+//
+//		if (result.size() > 0){
+//			entity = result.get(0);
+//		}
+//		return entity;
+//	}
+//	
+//	private List<CertificationResultTestTaskParticipantEntity> getTestParticipantsForCertification(Long certificationResultId){
+//		Query query = entityManager.createQuery( "SELECT tp "
+//				+ "FROM CertificationResultTestParticipantEntity tp "
+//				+ "LEFT OUTER JOIN FETCH tp.testParticipant "
+//				+ "where (NOT tp.deleted = true) AND (certification_result_id = :certificationResultId) ", 
+//				CertificationResultTestTaskParticipantEntity.class );
+//		query.setParameter("certificationResultId", certificationResultId);
+//		
+//		List<CertificationResultTestTaskParticipantEntity> result = query.getResultList();
+//		if(result == null) {
+//			return null;
+//		}
+//		return result;
+//	}
 }

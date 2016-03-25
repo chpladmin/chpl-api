@@ -27,16 +27,18 @@ public class CertifiedProductDTO {
 	private Long productVersionId;
 	private String reportFileLocation;
 	private String sedReportFileLocation;
+	private String sedIntendedUserDescription;
+    private Date sedTestingEnd;
 	private Long testingLabId;
 	private Long certificationStatusId;
 	private String otherAcb;
 	private Boolean visibleOnChpl;
 	private String termsOfUse;
-	private String apiDocumentation;
 	private String transparencyAttestationUrl;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
+	private Boolean accessibilityCertified;
 	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation = null;
 	
@@ -62,16 +64,18 @@ public class CertifiedProductDTO {
 		this.productVersionId = entity.getProductVersionId();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.sedReportFileLocation = entity.getSedReportFileLocation();
+		this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
+		this.sedTestingEnd = entity.getSedTestingEnd();
 		this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
 		this.testingLabId = entity.getTestingLabId();		
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
 		this.setVisibleOnChpl(entity.getVisibleOnChpl());
 		this.setTermsOfUse(entity.getTermsOfUse());
-		this.setApiDocumentation(entity.getApiDocumentation());
 		this.setIcs(entity.getIcs());
 		this.setSedTesting(entity.getSedTesting());
 		this.setQmsTesting(entity.getQmsTesting());
+		this.setAccessibilityCertified(entity.getAccessibilityCertified());
 		this.setProductAdditionalSoftware(entity.getProductAdditionalSoftware());
 	}
 
@@ -239,14 +243,6 @@ public class CertifiedProductDTO {
 		this.termsOfUse = termsOfUse;
 	}
 
-	public String getApiDocumentation() {
-		return apiDocumentation;
-	}
-
-	public void setApiDocumentation(String apiDocumentation) {
-		this.apiDocumentation = apiDocumentation;
-	}
-
 	public Boolean getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
@@ -301,5 +297,29 @@ public class CertifiedProductDTO {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 }

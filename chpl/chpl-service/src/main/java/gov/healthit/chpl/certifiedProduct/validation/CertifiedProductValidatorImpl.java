@@ -20,6 +20,7 @@ import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
@@ -68,14 +69,23 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The first part of the CHPL ID must match the certification year of the product.");
 			}
 			
-			TestingLabDTO testingLab = atlDao.getById(product.getTestingLabId());
-			if(!testingLab.getTestingLabCode().equals(atlCode)) {
-				product.getErrorMessages().add("The testing lab code provided does not match the assigned testing lab code '" + testingLab.getTestingLabCode() + "'.");
+			if(product.getTestingLabId() == null) {
+				product.getErrorMessages().add("No testing lab was found matching the name '" + product.getTestingLabName() + "'");
+			} else {
+				TestingLabDTO testingLab = atlDao.getById(product.getTestingLabId());
+				if(!testingLab.getTestingLabCode().equals(atlCode)) {
+					product.getErrorMessages().add("The testing lab code provided does not match the assigned testing lab code '" + testingLab.getTestingLabCode() + "'.");
+				}
 			}
 			
-			CertificationBodyDTO certificationBody = acbDao.getById(product.getCertificationBodyId());
-			if(!certificationBody.getAcbCode().equals(acbCode)) {
-				product.getErrorMessages().add("The ACB code provided does not match the assigned ACB code '" + certificationBody.getAcbCode() + "'.");
+			CertificationBodyDTO certificationBody = null;
+			if(product.getCertificationBodyId() == null) {
+				product.getErrorMessages().add("No certification body was found matching the name '" + product.getCertificationBodyName() + "'.");
+			} else {
+				certificationBody = acbDao.getById(product.getCertificationBodyId());
+				if(!certificationBody.getAcbCode().equals(acbCode)) {
+					product.getErrorMessages().add("The ACB code provided does not match the assigned ACB code '" + certificationBody.getAcbCode() + "'.");
+				}
 			}
 			
 			if(product.getDeveloperId() != null) {
@@ -149,6 +159,16 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		
 		validateDemographics(product);
+		
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+				for(PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
+					if(!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
+						product.getErrorMessages().add("No CHPL product was found matching additional software " + asDto.getChplId() + " for " + cert.getNumber());
+					}
+				}
+			}
+		}
 	}
 	@Override
 	public void validate(CertifiedProductSearchDetails product) {
@@ -169,17 +189,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		if(product.getCertificationBodyId() == null) {
 			product.getErrorMessages().add("ACB ID is required but was not found.");
-		}
-		if(product.getPracticeTypeId() == null) {
-			product.getErrorMessages().add("Practice setting is required but was not found.");
-		}
-		if(product.getProductClassificationId() == null) {
-			product.getErrorMessages().add("Product classification is required but was not found.");
-		}
-		if(StringUtils.isEmpty(product.getReportFileLocation())) {
-			product.getErrorMessages().add("Test Report URL is required but was not found.");
-		} else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {
-			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
 		}
 		
 		if(urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {

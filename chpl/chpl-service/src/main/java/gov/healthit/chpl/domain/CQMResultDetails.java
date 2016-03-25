@@ -22,12 +22,12 @@ public class CQMResultDetails {
 	private Boolean success;
 	private Set<String> successVersions;
 	private Set<String> allVersions;
-	private List<CQMResultCriteria> criteria;
+	private List<CQMResultCertification> criteria;
 	
 	public CQMResultDetails(){
 		this.successVersions = new HashSet<String>();
 		this.allVersions = new HashSet<String>();
-		this.criteria = new ArrayList<CQMResultCriteria>();
+		this.criteria = new ArrayList<CQMResultCertification>();
 	}
 	
 	public CQMResultDetails(CQMResultDetailsDTO dto){
@@ -48,11 +48,11 @@ public class CQMResultDetails {
 		
 		if(dto.getCriteria() != null && dto.getCriteria().size() > 0) {
 			for(CQMResultCriteriaDTO criteriaDTO : dto.getCriteria()) {
-				CQMResultCriteria criteria = new CQMResultCriteria();
-				criteria.setCriteriaId(criteriaDTO.getCqmResultId());
+				CQMResultCertification criteria = new CQMResultCertification();
+				criteria.setCertificationId(criteriaDTO.getCqmResultId());
 				criteria.setId(criteriaDTO.getId());
 				if(criteriaDTO.getCriterion() != null) {
-					criteria.setCriteriaNumber(criteriaDTO.getCriterion().getNumber());
+					criteria.setCertificationNumber(criteriaDTO.getCriterion().getNumber());
 				}
 				this.criteria.add(criteria);
 			}
@@ -135,11 +135,11 @@ public class CQMResultDetails {
 		this.id = id;
 	}
 
-	public List<CQMResultCriteria> getCriteria() {
+	public List<CQMResultCertification> getCriteria() {
 		return criteria;
 	}
 
-	public void setCriteria(List<CQMResultCriteria> criteria) {
+	public void setCriteria(List<CQMResultCertification> criteria) {
 		this.criteria = criteria;
 	}
 	

@@ -37,19 +37,28 @@ import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
 import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
+import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -70,6 +79,7 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired PendingCertifiedProductManager pcpManager;
 	@Autowired CertificationBodyManager acbManager;
+	@Autowired ActivityManager activityManager;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
 
 	@ApiOperation(value="List all certified products", 
@@ -148,12 +158,15 @@ public class CertifiedProductController {
 			throw new ValidationException(updateRequest.getErrorMessages(), updateRequest.getWarningMessages());
 		}
 		
-		CertifiedProductDTO existingProduct = cpManager.getById(updateRequest.getId());
-		Long acbId = existingProduct.getCertificationBodyId();
+		CertifiedProductSearchDetails existingProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		Long acbId = new Long(existingProduct.getCertifyingBody().get("id").toString());
 		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id").toString());
 		
 		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
 			cpManager.changeOwnership(updateRequest.getId(), newAcbId);
+			CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Changed ACB ownership.", existingProduct, changedProduct);
+			existingProduct = changedProduct;
 		}
 		
 		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
@@ -162,17 +175,23 @@ public class CertifiedProductController {
 			toUpdate.setTestingLabId(new Long(updateRequest.getTestingLab().get("id").toString()));
 		}
 		toUpdate.setCertificationBodyId(newAcbId);
-		toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id").toString()));
-		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
+		if(updateRequest.getPracticeType() != null && updateRequest.getPracticeType().get("id") != null) {
+			toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id").toString()));
+		}
+		if(updateRequest.getClassificationType() != null && updateRequest.getClassificationType().get("id") != null) {
+			toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
+		}
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
 		toUpdate.setSedReportFileLocation(updateRequest.getSedReportFileLocation());
+		toUpdate.setSedIntendedUserDescription(updateRequest.getSedIntendedUserDescription());
+		toUpdate.setSedTestingEnd(updateRequest.getSedTestingEnd());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
 		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
-		toUpdate.setApiDocumentation(updateRequest.getApiDocumentation());
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
+		toUpdate.setAccessibilityCertified(updateRequest.getAccessibilityCertified());
 		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
 		toUpdate.setTransparencyAttestationUrl(updateRequest.getTransparencyAttestationUrl());
 		
@@ -226,39 +245,65 @@ public class CertifiedProductController {
 		}
 		cpManager.updateTargetedUsers(acbId, toUpdate, targetedUsersToUpdate);
 		
+		List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardsToUpdate = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+		for(CertifiedProductAccessibilityStandard newStd : updateRequest.getAccessibilityStandards()) {
+			CertifiedProductAccessibilityStandardDTO dto = new CertifiedProductAccessibilityStandardDTO();
+			dto.setId(newStd.getId());
+			dto.setCertifiedProductId(toUpdate.getId());
+			dto.setAccessibilityStandardId(newStd.getAccessibilityStandardId());
+			dto.setAccessibilityStandardName(newStd.getAccessibilityStandardName());
+			accessibilityStandardsToUpdate.add(dto);
+		}
+		cpManager.updateAccessibilityStandards(acbId, toUpdate, accessibilityStandardsToUpdate);
+		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
 		
 		//update CQMs
-		Map<CQMCriterionDTO, Boolean> cqmDtos = new HashMap<CQMCriterionDTO, Boolean>();
+		List<CQMResultDetailsDTO> cqmDtos = new ArrayList<CQMResultDetailsDTO>();
 		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
 			if(!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null && cqm.getSuccessVersions().size() > 0) {
 				for(String version : cqm.getSuccessVersions()) {
-					CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+					CQMResultDetailsDTO cqmDto = new CQMResultDetailsDTO();
 					cqmDto.setNqfNumber(cqm.getNqfNumber());
 					cqmDto.setCmsId(cqm.getCmsId());
 					cqmDto.setNumber(cqm.getNumber());
 					cqmDto.setCmsId(cqm.getCmsId());
 					cqmDto.setNqfNumber(cqm.getNqfNumber());
 					cqmDto.setTitle(cqm.getTitle());
-					cqmDto.setCqmVersion(version);
-					cqmDtos.put(cqmDto, Boolean.TRUE);
+					cqmDto.setVersion(version);
+					cqmDto.setSuccess(Boolean.TRUE);
+					if(cqm.getCriteria() != null && cqm.getCriteria().size() > 0) {
+						for(CQMResultCertification criteria : cqm.getCriteria()) {
+							CQMResultCriteriaDTO dto = new CQMResultCriteriaDTO();
+							dto.setCriterionId(criteria.getCertificationId());
+							CertificationCriterionDTO certDto = new CertificationCriterionDTO();
+							certDto.setNumber(criteria.getCertificationNumber());
+							dto.setCriterion(certDto);
+							cqmDto.getCriteria().add(dto);
+						}
+					}
+					cqmDtos.add(cqmDto);
 				}
 			} else if(StringUtils.isEmpty(cqm.getCmsId())) {
-				CQMCriterionDTO cqmDto = new CQMCriterionDTO();
+				CQMResultDetailsDTO cqmDto = new CQMResultDetailsDTO();
 				cqmDto.setNqfNumber(cqm.getNqfNumber());
 				cqmDto.setCmsId(cqm.getCmsId());
 				cqmDto.setNumber(cqm.getNumber());
 				cqmDto.setCmsId(cqm.getCmsId());
 				cqmDto.setNqfNumber(cqm.getNqfNumber());
 				cqmDto.setTitle(cqm.getTitle());
-				cqmDtos.put(cqmDto, cqm.isSuccess());
+				cqmDto.setSuccess(cqm.isSuccess());
+				cqmDtos.add(cqmDto);
 			}
 		}
 		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
 		
+		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
+		
 		//search for the product by id to get it with all the updates
-		return cpdManager.getCertifiedProductDetails(toUpdate.getId());
+		return changedProduct;
 	}
 	
 	@ApiOperation(value="List pending certified products.", 

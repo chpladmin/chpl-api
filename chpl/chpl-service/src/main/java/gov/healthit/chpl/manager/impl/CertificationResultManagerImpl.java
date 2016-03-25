@@ -9,11 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
+import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
@@ -22,11 +25,16 @@ import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
@@ -40,6 +48,9 @@ public class CertificationResultManagerImpl implements
 	@Autowired private TestToolDAO testToolDAO;
 	@Autowired private TestProcedureDAO testProcedureDAO;
 	@Autowired private TestFunctionalityDAO testFunctionalityDAO;
+	@Autowired private TestParticipantDAO testParticipantDAO;
+	@Autowired private EducationTypeDAO educationTypeDAO;
+	@Autowired private TestTaskDAO testTaskDAO;
 	@Autowired private UcdProcessDAO ucdDao;
 
 	@Override
@@ -139,6 +150,35 @@ public class CertificationResultManagerImpl implements
 	public CertificationResultDTO update(Long acbId, CertificationResultDTO toUpdate) throws EntityRetrievalException, EntityCreationException {
 		CertificationResultDTO updated = certResultDAO.update(toUpdate);
 		
+		List<CertificationResultUcdProcessDTO> sed = updateSed(toUpdate);
+		updated.setUcdProcesses(sed);
+		
+		List<CertificationResultAdditionalSoftwareDTO> addSoft = updateAdditionalSoftware(toUpdate);
+		updated.setAdditionalSoftware(addSoft);
+		
+		List<CertificationResultTestStandardDTO> stds = updateTestStandards(toUpdate);
+		updated.setTestStandards(stds);
+		
+		List<CertificationResultTestToolDTO> tools = updateTestTools(toUpdate);
+		updated.setTestTools(tools);
+			
+		 List<CertificationResultTestDataDTO> data = updateTestData(toUpdate);
+		updated.setTestData(data);
+		
+		List<CertificationResultTestProcedureDTO> procs = updateTestProcedures(toUpdate);
+		updated.setTestProcedures(procs);
+		
+		List<CertificationResultTestFunctionalityDTO> func = updateTestFunctionality(toUpdate);
+		updated.setTestFunctionality(func);
+		
+		List<CertificationResultTestTaskDTO> tasks = updateTestTasks(toUpdate);
+		updated.setTestTasks(tasks);
+		
+		return updated;
+	}
+
+	private List<CertificationResultUcdProcessDTO> updateSed(CertificationResultDTO toUpdate) 
+		throws EntityCreationException, EntityRetrievalException {
 		//update ucd processes
 		List<CertificationResultUcdProcessDTO> existingUcdProcesses = certResultDAO.getUcdProcessesForCertificationResult(toUpdate.getId());
 		List<CertificationResultUcdProcessDTO> ucdProcessesToAdd = new ArrayList<CertificationResultUcdProcessDTO>();
@@ -180,14 +220,22 @@ public class CertificationResultManagerImpl implements
 		for(CertificationResultUcdProcessDTO toRemove : ucdProcessesToRemove) {
 			certResultDAO.deleteUcdProcessMapping(toRemove.getId());
 		}
-		updated.setUcdProcesses(certResultDAO.getUcdProcessesForCertificationResult(updated.getId()));
-		
-		
+		return certResultDAO.getUcdProcessesForCertificationResult(toUpdate.getId());
+	}
+	
+	private List<CertificationResultAdditionalSoftwareDTO> updateAdditionalSoftware(CertificationResultDTO toUpdate) 
+		throws EntityCreationException, EntityRetrievalException {
 		//update additional software mappings
 		List<CertificationResultAdditionalSoftwareDTO> existingMappings = certResultDAO.getAdditionalSoftwareForCertificationResult(toUpdate.getId());
 		List<CertificationResultAdditionalSoftwareDTO> mappingsToAdd = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
 		List<CertificationResultAdditionalSoftwareDTO> mappingsToRemove = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
 
+		for (CertificationResultAdditionalSoftwareDTO toUpdateMapping : toUpdate.getAdditionalSoftware()){
+			if(toUpdateMapping.getId() != null) {
+				certResultDAO.updateAdditionalSoftwareMapping(toUpdateMapping);
+			}
+		}
+		
 		for (CertificationResultAdditionalSoftwareDTO toUpdateMapping : toUpdate.getAdditionalSoftware()){
 			if(toUpdateMapping.getId() == null) {
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
@@ -214,9 +262,11 @@ public class CertificationResultManagerImpl implements
 		for(CertificationResultAdditionalSoftwareDTO toRemove : mappingsToRemove) {
 			certResultDAO.deleteAdditionalSoftwareMapping(toRemove.getId());
 		}
-		updated.setAdditionalSoftware(certResultDAO.getAdditionalSoftwareForCertificationResult(updated.getId()));
-		
-		
+		return certResultDAO.getAdditionalSoftwareForCertificationResult(toUpdate.getId());
+	}
+	
+	private List<CertificationResultTestStandardDTO> updateTestStandards(CertificationResultDTO toUpdate)
+		throws EntityCreationException, EntityRetrievalException {
 		//update test standard mappings
 		List<CertificationResultTestStandardDTO> existingTestStandards = certResultDAO.getTestStandardsForCertificationResult(toUpdate.getId());
 		List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
@@ -257,9 +307,11 @@ public class CertificationResultManagerImpl implements
 		for(CertificationResultTestStandardDTO toRemove : testStandardsToRemove) {
 			certResultDAO.deleteTestStandardMapping(toRemove.getId());
 		}
-		updated.setTestStandards(certResultDAO.getTestStandardsForCertificationResult(updated.getId()));
-		
-		
+		return certResultDAO.getTestStandardsForCertificationResult(toUpdate.getId());
+	}
+	
+	private List<CertificationResultTestToolDTO> updateTestTools(CertificationResultDTO toUpdate) 
+		throws EntityCreationException, EntityRetrievalException {
 		//update test tool mappings
 		List<CertificationResultTestToolDTO> existingTestTools = certResultDAO.getTestToolsForCertificationResult(toUpdate.getId());
 		List<CertificationResultTestToolDTO> testToolsToAdd = new ArrayList<CertificationResultTestToolDTO>();
@@ -273,7 +325,7 @@ public class CertificationResultManagerImpl implements
 					testToolToCreate.setVersion(toUpdateMapping.getTestToolVersion());
 					testToolToCreate = testToolDAO.create(testToolToCreate);
 					toUpdateMapping.setTestToolId(testToolToCreate.getId());
-				} 
+				}
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testToolsToAdd.add(toUpdateMapping);
 			} 
@@ -298,8 +350,10 @@ public class CertificationResultManagerImpl implements
 		for(CertificationResultTestToolDTO toRemove : testToolsToRemove) {
 			certResultDAO.deleteTestToolMapping(toRemove.getId());
 		}
-		updated.setTestTools(certResultDAO.getTestToolsForCertificationResult(updated.getId()));
-				
+		return certResultDAO.getTestToolsForCertificationResult(toUpdate.getId());
+	}
+	private List<CertificationResultTestDataDTO> updateTestData(CertificationResultDTO toUpdate) 
+		throws EntityCreationException, EntityRetrievalException {
 		//update test data
 		List<CertificationResultTestDataDTO> existingTestData = certResultDAO.getTestDataForCertificationResult(toUpdate.getId());
 		List<CertificationResultTestDataDTO> testDataToAdd = new ArrayList<CertificationResultTestDataDTO>();
@@ -309,7 +363,10 @@ public class CertificationResultManagerImpl implements
 			if(toUpdateMapping.getId() == null) {
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testDataToAdd.add(toUpdateMapping);
-			} 
+			} else {
+				//mapping exists, update the data
+				certResultDAO.updateTestDataMapping(toUpdateMapping);
+			}
 		}
 		
 		for(CertificationResultTestDataDTO currMapping : existingTestData) {
@@ -331,8 +388,11 @@ public class CertificationResultManagerImpl implements
 		for(CertificationResultTestDataDTO toRemove : testDataToRemove) {
 			certResultDAO.deleteTestDataMapping(toRemove.getId());
 		}
-		updated.setTestData(certResultDAO.getTestDataForCertificationResult(updated.getId()));
-		
+		return certResultDAO.getTestDataForCertificationResult(toUpdate.getId());
+	}
+	
+	private List<CertificationResultTestProcedureDTO> updateTestProcedures(CertificationResultDTO toUpdate) 
+		throws EntityRetrievalException, EntityCreationException {
 		//update test procedure mappings
 		List<CertificationResultTestProcedureDTO> existingTestProcedures = certResultDAO.getTestProceduresForCertificationResult(toUpdate.getId());
 		List<CertificationResultTestProcedureDTO> testProceduresToAdd = new ArrayList<CertificationResultTestProcedureDTO>();
@@ -370,8 +430,11 @@ public class CertificationResultManagerImpl implements
 		for(CertificationResultTestProcedureDTO toRemove : testProceduresToRemove) {
 			certResultDAO.deleteTestProcedureMapping(toRemove.getId());
 		}
-		updated.setTestProcedures(certResultDAO.getTestProceduresForCertificationResult(updated.getId()));
-		
+		return certResultDAO.getTestProceduresForCertificationResult(toUpdate.getId());
+	}
+	
+	private List<CertificationResultTestFunctionalityDTO> updateTestFunctionality(CertificationResultDTO toUpdate) 
+			throws EntityRetrievalException, EntityCreationException {
 		//update test functionality mappings
 		List<CertificationResultTestFunctionalityDTO> existingTestFunctionality = certResultDAO.getTestFunctionalityForCertificationResult(toUpdate.getId());
 		List<CertificationResultTestFunctionalityDTO> testFunctionalityToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
@@ -412,11 +475,109 @@ public class CertificationResultManagerImpl implements
 		for(CertificationResultTestFunctionalityDTO toRemove : testFunctionalityToRemove) {
 			certResultDAO.deleteTestFunctionalityMapping(toRemove.getId());
 		}
-		updated.setTestFunctionality(certResultDAO.getTestFunctionalityForCertificationResult(updated.getId()));
-		
-		return updated;
+		return certResultDAO.getTestFunctionalityForCertificationResult(toUpdate.getId());
 	}
+	
+	private List<CertificationResultTestTaskDTO> updateTestTasks(CertificationResultDTO toUpdate) 
+		throws EntityRetrievalException, EntityCreationException {
+		//update test task mappings
+		List<CertificationResultTestTaskDTO> existingTestTasks = certResultDAO.getTestTasksForCertificationResult(toUpdate.getId());
+		List<CertificationResultTestTaskDTO> testTasksToAdd = new ArrayList<CertificationResultTestTaskDTO>();
+		List<CertificationResultTestTaskDTO> testTasksToRemove = new ArrayList<CertificationResultTestTaskDTO>();
 
+		for (CertificationResultTestTaskDTO testtaskMapping : toUpdate.getTestTasks()){
+			if(testtaskMapping.getId() == null) {
+				//its a new test task mapping
+				if(testtaskMapping.getTestTaskId() == null && testtaskMapping.getTestTask() != null) {
+					//it's a new test task
+					TestTaskDTO created = testTaskDAO.create(testtaskMapping.getTestTask());
+					testtaskMapping.setTestTaskId(created.getId());
+				} else if(testtaskMapping.getTestTaskId() != null && testtaskMapping.getTestTask() != null ) {
+					//what if the task exists but needs updated?
+					testTaskDAO.update(testtaskMapping.getTestTask());					
+				}
+				testtaskMapping.setCertificationResultId(toUpdate.getId());
+				
+				
+				//check participants. the dao will add them all when it adds the task
+				for(CertificationResultTestTaskParticipantDTO participantMapping : testtaskMapping.getTaskParticipants()) {
+					if(participantMapping.getTestParticipantId() == null && participantMapping.getTestParticipant() != null) {
+						TestParticipantDTO created = testParticipantDAO.create(participantMapping.getTestParticipant());
+						participantMapping.setTestParticipantId(created.getId());
+					} else if(participantMapping.getTestParticipantId() != null 
+							&& participantMapping.getTestParticipant() != null) {
+						//update existing participant
+						testParticipantDAO.update(participantMapping.getTestParticipant());
+					}
+				}
+				testTasksToAdd.add(testtaskMapping);
+			} else {
+				//it is an existing test task mapping so update all test task fields and participants
+				testTaskDAO.update(testtaskMapping.getTestTask());
+				
+				//check participants
+				List<CertificationResultTestTaskParticipantDTO> existingParticipants = certResultDAO.getTestParticipantsForTask(testtaskMapping.getId());
+				List<CertificationResultTestTaskParticipantDTO> participantsToAdd = new ArrayList<CertificationResultTestTaskParticipantDTO>();
+				List<CertificationResultTestTaskParticipantDTO> participantsToRemove = new ArrayList<CertificationResultTestTaskParticipantDTO>();
+				for(CertificationResultTestTaskParticipantDTO participantMapping : testtaskMapping.getTaskParticipants()) {
+					if(participantMapping.getTestParticipantId() == null && participantMapping.getTestParticipant() != null) {
+						TestParticipantDTO created = testParticipantDAO.create(participantMapping.getTestParticipant());
+						participantMapping.setTestParticipantId(created.getId());
+					} else if(participantMapping.getTestParticipant() != null) {
+						//update existing participant
+						TestParticipantDTO updated = testParticipantDAO.update(participantMapping.getTestParticipant());
+						participantMapping.setTestParticipantId(updated.getId());
+					}
+					participantMapping.setCertTestTaskId(testtaskMapping.getId());
+					if(participantMapping.getId() == null) {
+						participantsToAdd.add(participantMapping);
+					}
+				}
+				
+				for(CertificationResultTestTaskParticipantDTO currParticipantMapping : existingParticipants) {
+					boolean isInUpdate = false;
+					for (CertificationResultTestTaskParticipantDTO participantMapping : testtaskMapping.getTaskParticipants()){
+						if(participantMapping.getId() != null && 
+								participantMapping.getId().longValue() == currParticipantMapping.getId().longValue()) {
+							isInUpdate = true;
+						}
+					}
+					if(!isInUpdate) {
+						participantsToRemove.add(currParticipantMapping);
+					}
+				}
+							
+				for(CertificationResultTestTaskParticipantDTO toAdd : participantsToAdd) {
+					certResultDAO.addTestParticipantMapping(toAdd);
+				}
+				for(CertificationResultTestTaskParticipantDTO toRemove : participantsToRemove) {
+					certResultDAO.deleteTestParticipantMapping(toRemove.getId());
+				}
+			}
+		}
+				
+		for(CertificationResultTestTaskDTO currMapping : existingTestTasks) {
+			boolean isInUpdate = false;
+			for (CertificationResultTestTaskDTO toUpdateMapping : toUpdate.getTestTasks()){
+				if(toUpdateMapping.getId() != null && 
+						toUpdateMapping.getId().longValue() == currMapping.getId().longValue()) {
+					isInUpdate = true;
+				}
+			}
+			if(!isInUpdate) {
+				testTasksToRemove.add(currMapping);
+			}
+		}
+					
+		for(CertificationResultTestTaskDTO toAdd : testTasksToAdd) {
+			certResultDAO.addTestTaskMapping(toAdd);
+		}
+		for(CertificationResultTestTaskDTO toRemove : testTasksToRemove) {
+			certResultDAO.deleteTestTaskMapping(toRemove.getId());
+		}
+		return certResultDAO.getTestTasksForCertificationResult(toUpdate.getId());
+	}
+	
 	@Override
 	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(Long certificationResultId){
 		return certResultDAO.getAdditionalSoftwareForCertificationResult(certificationResultId);
@@ -449,5 +610,15 @@ public class CertificationResultManagerImpl implements
 	@Override
 	public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestFunctionalityForCertificationResult(certificationResultId);
+	}
+	
+	@Override
+	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {
+		return certResultDAO.getTestTasksForCertificationResult(certificationResultId);
+	}
+	
+	@Override
+	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForTask(Long certificationResultTaskId) {
+		return certResultDAO.getTestParticipantsForTask(certificationResultTaskId);
 	}
 }

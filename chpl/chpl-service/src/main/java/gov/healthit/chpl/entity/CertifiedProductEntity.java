@@ -83,6 +83,14 @@ public class CertifiedProductEntity {
 	@Column(name = "sed_report_file_location")
 	private String sedReportFileLocation;
 	
+	@Basic(optional = true) 
+    @Column(name = "sed_intended_user_description")
+    private String sedIntendedUserDescription;
+
+	@Basic(optional = true) 
+    @Column(name = "sed_testing_end")
+    private Date sedTestingEnd;
+    
 	@Basic( optional = true )
 	@Column(name = "testing_lab_id", nullable = true )
 	private Long testingLabId;
@@ -101,9 +109,6 @@ public class CertifiedProductEntity {
 	@Column(name = "terms_of_use_url")
 	private String termsOfUse;
 	
-	@Column(name = "api_documentation_url")
-	private String apiDocumentation;
-	
 	@Column(name = "transparency_attestation_url")
 	private String transparencyAttestationUrl;
 	
@@ -115,6 +120,9 @@ public class CertifiedProductEntity {
 	
 	@Column(name = "qms")
 	private Boolean qmsTesting;
+	
+	@Column(name = "accessibility_certified")
+	private Boolean accessibilityCertified;
 	
 	@Column(name = "product_additional_software")
 	private String productAdditionalSoftware;
@@ -293,14 +301,6 @@ public class CertifiedProductEntity {
 		this.termsOfUse = termsOfUse;
 	}
 
-	public String getApiDocumentation() {
-		return apiDocumentation;
-	}
-
-	public void setApiDocumentation(String apiDocumentation) {
-		this.apiDocumentation = apiDocumentation;
-	}
-
 	public Boolean getIcs() {
 		return ics;
 	}
@@ -388,5 +388,29 @@ public class CertifiedProductEntity {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 }

@@ -5,6 +5,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -30,9 +31,30 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 			"170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(16)", "170.314 (a)(18)", "170.314 (a)(19)", 
 			"170.314 (a)(20)", "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(9)"};
 	
+	
+	public String[] getG1ComplimentaryCerts() {
+		return g1ComplementaryCerts;
+	}
+	
+	public String[] getG2ComplimentaryCerts() {
+		return g2ComplementaryCerts;
+	}
+	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		super.validate(product);
+		
+		if(product.getPracticeTypeId() == null) {
+			product.getErrorMessages().add("Practice setting is required but was not found.");
+		}
+		if(product.getProductClassificationId() == null) {
+			product.getErrorMessages().add("Product classification is required but was not found.");
+		}
+		if(StringUtils.isEmpty(product.getReportFileLocation())) {
+			product.getErrorMessages().add("Test Report URL is required but was not found.");
+		} else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {
+			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
+		}
 		
 		// check cqms
 		boolean isCqmRequired = false;
@@ -53,46 +75,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 			if(!hasOneCqmWithVersion) {
 				product.getErrorMessages().add("At least one CQM/version is required but was not found.");
 			}
-		}
-		
-		//g1 check
-		boolean hasG1 = false;
-		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-			if(cert.getNumber().equals("170.314 (g)(1)") && cert.getMeetsCriteria()) {
-				hasG1 = true;
-			}
-		}
-		boolean hasG1Complement = false;
-		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-			for(int i = 0; i < g1ComplementaryCerts.length; i++) {
-				if(cert.getNumber().equals(g1ComplementaryCerts[i]) && cert.getMeetsCriteria()) {
-					hasG1Complement = true;
-				}
-			}
-		}
-		
-		if(hasG1 && !hasG1Complement) {
-			product.getErrorMessages().add("(g)(1) was found without a required related certification.");
-		}
-		
-		//g2 check
-		boolean hasG2 = false;
-		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-			if(cert.getNumber().equals("170.314 (g)(2)") && cert.getMeetsCriteria()) {
-				hasG2 = true;
-			}
-		}
-		boolean hasG2Complement = false;
-		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-			for(int i = 0; i < g2ComplementaryCerts.length; i++) {
-				if(cert.getNumber().equals(g2ComplementaryCerts[i]) && cert.getMeetsCriteria()) {
-					hasG2Complement = true;
-				}
-			}
-		}
-		
-		if(hasG2 && !hasG2Complement) {
-			product.getErrorMessages().add("(g)(2) was found without a required related certification.");
 		}
 				
 		//g4 check
@@ -132,6 +114,34 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 	
 	@Override
 	public void validate(CertifiedProductSearchDetails product) {
+		super.validate(product);
+		
+		if(product.getPracticeType() == null || product.getPracticeType().get("id") == null) {
+			product.getErrorMessages().add("Practice setting is required but was not found.");
+		}
+		if(product.getClassificationType() == null || product.getClassificationType().get("id") == null) {
+			product.getErrorMessages().add("Product classification is required but was not found.");
+		}
+		if(StringUtils.isEmpty(product.getReportFileLocation())) {
+			product.getErrorMessages().add("Test Report URL is required but was not found.");
+		} else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {
+			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
+		}
+		
+		//check sed/ucd/tasks
+		for(CertificationResult cert : product.getCertificationResults()) {
+			if(cert.isSed() != null && cert.isSed().booleanValue() == true) {
+				for(CertificationResult certCriteria : product.getCertificationResults()) {
+					if (certCriteria.getTestTasks() != null && certCriteria.getTestTasks().size() > 0){
+						for(CertificationResultTestTask task : certCriteria.getTestTasks()) {
+							if(task.getTestParticipants() == null || task.getTestParticipants().size() < 5) {
+								product.getWarningMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 5 participants.");
+							}
+						}
+					}
+				}
+			}
+		}
 		
 		// check cqms
 		boolean isCqmRequired = false;

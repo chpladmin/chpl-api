@@ -48,16 +48,18 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			entity.setPracticeTypeId(dto.getPracticeTypeId());
 			entity.setProductClassificationTypeId(dto.getProductClassificationTypeId());
 			entity.setReportFileLocation(dto.getReportFileLocation());
+			entity.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
+			entity.setSedTestingEnd(dto.getSedTestingEnd());
 			entity.setSedReportFileLocation(dto.getSedReportFileLocation());
 			entity.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 			entity.setTestingLabId(dto.getTestingLabId());
 			entity.setOtherAcb(dto.getOtherAcb());
 			entity.setVisibleOnChpl(dto.getVisibleOnChpl());
 			entity.setTermsOfUse(dto.getTermsOfUse());
-			entity.setApiDocumentation(dto.getApiDocumentation());
 			entity.setIcs(dto.getIcs());
 			entity.setSedTesting(dto.getSedTesting());
 			entity.setQmsTesting(dto.getQmsTesting());
+			entity.setAccessibilityCertified(dto.getAccessibilityCertified());
 			entity.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 			
 			if(dto.getCertificationBodyId() != null) {
@@ -120,14 +122,16 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setProductClassificationTypeId(dto.getProductClassificationTypeId());
 		entity.setReportFileLocation(dto.getReportFileLocation());
 		entity.setSedReportFileLocation(dto.getSedReportFileLocation());
+		entity.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
+		entity.setSedTestingEnd(dto.getSedTestingEnd());
 		entity.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 		entity.setTestingLabId(dto.getTestingLabId());
 		entity.setOtherAcb(dto.getOtherAcb());
 		entity.setTermsOfUse(dto.getTermsOfUse());
-		entity.setApiDocumentation(dto.getApiDocumentation());
 		entity.setIcs(dto.getIcs());
 		entity.setSedTesting(dto.getSedTesting());
 		entity.setQmsTesting(dto.getQmsTesting());
+		entity.setAccessibilityCertified(dto.getAccessibilityCertified());
 		entity.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		
 		if(dto.getCertificationBodyId() != null) {

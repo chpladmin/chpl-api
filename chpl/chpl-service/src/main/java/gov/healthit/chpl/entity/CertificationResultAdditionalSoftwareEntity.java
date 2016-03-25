@@ -40,6 +40,14 @@ public class CertificationResultAdditionalSoftwareEntity {
 	@Column(name = "justification")
 	private String justification;
 
+	@Column(name = "grouping")
+	private String grouping;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certified_product_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private CertifiedProductDetailsEntity certifiedProduct;
+	
 	public Long getId() {
 		return id;
 	}
@@ -127,5 +135,21 @@ public class CertificationResultAdditionalSoftwareEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getGrouping() {
+		return grouping;
+	}
+
+	public void setGrouping(String grouping) {
+		this.grouping = grouping;
+	}
+
+	public CertifiedProductDetailsEntity getCertifiedProduct() {
+		return certifiedProduct;
+	}
+
+	public void setCertifiedProduct(CertifiedProductDetailsEntity certifiedProduct) {
+		this.certifiedProduct = certifiedProduct;
 	}
 }

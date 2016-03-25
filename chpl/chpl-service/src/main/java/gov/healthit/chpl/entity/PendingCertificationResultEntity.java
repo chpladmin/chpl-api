@@ -53,6 +53,12 @@ public class PendingCertificationResultEntity {
 	@Column(name = "g2_success")
 	private Boolean g2Success;
 	
+	@Column(name = "api_documentation")
+	private String apiDocumentation;
+	
+	@Column(name = "privacy_security_framework")
+	private String privacySecurityFramework;
+	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -104,6 +110,10 @@ public class PendingCertificationResultEntity {
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultTestToolEntity> testTools;
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
+	@Basic( optional = false )
+	@Column( name = "pending_certification_result_id", nullable = false  )
+	private Set<PendingCertificationResultTestTaskEntity> testTasks;
 	
 	public PendingCertificationResultEntity() {
 		ucdProcesses = new HashSet<PendingCertificationResultUcdProcessEntity>();
@@ -113,6 +123,7 @@ public class PendingCertificationResultEntity {
 		testProcedures = new HashSet<PendingCertificationResultTestProcedureEntity>();
 		testData = new HashSet<PendingCertificationResultTestDataEntity>();
 		testTools = new HashSet<PendingCertificationResultTestToolEntity>();
+		testTasks = new HashSet<PendingCertificationResultTestTaskEntity>();
 	}
 	
 	public Long getId() {
@@ -273,6 +284,30 @@ public class PendingCertificationResultEntity {
 
 	public void setHasAdditionalSoftware(boolean hasAdditionalSoftware) {
 		this.hasAdditionalSoftware = hasAdditionalSoftware;
+	}
+	
+	public Set<PendingCertificationResultTestTaskEntity> getTestTasks() {
+		return testTasks;
+	}
+
+	public void setTestTasks(Set<PendingCertificationResultTestTaskEntity> testTasks) {
+		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 
 }

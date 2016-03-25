@@ -7,21 +7,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
 public class PendingCertifiedProductDTO {
@@ -65,7 +71,10 @@ public class PendingCertifiedProductDTO {
     private Long developerContactId;
     private String reportFileLocation;
     private String sedReportFileLocation;
+    private String sedIntendedUserDescription;
+    private Date sedTestingEnd;
 	private Boolean ics;
+	private Boolean accessibilityCertified;
 	private String termsOfUseUrl;
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
@@ -74,6 +83,7 @@ public class PendingCertifiedProductDTO {
 	private List<PendingCqmCriterionDTO> cqmCriterion;
 	private List<PendingCertifiedProductQmsStandardDTO> qmsStandards;
 	private List<PendingCertifiedProductTargetedUserDTO> targetedUsers; 
+	private List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards;
 	
 	private Date uploadDate;
 	
@@ -84,6 +94,7 @@ public class PendingCertifiedProductDTO {
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
 		this.qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
 		this.targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
+		this.accessibilityStandards = new ArrayList<PendingCertifiedProductAccessibilityStandardDTO>();
 	}
 	
 	public PendingCertifiedProductDTO(PendingCertifiedProductDetails details) {
@@ -194,10 +205,14 @@ public class PendingCertifiedProductDTO {
 		this.acbCertificationId = details.getAcbCertificationId(); 
 		this.reportFileLocation = details.getReportFileLocation();
 		this.sedReportFileLocation = details.getSedReportFileLocation();
+		this.sedIntendedUserDescription = details.getSedIntendedUserDescription();
+		this.sedTestingEnd = details.getSedTestingEnd();
 		this.ics = details.getIcs();
+		this.accessibilityCertified = details.getAccessibilityCertified();
 		this.termsOfUseUrl = details.getTermsOfUse();
 		this.transparencyAttestation = details.getTransparencyAttestation();
 		this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
+		this.accessibilityCertified = details.getAccessibilityCertified();
 		
 		List<CertifiedProductQmsStandard> qmsStandards = details.getQmsStandards();
 		if(qmsStandards != null && qmsStandards.size() > 0) {
@@ -221,6 +236,16 @@ public class PendingCertifiedProductDTO {
 			}
 		}
 		
+		List<CertifiedProductAccessibilityStandard> accStds = details.getAccessibilityStandards();
+		if(accStds != null && accStds.size() > 0) {
+			for(CertifiedProductAccessibilityStandard as : accStds) {
+				PendingCertifiedProductAccessibilityStandardDTO asDto = new PendingCertifiedProductAccessibilityStandardDTO();
+				asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
+				asDto.setName(as.getAccessibilityStandardName());
+				this.accessibilityStandards.add(asDto);
+			}
+		}
+		
 		List<CertificationResult> certificationResults = details.getCertificationResults();
 		for(CertificationResult crResult : certificationResults) {
 			PendingCertificationResultDTO certDto = new PendingCertificationResultDTO();
@@ -231,6 +256,8 @@ public class PendingCertifiedProductDTO {
 			certDto.setG1Success(crResult.isG1Success());
 			certDto.setG2Success(crResult.isG2Success());
 			certDto.setSed(crResult.isSed());
+			certDto.setApiDocumentation(crResult.getApiDocumentation());
+			certDto.setPrivacySecurityFramework(crResult.getPrivacySecurityFramework());
 			
 			if(crResult.getUcdProcesses() != null && crResult.getUcdProcesses().size() > 0) {
 				for(CertificationResultUcdProcess ucd : crResult.getUcdProcesses()) {
@@ -250,6 +277,7 @@ public class PendingCertifiedProductDTO {
 					as.setJustification(software.getJustification());
 					as.setName(software.getName());
 					as.setVersion(software.getVersion());
+					as.setGrouping(software.getGrouping());
 					certDto.getAdditionalSoftware().add(as);
 				}
 			}
@@ -296,10 +324,56 @@ public class PendingCertifiedProductDTO {
 					toolDto.setName(tool.getTestToolName());
 					toolDto.setVersion(tool.getTestToolVersion());
 					toolDto.setTestToolId(tool.getTestToolId());
+					certDto.getTestTools().add(toolDto);
 				}
 			}
+			
+			if(crResult.getTestTasks() != null && crResult.getTestTasks().size() > 0) {
+				for(CertificationResultTestTask task : crResult.getTestTasks()) {
+					PendingCertificationResultTestTaskDTO crTaskDto = new PendingCertificationResultTestTaskDTO();
+					PendingTestTaskDTO taskDto = new PendingTestTaskDTO();
+					taskDto.setDescription(task.getDescription());
+					taskDto.setTaskErrors(task.getTaskErrors());
+					taskDto.setTaskErrorsStddev(task.getTaskErrorsStddev());
+					taskDto.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved());
+					taskDto.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal());
+					taskDto.setTaskRating(task.getTaskRating());
+					taskDto.setTaskRatingScale(task.getTaskRatingScale());
+					taskDto.setTaskSuccessAverage(task.getTaskSuccessAverage());
+					taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev());
+					taskDto.setTaskTimeAvg(task.getTaskTimeAvg());
+					taskDto.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg());
+					taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskPathDeviationOptimal());
+					taskDto.setTaskTimeStddev(task.getTaskTimeStddev());
+					taskDto.setUniqueId(task.getUniqueId());
+					crTaskDto.setPendingTestTask(taskDto);
+					
+					for(CertificationResultTestParticipant part : task.getTestParticipants()) {
+						PendingCertificationResultTestTaskParticipantDTO crPartDto = new PendingCertificationResultTestTaskParticipantDTO();
+						PendingTestParticipantDTO partDto = new PendingTestParticipantDTO();
+						partDto.setAge(part.getAge());
+						partDto.setAssistiveTechnologyNeeds(part.getAssistiveTechnologyNeeds());
+						partDto.setComputerExperienceMonths(part.getComputerExperienceMonths());
+						partDto.setEducationTypeId(part.getEducationTypeId());
+						EducationTypeDTO etDto = new EducationTypeDTO();
+						etDto.setName(part.getEducationTypeName());
+						etDto.setId(part.getEducationTypeId());
+						partDto.setEducationType(etDto);
+						partDto.setGender(part.getGender());
+						partDto.setOccupation(part.getOccupation());
+						partDto.setProductExperienceMonths(part.getProductExperienceMonths());
+						partDto.setProfessionalExperienceMonths(part.getProfessionalExperienceMonths());
+						partDto.setUniqueId(part.getUniqueId());
+						crPartDto.setTestParticipant(partDto);
+						crTaskDto.getTaskParticipants().add(crPartDto);
+					}
+					certDto.getTestTasks().add(crTaskDto);
+				}
+			}
+			
 			this.certificationCriterion.add(certDto);
 		}
+		
 		List<CQMResultDetails> cqmResults = details.getCqmResults();
 		for(CQMResultDetails cqmResult : cqmResults) {
 			if(cqmResult.getSuccessVersions() != null && cqmResult.getSuccessVersions().size() > 0) {
@@ -313,6 +387,13 @@ public class PendingCertifiedProductDTO {
 					cqmDto.setDomain(cqmResult.getDomain());
 					cqmDto.setMeetsCriteria(Boolean.TRUE);
 					cqmDto.setVersion(version);
+					for(CQMResultCertification cqmCert : cqmResult.getCriteria()) {
+						PendingCqmCertificationCriterionDTO pendingCqmCert = new PendingCqmCertificationCriterionDTO();
+						pendingCqmCert.setCertificationCriteriaNumber(cqmCert.getCertificationNumber());
+						pendingCqmCert.setCertificationId(cqmCert.getCertificationId());
+						pendingCqmCert.setCqmId(cqmDto.getId());
+						cqmDto.getCertifications().add(pendingCqmCert);
+					}
 					this.cqmCriterion.add(cqmDto);
 				}
 			} else {
@@ -365,7 +446,10 @@ public class PendingCertifiedProductDTO {
 		this.developerContactId = entity.getDeveloperContactId();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.sedReportFileLocation = entity.getSedReportFileLocation();
+		this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
+		this.sedTestingEnd = entity.getSedTestingEnd();
 		this.ics = entity.getIcs();
+		this.accessibilityCertified = entity.getAccessibilityCertified();
 		this.termsOfUseUrl = entity.getTermsOfUse();
 		if(entity.getTransparencyAttestation() != null) {
 			this.transparencyAttestation = entity.getTransparencyAttestation().toString();
@@ -378,6 +462,20 @@ public class PendingCertifiedProductDTO {
 		if(qmsStandards != null && qmsStandards.size() > 0) {
 			for(PendingCertifiedProductQmsStandardEntity qmsStandard : qmsStandards) {
 				this.qmsStandards.add(new PendingCertifiedProductQmsStandardDTO(qmsStandard));
+			}
+		}
+		
+		Set<PendingCertifiedProductTargetedUserEntity> targetedUsers = entity.getTargetedUsers();
+		if(targetedUsers != null && targetedUsers.size() > 0) {
+			for(PendingCertifiedProductTargetedUserEntity tu : targetedUsers) {
+				this.targetedUsers.add(new PendingCertifiedProductTargetedUserDTO(tu));
+			}
+		}
+		
+		Set<PendingCertifiedProductAccessibilityStandardEntity> accStds = entity.getAccessibilityStandards();
+		if(accStds != null && accStds.size() > 0) {
+			for(PendingCertifiedProductAccessibilityStandardEntity as : accStds) {
+				this.accessibilityStandards.add(new PendingCertifiedProductAccessibilityStandardDTO(as));
 			}
 		}
 		
@@ -745,5 +843,37 @@ public class PendingCertifiedProductDTO {
 
 	public void setTargetedUsers(List<PendingCertifiedProductTargetedUserDTO> targetedUsers) {
 		this.targetedUsers = targetedUsers;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public List<PendingCertifiedProductAccessibilityStandardDTO> getAccessibilityStandards() {
+		return accessibilityStandards;
+	}
+
+	public void setAccessibilityStandards(List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards) {
+		this.accessibilityStandards = accessibilityStandards;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 }

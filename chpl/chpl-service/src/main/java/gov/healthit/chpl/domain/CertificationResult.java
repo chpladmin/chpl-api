@@ -13,6 +13,8 @@ public class CertificationResult {
 	private Boolean sed;
 	private Boolean g1Success;
 	private Boolean g2Success;
+	private String apiDocumentation;
+	private String privacySecurityFramework;
 	
 	private List<CertificationResultUcdProcess> ucdProcesses;
 	private List<CertificationResultTestFunctionality> testFunctionality;
@@ -21,23 +23,17 @@ public class CertificationResult {
 	private List<CertificationResultAdditionalSoftware> additionalSoftware;
 	private List<CertificationResultTestStandard> testStandards;
 	private List<CertificationResultTestTool> testToolsUsed;
+	private List<CertificationResultTestTask> testTasks;
 	
 	public CertificationResult(){
-			ucdProcesses = new ArrayList<CertificationResultUcdProcess>();
+		ucdProcesses = new ArrayList<CertificationResultUcdProcess>();
 		 additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
 		 testStandards = new ArrayList<CertificationResultTestStandard>();
 		 testToolsUsed = new ArrayList<CertificationResultTestTool>();
 		 testDataUsed = new ArrayList<CertificationResultTestData>();
 		 testProcedures = new ArrayList<CertificationResultTestProcedure>();
 		 testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
-	}
-	
-	public List<CertificationResultTestProcedure> getTestProcedures() {
-		return testProcedures;
-	}
-
-	public void setTestProcedures(List<CertificationResultTestProcedure> testProcedures) {
-		this.testProcedures = testProcedures;
+		 testTasks = new ArrayList<CertificationResultTestTask>();
 	}
 
 	public CertificationResult(CertificationResultDetailsDTO certResult) {
@@ -49,6 +45,16 @@ public class CertificationResult {
 		this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
 		this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
 		this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
+		this.setApiDocumentation(certResult.getApiDocumentation());
+		this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
+	}
+	
+	public List<CertificationResultTestProcedure> getTestProcedures() {
+		return testProcedures;
+	}
+
+	public void setTestProcedures(List<CertificationResultTestProcedure> testProcedures) {
+		this.testProcedures = testProcedures;
 	}
 	
 	public String getNumber() {
@@ -138,5 +144,29 @@ public class CertificationResult {
 
 	public void setUcdProcesses(List<CertificationResultUcdProcess> ucdProcesses) {
 		this.ucdProcesses = ucdProcesses;
+	}
+
+	public List<CertificationResultTestTask> getTestTasks() {
+		return testTasks;
+	}
+
+	public void setTestTasks(List<CertificationResultTestTask> testTasks) {
+		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 }

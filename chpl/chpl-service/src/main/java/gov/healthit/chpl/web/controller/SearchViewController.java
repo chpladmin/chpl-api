@@ -234,6 +234,14 @@ public class SearchViewController {
 		return searchMenuManager.getCertBodyNames();
 	}
 	
+	@ApiOperation(value="Get all possible education types in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/education_types", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody Set<KeyValueModel> getEducationTypes() {
+		return searchMenuManager.getEducationTypes();
+	}
+	
 	@ApiOperation(value="Get all search options in the CHPL", 
 			notes="This returns all of the other /data/{something} results in one single response.")
 	@RequestMapping(value="/data/search_options", method=RequestMethod.GET,
