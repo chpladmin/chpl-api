@@ -179,11 +179,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(product.getCertificationBodyId() == null) {
 			product.getErrorMessages().add("ACB ID is required but was not found.");
 		}
-		if(StringUtils.isEmpty(product.getReportFileLocation())) {
-			product.getErrorMessages().add("Test Report URL is required but was not found.");
-		} else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {
-			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
-		}
 		
 		if(urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
 			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
