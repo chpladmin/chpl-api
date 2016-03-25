@@ -401,7 +401,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				certResultToCreate.setGap(certResult.getGap());
 				certResultToCreate.setG1Success(certResult.getG1Success());
 				certResultToCreate.setG2Success(certResult.getG2Success());
-				certResultToCreate.setSed(certResult.getSed());
+				if(certResult.getSed() == null) {
+					if(certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
+						certResultToCreate.setSed(Boolean.TRUE);
+					} else {
+						certResultToCreate.setSed(Boolean.FALSE);
+					}
+				} else {
+					certResultToCreate.setSed(certResult.getSed());
+				}
 				certResultToCreate.setApiDocumentation(certResult.getApiDocumentation());
 				certResultToCreate.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
 				CertificationResultDTO createdCert = certDao.create(certResultToCreate);
@@ -701,7 +709,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			if(newQmsStandard.getId() == null) {
 				newQmsStandard.setQmsStandardId(qms.getId());
 				qmsToAdd.add(newQmsStandard);
-			} 
+			} else {
+				//it exists so update it
+				cpQmsDao.updateCertifiedProductQms(newQmsStandard);
+			}
 		}
 		
 		for(CertifiedProductQmsStandardDTO currQms : beforeQms) {
@@ -863,11 +874,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					} else {
 						oldResult.setG2Success(null);
 					}
-					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.SED)) {
-						oldResult.setSed(newCertResult.isSed());
-					} else {
-						oldResult.setSed(null);
-					}
 					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
 						oldResult.setApiDocumentation(newCertResult.getApiDocumentation());
 					} else {
@@ -882,6 +888,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.UCD_FIELDS) ||
 							newCertResult.getUcdProcesses() == null || newCertResult.getUcdProcesses().size() == 0) {
 						oldResult.setUcdProcesses(new ArrayList<CertificationResultUcdProcessDTO>());
+						oldResult.setSed(Boolean.FALSE);
 					} else {
 						for(CertificationResultUcdProcess newUcdProcess : newCertResult.getUcdProcesses()) {
 							CertificationResultUcdProcessDTO ucd = new CertificationResultUcdProcessDTO();
@@ -892,6 +899,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							ucd.setUcdProcessName(newUcdProcess.getUcdProcessName());
 							oldResult.getUcdProcesses().add(ucd);
 						}
+						oldResult.setSed(Boolean.TRUE);
 					}
 
 					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE) || 
@@ -1013,6 +1021,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							testTask.setTestTaskId(newTestTask.getTestTaskId());
 							testTask.setCertificationResultId(oldResult.getId());
 							TestTaskDTO tt = new TestTaskDTO();
+							tt.setId(newTestTask.getTestTaskId());
 							tt.setDescription(newTestTask.getDescription());
 							tt.setTaskErrors(newTestTask.getTaskErrors());
 							tt.setTaskErrorsStddev(newTestTask.getTaskErrorsStddev());
@@ -1038,6 +1047,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 									testParticipant.setTestParticipantId(newTestParticipant.getTestParticipantId());
 									testParticipant.setCertTestTaskId(newTestTask.getId());
 									TestParticipantDTO tp = new TestParticipantDTO();
+									tp.setId(newTestParticipant.getTestParticipantId());
 									tp.setAge(newTestParticipant.getAge());
 									tp.setGender(newTestParticipant.getGender());
 									tp.setAssistiveTechnologyNeeds(newTestParticipant.getAssistiveTechnologyNeeds());

@@ -175,8 +175,12 @@ public class CertifiedProductController {
 			toUpdate.setTestingLabId(new Long(updateRequest.getTestingLab().get("id").toString()));
 		}
 		toUpdate.setCertificationBodyId(newAcbId);
-		toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id").toString()));
-		toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
+		if(updateRequest.getPracticeType() != null && updateRequest.getPracticeType().get("id") != null) {
+			toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id").toString()));
+		}
+		if(updateRequest.getClassificationType() != null && updateRequest.getClassificationType().get("id") != null) {
+			toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
+		}
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
 		toUpdate.setSedReportFileLocation(updateRequest.getSedReportFileLocation());

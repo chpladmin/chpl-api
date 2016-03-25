@@ -43,6 +43,13 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 	public void validate(PendingCertifiedProductDTO product) {
 		super.validate(product);
 		
+		if(product.getPracticeTypeId() == null) {
+			product.getErrorMessages().add("Practice setting is required but was not found.");
+		}
+		if(product.getProductClassificationId() == null) {
+			product.getErrorMessages().add("Product classification is required but was not found.");
+		}
+		
 		// check cqms
 		boolean isCqmRequired = false;
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
@@ -101,6 +108,14 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 	
 	@Override
 	public void validate(CertifiedProductSearchDetails product) {
+		super.validate(product);
+		
+		if(product.getPracticeType() == null || product.getPracticeType().get("id") == null) {
+			product.getErrorMessages().add("Practice setting is required but was not found.");
+		}
+		if(product.getClassificationType() == null || product.getClassificationType().get("id") == null) {
+			product.getErrorMessages().add("Product classification is required but was not found.");
+		}
 		
 		// check cqms
 		boolean isCqmRequired = false;

@@ -7,12 +7,14 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 @Component("certifiedProduct2015Validator")
-public class CertifiedProduct2015Validator implements CertifiedProductValidator {
+public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl {
 
 	private static final String[] aComplimentaryCerts = {"170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)",
 			"170.315 (d)(4)", "170.315 (d)(5)", "170.315 (d)(6)", "170.315 (d)(7)"};
@@ -36,7 +38,7 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 
 	private static final String[] hComplimentaryCerts = {"170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)"};
 	
-	private static final String[] g3CertsToCheck = {"170.315(a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", 
+	private static final String[] ucdRequiredCerts = {"170.315(a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", 
 			"170.315 (a)(4)", "170.315 (a)(5)", "170.315 (a)(6)", "170.315 (a)(7)", "170.315 (a)(8)", 
 			"170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(2)", "170.315 (b)(3)"};
 
@@ -45,6 +47,8 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
+		super.validate(product);
+		
 		List<String> allMetCerts = new ArrayList<String>();
 		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
 			if(certCriteria.getMeetsCriteria()) {
@@ -110,17 +114,34 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 			
 			boolean meetsD2Criterion = hasCert("170.315 (d)(2)", allMetCerts);
 			boolean meetsD10Criterion = hasCert("170.315 (d)(10)", allMetCerts);
-			if( (!meetsD2Criterion && !meetsD10Criterion) || 
-				(meetsD2Criterion && meetsD10Criterion) ) {
-				product.getErrorMessages().add("Certification criterion 170.315 (g)(7) or 170.315 (g)(8) or 170.315 (g)(9) was found so EITHER 170.315 (d)(2) OR 170.315 (d)(10) is required (not both).");
+			if(!meetsD2Criterion && !meetsD10Criterion) {
+				product.getErrorMessages().add("Certification criterion 170.315 (g)(7) or 170.315 (g)(8) or 170.315 (g)(9) was found so 170.315 (d)(2) or 170.315 (d)(10) is also required.");
 			}
 		}
 		
 		//g3 checks
 		boolean needsG3 = false;
-		for(int i = 0; i < g3CertsToCheck.length && !needsG3; i++) {
-			if(hasCert(g3CertsToCheck[i], allMetCerts)) {
+		for(int i = 0; i < ucdRequiredCerts.length && !needsG3; i++) {
+			if(hasCert(ucdRequiredCerts[i], allMetCerts)) {
 				needsG3 = true;
+				
+				//check for full set of UCD data
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+					if(certCriteria.getNumber().equals(ucdRequiredCerts[i])) {
+						if(certCriteria.getUcdProcesses() == null || certCriteria.getUcdProcesses().size() == 0) {
+							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one UCD process.");
+						}
+						if(certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
+							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one test task.");
+						} else {
+							for(PendingCertificationResultTestTaskDTO task : certCriteria.getTestTasks()) {
+								if(task.getTaskParticipants() == null || task.getTaskParticipants().size() < 10) {
+									product.getErrorMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		if(needsG3) {
@@ -128,14 +149,12 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 			if(!hasG3) {
 				product.getErrorMessages().add("170.315 (g)(3) is required but was not found.");
 			}
-		}
-		
-		//TODO: check for full set of UCD data for each criterion
+		}		
 		
 		//g3 inverse check
 		boolean hasG3ComplimentaryCerts = false;
-		for(int i = 0; i < g3CertsToCheck.length; i++) {
-			if(hasCert(g3CertsToCheck[i], allMetCerts)) {
+		for(int i = 0; i < ucdRequiredCerts.length; i++) {
+			if(hasCert(ucdRequiredCerts[i], allMetCerts)) {
 				hasG3ComplimentaryCerts = true;
 			}
 		}
@@ -202,6 +221,8 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 
 	@Override
 	public void validate(CertifiedProductSearchDetails product) {
+		super.validate(product);
+		
 		List<String> allMetCerts = new ArrayList<String>();
 		for(CertificationResult certCriteria : product.getCertificationResults()) {
 			if(certCriteria.isSuccess()) {
@@ -276,9 +297,27 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 		
 		//g3 checks
 		boolean needsG3 = false;
-		for(int i = 0; i < g3CertsToCheck.length && !needsG3; i++) {
-			if(hasCert(g3CertsToCheck[i], allMetCerts)) {
+		for(int i = 0; i < ucdRequiredCerts.length && !needsG3; i++) {
+			if(hasCert(ucdRequiredCerts[i], allMetCerts)) {
 				needsG3 = true;
+				
+				//check for full set of UCD data
+				for(CertificationResult certCriteria : product.getCertificationResults()) {
+					if(certCriteria.getNumber().equals(ucdRequiredCerts[i])) {
+						if(certCriteria.getUcdProcesses() == null || certCriteria.getUcdProcesses().size() == 0) {
+							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one UCD process.");
+						}
+						if(certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
+							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one test task.");
+						} else {
+							for(CertificationResultTestTask task : certCriteria.getTestTasks()) {
+								if(task.getTestParticipants() == null || task.getTestParticipants().size() < 10) {
+									product.getErrorMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		if(needsG3) {
@@ -287,13 +326,11 @@ public class CertifiedProduct2015Validator implements CertifiedProductValidator 
 				product.getErrorMessages().add("170.315 (g)(3) is required but was not found.");
 			}
 		}
-		
-		//TODO: check for full set of UCD data for each criterion
-		
+				
 		//g3 inverse check
 		boolean hasG3ComplimentaryCerts = false;
-		for(int i = 0; i < g3CertsToCheck.length; i++) {
-			if(hasCert(g3CertsToCheck[i], allMetCerts)) {
+		for(int i = 0; i < ucdRequiredCerts.length; i++) {
+			if(hasCert(ucdRequiredCerts[i], allMetCerts)) {
 				hasG3ComplimentaryCerts = true;
 			}
 		}
