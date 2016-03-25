@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 0.5.0
+_25 March 2016_
+
+### Features added
+* API call added to check 'system is up'
+* 2015 Upload process
+* 2014 validation improved
+* Email sending updated to conform with deployment
+
+### Bugs fixed
+* Searching on criteria alone gives error
+
 ## Version 0.4.0
 _14 March 2016_
 
