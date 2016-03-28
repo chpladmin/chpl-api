@@ -170,6 +170,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 			}
 		}
+		
+		if(StringUtils.isEmpty(product.getProductName())) {
+			product.getErrorMessages().add("A product name is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getProductVersion())) {
+			product.getErrorMessages().add("A product version is required.");
+		}
 	}
 	@Override
 	public void validate(CertifiedProductSearchDetails product) {
