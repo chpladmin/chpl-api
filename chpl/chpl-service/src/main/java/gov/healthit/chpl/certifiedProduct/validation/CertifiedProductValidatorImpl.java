@@ -51,8 +51,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String uniqueId = product.getUniqueId();
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		if(uniqueIdParts == null || uniqueIdParts.length != 9) {
-			product.getErrorMessages().add("The unique CHPL ID provided must have 9 parts separated by '.'");
-		}
+			product.getErrorMessages().add("The unique CHPL ID '" + uniqueId + "' must have 9 parts separated by '.'");
+			return;
+		} 
 		//validate that these pieces match up with data
 		String editionCode = uniqueIdParts[0];
 		String atlCode = uniqueIdParts[1];

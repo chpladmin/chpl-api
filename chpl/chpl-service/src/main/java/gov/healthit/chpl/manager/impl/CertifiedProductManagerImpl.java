@@ -888,7 +888,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.SED)) {
 						oldResult.setSed(newCertResult.isSed());
 					} else {
-						oldResult.setPrivacySecurityFramework(null);
+						oldResult.setSed(null);
 					}
 					
 					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.UCD_FIELDS) ||

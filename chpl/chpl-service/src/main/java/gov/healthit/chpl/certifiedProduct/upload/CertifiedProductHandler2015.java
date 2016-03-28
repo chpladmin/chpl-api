@@ -378,6 +378,9 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		//certification year
 		String certificaitonYear = record.get(colIndex++);
 		pendingCertifiedProduct.setCertificationEdition(certificaitonYear.trim());
+		if(!pendingCertifiedProduct.getCertificationEdition().equals("2015")) {
+			pendingCertifiedProduct.getErrorMessages().add("Expecting certification year 2015 but found '" + pendingCertifiedProduct.getCertificationEdition() + "' for product " + pendingCertifiedProduct.getUniqueId());
+		}
 		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear.trim());
 		if(foundEdition != null) {
 			pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
@@ -393,7 +396,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		if(foundAcb != null) {
 			pendingCertifiedProduct.setCertificationBodyId(foundAcb.getId());
 		} else {
-			pendingCertifiedProduct.getErrorMessages().add("No certification body with name " + acbName.trim() + " could be found.");
+			pendingCertifiedProduct.getErrorMessages().add("No certification body with name '" + acbName.trim() + "' could be found for product " + pendingCertifiedProduct.getUniqueId() + ".'");
 		}
 		
 		//testing lab
@@ -499,7 +502,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 				pendingCertifiedProduct.setSedTestingEnd(sedTestingEndDate);
 			} catch(ParseException ex) {
 				logger.error("Could not parse " + sedTestingEnd, ex);
-				pendingCertifiedProduct.getErrorMessages().add("Could not parse sed testing end date '" + sedTestingEnd + "'.");
+				pendingCertifiedProduct.getErrorMessages().add("Product " + pendingCertifiedProduct.getUniqueId() + " has an invalid sed testing end date '" + sedTestingEnd + "'.");
 			}
 		}
 	}
@@ -561,18 +564,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		if(!StringUtils.isEmpty(record.get(colIndex))) {
 			PendingTestParticipantEntity participant = new PendingTestParticipantEntity(); 
 			participant.setUniqueId(record.get(colIndex++).toString());
-			String genderStr = record.get(colIndex++).toString();
-			if(!StringUtils.isEmpty(genderStr)) {
-				if(genderStr.length() > 1) {
-					if(genderStr.equalsIgnoreCase("Male")) {
-						participant.setGender("M");
-					} else if(genderStr.contentEquals("Female")) {
-						participant.setGender("F");
-					}
-				} else {
-					participant.setGender(genderStr);
-				}
-			}
+			participant.setGender(record.get(colIndex++).toString());
 			String ageStr = record.get(colIndex++).toString();
 			try {
 				Integer age = new Integer(ageStr);
@@ -954,7 +946,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 					}
 				}
 				if(taskEntity == null) {
-					product.getErrorMessages().add("No task with unique id " + taskUniqueId + " was found in the file.");
+					product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " has no task with unique id " + taskUniqueId + " defined in the file.");
 				} else {
 					PendingCertificationResultTestTaskEntity certTask = new PendingCertificationResultTestTaskEntity();
 					certTask.setTestTask(taskEntity);
@@ -969,7 +961,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 							}
 						}
 						if(participantEntity == null) {
-							product.getErrorMessages().add("No participant with unique id '" + participantUniqueIds[i] + "' was found in the file.");
+							product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " has no participant with unique id '" + participantUniqueIds[i] + "'  defined in the file.");
 						} else {
 							PendingCertificationResultTestTaskParticipantEntity ttPartEntity = new PendingCertificationResultTestTaskParticipantEntity();
 							ttPartEntity.setCertTestTask(certTask);
@@ -1023,7 +1015,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 				}
 				CQMCriterionEntity cqmEntity = cqmDao.getCMSEntityByNumberAndVersion(criterionNum, currVersion);
 				if(cqmEntity == null) {
-					product.getErrorMessages().add("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + currVersion);
+					product.getErrorMessages().add("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + currVersion + " for product " + product.getUniqueId());
 				}
 				
 				PendingCqmCriterionEntity currResult = new PendingCqmCriterionEntity();
@@ -1054,7 +1046,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 							certEntity.setCertificationId(cert.getId());
 							currResult.getCertifications().add(certEntity);
 						} else {
-							product.getErrorMessages().add("Could not find a certification criteria matching " + currCriteria);
+							product.getErrorMessages().add("Could not find a certification criteria matching " + currCriteria + " for product " + product.getUniqueId());
 						}
 					}
 				}
