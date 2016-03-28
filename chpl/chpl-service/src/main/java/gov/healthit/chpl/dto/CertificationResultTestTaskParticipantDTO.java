@@ -1,18 +1,18 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.CertificationResultTestParticipantEntity;
+import gov.healthit.chpl.entity.CertificationResultTestTaskParticipantEntity;
 
-public class CertificationResultTestParticipantDTO {
+public class CertificationResultTestTaskParticipantDTO {
 	private Long id;
-	private Long certificationResultId;
+	private Long certTestTaskId;
 	private Long testParticipantId;
 	private TestParticipantDTO testParticipant;
 	
-	public CertificationResultTestParticipantDTO(){}
+	public CertificationResultTestTaskParticipantDTO(){}
 	
-	public CertificationResultTestParticipantDTO(CertificationResultTestParticipantEntity entity){		
+	public CertificationResultTestTaskParticipantDTO(CertificationResultTestTaskParticipantEntity entity){		
 		this.id = entity.getId();
-		this.certificationResultId = entity.getCertificationResultId();
+		this.certTestTaskId = entity.getCertificationResultTestTaskId();
 		this.testParticipantId = entity.getTestParticipantId();
 		if(entity.getTestParticipant() != null) {
 			this.testParticipant = new TestParticipantDTO(entity.getTestParticipant());
@@ -25,14 +25,6 @@ public class CertificationResultTestParticipantDTO {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getCertificationResultId() {
-		return certificationResultId;
-	}
-
-	public void setCertificationResultId(Long certificationResultId) {
-		this.certificationResultId = certificationResultId;
 	}
 
 	public Long getTestParticipantId() {
@@ -50,6 +42,12 @@ public class CertificationResultTestParticipantDTO {
 	public void setTestParticipant(TestParticipantDTO testParticipant) {
 		this.testParticipant = testParticipant;
 	}
-	
-	
+
+	public Long getCertTestTaskId() {
+		return certTestTaskId;
+	}
+
+	public void setCertTestTaskId(Long certTestTaskId) {
+		this.certTestTaskId = certTestTaskId;
+	}
 }

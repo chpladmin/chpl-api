@@ -21,7 +21,7 @@ public class AmbulatoryComplete2014Validator extends AmbulatoryModular2014Valida
 			"170.314 (d)(5)", "170.314 (d)(6)", "170.314 (d)(7)", "170.314 (d)(8)",
 			"170.314 (e)(1)", "170.314 (e)(2)", "170.314 (e)(3)", "170.314 (f)(1)", "170.314 (f)(2)", 
 			"170.314 (f)(3)", "170.314 (g)(2)", "170.314 (g)(3)", "170.314 (g)(4)"};
-
+	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		super.validate(product);

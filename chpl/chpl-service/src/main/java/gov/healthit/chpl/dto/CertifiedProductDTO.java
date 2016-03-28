@@ -34,7 +34,6 @@ public class CertifiedProductDTO {
 	private String otherAcb;
 	private Boolean visibleOnChpl;
 	private String termsOfUse;
-	private String apiDocumentation;
 	private String transparencyAttestationUrl;
 	private Boolean ics;
 	private Boolean sedTesting;
@@ -73,7 +72,6 @@ public class CertifiedProductDTO {
 		this.otherAcb = entity.getOtherAcb();
 		this.setVisibleOnChpl(entity.getVisibleOnChpl());
 		this.setTermsOfUse(entity.getTermsOfUse());
-		this.setApiDocumentation(entity.getApiDocumentation());
 		this.setIcs(entity.getIcs());
 		this.setSedTesting(entity.getSedTesting());
 		this.setQmsTesting(entity.getQmsTesting());
@@ -243,14 +241,6 @@ public class CertifiedProductDTO {
 
 	public void setTermsOfUse(String termsOfUse) {
 		this.termsOfUse = termsOfUse;
-	}
-
-	public String getApiDocumentation() {
-		return apiDocumentation;
-	}
-
-	public void setApiDocumentation(String apiDocumentation) {
-		this.apiDocumentation = apiDocumentation;
 	}
 
 	public Boolean getTransparencyAttestation() {

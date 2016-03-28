@@ -34,7 +34,6 @@ public class CertifiedProductSearchDetails {
 	private Integer countClosedCorrectiveActionPlans;
 	private Boolean visibleOnChpl;
 	private String termsOfUse;
-	private String apiDocumentation;
 	private Boolean ics;
 	private Boolean accessibilityCertified;
 	private String productAdditionalSoftware;
@@ -197,12 +196,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setTermsOfUse(String termsOfUse) {
 		this.termsOfUse = termsOfUse;
-	}
-	public String getApiDocumentation() {
-		return apiDocumentation;
-	}
-	public void setApiDocumentation(String apiDocumentation) {
-		this.apiDocumentation = apiDocumentation;
 	}
 	public String getTransparencyAttestation() {
 		return transparencyAttestation;

@@ -54,7 +54,6 @@ public class CertifiedProductDetailsDTO {
     private Boolean visibleOnChpl;
     private Date lastModifiedDate;
 	private String termsOfUse;
-	private String apiDocumentation;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
@@ -114,7 +113,6 @@ public class CertifiedProductDetailsDTO {
     	this.developerWebsite = entity.getDeveloperWebsite();
     	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.termsOfUse = entity.getTermsOfUse();
-    	this.apiDocumentation = entity.getApiDocumentation();
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
@@ -398,14 +396,6 @@ public class CertifiedProductDetailsDTO {
 
 	public void setTermsOfUse(String termsOfUse) {
 		this.termsOfUse = termsOfUse;
-	}
-
-	public String getApiDocumentation() {
-		return apiDocumentation;
-	}
-
-	public void setApiDocumentation(String apiDocumentation) {
-		this.apiDocumentation = apiDocumentation;
 	}
 
 	public String getTransparencyAttestation() {

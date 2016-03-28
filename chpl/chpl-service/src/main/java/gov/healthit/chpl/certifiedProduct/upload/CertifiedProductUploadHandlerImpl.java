@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -15,12 +16,14 @@ import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
+import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
@@ -47,11 +50,14 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 	@Autowired protected CQMCriterionDAO cqmDao;
 	@Autowired protected CertificationStatusDAO statusDao;
 	@Autowired protected QmsStandardDAO qmsDao;
+	@Autowired protected AccessibilityStandardDAO stdDao;
+	@Autowired protected TargetedUserDAO tuDao;
 	@Autowired protected TestFunctionalityDAO testFunctionalityDao;
 	@Autowired protected TestProcedureDAO testProcedureDao;
 	@Autowired protected TestStandardDAO testStandardDao;
 	@Autowired protected TestToolDAO testToolDao;
 	@Autowired protected UcdProcessDAO ucdDao;
+	@Autowired protected EducationTypeDAO educationDao;
 	
 	@Autowired private PendingCertifiedProductDAO pendingCpDao;
 	

@@ -12,8 +12,10 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 @Service
 public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProductUploadHandlerFactory {
 	public static int NUM_FIELDS_2014 = 712;
+	public static int NUM_FIELDS_2015 = 860;
 	
 	@Autowired private CertifiedProductHandler2014 handler2014;
+	@Autowired private CertifiedProductHandler2015 handler2015;
 	
 	private CertifiedProductUploadHandlerFactoryImpl() {}
 	
@@ -33,6 +35,8 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
 		
 		if((lastDataIndex+1) == NUM_FIELDS_2014) {
 			handler = handler2014;
+		} else if((lastDataIndex+1) == NUM_FIELDS_2015) {
+			handler = handler2015;
 		} else {
 			throw new InvalidArgumentsException("Expected " + NUM_FIELDS_2014 + " fields in the record but found " + (lastDataIndex+1));
 		}

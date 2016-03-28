@@ -1,6 +1,8 @@
 package gov.healthit.chpl.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -10,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -33,6 +36,11 @@ public class PendingCqmCriterionEntity {
 	@Column(name = "meets_criteria")
 	private Boolean meetsCriteria;
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCqmId")
+	@Basic( optional = false )
+	@Column( name = "pending_cqm_criterion_id", nullable = false  )
+	private Set<PendingCqmCertificationCriteriaEntity> certifications = new HashSet<PendingCqmCertificationCriteriaEntity>();
+	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -48,12 +56,6 @@ public class PendingCqmCriterionEntity {
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
-//	@Transient private String cqmNumber;
-//	@Transient private String cmsId;
-//	@Transient private String title;
-//	@Transient private String nqfNumber;
-//	@Transient private String version;
 	
 	public Long getId() {
 		return id;
@@ -157,5 +159,13 @@ public class PendingCqmCriterionEntity {
 
 	public void setMappedCriterion(CQMCriterionEntity mappedCriterion) {
 		this.mappedCriterion = mappedCriterion;
+	}
+
+	public Set<PendingCqmCertificationCriteriaEntity> getCertifications() {
+		return certifications;
+	}
+
+	public void setCertifications(Set<PendingCqmCertificationCriteriaEntity> certifications) {
+		this.certifications = certifications;
 	}
 }

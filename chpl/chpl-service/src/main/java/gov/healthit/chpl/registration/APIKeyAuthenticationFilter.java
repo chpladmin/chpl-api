@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class APIKeyAuthenticationFilter extends GenericFilterBean {
 	
-	private static final String[] ALLOWED_REQUEST_PATHS = {"/api-docs"};
+	private static final String[] ALLOWED_REQUEST_PATHS = {"/api-docs", "/status"};
 	
 	@Autowired
 	private ApiKeyManager apiKeyManager;

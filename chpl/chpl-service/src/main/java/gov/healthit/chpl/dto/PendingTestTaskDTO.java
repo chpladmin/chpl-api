@@ -1,14 +1,14 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity;
+import gov.healthit.chpl.entity.PendingTestTaskEntity;
 
-public class CertificationResultTestTask {
+public class PendingTestTaskDTO {
 	private Long id;
 	private String uniqueId;
-	private Long testTaskId;
 	private String description;
 	private Float taskSuccessAverage;
 	private Float taskSuccessStddev;
@@ -22,48 +22,42 @@ public class CertificationResultTestTask {
 	private Float taskErrorsStddev;
 	private String taskRatingScale;
 	private Float taskRating;
-	private List<CertificationResultTestParticipant> testParticipants;
-
-	public CertificationResultTestTask() {
-		super();
-		testParticipants = new ArrayList<CertificationResultTestParticipant>();
+	
+	public PendingTestTaskDTO() {
 	}
 	
-	public CertificationResultTestTask(CertificationResultTestTaskDTO dto) {
+	public PendingTestTaskDTO(PendingTestTaskEntity entity) {
 		this();
-		this.id = dto.getId();
-		this.testTaskId = dto.getTestTaskId();
-		if(dto.getTestTask() != null) {
-			this.description = dto.getTestTask().getDescription();
-			this.taskSuccessAverage = dto.getTestTask().getTaskSuccessAverage();
-			this.taskSuccessStddev = dto.getTestTask().getTaskSuccessStddev();
-			this.taskPathDeviationObserved = dto.getTestTask().getTaskPathDeviationObserved();
-			this.taskPathDeviationOptimal = dto.getTestTask().getTaskPathDeviationOptimal();
-			this.taskTimeAvg = dto.getTestTask().getTaskTimeAvg();
-			this.taskTimeStddev = dto.getTestTask().getTaskTimeStddev();
-			this.taskTimeDeviationObservedAvg = dto.getTestTask().getTaskTimeDeviationObservedAvg();
-			this.taskTimeDeviationOptimalAvg = dto.getTestTask().getTaskTimeDeviationOptimalAvg();
-			this.taskErrors = dto.getTestTask().getTaskErrors();
-			this.taskErrorsStddev = dto.getTestTask().getTaskErrorsStddev();
-			this.taskRatingScale = dto.getTestTask().getTaskRatingScale();
-			this.taskRating = dto.getTestTask().getTaskRating();
-		}
+		this.setId(entity.getId());
+		this.uniqueId = entity.getUniqueId();
+		this.description = entity.getDescription();
+		this.taskSuccessAverage = entity.getTaskSuccessAverage();
+		this.taskSuccessStddev = entity.getTaskSuccessStddev();
+		this.taskPathDeviationObserved = entity.getTaskPathDeviationObserved();
+		this.taskPathDeviationOptimal = entity.getTaskPathDeviationOptimal();
+		this.taskTimeAvg = entity.getTaskTimeAvg();
+		this.taskTimeStddev = entity.getTaskTimeStddev();
+		this.taskTimeDeviationObservedAvg = entity.getTaskTimeDeviationObservedAvg();
+		this.taskTimeDeviationOptimalAvg = entity.getTaskTimeDeviationOptimalAvg();
+		this.taskErrors = entity.getTaskErrors();
+		this.taskErrorsStddev = entity.getTaskErrorsStddev();
+		this.taskRatingScale = entity.getTaskRatingScale();
+		this.taskRating = entity.getTaskRating();
 	}
 	
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Long getTestTaskId() {
-		return testTaskId;
+	public String getUniqueId() {
+		return uniqueId;
 	}
 
-	public void setTestTaskId(Long testTaskId) {
-		this.testTaskId = testTaskId;
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 
 	public String getDescription() {
@@ -168,21 +162,5 @@ public class CertificationResultTestTask {
 
 	public void setTaskRating(Float taskRating) {
 		this.taskRating = taskRating;
-	}
-
-	public List<CertificationResultTestParticipant> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(List<CertificationResultTestParticipant> testParticipants) {
-		this.testParticipants = testParticipants;
-	}
-
-	public String getUniqueId() {
-		return uniqueId;
-	}
-
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
 	}
 }

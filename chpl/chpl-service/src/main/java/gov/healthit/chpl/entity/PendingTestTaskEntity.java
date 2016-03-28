@@ -1,54 +1,82 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public class CertificationResultTestTask {
-	private Long id;
-	private String uniqueId;
-	private Long testTaskId;
-	private String description;
-	private Float taskSuccessAverage;
-	private Float taskSuccessStddev;
-	private Integer taskPathDeviationObserved;
-	private Integer taskPathDeviationOptimal;
-	private Long taskTimeAvg;
-	private Integer taskTimeStddev;
-	private Integer taskTimeDeviationObservedAvg;
-	private Integer taskTimeDeviationOptimalAvg;
-	private Float taskErrors;
-	private Float taskErrorsStddev;
-	private String taskRatingScale;
-	private Float taskRating;
-	private List<CertificationResultTestParticipant> testParticipants;
-
-	public CertificationResultTestTask() {
-		super();
-		testParticipants = new ArrayList<CertificationResultTestParticipant>();
-	}
+@Entity
+@Table(name="pending_test_task")
+public class PendingTestTaskEntity {
 	
-	public CertificationResultTestTask(CertificationResultTestTaskDTO dto) {
-		this();
-		this.id = dto.getId();
-		this.testTaskId = dto.getTestTaskId();
-		if(dto.getTestTask() != null) {
-			this.description = dto.getTestTask().getDescription();
-			this.taskSuccessAverage = dto.getTestTask().getTaskSuccessAverage();
-			this.taskSuccessStddev = dto.getTestTask().getTaskSuccessStddev();
-			this.taskPathDeviationObserved = dto.getTestTask().getTaskPathDeviationObserved();
-			this.taskPathDeviationOptimal = dto.getTestTask().getTaskPathDeviationOptimal();
-			this.taskTimeAvg = dto.getTestTask().getTaskTimeAvg();
-			this.taskTimeStddev = dto.getTestTask().getTaskTimeStddev();
-			this.taskTimeDeviationObservedAvg = dto.getTestTask().getTaskTimeDeviationObservedAvg();
-			this.taskTimeDeviationOptimalAvg = dto.getTestTask().getTaskTimeDeviationOptimalAvg();
-			this.taskErrors = dto.getTestTask().getTaskErrors();
-			this.taskErrorsStddev = dto.getTestTask().getTaskErrorsStddev();
-			this.taskRatingScale = dto.getTestTask().getTaskRatingScale();
-			this.taskRating = dto.getTestTask().getTaskRating();
-		}
-	}
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column( name = "pending_test_task_id", nullable = false  )
+	private Long id;
+	
+	@Basic(optional = false) 
+	@Column(name = "test_task_unique_id", nullable = false) 
+	private String uniqueId;
+	
+	@Column(name = "description")
+	private String description;
+	
+	@Column(name = "task_success_avg_pct" )
+	private Float taskSuccessAverage;
+
+	@Column(name = "task_success_stddev_pct" )
+	private Float taskSuccessStddev;
+	
+	@Column( name = "task_path_deviation_observed", nullable = false  )
+	private Integer taskPathDeviationObserved;
+	
+	@Column( name = "task_path_deviation_optimal", nullable = false  )
+	private Integer taskPathDeviationOptimal;
+	
+	@Column( name = "task_time_avg_seconds", nullable = false  )
+	private Long taskTimeAvg;
+	
+	@Column( name = "task_time_stddev_seconds", nullable = false  )
+	private Integer taskTimeStddev;
+	
+	@Column( name = "task_time_deviation_observed_avg_seconds", nullable = false  )
+	private Integer taskTimeDeviationObservedAvg;
+	
+	@Column( name = "task_time_deviation_optimal_avg_seconds", nullable = false  )
+	private Integer taskTimeDeviationOptimalAvg;
+	
+	@Column(name = "task_errors_pct" )
+	private Float taskErrors;
+
+	@Column(name = "task_errors_stddev_pct" )
+	private Float taskErrorsStddev;
+	
+	@Column(name = "task_rating_scale" )
+	private String taskRatingScale;
+
+	@Column(name = "task_rating" )
+	private Float taskRating;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_date", nullable = false  )
+	private Date lastModifiedDate;
+	
+	@Basic( optional = false )
+	@Column( name = "last_modified_user", nullable = false  )
+	private Long lastModifiedUser;
+	
+	@Basic( optional = false )
+	@Column( name = "creation_date", nullable = false  )
+	private Date creationDate;
+	
+	@Basic( optional = false )
+	@Column( name = "deleted", nullable = false  )
+	private Boolean deleted;
 	
 	public Long getId() {
 		return id;
@@ -58,12 +86,45 @@ public class CertificationResultTestTask {
 		this.id = id;
 	}
 
-	public Long getTestTaskId() {
-		return testTaskId;
+	
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
 	}
 
-	public void setTestTaskId(Long testTaskId) {
-		this.testTaskId = testTaskId;
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
+	}
+
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 
 	public String getDescription() {
@@ -168,21 +229,5 @@ public class CertificationResultTestTask {
 
 	public void setTaskRating(Float taskRating) {
 		this.taskRating = taskRating;
-	}
-
-	public List<CertificationResultTestParticipant> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(List<CertificationResultTestParticipant> testParticipants) {
-		this.testParticipants = testParticipants;
-	}
-
-	public String getUniqueId() {
-		return uniqueId;
-	}
-
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
 	}
 }

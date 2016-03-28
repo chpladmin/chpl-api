@@ -23,7 +23,6 @@ public class CertificationResult {
 	private List<CertificationResultAdditionalSoftware> additionalSoftware;
 	private List<CertificationResultTestStandard> testStandards;
 	private List<CertificationResultTestTool> testToolsUsed;
-	private List<CertificationResultTestParticipant> testParticipants;
 	private List<CertificationResultTestTask> testTasks;
 	
 	public CertificationResult(){
@@ -34,7 +33,6 @@ public class CertificationResult {
 		 testDataUsed = new ArrayList<CertificationResultTestData>();
 		 testProcedures = new ArrayList<CertificationResultTestProcedure>();
 		 testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
-		 testParticipants = new ArrayList<CertificationResultTestParticipant>();
 		 testTasks = new ArrayList<CertificationResultTestTask>();
 	}
 
@@ -146,14 +144,6 @@ public class CertificationResult {
 
 	public void setUcdProcesses(List<CertificationResultUcdProcess> ucdProcesses) {
 		this.ucdProcesses = ucdProcesses;
-	}
-
-	public List<CertificationResultTestParticipant> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(List<CertificationResultTestParticipant> testParticipants) {
-		this.testParticipants = testParticipants;
 	}
 
 	public List<CertificationResultTestTask> getTestTasks() {
