@@ -4,9 +4,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -120,7 +124,11 @@ import gov.healthit.chpl.util.CertificationResultRules;
 @Service
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductManagerImpl.class);
-
+	private static final long SUSPICIOUS_ACTIVITY_TIME_MILLS = 14*24*60*60*1000;
+	
+	@Autowired SendMailUtil sendMailService;
+	@Autowired private Environment env;
+	
 	@Autowired
 	private CertificationResultRules certRules;
 	
@@ -1243,6 +1251,40 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			return cqm.getCriterion().getId();
 		} else {
 			throw new EntityRetrievalException("A criteria id or number must be provided.");
+		}
+	}
+	
+	@Override
+	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed) {
+		if(original.getCertificationDate() != null && changed.getCertificationDate() != null &&
+		   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > SUSPICIOUS_ACTIVITY_TIME_MILLS)) {
+			//if they changed something outside of the suspicious activity window, 
+			//check if the change was something that should trigger an email
+			
+			String subject = "CHPL Questionable Activity";
+			
+			String htmlMessage = "<p>Questionable activity was detected on certified product " + original.getChplProductNumber() + ".</p>"
+					+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
+					
+			boolean sendMsg = false;
+			if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
+				(original.getCqmResults() != null && changed.getCqmResults() == null) ||
+				(original.getCqmResults().size() != changed.getCqmResults().size())) {
+				sendMsg = true;
+			}
+			if( (original.getCertificationResults() == null && changed.getCertificationResults() != null) ||
+				(original.getCertificationResults() != null && changed.getCertificationResults() == null) ||
+				(original.getCertificationResults().size() != changed.getCertificationResults().size())) {
+				sendMsg = true;
+			}
+			
+			if(sendMsg) {
+				try {
+					sendMailService.sendEmail("onc_chpl@hhs.gov", subject, htmlMessage);
+				} catch(MessagingException me) {
+					logger.error("Could not send questionable activity email", me);
+				}
+			}
 		}
 	}
 }
