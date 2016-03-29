@@ -451,6 +451,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			} else if("2".equals(k2AttestationStr.trim())) {
 				pendingCertifiedProduct.setTransparencyAttestation(AttestationType.NA);
 			}
+		} else {
+			pendingCertifiedProduct.setTransparencyAttestation(null);
 		}
 	}
 	

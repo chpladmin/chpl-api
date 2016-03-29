@@ -104,7 +104,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					//check transparency attestation and url for warnings
 					if( (developer.getTransparencyAttestation() == null && product.getTransparencyAttestation() != null) ||
 						(developer.getTransparencyAttestation() != null && product.getTransparencyAttestation() == null) || 
-						(!developer.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
+						(developer.getTransparencyAttestation() != null && !developer.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
 						product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 					}
 				}
@@ -200,7 +200,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("ACB ID is required but was not found.");
 		}
 		
-		if(urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
+		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
+				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
 			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
 		}
 	}
