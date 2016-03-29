@@ -66,10 +66,11 @@ public class PendingCertificationResultDTO {
 		this.apiDocumentation = entity.getApiDocumentation();
 		this.privacySecurityFramework = entity.getPrivacySecurityFramework();
 		
-		if(entity.getUcdProcesses() != null) {
+		if(entity.getUcdProcesses() != null && entity.getUcdProcesses().size() > 0) {
 			for(PendingCertificationResultUcdProcessEntity e : entity.getUcdProcesses()) {
 				this.getUcdProcesses().add(new PendingCertificationResultUcdProcessDTO(e));
 			}
+			this.setSed(Boolean.TRUE);
 		}
 		
 		if(entity.getTestStandards() != null) {
@@ -103,11 +104,12 @@ public class PendingCertificationResultDTO {
 			}
 		}
 		
-		if(entity.getTestTasks() != null) {
+		if(entity.getTestTasks() != null && entity.getTestTasks().size() > 0) {
 			for(PendingCertificationResultTestTaskEntity e : entity.getTestTasks()) {
 				PendingCertificationResultTestTaskDTO taskDto = new PendingCertificationResultTestTaskDTO(e);
 				this.getTestTasks().add(taskDto);
 			}
+			this.setSed(Boolean.TRUE);
 		}
 	}
 	

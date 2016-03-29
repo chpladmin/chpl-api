@@ -24,6 +24,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
 	@Autowired CertifiedProductDAO cpDao;
@@ -31,6 +32,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	@Autowired CertificationEditionDAO certEditionDao;
 	@Autowired CertificationBodyDAO acbDao;
 	@Autowired DeveloperDAO developerDao;
+	
+	@Autowired
+	protected CertificationResultRules certRules;
 	
 	Pattern urlRegex;
 	
@@ -170,21 +174,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 			}
 		}
-		
-		if(StringUtils.isEmpty(product.getProductName())) {
-			product.getErrorMessages().add("A product name is required.");
-		}
-		
-		if(StringUtils.isEmpty(product.getProductVersion())) {
-			product.getErrorMessages().add("A product version is required.");
-		}
 	}
 	@Override
 	public void validate(CertifiedProductSearchDetails product) {
 		//TODO: not sure if we should do the same validation here or not
 	}
 	
-	private void validateDemographics(PendingCertifiedProductDTO product) {
+	protected void validateDemographics(PendingCertifiedProductDTO product) {
 		if(product.getCertificationEditionId() == null && StringUtils.isEmpty(product.getCertificationEdition())) {
 			product.getErrorMessages().add("Certification edition is required but was not found.");
 		}
@@ -200,9 +196,88 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("ACB ID is required but was not found.");
 		}
 		
+		if(StringUtils.isEmpty(product.getUniqueId())) {
+			product.getErrorMessages().add("The product unique id is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getDeveloperName())) {
+			product.getErrorMessages().add("A developer name is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getProductName())) {
+			product.getErrorMessages().add("A product name is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getProductVersion())) {
+			product.getErrorMessages().add("A product version is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getDeveloperStreetAddress())) {
+			product.getErrorMessages().add("Developer street address is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getDeveloperCity())) {
+			product.getErrorMessages().add("Developer city is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getDeveloperState())) {
+			product.getErrorMessages().add("Developer state is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getDeveloperZipCode())) {
+			product.getErrorMessages().add("Developer zip code is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getDeveloperWebsite())) {
+			product.getErrorMessages().add("Developer website is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getDeveloperEmail())) {
+			product.getErrorMessages().add("Developer contact email address is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getDeveloperPhoneNumber())) {
+			product.getErrorMessages().add("Developer contact phone number is required.");
+		}
+		
+		if(StringUtils.isEmpty(product.getDeveloperContactName())) {
+			product.getErrorMessages().add("Developer contact name is required.");
+		}
+
+		if(product.getIcs() == null) {
+			product.getErrorMessages().add("ICS is required.");
+		}
+		
 		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
 				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
 			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
+		}
+		
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getMeetsCriteria() == null) {
+				product.getErrorMessages().add("0 or 1 is required to inidicate whether " + cert.getNumber() + " was met.");
+			} else if(cert.getMeetsCriteria() == Boolean.TRUE) {
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
+						cert.getGap() == null) {
+					product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED) &&
+						cert.getSed() == null) {
+					product.getErrorMessages().add("SED is required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+					product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
+						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
+					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA) &&
+						(cert.getTestData() == null || cert.getTestData().size() == 0)) {
+					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
+				}
+			}
 		}
 	}
 }
