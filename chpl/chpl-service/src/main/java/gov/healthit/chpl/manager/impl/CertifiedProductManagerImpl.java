@@ -44,6 +44,7 @@ import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -124,7 +125,6 @@ import gov.healthit.chpl.util.CertificationResultRules;
 @Service
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductManagerImpl.class);
-	private static final long SUSPICIOUS_ACTIVITY_TIME_MILLS = 14*24*60*60*1000;
 	
 	@Autowired SendMailUtil sendMailService;
 	@Autowired private Environment env;
@@ -1256,34 +1256,89 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	
 	@Override
 	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed) {
-		if(original.getCertificationDate() != null && changed.getCertificationDate() != null &&
-		   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > SUSPICIOUS_ACTIVITY_TIME_MILLS)) {
-			//if they changed something outside of the suspicious activity window, 
-			//check if the change was something that should trigger an email
-			
-			String subject = "CHPL Questionable Activity";
-			
-			String htmlMessage = "<p>Questionable activity was detected on certified product " + original.getChplProductNumber() + ".</p>"
-					+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
-					
-			boolean sendMsg = false;
-			if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
-				(original.getCqmResults() != null && changed.getCqmResults() == null) ||
-				(original.getCqmResults().size() != changed.getCqmResults().size())) {
-				sendMsg = true;
-			}
-			if( (original.getCertificationResults() == null && changed.getCertificationResults() != null) ||
-				(original.getCertificationResults() != null && changed.getCertificationResults() == null) ||
-				(original.getCertificationResults().size() != changed.getCertificationResults().size())) {
-				sendMsg = true;
-			}
-			
-			if(sendMsg) {
-				try {
-					sendMailService.sendEmail("onc_chpl@hhs.gov", subject, htmlMessage);
-				} catch(MessagingException me) {
-					logger.error("Could not send questionable activity email", me);
+		boolean sendMsg = false;
+		String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
+		String subject = "CHPL Questionable Activity";
+		String htmlMessage = "<p>Activity was detected on certified product " + original.getChplProductNumber(); 
+		if(activityThresholdDaysStr.equals("0")) {
+			htmlMessage += ".";
+		} else {
+			htmlMessage += " more than " + activityThresholdDaysStr + " days after it was certified.";
+		}
+		htmlMessage += "</p>"
+				+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/app/#/admin/reports/" + original.getId() + " </p>";
+		
+		
+		if(original.getCertificationEdition().get("name").equals("2011")) {
+			sendMsg = true;
+		} else {
+			int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
+			long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
+			if(original.getCertificationDate() != null && changed.getCertificationDate() != null &&
+			   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > activityThresholdMillis)) {
+				//if they changed something outside of the suspicious activity window, 
+				//check if the change was something that should trigger an email
+								
+				if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
+					(original.getCqmResults() != null && changed.getCqmResults() == null) ||
+					(original.getCqmResults().size() != changed.getCqmResults().size())) {
+					sendMsg = true;
+				} else if(original.getCqmResults().size() == changed.getCqmResults().size()) {
+					for(CQMResultDetails origCqm : original.getCqmResults()) {
+						for(CQMResultDetails changedCqm : changed.getCqmResults()) {
+							if(origCqm.getCmsId().equals(changedCqm.getCmsId())) {
+								if(origCqm.isSuccess().booleanValue() != changedCqm.isSuccess().booleanValue()) {
+									sendMsg = true;
+								}
+							}
+						}
+					}
 				}
+				if( (original.getCertificationResults() == null && changed.getCertificationResults() != null) ||
+					(original.getCertificationResults() != null && changed.getCertificationResults() == null) ||
+					(original.getCertificationResults().size() != changed.getCertificationResults().size())) {
+					sendMsg = true;
+				} else if(original.getCertificationResults().size() == changed.getCertificationResults().size()) {
+					for(CertificationResult origCert : original.getCertificationResults()) {
+						for(CertificationResult changedCert : changed.getCertificationResults()) {
+							if(origCert.getNumber().equals(changedCert.getNumber())) {
+								if(origCert.isSuccess().booleanValue() != changedCert.isSuccess().booleanValue()) {
+									sendMsg = true;
+								}
+								if(origCert.isG1Success() != null || changedCert.isG1Success() != null) {
+									if(	(origCert.isG1Success() == null && changedCert.isG1Success() != null) ||
+										(origCert.isG1Success() != null && changedCert.isG1Success() == null) ||
+										(origCert.isG1Success().booleanValue() != changedCert.isG1Success().booleanValue())) {
+										sendMsg = true;
+									}
+								}
+								if(origCert.isG2Success() != null || changedCert.isG2Success() != null) {
+									if(	(origCert.isG2Success() == null && changedCert.isG2Success() != null) ||
+										(origCert.isG2Success() != null && changedCert.isG2Success() == null) ||
+										(origCert.isG2Success().booleanValue() != changedCert.isG2Success().booleanValue())) {
+										sendMsg = true;
+									}
+								}
+								if(origCert.isGap() != null || changedCert.isGap() != null) {
+									if(	(origCert.isGap() == null && changedCert.isGap() != null) ||
+										(origCert.isGap() != null && changedCert.isGap() == null) ||
+										(origCert.isGap().booleanValue() != changedCert.isGap().booleanValue())) {
+										sendMsg = true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if(sendMsg) {
+			String emailAddr = env.getProperty("questionableActivityEmail");
+			try {
+				sendMailService.sendEmail(emailAddr, subject, htmlMessage);
+			} catch(MessagingException me) {
+				logger.error("Could not send questionable activity email", me);
 			}
 		}
 	}
