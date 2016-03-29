@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version TBD
+_DATE_TBD_
+
+### Features added
+* Check for questionable certified product updates and trigger email if found.
+
+### Bugs fixed
+* Allow for empty transparency attestation and url values
+
 ## Version 0.5.0
 _25 March 2016_
 
