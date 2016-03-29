@@ -300,6 +300,7 @@ public class CertifiedProductController {
 		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
 		
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
 		
 		//search for the product by id to get it with all the updates

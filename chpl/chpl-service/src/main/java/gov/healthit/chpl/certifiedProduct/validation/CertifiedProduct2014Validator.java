@@ -113,6 +113,13 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 	}
 	
 	@Override
+	protected void validateDemographics(PendingCertifiedProductDTO product) {
+		if(StringUtils.isEmpty(product.getReportFileLocation())) {
+			product.getErrorMessages().add("A test result summary URL is required.");
+		}
+	}
+	
+	@Override
 	public void validate(CertifiedProductSearchDetails product) {
 		super.validate(product);
 		

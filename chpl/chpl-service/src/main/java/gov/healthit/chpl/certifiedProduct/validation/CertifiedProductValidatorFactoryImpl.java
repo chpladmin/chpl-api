@@ -19,6 +19,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 	private static final String PRODUCT_CLASSIFICATION_MODULAR = "Modular EHR";
 	private static final String PRODUCT_CLASSIFICATION_COMPLETE = "Complete EHR";
 	
+	@Autowired private CertifiedProductAllowedValidator allowedValidator;
 	@Autowired private AmbulatoryComplete2014Validator ambulatoryComplete2014Validator;
 	@Autowired private AmbulatoryModular2014Validator ambulatoryModular2014Validator;
 	@Autowired private InpatientComplete2014Validator inpatientComplete2014Validator;
@@ -53,8 +54,8 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 		} else if(product.getCertificationEdition().equals("2015")) {
 			return cp2015Validator;
 		} else {
-			product.getErrorMessages().add("Cannot determine if this product is from 2014 or 2015 so it cannot be validated.");
 			logger.error("Cannot find validator for certificatoin edition '" + product.getCertificationEdition() + "'.");
+			return allowedValidator;
 		}
 		return null;
 	}

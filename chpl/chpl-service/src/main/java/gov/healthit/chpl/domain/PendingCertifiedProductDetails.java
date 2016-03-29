@@ -226,6 +226,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 					ucd.setUcdProcessDetails(ucdDto.getUcdProcessDetails());
 					cert.getUcdProcesses().add(ucd);
 				}
+				cert.setSed(Boolean.TRUE);
 			}
 			
 			if(certCriterion.getAdditionalSoftware() != null) {
@@ -299,7 +300,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				cert.setTestStandards(null);
 			}
 			
-			if(certCriterion.getTestTasks() != null) {
+			if(certCriterion.getTestTasks() != null && certCriterion.getTestTasks().size() > 0) {
+				cert.setSed(Boolean.TRUE);
 				for(PendingCertificationResultTestTaskDTO ttDto : certCriterion.getTestTasks()) {
 					if(ttDto.getPendingTestTask() != null) {
 						PendingTestTaskDTO tt = ttDto.getPendingTestTask();

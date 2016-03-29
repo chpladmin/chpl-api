@@ -55,7 +55,7 @@ public class PostgresEnumType implements UserType, ParameterizedType {
 
 	public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {
 	    if (value == null) {
-	        st.setNull(index, Types.VARCHAR);
+	        st.setNull(index, Types.OTHER);
 	    }
 	    else {
 //	            previously used setString, but this causes postgresql to bark about incompatible types.
