@@ -5,6 +5,7 @@ _DATE_TBD_
 
 ### Features added
 * Check for questionable certified product updates and trigger email if found.
+* Return list of applicable transparency attestations for each developer
 
 ### Bugs fixed
 * Allow for empty transparency attestation and url values
