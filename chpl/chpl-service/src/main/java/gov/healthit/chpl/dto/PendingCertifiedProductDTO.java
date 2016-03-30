@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -22,6 +25,7 @@ import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
@@ -128,15 +132,14 @@ public class PendingCertifiedProductDTO {
 		if(details.getDeveloper().get("email") != null) {
 			this.developerEmail = details.getDeveloper().get("email").toString();
 		}
-		if(details.getDeveloper().get("contactName") != null) {
-			this.developerContactName = details.getDeveloper().get("contactName").toString();
+		Object contactObj = details.getDeveloper().get("contact");
+		if(contactObj != null && contactObj instanceof Map) {
+			Map<String, String> contact = (Map)contactObj;
+			this.developerContactName = contact.get("lastName").toString();
+			this.developerPhoneNumber = contact.get("phoneNumber").toString();
+			this.developerEmail = contact.get("email").toString();
 		}
-		if(details.getDeveloper().get("contactPhone") != null) {
-			this.developerPhoneNumber = details.getDeveloper().get("contactPhone").toString();
-		}
-		if(details.getDeveloper().get("contactId") != null) {
-			this.developerContactId = new Long(details.getDeveloper().get("contactId").toString());
-		}
+
 		
 		AddressDTO address = new AddressDTO();
 		if(details.getDeveloperAddress().get("id") != null) {
@@ -155,6 +158,7 @@ public class PendingCertifiedProductDTO {
 		if(details.getDeveloperAddress().get("zipcode") != null) {
 			address.setZipcode(details.getDeveloperAddress().get("zipcode").toString());
 		}
+		address.setCountry("US");
 		this.developerAddress = address;
 		
 		if(details.getProduct().get("id") != null) {
@@ -416,7 +420,7 @@ public class PendingCertifiedProductDTO {
 		this.practiceTypeId = entity.getPracticeTypeId();
 		this.testingLabId = entity.getTestingLabId();
 		this.developerId = entity.getDeveloperId();
-		this.developerAddress = new AddressDTO(entity.getDeveloperAddress());
+		//this.developerAddress = new AddressDTO(entity.getDeveloperAddress());
 		this.productId = entity.getProductId();
 		this.productVersionId = entity.getProductVersionId();
 		this.certificationEditionId = entity.getCertificationEditionId();

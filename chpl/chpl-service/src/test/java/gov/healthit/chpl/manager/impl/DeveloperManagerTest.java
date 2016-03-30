@@ -18,6 +18,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.DeveloperManager;
 import junit.framework.TestCase;
@@ -58,7 +59,8 @@ public class DeveloperManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
-		assertNull(developer.getTransparencyAttestation());
+		assertNotNull(developer.getTransparencyAttestationMappings());
+		assertTrue(developer.getTransparencyAttestationMappings().size() > 0);
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -67,8 +69,12 @@ public class DeveloperManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
-		assertNotNull(developer.getTransparencyAttestation());
-		assertEquals("Affirmative", developer.getTransparencyAttestation());
+		assertNotNull(developer.getTransparencyAttestationMappings());
+		for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+			if(attMap.getDeveloperId().longValue() == developer.getId().longValue()) {
+				assertEquals("Affirmative", attMap.getTransparencyAttestation());
+			}
+		}
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 }

@@ -168,7 +168,8 @@ public class ApiKeyController {
 				+ "<p>For more information about how to use the API, please visit " + env.getProperty("chplUrlBegin") + "/#/resources </p>"
 				+ "<p>Thanks, <br/>The CHPL Team</p>";
 
-		sendMailService.sendEmail(email, subject, htmlMessage);
+		String[] toEmails = {email};
+		sendMailService.sendEmail(toEmails, subject, htmlMessage);
 	}
 	
 }

@@ -82,6 +82,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.ContactDTO;
+import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
@@ -279,24 +280,29 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 			newDeveloper.setName(pendingCp.getDeveloperName());
 			newDeveloper.setWebsite(pendingCp.getDeveloperWebsite());
-			newDeveloper.setTransparencyAttestation(pendingCp.getTransparencyAttestation() == null ? null : pendingCp.getTransparencyAttestation());
+			DeveloperACBMapDTO transparencyMap = new DeveloperACBMapDTO();
+			transparencyMap.setAcbId(pendingCp.getCertificationBodyId());
+			transparencyMap.setAcbName(pendingCp.getCertificationBodyName());
+			transparencyMap.setTransparencyAttestation(pendingCp.getTransparencyAttestation());
+			newDeveloper.getTransparencyAttestationMappings().add(transparencyMap);
 			AddressDTO developerAddress = pendingCp.getDeveloperAddress();
 			newDeveloper.setAddress(developerAddress);
 			ContactDTO developerContact = new ContactDTO();
 			developerContact.setLastName(pendingCp.getDeveloperContactName());
 			developerContact.setPhoneNumber(pendingCp.getDeveloperPhoneNumber());
 			developerContact.setEmail(pendingCp.getDeveloperEmail());
-			
+			newDeveloper.setContact(developerContact);
 			//create the dev, address, and contact
 			developer = developerManager.create(newDeveloper);
 			pendingCp.setDeveloperId(developer.getId());
 		} else {
-			developer = developerDao.getById(pendingCp.getDeveloperId());
-			boolean needsUpdate = false;
-			if(developer.getTransparencyAttestation() == null && pendingCp.getTransparencyAttestation() != null || 
-				(!developer.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation()))) {
-				developer.setTransparencyAttestation(pendingCp.getTransparencyAttestation());
-				needsUpdate = true;
+			developer = developerManager.getById(pendingCp.getDeveloperId());
+			boolean needsUpdate = true;
+			for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+				if(attMap.getAcbId().equals(pendingCp.getCertificationBodyId()) && 
+					attMap.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation())) {
+					needsUpdate = false;
+				}
 			}
 			if(needsUpdate) {
 				developerManager.update(developer);
@@ -1278,7 +1284,23 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > activityThresholdMillis)) {
 				//if they changed something outside of the suspicious activity window, 
 				//check if the change was something that should trigger an email
-								
+				
+//				if(!original.getProduct().get("id").equals(changed.getProduct().get("id"))) {
+//					sendMsg = true;
+//				}
+//				
+//				if(!original.getProduct().get("versionId").equals(changed.getProduct().get("versionId"))) {
+//					sendMsg = true;
+//				}
+//				
+//				if(!original.getDeveloper().get("id").equals(changed.getDeveloper().get("id"))) {
+//					sendMsg = true;
+//				}
+//				
+//				if(!original.getChplProductNumber().equals(changed.getChplProductNumber())) {
+//					sendMsg = true;
+//				}
+				
 				if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
 					(original.getCqmResults() != null && changed.getCqmResults() == null) ||
 					(original.getCqmResults().size() != changed.getCqmResults().size())) {
@@ -1335,8 +1357,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		
 		if(sendMsg) {
 			String emailAddr = env.getProperty("questionableActivityEmail");
+			String[] emailAddrs = emailAddr.split(";");
 			try {
-				sendMailService.sendEmail(emailAddr, subject, htmlMessage);
+				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
 			} catch(MessagingException me) {
 				logger.error("Could not send questionable activity email", me);
 			}

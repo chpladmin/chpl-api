@@ -29,7 +29,7 @@ public class SendMailUtil {
 	 * create and send the email to invite the user
 	 * @param invitation
 	 */
-	public void sendEmail(String toEmail, String subject, String htmlMessage) throws AddressException, MessagingException {
+	public void sendEmail(String[] toEmail, String subject, String htmlMessage) throws AddressException, MessagingException {
 		//do not attempt to send email if we are in a dev environment
 		String mailHost = env.getProperty("smtpHost");
 		if(StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost) || "dev".equalsIgnoreCase(mailHost)) {
@@ -71,8 +71,11 @@ public class SendMailUtil {
         }
 
         try {
-        	InternetAddress toEmailaddress = new InternetAddress(toEmail);
-	        InternetAddress[] toAddresses = { toEmailaddress };
+        	InternetAddress[] toAddresses = new InternetAddress[toEmail.length];
+        	for(int i = 0; i < toEmail.length; i++) {
+            	InternetAddress toEmailaddress = new InternetAddress(toEmail[i]);
+            	toAddresses[i] = toEmailaddress;
+        	}
 	        msg.setRecipients(Message.RecipientType.TO, toAddresses);
 	        logger.debug("Sending email to " + toEmail);
         } catch (MessagingException ex) {

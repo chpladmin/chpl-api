@@ -108,7 +108,8 @@ public class UserManagementController {
 				"<p>If you have any questions, please contact the ONC CHPL Team at onc_chpl@hhs.gov.</p>" +
 				"<p>The CHPL Team</p>";
 
-		sendMailService.sendEmail(createdUser.getEmail(), "Confirm CHPL Administrator Account", htmlMessage);
+		String[] toEmails = {createdUser.getEmail()};
+		sendMailService.sendEmail(toEmails, "Confirm CHPL Administrator Account", htmlMessage);
 		
 		String activityDescription = "User "+createdUser.getSubjectName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, createdUser.getId(), activityDescription, null, createdUser, createdUser.getId());
@@ -239,7 +240,8 @@ public class UserManagementController {
 				"<p>Take care,<br/> " +
 				 "The CHPL Team</p>";
 
-		sendMailService.sendEmail(createdInvite.getEmail(), "CHPL Administrator Invitation", htmlMessage);
+		String[] toEmails = {createdInvite.getEmail()};
+		sendMailService.sendEmail(toEmails, "CHPL Administrator Invitation", htmlMessage);
 		
 		UserInvitation result = new UserInvitation(createdInvite);
 		return result;

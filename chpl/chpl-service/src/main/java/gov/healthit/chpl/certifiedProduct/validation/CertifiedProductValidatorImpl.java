@@ -102,14 +102,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					if(certificationBody != null) {
 						DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(), certificationBody.getId());
 						if(mapping != null) {
-							developer.setTransparencyAttestation(mapping.getTransparencyAttestation());
+							//check transparency attestation and url for warnings
+							if( (mapping.getTransparencyAttestation() == null && product.getTransparencyAttestation() != null) ||
+								(mapping.getTransparencyAttestation() != null && product.getTransparencyAttestation() == null) || 
+								(mapping.getTransparencyAttestation() != null && !mapping.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
+								product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
+							}
+						} else if(mapping == null && !StringUtils.isEmpty(product.getTransparencyAttestation())){
+							product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 						}
-					}
-					//check transparency attestation and url for warnings
-					if( (developer.getTransparencyAttestation() == null && product.getTransparencyAttestation() != null) ||
-						(developer.getTransparencyAttestation() != null && product.getTransparencyAttestation() == null) || 
-						(developer.getTransparencyAttestation() != null && !developer.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
-						product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 					}
 				}
 			} else if(!developerCode.matches("X+")){
@@ -212,20 +213,38 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("A product version is required.");
 		}
 		
-		if(StringUtils.isEmpty(product.getDeveloperStreetAddress())) {
-			product.getErrorMessages().add("Developer street address is required.");
-		}
-		
-		if(StringUtils.isEmpty(product.getDeveloperCity())) {
-			product.getErrorMessages().add("Developer city is required.");
-		}
-		
-		if(StringUtils.isEmpty(product.getDeveloperState())) {
-			product.getErrorMessages().add("Developer state is required.");
-		}
-		
-		if(StringUtils.isEmpty(product.getDeveloperZipCode())) {
-			product.getErrorMessages().add("Developer zip code is required.");
+		if(product.getDeveloperAddress() != null) {
+			if(StringUtils.isEmpty(product.getDeveloperAddress().getStreetLineOne())) {
+				product.getErrorMessages().add("Developer street address is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperAddress().getCity())) {
+				product.getErrorMessages().add("Developer city is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperAddress().getState())) {
+				product.getErrorMessages().add("Developer state is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperAddress().getZipcode())) {
+				product.getErrorMessages().add("Developer zip code is required.");
+			}
+		} else {
+			if(StringUtils.isEmpty(product.getDeveloperStreetAddress())) {
+				product.getErrorMessages().add("Developer street address is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperCity())) {
+				product.getErrorMessages().add("Developer city is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperState())) {
+				product.getErrorMessages().add("Developer state is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperZipCode())) {
+				product.getErrorMessages().add("Developer zip code is required.");
+			}
 		}
 		
 		if(StringUtils.isEmpty(product.getDeveloperWebsite())) {
