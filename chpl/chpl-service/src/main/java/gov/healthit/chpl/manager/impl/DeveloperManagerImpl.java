@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -22,6 +23,7 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -122,23 +124,27 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				for(CertificationBodyDTO acb : availableAcbs) {
 					DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
 					if(existingMap == null) {
-						DeveloperACBMapDTO developerMappingToUpdate = new DeveloperACBMapDTO();
-						developerMappingToUpdate.setAcbId(acb.getId());
-						developerMappingToUpdate.setDeveloperId(before.getId());
-						developerMappingToUpdate.setTransparencyAttestation(developer.getTransparencyAttestation());
-						developerDao.createTransparencyMapping(developerMappingToUpdate);
+						DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
+						developerMappingToCreate.setAcbId(acb.getId());
+						developerMappingToCreate.setDeveloperId(before.getId());
+						for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+							if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
+								developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());;
+							}
+						}
+						developerDao.createTransparencyMapping(developerMappingToCreate);
 					} else {
-						existingMap.setTransparencyAttestation(developer.getTransparencyAttestation());
+						for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+							if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
+								existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());;
+							}
+						}
 						developerDao.updateTransparencyMapping(existingMap);
 					}
 				}
 			}
 		}
-		DeveloperDTO after = new DeveloperDTO(result);
-		
-		if(!isChplAdmin) {
-			after.setTransparencyAttestation(developer.getTransparencyAttestation());
-		}
+		DeveloperDTO after = getById(result.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", before, after);
 		
 		return after;
@@ -153,11 +159,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs != null && availableAcbs.size() > 0) {
 			for(CertificationBodyDTO acb : availableAcbs) {
-				DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-				developerMappingToCreate.setAcbId(acb.getId());
-				developerMappingToCreate.setDeveloperId(created.getId());
-				developerMappingToCreate.setTransparencyAttestation(dto.getTransparencyAttestation());
-				developerDao.createTransparencyMapping(developerMappingToCreate);
+				for(DeveloperACBMapDTO attMap : dto.getTransparencyAttestationMappings()) {
+					if(acb.getId().longValue() == attMap.getAcbId().longValue() && 
+							!StringUtils.isEmpty(attMap.getTransparencyAttestation())) {
+						attMap.setDeveloperId(created.getId());
+						developerDao.createTransparencyMapping(attMap);
+					}
+				}
 			}
 		}
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, created.getId(), "Developer "+created.getName()+" has been created.", null, created);

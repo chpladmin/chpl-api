@@ -14,7 +14,6 @@ public class Developer {
 	private Address address;
 	private Contact contact;
 	private String lastModifiedDate;
-	private String transparencyAttestation;
 	private List<TransparencyAttestationMap> transparencyAttestations;
 	
 	public Developer() {
@@ -34,7 +33,6 @@ public class Developer {
 			this.contact = new Contact(dto.getContact());
 		}
 		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
-		this.transparencyAttestation = dto.getTransparencyAttestation();
 		if(dto.getTransparencyAttestationMappings() != null && dto.getTransparencyAttestationMappings().size() > 0) {
 			for(DeveloperACBMapDTO map : dto.getTransparencyAttestationMappings()) {
 				TransparencyAttestationMap toAdd = new TransparencyAttestationMap();
@@ -84,14 +82,6 @@ public class Developer {
 
 	public void setDeveloperCode(String developerCode) {
 		this.developerCode = developerCode;
-	}
-
-	public String getTransparencyAttestation() {
-		return transparencyAttestation;
-	}
-
-	public void setTransparencyAttestation(String transparencyAttestation) {
-		this.transparencyAttestation = transparencyAttestation;
 	}
 
 	public Contact getContact() {

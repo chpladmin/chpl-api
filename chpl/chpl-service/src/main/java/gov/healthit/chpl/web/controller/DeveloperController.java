@@ -24,8 +24,10 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
+import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -101,7 +103,13 @@ public class DeveloperController {
 			toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
 			toCreate.setName(developerInfo.getDeveloper().getName());
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
-			toCreate.setTransparencyAttestation(developerInfo.getDeveloper().getTransparencyAttestation());
+			for(TransparencyAttestationMap attMap : developerInfo.getDeveloper().getTransparencyAttestations()) {
+				DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
+				devMap.setAcbId(attMap.getAcbId());
+				devMap.setAcbName(attMap.getAcbName());
+				devMap.setTransparencyAttestation(attMap.getAttestation());
+				toCreate.getTransparencyAttestationMappings().add(devMap);
+			}
 			
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
 			if(developerAddress != null) {
@@ -132,7 +140,13 @@ public class DeveloperController {
 			toUpdate.setId(developerInfo.getDeveloperIds().get(0));
 			toUpdate.setName(developerInfo.getDeveloper().getName());
 			toUpdate.setWebsite(developerInfo.getDeveloper().getWebsite());
-			toUpdate.setTransparencyAttestation(developerInfo.getDeveloper().getTransparencyAttestation());
+			for(TransparencyAttestationMap attMap : developerInfo.getDeveloper().getTransparencyAttestations()) {
+				DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
+				devMap.setAcbId(attMap.getAcbId());
+				devMap.setAcbName(attMap.getAcbName());
+				devMap.setTransparencyAttestation(attMap.getAttestation());
+				toUpdate.getTransparencyAttestationMappings().add(devMap);
+			}	
 			
 			if(developerInfo.getDeveloper().getAddress() != null) {
 				AddressDTO address = new AddressDTO();

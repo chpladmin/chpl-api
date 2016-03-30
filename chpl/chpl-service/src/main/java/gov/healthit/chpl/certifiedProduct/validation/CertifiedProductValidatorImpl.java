@@ -102,14 +102,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					if(certificationBody != null) {
 						DeveloperACBMapDTO mapping = developerDao.getTransparencyMapping(developer.getId(), certificationBody.getId());
 						if(mapping != null) {
-							developer.setTransparencyAttestation(mapping.getTransparencyAttestation());
+							//check transparency attestation and url for warnings
+							if( (mapping.getTransparencyAttestation() == null && product.getTransparencyAttestation() != null) ||
+								(mapping.getTransparencyAttestation() != null && product.getTransparencyAttestation() == null) || 
+								(mapping.getTransparencyAttestation() != null && !mapping.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
+								product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
+							}
 						}
-					}
-					//check transparency attestation and url for warnings
-					if( (developer.getTransparencyAttestation() == null && product.getTransparencyAttestation() != null) ||
-						(developer.getTransparencyAttestation() != null && product.getTransparencyAttestation() == null) || 
-						(developer.getTransparencyAttestation() != null && !developer.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
-						product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 					}
 				}
 			} else if(!developerCode.matches("X+")){

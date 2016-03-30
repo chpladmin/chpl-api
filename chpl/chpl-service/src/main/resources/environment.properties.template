@@ -4,7 +4,7 @@ jndiName=java:comp/env/jdbc/openchpl
 persistenceUnitName=openchpl
 springfox.documentation.swagger.v2.path=/api-docs
 basePath=/rest
-questionableActivityEmail=theonc.certification@hhs.gov
+questionableActivityEmail=theonc.certification@hhs.gov;onc_chpl@hhs.gov
 questionableActivityThresholdDays=0
 
 #chpl-service download jar properties

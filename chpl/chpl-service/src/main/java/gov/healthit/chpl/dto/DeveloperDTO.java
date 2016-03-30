@@ -19,7 +19,6 @@ public class DeveloperDTO {
 	private Long lastModifiedUser;
 	private String name;
 	private String website;
-	private String transparencyAttestation;
 	private List<DeveloperACBMapDTO> transparencyAttestationMappings;
 	
 	public DeveloperDTO(){
@@ -104,15 +103,7 @@ public class DeveloperDTO {
 	public void setDeveloperCode(String developerCode) {
 		this.developerCode = developerCode;
 	}
-
-	public String getTransparencyAttestation() {
-		return transparencyAttestation;
-	}
-
-	public void setTransparencyAttestation(String transparencyAttestation) {
-		this.transparencyAttestation = transparencyAttestation;
-	}
-
+	
 	public ContactDTO getContact() {
 		return contact;
 	}
