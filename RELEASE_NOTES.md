@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_DATE_TBD_
+## Version 1.0.0
+_30 March 2016_
 
 ### Features added
 * Check for questionable certified product updates and trigger email if found.
