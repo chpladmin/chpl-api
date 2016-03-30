@@ -50,15 +50,23 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	public List<DeveloperDTO> getAll() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAll();
 		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() == 1) {
-			//if someone is a member of multiple acbs, they will not see the transparency
-			CertificationBodyDTO acb = availableAcbs.get(0);
+		if(availableAcbs == null || availableAcbs.size() == 0) {
+			availableAcbs = acbManager.getAll(true);
+		}
+		//someone will see either the transparencies that apply to the ACBs to which they have access
+		//or they will see the transparencies for all ACBs if they are an admin or not logged in
+		for(CertificationBodyDTO acb : availableAcbs) {
 			for(DeveloperDTO developer : allDevelopers) {
 				DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
 				if(map == null) {
-					developer.setTransparencyAttestation(null);
+					DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
+					mapToAdd.setAcbId(acb.getId());
+					mapToAdd.setAcbName(acb.getName());
+					mapToAdd.setDeveloperId(developer.getId());
+					mapToAdd.setTransparencyAttestation(null);
+					developer.getTransparencyAttestationMappings().add(mapToAdd);
 				} else {
-					developer.setTransparencyAttestation(map.getTransparencyAttestation());
+					developer.getTransparencyAttestationMappings().add(map);
 				}
 			}
 		}
@@ -70,14 +78,22 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException {
 		DeveloperDTO developer = developerDao.getById(id);
 		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() == 1) {
-			//if someone is a member of multiple acbs, they will not see the transparency
-			CertificationBodyDTO acb = availableAcbs.get(0);
+		if(availableAcbs == null || availableAcbs.size() == 0) {
+			availableAcbs = acbManager.getAll(true);
+		}
+		//someone will see either the transparencies that apply to the ACBs to which they have access
+		//or they will see the transparencies for all ACBs if they are an admin or not logged in
+		for(CertificationBodyDTO acb : availableAcbs) {
 			DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
 			if(map == null) {
-				developer.setTransparencyAttestation(null);
+				DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
+				mapToAdd.setAcbId(acb.getId());
+				mapToAdd.setAcbName(acb.getName());
+				mapToAdd.setDeveloperId(developer.getId());
+				mapToAdd.setTransparencyAttestation(null);
+				developer.getTransparencyAttestationMappings().add(mapToAdd);
 			} else {
-				developer.setTransparencyAttestation(map.getTransparencyAttestation());
+				developer.getTransparencyAttestationMappings().add(map);
 			}
 		}
 		return developer;

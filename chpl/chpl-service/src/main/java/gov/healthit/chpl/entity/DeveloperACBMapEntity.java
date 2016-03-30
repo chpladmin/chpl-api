@@ -6,9 +6,12 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -31,6 +34,11 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 	
 	@Column(name = "certification_body_id")
 	private Long certificationBodyId;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_body_id", unique=true, nullable = true, insertable = false, updatable = false)
+	private CertificationBodyEntity certificationBody;
 	
 	@Column(name = "transparency_attestation")
 	@Type(type = "gov.healthit.chpl.entity.PostgresEnumType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
@@ -115,5 +123,13 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public CertificationBodyEntity getCertificationBody() {
+		return certificationBody;
+	}
+
+	public void setCertificationBody(CertificationBodyEntity certificationBody) {
+		this.certificationBody = certificationBody;
 	}
 }
