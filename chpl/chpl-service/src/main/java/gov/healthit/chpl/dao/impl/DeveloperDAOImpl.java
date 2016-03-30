@@ -391,10 +391,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 
 	private DeveloperACBMapEntity getTransparencyMappingEntity(Long developerId, Long acbId) {
-		Query query = entityManager.createQuery( "FROM DeveloperACBMapEntity where "
-				+ "(NOT deleted = true) "
-				+ "AND developerId = :developerId "
-				+ "AND certificationBodyId = :acbId", DeveloperACBMapEntity.class);
+		Query query = entityManager.createQuery( "FROM DeveloperACBMapEntity map "
+				+ "LEFT OUTER JOIN FETCH map.certificationBody where "
+				+ "(NOT map.deleted = true) "
+				+ "AND map.developerId = :developerId "
+				+ "AND map.certificationBodyId = :acbId", DeveloperACBMapEntity.class);
 		query.setParameter("developerId", developerId);
 		query.setParameter("acbId", acbId);
 		
