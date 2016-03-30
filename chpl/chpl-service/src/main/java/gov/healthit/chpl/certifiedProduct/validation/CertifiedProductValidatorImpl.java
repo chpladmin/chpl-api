@@ -213,20 +213,38 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("A product version is required.");
 		}
 		
-		if(StringUtils.isEmpty(product.getDeveloperStreetAddress())) {
-			product.getErrorMessages().add("Developer street address is required.");
-		}
-		
-		if(StringUtils.isEmpty(product.getDeveloperCity())) {
-			product.getErrorMessages().add("Developer city is required.");
-		}
-		
-		if(StringUtils.isEmpty(product.getDeveloperState())) {
-			product.getErrorMessages().add("Developer state is required.");
-		}
-		
-		if(StringUtils.isEmpty(product.getDeveloperZipCode())) {
-			product.getErrorMessages().add("Developer zip code is required.");
+		if(product.getDeveloperAddress() != null) {
+			if(StringUtils.isEmpty(product.getDeveloperAddress().getStreetLineOne())) {
+				product.getErrorMessages().add("Developer street address is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperAddress().getCity())) {
+				product.getErrorMessages().add("Developer city is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperAddress().getState())) {
+				product.getErrorMessages().add("Developer state is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperAddress().getZipcode())) {
+				product.getErrorMessages().add("Developer zip code is required.");
+			}
+		} else {
+			if(StringUtils.isEmpty(product.getDeveloperStreetAddress())) {
+				product.getErrorMessages().add("Developer street address is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperCity())) {
+				product.getErrorMessages().add("Developer city is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperState())) {
+				product.getErrorMessages().add("Developer state is required.");
+			}
+			
+			if(StringUtils.isEmpty(product.getDeveloperZipCode())) {
+				product.getErrorMessages().add("Developer zip code is required.");
+			}
 		}
 		
 		if(StringUtils.isEmpty(product.getDeveloperWebsite())) {

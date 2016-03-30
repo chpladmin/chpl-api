@@ -291,7 +291,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			developerContact.setLastName(pendingCp.getDeveloperContactName());
 			developerContact.setPhoneNumber(pendingCp.getDeveloperPhoneNumber());
 			developerContact.setEmail(pendingCp.getDeveloperEmail());
-			
+			newDeveloper.setContact(developerContact);
 			//create the dev, address, and contact
 			developer = developerManager.create(newDeveloper);
 			pendingCp.setDeveloperId(developer.getId());
