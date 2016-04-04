@@ -1272,7 +1272,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			htmlMessage += " more than " + activityThresholdDaysStr + " days after it was certified.";
 		}
 		htmlMessage += "</p>"
-				+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/app/#/admin/reports/" + original.getId() + " </p>";
+				+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
 		
 		
 		if(original.getCertificationEdition().get("name").equals("2011")) {
