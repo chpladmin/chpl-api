@@ -253,6 +253,14 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						(cert.getTestFunctionality() == null || cert.getTestFunctionality().size() == 0)) {
 					product.getErrorMessages().add("Functionality Tested is required for certification " + cert.getNumber() + ".");
 				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				}
+				if((cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
+					(cert.getTestData() == null || cert.getTestData().size() == 0)) {
+					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
+				}
 //				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
 //					if(cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0) {
 //						product.getErrorMessages().add("UCD Fields are required for certification " + cert.getNumber() + ".");
