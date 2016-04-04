@@ -12,6 +12,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -140,6 +141,13 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							for(PendingCertificationResultTestTaskDTO task : certCriteria.getTestTasks()) {
 								if(task.getTaskParticipants() == null || task.getTaskParticipants().size() < 10) {
 									product.getErrorMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
+								}
+								for(PendingCertificationResultTestTaskParticipantDTO part : task.getTaskParticipants()) {
+									if(part.getTestParticipant().getEducationTypeId() == null) {
+										product.getErrorMessages().add("Found no matching eduation level for test participant (age: " + 
+												part.getTestParticipant().getAge() + " and gender: " + part.getTestParticipant().getGender() 
+												+ ") related to " + certCriteria.getNumber() + ".");
+									}
 								}
 							}
 						}

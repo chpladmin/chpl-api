@@ -32,6 +32,9 @@ public class EducationTypeDAOImpl extends BaseDAOImpl implements EducationTypeDA
 	public EducationTypeDTO getByName(String name) {
 		
 		EducationTypeEntity entity = getEntityByName(name);
+		if(entity == null) {
+			return null;
+		}
 		EducationTypeDTO dto = new EducationTypeDTO(entity);
 		return dto;
 		
@@ -61,8 +64,8 @@ public class EducationTypeDAOImpl extends BaseDAOImpl implements EducationTypeDA
 	private EducationTypeEntity getEntityByName(String name) {
 		EducationTypeEntity entity = null;
 
-		Query query = entityManager.createQuery( "from EducationTypeEntity where (NOT deleted = true) and (name = :name)", EducationTypeEntity.class);
-		query.setParameter("name", name);
+		Query query = entityManager.createQuery( "from EducationTypeEntity where (NOT deleted = true) and (UPPER(name) = :name)", EducationTypeEntity.class);
+		query.setParameter("name", name.toUpperCase());
 		List<EducationTypeEntity> result = query.getResultList();
 		if (result.size() > 0){
 			entity = result.get(0);
