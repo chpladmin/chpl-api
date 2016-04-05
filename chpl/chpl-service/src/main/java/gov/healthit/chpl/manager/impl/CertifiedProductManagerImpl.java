@@ -299,9 +299,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			developer = developerManager.getById(pendingCp.getDeveloperId());
 			boolean needsUpdate = true;
 			for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-				if(attMap.getAcbId().equals(pendingCp.getCertificationBodyId()) && 
-					attMap.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation())) {
-					needsUpdate = false;
+				if(attMap.getAcbId().equals(pendingCp.getCertificationBodyId())) {
+					if(attMap.getTransparencyAttestation() == null && pendingCp.getTransparencyAttestation() == null) {
+						needsUpdate = false;
+					} else if(attMap.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation())) {
+						needsUpdate = false;
+					}
 				}
 			}
 			if(needsUpdate) {
