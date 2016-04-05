@@ -327,7 +327,10 @@ public class CertificationResultManagerImpl implements
 				}
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testToolsToAdd.add(toUpdateMapping);
-			} 
+			} else {
+				toUpdateMapping.setCertificationResultId(toUpdate.getId());
+				certResultDAO.updateTestToolMapping(toUpdateMapping);
+			}
 		}
 				
 		for(CertificationResultTestToolDTO currMapping : existingTestTools) {
