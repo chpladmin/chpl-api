@@ -6,9 +6,12 @@ _30 March 2016_
 ### Features added
 * Check for questionable certified product updates and trigger email if found.
 * Return list of applicable transparency attestations for each developer
+* Test tools are not required for 2014 g1 and g2
+* Test Data is optional in 2015 for everything except g1 and g2.
 
 ### Bugs fixed
 * Allow for empty transparency attestation and url values
+* Fix activity report link email
 
 ## Version 0.5.0
 _25 March 2016_

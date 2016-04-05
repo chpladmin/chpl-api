@@ -32,4 +32,4 @@ smtpFrom=CHPLadmin@ainq.com
 smtpUsername=intranet/chpladmin
 smtpPassword=
 
-chplUrlBegin=http://localhost:8000
+chplUrlBegin=http://localhost:8000/app
