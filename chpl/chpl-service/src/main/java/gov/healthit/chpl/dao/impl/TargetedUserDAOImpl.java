@@ -151,8 +151,9 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 	
 	private List<TargetedUserEntity> getEntitiesByName(String name) {
 		
-		Query query = entityManager.createQuery( "from TargetedUserEntity where (NOT deleted = true) AND (name = :name) ", TargetedUserEntity.class );
-		query.setParameter("name", name);
+		Query query = entityManager.createQuery( "from TargetedUserEntity where "
+				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", TargetedUserEntity.class );
+		query.setParameter("name", name.toUpperCase());
 		List<TargetedUserEntity> result = query.getResultList();
 		
 		return result;
