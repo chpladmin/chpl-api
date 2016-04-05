@@ -5,7 +5,6 @@ import gov.healthit.chpl.entity.TestToolEntity;
 public class TestToolDTO {
 	private Long id;
 	private String name;
-	private String version;
 	private String description;
 	
 	public TestToolDTO(){}
@@ -13,7 +12,6 @@ public class TestToolDTO {
 	public TestToolDTO(TestToolEntity entity){		
 		this.id = entity.getId();
 		this.name = entity.getName();
-		this.version = entity.getVersion();
 		this.description = entity.getDescription();
 	}
 
@@ -31,14 +29,6 @@ public class TestToolDTO {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
 	}
 
 	public String getDescription() {

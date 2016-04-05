@@ -519,11 +519,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						if(tool.getTestToolId() != null) {
 							CertificationResultTestToolDTO toolDto = new CertificationResultTestToolDTO();
 							toolDto.setTestToolId(tool.getTestToolId());
+							toolDto.setTestToolVersion(tool.getVersion());
 							toolDto.setCertificationResultId(createdCert.getId());
 							certDao.addTestToolMapping(toolDto);
 						} else {
 							logger.error("Could not insert test tool with null id. Name was " + tool.getName());
-
 						}
 					}
 				}

@@ -477,6 +477,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		CertificationResultTestToolEntity mapping = new CertificationResultTestToolEntity();
 		mapping.setCertificationResultId(dto.getCertificationResultId());
 		mapping.setTestToolId(dto.getTestToolId());
+		mapping.setVersion(dto.getTestToolVersion());
 		mapping.setCreationDate(new Date());
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());

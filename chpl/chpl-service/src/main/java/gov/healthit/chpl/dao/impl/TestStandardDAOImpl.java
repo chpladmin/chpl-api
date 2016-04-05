@@ -155,8 +155,9 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	
 	private List<TestStandardEntity> getEntitiesByNumber(String number) {
 		
-		Query query = entityManager.createQuery( "from TestStandardEntity where (NOT deleted = true) AND (number = :number) ", TestStandardEntity.class );
-		query.setParameter("number", number);
+		Query query = entityManager.createQuery( "from TestStandardEntity where "
+				+ "(NOT deleted = true) AND (UPPER(number) = :number) ", TestStandardEntity.class );
+		query.setParameter("number", number.toUpperCase());
 		List<TestStandardEntity> result = query.getResultList();
 		
 		return result;

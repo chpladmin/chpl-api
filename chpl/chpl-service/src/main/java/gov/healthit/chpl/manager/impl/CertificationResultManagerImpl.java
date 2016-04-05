@@ -94,13 +94,13 @@ public class CertificationResultManagerImpl implements
 			if(mapping.getTestToolId() == null) {
 				TestToolDTO newTestTool = new TestToolDTO();
 				newTestTool.setName(mapping.getTestToolName());
-				newTestTool.setVersion(mapping.getTestToolVersion());
 				newTestTool = testToolDAO.create(newTestTool);
 				mapping.setTestToolId(newTestTool.getId());
 			}
 			CertificationResultTestToolDTO mappingToCreate = new CertificationResultTestToolDTO();
 			mappingToCreate.setCertificationResultId(created.getId());
 			mappingToCreate.setTestToolId(mapping.getTestToolId());
+			mappingToCreate.setTestToolVersion(mapping.getTestToolVersion());
 			CertificationResultTestToolDTO createdMapping = certResultDAO.addTestToolMapping(mappingToCreate);
 			created.getTestTools().add(createdMapping);
 		}
@@ -322,7 +322,6 @@ public class CertificationResultManagerImpl implements
 				if(toUpdateMapping.getTestToolId() == null) {
 					TestToolDTO testToolToCreate = new TestToolDTO();
 					testToolToCreate.setName(toUpdateMapping.getTestToolName());
-					testToolToCreate.setVersion(toUpdateMapping.getTestToolVersion());
 					testToolToCreate = testToolDAO.create(testToolToCreate);
 					toUpdateMapping.setTestToolId(testToolToCreate.getId());
 				}
