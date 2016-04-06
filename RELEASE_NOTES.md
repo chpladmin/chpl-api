@@ -7,10 +7,12 @@ _TBD_
 * Test tools are not required for 2014 g1 and g2
 * Test data is optional in 2015 for everything except g1 and g2.
 * Improved education level name matching and error messages for education levels that are not in the database.
+* Allow portions of CHPL Product Number to be changed.
 
 ### Bugs fixed
 * Test tool version is now saved.
 * Fix activity report link email
+* Allow certification date to be changed.`
 
 ## Version 1.0.0
 _30 March 2016_
