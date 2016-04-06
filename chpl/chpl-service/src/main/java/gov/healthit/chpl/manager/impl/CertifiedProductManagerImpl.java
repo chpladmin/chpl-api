@@ -234,6 +234,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CertifiedProductDTO toCreate = new CertifiedProductDTO();
+		toCreate.setChplProductNumber(null);
 		toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
 		toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
 		toCreate.setSedReportFileLocation(pendingCp.getSedReportFileLocation());
@@ -299,9 +300,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			developer = developerManager.getById(pendingCp.getDeveloperId());
 			boolean needsUpdate = true;
 			for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-				if(attMap.getAcbId().equals(pendingCp.getCertificationBodyId()) && 
-					attMap.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation())) {
-					needsUpdate = false;
+				if(attMap.getAcbId().equals(pendingCp.getCertificationBodyId())) {
+					if(attMap.getTransparencyAttestation() == null && pendingCp.getTransparencyAttestation() == null) {
+						needsUpdate = false;
+					} else if(attMap.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation())) {
+						needsUpdate = false;
+					}
 				}
 			}
 			if(needsUpdate) {
@@ -845,6 +849,28 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductAccessibilityStandardDTO toRemove : stdsToRemove) {
 			cpAccStdDao.deleteCertifiedProductAccessibilityStandards(toRemove.getId());
 		}	
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateCertificationDate(Long acbId, CertifiedProductDTO productDto, Date newCertDate)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		CertifiedProductDetailsDTO existingCp = cpDao.getDetailsById(productDto.getId());
+		if(existingCp != null && existingCp.getCertificationDate().getTime() != newCertDate.getTime()) {
+			List<CertificationEventDTO> certEvents = eventDao.findByCertifiedProductId(productDto.getId());
+			CertificationEventDTO foundEvent = null;
+			for(CertificationEventDTO certEvent : certEvents) {
+				if(certEvent.getEventTypeId().equals(1L)) { // certified event type
+					foundEvent = certEvent;
+				}
+			}
+			foundEvent.setEventDate(newCertDate);
+			eventDao.update(foundEvent);
+		}
 	}
 	
 	/**
