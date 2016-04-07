@@ -316,7 +316,7 @@ public class PendingCertifiedProductDTO {
 			if(crResult.getTestStandards() != null && crResult.getTestStandards().size() > 0) {
 				for(CertificationResultTestStandard std : crResult.getTestStandards()) {
 					PendingCertificationResultTestStandardDTO stdDto = new PendingCertificationResultTestStandardDTO();
-					stdDto.setNumber(std.getTestStandardNumber());
+					stdDto.setName(std.getTestStandardName());
 					stdDto.setTestStandardId(std.getTestStandardId());
 					certDto.getTestStandards().add(stdDto);
 				}

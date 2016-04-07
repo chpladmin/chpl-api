@@ -108,42 +108,31 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		DeveloperDTO before = getById(developer.getId());
 		DeveloperEntity result = developerDao.update(developer);
 		
-		//chplAdmin cannot update the transparency but any other role
-		//allowed in this method can
-		boolean isChplAdmin = false;
-		Set<GrantedPermission> permissions = Util.getCurrentUser().getPermissions();
-		for(GrantedPermission permission : permissions) {
-			if(permission.getAuthority().equals("ROLE_ADMIN")) {
-				isChplAdmin = true;
-			}
-		}
-		
-		if(!isChplAdmin) {
-			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-			if(availableAcbs != null && availableAcbs.size() > 0) {
-				for(CertificationBodyDTO acb : availableAcbs) {
-					DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
-					if(existingMap == null) {
-						DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-						developerMappingToCreate.setAcbId(acb.getId());
-						developerMappingToCreate.setDeveloperId(before.getId());
-						for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-							if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
-								developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());;
-							}
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+		if(availableAcbs != null && availableAcbs.size() > 0) {
+			for(CertificationBodyDTO acb : availableAcbs) {
+				DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
+				if(existingMap == null) {
+					DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
+					developerMappingToCreate.setAcbId(acb.getId());
+					developerMappingToCreate.setDeveloperId(before.getId());
+					for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+						if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
+							developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());;
+							developerDao.createTransparencyMapping(developerMappingToCreate);
 						}
-						developerDao.createTransparencyMapping(developerMappingToCreate);
-					} else {
-						for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-							if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
-								existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());;
-							}
+					}
+				} else if(!StringUtils.isEmpty(existingMap.getTransparencyAttestation())){
+					for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+						if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
+							existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
+							developerDao.updateTransparencyMapping(existingMap);
 						}
-						developerDao.updateTransparencyMapping(existingMap);
 					}
 				}
 			}
 		}
+		
 		DeveloperDTO after = getById(result.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", before, after);
 		
