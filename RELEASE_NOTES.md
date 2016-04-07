@@ -8,6 +8,7 @@ _TBD_
 * Test data is optional in 2015 for everything except g1 and g2.
 * Improved education level name matching and error messages for education levels that are not in the database.
 * Allow portions of CHPL Product Number to be changed.
+* Allow ACB_ADMIN role to change the name of their own ACB.
 
 ### Bugs fixed
 * Test tool version is now saved.
