@@ -79,7 +79,7 @@ public class CertificationResultManagerImpl implements
 		for (CertificationResultTestStandardDTO mapping : toCreate.getTestStandards()){
 			if(mapping.getTestStandardId() == null) {
 				TestStandardDTO newTestStandard = new TestStandardDTO();
-				newTestStandard.setName(mapping.getTestStandardName());
+				newTestStandard.setDescription(mapping.getTestStandardDescription());
 				newTestStandard = testStandardDAO.create(newTestStandard);
 				mapping.setTestStandardId(newTestStandard.getId());
 			}
@@ -275,10 +275,10 @@ public class CertificationResultManagerImpl implements
 		for (CertificationResultTestStandardDTO toUpdateMapping : toUpdate.getTestStandards()){
 			if(toUpdateMapping.getId() == null) {
 				if(toUpdateMapping.getTestStandardId() == null) {
-					TestStandardDTO testStd = testStandardDAO.getByNumber(toUpdateMapping.getTestStandardNumber());
+					TestStandardDTO testStd = testStandardDAO.getByNumber(toUpdateMapping.getTestStandardName());
 					if(testStd == null) {
 						TestStandardDTO testStandardToCreate = new TestStandardDTO();
-						testStandardToCreate.setNumber(toUpdateMapping.getTestStandardNumber());
+						testStandardToCreate.setName(toUpdateMapping.getTestStandardName());
 						testStd = testStandardDAO.create(testStandardToCreate);
 					}
 					toUpdateMapping.setTestStandardId(testStd.getId());

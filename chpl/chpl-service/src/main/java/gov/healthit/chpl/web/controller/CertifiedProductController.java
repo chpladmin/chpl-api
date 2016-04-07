@@ -203,37 +203,43 @@ public class CertifiedProductController {
 		
 		//set the pieces of the unique id
 		if(!StringUtils.isEmpty(updateRequest.getChplProductNumber())) {
-			String chplProductId = updateRequest.getChplProductNumber();
-			String[] chplProductIdComponents = chplProductId.split("\\.");
-			if(chplProductIdComponents == null || chplProductIdComponents.length != 9) {
-				throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
+			if(updateRequest.getChplProductNumber().startsWith("CHP-")) {
+				toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
 			} else {
-				toUpdate.setProductCode(chplProductIdComponents[4]);
-				toUpdate.setVersionCode(chplProductIdComponents[5]);
-				toUpdate.setIcsCode(chplProductIdComponents[6]);
-				toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
-				toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
-			}
-		} 
-		if(updateRequest.getCertificationDate() != null) {
-			Date certDate = new Date(updateRequest.getCertificationDate());
-			SimpleDateFormat dateCodeFormat = new SimpleDateFormat("yyMMdd");
-			String dateCode = dateCodeFormat.format(certDate);
-			toUpdate.setCertifiedDateCode(dateCode);
-		} 
-		if(updateRequest.getCertificationResults() != null && updateRequest.getCertificationResults().size() > 0) {
-			boolean hasSoftware = false;
-			for(CertificationResult cert : updateRequest.getCertificationResults()) {
-				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-					hasSoftware = true;
+				String chplProductId = updateRequest.getChplProductNumber();
+				String[] chplProductIdComponents = chplProductId.split("\\.");
+				if(chplProductIdComponents == null || chplProductIdComponents.length != 9) {
+					throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
+				} else {
+					toUpdate.setProductCode(chplProductIdComponents[4]);
+					toUpdate.setVersionCode(chplProductIdComponents[5]);
+					toUpdate.setIcsCode(chplProductIdComponents[6]);
+					toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
+					toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
+				}
+				
+				if(updateRequest.getCertificationDate() != null) {
+					Date certDate = new Date(updateRequest.getCertificationDate());
+					SimpleDateFormat dateCodeFormat = new SimpleDateFormat("yyMMdd");
+					String dateCode = dateCodeFormat.format(certDate);
+					toUpdate.setCertifiedDateCode(dateCode);
+				}
+				
+				if(updateRequest.getCertificationResults() != null && updateRequest.getCertificationResults().size() > 0) {
+					boolean hasSoftware = false;
+					for(CertificationResult cert : updateRequest.getCertificationResults()) {
+						if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+							hasSoftware = true;
+						}
+					}
+					if(hasSoftware) {
+						toUpdate.setAdditionalSoftwareCode("1");
+					} else {
+						toUpdate.setAdditionalSoftwareCode("0");
+					}
 				}
 			}
-			if(hasSoftware) {
-				toUpdate.setAdditionalSoftwareCode("1");
-			} else {
-				toUpdate.setAdditionalSoftwareCode("0");
-			}
-		}
+		} 
 		
 		toUpdate = cpManager.update(acbId, toUpdate);
 		

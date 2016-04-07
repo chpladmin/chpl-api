@@ -234,7 +234,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CertifiedProductDTO toCreate = new CertifiedProductDTO();
-		toCreate.setChplProductNumber(null);
 		toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
 		toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
 		toCreate.setSedReportFileLocation(pendingCp.getSedReportFileLocation());
@@ -296,21 +295,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			//create the dev, address, and contact
 			developer = developerManager.create(newDeveloper);
 			pendingCp.setDeveloperId(developer.getId());
-		} else {
-			developer = developerManager.getById(pendingCp.getDeveloperId());
-			boolean needsUpdate = true;
-			for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-				if(attMap.getAcbId().equals(pendingCp.getCertificationBodyId())) {
-					if(attMap.getTransparencyAttestation() == null && pendingCp.getTransparencyAttestation() == null) {
-						needsUpdate = false;
-					} else if(attMap.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation())) {
-						needsUpdate = false;
-					}
-				}
-			}
-			if(needsUpdate) {
-				developerManager.update(developer);
-			}
 		}
 		
 		if(pendingCp.getProductId() == null) {
@@ -507,7 +491,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						CertificationResultTestStandardDTO stdDto = new CertificationResultTestStandardDTO();
 						if(std.getTestStandardId() == null) {
 							TestStandardDTO ts = new TestStandardDTO();
-							ts.setNumber(std.getNumber());
+							ts.setName(std.getName());
 							ts = testStandardDao.create(ts);
 							stdDto.setTestStandardId(ts.getId());
 						} else {
@@ -990,8 +974,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							CertificationResultTestStandardDTO testStandard = new CertificationResultTestStandardDTO();
 							testStandard.setId(newTestStandard.getId());
 							testStandard.setTestStandardId(newTestStandard.getTestStandardId());
+							testStandard.setTestStandardDescription(newTestStandard.getTestStandardDescription());
 							testStandard.setTestStandardName(newTestStandard.getTestStandardName());
-							testStandard.setTestStandardNumber(newTestStandard.getTestStandardNumber());
 							testStandard.setCertificationResultId(oldResult.getId());
 							testStandard.setDeleted(false);
 							oldResult.getTestStandards().add(testStandard);

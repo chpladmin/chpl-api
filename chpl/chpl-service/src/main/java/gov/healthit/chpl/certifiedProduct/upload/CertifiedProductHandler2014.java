@@ -584,7 +584,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			String tsValue = row.get(tsColumn).toString();
 			if(!StringUtils.isEmpty(tsValue)) {
 				PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
-				tsEntity.setTestStandardNumber(tsValue);
+				tsEntity.setTestStandardName(tsValue);
 				TestStandardDTO ts = testStandardDao.getByNumber(tsValue);
 				if(ts != null) {
 					tsEntity.setTestStandardId(ts.getId());
