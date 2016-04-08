@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.DeveloperDTO;
 
 public interface DeveloperManager {
@@ -16,4 +17,5 @@ public interface DeveloperManager {
 	public void delete(DeveloperDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void delete(Long developerId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	public void checkSuspiciousActivity(DeveloperDTO original, DeveloperDTO changed);
 }
