@@ -9,6 +9,8 @@ _TBD_
 * Improved education level name matching and error messages for education levels that are not in the database.
 * Allow portions of CHPL Product Number to be changed.
 * Allow ACB_ADMIN role to change the name of their own ACB.
+* Add service for version activity
+* Trigger emails on version name change, product name change, developer name change, or certified product status change
 
 ### Bugs fixed
 * Test tool version is now saved.

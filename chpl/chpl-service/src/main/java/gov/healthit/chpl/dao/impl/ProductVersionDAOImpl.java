@@ -146,7 +146,11 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 	
 	@Override
 	public List<ProductVersionDTO> getByProductId(Long productId) {
-		Query query = entityManager.createQuery( "from ProductVersionEntity where (NOT deleted = true) AND (product_id = :productId)", ProductVersionEntity.class );
+		Query query = entityManager.createQuery( "SELECT pve "
+				+ " FROM ProductVersionEntity pve "
+				+ " LEFT OUTER JOIN FETCH pve.product "
+				+ "where (NOT pve.deleted = true) AND (pve.productId = :productId)", 
+				ProductVersionEntity.class );
 		query.setParameter("productId", productId);
 		List<ProductVersionEntity> results = query.getResultList();
 		
@@ -158,7 +162,12 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 	}
 	
 	public List<ProductVersionDTO> getByProductIds(List<Long> productIds) {
-		Query query = entityManager.createQuery( "from ProductVersionEntity where (NOT deleted = true) AND product_id IN :idList ", ProductVersionEntity.class );
+		Query query = entityManager.createQuery( "SELECT pve "
+				+ " FROM ProductVersionEntity pve "
+				+ " LEFT OUTER JOIN FETCH pve.product "
+				+ "where (NOT pve.deleted = true) AND (pve.productId IN :idList)", 
+				ProductVersionEntity.class );
+		
 		query.setParameter("idList", productIds);
 		List<ProductVersionEntity> results = query.getResultList();
 
@@ -171,7 +180,13 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 	
 	
 	public ProductVersionDTO getByProductAndVersion(Long productId, String version) {
-		Query query = entityManager.createQuery( "from ProductVersionEntity where (NOT deleted = true) AND (product_id = :productId) AND (version = :version) ", ProductVersionEntity.class );
+		Query query = entityManager.createQuery( "SELECT pve "
+				+ " FROM ProductVersionEntity pve "
+				+ " LEFT OUTER JOIN FETCH pve.product "
+				+ "where (NOT pve.deleted = true) AND "
+				+ "(pve.product_id = :productId) AND (pve.version = :version) ", 
+				ProductVersionEntity.class );
+		
 		query.setParameter("productId", productId);
 		query.setParameter("version", version);
 		List<ProductVersionEntity> results = query.getResultList();
@@ -196,8 +211,13 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 	}
 	
 	private List<ProductVersionEntity> getAllEntities() {
+		Query query = entityManager.createQuery( "SELECT pve "
+				+ " FROM ProductVersionEntity pve "
+				+ " LEFT OUTER JOIN FETCH pve.product "
+				+ "where (NOT pve.deleted = true)", 
+				ProductVersionEntity.class );
 		
-		List<ProductVersionEntity> result = entityManager.createQuery( "from ProductVersionEntity where (NOT deleted = true) ", ProductVersionEntity.class).getResultList();
+		List<ProductVersionEntity> result = query.getResultList();
 		return result;
 		
 	}
@@ -205,8 +225,13 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 	private ProductVersionEntity getEntityById(Long id) throws EntityRetrievalException {
 		
 		ProductVersionEntity entity = null;
-			
-		Query query = entityManager.createQuery( "from ProductVersionEntity where (NOT deleted = true) AND (product_version_id = :entityid) ", ProductVersionEntity.class );
+		Query query = entityManager.createQuery( "SELECT pve "
+				+ " FROM ProductVersionEntity pve "
+				+ " LEFT OUTER JOIN FETCH pve.product "
+				+ "where (NOT pve.deleted = true) AND "
+				+ "(product_version_id = :entityid)", 
+				ProductVersionEntity.class );
+		
 		query.setParameter("entityid", id);
 		List<ProductVersionEntity> result = query.getResultList();
 		
