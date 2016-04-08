@@ -3,13 +3,19 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -23,12 +29,14 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 
 @Service
 public class ProductVersionManagerImpl implements ProductVersionManager {
-
-	@Autowired ProductVersionDAO dao;
-	@Autowired CertifiedProductDAO cpDao;
+	private static final Logger logger = LogManager.getLogger(ProductVersionManagerImpl.class);
 	
-	@Autowired
-	ActivityManager activityManager;
+	@Autowired private SendMailUtil sendMailService;
+	
+	@Autowired private ProductVersionDAO dao;
+	@Autowired private CertifiedProductDAO cpDao;
+	@Autowired private Environment env;
+	@Autowired private ActivityManager activityManager;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -72,6 +80,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		ProductVersionEntity result = dao.update(dto);
 		ProductVersionDTO after = new ProductVersionDTO(result);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, after.getId(), "Product Version "+dto.getVersion()+" updated for product "+dto.getProductId(), before, after);
+		checkSuspiciousActivity(before, after);
 		return after;
 	}
 
@@ -122,5 +131,31 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, createdVersion.getId(), "Merged " + versionIdsToMerge.size() + " versions into '" + createdVersion.getVersion() + "'.", beforeVersions, createdVersion);
 
 		return createdVersion;
+	}
+	
+	@Override
+	public void checkSuspiciousActivity(ProductVersionDTO original, ProductVersionDTO changed) {
+		String subject = "CHPL Questionable Activity";
+		String htmlMessage = "<p>Activity was detected on version " + original.getVersion() + ".</p>" 
+				+ "<p>To view the details of this activity go to: " + 
+				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
+		
+		boolean sendMsg = false;
+		
+		if( (original.getVersion() != null && changed.getVersion() == null) ||
+			(original.getVersion() == null && changed.getVersion() != null) ||
+			!original.getVersion().equals(changed.getVersion()) ) {
+			sendMsg = true;
+		}
+		
+		if(sendMsg) {
+			String emailAddr = env.getProperty("questionableActivityEmail");
+			String[] emailAddrs = emailAddr.split(";");
+			try {
+				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
+			} catch(MessagingException me) {
+				logger.error("Could not send questionable activity email", me);
+			}
+		}	
 	}
 }
