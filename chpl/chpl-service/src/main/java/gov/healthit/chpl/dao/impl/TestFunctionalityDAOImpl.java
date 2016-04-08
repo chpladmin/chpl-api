@@ -157,8 +157,9 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		
 		TestFunctionalityEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from TestFunctionalityEntity where (NOT deleted = true) AND (number = :number) ", TestFunctionalityEntity.class );
-		query.setParameter("number", number);
+		Query query = entityManager.createQuery( "from TestFunctionalityEntity where "
+				+ "(NOT deleted = true) AND (UPPER(number) = :number) ", TestFunctionalityEntity.class );
+		query.setParameter("number", number.toUpperCase());
 		return query.getResultList();
 	}
 }
