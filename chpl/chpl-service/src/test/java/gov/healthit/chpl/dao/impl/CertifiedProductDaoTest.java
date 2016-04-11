@@ -90,4 +90,12 @@ public class CertifiedProductDaoTest {
 		assertNotNull(products);
 		assertEquals(1, products.size());
 	}
+	
+//	@Test
+//	public void getByUniqueId() throws EntityRetrievalException {
+//		String id = "14.";
+//		CertifiedProductDetailsDTO cpDetails = productDao.getByChplUniqueId(id);
+//		assertNotNull(cpDetails);
+//		assertEquals(cpDetails.getChplProductNumber(), id);
+//	}
 }
