@@ -251,6 +251,32 @@ public class ActivityController {
 		}
 	}
 	
+	@ApiOperation(value="Get auditable data for all versions",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for all versions across all dates.")
+	@RequestMapping(value="/versions", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForVersions(@RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		
+		if (lastNDays == null){
+			return getActivityEventsForVersions();
+		} else {
+			return getActivityEventsForVersions(lastNDays);
+		}
+	}
+	
+	@ApiOperation(value="Get auditable data for a specific version",
+			notes="Users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
+				+ "The default behavior is to return activity for the specified version across all dates.")
+	@RequestMapping(value="/versions/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	public List<ActivityEvent> activityForVersions(@PathVariable("id") Long id, @RequestParam(required=false) Integer lastNDays) throws JsonParseException, IOException{
+		
+		if (lastNDays == null){
+			return getActivityEventsForVersions(id);
+		} else {
+			return getActivityEventsForVersions(id, lastNDays);
+		}
+	}
+	
 	@ApiOperation(value="Get auditable data about all CHPL user accounts",
 			notes="API users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
 				+ "The default behavior is to return activity for all CHPL user across all dates.")

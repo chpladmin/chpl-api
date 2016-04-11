@@ -1295,21 +1295,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				//if they changed something outside of the suspicious activity window, 
 				//check if the change was something that should trigger an email
 				
-//				if(!original.getProduct().get("id").equals(changed.getProduct().get("id"))) {
-//					sendMsg = true;
-//				}
-//				
-//				if(!original.getProduct().get("versionId").equals(changed.getProduct().get("versionId"))) {
-//					sendMsg = true;
-//				}
-//				
-//				if(!original.getDeveloper().get("id").equals(changed.getDeveloper().get("id"))) {
-//					sendMsg = true;
-//				}
-//				
-//				if(!original.getChplProductNumber().equals(changed.getChplProductNumber())) {
-//					sendMsg = true;
-//				}
+				if(!original.getCertificationStatus().get("id").equals(changed.getCertificationStatus().get("id"))) {
+					sendMsg = true;
+				}
 				
 				if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
 					(original.getCqmResults() != null && changed.getCqmResults() == null) ||
