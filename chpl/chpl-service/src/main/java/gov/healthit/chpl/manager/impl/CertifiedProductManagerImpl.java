@@ -345,7 +345,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				}
 				qmsDto.setCertifiedProductId(newCertifiedProduct.getId());
 				qmsDto.setApplicableCriteria(qms.getApplicableCriteria());
-				qmsDto.setQmsModification(qmsDto.getQmsModification());
+				qmsDto.setQmsModification(qms.getModification());
 				cpQmsDao.createCertifiedProductQms(qmsDto);
 			}
 		}
@@ -1033,8 +1033,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							CertificationResultTestFunctionalityDTO testFunctionality = new CertificationResultTestFunctionalityDTO();
 							testFunctionality.setId(newTestFunctionality.getId());
 							testFunctionality.setTestFunctionalityId(newTestFunctionality.getTestFunctionalityId());
-							testFunctionality.setTestFunctionalityName(newTestFunctionality.getName());
-							testFunctionality.setTestFunctionalityNumber(newTestFunctionality.getNumber());
+							testFunctionality.setTestFunctionalityName(newTestFunctionality.getDescription());
+							testFunctionality.setTestFunctionalityNumber(newTestFunctionality.getName());
 							testFunctionality.setCertificationResultId(oldResult.getId());
 							oldResult.getTestFunctionality().add(testFunctionality);
 						}
