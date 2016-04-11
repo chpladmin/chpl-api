@@ -345,7 +345,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				}
 				qmsDto.setCertifiedProductId(newCertifiedProduct.getId());
 				qmsDto.setApplicableCriteria(qms.getApplicableCriteria());
-				qmsDto.setQmsModification(qmsDto.getQmsModification());
+				qmsDto.setQmsModification(qms.getModification());
 				cpQmsDao.createCertifiedProductQms(qmsDto);
 			}
 		}
