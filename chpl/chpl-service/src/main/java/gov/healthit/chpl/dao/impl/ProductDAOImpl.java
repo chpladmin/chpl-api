@@ -10,16 +10,18 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.DeveloperEntity;
 
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
-
+	
 	@Override
 	@Transactional
 	public ProductDTO create(ProductDTO dto) throws EntityCreationException,
@@ -84,8 +86,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			entity.setName(dto.getName());
 		}
 		
-		if(dto.getDeveloperId() != null)
-		{
+		if(dto.getDeveloperId() != null) {
 			entity.setDeveloperId(dto.getDeveloperId());
 		}
 				
@@ -152,7 +153,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	public List<ProductDTO> getByDeveloper(Long developerId) {		
-		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND (vendor_id = :entityid) ", ProductEntity.class );
+		Query query = entityManager.createQuery( "from ProductEntity pe "
+				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "where (NOT pe.deleted = true) "
+				+ "AND (pe.developerId = :entityid) ", ProductEntity.class );
 		query.setParameter("entityid", developerId);
 		List<ProductEntity> results = query.getResultList();
 		
@@ -164,7 +168,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
-		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND vendor_id IN :idList ", ProductEntity.class );
+		Query query = entityManager.createQuery( "from ProductEntity pe "
+				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "where (NOT pe.deleted = true) "
+				+ "AND pe.developerId IN (:idList) ", ProductEntity.class );
 		query.setParameter("idList", developerIds);
 		List<ProductEntity> results = query.getResultList();
 
@@ -176,8 +183,12 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	public ProductDTO getByDeveloperAndName(Long developerId, String name) {
-		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND (vendor_id = :vendorId) and (name = :name)", ProductEntity.class );
-		query.setParameter("vendorId", developerId);
+		Query query = entityManager.createQuery( "from ProductEntity pe "
+				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "where (NOT pe.deleted = true) "
+				+ "AND (pe.developerId = :developerId) and "
+				+ "(pe.name = :name)", ProductEntity.class );
+		query.setParameter("developerId", developerId);
 		query.setParameter("name", name);
 		List<ProductEntity> results = query.getResultList();
 		
@@ -202,7 +213,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	
 	private List<ProductEntity> getAllEntities() {
 		
-		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) ", ProductEntity.class).getResultList();
+		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
+				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "where (NOT pe.deleted = true) ", 
+				ProductEntity.class).getResultList();
 		return result;
 		
 	}
@@ -211,7 +225,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		
 		ProductEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND (product_id = :entityid) ", ProductEntity.class );
+		Query query = entityManager.createQuery( "from ProductEntity pe "
+				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "where (NOT pe.deleted = true) "
+				+ "AND (pe.id = :entityid) ", ProductEntity.class );
 		query.setParameter("entityid", id);
 		List<ProductEntity> result = query.getResultList();
 		
