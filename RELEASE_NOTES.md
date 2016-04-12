@@ -15,7 +15,12 @@ _12 April 2016_
 ### Bugs fixed
 * Test tool version is now saved.
 * Fix activity report link email
-* Allow certification date to be changed.`
+* Allow certification date to be changed.
+* Fix 'null' in developer report when transparency attestation is changed.
+* Standards tested against are now saved.
+* Functionality tested against is now saved.
+* Fix error related to merging of products.
+* Product ownership change shows up correctly in activity report.`
 
 ## Version 1.0.0
 _30 March 2016_
