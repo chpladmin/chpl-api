@@ -17,6 +17,7 @@ public class ProductDTO {
 	private Set<ProductVersionDTO> productVersions = new HashSet<ProductVersionDTO>();
 	private String reportFileLocation;
 	private Long developerId;
+	private String developerName;
 	
 	public ProductDTO(){}
 	public ProductDTO(ProductEntity entity){
@@ -29,6 +30,9 @@ public class ProductDTO {
 		this.name = entity.getName();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.developerId = entity.getDeveloperId();
+		if(entity.getDeveloper() != null) {
+			this.developerName = entity.getDeveloper().getName();
+		}
 	}
 	
 	
@@ -85,6 +89,12 @@ public class ProductDTO {
 	}
 	public void setDeveloperId(Long developerId) {
 		this.developerId = developerId;
+	}
+	public String getDeveloperName() {
+		return developerName;
+	}
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
 	
 }
