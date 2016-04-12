@@ -326,11 +326,11 @@ public class CertifiedProductDetailsDTO {
 	public String getYearCode() {
 		if(StringUtils.isEmpty(this.getYear())) {
 			return "";
-		} else if(this.getYear().equals("2014")) {
-			return "14";
-		} else if(this.getYear().equals("2015")) {
-			return "15";
-		}
+		} else if(this.getYear().length() == 2) {
+			return this.getYear();
+		} else if(this.getYear().length() == 4) {
+			return this.getYear().substring(this.getYear().length()-2);
+		} 
 		return "??";
 	}
 	

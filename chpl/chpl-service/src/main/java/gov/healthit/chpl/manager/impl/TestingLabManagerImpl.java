@@ -98,16 +98,8 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		TestingLabDTO toUpdate = testingLabDAO.getById(atl.getId());
 		TestingLabDTO result = testingLabDAO.update(atl);
 		
-		if((atl.getName() != null && Util.isUserRoleAdmin()) || atl.getName() == null || atl.getName().equals(toUpdate.getName())){
-		
-		logger.debug("Updated testingLab " + atl);
-		
 		String activityMsg = "Updated testing lab " + atl.getName();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, toUpdate, result);
-		}else{
-			 logger.debug("ATL update failed: only admin can update atl name.");
-			 throw new UpdateTestingLabException("Only ADMIN can change the name of an ATL.");
-		}
 		return result;
 	}
 	

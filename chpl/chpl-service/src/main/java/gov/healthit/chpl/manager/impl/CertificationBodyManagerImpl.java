@@ -104,21 +104,10 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		
 		CertificationBodyDTO result = null;
 		CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acb.getId());
-		
-		if((acb.getName() != null && Util.isUserRoleAdmin()) || acb.getName() == null || acb.getName().equals(toUpdate.getName())){
-			
-			result = certificationBodyDAO.update(acb);
+		result = certificationBodyDAO.update(acb);
 
-			logger.debug("Updated acb " + acb);
-
-			String activityMsg = "Updated acb " + acb.getName();
-
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, toUpdate, result);
-		}else{
-			logger.debug("ACB update failed: only admin can update acb name.");
-			throw new UpdateCertifiedBodyException("Only ADMIN can change the name of an ACB.");
-		}
-
+		String activityMsg = "Updated acb " + acb.getName();
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, toUpdate, result);
 		return result;
 	}
 	

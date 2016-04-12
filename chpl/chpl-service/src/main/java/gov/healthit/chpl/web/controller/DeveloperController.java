@@ -123,13 +123,15 @@ public class DeveloperController {
 				toCreate.setAddress(toCreateAddress);
 			}
 			Contact developerContact = developerInfo.getDeveloper().getContact();
-			ContactDTO toCreateContact = new ContactDTO();
-			toCreateContact.setEmail(developerContact.getEmail());
-			toCreateContact.setFirstName(developerContact.getFirstName());
-			toCreateContact.setLastName(developerContact.getLastName());
-			toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
-			toCreateContact.setTitle(developerContact.getTitle());
-			toCreate.setContact(toCreateContact);
+			if(developerContact != null) {
+				ContactDTO toCreateContact = new ContactDTO();
+				toCreateContact.setEmail(developerContact.getEmail());
+				toCreateContact.setFirstName(developerContact.getFirstName());
+				toCreateContact.setLastName(developerContact.getLastName());
+				toCreateContact.setPhoneNumber(developerContact.getPhoneNumber());
+				toCreateContact.setTitle(developerContact.getTitle());
+				toCreate.setContact(toCreateContact);
+			}
 			result = developerManager.merge(developerInfo.getDeveloperIds(), toCreate);
 			//re-query because the developer code isn't filled in otherwise
 			result = developerManager.getById(result.getId());

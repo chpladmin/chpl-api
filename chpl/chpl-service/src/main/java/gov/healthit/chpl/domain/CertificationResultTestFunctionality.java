@@ -5,8 +5,8 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 public class CertificationResultTestFunctionality {
 	private Long id;
 	private Long testFunctionalityId;
+	private String description;
 	private String name;
-	private String number;
 
 	public CertificationResultTestFunctionality() {
 		super();
@@ -15,8 +15,8 @@ public class CertificationResultTestFunctionality {
 	public CertificationResultTestFunctionality(CertificationResultTestFunctionalityDTO dto) {
 		this.id = dto.getId();
 		this.testFunctionalityId = dto.getTestFunctionalityId();
-		this.name = dto.getTestFunctionalityName();
-		this.number = dto.getTestFunctionalityNumber();
+		this.description = dto.getTestFunctionalityName();
+		this.name = dto.getTestFunctionalityNumber();
 	}
 	
 	public Long getId() {
@@ -35,20 +35,20 @@ public class CertificationResultTestFunctionality {
 		this.testFunctionalityId = testFunctionalityId;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String name) {
+		this.description = name;
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getNumber() {
-		return number;
-	}
-
-	public void setNumber(String number) {
-		this.number = number;
 	}
 
 }

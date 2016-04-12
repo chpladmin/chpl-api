@@ -39,8 +39,8 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 			entity.setDeleted(false);
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			entity.setDescription(dto.getDescription());
 			entity.setName(dto.getName());
-			entity.setNumber(dto.getNumber());
 			create(entity);
 			return new TestStandardDTO(entity);
 		}		
@@ -55,8 +55,8 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
 		
+		entity.setDescription(dto.getDescription());
 		entity.setName(dto.getName());
-		entity.setNumber(dto.getNumber());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
 		
@@ -155,8 +155,9 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	
 	private List<TestStandardEntity> getEntitiesByNumber(String number) {
 		
-		Query query = entityManager.createQuery( "from TestStandardEntity where (NOT deleted = true) AND (number = :number) ", TestStandardEntity.class );
-		query.setParameter("number", number);
+		Query query = entityManager.createQuery( "from TestStandardEntity where "
+				+ "(NOT deleted = true) AND (UPPER(number) = :number) ", TestStandardEntity.class );
+		query.setParameter("number", number.toUpperCase());
 		List<TestStandardEntity> result = query.getResultList();
 		
 		return result;

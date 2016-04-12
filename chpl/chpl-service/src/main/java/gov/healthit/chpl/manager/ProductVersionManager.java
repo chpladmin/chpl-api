@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 
 public interface ProductVersionManager {
@@ -18,4 +19,5 @@ public interface ProductVersionManager {
 	public void delete(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void delete(Long productVersionId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	public void checkSuspiciousActivity(ProductVersionDTO original, ProductVersionDTO changed);
 }
