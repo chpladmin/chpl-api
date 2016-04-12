@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
@@ -45,4 +47,7 @@ public interface CertifiedProductManager {
 	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, List<CertificationResult> certResults)
 			throws EntityCreationException, EntityRetrievalException,
 			JsonProcessingException;
+	public void updateCertificationDate(Long acbId, CertifiedProductDTO productDto, Date newCertDate)
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed);
 }

@@ -5,8 +5,8 @@ import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 public class CertificationResultTestStandard {
 	private Long id;
 	private Long testStandardId;
+	private String testStandardDescription;
 	private String testStandardName;
-	private String testStandardNumber;
 
 	public CertificationResultTestStandard() {
 		super();
@@ -15,8 +15,8 @@ public class CertificationResultTestStandard {
 	public CertificationResultTestStandard(CertificationResultTestStandardDTO dto) {
 		this.id = dto.getId();
 		this.testStandardId = dto.getTestStandardId();
+		this.testStandardDescription = dto.getTestStandardDescription();
 		this.testStandardName = dto.getTestStandardName();
-		this.testStandardNumber = dto.getTestStandardNumber();
 	}
 	
 	public Long getId() {
@@ -35,20 +35,20 @@ public class CertificationResultTestStandard {
 		this.testStandardId = testStandardId;
 	}
 
+	public String getTestStandardDescription() {
+		return testStandardDescription;
+	}
+
+	public void setTestStandardDescription(String testStandardDescription) {
+		this.testStandardDescription = testStandardDescription;
+	}
+
 	public String getTestStandardName() {
 		return testStandardName;
 	}
 
 	public void setTestStandardName(String testStandardName) {
 		this.testStandardName = testStandardName;
-	}
-
-	public String getTestStandardNumber() {
-		return testStandardNumber;
-	}
-
-	public void setTestStandardNumber(String testStandardNumber) {
-		this.testStandardNumber = testStandardNumber;
 	}
 
 }

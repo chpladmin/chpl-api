@@ -26,9 +26,6 @@ public class TestToolEntity {
 	
 	@Column(name = "description")
 	private String description;
-	
-	@Column( name = "version", nullable = false  )
-	private String version;
 
 	public Long getId() {
 		return id;
@@ -36,14 +33,6 @@ public class TestToolEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
 	}
 
 	public String getName() {

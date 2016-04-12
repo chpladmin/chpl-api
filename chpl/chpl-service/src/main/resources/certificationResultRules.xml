@@ -1275,7 +1275,7 @@
 			<additionalSoftware>true</additionalSoftware>
 			<testTool>false</testTool>
 			<testProcedure>true</testProcedure>
-			<testData>true</testData>
+			<testData>false</testData>
 			<sed>true</sed>
 			<ucd>true</ucd>
 			<task>true</task>

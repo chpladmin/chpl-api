@@ -153,8 +153,9 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 	
 	private List<UcdProcessEntity> getEntitiesByName(String name) {
 		
-		Query query = entityManager.createQuery( "from UcdProcessEntity where (NOT deleted = true) AND (name = :name) ", UcdProcessEntity.class );
-		query.setParameter("name", name);
+		Query query = entityManager.createQuery( "from UcdProcessEntity where "
+				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", UcdProcessEntity.class );
+		query.setParameter("name", name.toUpperCase());
 		List<UcdProcessEntity> result = query.getResultList();
 		
 		return result;

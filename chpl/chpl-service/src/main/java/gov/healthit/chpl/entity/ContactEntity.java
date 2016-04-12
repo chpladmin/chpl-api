@@ -42,11 +42,11 @@ public class ContactEntity implements Cloneable, Serializable {
 	@Column( nullable = false  )
 	private Boolean deleted;
 	
-	@Basic( optional = false )
+	@Basic( optional = true )
 	@Column( nullable = false, length = 250  )
 	private String email;
 	
-	@Basic( optional = false )
+	@Basic( optional = true )
 	@Column( name = "first_name", nullable = false, length = 250  )
 	private String firstName;
 	
@@ -58,11 +58,11 @@ public class ContactEntity implements Cloneable, Serializable {
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
 	
-	@Basic( optional = false )
+	@Basic( optional = true )
 	@Column( name = "last_name", nullable = false, length = 250  )
 	private String lastName;
 	
-	@Basic( optional = false )
+	@Basic( optional = true )
 	@Column( name = "phone_number", nullable = false, length = 50  )
 	private String phoneNumber;
 	

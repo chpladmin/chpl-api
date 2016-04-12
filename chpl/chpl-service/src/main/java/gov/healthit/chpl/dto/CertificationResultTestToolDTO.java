@@ -16,9 +16,9 @@ public class CertificationResultTestToolDTO {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.testToolId = entity.getTestToolId();
+		this.testToolVersion = entity.getVersion();
 		if(entity.getTestTool() != null) {
 			this.testToolName = entity.getTestTool().getName();
-			this.testToolVersion = entity.getTestTool().getVersion();
 		}
 		this.deleted = entity.getDeleted();
 	}

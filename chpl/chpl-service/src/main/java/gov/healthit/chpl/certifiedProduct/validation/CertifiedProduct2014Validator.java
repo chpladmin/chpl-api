@@ -10,6 +10,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2014Validator")
 public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl {
@@ -109,6 +110,30 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		}
 		if(hasG3Complement && !hasG3) {
 			product.getErrorMessages().add("A certification that requires (g)(3) was found but (g)(3) was not.");
+		}
+	}
+	
+	@Override
+	protected void validateDemographics(PendingCertifiedProductDTO product) {
+		super.validateDemographics(product);
+		
+		if(StringUtils.isEmpty(product.getReportFileLocation())) {
+			product.getErrorMessages().add("A test result summary URL is required.");
+		}
+		
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						!cert.getNumber().equals("170.314 (g)(1)") && 
+						!cert.getNumber().equals("170.314 (g)(2)") && 
+						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA) &&
+						(cert.getTestData() == null || cert.getTestData().size() == 0)) {
+					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
+				}
+			}
 		}
 	}
 	

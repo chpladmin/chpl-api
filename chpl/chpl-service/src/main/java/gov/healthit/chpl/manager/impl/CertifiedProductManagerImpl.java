@@ -4,9 +4,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -40,6 +44,7 @@ import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -77,6 +82,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.ContactDTO;
+import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
@@ -120,7 +126,10 @@ import gov.healthit.chpl.util.CertificationResultRules;
 @Service
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductManagerImpl.class);
-
+	
+	@Autowired SendMailUtil sendMailService;
+	@Autowired private Environment env;
+	
 	@Autowired
 	private CertificationResultRules certRules;
 	
@@ -271,28 +280,21 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 			newDeveloper.setName(pendingCp.getDeveloperName());
 			newDeveloper.setWebsite(pendingCp.getDeveloperWebsite());
-			newDeveloper.setTransparencyAttestation(pendingCp.getTransparencyAttestation() == null ? null : pendingCp.getTransparencyAttestation());
+			DeveloperACBMapDTO transparencyMap = new DeveloperACBMapDTO();
+			transparencyMap.setAcbId(pendingCp.getCertificationBodyId());
+			transparencyMap.setAcbName(pendingCp.getCertificationBodyName());
+			transparencyMap.setTransparencyAttestation(pendingCp.getTransparencyAttestation());
+			newDeveloper.getTransparencyAttestationMappings().add(transparencyMap);
 			AddressDTO developerAddress = pendingCp.getDeveloperAddress();
 			newDeveloper.setAddress(developerAddress);
 			ContactDTO developerContact = new ContactDTO();
 			developerContact.setLastName(pendingCp.getDeveloperContactName());
 			developerContact.setPhoneNumber(pendingCp.getDeveloperPhoneNumber());
 			developerContact.setEmail(pendingCp.getDeveloperEmail());
-			
+			newDeveloper.setContact(developerContact);
 			//create the dev, address, and contact
 			developer = developerManager.create(newDeveloper);
 			pendingCp.setDeveloperId(developer.getId());
-		} else {
-			developer = developerDao.getById(pendingCp.getDeveloperId());
-			boolean needsUpdate = false;
-			if(developer.getTransparencyAttestation() == null && pendingCp.getTransparencyAttestation() != null || 
-				(!developer.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation()))) {
-				developer.setTransparencyAttestation(pendingCp.getTransparencyAttestation());
-				needsUpdate = true;
-			}
-			if(needsUpdate) {
-				developerManager.update(developer);
-			}
 		}
 		
 		if(pendingCp.getProductId() == null) {
@@ -489,7 +491,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						CertificationResultTestStandardDTO stdDto = new CertificationResultTestStandardDTO();
 						if(std.getTestStandardId() == null) {
 							TestStandardDTO ts = new TestStandardDTO();
-							ts.setNumber(std.getNumber());
+							ts.setName(std.getName());
 							ts = testStandardDao.create(ts);
 							stdDto.setTestStandardId(ts.getId());
 						} else {
@@ -505,11 +507,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						if(tool.getTestToolId() != null) {
 							CertificationResultTestToolDTO toolDto = new CertificationResultTestToolDTO();
 							toolDto.setTestToolId(tool.getTestToolId());
+							toolDto.setTestToolVersion(tool.getVersion());
 							toolDto.setCertificationResultId(createdCert.getId());
 							certDao.addTestToolMapping(toolDto);
 						} else {
 							logger.error("Could not insert test tool with null id. Name was " + tool.getName());
-
 						}
 					}
 				}
@@ -833,6 +835,28 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}	
 	}
 	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateCertificationDate(Long acbId, CertifiedProductDTO productDto, Date newCertDate)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		CertifiedProductDetailsDTO existingCp = cpDao.getDetailsById(productDto.getId());
+		if(existingCp != null && existingCp.getCertificationDate().getTime() != newCertDate.getTime()) {
+			List<CertificationEventDTO> certEvents = eventDao.findByCertifiedProductId(productDto.getId());
+			CertificationEventDTO foundEvent = null;
+			for(CertificationEventDTO certEvent : certEvents) {
+				if(certEvent.getEventTypeId().equals(1L)) { // certified event type
+					foundEvent = certEvent;
+				}
+			}
+			foundEvent.setEventDate(newCertDate);
+			eventDao.update(foundEvent);
+		}
+	}
+	
 	/**
 	 * both successes and failures are passed in
 	 * @throws JsonProcessingException 
@@ -888,7 +912,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					if(certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.SED)) {
 						oldResult.setSed(newCertResult.isSed());
 					} else {
-						oldResult.setPrivacySecurityFramework(null);
+						oldResult.setSed(null);
 					}
 					
 					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.UCD_FIELDS) ||
@@ -950,8 +974,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							CertificationResultTestStandardDTO testStandard = new CertificationResultTestStandardDTO();
 							testStandard.setId(newTestStandard.getId());
 							testStandard.setTestStandardId(newTestStandard.getTestStandardId());
+							testStandard.setTestStandardDescription(newTestStandard.getTestStandardDescription());
 							testStandard.setTestStandardName(newTestStandard.getTestStandardName());
-							testStandard.setTestStandardNumber(newTestStandard.getTestStandardNumber());
 							testStandard.setCertificationResultId(oldResult.getId());
 							testStandard.setDeleted(false);
 							oldResult.getTestStandards().add(testStandard);
@@ -1243,6 +1267,100 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			return cqm.getCriterion().getId();
 		} else {
 			throw new EntityRetrievalException("A criteria id or number must be provided.");
+		}
+	}
+	
+	@Override
+	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed) {
+		boolean sendMsg = false;
+		String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
+		String subject = "CHPL Questionable Activity";
+		String htmlMessage = "<p>Activity was detected on certified product " + original.getChplProductNumber(); 
+		if(activityThresholdDaysStr.equals("0")) {
+			htmlMessage += ".";
+		} else {
+			htmlMessage += " more than " + activityThresholdDaysStr + " days after it was certified.";
+		}
+		htmlMessage += "</p>"
+				+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
+		
+		
+		if(original.getCertificationEdition().get("name").equals("2011")) {
+			sendMsg = true;
+		} else {
+			int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
+			long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
+			if(original.getCertificationDate() != null && changed.getCertificationDate() != null &&
+			   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > activityThresholdMillis)) {
+				//if they changed something outside of the suspicious activity window, 
+				//check if the change was something that should trigger an email
+				
+				if(!original.getCertificationStatus().get("id").equals(changed.getCertificationStatus().get("id"))) {
+					sendMsg = true;
+				}
+				
+				if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
+					(original.getCqmResults() != null && changed.getCqmResults() == null) ||
+					(original.getCqmResults().size() != changed.getCqmResults().size())) {
+					sendMsg = true;
+				} else if(original.getCqmResults().size() == changed.getCqmResults().size()) {
+					for(CQMResultDetails origCqm : original.getCqmResults()) {
+						for(CQMResultDetails changedCqm : changed.getCqmResults()) {
+							if(origCqm.getCmsId().equals(changedCqm.getCmsId())) {
+								if(origCqm.isSuccess().booleanValue() != changedCqm.isSuccess().booleanValue()) {
+									sendMsg = true;
+								}
+							}
+						}
+					}
+				}
+				if( (original.getCertificationResults() == null && changed.getCertificationResults() != null) ||
+					(original.getCertificationResults() != null && changed.getCertificationResults() == null) ||
+					(original.getCertificationResults().size() != changed.getCertificationResults().size())) {
+					sendMsg = true;
+				} else if(original.getCertificationResults().size() == changed.getCertificationResults().size()) {
+					for(CertificationResult origCert : original.getCertificationResults()) {
+						for(CertificationResult changedCert : changed.getCertificationResults()) {
+							if(origCert.getNumber().equals(changedCert.getNumber())) {
+								if(origCert.isSuccess().booleanValue() != changedCert.isSuccess().booleanValue()) {
+									sendMsg = true;
+								}
+								if(origCert.isG1Success() != null || changedCert.isG1Success() != null) {
+									if(	(origCert.isG1Success() == null && changedCert.isG1Success() != null) ||
+										(origCert.isG1Success() != null && changedCert.isG1Success() == null) ||
+										(origCert.isG1Success().booleanValue() != changedCert.isG1Success().booleanValue())) {
+										sendMsg = true;
+									}
+								}
+								if(origCert.isG2Success() != null || changedCert.isG2Success() != null) {
+									if(	(origCert.isG2Success() == null && changedCert.isG2Success() != null) ||
+										(origCert.isG2Success() != null && changedCert.isG2Success() == null) ||
+										(origCert.isG2Success().booleanValue() != changedCert.isG2Success().booleanValue())) {
+										sendMsg = true;
+									}
+								}
+								if(origCert.isGap() != null || changedCert.isGap() != null) {
+									if(	(origCert.isGap() == null && changedCert.isGap() != null) ||
+										(origCert.isGap() != null && changedCert.isGap() == null) ||
+										(origCert.isGap().booleanValue() != changedCert.isGap().booleanValue())) {
+										sendMsg = true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if(sendMsg) {
+			String emailAddr = env.getProperty("questionableActivityEmail");
+			String[] emailAddrs = emailAddr.split(";");
+			try {
+				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
+			} catch(MessagingException me) {
+				logger.error("Could not send questionable activity email", me);
+			}
 		}
 	}
 }

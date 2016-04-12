@@ -73,7 +73,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 			
 			if(!hasG1Complement) {
-				product.getErrorMessages().add("(g)(1) was found without a required related certification.");
+				product.getWarningMessages().add("(g)(1) was found without a required related certification.");
 			}
 		}
 		
@@ -96,7 +96,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 			
 			if(!hasG2Complement) {
-				product.getErrorMessages().add("(g)(2) was found without a required related certification.");
+				product.getWarningMessages().add("(g)(2) was found without a required related certification.");
 			}
 		}
 		
@@ -128,7 +128,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("(g)(1) was found without a required related certification.");
+				product.getWarningMessages().add("(g)(1) was found without a required related certification.");
 			}
 		}
 		
@@ -151,7 +151,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("(g)(2) was found without a required related certification.");
+				product.getWarningMessages().add("(g)(2) was found without a required related certification.");
 			}
 		}
 		

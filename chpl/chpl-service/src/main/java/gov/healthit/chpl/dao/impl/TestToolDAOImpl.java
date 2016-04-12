@@ -40,7 +40,6 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
-			entity.setVersion(dto.getVersion());
 			entity.setDescription(dto.getDescription());
 			
 			create(entity);
@@ -58,7 +57,6 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 		}
 		
 		entity.setName(dto.getName());
-		entity.setVersion(dto.getVersion());
 		entity.setDescription(dto.getDescription());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
@@ -157,8 +155,9 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 	
 	private List<TestToolEntity> getEntitiesByName(String name) {
 		
-		Query query = entityManager.createQuery( "from TestToolEntity where (NOT deleted = true) AND (name = :name) ", TestToolEntity.class );
-		query.setParameter("name", name);
+		Query query = entityManager.createQuery( "from TestToolEntity where "
+				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", TestToolEntity.class );
+		query.setParameter("name", name.toUpperCase());
 		List<TestToolEntity> result = query.getResultList();
 		
 		return result;

@@ -79,7 +79,7 @@ public class CertificationResultManagerImpl implements
 		for (CertificationResultTestStandardDTO mapping : toCreate.getTestStandards()){
 			if(mapping.getTestStandardId() == null) {
 				TestStandardDTO newTestStandard = new TestStandardDTO();
-				newTestStandard.setName(mapping.getTestStandardName());
+				newTestStandard.setDescription(mapping.getTestStandardDescription());
 				newTestStandard = testStandardDAO.create(newTestStandard);
 				mapping.setTestStandardId(newTestStandard.getId());
 			}
@@ -94,13 +94,13 @@ public class CertificationResultManagerImpl implements
 			if(mapping.getTestToolId() == null) {
 				TestToolDTO newTestTool = new TestToolDTO();
 				newTestTool.setName(mapping.getTestToolName());
-				newTestTool.setVersion(mapping.getTestToolVersion());
 				newTestTool = testToolDAO.create(newTestTool);
 				mapping.setTestToolId(newTestTool.getId());
 			}
 			CertificationResultTestToolDTO mappingToCreate = new CertificationResultTestToolDTO();
 			mappingToCreate.setCertificationResultId(created.getId());
 			mappingToCreate.setTestToolId(mapping.getTestToolId());
+			mappingToCreate.setTestToolVersion(mapping.getTestToolVersion());
 			CertificationResultTestToolDTO createdMapping = certResultDAO.addTestToolMapping(mappingToCreate);
 			created.getTestTools().add(createdMapping);
 		}
@@ -275,10 +275,10 @@ public class CertificationResultManagerImpl implements
 		for (CertificationResultTestStandardDTO toUpdateMapping : toUpdate.getTestStandards()){
 			if(toUpdateMapping.getId() == null) {
 				if(toUpdateMapping.getTestStandardId() == null) {
-					TestStandardDTO testStd = testStandardDAO.getByNumber(toUpdateMapping.getTestStandardNumber());
+					TestStandardDTO testStd = testStandardDAO.getByNumber(toUpdateMapping.getTestStandardName());
 					if(testStd == null) {
 						TestStandardDTO testStandardToCreate = new TestStandardDTO();
-						testStandardToCreate.setNumber(toUpdateMapping.getTestStandardNumber());
+						testStandardToCreate.setName(toUpdateMapping.getTestStandardName());
 						testStd = testStandardDAO.create(testStandardToCreate);
 					}
 					toUpdateMapping.setTestStandardId(testStd.getId());
@@ -322,13 +322,15 @@ public class CertificationResultManagerImpl implements
 				if(toUpdateMapping.getTestToolId() == null) {
 					TestToolDTO testToolToCreate = new TestToolDTO();
 					testToolToCreate.setName(toUpdateMapping.getTestToolName());
-					testToolToCreate.setVersion(toUpdateMapping.getTestToolVersion());
 					testToolToCreate = testToolDAO.create(testToolToCreate);
 					toUpdateMapping.setTestToolId(testToolToCreate.getId());
 				}
 				toUpdateMapping.setCertificationResultId(toUpdate.getId());
 				testToolsToAdd.add(toUpdateMapping);
-			} 
+			} else {
+				toUpdateMapping.setCertificationResultId(toUpdate.getId());
+				certResultDAO.updateTestToolMapping(toUpdateMapping);
+			}
 		}
 				
 		for(CertificationResultTestToolDTO currMapping : existingTestTools) {

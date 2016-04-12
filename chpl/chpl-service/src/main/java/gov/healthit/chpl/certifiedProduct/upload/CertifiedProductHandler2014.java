@@ -328,6 +328,9 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		//certification year
 		String certificaitonYear = record.get(colIndex++);
 		pendingCertifiedProduct.setCertificationEdition(certificaitonYear.trim());
+		if(!pendingCertifiedProduct.getCertificationEdition().equals("2014")) {
+			pendingCertifiedProduct.getErrorMessages().add("Expecting certification year 2014 but found '" + pendingCertifiedProduct.getCertificationEdition() + "' for product " + pendingCertifiedProduct.getUniqueId());
+		}
 		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear.trim());
 		if(foundEdition != null) {
 			pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
@@ -448,6 +451,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			} else if("2".equals(k2AttestationStr.trim())) {
 				pendingCertifiedProduct.setTransparencyAttestation(AttestationType.NA);
 			}
+		} else {
+			pendingCertifiedProduct.setTransparencyAttestation(null);
 		}
 	}
 	
@@ -579,7 +584,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			String tsValue = row.get(tsColumn).toString();
 			if(!StringUtils.isEmpty(tsValue)) {
 				PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
-				tsEntity.setTestStandardNumber(tsValue);
+				tsEntity.setTestStandardName(tsValue);
 				TestStandardDTO ts = testStandardDao.getByNumber(tsValue);
 				if(ts != null) {
 					tsEntity.setTestStandardId(ts.getId());

@@ -4,7 +4,9 @@ package gov.healthit.chpl.web.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,6 +42,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -181,7 +184,9 @@ public class CertifiedProductController {
 		if(updateRequest.getClassificationType() != null && updateRequest.getClassificationType().get("id") != null) {
 			toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
 		}
+		toUpdate.setProductVersionId(new Long(updateRequest.getProduct().get("versionId").toString()));
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
+		toUpdate.setCertificationEditionId(new Long(updateRequest.getCertificationEdition().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
 		toUpdate.setSedReportFileLocation(updateRequest.getSedReportFileLocation());
 		toUpdate.setSedIntendedUserDescription(updateRequest.getSedIntendedUserDescription());
@@ -193,30 +198,49 @@ public class CertifiedProductController {
 		toUpdate.setIcs(updateRequest.getIcs());
 		toUpdate.setAccessibilityCertified(updateRequest.getAccessibilityCertified());
 		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
+		
 		toUpdate.setTransparencyAttestationUrl(updateRequest.getTransparencyAttestationUrl());
 		
+		//set the pieces of the unique id
 		if(!StringUtils.isEmpty(updateRequest.getChplProductNumber())) {
-			toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
-			toUpdate.setProductCode(null);
-			toUpdate.setVersionCode(null);
-			toUpdate.setIcsCode(null);
-			toUpdate.setAdditionalSoftwareCode(null);
-			toUpdate.setCertifiedDateCode(null);
-		} else {
-			//parse out the components of the chpl id
-			toUpdate.setChplProductNumber(null);
-			String chplProductId = updateRequest.getChplProductNumber();
-			String[] chplProductIdComponents = chplProductId.split("\\.");
-			if(chplProductIdComponents == null || chplProductIdComponents.length != 9) {
-				throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
+			if(updateRequest.getChplProductNumber().startsWith("CHP-")) {
+				toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
+			} else {
+				String chplProductId = updateRequest.getChplProductNumber();
+				String[] chplProductIdComponents = chplProductId.split("\\.");
+				if(chplProductIdComponents == null || chplProductIdComponents.length != 9) {
+					throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
+				} else {
+					toUpdate.setProductCode(chplProductIdComponents[4]);
+					toUpdate.setVersionCode(chplProductIdComponents[5]);
+					toUpdate.setIcsCode(chplProductIdComponents[6]);
+					toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
+					toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
+				}
+				
+				if(updateRequest.getCertificationDate() != null) {
+					Date certDate = new Date(updateRequest.getCertificationDate());
+					SimpleDateFormat dateCodeFormat = new SimpleDateFormat("yyMMdd");
+					String dateCode = dateCodeFormat.format(certDate);
+					toUpdate.setCertifiedDateCode(dateCode);
+				}
+				
+				if(updateRequest.getCertificationResults() != null && updateRequest.getCertificationResults().size() > 0) {
+					boolean hasSoftware = false;
+					for(CertificationResult cert : updateRequest.getCertificationResults()) {
+						if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+							hasSoftware = true;
+						}
+					}
+					if(hasSoftware) {
+						toUpdate.setAdditionalSoftwareCode("1");
+					} else {
+						toUpdate.setAdditionalSoftwareCode("0");
+					}
+				}
 			}
-			toUpdate.setProductCode(chplProductIdComponents[4]);
-			toUpdate.setVersionCode(chplProductIdComponents[5]);
-			toUpdate.setIcsCode(chplProductIdComponents[6]);
-			toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
-			toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
-		}
-
+		} 
+		
 		toUpdate = cpManager.update(acbId, toUpdate);
 		
 		//update qms standards used
@@ -245,6 +269,7 @@ public class CertifiedProductController {
 		}
 		cpManager.updateTargetedUsers(acbId, toUpdate, targetedUsersToUpdate);
 		
+		//update accessibility standards
 		List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardsToUpdate = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
 		for(CertifiedProductAccessibilityStandard newStd : updateRequest.getAccessibilityStandards()) {
 			CertifiedProductAccessibilityStandardDTO dto = new CertifiedProductAccessibilityStandardDTO();
@@ -255,6 +280,9 @@ public class CertifiedProductController {
 			accessibilityStandardsToUpdate.add(dto);
 		}
 		cpManager.updateAccessibilityStandards(acbId, toUpdate, accessibilityStandardsToUpdate);
+		
+		//update certification date
+		cpManager.updateCertificationDate(acbId, toUpdate, new Date(updateRequest.getCertificationDate()));
 		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
@@ -300,6 +328,7 @@ public class CertifiedProductController {
 		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
 		
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
 		
 		//search for the product by id to get it with all the updates

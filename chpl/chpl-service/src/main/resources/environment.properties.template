@@ -4,6 +4,8 @@ jndiName=java:comp/env/jdbc/openchpl
 persistenceUnitName=openchpl
 springfox.documentation.swagger.v2.path=/api-docs
 basePath=/rest
+questionableActivityEmail=theonc.certification@hhs.gov;onc_chpl@hhs.gov
+questionableActivityThresholdDays=0
 
 #chpl-service download jar properties
 dbDriverClass=org.postgresql.Driver
@@ -30,4 +32,4 @@ smtpFrom=CHPLadmin@ainq.com
 smtpUsername=intranet/chpladmin
 smtpPassword=
 
-chplUrlBegin=http://localhost:8000
+chplUrlBegin=http://localhost:8000/app

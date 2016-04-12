@@ -91,46 +91,14 @@ public class CertificationEventDAOImpl extends BaseDAOImpl implements Certificat
 		if(entity == null) {
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
+		entity.setCertifiedProductId(dto.getCertifiedProductId());
+		entity.setCity(dto.getCity());
+		entity.setState(dto.getState());
+		entity.setEventDate(dto.getEventDate());
+		entity.setEventTypeId(dto.getEventTypeId());
 		
-		if (dto.getCity() != null ){
-			entity.setCity(dto.getCity());
-		}
-		
-		if (dto.getState() != null){
-			entity.setState(dto.getState());
-		}
-		
-		if (dto.getEventDate() != null){
-			entity.setEventDate(dto.getEventDate());
-		}
-		
-		if(dto.getEventTypeId() != null){
-			entity.setEventTypeId(dto.getEventTypeId());
-		}
-		
-		if(dto.getLastModifiedUser() != null) {
-			entity.setLastModifiedUser(dto.getLastModifiedUser());
-		} else {
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		}		
-		
-		if(dto.getLastModifiedDate() != null) {
-			entity.setLastModifiedDate(dto.getLastModifiedDate());
-		} else {
-			entity.setLastModifiedDate(new Date());
-		}
-		
-		if(dto.getCreationDate() != null) {
-			entity.setCreationDate(dto.getCreationDate());
-		} else {
-			entity.setCreationDate(new Date());
-		}
-		
-		if(dto.getDeleted() != null) {
-			entity.setDeleted(dto.getDeleted());
-		} else {
-			entity.setDeleted(false);
-		}
+		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		entity.setLastModifiedDate(new Date());
 		
 		update(entity);
 		return new CertificationEventDTO(entity);

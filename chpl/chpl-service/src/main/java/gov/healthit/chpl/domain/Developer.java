@@ -1,5 +1,9 @@
 package gov.healthit.chpl.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 
 public class Developer {
@@ -10,11 +14,14 @@ public class Developer {
 	private Address address;
 	private Contact contact;
 	private String lastModifiedDate;
-	private String transparencyAttestation;
+	private List<TransparencyAttestationMap> transparencyAttestations;
 	
-	public Developer() {}
+	public Developer() {
+		this.transparencyAttestations = new ArrayList<TransparencyAttestationMap>();
+	}
 	
 	public Developer(DeveloperDTO dto) {
+		this();
 		this.developerId = dto.getId();
 		this.developerCode = dto.getDeveloperCode();
 		this.name = dto.getName();
@@ -26,7 +33,15 @@ public class Developer {
 			this.contact = new Contact(dto.getContact());
 		}
 		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
-		this.transparencyAttestation = dto.getTransparencyAttestation();
+		if(dto.getTransparencyAttestationMappings() != null && dto.getTransparencyAttestationMappings().size() > 0) {
+			for(DeveloperACBMapDTO map : dto.getTransparencyAttestationMappings()) {
+				TransparencyAttestationMap toAdd = new TransparencyAttestationMap();
+				toAdd.setAcbId(map.getAcbId());
+				toAdd.setAcbName(map.getAcbName());
+				toAdd.setAttestation(map.getTransparencyAttestation());
+				this.transparencyAttestations.add(toAdd);
+			}
+		}
 	}
 	public Long getDeveloperId() {
 		return developerId;
@@ -69,19 +84,19 @@ public class Developer {
 		this.developerCode = developerCode;
 	}
 
-	public String getTransparencyAttestation() {
-		return transparencyAttestation;
-	}
-
-	public void setTransparencyAttestation(String transparencyAttestation) {
-		this.transparencyAttestation = transparencyAttestation;
-	}
-
 	public Contact getContact() {
 		return contact;
 	}
 
 	public void setContact(Contact contact) {
 		this.contact = contact;
+	}
+
+	public List<TransparencyAttestationMap> getTransparencyAttestations() {
+		return transparencyAttestations;
+	}
+
+	public void setTransparencyAttestations(List<TransparencyAttestationMap> transparencyAttestations) {
+		this.transparencyAttestations = transparencyAttestations;
 	}
 }

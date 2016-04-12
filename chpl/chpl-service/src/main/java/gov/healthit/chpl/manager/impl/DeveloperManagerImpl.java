@@ -5,15 +5,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.mail.MessagingException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -22,6 +29,7 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -35,7 +43,11 @@ import gov.healthit.chpl.manager.DeveloperManager;
 
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
-
+	private static final Logger logger = LogManager.getLogger(DeveloperManagerImpl.class);
+	
+	@Autowired private SendMailUtil sendMailService;
+	@Autowired private Environment env;
+	
 	@Autowired
 	DeveloperDAO developerDao;
 	
@@ -50,15 +62,23 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	public List<DeveloperDTO> getAll() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAll();
 		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() == 1) {
-			//if someone is a member of multiple acbs, they will not see the transparency
-			CertificationBodyDTO acb = availableAcbs.get(0);
+		if(availableAcbs == null || availableAcbs.size() == 0) {
+			availableAcbs = acbManager.getAll(true);
+		}
+		//someone will see either the transparencies that apply to the ACBs to which they have access
+		//or they will see the transparencies for all ACBs if they are an admin or not logged in
+		for(CertificationBodyDTO acb : availableAcbs) {
 			for(DeveloperDTO developer : allDevelopers) {
 				DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
 				if(map == null) {
-					developer.setTransparencyAttestation(null);
+					DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
+					mapToAdd.setAcbId(acb.getId());
+					mapToAdd.setAcbName(acb.getName());
+					mapToAdd.setDeveloperId(developer.getId());
+					mapToAdd.setTransparencyAttestation(null);
+					developer.getTransparencyAttestationMappings().add(mapToAdd);
 				} else {
-					developer.setTransparencyAttestation(map.getTransparencyAttestation());
+					developer.getTransparencyAttestationMappings().add(map);
 				}
 			}
 		}
@@ -70,14 +90,22 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException {
 		DeveloperDTO developer = developerDao.getById(id);
 		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() == 1) {
-			//if someone is a member of multiple acbs, they will not see the transparency
-			CertificationBodyDTO acb = availableAcbs.get(0);
+		if(availableAcbs == null || availableAcbs.size() == 0) {
+			availableAcbs = acbManager.getAll(true);
+		}
+		//someone will see either the transparencies that apply to the ACBs to which they have access
+		//or they will see the transparencies for all ACBs if they are an admin or not logged in
+		for(CertificationBodyDTO acb : availableAcbs) {
 			DeveloperACBMapDTO map = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
 			if(map == null) {
-				developer.setTransparencyAttestation(null);
+				DeveloperACBMapDTO mapToAdd = new DeveloperACBMapDTO();
+				mapToAdd.setAcbId(acb.getId());
+				mapToAdd.setAcbName(acb.getName());
+				mapToAdd.setDeveloperId(developer.getId());
+				mapToAdd.setTransparencyAttestation(null);
+				developer.getTransparencyAttestationMappings().add(mapToAdd);
 			} else {
-				developer.setTransparencyAttestation(map.getTransparencyAttestation());
+				developer.getTransparencyAttestationMappings().add(map);
 			}
 		}
 		return developer;
@@ -90,41 +118,34 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		DeveloperDTO before = getById(developer.getId());
 		DeveloperEntity result = developerDao.update(developer);
 		
-		//chplAdmin cannot update the transparency but any other role
-		//allowed in this method can
-		boolean isChplAdmin = false;
-		Set<GrantedPermission> permissions = Util.getCurrentUser().getPermissions();
-		for(GrantedPermission permission : permissions) {
-			if(permission.getAuthority().equals("ROLE_ADMIN")) {
-				isChplAdmin = true;
-			}
-		}
-		
-		if(!isChplAdmin) {
-			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-			if(availableAcbs != null && availableAcbs.size() > 0) {
-				for(CertificationBodyDTO acb : availableAcbs) {
-					DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
-					if(existingMap == null) {
-						DeveloperACBMapDTO developerMappingToUpdate = new DeveloperACBMapDTO();
-						developerMappingToUpdate.setAcbId(acb.getId());
-						developerMappingToUpdate.setDeveloperId(before.getId());
-						developerMappingToUpdate.setTransparencyAttestation(developer.getTransparencyAttestation());
-						developerDao.createTransparencyMapping(developerMappingToUpdate);
-					} else {
-						existingMap.setTransparencyAttestation(developer.getTransparencyAttestation());
-						developerDao.updateTransparencyMapping(existingMap);
+		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+		if(availableAcbs != null && availableAcbs.size() > 0) {
+			for(CertificationBodyDTO acb : availableAcbs) {
+				DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
+				if(existingMap == null) {
+					DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
+					developerMappingToCreate.setAcbId(acb.getId());
+					developerMappingToCreate.setDeveloperId(before.getId());
+					for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+						if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
+							developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());;
+							developerDao.createTransparencyMapping(developerMappingToCreate);
+						}
+					}
+				} else if(!StringUtils.isEmpty(existingMap.getTransparencyAttestation())){
+					for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+						if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
+							existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
+							developerDao.updateTransparencyMapping(existingMap);
+						}
 					}
 				}
 			}
 		}
-		DeveloperDTO after = new DeveloperDTO(result);
 		
-		if(!isChplAdmin) {
-			after.setTransparencyAttestation(developer.getTransparencyAttestation());
-		}
+		DeveloperDTO after = getById(result.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", before, after);
-		
+		checkSuspiciousActivity(before, after);
 		return after;
 	}
 	
@@ -137,11 +158,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs != null && availableAcbs.size() > 0) {
 			for(CertificationBodyDTO acb : availableAcbs) {
-				DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-				developerMappingToCreate.setAcbId(acb.getId());
-				developerMappingToCreate.setDeveloperId(created.getId());
-				developerMappingToCreate.setTransparencyAttestation(dto.getTransparencyAttestation());
-				developerDao.createTransparencyMapping(developerMappingToCreate);
+				for(DeveloperACBMapDTO attMap : dto.getTransparencyAttestationMappings()) {
+					if(acb.getId().longValue() == attMap.getAcbId().longValue() && 
+							!StringUtils.isEmpty(attMap.getTransparencyAttestation())) {
+						attMap.setDeveloperId(created.getId());
+						developerDao.createTransparencyMapping(attMap);
+					}
+				}
 			}
 		}
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, created.getId(), "Developer "+created.getName()+" has been created.", null, created);
@@ -211,5 +234,31 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, createdDeveloper.getId(), "Merged "+ developerIdsToMerge.size() + " developers into new developer '" + createdDeveloper.getName() + "'.", beforeDevelopers, createdDeveloper);
 		
 		return createdDeveloper;
+	}
+	
+	@Override
+	public void checkSuspiciousActivity(DeveloperDTO original, DeveloperDTO changed) {
+		String subject = "CHPL Questionable Activity";
+		String htmlMessage = "<p>Activity was detected on developer " + original.getName() + ".</p>" 
+				+ "<p>To view the details of this activity go to: " + 
+				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
+		
+		boolean sendMsg = false;
+		
+		if( (original.getName() != null && changed.getName() == null) ||
+			(original.getName() == null && changed.getName() != null) ||
+			!original.getName().equals(changed.getName()) ) {
+			sendMsg = true;
+		}
+		
+		if(sendMsg) {
+			String emailAddr = env.getProperty("questionableActivityEmail");
+			String[] emailAddrs = emailAddr.split(";");
+			try {
+				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
+			} catch(MessagingException me) {
+				logger.error("Could not send questionable activity email", me);
+			}
+		}	
 	}
 }

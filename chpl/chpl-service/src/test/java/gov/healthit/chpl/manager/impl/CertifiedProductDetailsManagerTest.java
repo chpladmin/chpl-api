@@ -120,7 +120,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		assertNotNull(cert.getTestStandards());
 		assertEquals(1, cert.getTestStandards().size());
 		CertificationResultTestStandard ts = cert.getTestStandards().get(0);
-		assertNotNull(ts.getTestStandardName());
+		assertNotNull(ts.getTestStandardDescription());
 		
 		//check test procedures
 		assertNotNull(cert.getTestProcedures());

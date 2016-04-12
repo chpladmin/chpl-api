@@ -477,6 +477,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		CertificationResultTestToolEntity mapping = new CertificationResultTestToolEntity();
 		mapping.setCertificationResultId(dto.getCertificationResultId());
 		mapping.setTestToolId(dto.getTestToolId());
+		mapping.setVersion(dto.getTestToolVersion());
 		mapping.setCreationDate(new Date());
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
@@ -487,6 +488,22 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		return new CertificationResultTestToolDTO(mapping);
 	}
 
+	@Override
+	public CertificationResultTestToolDTO updateTestToolMapping(CertificationResultTestToolDTO dto){
+		CertificationResultTestToolEntity mapping = getCertificationResultTestToolById(dto.getId());
+		if(mapping == null) {
+			return null;
+		}
+		mapping.setCertificationResultId(dto.getCertificationResultId());
+		mapping.setVersion(dto.getTestToolVersion());
+		mapping.setTestToolId(dto.getTestToolId());
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.merge(mapping);
+		entityManager.flush();
+		return new CertificationResultTestToolDTO(mapping);
+	}
+	
 	@Override
 	public void deleteTestToolMapping(Long mappingId){
 		CertificationResultTestToolEntity toDelete = getCertificationResultTestToolById(mappingId);

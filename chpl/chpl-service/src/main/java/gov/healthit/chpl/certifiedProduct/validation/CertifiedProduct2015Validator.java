@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
@@ -11,7 +12,10 @@ import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2015Validator")
 public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl {
@@ -138,6 +142,13 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 								if(task.getTaskParticipants() == null || task.getTaskParticipants().size() < 10) {
 									product.getErrorMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
 								}
+								for(PendingCertificationResultTestTaskParticipantDTO part : task.getTaskParticipants()) {
+									if(part.getTestParticipant().getEducationTypeId() == null) {
+										product.getErrorMessages().add("Found no matching eduation level for test participant (age: " + 
+												part.getTestParticipant().getAge() + " and gender: " + part.getTestParticipant().getGender() 
+												+ ") related to " + certCriteria.getNumber() + ".");
+									}
+								}
 							}
 						}
 					}
@@ -219,6 +230,57 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		}
 	}
 
+	protected void validateDemographics(PendingCertifiedProductDTO product) {
+		super.validateDemographics(product);
+		
+		if(product.getQmsStandards() == null || product.getQmsStandards().size() == 0) {
+			product.getErrorMessages().add("QMS Standards are required.");
+		} else {
+			for(PendingCertifiedProductQmsStandardDTO qms : product.getQmsStandards()) {
+				if(StringUtils.isBlank(qms.getApplicableCriteria())) {
+					product.getErrorMessages().add("Applicable criteria is required for each QMS Standard listed.");
+				}
+			}
+		}
+		
+		if(product.getAccessibilityStandards() == null || product.getAccessibilityStandards().size() == 0) {
+			product.getErrorMessages().add("Accessibility standards are required.");
+		}
+		
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY) &&
+						cert.getPrivacySecurityFramework() == null) {
+					product.getErrorMessages().add("Privacy and Security Framework is required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.API_DOCUMENTATION) &&
+						cert.getApiDocumentation() == null) {
+					product.getErrorMessages().add("API Documentation is required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED) &&
+						(cert.getTestFunctionality() == null || cert.getTestFunctionality().size() == 0)) {
+					product.getErrorMessages().add("Functionality Tested is required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				}
+				if((cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
+					(cert.getTestData() == null || cert.getTestData().size() == 0)) {
+					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
+				}
+//				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
+//					if(cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0) {
+//						product.getErrorMessages().add("UCD Fields are required for certification " + cert.getNumber() + ".");
+//					}
+//					if(cert.getTestTasks() == null || cert.getTestTasks().size() == 0) {
+//						product.getErrorMessages().add("Test tasks are required for certification " + cert.getNumber() + ".");
+//					}
+//				}
+			}
+		}
+	}
+	
 	@Override
 	public void validate(CertifiedProductSearchDetails product) {
 		super.validate(product);
@@ -289,9 +351,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 			
 			boolean meetsD2Criterion = hasCert("170.315 (d)(2)", allMetCerts);
 			boolean meetsD10Criterion = hasCert("170.315 (d)(10)", allMetCerts);;
-			if( (!meetsD2Criterion && !meetsD10Criterion) || 
-				(meetsD2Criterion && meetsD10Criterion) ) {
-				product.getErrorMessages().add("Certification criterion 170.315 (g)(7) or 170.315 (g)(8) or 170.315 (g)(9) was found so EITHER 170.315 (d)(2) OR 170.315 (d)(10) is required.");
+			if(!meetsD2Criterion && !meetsD10Criterion) {
+				product.getErrorMessages().add("Certification criterion 170.315 (g)(7) or 170.315 (g)(8) or 170.315 (g)(9) was found so 170.315 (d)(2) or 170.315 (d)(10) is required.");
 			}
 		}
 		

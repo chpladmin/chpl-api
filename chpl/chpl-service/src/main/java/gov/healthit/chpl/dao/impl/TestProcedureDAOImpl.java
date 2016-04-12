@@ -155,8 +155,9 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 		
 		TestProcedureEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from TestProcedureEntity where (NOT deleted = true) AND (version = :versionName) ", TestProcedureEntity.class );
-		query.setParameter("versionName", versionName);
+		Query query = entityManager.createQuery( "from TestProcedureEntity where "
+				+ "(NOT deleted = true) AND (UPPER(version) = :versionName) ", TestProcedureEntity.class );
+		query.setParameter("versionName", versionName.toUpperCase());
 		return query.getResultList();
 	}
 }
