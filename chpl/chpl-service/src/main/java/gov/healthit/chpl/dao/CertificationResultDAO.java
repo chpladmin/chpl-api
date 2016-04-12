@@ -35,6 +35,7 @@ public interface CertificationResultDAO {
 	
 	public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId);
 	public CertificationResultTestToolDTO addTestToolMapping(CertificationResultTestToolDTO dto) throws EntityCreationException;
+	public CertificationResultTestToolDTO updateTestToolMapping(CertificationResultTestToolDTO dto);
 	public void deleteTestToolMapping(Long mappingId);
 	
 	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId);

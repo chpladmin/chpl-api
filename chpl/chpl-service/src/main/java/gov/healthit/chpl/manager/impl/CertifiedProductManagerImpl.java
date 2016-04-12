@@ -295,18 +295,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			//create the dev, address, and contact
 			developer = developerManager.create(newDeveloper);
 			pendingCp.setDeveloperId(developer.getId());
-		} else {
-			developer = developerManager.getById(pendingCp.getDeveloperId());
-			boolean needsUpdate = true;
-			for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-				if(attMap.getAcbId().equals(pendingCp.getCertificationBodyId()) && 
-					attMap.getTransparencyAttestation().equals(pendingCp.getTransparencyAttestation())) {
-					needsUpdate = false;
-				}
-			}
-			if(needsUpdate) {
-				developerManager.update(developer);
-			}
 		}
 		
 		if(pendingCp.getProductId() == null) {
@@ -357,7 +345,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				}
 				qmsDto.setCertifiedProductId(newCertifiedProduct.getId());
 				qmsDto.setApplicableCriteria(qms.getApplicableCriteria());
-				qmsDto.setQmsModification(qmsDto.getQmsModification());
+				qmsDto.setQmsModification(qms.getModification());
 				cpQmsDao.createCertifiedProductQms(qmsDto);
 			}
 		}
@@ -503,7 +491,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						CertificationResultTestStandardDTO stdDto = new CertificationResultTestStandardDTO();
 						if(std.getTestStandardId() == null) {
 							TestStandardDTO ts = new TestStandardDTO();
-							ts.setNumber(std.getNumber());
+							ts.setName(std.getName());
 							ts = testStandardDao.create(ts);
 							stdDto.setTestStandardId(ts.getId());
 						} else {
@@ -519,11 +507,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						if(tool.getTestToolId() != null) {
 							CertificationResultTestToolDTO toolDto = new CertificationResultTestToolDTO();
 							toolDto.setTestToolId(tool.getTestToolId());
+							toolDto.setTestToolVersion(tool.getVersion());
 							toolDto.setCertificationResultId(createdCert.getId());
 							certDao.addTestToolMapping(toolDto);
 						} else {
 							logger.error("Could not insert test tool with null id. Name was " + tool.getName());
-
 						}
 					}
 				}
@@ -847,6 +835,28 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}	
 	}
 	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateCertificationDate(Long acbId, CertifiedProductDTO productDto, Date newCertDate)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		CertifiedProductDetailsDTO existingCp = cpDao.getDetailsById(productDto.getId());
+		if(existingCp != null && existingCp.getCertificationDate().getTime() != newCertDate.getTime()) {
+			List<CertificationEventDTO> certEvents = eventDao.findByCertifiedProductId(productDto.getId());
+			CertificationEventDTO foundEvent = null;
+			for(CertificationEventDTO certEvent : certEvents) {
+				if(certEvent.getEventTypeId().equals(1L)) { // certified event type
+					foundEvent = certEvent;
+				}
+			}
+			foundEvent.setEventDate(newCertDate);
+			eventDao.update(foundEvent);
+		}
+	}
+	
 	/**
 	 * both successes and failures are passed in
 	 * @throws JsonProcessingException 
@@ -964,8 +974,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							CertificationResultTestStandardDTO testStandard = new CertificationResultTestStandardDTO();
 							testStandard.setId(newTestStandard.getId());
 							testStandard.setTestStandardId(newTestStandard.getTestStandardId());
+							testStandard.setTestStandardDescription(newTestStandard.getTestStandardDescription());
 							testStandard.setTestStandardName(newTestStandard.getTestStandardName());
-							testStandard.setTestStandardNumber(newTestStandard.getTestStandardNumber());
 							testStandard.setCertificationResultId(oldResult.getId());
 							testStandard.setDeleted(false);
 							oldResult.getTestStandards().add(testStandard);
@@ -1023,8 +1033,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							CertificationResultTestFunctionalityDTO testFunctionality = new CertificationResultTestFunctionalityDTO();
 							testFunctionality.setId(newTestFunctionality.getId());
 							testFunctionality.setTestFunctionalityId(newTestFunctionality.getTestFunctionalityId());
-							testFunctionality.setTestFunctionalityName(newTestFunctionality.getName());
-							testFunctionality.setTestFunctionalityNumber(newTestFunctionality.getNumber());
+							testFunctionality.setTestFunctionalityName(newTestFunctionality.getDescription());
+							testFunctionality.setTestFunctionalityNumber(newTestFunctionality.getName());
 							testFunctionality.setCertificationResultId(oldResult.getId());
 							oldResult.getTestFunctionality().add(testFunctionality);
 						}
@@ -1272,7 +1282,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			htmlMessage += " more than " + activityThresholdDaysStr + " days after it was certified.";
 		}
 		htmlMessage += "</p>"
-				+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/app/#/admin/reports/" + original.getId() + " </p>";
+				+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
 		
 		
 		if(original.getCertificationEdition().get("name").equals("2011")) {
@@ -1285,21 +1295,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				//if they changed something outside of the suspicious activity window, 
 				//check if the change was something that should trigger an email
 				
-//				if(!original.getProduct().get("id").equals(changed.getProduct().get("id"))) {
-//					sendMsg = true;
-//				}
-//				
-//				if(!original.getProduct().get("versionId").equals(changed.getProduct().get("versionId"))) {
-//					sendMsg = true;
-//				}
-//				
-//				if(!original.getDeveloper().get("id").equals(changed.getDeveloper().get("id"))) {
-//					sendMsg = true;
-//				}
-//				
-//				if(!original.getChplProductNumber().equals(changed.getChplProductNumber())) {
-//					sendMsg = true;
-//				}
+				if(!original.getCertificationStatus().get("id").equals(changed.getCertificationStatus().get("id"))) {
+					sendMsg = true;
+				}
 				
 				if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
 					(original.getCqmResults() != null && changed.getCqmResults() == null) ||

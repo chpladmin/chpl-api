@@ -12,6 +12,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -141,6 +142,13 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 								if(task.getTaskParticipants() == null || task.getTaskParticipants().size() < 10) {
 									product.getErrorMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
 								}
+								for(PendingCertificationResultTestTaskParticipantDTO part : task.getTaskParticipants()) {
+									if(part.getTestParticipant().getEducationTypeId() == null) {
+										product.getErrorMessages().add("Found no matching eduation level for test participant (age: " + 
+												part.getTestParticipant().getAge() + " and gender: " + part.getTestParticipant().getGender() 
+												+ ") related to " + certCriteria.getNumber() + ".");
+									}
+								}
 							}
 						}
 					}
@@ -252,6 +260,14 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED) &&
 						(cert.getTestFunctionality() == null || cert.getTestFunctionality().size() == 0)) {
 					product.getErrorMessages().add("Functionality Tested is required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				}
+				if((cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
+					(cert.getTestData() == null || cert.getTestData().size() == 0)) {
+					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
 				}
 //				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
 //					if(cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0) {

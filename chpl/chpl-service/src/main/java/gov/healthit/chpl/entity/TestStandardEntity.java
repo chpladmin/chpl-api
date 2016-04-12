@@ -21,11 +21,11 @@ public class TestStandardEntity {
 	@Column(name = "test_standard_id")
 	private Long id;
 	
-	@Column( name = "name", nullable = false  )
+	@Column( name = "number", nullable = false  )
 	private String name;
 	
-	@Column( name = "number", nullable = false  )
-	private String number;
+	@Column( name = "name", nullable = false  )
+	private String description;
 	
 	public Long getId() {
 		return id;
@@ -35,12 +35,12 @@ public class TestStandardEntity {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	@Basic( optional = false )
@@ -84,11 +84,11 @@ public class TestStandardEntity {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
-	public String getNumber() {
-		return number;
+	public String getName() {
+		return name;
 	}
 
-	public void setNumber(String number) {
-		this.number = number;
+	public void setName(String name) {
+		this.name = name;
 	}
 }

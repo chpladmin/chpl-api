@@ -151,8 +151,9 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 	
 	private List<QmsStandardEntity> getEntitiesByName(String name) {
 		
-		Query query = entityManager.createQuery( "from QmsStandardEntity where (NOT deleted = true) AND (name = :name) ", QmsStandardEntity.class );
-		query.setParameter("name", name);
+		Query query = entityManager.createQuery( "from QmsStandardEntity where "
+				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", QmsStandardEntity.class );
+		query.setParameter("name", name.toUpperCase());
 		List<QmsStandardEntity> result = query.getResultList();
 		
 		return result;

@@ -27,7 +27,7 @@ public class PendingCertificationResultTestStandardEntity {
 	private Long testStandardId;
 	
 	@Column(name = "test_standard_number")
-	private String testStandardNumber;
+	private String testStandardName;
 	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
@@ -102,11 +102,11 @@ public class PendingCertificationResultTestStandardEntity {
 		this.testStandardId = testStandardId;
 	}
 
-	public String getTestStandardNumber() {
-		return testStandardNumber;
+	public String getTestStandardName() {
+		return testStandardName;
 	}
 
-	public void setTestStandardNumber(String testStandardName) {
-		this.testStandardNumber = testStandardName;
+	public void setTestStandardName(String testStandardName) {
+		this.testStandardName = testStandardName;
 	}
 }

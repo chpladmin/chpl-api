@@ -271,7 +271,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				for(PendingCertificationResultTestFunctionalityDTO tf : certCriterion.getTestFunctionality()) {
 					CertificationResultTestFunctionality testFunc = new CertificationResultTestFunctionality();
 					testFunc.setTestFunctionalityId(tf.getTestFunctionalityId());
-					testFunc.setNumber(tf.getNumber());
+					testFunc.setName(tf.getNumber());
 					cert.getTestFunctionality().add(testFunc);
 				}
 			} else {
@@ -293,7 +293,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				for(PendingCertificationResultTestStandardDTO ts : certCriterion.getTestStandards()) {
 					CertificationResultTestStandard testStd = new CertificationResultTestStandard();
 					testStd.setTestStandardId(ts.getTestStandardId());
-					testStd.setTestStandardNumber(ts.getNumber());
+					testStd.setTestStandardName(ts.getName());
 					cert.getTestStandards().add(testStd);
 				}
 			} else {

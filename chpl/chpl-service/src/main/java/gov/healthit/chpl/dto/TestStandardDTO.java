@@ -4,15 +4,15 @@ import gov.healthit.chpl.entity.TestStandardEntity;
 
 public class TestStandardDTO {
 	private Long id;
+	private String description;
 	private String name;
-	private String number;
 	
 	public TestStandardDTO(){}
 	
 	public TestStandardDTO(TestStandardEntity entity){		
 		this.id = entity.getId();
+		this.description = entity.getDescription();
 		this.name = entity.getName();
-		this.number = entity.getNumber();
 	}
 
 	public Long getId() {
@@ -23,19 +23,19 @@ public class TestStandardDTO {
 		this.id = id;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String name) {
+		this.description = name;
+	}
+
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getNumber() {
-		return number;
-	}
-
-	public void setNumber(String number) {
-		this.number = number;
+	public void setName(String number) {
+		this.name = number;
 	}
 }

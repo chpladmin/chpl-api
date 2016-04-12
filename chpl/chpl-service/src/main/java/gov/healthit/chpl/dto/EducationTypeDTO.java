@@ -11,10 +11,8 @@ public class EducationTypeDTO {
 	
 	public EducationTypeDTO(EducationTypeEntity entity)
 	{
-		if(entity != null) {
-			this.id = entity.getId();
-			this.name = entity.getName();
-		}
+		this.id = entity.getId();
+		this.name = entity.getName();
 	}
 	
 	public Long getId() {

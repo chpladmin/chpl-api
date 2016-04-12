@@ -31,6 +31,9 @@ public class CertificationResultTestToolEntity {
 	@Column(name = "test_tool_id")
 	private Long testToolId;
 	
+	@Column(name = "version")
+	private String version;
+	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_tool_id", unique=true, nullable = true, insertable=false, updatable= false)
@@ -107,5 +110,13 @@ public class CertificationResultTestToolEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 }
