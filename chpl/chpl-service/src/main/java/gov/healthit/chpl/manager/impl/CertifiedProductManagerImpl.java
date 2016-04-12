@@ -182,6 +182,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	
 	@Override
 	@Transactional(readOnly = true)
+	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException {
+		List<CertifiedProductDetailsDTO> result = cpDao.getDetailsByIds(ids);
+		return result;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
 	public List<CertifiedProductDetailsDTO> getAll() {
 		return cpDao.findAll();
 	}

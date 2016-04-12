@@ -20,10 +20,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.CertificationIdDTO;
+import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +37,8 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/certificationids")
 public class CertificationIdController {
 	
-	@Autowired ProductManager productManager;
+	@Autowired CertifiedProductManager certifiedProductManager;
+	@Autowired CertificationIdManager certificationIdManager;
 
 	@ApiOperation(value="Retrieves an EHR Certification ID for a collection of products.",
 			notes="Calculates the details of a collection of products in order to retrieve an EHR Certification ID.")
@@ -51,9 +56,21 @@ public class CertificationIdController {
 			products = null;
 		}
 
-		// Lookup specified products
-		List<ProductDTO> productDtos = new ArrayList<ProductDTO>();
+		List<Long> certProductIds = new ArrayList<Long>();
 		if (null != products) {
+			String[] productArray = products.trim().split("\\|");
+			for (String id : productArray) {
+				if (null != id)
+					certProductIds.add(new Long(id));
+			}
+		}
+		
+		CertificationIdResults results = new CertificationIdResults();
+
+		// Lookup specified products
+		List<CertifiedProductDetailsDTO> productDtos = new ArrayList<CertifiedProductDetailsDTO>();
+		if (null != products) {
+			try {
 			String[] productArray = products.trim().split("\\|");
 			List<Long> productIdList = new ArrayList<Long>();
 			if (productArray.length > 0) {
@@ -61,11 +78,14 @@ public class CertificationIdController {
 					if (null != id)
 						productIdList.add(new Long(id));
 				}
-				productDtos = productManager.getByIds(productIdList);
+				productDtos = certifiedProductManager.getDetailsByIds(productIdList);
+			}
+			} catch (EntityRetrievalException ex) {
+				ex.printStackTrace();				
 			}
 		}
-		
-		CertificationIdResults results = new CertificationIdResults();
+
+		// TODO: Calculate percentages met (add call)
 		Map<String, Integer> percents = new HashMap<String, Integer>();
 		Map<String, Integer> counts = new HashMap<String, Integer>();
 		
@@ -80,15 +100,27 @@ public class CertificationIdController {
 		counts.put("cqmsAmbulatory", 1);
 		percents.put("cqmsInpatient", 100);
 		counts.put("cqmsInpatient", 1);
-		
-		List<Product> resultProducts = new ArrayList<Product>();
-		for (ProductDTO dto : productDtos) {
-			resultProducts.add(new Product(dto));
+
+		// TODO: Calculate attestation year
+		Long attestationYearId = 2L;	// Debug: 1L=2011, 2L = 2014
+
+		List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
+		for (CertifiedProductDetailsDTO dto : productDtos) {
+			CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
+			resultProducts.add(p);
 		}
 		results.setProducts(resultProducts);
 
-		results.setEhrCertificationId("TESTCERTID" + productDtos.size());
-
+		// Lookup CERT ID
+		try {
+			CertificationIdDTO idDto = certificationIdManager.getByProductIds(certProductIds, attestationYearId);
+			if (null != idDto) {
+				results.setEhrCertificationId(idDto.getCertificationId() + "," + idDto.getId());
+			}
+		} catch (EntityRetrievalException ex) {
+			ex.printStackTrace();
+		}
+		
 		return results;
 	}
 	

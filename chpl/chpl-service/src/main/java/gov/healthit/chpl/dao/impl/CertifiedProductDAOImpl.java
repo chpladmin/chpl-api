@@ -249,6 +249,22 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		}
 		return new CertifiedProductDetailsDTO(results.get(0));
 	}
+
+	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> productIds) throws EntityRetrievalException {
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) "
+				+ "and certified_product_id in (:productIds)", CertifiedProductDetailsEntity.class );
+		query.setParameter("productIds", productIds);
+		List<CertifiedProductDetailsEntity> results = query.getResultList();
+		
+		List<CertifiedProductDetailsDTO> dtos = new ArrayList<CertifiedProductDetailsDTO>();
+		if (null != results) {
+			for (CertifiedProductDetailsEntity entity : results) {
+				dtos.add(new CertifiedProductDetailsDTO(entity));
+			}
+		}
+		
+		return dtos;
+	}
 	
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId) {
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and product_version_id = :versionId)", CertifiedProductDetailsEntity.class );

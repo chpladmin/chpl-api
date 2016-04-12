@@ -4,9 +4,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public class CertificationIdResults {
+	
+	static public class Product {
+		private String name;
+		private Long productId;
+	
+		public Product(CertifiedProductDetailsDTO dto) {
+			this.name = dto.getProductName();
+			this.productId = dto.getId();
+		}
+		
+		public String getName() {
+			return this.name;
+		}
+		
+		public void setName(String name) {
+			this.name = name;
+		}
+		
+		public Long getProductId() {
+			return this.productId;
+		}
+		
+		public void setProductId(Long id) {
+			this.productId = id;
+		}
+	}
 	
 	private List<Product> products;
 	private String ehrCertificationId;
