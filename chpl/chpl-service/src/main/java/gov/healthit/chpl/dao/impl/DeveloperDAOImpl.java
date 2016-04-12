@@ -30,6 +30,7 @@ import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperEntity;
+import gov.healthit.chpl.entity.ProductEntity;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
@@ -399,16 +400,10 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		query.setParameter("developerId", developerId);
 		query.setParameter("acbId", acbId);
 		
-		Object result = null;
-		try {
-			result = query.getSingleResult();
-		} 
-		catch(NoResultException ex) {}
-		catch(NonUniqueResultException ex) {}
-		
-		if(result == null) {
-			return null;
+		List<DeveloperACBMapEntity> results = query.getResultList();
+		if(results != null && results.size() > 0) {
+			return results.get(0);
 		}
-		return (DeveloperACBMapEntity)result;
+		return null;
 	}
 }

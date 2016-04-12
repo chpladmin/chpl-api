@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version 1.0.1
-_TBD_
+## Version 1.1.0
+_12 April 2016_
 
 ### Features Added
 * Test tools are not required for 2014 g1 and g2

@@ -16,11 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductEntity;
@@ -36,7 +38,8 @@ public class ProductManagerImpl implements ProductManager {
 	
 	@Autowired ProductDAO productDao;
 	@Autowired ProductVersionDAO versionDao;
-	
+	@Autowired DeveloperDAO devDao;
+
 	@Autowired
 	ActivityManager activityManager;
 	
@@ -91,6 +94,9 @@ public class ProductManagerImpl implements ProductManager {
 		
 		ProductEntity result = productDao.update(dto);
 		ProductDTO afterDto = new ProductDTO(result);
+		//the developer name is not updated at this point until after transaction commit so we have to set it
+		DeveloperDTO devDto = devDao.getById(afterDto.getDeveloperId());
+		afterDto.setDeveloperName(devDto.getName());
 		
 		String activityMsg = "Product "+dto.getName()+" was updated.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, afterDto);

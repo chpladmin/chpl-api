@@ -329,7 +329,7 @@ public class CertifiedProductDetailsDTO {
 		} else if(this.getYear().length() == 2) {
 			return this.getYear();
 		} else if(this.getYear().length() == 4) {
-			return this.getYear().substring(1, 3);
+			return this.getYear().substring(this.getYear().length()-2);
 		} 
 		return "??";
 	}
