@@ -11,7 +11,9 @@
   	<module>chpl-api</module>
     <module>chpl-service</module>
     <module>chpl-auth</module>
-    <module>chpl-etl</module>
+    <!--
+        <module>chpl-etl</module>
+    -->
   </modules>
   
   <dependencies>

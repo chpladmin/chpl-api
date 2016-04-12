@@ -165,7 +165,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 		Query query = entityManager.createQuery( "SELECT pve "
 				+ " FROM ProductVersionEntity pve "
 				+ " LEFT OUTER JOIN FETCH pve.product "
-				+ "where (NOT pve.deleted = true) AND (pve.productId IN :idList)", 
+				+ "where (NOT pve.deleted = true) AND (pve.productId IN (:idList))", 
 				ProductVersionEntity.class );
 		
 		query.setParameter("idList", productIds);
@@ -184,7 +184,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 				+ " FROM ProductVersionEntity pve "
 				+ " LEFT OUTER JOIN FETCH pve.product "
 				+ "where (NOT pve.deleted = true) AND "
-				+ "(pve.product_id = :productId) AND (pve.version = :version) ", 
+				+ "(pve.productId = :productId) AND (pve.version = :version) ", 
 				ProductVersionEntity.class );
 		
 		query.setParameter("productId", productId);

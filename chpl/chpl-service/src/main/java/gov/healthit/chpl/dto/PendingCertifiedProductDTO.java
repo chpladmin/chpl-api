@@ -298,7 +298,7 @@ public class PendingCertifiedProductDTO {
 			if(crResult.getTestFunctionality() != null && crResult.getTestFunctionality().size() > 0) {
 				for(CertificationResultTestFunctionality func : crResult.getTestFunctionality()) {
 					PendingCertificationResultTestFunctionalityDTO funcDto = new PendingCertificationResultTestFunctionalityDTO();
-					funcDto.setNumber(func.getNumber());
+					funcDto.setNumber(func.getName());
 					funcDto.setTestFunctionalityId(func.getTestFunctionalityId());
 					certDto.getTestFunctionality().add(funcDto);
 				}

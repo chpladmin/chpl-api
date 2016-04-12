@@ -352,14 +352,14 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return entity;
 	}
 	
-	private CertifiedProductDetailsEntity getEntityByUniqueIdParts(String year, String atlCode, String acbCode, 
+	private CertifiedProductDetailsEntity getEntityByUniqueIdParts(String yearCode, String atlCode, String acbCode, 
 			String developerCode, String productCode, String versionCode, String icsCode, 
 			String additionalSoftwareCode, String certifiedDateCode) {
 		
 		CertifiedProductDetailsEntity entity = null;
 		
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where "
-				+ "year = :year AND "
+				+ "year = '20' || :yearCode AND "
 				+ "testingLabCode = :atlCode AND "
 				+ "certificationBodyCode = :acbCode AND "
 				+ "developerCode = :developerCode AND "
@@ -367,10 +367,11 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 				+ "versionCode = :versionCode AND "
 				+ "icsCode = :icsCode AND "
 				+ "additionalSoftwareCode = :additionalSoftwareCode AND "
-				+ "certifiedDateCode = :certifiedDateCode", 
+				+ "certifiedDateCode = :certifiedDateCode "
+				+ "AND NOT deleted = true ", 
 				CertifiedProductDetailsEntity.class );
 		
-		query.setParameter("year", year);
+		query.setParameter("yearCode", yearCode);
 		query.setParameter("atlCode", atlCode);
 		query.setParameter("acbCode", acbCode);
 		query.setParameter("developerCode", developerCode);
