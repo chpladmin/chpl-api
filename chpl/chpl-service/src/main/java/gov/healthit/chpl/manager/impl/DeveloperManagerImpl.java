@@ -105,6 +105,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				mapToAdd.setTransparencyAttestation(null);
 				developer.getTransparencyAttestationMappings().add(mapToAdd);
 			} else {
+				map.setAcbName(acb.getName());
 				developer.getTransparencyAttestationMappings().add(map);
 			}
 		}
@@ -132,7 +133,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 							developerDao.createTransparencyMapping(developerMappingToCreate);
 						}
 					}
-				} else if(!StringUtils.isEmpty(existingMap.getTransparencyAttestation())){
+				} else {
 					for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
 						if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
 							existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
