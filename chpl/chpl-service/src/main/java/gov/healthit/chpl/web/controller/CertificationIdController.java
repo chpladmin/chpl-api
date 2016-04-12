@@ -113,9 +113,11 @@ public class CertificationIdController {
 
 		// Lookup CERT ID
 		try {
-			CertificationIdDTO idDto = certificationIdManager.getByProductIds(certProductIds, attestationYearId);
-			if (null != idDto) {
-				results.setEhrCertificationId(idDto.getCertificationId() + "," + idDto.getId());
+			if (certProductIds.size() > 0) {
+				CertificationIdDTO idDto = certificationIdManager.getByProductIds(certProductIds, attestationYearId);
+				if (null != idDto) {
+					results.setEhrCertificationId(idDto.getCertificationId());
+				}
 			}
 		} catch (EntityRetrievalException ex) {
 			ex.printStackTrace();
