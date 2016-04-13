@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
  
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,20 +102,24 @@ public class CertificationIdController {
 		percents.put("cqmsInpatient", 100);
 		counts.put("cqmsInpatient", 1);
 
-		// TODO: Calculate attestation year
-		Long attestationYearId = 2L;	// Debug: 1L=2011, 2L = 2014
-
+		TreeSet<String> years = new TreeSet<String>();
 		List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
 		for (CertifiedProductDetailsDTO dto : productDtos) {
 			CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
 			resultProducts.add(p);
+			// Collection the certification years
+			years.add(dto.getYear());
 		}
 		results.setProducts(resultProducts);
+		
+		// Calculate Attestation Year
+		//Long attestationYearId = 2L;	// Debug: 1L=2011, 2L = 2014
+		String attYearString = calculateAttestationYear(years);
 
 		// Lookup CERT ID
 		try {
 			if (certProductIds.size() > 0) {
-				CertificationIdDTO idDto = certificationIdManager.getByProductIds(certProductIds, attestationYearId);
+				CertificationIdDTO idDto = certificationIdManager.getByProductIds(certProductIds);
 				if (null != idDto) {
 					results.setEhrCertificationId(idDto.getCertificationId());
 				}
@@ -134,6 +139,18 @@ public class CertificationIdController {
 		CertificationIdResults results = new CertificationIdResults();
 		results.setEhrCertificationId(certificationId);
 		return results;
+
+	}
+
+	private String calculateAttestationYear(TreeSet<String> years) {
+		// Get the lowest year...
+		String attYearString = years.first();
+
+		// ...if there are two years then we have a hybrid
+		if (years.size() > 0) {
+			attYearString += "/" + years.last();
+		}
+		return attYearString;
 	}
 	
 }
