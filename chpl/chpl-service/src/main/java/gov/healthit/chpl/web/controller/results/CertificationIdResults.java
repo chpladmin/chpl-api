@@ -11,12 +11,32 @@ public class CertificationIdResults {
 	static public class Product {
 		private String name;
 		private Long productId;
+		private String version;
+		private String acbCertificationId;
 	
 		public Product(CertifiedProductDetailsDTO dto) {
 			this.name = dto.getProductName();
 			this.productId = dto.getId();
+			this.version = dto.getProductVersion();
+			this.acbCertificationId = dto.getAcbCertificationId();
+		}
+
+		public String getVersion() {
+			return this.version;
 		}
 		
+		public void setVersion(String version) {
+			this.version = version;
+		}
+		
+		public String getAcbCertificationId() {
+			return this.acbCertificationId;
+		}
+		
+		public void setAcbCertificationId(String acbCertificationId) {
+			this.acbCertificationId = acbCertificationId;
+		}
+
 		public String getName() {
 			return this.name;
 		}
@@ -38,7 +58,16 @@ public class CertificationIdResults {
 	private String ehrCertificationId;
 	private Map<String, Integer> metCounts;
 	private Map<String, Integer> metPercentages;
+	private boolean isValid;
 
+	public boolean getIsValid() {
+		return isValid;
+	}
+
+	public void setIsValid(boolean valid) {
+		this.isValid = valid;
+	}
+	
 	public List<Product> getProducts() {
 		return products;
 	}
