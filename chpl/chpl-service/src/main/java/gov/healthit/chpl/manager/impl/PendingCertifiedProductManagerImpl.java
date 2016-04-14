@@ -249,7 +249,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
 		
 		CertificationStatusDTO newStatus = statusDao.getByStatusName("Active");
-		pcpDao.updateStatus(pendingProductId, newStatus);
+		pcpDao.delete(pendingProductId, newStatus);
 		
 		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been confirmed.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, pendingCpDto);
