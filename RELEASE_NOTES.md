@@ -21,6 +21,7 @@ _12 April 2016_
 * Functionality tested against is now saved.
 * Fix error related to merging of products.
 * Product ownership change shows up correctly in activity report.`
+* Do not allow duplicate chpl ids in the same file unless they have XXXX (new developers)
 
 ## Version 1.0.0
 _30 March 2016_
