@@ -119,47 +119,24 @@ public class PendingCertifiedProductDTO {
 			this.testingLabName = details.getTestingLab().get("name").toString();
 		}
 		
-		if(details.getDeveloper().get("id") != null) {
-			String developerId = details.getDeveloper().get("id").toString();
-			this.developerId = new Long(developerId);
+		this.developerId = details.getDeveloper().getDeveloperId();
+		this.developerName = details.getDeveloper().getName();
+		this.developerWebsite = details.getDeveloper().getWebsite();
+		if(details.getDeveloper().getContact() != null) {
+			this.developerEmail = details.getDeveloper().getContact().getEmail();
+			this.developerContactName = details.getDeveloper().getContact().getLastName();
+			this.developerPhoneNumber = details.getDeveloper().getContact().getPhoneNumber();
 		}
-		if(details.getDeveloper().get("name") != null) {
-			this.developerName = details.getDeveloper().get("name").toString();
+		if(details.getDeveloper().getAddress() != null) {
+			AddressDTO address = new AddressDTO();
+			address.setId(details.getDeveloper().getAddress().getAddressId());
+			address.setStreetLineOne(details.getDeveloper().getAddress().getLine1());
+			address.setCity(details.getDeveloper().getAddress().getCity());
+			address.setState(details.getDeveloper().getAddress().getState());
+			address.setZipcode(details.getDeveloper().getAddress().getZipcode());
+			address.setCountry("US");
+			this.developerAddress = address;
 		}
-		if(details.getDeveloper().get("website") != null) {
-			this.developerWebsite = details.getDeveloper().get("website").toString();
-		}
-		if(details.getDeveloper().get("email") != null) {
-			this.developerEmail = details.getDeveloper().get("email").toString();
-		}
-		Object contactObj = details.getDeveloper().get("contact");
-		if(contactObj != null && contactObj instanceof Map) {
-			Map<String, String> contact = (Map)contactObj;
-			this.developerContactName = contact.get("lastName").toString();
-			this.developerPhoneNumber = contact.get("phoneNumber").toString();
-			this.developerEmail = contact.get("email").toString();
-		}
-
-		
-		AddressDTO address = new AddressDTO();
-		if(details.getDeveloperAddress().get("id") != null) {
-			String addressId = details.getDeveloper().get("id").toString();
-			address.setId(new Long(addressId));
-		}
-		if(details.getDeveloperAddress().get("line1") != null) {
-			address.setStreetLineOne(details.getDeveloperAddress().get("line1").toString());
-		}
-		if(details.getDeveloperAddress().get("city") != null) {
-			address.setCity(details.getDeveloperAddress().get("city").toString());
-		}
-		if(details.getDeveloperAddress().get("state") != null) {
-			address.setState(details.getDeveloperAddress().get("state").toString());
-		}
-		if(details.getDeveloperAddress().get("zipcode") != null) {
-			address.setZipcode(details.getDeveloperAddress().get("zipcode").toString());
-		}
-		address.setCountry("US");
-		this.developerAddress = address;
 		
 		if(details.getProduct().get("id") != null) {
 			String productId = details.getProduct().get("id").toString();

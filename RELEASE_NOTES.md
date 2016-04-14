@@ -11,6 +11,7 @@ _12 April 2016_
 * Allow ACB_ADMIN role to change the name of their own ACB.
 * Add service for version activity
 * Trigger emails on version name change, product name change, developer name change, or certified product status change
+* Moved developer information around into the standard object when returning product or pending product details
 
 ### Bugs fixed
 * Test tool version is now saved.
