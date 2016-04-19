@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.TreeSet;
+import java.util.SortedSet;
 import java.util.regex.Pattern;
 
  
@@ -22,7 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.certificationId.Validator2014;
+import gov.healthit.chpl.certificationId.Validator;
+import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -93,63 +95,43 @@ public class CertificationIdController {
 			}
 		}
 
-		Map<String, Long> criteriaMet = new HashMap<String, Long>();
-		Map<String, Long> cqmsMet = new HashMap<String, Long>();
-		Map<String, Long> domainsMet = new HashMap<String, Long>();
-		TreeSet<String> years = new TreeSet<String>();
+		// Add products to results
+		SortedSet<Integer> editionYears = new TreeSet<Integer>();
 		List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
 		for (CertifiedProductDetailsDTO dto : productDtos) {
 			CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
 			resultProducts.add(p);
-
-			// Collect the certification years
-			years.add(dto.getYear());
-			
-			// Collect criteria met
-			for (CertificationResultDetailsDTO certDetail : dto.getCertResults()) {
-				if (certDetail.getSuccess()) {
-					criteriaMet.put(certDetail.getNumber(), 1L);
-				}
-			}
-
-			// Collect cqms met
-			for (CQMResultDetailsDTO cqmDetail : dto.getCqmResults()) {
-				if (cqmDetail.getSuccess()) {
-					cqmsMet.put(cqmDetail.getCmsId(), 1L);
-				}
-			}
-			
+			editionYears.add(new Integer(dto.getYear()));
 		}
 		results.setProducts(resultProducts);
-
-		
-		// Calculate Attestation Year
-//		String attYearString = calculateAttestationYear(years);
-
-		Validator2014 validator = new Validator2014(criteriaMet, cqmsMet, domainsMet);
-		results.setIsValid(validator.validate());
-		
-		// TODO: Calculate percentages met (add call)
-		Map<String, Integer> percents = new HashMap<String, Integer>();
-		Map<String, Integer> counts = new HashMap<String, Integer>();
-
+		String attestationYear = Validator.calculateAttestationYear(editionYears);
+		results.setYear(attestationYear);
+			
+		// Validate the collection
+		Validator validator = ValidatorFactory.getValidator(attestationYear);
+		boolean isValid = validator.validate(productDtos);
+		results.setIsValid(isValid);
 		results.setMetPercentages(validator.getPercents());
 		results.setMetCounts(validator.getCounts());
 
 		// Lookup CERT ID
-		try {
-			if (certProductIds.size() > 0) {
+		if (validator.isValid()) {
+			try {
 				CertificationIdDTO idDto = certificationIdManager.getByProductIds(certProductIds);
 				if (null != idDto) {
 					results.setEhrCertificationId(idDto.getCertificationId());
 				} else {
 					if (results.getIsValid()) {
 						// TODO: Generate a new ID, store it, and return it
+						String tempId = "XX14E";
+						for (int i=0; i<10; ++i)
+							tempId += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(new Random().nextInt(36));
+						results.setEhrCertificationId(tempId);
 					}
 				}
+			} catch (EntityRetrievalException ex) {
+				ex.printStackTrace();
 			}
-		} catch (EntityRetrievalException ex) {
-			ex.printStackTrace();
 		}
 		
 		return results;
@@ -164,17 +146,6 @@ public class CertificationIdController {
 		results.setEhrCertificationId(certificationId);
 		return results;
 
-	}
-
-	private String calculateAttestationYear(TreeSet<String> years) {
-		// Get the lowest year...
-		String attYearString = years.first();
-
-		// ...if there are two years then we have a hybrid
-		if (years.size() > 0) {
-			attYearString += "/" + years.last();
-		}
-		return attYearString;
 	}
 
 }

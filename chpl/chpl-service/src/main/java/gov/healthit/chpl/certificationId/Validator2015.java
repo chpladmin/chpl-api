@@ -8,36 +8,34 @@ import java.util.HashMap;
 
 import gov.healthit.chpl.certificationId.Validator;
 
-public class Validator2014 extends Validator {
+public class Validator2015 extends Validator {
 
 	protected static final List<String> REQUIRED_CRITERIA = new ArrayList<String> (Arrays.asList(
-		"170.314 (a)(3)",
-		"170.314 (a)(5)",
-		"170.314 (a)(6)",
-		"170.314 (a)(7)",
-		"170.314 (a)(8)",
-		"170.314 (b)(7)",
-		"170.314 (c)(1)",
-		"170.314 (c)(2)",
-		"170.314 (c)(3)",
-		"170.314 (d)(1)",
-		"170.314 (d)(2)",
-		"170.314 (d)(3)",
-		"170.314 (d)(4)",
-		"170.314 (d)(5)",
-		"170.314 (d)(6)",
-		"170.314 (d)(7)",
-		"170.314 (d)(8)",
-		"170.314 (g)(4)"
+		"170.315 (a)(5)",
+		"170.315 (a)(6)",
+		"170.315 (a)(7)",
+		"170.315 (a)(8)",
+		"170.315 (a)(11)",
+		"170.315 (a)(14)",
+		"170.315 (c)(1)",
+		"170.315 (b)(1)",
+		"170.315 (b)(6)",
+		"170.315 (g)(7)",
+		"170.315 (g)(8)",
+		"170.315 (g)(9)"
 	));
 
 	protected static final List<String> CPOE_CRITERIA = new ArrayList<String> (Arrays.asList(
-		"170.314 (a)(1)",
-		"170.314 (a)(18)",
-		"170.314 (a)(19)",
-		"170.314 (a)(20)"
+		"170.315 (a)(1)",
+		"170.315 (a)(2)",
+		"170.315 (a)(3)"
 	));
-	
+
+	protected static final List<String> DIRECTPROJECT_CRITERIA = new ArrayList<String> (Arrays.asList(
+		"170.315 (h)(1)",
+		"170.315 (h)(2)"
+	));	
+
 	protected static final List<String> INPATIENT_CQMS = new ArrayList<String> (Arrays.asList(
 		"CMS9",
 		"CMS26",
@@ -157,13 +155,13 @@ public class Validator2014 extends Validator {
 		"CMS166"	
 	));
 
-	public Validator2014() {
+	public Validator2015() {
 		this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size());
 		this.counts.put("criteriaRequiredMet", 0);
 		this.counts.put("criteriaCpoeRequired", 1);
 		this.counts.put("criteriaCpoeRequiredMet", 0);
-		this.counts.put("criteriaTocRequired", 2);
-		this.counts.put("criteriaTocRequiredMet", 0);
+		this.counts.put("criteriaDpRequired", 1);
+		this.counts.put("criteriaDpRequiredMet", 0);
 		this.counts.put("cqmsInpatientRequired", 16);
 		this.counts.put("cqmsInpatientRequiredMet", 0);
 		this.counts.put("cqmsAmbulatoryRequired", 3);
@@ -202,12 +200,12 @@ public class Validator2014 extends Validator {
 		}
 		
 		boolean cpoeValid = isCPOEValid();
-		boolean tocValid = isTOCValid();
+		boolean dpValid = isDPValid();
 		
-		this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + this.counts.get("criteriaCpoeRequired") + this.counts.get("criteriaTocRequired"));
-		this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + this.counts.get("criteriaCpoeRequiredMet") + this.counts.get("criteriaTocRequiredMet"));
+		this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + this.counts.get("criteriaCpoeRequired") + this.counts.get("criteriaDpRequired"));
+		this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + this.counts.get("criteriaCpoeRequiredMet") + this.counts.get("criteriaDpRequiredMet"));
 		
-		return (criteriaValid && cpoeValid && tocValid);
+		return (criteriaValid && cpoeValid && dpValid);
 	}
 	
 	//**********************************************************************
@@ -298,50 +296,24 @@ public class Validator2014 extends Validator {
 	}
 	
 	//**********************************************************************
-	// isTOCValid
+	// isDPValid
 	//
-	// A combination of the Transitions of Care criteria must be met.
+	// Either Direct Project or Direct Project, Edge Protocol, and 
+	// XDR/XDM must be met.
 	//**********************************************************************
-	protected boolean isTOCValid() {
-
-		// 170.314(b)(1) and 170.314(b)(2) and 170.314(b)(8) and 170.314(h)(1)
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)") &&
-			this.criteriaMet.containsKey("170.314 (8)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
-			this.counts.put("criteriaTocRequiredMet", 4);
-			this.counts.put("criteriaTocRequired", 4);
-			return true;
-		}
-
-		// 170.314(b)(1) and 170.314(b)(2) and 170.314(h)(1)
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)") &&
-			this.criteriaMet.containsKey("170.314 (h)(1)")) {
-			this.counts.put("criteriaTocRequiredMet", 3);
-			this.counts.put("criteriaTocRequired", 3);
-			return true;
-		}
+	protected boolean isDPValid() {
+		this.counts.put("criteriaDpRequired", 1);
 		
-		// 170.314(b)(1) and 170.314(b)(2) and 170.314(b)(8)
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)") &&
-			this.criteriaMet.containsKey("170.314 (b)(8)")) {
-			this.counts.put("criteriaTocRequiredMet", 3);
-			this.counts.put("criteriaTocRequired", 3);
-			return true;
-		}
-		
-		// 170.314(b)(8) and 170.314(h)(1)
-		if (this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
-			this.counts.put("criteriaTocRequiredMet", 2);
-			this.counts.put("criteriaTocRequired", 2);
-			return true;
+		// 170.315 (h)(1)
+		if (this.criteriaMet.containsKey("170.315 (h)(1)")) {
+			this.counts.put("criteriaDpRequiredMet", 1);
 		}
 
-		// 170.314(b)(1) and 170.314(b)(2)
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")) {
-			this.counts.put("criteriaTocRequiredMet", 2);
-			this.counts.put("criteriaTocRequired", 2);
-			return true;
+		// 170.315 (h)(2)
+		if (this.criteriaMet.containsKey("170.315 (h)(2)")) {
+			this.counts.put("criteriaDpRequiredMet", 1);
 		}
 	
-		return false;
+		return (this.counts.get("criteriaDpRequiredMet") >= this.counts.get("criteriaDpRequired"));
 	}	
 }

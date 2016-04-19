@@ -13,14 +13,24 @@ public class CertificationIdResults {
 		private Long productId;
 		private String version;
 		private String acbCertificationId;
+		private String year;
 	
 		public Product(CertifiedProductDetailsDTO dto) {
 			this.name = dto.getProductName();
 			this.productId = dto.getId();
 			this.version = dto.getProductVersion();
 			this.acbCertificationId = dto.getAcbCertificationId();
+			this.year = dto.getYear();
 		}
 
+		public String getYear() {
+			return this.year;
+		}
+		
+		public void setYear(String year) {
+			this.year = year;
+		}
+		
 		public String getVersion() {
 			return this.version;
 		}
@@ -58,8 +68,17 @@ public class CertificationIdResults {
 	private String ehrCertificationId;
 	private Map<String, Integer> metCounts;
 	private Map<String, Integer> metPercentages;
+	private String year;
 	private boolean isValid;
 
+	public String getYear() {
+		return this.year;
+	}
+	
+	public void setYear(String year) {
+		this.year = year;
+	}
+	
 	public boolean getIsValid() {
 		return isValid;
 	}
