@@ -171,6 +171,7 @@ public class DeveloperController {
 				toUpdateContact.setTitle(developerContact.getTitle());
 				toUpdate.setContact(toUpdateContact);
 			}
+			
 			result = developerManager.update(toUpdate);
 		}
 		

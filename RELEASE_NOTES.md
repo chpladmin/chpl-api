@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 1.2.0
+_20 April 2016_
+
+### Features Added
+* Moved developer information around into the standard object when returning product or pending product details
+
+### Bugs fixed
+* Fix 'null' in developer report when transparency attestation is changed.
+* Standards tested against are now saved.
+* Functionality tested against is now saved.
+* Fix error related to merging of products.
+* Product ownership change shows up correctly in activity report.`
+* Do not allow duplicate chpl ids in the same file unless they have XXXX (new developers)
+
 ## Version 1.1.0
 _12 April 2016_
 
@@ -15,7 +29,7 @@ _12 April 2016_
 ### Bugs fixed
 * Test tool version is now saved.
 * Fix activity report link email
-* Allow certification date to be changed.`
+* Allow certification date to be changed.
 
 ## Version 1.0.0
 _30 March 2016_

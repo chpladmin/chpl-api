@@ -249,7 +249,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
 		
 		CertificationStatusDTO newStatus = statusDao.getByStatusName("Active");
-		pcpDao.updateStatus(pendingProductId, newStatus);
+		pcpDao.delete(pendingProductId, newStatus);
 		
 		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been confirmed.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, pendingCpDto);
@@ -282,12 +282,17 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		
 		Sid recipient = new PrincipalSid(user.getSubjectName());
 		if(permissionExists(acl, recipient, permission)) {
-			logger.debug("User " + recipient + " already has permission on the pending certified product " + pcpDto.getId());
+			logger.info("User " + recipient + " already has permission on the pending certified product " + pcpDto.getId());
 		} else {
-			acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-			mutableAclService.updateAcl(acl);
-			logger.debug("Added permission " + permission + " for Sid " + recipient
-					+ " pending certified product " + pcpDto);
+//			try {
+				acl.insertAce(acl.getEntries().size(), permission, recipient, true);
+				mutableAclService.updateAcl(acl);
+//				logger.info("Added permission " + permission + " for Sid " + recipient
+//						+ " pending certified product " + pcpDto);
+//			} catch(NotFoundException nfe) {
+//				logger.error("Error inserting ACE for pending certified product " + pcpDto.getId() + " with ACE values: " + 
+//						acl.getEntries().size() + ", " + permission.getPattern() + ", " + recipient.toString(), nfe);
+//			}
 		}
 	}
 	

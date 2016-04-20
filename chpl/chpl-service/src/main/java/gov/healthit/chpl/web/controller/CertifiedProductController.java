@@ -438,43 +438,64 @@ public class CertifiedProductController {
 				throw new ValidationException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
 			}
 			
-			//parse the entire file into groups of records, one group per product
-			Map<String, List<CSVRecord>> cpGroups = new HashMap<String, List<CSVRecord>>();
-			CSVRecord heading = null; 
-			String currUniqueId = null;
-			String prevUniqueId = null;
+			Set<String> handlerErrors = new HashSet<String>();
+			List<PendingCertifiedProductEntity> cpsToAdd = new ArrayList<PendingCertifiedProductEntity>();
 			
+			//parse the entire file into groups of records, one group per product
+			CSVRecord heading = null; 
+			Set<String> uniqueIdsFromFile = new HashSet<String>();
+			Set<String> duplicateIdsFromFile = new HashSet<String>();
+			List<CSVRecord> rows = new ArrayList<CSVRecord>();
 			for(int i = 0; i < records.size(); i++) {
 				CSVRecord currRecord = records.get(i);
 				
-				if(heading == null && !StringUtils.isEmpty(currRecord.get(0)) 
-						&& currRecord.get(0).equals("UNIQUE_CHPL_ID__C")) {
+				if(heading == null && !StringUtils.isEmpty(currRecord.get(1)) 
+						&& currRecord.get(1).equals("RECORD_STATUS__C")) {
 					//have to find the heading first
 					heading = currRecord;
 				} else if(heading != null) {
-					//check the cp unique id
 					if(!StringUtils.isEmpty(currRecord.get(0))) {
-						currUniqueId = currRecord.get(0);
+						String currUniqueId = currRecord.get(0);
+						String currStatus = currRecord.get(1);
 						
-						if(!currUniqueId.equals(prevUniqueId)) {
-							cpGroups.put(currUniqueId, new ArrayList<CSVRecord>());
+						if(currStatus.equalsIgnoreCase("NEW")) {
+							if(!currUniqueId.contains("XXXX") && uniqueIdsFromFile.contains(currUniqueId)) {
+								handlerErrors.add("Multiple products with unique id " + currUniqueId + " were found in the file.");
+								duplicateIdsFromFile.add(currUniqueId);
+							} else {
+								uniqueIdsFromFile.add(currUniqueId);
+
+								//parse the previous recordset
+								if(rows.size() > 0) {
+									try {
+										CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+										PendingCertifiedProductEntity pendingCp = handler.handle();
+										cpsToAdd.add(pendingCp);
+									}
+									catch(InvalidArgumentsException ex) {
+										handlerErrors.add(ex.getMessage());
+									}
+								}
+								rows.clear();
+							}
 						}
-						cpGroups.get(currUniqueId).add(currRecord);
-						prevUniqueId = currUniqueId;
+						
+						if(!duplicateIdsFromFile.contains(currUniqueId)) {
+							rows.add(currRecord);
+							
+							//add the last object
+							if(i == records.size()-1) {
+								try {
+									CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+									PendingCertifiedProductEntity pendingCp = handler.handle();
+									cpsToAdd.add(pendingCp);
+								}
+								catch(InvalidArgumentsException ex) {
+									handlerErrors.add(ex.getMessage());
+								}
+							}
+						}
 					}
-				}
-			}
-					
-			Set<String> handlerErrors = new HashSet<String>();
-			List<PendingCertifiedProductEntity> cpsToAdd = new ArrayList<PendingCertifiedProductEntity>();
-			for(String cpUniqueId : cpGroups.keySet()) {
-				try {
-					CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, cpGroups.get(cpUniqueId));
-					PendingCertifiedProductEntity pendingCp = handler.handle();
-					cpsToAdd.add(pendingCp);
-				}
-				catch(InvalidArgumentsException ex) {
-					handlerErrors.add(ex.getMessage());
 				}
 			}
 			if(handlerErrors.size() > 0) {

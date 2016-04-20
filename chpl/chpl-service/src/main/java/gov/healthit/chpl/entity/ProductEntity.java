@@ -12,7 +12,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
@@ -69,6 +71,12 @@ public class ProductEntity implements Serializable {
 	@Basic( optional = false )
 	@Column(name = "vendor_id", nullable = false )
 	private Long developerId;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "vendor_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private DeveloperEntity developer;
+	
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -272,5 +280,13 @@ public class ProductEntity implements Serializable {
 		sb.append("name: " + this.getName() + ", ");
 		sb.append("reportFileLocation: " + this.getReportFileLocation() + ", ");
 		return sb.toString();		
+	}
+
+	public DeveloperEntity getDeveloper() {
+		return developer;
+	}
+
+	public void setDeveloper(DeveloperEntity developer) {
+		this.developer = developer;
 	}
 }
