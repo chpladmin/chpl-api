@@ -132,7 +132,6 @@ public class CertificationEventDaoTest extends TestCase {
 		assertEquals(result.getEventDate(), check.getEventDate());
 		assertEquals(result.getEventTypeId(), check.getEventTypeId());
 		assertEquals(result.getState(), check.getState());
-		assertEquals(result.getCreationDate(), check.getCreationDate());
 		assertEquals(result.getDeleted(), check.getDeleted());
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());

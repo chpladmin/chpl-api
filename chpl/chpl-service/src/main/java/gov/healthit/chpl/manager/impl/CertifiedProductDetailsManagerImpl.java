@@ -39,6 +39,7 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
@@ -163,10 +164,12 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.getTestingLab().put("name", dto.getTestingLabName());
 		searchDetails.getTestingLab().put("code", dto.getTestingLabCode());
 		
-		searchDetails.getDeveloper().put("id", dto.getDeveloperId());
-		searchDetails.getDeveloper().put("name", dto.getDeveloperName());
-		searchDetails.getDeveloper().put("code", dto.getDeveloperCode());
-		searchDetails.getDeveloper().put("website", dto.getDeveloperWebsite());
+		Developer developer = new Developer();
+		developer.setDeveloperCode(dto.getDeveloperCode());
+		developer.setDeveloperId(dto.getDeveloperId());
+		developer.setName(dto.getDeveloperName());
+		developer.setWebsite(dto.getDeveloperWebsite());
+		searchDetails.setDeveloper(developer);
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
 		searchDetails.setIcs(dto.getIcs());

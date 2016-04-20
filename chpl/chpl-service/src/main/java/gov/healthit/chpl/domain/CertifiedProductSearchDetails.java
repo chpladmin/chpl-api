@@ -20,7 +20,7 @@ public class CertifiedProductSearchDetails {
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
     private Map<String, Object> certificationStatus = new HashMap<String, Object>();
-	private Map<String, Object> developer = new HashMap<String, Object>();
+    private Developer developer;
 	private Map<String, Object> product = new HashMap<String, Object>();
 	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
@@ -87,10 +87,10 @@ public class CertifiedProductSearchDetails {
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
 	}
-	public Map<String, Object> getDeveloper() {
+	public Developer getDeveloper() {
 		return developer;
 	}
-	public void setDeveloper(Map<String, Object> developer) {
+	public void setDeveloper(Developer developer) {
 		this.developer = developer;
 	}
 	public Map<String, Object> getProduct() {
