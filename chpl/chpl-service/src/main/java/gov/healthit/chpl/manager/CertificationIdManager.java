@@ -9,10 +9,11 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 
 public interface CertificationIdManager {
-	public CertificationIdDTO getByProductIds(List<Long> productIds) throws EntityRetrievalException;
+	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
 	public CertificationIdDTO getById(Long id) throws EntityRetrievalException;
 	public CertificationIdDTO getByCertificationId(String certId) throws EntityRetrievalException;
 	public List<CertificationIdDTO> getAll();
+	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public CertificationIdDTO update(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public void delete(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;

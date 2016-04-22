@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/certificationids")
 public class CertificationIdController {
-	
+
 	@Autowired CertifiedProductManager certifiedProductManager;
 	@Autowired CertificationIdManager certificationIdManager;
 
@@ -55,7 +56,7 @@ public class CertificationIdController {
 	@RequestMapping(value="/getCertificationId", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertificationIdResults getCertificationId(@RequestParam(required=false) String products) 
-		throws InvalidArgumentsException {
+		throws InvalidArgumentsException, ValidationException {
 
 		// Make sure the value is formatted correctly (Ex: "123|234|345")
 		if ((null != products) && (0 != products.trim().length())) {
@@ -96,19 +97,19 @@ public class CertificationIdController {
 		}
 
 		// Add products to results
-		SortedSet<Integer> editionYears = new TreeSet<Integer>();
+		SortedSet<Integer> yearSet = new TreeSet<Integer>();
 		List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
 		for (CertifiedProductDetailsDTO dto : productDtos) {
 			CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
 			resultProducts.add(p);
-			editionYears.add(new Integer(dto.getYear()));
+			yearSet.add(new Integer(dto.getYear()));
 		}
 		results.setProducts(resultProducts);
-		String attestationYear = Validator.calculateAttestationYear(editionYears);
-		results.setYear(attestationYear);
+		String year = Validator.calculateAttestationYear(yearSet);
+		results.setYear(year);
 			
 		// Validate the collection
-		Validator validator = ValidatorFactory.getValidator(attestationYear);
+		Validator validator = ValidatorFactory.getValidator(year);
 		boolean isValid = validator.validate(productDtos);
 		results.setIsValid(isValid);
 		results.setMetPercentages(validator.getPercents());
@@ -116,21 +117,24 @@ public class CertificationIdController {
 
 		// Lookup CERT ID
 		if (validator.isValid()) {
+			CertificationIdDTO idDto = null;
 			try {
-				CertificationIdDTO idDto = certificationIdManager.getByProductIds(certProductIds);
+				idDto = certificationIdManager.getByProductIds(certProductIds, year);
 				if (null != idDto) {
 					results.setEhrCertificationId(idDto.getCertificationId());
 				} else {
 					if (results.getIsValid()) {
-						// TODO: Generate a new ID, store it, and return it
-						String tempId = "XX14E";
-						for (int i=0; i<10; ++i)
-							tempId += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(new Random().nextInt(36));
-						results.setEhrCertificationId(tempId);
+						// Generate a new ID
+						idDto = certificationIdManager.create(certProductIds, year);
+						results.setEhrCertificationId(idDto.getCertificationId());
 					}
 				}
 			} catch (EntityRetrievalException ex) {
-				ex.printStackTrace();
+				throw new ValidationException("Unable to retrieve a Certification ID.");
+			} catch (EntityCreationException ex) {
+				throw new ValidationException("Unable to create a new Certification ID.");
+			} catch (JsonProcessingException ex) {
+				throw new ValidationException("Unable to create a new Certification ID.");
 			}
 		}
 		

@@ -2,16 +2,16 @@ package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.entity.CertificationIdEntity;
 
+import java.lang.StringBuffer;
 import java.util.Date;
-
 
 public class CertificationIdDTO {
 	
 	private Long id;
 	private String certificationId;
-	private Long attestationYearId;
+	private String year;
 	private Long practiceTypeId;
-	
+	private String key;
 	
 	private Date creationDate;
 	private Date lastModifiedDate;
@@ -25,11 +25,10 @@ public class CertificationIdDTO {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.certificationId = entity.getCertificationId();
-		this.attestationYearId = entity.getAttestationYearId();
+		this.year = entity.getYear();
 		this.practiceTypeId = entity.getPracticeTypeId();
-
+		this.key = entity.getKey();
 	}
-	
 	
 	public Date getCreationDate() {
 		return creationDate;
@@ -64,12 +63,12 @@ public class CertificationIdDTO {
 		return this.certificationId;
 	}
 	
-	public void setAttestationYearId(Long attestationYearId) {
-		this.attestationYearId = attestationYearId;
+	public void setYear(String year) {
+		this.year = year;
 	}
 
-	public Long getAttestationYearId() {
-		return this.attestationYearId;
+	public String getYear() {
+		return this.year;
 	}
 	
 	public void setPracticeTypeId(Long practiceTypeId) {
@@ -79,5 +78,30 @@ public class CertificationIdDTO {
 	public Long getPracticeTypeId() {
 		return this.practiceTypeId;
 	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public String getKey() {
+		return this.key;
+	}
 	
+	/** Provides toString implementation.
+	 * @see java.lang.Object#toString()
+	 * @return String representation of this class.
+	 */
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("creationDate: " + this.getCreationDate() + ", ");
+		sb.append("id: " + this.getId() + ", ");
+		sb.append("key: " + this.getKey() + ", ");
+		sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
+		sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
+		sb.append("certificationId: " + this.getCertificationId() + ", ");
+		sb.append("year: " + this.getYear() + ", ");
+		sb.append("practiceTypeId: " + this.getPracticeTypeId() + ", ");
+		return sb.toString();		
+	}
 }

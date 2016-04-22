@@ -29,8 +29,8 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 
 	@Override
 	@Transactional(readOnly = true)
-	public CertificationIdDTO getByProductIds(List<Long> productIds) throws EntityRetrievalException {
-		return CertificationIdDAO.getByProductIds(productIds);
+	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
+		return CertificationIdDAO.getByProductIds(productIds, year);
 	}
 	
 	@Override
@@ -51,6 +51,17 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 		return CertificationIdDAO.findAll();
 	}
 
+	@Override
+	@Transactional(readOnly = false)
+	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		
+		CertificationIdDTO result = CertificationIdDAO.create(productIds, year);
+
+		String activityMsg = "CertificationId "+result.getCertificationId()+" was created.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null, result);
+		return result;
+	}
+	
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")

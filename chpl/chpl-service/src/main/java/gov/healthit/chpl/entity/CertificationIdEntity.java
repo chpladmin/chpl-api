@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -39,29 +41,33 @@ public class CertificationIdEntity implements Serializable {
 	private Long id;
     
 	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
+	@Column( name = "creation_date", nullable = false )
 	private Date creationDate;
 	
 	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
+	@Column( name = "last_modified_date", nullable = false )
 	private Date lastModifiedDate;
 	
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
 	
-	@Basic( optional = true )
-	@Column( name = "certification_id", length = 255  )
-	private String certificationId;
-	
 	@Basic( optional = false )
-	@Column(name = "practice_type_id", nullable = false )
+	@Column( name = "certification_id", length = 255, nullable = false)
+	private String certificationId;
+
+	@Basic( optional = false )
+	@Column( name = "key", nullable = false)
+	private String key;
+	
+	@Basic( optional = true )
+	@Column(name = "practice_type_id", nullable = true )
 	private Long practiceTypeId;
 
 	@Basic( optional = false )
-	@Column(name = "certification_edition_id", nullable = false )
-	private Long attestationYearId;
-	
+	@Column(name = "year", nullable = false )
+	private String year;
+
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -174,6 +180,22 @@ public class CertificationIdEntity implements Serializable {
 	}
 
 	 /**
+	 * Return the value associated with the column: key.
+	 * @return A String object (this.key)
+	 */
+	public String getKey() {
+		return this.key;
+	}
+
+	 /**  
+	 * Set the value related to the column: key.
+	 * @param key the key value you wish to set
+	 */
+	public void setKey(String key) {
+		this.key = key;
+	}
+	
+	 /**
 	 * Return the value associated with the column: practice_type_id.
 	 * @return A Long object (this.practiceTypeId)
 	 */
@@ -189,20 +211,20 @@ public class CertificationIdEntity implements Serializable {
 		this.practiceTypeId = practiceTypeId;
 	}
 
-	 /**
-	 * Return the value associated with the column: attestation_year_id.
-	 * @return A Long object (this.attestationYearId)
+	/**
+	 * Return the value associated with the column: year.
+	 * @return A String object (this.year)
 	 */
-	public Long getAttestationYearId() {
-		return this.attestationYearId;
+	public String getYear() {
+		return this.year;
 	}
 
 	 /**  
-	 * Set the value related to the column: attestation_year_id.
-	 * @param attestationYearId the attestationYearId value you wish to set
+	 * Set the value related to the column: year.
+	 * @param year the year value you wish to set
 	 */
-	public void setAttestationYearId(Long attestationYearId) {
-		this.attestationYearId = attestationYearId;
+	public void setYear(String year) {
+		this.year = year;
 	}
 	
 	/** Provides toString implementation.
@@ -215,10 +237,11 @@ public class CertificationIdEntity implements Serializable {
 		
 		sb.append("creationDate: " + this.getCreationDate() + ", ");
 		sb.append("id: " + this.getId() + ", ");
+		sb.append("key: " + this.getKey() + ", ");
 		sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
 		sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
 		sb.append("certificationId: " + this.getCertificationId() + ", ");
-		sb.append("attestationYearId: " + this.getAttestationYearId() + ", ");
+		sb.append("year: " + this.getYear() + ", ");
 		sb.append("practiceTypeId: " + this.getPracticeTypeId() + ", ");
 		return sb.toString();		
 	}

@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface CertificationIdDAO {
 	
+	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException;
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException;
 	
 	public CertificationIdEntity update(CertificationIdDTO dto) throws EntityRetrievalException;
@@ -17,5 +18,5 @@ public interface CertificationIdDAO {
 	
 	public CertificationIdDTO getById(Long id) throws EntityRetrievalException;
 	public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException;
-	public CertificationIdDTO getByProductIds(List<Long> productIds) throws EntityRetrievalException;
+	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
 }

@@ -1,9 +1,11 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.lang.StringBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.Query;
 
@@ -21,26 +23,76 @@ import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 @Repository("certificationIdDAO")
 public class CertificationIdDAOImpl extends BaseDAOImpl implements CertificationIdDAO {
 
+	public static String CERT_ID_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	public static int CERT_ID_LENGTH = 15;
+
+	@Override
+	@Transactional
+	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException {
+		CertificationIdEntity entity = null;
+		CertificationIdDTO newDto = null;
+			
+		if (null != entity) {
+			throw new EntityCreationException("An entity with this Certification ID already exists.");
+		} else {
+				
+			// Create a new EHR Certification ID record
+			entity = new CertificationIdEntity();
+			entity.setCertificationId(this.generateCertificationIdString(year));
+			entity.setYear(year);
+			entity.setKey(this.encodeCollectionKey(productIds));
+			entity.setLastModifiedDate(new Date());
+			entity.setCreationDate(new Date());
+			entity.setLastModifiedUser(-1L);
+			entity.setPracticeTypeId(null);
+
+			// Store the map entities
+			entityManager.persist(entity);
+			try {
+				entity = getEntityByCertificationId(entity.getCertificationId());
+			} catch (EntityRetrievalException e) {
+				throw new EntityCreationException("Unable to create Certification ID and Product Map.");
+			}
+			newDto = new CertificationIdDTO(entity);
+
+			// Create map records
+			for (Long prodId : productIds) {
+				CertificationIdProductMapEntity mapEntity = new CertificationIdProductMapEntity();
+				mapEntity.setCertifiedProductId(prodId);
+				mapEntity.setCertificationIdId(newDto.getId());
+				mapEntity.setLastModifiedDate(new Date());
+				mapEntity.setCreationDate(new Date());
+				mapEntity.setLastModifiedUser(-1L);
+				mapEntity.setDeleted(false);
+				entityManager.persist(mapEntity);
+			}
+
+			// Store the map entities
+			entityManager.flush();
+		}
+		
+		return newDto;
+	}
+	
 	@Override
 	@Transactional
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
 		
 		CertificationIdEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (null != dto.getId()) 
 				entity = this.getEntityById(dto.getId());
-			}
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 		
 		if (entity != null) {
-			throw new EntityCreationException("An entity with this ID already exists.");
+			throw new EntityCreationException("An entity with this record ID or Certification ID already exists.");
 		} else {
 			
 			entity = new CertificationIdEntity();
 			entity.setCertificationId(dto.getCertificationId());
-			entity.setAttestationYearId(dto.getAttestationYearId());
+			entity.setYear(dto.getYear());
 			entity.setPracticeTypeId(dto.getPracticeTypeId());
 			
 			if(dto.getLastModifiedUser() != null) {
@@ -60,8 +112,8 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 			} else {
 				entity.setCreationDate(new Date());
 			}
-			
-			create(entity);	
+
+			create(entity);
 			return new CertificationIdDTO(entity);
 		}
 		
@@ -76,9 +128,9 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 			entity.setCertificationId(dto.getCertificationId());
 		}
 		
-		if(dto.getAttestationYearId() != null)
+		if(dto.getYear() != null)
 		{
-			entity.setAttestationYearId(dto.getAttestationYearId());
+			entity.setYear(dto.getYear());
 		}
 
 		if(dto.getPracticeTypeId() != null)
@@ -156,12 +208,10 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	}
 
 	@Override
-	public CertificationIdDTO getByProductIds(List<Long> productIds) throws EntityRetrievalException {
+	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
 		
-		Long editionYearId = 2L;
-		
-		CertificationIdEntity entity = getEntityByProductIds(productIds, editionYearId);
-		if(entity == null) {
+		CertificationIdEntity entity = getEntityByProductIds(productIds, year);
+		if (entity == null) {
 			return null;
 		}
 		CertificationIdDTO dto = new CertificationIdDTO(entity);
@@ -222,7 +272,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		return entity;
 	}
 	
-	private CertificationIdEntity getEntityByProductIds(List<Long> productIds, Long editionYearId) throws EntityRetrievalException {
+	private CertificationIdEntity getEntityByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
 
 		CertificationIdEntity entity = null;
 
@@ -256,13 +306,13 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 				"having count(mpx.certificationIdId) = :productCount " +
 				
 			") " +
-			"and certification_edition_id = :editionYearId",
+			"and year = :year",
 			CertificationIdEntity.class
 		);
 		
 		query.setParameter("productIds", productIds);
 		query.setParameter("productCount", new Long(productIds.size()));
-		query.setParameter("editionYearId", editionYearId);
+		query.setParameter("year", year);
 		result = query.getResultList();
 		
 		if (result.size() > 1){
@@ -288,5 +338,35 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         
         return numbers.toUpperCase();
     }
-	
+
+	private static String generateCertificationIdString(String year) {
+		// Form the EHR Certification ID prefix and edition year identifier.
+		// The identifier begins with the two-digit year followed by an "E" to indicate
+		// an edition year (e.g. "2015") or "H" to indicate a hybrid edition year (e.g. "2014/2015").
+		// To create it we take the last two digits of the year value which would
+		// represent the highest (current) year number...
+		StringBuffer newId = new StringBuffer("00");
+		newId.append(year.substring(year.length() - 2));
+		
+		// ...Decide if it's a hybrid year or not and attach the "E" or "H".
+		if (-1 == year.indexOf("/")) {
+			newId.append("E");
+		} else {
+			newId.append("H");
+		}
+		
+		int suffixLength = (CERT_ID_LENGTH - newId.length());
+
+		// Generate the remainder of the ID
+		for (int i = 0; i < suffixLength; ++i) {
+			newId.append(CERT_ID_CHARS.charAt(new Random().nextInt(CERT_ID_CHARS.length())));
+		}
+
+		// Safeguard we have a proper ID
+		if (newId.length() != CERT_ID_LENGTH) {
+			return null;
+		}
+
+		return newId.toString();
+	}
 }
