@@ -55,7 +55,8 @@ public class CertificationIdController {
 			notes="Calculates the details of a collection of products in order to retrieve an EHR Certification ID.")
 	@RequestMapping(value="/getCertificationId", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertificationIdResults getCertificationId(@RequestParam(required=false) String products) 
+	public @ResponseBody CertificationIdResults getCertificationId(@RequestParam(required=false) String products, 
+		@RequestParam(required=false,defaultValue="false") Boolean create) 
 		throws InvalidArgumentsException, ValidationException {
 
 		// Make sure the value is formatted correctly (Ex: "123|234|345")
@@ -123,7 +124,7 @@ public class CertificationIdController {
 				if (null != idDto) {
 					results.setEhrCertificationId(idDto.getCertificationId());
 				} else {
-					if (results.getIsValid()) {
+					if ((create) && (results.getIsValid())) {
 						// Generate a new ID
 						idDto = certificationIdManager.create(certProductIds, year);
 						results.setEhrCertificationId(idDto.getCertificationId());
