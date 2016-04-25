@@ -1,5 +1,12 @@
 # Release Notes
 
+## Next Version
+_Date TBD_
+
+### Features Added
+* Added fields to the corrective action plans
+* Changed search parameter values for searching by corrective action plan (open, closed, none)
+
 ## Version 1.1.0
 _12 April 2016_
 
