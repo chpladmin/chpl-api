@@ -43,6 +43,9 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 			entity.setSurveillanceStartDate(toCreate.getSurveillanceStartDate());
 			entity.setSurveillanceEndDate(toCreate.getSurveillanceEndDate());
 			entity.setSurveillanceResult(toCreate.getSurveillanceResult());
+			entity.setDeveloperExplanation(toCreate.getDeveloperExplanation());
+			entity.setResolution(toCreate.getResolution());
+			entity.setSummary(toCreate.getSummary());
 			
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
@@ -73,6 +76,9 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		entity.setSurveillanceStartDate(toUpdate.getSurveillanceStartDate());
 		entity.setSurveillanceEndDate(toUpdate.getSurveillanceEndDate());
 		entity.setSurveillanceResult(toUpdate.getSurveillanceResult());
+		entity.setDeveloperExplanation(toUpdate.getDeveloperExplanation());
+		entity.setResolution(toUpdate.getResolution());
+		entity.setSummary(toUpdate.getSummary());
 		
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
