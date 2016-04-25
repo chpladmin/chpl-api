@@ -405,9 +405,6 @@ public class CorrectiveActionPlanController {
 		if(cap.getNoncomplianceDate() == null) {
 			errors.add("Date of determination of noncompliance is required.");
 		}
-		if(cap.getCertifications() == null || cap.getCertifications().size() == 0) {
-			errors.add("One or more certifications must be included in the corrective action plan.");
-		}
 		
 		//if surveillance end date is filled in, everything is required
 		if(cap.getSurveillanceEndDate() != null) {
