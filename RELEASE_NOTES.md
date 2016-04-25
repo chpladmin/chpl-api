@@ -21,7 +21,6 @@ _20 April 2016_
 * Product ownership change shows up correctly in activity report.`
 * Do not allow duplicate chpl ids in the same file unless they have XXXX (new developers)
 
-
 ## Version 1.1.0
 _12 April 2016_
 
