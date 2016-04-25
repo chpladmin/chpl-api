@@ -7,6 +7,21 @@ _Date TBD_
 * Added fields to the corrective action plans
 * Changed search parameter values for searching by corrective action plan (open, closed, none)
 
+## Version 1.2.0
+_20 April 2016_
+
+### Features Added
+* Moved developer information around into the standard object when returning product or pending product details
+
+### Bugs fixed
+* Fix 'null' in developer report when transparency attestation is changed.
+* Standards tested against are now saved.
+* Functionality tested against is now saved.
+* Fix error related to merging of products.
+* Product ownership change shows up correctly in activity report.`
+* Do not allow duplicate chpl ids in the same file unless they have XXXX (new developers)
+
+
 ## Version 1.1.0
 _12 April 2016_
 
@@ -18,18 +33,11 @@ _12 April 2016_
 * Allow ACB_ADMIN role to change the name of their own ACB.
 * Add service for version activity
 * Trigger emails on version name change, product name change, developer name change, or certified product status change
-* Moved developer information around into the standard object when returning product or pending product details
 
 ### Bugs fixed
 * Test tool version is now saved.
 * Fix activity report link email
 * Allow certification date to be changed.
-* Fix 'null' in developer report when transparency attestation is changed.
-* Standards tested against are now saved.
-* Functionality tested against is now saved.
-* Fix error related to merging of products.
-* Product ownership change shows up correctly in activity report.`
-* Do not allow duplicate chpl ids in the same file unless they have XXXX (new developers)
 
 ## Version 1.0.0
 _30 March 2016_
