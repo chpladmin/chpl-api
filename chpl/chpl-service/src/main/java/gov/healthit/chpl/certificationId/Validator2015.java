@@ -15,6 +15,7 @@ public class Validator2015 extends Validator {
 		"170.315 (a)(6)",
 		"170.315 (a)(7)",
 		"170.315 (a)(8)",
+		"170.315 (a)(9)",
 		"170.315 (a)(11)",
 		"170.315 (a)(14)",
 		"170.315 (c)(1)",
@@ -25,16 +26,16 @@ public class Validator2015 extends Validator {
 		"170.315 (g)(9)"
 	));
 
-	protected static final List<String> CPOE_CRITERIA = new ArrayList<String> (Arrays.asList(
+	protected static final List<String> CPOE_CRITERIA_OR = new ArrayList<String> (Arrays.asList(
 		"170.315 (a)(1)",
 		"170.315 (a)(2)",
 		"170.315 (a)(3)"
 	));
 
-	protected static final List<String> DIRECTPROJECT_CRITERIA = new ArrayList<String> (Arrays.asList(
-		"170.315 (h)(1)",
-		"170.315 (h)(2)"
-	));	
+//	protected static final List<String> DIRECTPROJECT_CRITERIA_OR = new ArrayList<String> (Arrays.asList(
+//		"170.315 (h)(1)",
+//		"170.315 (h)(2)"
+//	));	
 
 	protected static final List<String> INPATIENT_CQMS = new ArrayList<String> (Arrays.asList(
 		"CMS9",
@@ -286,7 +287,7 @@ public class Validator2015 extends Validator {
 	// criteria must be met.
 	//**********************************************************************
 	protected boolean isCPOEValid() {
-		for (String crit : CPOE_CRITERIA) {
+		for (String crit : CPOE_CRITERIA_OR) {
 			if (null != criteriaMet.get(crit)) {
 				this.counts.put("criteriaCpoeRequiredMet", 1);
 				return true;
