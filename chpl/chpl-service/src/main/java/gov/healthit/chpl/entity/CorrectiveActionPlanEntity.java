@@ -52,6 +52,15 @@ public class CorrectiveActionPlanEntity {
 	@Column(name = "completion_date_actual")
 	private Date actualCompletionDate;
 	
+	@Column(name = "summary")
+	private String summary;
+	
+	@Column(name = "developer_explanation")
+	private String developerExplanation;
+	
+	@Column(name = "resolution")
+	private String resolution;
+	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -180,5 +189,29 @@ public class CorrectiveActionPlanEntity {
 
 	public void setRequiredCompletionDate(Date requiredCompletionDate) {
 		this.requiredCompletionDate = requiredCompletionDate;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getDeveloperExplanation() {
+		return developerExplanation;
+	}
+
+	public void setDeveloperExplanation(String developerExplanation) {
+		this.developerExplanation = developerExplanation;
+	}
+
+	public String getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
 	}
 }

@@ -139,6 +139,9 @@ public class CorrectiveActionPlanController {
 		toUpdate.setSurveillanceEndDate(updateRequest.getSurveillanceEndDate());
 		toUpdate.setSurveillanceResult(updateRequest.getRandomizedSurveillance());
 		toUpdate.setSurveillanceStartDate(updateRequest.getSurveillanceStartDate());
+		toUpdate.setSummary(updateRequest.getAcbSummary());
+		toUpdate.setDeveloperExplanation(updateRequest.getDeveloperSummary());
+		toUpdate.setResolution(updateRequest.getResolution());
 
 		//update the plan info
 		Long owningAcbId = null;
@@ -295,6 +298,9 @@ public class CorrectiveActionPlanController {
 		toCreate.setSurveillanceEndDate(createRequest.getSurveillanceEndDate());
 		toCreate.setSurveillanceResult(createRequest.getRandomizedSurveillance());
 		toCreate.setSurveillanceStartDate(createRequest.getSurveillanceStartDate());
+		toCreate.setSummary(createRequest.getAcbSummary());
+		toCreate.setDeveloperExplanation(createRequest.getDeveloperSummary());
+		toCreate.setResolution(createRequest.getResolution());
 		
 		Long createdPlanId = null;
 		Long acbId = null;
