@@ -22,6 +22,9 @@ public class CorrectiveActionPlanDetails {
 	private Date effectiveDate;
 	private Date estimatedCompletionDate;
 	private Date actualCompletionDate;
+	private String acbSummary;
+	private String developerSummary;
+	private String resolution;
 	
 	private List<CorrectiveActionPlanCertificationResult> certifications;
 	private List<CorrectiveActionPlanDocumentation> documentation;
@@ -42,6 +45,9 @@ public class CorrectiveActionPlanDetails {
 		this.effectiveDate = dto.getStartDate();
 		this.estimatedCompletionDate = dto.getRequiredCompletionDate();
 		this.actualCompletionDate = dto.getActualCompletionDate();
+		this.acbSummary = dto.getSummary();
+		this.developerSummary = dto.getDeveloperExplanation();
+		this.resolution = dto.getResolution();
 		
 	}
 	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto, List<CorrectiveActionPlanCertificationResultDTO> certDtos) {
@@ -158,5 +164,23 @@ public class CorrectiveActionPlanDetails {
 	}
 	public void setNoncomplianceDate(Date noncomplianceDate) {
 		this.noncomplianceDate = noncomplianceDate;
+	}
+	public String getAcbSummary() {
+		return acbSummary;
+	}
+	public void setAcbSummary(String acbSummary) {
+		this.acbSummary = acbSummary;
+	}
+	public String getDeveloperSummary() {
+		return developerSummary;
+	}
+	public void setDeveloperSummary(String developerSummary) {
+		this.developerSummary = developerSummary;
+	}
+	public String getResolution() {
+		return resolution;
+	}
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
 	}
 }

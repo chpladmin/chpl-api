@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchRequest {
-	public static final String CURRENT_CAP = "current";
+	public static final String CURRENT_CAP = "open";
 	public static final String CLOSED_CAP = "closed";
-	public static final String NO_CAP = "never";
-	public static final String ANY_CAP = "all";
+	public static final String NO_CAP = "none";
 	
 	String searchTerm = null;
 	String developer = null;

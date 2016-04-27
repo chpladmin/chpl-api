@@ -16,7 +16,10 @@ public class CorrectiveActionPlanDTO {
 	private Date startDate;
 	private Date requiredCompletionDate;
 	private Date actualCompletionDate;
-
+	private String summary;
+	private String developerExplanation;
+	private String resolution;
+	
 	public CorrectiveActionPlanDTO() {
 	}
 	
@@ -31,6 +34,9 @@ public class CorrectiveActionPlanDTO {
 		this.startDate = entity.getStartDate();
 		this.requiredCompletionDate = entity.getRequiredCompletionDate();
 		this.actualCompletionDate = entity.getActualCompletionDate();
+		this.summary = entity.getSummary();
+		this.developerExplanation = entity.getDeveloperExplanation();
+		this.resolution = entity.getResolution();
 	}
 
 	public Long getId() {
@@ -111,6 +117,30 @@ public class CorrectiveActionPlanDTO {
 
 	public void setActualCompletionDate(Date actualCompletionDate) {
 		this.actualCompletionDate = actualCompletionDate;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getDeveloperExplanation() {
+		return developerExplanation;
+	}
+
+	public void setDeveloperExplanation(String developerExplanation) {
+		this.developerExplanation = developerExplanation;
+	}
+
+	public String getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
 	}
 
 }
