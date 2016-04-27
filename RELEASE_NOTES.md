@@ -1,7 +1,7 @@
 # Release Notes
 
-## Next Version
-_Date TBD_
+## Version 1.3.0
+_27 April 2016_
 
 ### Features Added
 * Added fields to the corrective action plans
