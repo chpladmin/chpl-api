@@ -25,7 +25,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
 	public static String CERT_ID_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	public static int CERT_ID_LENGTH = 15;
-	private static long MODIFIED_USER_ID = -4L
+	private static long MODIFIED_USER_ID = -4L;
 
 	@Override
 	@Transactional
