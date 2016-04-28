@@ -1,5 +1,11 @@
 # Release Notes
 
+## Next Version
+_Date TBD_
+
+### Bugs fixed
+* Increased 2015 column count to handle (a)(10) G2
+
 ## Version 1.3.0
 _27 April 2016_
 
