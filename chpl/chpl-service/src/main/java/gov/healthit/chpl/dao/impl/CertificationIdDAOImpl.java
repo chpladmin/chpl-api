@@ -64,7 +64,6 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 				mapEntity.setLastModifiedDate(new Date());
 				mapEntity.setCreationDate(new Date());
 				mapEntity.setLastModifiedUser(MODIFIED_USER_ID);
-				mapEntity.setDeleted(false);
 				entityManager.persist(mapEntity);
 			}
 
@@ -121,57 +120,6 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	}
 
 	@Override
-	@Transactional
-	public CertificationIdEntity update(CertificationIdDTO dto) throws EntityRetrievalException {
-		CertificationIdEntity entity = this.getEntityById(dto.getId());
-		
-		if(dto.getCertificationId() != null) {
-			entity.setCertificationId(dto.getCertificationId());
-		}
-		
-		if(dto.getYear() != null)
-		{
-			entity.setYear(dto.getYear());
-		}
-
-		if(dto.getPracticeTypeId() != null)
-		{
-			entity.setPracticeTypeId(dto.getPracticeTypeId());
-		}
-		
-		if(dto.getCreationDate() != null) {
-			entity.setCreationDate(dto.getCreationDate());
-		} 
-		
-		if(dto.getLastModifiedUser() != null) {
-			entity.setLastModifiedUser(dto.getLastModifiedUser());
-		} else {
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		}		
-		
-		if(dto.getLastModifiedDate() != null) {
-			entity.setLastModifiedDate(dto.getLastModifiedDate());
-		} else {
-			entity.setLastModifiedDate(new Date());
-		}
-		
-		update(entity);
-		return entity;
-	}
-
-	@Override
-	@Transactional
-	public void delete(Long id) throws EntityRetrievalException {
-		CertificationIdEntity toDelete = getEntityById(id);
-		
-		if(toDelete != null) {
-			toDelete.setLastModifiedDate(new Date());
-			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-			update(toDelete);
-		}
-	}
-
-	@Override
 	public List<CertificationIdDTO> findAll() {
 		
 		List<CertificationIdEntity> entities = getAllEntities();
@@ -223,12 +171,6 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	private void create(CertificationIdEntity entity) {
 		
 		entityManager.persist(entity);
-		entityManager.flush();
-	}
-	
-	private void update(CertificationIdEntity entity) {
-		
-		entityManager.merge(entity);	
 		entityManager.flush();
 	}
 	

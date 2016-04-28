@@ -2,8 +2,6 @@ package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -41,10 +39,6 @@ public class CertificationIdProductMapEntity implements Serializable {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column(name = "deleted", nullable = false  )
-	private Boolean deleted;
     
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
@@ -104,25 +98,6 @@ public class CertificationIdProductMapEntity implements Serializable {
 	}
 
 	 /**
-	 * Return the value associated with the column: deleted.
-	 * @return A Boolean object (this.deleted)
-	 */
-	public Boolean isDeleted() {
-		return this.deleted;
-		
-	}
-	
-
-  
-	 /**  
-	 * Set the value related to the column: deleted.
-	 * @param deleted the deleted value you wish to set
-	 */
-	public void setDeleted(final Boolean deleted) {
-		this.deleted = deleted;
-	}
-
-	 /**
 	 * Return the value associated with the column: id.
 	 * @return A Long object (this.id)
 	 */
@@ -131,8 +106,6 @@ public class CertificationIdProductMapEntity implements Serializable {
 		
 	}
 	
-
-  
 	 /**  
 	 * Set the value related to the column: id.
 	 * @param id the id value you wish to set
@@ -220,7 +193,6 @@ public class CertificationIdProductMapEntity implements Serializable {
 		StringBuffer sb = new StringBuffer();
 		
 		sb.append("creationDate: " + this.getCreationDate() + ", ");
-		sb.append("deleted: " + this.isDeleted() + ", ");
 		sb.append("id: " + this.getId() + ", ");
 		sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
 		sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");

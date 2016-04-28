@@ -10,10 +10,6 @@ public interface CertificationIdDAO {
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException;
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException;
 	
-	public CertificationIdEntity update(CertificationIdDTO dto) throws EntityRetrievalException;
-	
-	public void delete(Long id) throws EntityRetrievalException;
-	
 	public List<CertificationIdDTO> findAll();
 	
 	public CertificationIdDTO getById(Long id) throws EntityRetrievalException;
