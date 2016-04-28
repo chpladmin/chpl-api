@@ -25,6 +25,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
 	public static String CERT_ID_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	public static int CERT_ID_LENGTH = 15;
+	private static long MODIFIED_USER_ID = -4L
 
 	@Override
 	@Transactional
@@ -43,7 +44,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 			entity.setKey(this.encodeCollectionKey(productIds));
 			entity.setLastModifiedDate(new Date());
 			entity.setCreationDate(new Date());
-			entity.setLastModifiedUser(-1L);
+			entity.setLastModifiedUser(MODIFIED_USER_ID);
 			entity.setPracticeTypeId(null);
 
 			// Store the map entities
@@ -62,7 +63,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 				mapEntity.setCertificationIdId(newDto.getId());
 				mapEntity.setLastModifiedDate(new Date());
 				mapEntity.setCreationDate(new Date());
-				mapEntity.setLastModifiedUser(-1L);
+				mapEntity.setLastModifiedUser(MODIFIED_USER_ID);
 				mapEntity.setDeleted(false);
 				entityManager.persist(mapEntity);
 			}
