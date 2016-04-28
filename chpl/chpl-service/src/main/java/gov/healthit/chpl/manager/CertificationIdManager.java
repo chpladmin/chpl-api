@@ -15,7 +15,4 @@ public interface CertificationIdManager {
 	public List<CertificationIdDTO> getAll();
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public CertificationIdDTO update(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public void delete(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public void delete(Long id) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 }

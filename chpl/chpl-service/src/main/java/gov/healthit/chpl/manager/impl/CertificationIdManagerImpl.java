@@ -74,44 +74,4 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 		return result;
 	}
 
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	public CertificationIdDTO update(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
-		CertificationIdDTO beforeDTO = CertificationIdDAO.getById(dto.getId());
-		
-		CertificationIdEntity result = CertificationIdDAO.update(dto);
-		CertificationIdDTO afterDto = new CertificationIdDTO(result);
-		
-		String activityMsg = "CertificationId "+dto.getCertificationId()+" was updated.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, beforeDTO, afterDto);
-		return new CertificationIdDTO(result);
-		
-	}
-
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	public void delete(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
-		delete(dto.getId());
-		String activityMsg = "CertificationId "+dto.getCertificationId()+" was deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, dto.getId(), activityMsg, dto, null);
-	
-	}
-
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	public void delete(Long id) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
-		CertificationIdDTO toDelete = CertificationIdDAO.getById(id);
-		String activityMsg = "Product "+ toDelete.getCertificationId() +" was deleted.";
-
-		CertificationIdDAO.delete(id);
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, id, activityMsg, toDelete , null);
-		
-	}
-	
 }
