@@ -151,19 +151,6 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return dto;
 		
 	}
-
-	@Override
-	public List<ProductDTO> getByIds(List<Long> productIds) {
-		Query query = entityManager.createQuery( "from ProductEntity where (NOT deleted = true) AND (product_id IN (:idList)) ", ProductEntity.class );
-		query.setParameter("idList", productIds);
-		List<ProductEntity> results = query.getResultList();
-
-		List<ProductDTO> dtoResults = new ArrayList<ProductDTO>();
-		for(ProductEntity result : results) {
-			dtoResults.add(new ProductDTO(result));
-		}
-		return dtoResults;
-	}
 	
 	public List<ProductDTO> getByDeveloper(Long developerId) {		
 		Query query = entityManager.createQuery( "from ProductEntity pe "
