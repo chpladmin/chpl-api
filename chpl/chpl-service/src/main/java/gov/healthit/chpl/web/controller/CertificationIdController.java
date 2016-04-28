@@ -45,7 +45,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Api(value="certificationids")
 @RestController
-@RequestMapping("/certificationids")
+@RequestMapping("/certificationIds")
 public class CertificationIdController {
 
 	@Autowired CertifiedProductManager certifiedProductManager;
@@ -53,7 +53,7 @@ public class CertificationIdController {
 
 	@ApiOperation(value="Retrieves an EHR Certification ID for a collection of products.",
 			notes="Calculates the details of a collection of products in order to retrieve an EHR Certification ID.")
-	@RequestMapping(value="/getCertificationId", method=RequestMethod.GET,
+	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertificationIdResults getCertificationId(@RequestParam(required=false) String products, 
 		@RequestParam(required=false,defaultValue="false") Boolean create) 
