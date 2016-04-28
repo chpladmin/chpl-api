@@ -42,10 +42,11 @@ import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 
-@Api(value="certificationids")
+@Api(value="certification-ids")
 @RestController
-@RequestMapping("/certificationIds")
+@RequestMapping("/certification_ids")
 public class CertificationIdController {
 
 	@Autowired CertifiedProductManager certifiedProductManager;
