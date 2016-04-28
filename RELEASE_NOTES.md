@@ -1,5 +1,11 @@
 # Release Notes
 
+## Next version
+_Date TBD_
+
+### Features Added
+* Added EHR Certification ID rest service
+
 ## Version 1.1.0
 _12 April 2016_
 
