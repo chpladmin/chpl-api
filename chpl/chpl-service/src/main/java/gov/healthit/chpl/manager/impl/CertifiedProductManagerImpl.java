@@ -26,6 +26,8 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.dao.CQMResultDetailsDAO;
+import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -67,6 +69,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -163,6 +166,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	public ActivityManager activityManager;
 	
 	@Autowired
+	private CertificationResultDetailsDAO certificationResultDetailsDAO;
+
+	@Autowired
+	private CQMResultDetailsDAO cqmResultDetailsDAO;
+	
+	@Autowired
 	public CertifiedProductDetailsManager detailsManager;
 		
 	@Autowired 
@@ -177,6 +186,22 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = true)
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		CertifiedProductDTO result = cpDao.getById(id);
+		return result;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException {
+		List<CertifiedProductDetailsDTO> result = cpDao.getDetailsByIds(ids);
+		
+		// Get result details
+		for (CertifiedProductDetailsDTO dto : result) {
+			List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
+			dto.setCertResults(certificationResultDetailsDTOs);
+			List<CQMResultDetailsDTO> cqmResultDetailsDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(dto.getId());
+			dto.setCqmResults(cqmResultDetailsDTOs);
+		}
+		
 		return result;
 	}
 	
