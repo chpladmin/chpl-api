@@ -93,7 +93,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 			}
 			
-			if(product.getDeveloperId() != null) {
+			if(product.getDeveloperId() != null && !developerCode.matches("X+")) {
 				DeveloperDTO developer = developerDao.getById(product.getDeveloperId());
 				if(developer != null) {
 					if(!developer.getDeveloperCode().equals(developerCode)) {

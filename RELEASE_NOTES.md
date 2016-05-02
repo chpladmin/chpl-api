@@ -6,6 +6,33 @@ _Date TBD_
 ### Features Added
 * Added EHR Certification ID rest service
 
+## Version 1.3.1
+_2 May 2016_
+
+### Bugs fixed
+* Increased 2015 column count to handle (a)(10) G2
+
+## Version 1.3.0
+_27 April 2016_
+
+### Features Added
+* Added fields to the corrective action plans
+* Changed search parameter values for searching by corrective action plan (open, closed, none)
+
+## Version 1.2.0
+_20 April 2016_
+
+### Features Added
+* Moved developer information around into the standard object when returning product or pending product details
+
+### Bugs fixed
+* Fix 'null' in developer report when transparency attestation is changed.
+* Standards tested against are now saved.
+* Functionality tested against is now saved.
+* Fix error related to merging of products.
+* Product ownership change shows up correctly in activity report.`
+* Do not allow duplicate chpl ids in the same file unless they have XXXX (new developers)
+
 ## Version 1.1.0
 _12 April 2016_
 
@@ -21,7 +48,7 @@ _12 April 2016_
 ### Bugs fixed
 * Test tool version is now saved.
 * Fix activity report link email
-* Allow certification date to be changed.`
+* Allow certification date to be changed.
 
 ## Version 1.0.0
 _30 March 2016_

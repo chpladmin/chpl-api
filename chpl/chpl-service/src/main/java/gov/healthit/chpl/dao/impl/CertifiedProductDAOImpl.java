@@ -133,7 +133,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setQmsTesting(dto.getQmsTesting());
 		entity.setAccessibilityCertified(dto.getAccessibilityCertified());
 		entity.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
-		
+		entity.setVisibleOnChpl(dto.getVisibleOnChpl());
 		entity.setCertificationBodyId(dto.getCertificationBodyId());
 		entity.setCertificationEditionId(dto.getCertificationEditionId());
 		entity.setCertificationStatusId(dto.getCertificationStatusId());

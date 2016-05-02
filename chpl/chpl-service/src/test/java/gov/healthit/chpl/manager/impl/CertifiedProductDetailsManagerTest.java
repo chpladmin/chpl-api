@@ -249,7 +249,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsDeveloper() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals("Test Developer 1", detail.getDeveloper().get("name"));
+		assertEquals("Test Developer 1", detail.getDeveloper().getName());
 		assertEquals(1, new Long(detail.getProduct().get("id").toString()).longValue());
 	}
 	

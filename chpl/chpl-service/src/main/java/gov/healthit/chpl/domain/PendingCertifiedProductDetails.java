@@ -31,7 +31,6 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
 	private String recordStatus;
-	private Map<String, Object> developerAddress;
 	
 	public PendingCertifiedProductDetails() {}
 	
@@ -61,32 +60,36 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setOtherAcb(null);
 		this.setCertificationStatus(null);
 		
-		Map<String, Object> developerMap = new HashMap<String, Object>();
-		if(dto.getDeveloperId() == null) {
-			developerMap.put("id", null);
-		} else {
-			developerMap.put("id", dto.getDeveloperId());
-		}
-		developerMap.put("name", dto.getDeveloperName());
-		developerMap.put("email", dto.getDeveloperEmail());
-		developerMap.put("website", dto.getDeveloperWebsite());
+		Developer developer = new Developer();
+		developer.setDeveloperId(dto.getDeveloperId());
+		developer.setName(dto.getDeveloperName());
+		developer.setWebsite(dto.getDeveloperWebsite());
+
 		Contact developerContact = new Contact();
 		developerContact.setLastName(dto.getDeveloperContactName());
 		developerContact.setEmail(dto.getDeveloperEmail());
 		developerContact.setPhoneNumber(dto.getDeveloperPhoneNumber());
-		developerMap.put("contact", developerContact);
-		this.setDeveloper(developerMap);
-		
-		developerAddress = new HashMap<String, Object>();
-		if(dto.getDeveloperAddress() == null || dto.getDeveloperAddress().getId() == null) {
-			developerAddress.put("id", null);
+		developer.setContact(developerContact);
+
+		if(dto.getDeveloperAddress() != null) {
+			Address address = new Address();
+			address.setAddressId(dto.getDeveloperAddress().getId());
+			address.setLine1(dto.getDeveloperStreetAddress());
+			address.setCity(dto.getDeveloperCity());
+			address.setState(dto.getDeveloperState());
+			address.setZipcode(dto.getDeveloperZipCode());
+			address.setCountry(dto.getDeveloperAddress().getCountry());
+			developer.setAddress(address);
 		} else {
-			developerAddress.put("id", dto.getDeveloperAddress().getId());
+			Address address = new Address();
+			address.setLine1(dto.getDeveloperStreetAddress());
+			address.setCity(dto.getDeveloperCity());
+			address.setState(dto.getDeveloperState());
+			address.setZipcode(dto.getDeveloperZipCode());
+			developer.setAddress(address);
 		}
-		developerAddress.put("line1", dto.getDeveloperStreetAddress());
-		developerAddress.put("city", dto.getDeveloperCity());
-		developerAddress.put("state", dto.getDeveloperState());
-		developerAddress.put("zipcode", dto.getDeveloperZipCode());
+		
+		this.setDeveloper(developer);
 		
 		Map<String, Object> productMap = new HashMap<String, Object>();
 		if(dto.getProductId() == null) {
@@ -395,14 +398,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			}
 		}
 		this.setCqmResults(cqmResults);
-	}
-
-	public Map<String, Object> getDeveloperAddress() {
-		return developerAddress;
-	}
-
-	public void setDeveloperAddress(Map<String, Object> developerAddress) {
-		this.developerAddress = developerAddress;
 	}
 
 	public String getRecordStatus() {
