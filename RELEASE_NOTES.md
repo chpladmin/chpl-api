@@ -1,7 +1,19 @@
 # Release Notes
 
-## Next Version
+## Next version
 _Date TBD_
+
+### Features Added
+* Added EHR Certification ID rest service
+
+## Version 1.3.1
+_2 May 2016_
+
+### Bugs fixed
+* Increased 2015 column count to handle (a)(10) G2
+
+## Version 1.3.0
+_27 April 2016_
 
 ### Features Added
 * Added fields to the corrective action plans

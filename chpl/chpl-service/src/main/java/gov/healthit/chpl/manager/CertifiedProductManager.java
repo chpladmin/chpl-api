@@ -23,6 +23,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 public interface CertifiedProductManager {
 
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
+	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getAll();
 	public List<CertifiedProductDetailsDTO> getAllWithEditPermission();
 	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId);
