@@ -484,20 +484,33 @@ public class CertifiedProductController {
 							rows.add(currRecord);
 							
 							//add the last object
-							if(i == records.size()-1) {
-								try {
-									CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
-									PendingCertifiedProductEntity pendingCp = handler.handle();
-									cpsToAdd.add(pendingCp);
-								}
-								catch(InvalidArgumentsException ex) {
-									handlerErrors.add(ex.getMessage());
-								}
-							}
+//							if(i == records.size()-1) {
+//								try {
+//									CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+//									PendingCertifiedProductEntity pendingCp = handler.handle();
+//									cpsToAdd.add(pendingCp);
+//								}
+//								catch(InvalidArgumentsException ex) {
+//									handlerErrors.add(ex.getMessage());
+//								}
+//							}
 						}
 					}
 				}
+				
+				//add the last object
+				if(i == records.size()-1 && !rows.isEmpty()) {
+					try {
+						CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+						PendingCertifiedProductEntity pendingCp = handler.handle();
+						cpsToAdd.add(pendingCp);
+					}
+					catch(InvalidArgumentsException ex) {
+						handlerErrors.add(ex.getMessage());
+					}
+				}
 			}
+			
 			if(handlerErrors.size() > 0) {
 				throw new ValidationException(handlerErrors, null);
 			}
