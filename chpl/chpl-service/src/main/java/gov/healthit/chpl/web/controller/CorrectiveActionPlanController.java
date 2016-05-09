@@ -26,14 +26,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CorrectiveActionPlanCertificationResult;
 import gov.healthit.chpl.domain.CorrectiveActionPlanDetails;
 import gov.healthit.chpl.domain.CorrectiveActionPlanResults;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CorrectiveActionPlanManager;
 import io.swagger.annotations.Api;
@@ -48,6 +52,8 @@ public class CorrectiveActionPlanController {
 
 	@Autowired CorrectiveActionPlanManager capManager;
 	@Autowired CertifiedProductManager productManager;
+	@Autowired CertificationBodyManager acbManager;
+	@Autowired ActivityManager activityManager;
 	
 	@ApiOperation(value="List corrective action plans for a certified product.", 
 			notes="List all corrective action plans, both open and resolved, for a certified product.")
@@ -128,6 +134,8 @@ public class CorrectiveActionPlanController {
 			throw new InvalidArgumentsException(capErrors.get(0));
 		} 
 		
+		CorrectiveActionPlanDetails before = capManager.getPlanDetails(updateRequest.getId());
+		
 		CorrectiveActionPlanDTO toUpdate = new CorrectiveActionPlanDTO();
 		toUpdate.setId(updateRequest.getId());
 		toUpdate.setActualCompletionDate(updateRequest.getActualCompletionDate());
@@ -150,6 +158,10 @@ public class CorrectiveActionPlanController {
 			CertifiedProductDTO certifiedProduct = productManager.getById(existingPlan.getCertifiedProductId());
 			if(certifiedProduct != null) {
 				owningAcbId = certifiedProduct.getCertificationBodyId();
+				CertificationBodyDTO acb = acbManager.getById(owningAcbId);
+				if(acb != null) {
+					before.setAcbName(acb.getName());
+				}
 				capManager.update(owningAcbId, toUpdate);
 			} else {
 				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
@@ -233,6 +245,23 @@ public class CorrectiveActionPlanController {
 		}
 		//END 
 		
+		CorrectiveActionPlanDetails after = capManager.getPlanDetails(updateRequest.getId());
+		if(after.getCertifiedProductId().longValue() != before.getCertifiedProductId().longValue()) {
+			CertifiedProductDTO certifiedProduct = productManager.getById(after.getCertifiedProductId());
+			if(certifiedProduct != null) {
+				owningAcbId = certifiedProduct.getCertificationBodyId();
+				CertificationBodyDTO acb = acbManager.getById(owningAcbId);
+				if(acb != null) {
+					after.setAcbName(acb.getName());
+				}
+			}
+		} else {
+			after.setAcbName(before.getAcbName());
+		}
+		
+		CertifiedProductDTO cpDto = productManager.getById(after.getCertifiedProductId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, updateRequest.getId(), 
+				"A corrective action plan for certified product "+ cpDto.getChplProductNumberForActivity() + " was updated.", before, after);
 		return capManager.getPlanDetails(toUpdate.getId());
 	}
 	
@@ -250,6 +279,8 @@ public class CorrectiveActionPlanController {
 			throw new InvalidArgumentsException("You cannot upload an empty file!");
 		}
 		
+		CorrectiveActionPlanDetails before = capManager.getPlanDetails(correctiveActionPlanId);
+
 		CorrectiveActionPlanDocumentationDTO toCreate = new CorrectiveActionPlanDocumentationDTO();
 		toCreate.setFileType(file.getContentType());
 		toCreate.setFileName(file.getOriginalFilename());
@@ -262,6 +293,10 @@ public class CorrectiveActionPlanController {
 			CertifiedProductDTO certifiedProduct = productManager.getById(existingPlan.getCertifiedProductId());
 			if(certifiedProduct != null) {
 				owningAcbId = certifiedProduct.getCertificationBodyId();
+				CertificationBodyDTO acb = acbManager.getById(owningAcbId);
+				if(acb != null) {
+					before.setAcbName(acb.getName());
+				}
 				capManager.addDocumentationToPlan(owningAcbId, toCreate);
 			} else {
 				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
@@ -270,6 +305,11 @@ public class CorrectiveActionPlanController {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
 		
+		CorrectiveActionPlanDetails after = capManager.getPlanDetails(correctiveActionPlanId);
+		after.setAcbName(before.getAcbName());
+		CertifiedProductDTO cpDto = productManager.getById(after.getCertifiedProductId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, correctiveActionPlanId, 
+				"A file " + toCreate.getFileName() + " was added to a corrective action plan for certified product "+ cpDto.getChplProductNumberForActivity(), before, after);
 		return "{\"success\": \"true\"}";
 	}
 	
@@ -335,6 +375,14 @@ public class CorrectiveActionPlanController {
 		}
 		
 		CorrectiveActionPlanDetails result = capManager.addCertificationsToPlan(acbId, createdPlanId, certsToCreate);
+		CertificationBodyDTO acb = acbManager.getById(acbId);
+		if(acb != null) {
+			result.setAcbName(acb.getName());
+		}
+		CertifiedProductDTO cpDto = productManager.getById(result.getCertifiedProductId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), 
+				"Corrective action plan for " + cpDto.getChplProductNumberForActivity() +" was created.", null, result);
+
 		return result;
 	}
 	
@@ -349,11 +397,16 @@ public class CorrectiveActionPlanController {
 				InvalidArgumentsException {
 		
 		//get the acb that owns the product to make sure we have permissions to update it
-		CorrectiveActionPlanDTO existingPlan = capManager.getPlanById(planId);
-		if(existingPlan.getCertifiedProductId() != null) {
-			CertifiedProductDTO certifiedProduct = productManager.getById(existingPlan.getCertifiedProductId());
+		Long acbId = null;
+		CorrectiveActionPlanDetails before = capManager.getPlanDetails(planId);
+		if(before.getCertifiedProductId() != null) {
+			CertifiedProductDTO certifiedProduct = productManager.getById(before.getCertifiedProductId());
 			if(certifiedProduct != null) {
-				Long acbId = certifiedProduct.getCertificationBodyId();
+				acbId = certifiedProduct.getCertificationBodyId();
+				CertificationBodyDTO acb = acbManager.getById(acbId);
+				if(acb != null) {
+					before.setAcbName(acb.getName());
+				}
 				capManager.delete(acbId, planId);
 			} else {
 				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
@@ -361,6 +414,11 @@ public class CorrectiveActionPlanController {
 		} else {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
+		
+		CertifiedProductDTO cpDto = productManager.getById(before.getCertifiedProductId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, before.getId(), 
+				"Corrective action plan for " + cpDto.getChplProductNumberForActivity() +" was deleted.", before, null);
+
 		return "{\"deleted\" : true }";
 	}
 	
@@ -377,11 +435,15 @@ public class CorrectiveActionPlanController {
 		CorrectiveActionPlanDocumentationDTO doc = capManager.getDocumentationById(docId);
 		
 		//get the acb that owns the product to make sure we have permissions to update it
-		CorrectiveActionPlanDTO existingPlan = capManager.getPlanById(doc.getCorrectiveActionPlanId());
-		if(existingPlan.getCertifiedProductId() != null) {
-			CertifiedProductDTO certifiedProduct = productManager.getById(existingPlan.getCertifiedProductId());
+		CorrectiveActionPlanDetails before = capManager.getPlanDetails(doc.getCorrectiveActionPlanId());		
+		if(before.getCertifiedProductId() != null) {
+			CertifiedProductDTO certifiedProduct = productManager.getById(before.getCertifiedProductId());
 			if(certifiedProduct != null) {
 				Long acbId = certifiedProduct.getCertificationBodyId();
+				CertificationBodyDTO acb = acbManager.getById(acbId);
+				if(acb != null) {
+					before.setAcbName(acb.getName());
+				}
 				capManager.removeDocumentation(acbId, doc);
 			} else {
 				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
@@ -389,6 +451,13 @@ public class CorrectiveActionPlanController {
 		} else {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
+		
+		CorrectiveActionPlanDTO after = capManager.getPlanById(doc.getCorrectiveActionPlanId());
+		CertifiedProductDTO cpDto = productManager.getById(before.getCertifiedProductId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, before.getId(), 
+				"Documentation on a corrective action plan for " + cpDto.getChplProductNumberForActivity() +" was removed.", before, after);
+
+		
 		return "{\"deleted\" : true }";
 	}
 	
