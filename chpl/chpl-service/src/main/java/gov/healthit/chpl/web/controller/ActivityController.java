@@ -772,7 +772,7 @@ public class ActivityController {
 	}
 	
 	private List<ActivityEvent> getActivityEventsForConcept(boolean showDeleted, ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException{
-		return activityManager.getActivityForConcept(showDeleted, concept);
+		return activityManager.getActivityForConcept(showDeleted, concept, lastNDays);
 	}
 	
 	private List<ActivityEvent> getActivityEventsForObject(boolean showDeleted, ActivityConcept concept, Long objectId) throws JsonParseException, IOException{
