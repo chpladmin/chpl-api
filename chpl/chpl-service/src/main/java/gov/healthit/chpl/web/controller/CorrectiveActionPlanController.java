@@ -309,7 +309,7 @@ public class CorrectiveActionPlanController {
 		after.setAcbName(before.getAcbName());
 		CertifiedProductDTO cpDto = productManager.getById(after.getCertifiedProductId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, correctiveActionPlanId, 
-				"A file " + toCreate.getFileName() + " was added to a corrective action plan for certified product "+ cpDto.getChplProductNumberForActivity(), before, after);
+				"Documentation was added to a corrective action plan for " + cpDto.getChplProductNumberForActivity(), before, after);
 		return "{\"success\": \"true\"}";
 	}
 	
@@ -452,10 +452,11 @@ public class CorrectiveActionPlanController {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
 		
-		CorrectiveActionPlanDTO after = capManager.getPlanById(doc.getCorrectiveActionPlanId());
+		CorrectiveActionPlanDetails after = capManager.getPlanDetails(doc.getCorrectiveActionPlanId());
+		after.setAcbName(before.getAcbName());
 		CertifiedProductDTO cpDto = productManager.getById(before.getCertifiedProductId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, before.getId(), 
-				"Documentation on a corrective action plan for " + cpDto.getChplProductNumberForActivity() +" was removed.", before, after);
+				"Documentation was removed from a corrective action plan for " + cpDto.getChplProductNumberForActivity(), before, after);
 
 		
 		return "{\"deleted\" : true }";
