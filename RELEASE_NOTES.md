@@ -9,6 +9,7 @@ _Date TBD_
 
 ### Bugs fixed
 * Fix parsing error when spreadsheet has only a single row. 
+* Only return last N days of activity as requested.
 
 ## Version 1.3.1
 _2 May 2016_

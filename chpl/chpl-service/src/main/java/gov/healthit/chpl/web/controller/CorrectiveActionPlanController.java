@@ -381,7 +381,7 @@ public class CorrectiveActionPlanController {
 		}
 		CertifiedProductDTO cpDto = productManager.getById(result.getCertifiedProductId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), 
-				"Corrective action plan for " + cpDto.getChplProductNumberForActivity() +" was created.", null, result);
+				"A corrective action plan for " + cpDto.getChplProductNumberForActivity() +" was created.", null, result);
 
 		return result;
 	}
@@ -417,7 +417,7 @@ public class CorrectiveActionPlanController {
 		
 		CertifiedProductDTO cpDto = productManager.getById(before.getCertifiedProductId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, before.getId(), 
-				"Corrective action plan for " + cpDto.getChplProductNumberForActivity() +" was deleted.", before, null);
+				"A corrective action plan for " + cpDto.getChplProductNumberForActivity() +" was deleted.", before, null);
 
 		return "{\"deleted\" : true }";
 	}
