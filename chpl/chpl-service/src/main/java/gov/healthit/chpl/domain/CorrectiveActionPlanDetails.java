@@ -14,6 +14,7 @@ public class CorrectiveActionPlanDetails {
 	
 	private Long id;
 	private Long certifiedProductId;
+	private String acbName;
 	private Date surveillanceStartDate;
 	private Date surveillanceEndDate;
 	private Boolean randomizedSurveillance;
@@ -182,5 +183,11 @@ public class CorrectiveActionPlanDetails {
 	}
 	public void setResolution(String resolution) {
 		this.resolution = resolution;
+	}
+	public String getAcbName() {
+		return acbName;
+	}
+	public void setAcbName(String acbName) {
+		this.acbName = acbName;
 	}
 }
