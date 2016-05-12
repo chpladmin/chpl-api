@@ -37,124 +37,130 @@ public class Validator2015 extends Validator {
 //		"170.315 (h)(2)"
 //	));	
 
-	protected static final List<String> INPATIENT_CQMS = new ArrayList<String> (Arrays.asList(
-		"CMS9",
-		"CMS26",
-		"CMS30",
-		"CMS31",
-		"CMS32",
-		"CMS53",
-		"CMS55",
-		"CMS60",
-		"CMS71",
-		"CMS72",
-		"CMS73",
-		"CMS91",
-		"CMS100",
-		"CMS102",
-		"CMS104",
-		"CMS105",
-		"CMS107",
-		"CMS108",
-		"CMS109",
-		"CMS110",
-		"CMS111",
-		"CMS113",
-		"CMS114",
-		"CMS171",
-		"CMS172",
-		"CMS178",
-		"CMS185",
-		"CMS188",
-		"CMS190"
-	));
+	protected static final Map<String, Integer> INPATIENT_CQMS;
+	static  {
+		INPATIENT_CQMS = new HashMap<String, Integer>();
+		INPATIENT_CQMS.put("CMS9",5);
+		INPATIENT_CQMS.put("CMS26",4);
+		INPATIENT_CQMS.put("CMS30",6);
+		INPATIENT_CQMS.put("CMS31",5);
+		INPATIENT_CQMS.put("CMS32",6);
+		INPATIENT_CQMS.put("CMS53",5);
+		INPATIENT_CQMS.put("CMS55",5);
+		INPATIENT_CQMS.put("CMS60",5);
+		INPATIENT_CQMS.put("CMS71",6);
+		INPATIENT_CQMS.put("CMS72",5);
+		INPATIENT_CQMS.put("CMS73",5);
+		INPATIENT_CQMS.put("CMS91",6);
+		INPATIENT_CQMS.put("CMS100",5);
+		INPATIENT_CQMS.put("CMS102",5);
+		INPATIENT_CQMS.put("CMS104",5);
+		INPATIENT_CQMS.put("CMS105",5);
+		INPATIENT_CQMS.put("CMS107",5);
+		INPATIENT_CQMS.put("CMS108",5);
+		INPATIENT_CQMS.put("CMS109",5);
+		INPATIENT_CQMS.put("CMS110",5);
+		INPATIENT_CQMS.put("CMS111",5);
+		INPATIENT_CQMS.put("CMS113",5);
+		INPATIENT_CQMS.put("CMS114",5);
+		INPATIENT_CQMS.put("CMS171",6);
+		INPATIENT_CQMS.put("CMS172",6);
+		INPATIENT_CQMS.put("CMS178",6);
+		INPATIENT_CQMS.put("CMS185",5);
+		INPATIENT_CQMS.put("CMS188",6);
+		INPATIENT_CQMS.put("CMS190",5);
+	}
 
-	protected static final List<String> AMBULATORY_CQMS = new ArrayList<String> (Arrays.asList(
-// Core		"CMS2",
-		"CMS22",
-// Core		"CMS50",
-		"CMS52",
-		"CMS56",
-		"CMS61",
-		"CMS62",
-		"CMS64",
-		"CMS65",
-		"CMS66",
-// Core		"CMS68",
-// Core		"CMS69",
-		"CMS74",
-// Core		"CMS75",
-		"CMS77",
-		"CMS82",
-// Core		"CMS90",
-// Core		"CMS117",
-		"CMS122",
-		"CMS123",
-		"CMS124",
-		"CMS125",
-// Core		"CMS126",
-		"CMS127",
-		"CMS128",
-		"CMS129",
-		"CMS130",
-		"CMS131",
-		"CMS132",
-		"CMS133",
-		"CMS134",
-		"CMS135",
-// Core		"CMS136",
-		"CMS137",
-// Core		"CMS138",
-		"CMS139",
-		"CMS140",
-		"CMS141",
-		"CMS142",
-		"CMS143",
-		"CMS144",
-		"CMS145",
-// Core		"CMS146",
-		"CMS147",
-		"CMS148",
-		"CMS149",
-// Core		"CMS153",
-// Core		"CMS154",
-// Core		"CMS155",
-// Core		"CMS156",
-		"CMS157",
-		"CMS158",
-		"CMS159",
-		"CMS160",
-		"CMS161",
-		"CMS163",
-		"CMS164",
-// Core		"CMS165",
-// Core		"CMS166",
-		"CMS167",
-		"CMS169",
-		"CMS177",
-		"CMS179",
-		"CMS182"
-	));
+	protected static final Map<String, Integer> AMBULATORY_CQMS;
+	static {
+		AMBULATORY_CQMS = new HashMap<String, Integer>();
+// Core	AMBULATORY_CQMS.put("CMS2",6);
+		AMBULATORY_CQMS.put("CMS22",5);
+// Core	AMBULATORY_CQMS.put("CMS50",5);
+		AMBULATORY_CQMS.put("CMS52",5);
+		AMBULATORY_CQMS.put("CMS56",5);
+		AMBULATORY_CQMS.put("CMS61",6);
+		AMBULATORY_CQMS.put("CMS62",5);
+		AMBULATORY_CQMS.put("CMS64",6);
+		AMBULATORY_CQMS.put("CMS65",6);
+		AMBULATORY_CQMS.put("CMS66",5);
+// Core	AMBULATORY_CQMS.put("CMS68",6);
+// Core	AMBULATORY_CQMS.put("CMS69",5);
+		AMBULATORY_CQMS.put("CMS74",6);
+// Core	AMBULATORY_CQMS.put("CMS75",5);
+		AMBULATORY_CQMS.put("CMS77",5);
+		AMBULATORY_CQMS.put("CMS82",4);
+// Core	AMBULATORY_CQMS.put("CMS90",6);
+// Core	AMBULATORY_CQMS.put("CMS117",5);
+		AMBULATORY_CQMS.put("CMS122",5);
+		AMBULATORY_CQMS.put("CMS123",5);
+		AMBULATORY_CQMS.put("CMS124",5);
+		AMBULATORY_CQMS.put("CMS125",5);
+// Core	AMBULATORY_CQMS.put("CMS126",5);
+		AMBULATORY_CQMS.put("CMS127",5);
+		AMBULATORY_CQMS.put("CMS128",5);
+		AMBULATORY_CQMS.put("CMS129",6);
+		AMBULATORY_CQMS.put("CMS130",5);
+		AMBULATORY_CQMS.put("CMS131",5);
+		AMBULATORY_CQMS.put("CMS132",5);
+		AMBULATORY_CQMS.put("CMS133",5);
+		AMBULATORY_CQMS.put("CMS134",5);
+		AMBULATORY_CQMS.put("CMS135",5);
+// Core	AMBULATORY_CQMS.put("CMS136",6);
+		AMBULATORY_CQMS.put("CMS137",5);
+// Core	AMBULATORY_CQMS.put("CMS138",5);
+		AMBULATORY_CQMS.put("CMS139",5);
+		AMBULATORY_CQMS.put("CMS140",5);
+		AMBULATORY_CQMS.put("CMS141",6);
+		AMBULATORY_CQMS.put("CMS142",5);
+		AMBULATORY_CQMS.put("CMS143",5);
+		AMBULATORY_CQMS.put("CMS144",5);
+		AMBULATORY_CQMS.put("CMS145",5);
+// Core	AMBULATORY_CQMS.put("CMS146",5);
+		AMBULATORY_CQMS.put("CMS147",6);
+		AMBULATORY_CQMS.put("CMS148",5);
+		AMBULATORY_CQMS.put("CMS149",5);
+// Core	AMBULATORY_CQMS.put("CMS153",5);
+// Core	AMBULATORY_CQMS.put("CMS154",5);
+// Core	AMBULATORY_CQMS.put("CMS155",5);
+// Core	AMBULATORY_CQMS.put("CMS156",5);
+		AMBULATORY_CQMS.put("CMS157",5);
+		AMBULATORY_CQMS.put("CMS158",5);
+		AMBULATORY_CQMS.put("CMS159",5);
+		AMBULATORY_CQMS.put("CMS160",5);
+		AMBULATORY_CQMS.put("CMS161",5);
+		AMBULATORY_CQMS.put("CMS163",5);
+		AMBULATORY_CQMS.put("CMS164",5);
+// Core	AMBULATORY_CQMS.put("CMS165",5);
+// Core	AMBULATORY_CQMS.put("CMS166",6);
+		AMBULATORY_CQMS.put("CMS167",5);
+		AMBULATORY_CQMS.put("CMS169",5);
+		AMBULATORY_CQMS.put("CMS177",5);
+		AMBULATORY_CQMS.put("CMS179",5);
+		AMBULATORY_CQMS.put("CMS182",6);
+	}
 	
-	protected static final List<String> AMBULATORY_CORE_CQMS = new ArrayList<String>(Arrays.asList(
-		"CMS2",
-		"CMS50",
-		"CMS68",
-		"CMS69",
-		"CMS75",
-		"CMS90",
-		"CMS117",
-		"CMS126",
-		"CMS136",
-		"CMS138",
-		"CMS146",
-		"CMS153",
-		"CMS154",
-		"CMS155",
-		"CMS156",
-		"CMS165",
-		"CMS166"	
-	));
+	protected static final Map<String, Integer> AMBULATORY_CORE_CQMS;
+	static {
+		AMBULATORY_CORE_CQMS = new HashMap<String, Integer>();
+		AMBULATORY_CORE_CQMS.put("CMS2",6);
+		AMBULATORY_CORE_CQMS.put("CMS50",5);
+		AMBULATORY_CORE_CQMS.put("CMS68",6);
+		AMBULATORY_CORE_CQMS.put("CMS69",5);
+		AMBULATORY_CORE_CQMS.put("CMS75",5);
+		AMBULATORY_CORE_CQMS.put("CMS90",6);
+		AMBULATORY_CORE_CQMS.put("CMS117",5);
+		AMBULATORY_CORE_CQMS.put("CMS126",5);
+		AMBULATORY_CORE_CQMS.put("CMS136",6);
+		AMBULATORY_CORE_CQMS.put("CMS138",5);
+		AMBULATORY_CORE_CQMS.put("CMS146",5);
+		AMBULATORY_CORE_CQMS.put("CMS153",5);
+		AMBULATORY_CORE_CQMS.put("CMS154",5);
+		AMBULATORY_CORE_CQMS.put("CMS155",5);
+		AMBULATORY_CORE_CQMS.put("CMS156",5);
+		AMBULATORY_CORE_CQMS.put("CMS165",5);
+		AMBULATORY_CORE_CQMS.put("CMS166",6);
+	}
 
 	public Validator2015() {
 		this.counts.put("criteriaRequired", REQUIRED_CRITERIA.size());
@@ -236,7 +242,7 @@ public class Validator2015 extends Validator {
 				this.counts.get("domainsRequired") : this.domainsMet.size());
 		return (this.counts.get("domainsRequiredMet") >= this.counts.get("domainsRequired"));
 	}
-
+	
 	//**********************************************************************
 	// isInpatientCqmsValid
 	//
@@ -244,8 +250,10 @@ public class Validator2015 extends Validator {
 	//**********************************************************************
 	protected boolean isInpatientCqmsValid() {
 		int cqmCount = 0;
-		for (String cqm : INPATIENT_CQMS) {
-			if (this.cqmsMet.containsKey(cqm)) {
+		for (String cqm : this.INPATIENT_CQMS.keySet()) {
+			Integer reqVersion = INPATIENT_CQMS.get(cqm);
+			Integer metVersion = this.cqmsMet.get(cqm);
+			if ((null != metVersion) && (metVersion >= reqVersion)) {
 				++cqmCount;
 			}
 		}
@@ -265,19 +273,31 @@ public class Validator2015 extends Validator {
 		int coreAmbulatory = 0;
 
 		for (String cqm : cqmsMet.keySet()) {
-			if (this.AMBULATORY_CORE_CQMS.contains(cqm)) {
-				++coreAmbulatory;
+			Integer metVersion = this.cqmsMet.get(cqm);
+			
+			// Check Core
+			Integer reqVersion = this.AMBULATORY_CORE_CQMS.get(cqm);
+			if (null != reqVersion) {
+				if (metVersion >= reqVersion) {
+					++coreAmbulatory;
+				}
 			}
-			if (this.AMBULATORY_CQMS.contains(cqm)) {
-				++nonCoreAmbulatory;
+			
+			// Check Non-Core
+			reqVersion = this.AMBULATORY_CQMS.get(cqm);
+			if (null != reqVersion) {
+				if (metVersion >= reqVersion) {
+					++nonCoreAmbulatory;
+				}
 			}
+			
 		}
 		
 		this.counts.put("cqmsAmbulatoryRequiredMet", nonCoreAmbulatory);
 		this.counts.put("cqmsAmbulatoryCoreRequiredMet", coreAmbulatory);
-		
+
 		return ((this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet")) >= 
-			(this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet")));
+			(this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")));
 	}
 
 	//**********************************************************************

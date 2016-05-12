@@ -1,14 +1,14 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Random;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.TreeSet;
+import java.util.Random;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
  
@@ -39,6 +39,7 @@ import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
+import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,16 +55,15 @@ public class CertificationIdController {
 
 	@ApiOperation(value="Retrieves an EHR Certification ID for a collection of products.",
 			notes="Calculates the details of a collection of products in order to retrieve an EHR Certification ID.")
-	@RequestMapping(value="/", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
+	@RequestMapping(value="/", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody CertificationIdResults getCertificationId(@RequestParam(required=false) String products, 
 		@RequestParam(required=false,defaultValue="false") Boolean create) 
-		throws InvalidArgumentsException, ValidationException {
+		throws InvalidArgumentsException, CertificationIdException {
 
 		// Make sure the value is formatted correctly (Ex: "123|234|345")
 		if ((null != products) && (0 != products.trim().length())) {
 			if (!Pattern.matches("[0-9]+(\\|[0-9]+)*", products)) {
-				throw new InvalidArgumentsException("Product ids are integers and must be separated by pipes.");
+				throw new InvalidArgumentsException("Invalid Product ID(s).  Product IDs are integers and must be separated by pipes.");
 			}
 		} else {
 			products = null;
@@ -132,26 +132,53 @@ public class CertificationIdController {
 					}
 				}
 			} catch (EntityRetrievalException ex) {
-				throw new ValidationException("Unable to retrieve a Certification ID.");
+				throw new CertificationIdException("Unable to retrieve a Certification ID.");
 			} catch (EntityCreationException ex) {
-				throw new ValidationException("Unable to create a new Certification ID.");
+				throw new CertificationIdException("Unable to create a new Certification ID.");
 			} catch (JsonProcessingException ex) {
-				throw new ValidationException("Unable to create a new Certification ID.");
+				throw new CertificationIdException("Unable to create a new Certification ID.");
 			}
 		}
 		
 		return results;
 	}
-	
+
 	@ApiOperation(value="Get information about a specific EHR Certification ID.", 
 			notes="Retrieves detailed information about a specific EHR Certification ID including the list of products that make it up.")
-	@RequestMapping(value="/{certificationId}", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody CertificationIdResults getCertificationIdByCertificationId(@PathVariable("certificationId") String certificationId) {
+	@RequestMapping(value="/{certificationId}", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody CertificationIdResults getCertificationIdByCertificationId(@PathVariable("certificationId") String certificationId) 
+	throws InvalidArgumentsException, CertificationIdException {
 		CertificationIdResults results = new CertificationIdResults();
 		results.setEhrCertificationId(certificationId);
 		return results;
+	}
 
+	@ApiOperation(value="Verify whether a specific EHR Certification ID is valid or not.", 
+			notes="Returns true or false for each EHR Certification ID specified.")
+	@RequestMapping(value="/verify", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces={MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody CertificationIdVerifyResults verifyCertificationId(@RequestBody CertificationIdVerificationBody body) 
+	throws InvalidArgumentsException, CertificationIdException {
+
+		CertificationIdVerifyResults results = new CertificationIdVerifyResults();
+		if (null != body) {
+		
+			try {
+				Map<String, Boolean> lookupResults = certificationIdManager.verifyByCertificationId(body.getIds());
+
+				// Put the IDs in the order that they were passed in
+				for (String id : body.getIds()) {
+					results.getResults().add(new CertificationIdVerifyResults.VerifyResult(id, lookupResults.get(id)));
+				}
+				
+			} catch (EntityRetrievalException e) {
+				throw new CertificationIdException("Unable to verify EHR Certification IDs. Notify system administrator.");
+			}
+			
+		} else {
+			throw new InvalidArgumentsException("No EHR Certification IDs specified in request body.");
+		}
+		
+		return results;
 	}
 
 }

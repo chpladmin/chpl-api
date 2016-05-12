@@ -1,7 +1,9 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +47,12 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 		return CertificationIdDAO.getByCertificationId(certificationId);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException {
+		return CertificationIdDAO.verifyByCertificationId(certificationIds);
+	}
+	
 	@Override
 	@Transactional(readOnly = true) 
 	public List<CertificationIdDTO> getAll() {
