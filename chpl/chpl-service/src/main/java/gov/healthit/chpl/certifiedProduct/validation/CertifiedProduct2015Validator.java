@@ -42,7 +42,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 
 	private static final String[] hComplimentaryCerts = {"170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)"};
 	
-	private static final String[] ucdRequiredCerts = {"170.315(a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", 
+	private static final String[] ucdRequiredCerts = {"170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", 
 			"170.315 (a)(4)", "170.315 (a)(5)", "170.315 (a)(6)", "170.315 (a)(7)", "170.315 (a)(8)", 
 			"170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(2)", "170.315 (b)(3)"};
 
@@ -125,7 +125,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		//g3 checks
 		boolean needsG3 = false;
-		for(int i = 0; i < ucdRequiredCerts.length && !needsG3; i++) {
+		for(int i = 0; i < ucdRequiredCerts.length; i++) {
 			if(hasCert(ucdRequiredCerts[i], allMetCerts)) {
 				needsG3 = true;
 				
@@ -134,7 +134,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					if(certCriteria.getNumber().equals(ucdRequiredCerts[i])) {
 						if(certCriteria.getUcdProcesses() == null || certCriteria.getUcdProcesses().size() == 0) {
 							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one UCD process.");
-						}
+						} 
 						if(certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
 							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one test task.");
 						} else {
