@@ -6,11 +6,13 @@ _Date TBD_
 ### Features Added
 * Added EHR Certification ID rest service
 * Rearranged data for the corrective action plan reports/activity so there is just one activity event per CAP change.
+* Added EHR Certification ID rest service verify operation
 
 ### Bugs fixed
 * Fix parsing error when spreadsheet has only a single row. 
 * Only return last N days of activity as requested.
 * Fix 2015 upload file validation to catch missing UCD Process, test tasks, and test participants.
+* Fix met calculation for Certification ID 2015 Ambulatory CQM validation
 
 ## Version 1.3.1
 _2 May 2016_
