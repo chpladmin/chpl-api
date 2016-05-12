@@ -262,6 +262,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
 		toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
 		toCreate.setSedReportFileLocation(pendingCp.getSedReportFileLocation());
+		toCreate.setSedIntendedUserDescription(pendingCp.getSedIntendedUserDescription());
+		toCreate.setSedTestingEnd(pendingCp.getSedTestingEnd());
 		toCreate.setVisibleOnChpl(true);
 		toCreate.setIcs(pendingCp.getIcs());
 		toCreate.setAccessibilityCertified(pendingCp.getAccessibilityCertified());
