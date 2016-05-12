@@ -4,7 +4,9 @@ import java.lang.StringBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.persistence.Query;
@@ -166,6 +168,29 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		CertificationIdDTO dto = new CertificationIdDTO(entity);
 		return dto;
 		
+	}
+	
+	@Override
+	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException {
+		Map<String, Boolean> results = new HashMap<String, Boolean>();
+
+		Query query = entityManager.createQuery( "from CertificationIdEntity where certification_id IN :certids ", CertificationIdEntity.class );
+		query.setParameter("certids", certificationIds);
+		List<CertificationIdEntity> queryResult = query.getResultList();
+
+		// Get the IDs that were found...
+		for (CertificationIdEntity entity : queryResult) {
+			results.put(entity.getCertificationId(), true);
+		}
+		
+		// then merge in the IDs that where not found.
+		for (String certId : certificationIds) {
+			if (null == results.get(certId)) {
+				results.put(certId, false);
+			}
+		}
+		
+		return results;
 	}
 	
 	private void create(CertificationIdEntity entity) {
