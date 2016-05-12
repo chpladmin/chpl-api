@@ -9,10 +9,13 @@ _Date TBD_
 * Added EHR Certification ID rest service verify operation
 
 ### Bugs fixed
-* Fix parsing error when spreadsheet has only a single row. 
+* Fix parsing error when spreadsheet has only a single row.
 * Only return last N days of activity as requested.
 * Fix 2015 upload file validation to catch missing UCD Process, test tasks, and test participants.
 * Fix met calculation for Certification ID 2015 Ambulatory CQM validation
+* Save sed testing end date and sed intended users on confirm
+
+---
 
 ## Version 1.3.1
 _2 May 2016_
