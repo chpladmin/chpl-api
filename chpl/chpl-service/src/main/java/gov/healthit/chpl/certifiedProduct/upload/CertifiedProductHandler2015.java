@@ -788,13 +788,18 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						break;
 					case "UCD PROCESS SELECTED":
 						PendingCertificationResultUcdProcessEntity ucd = new PendingCertificationResultUcdProcessEntity();
-						ucd.setUcdProcessName(firstRow.get(currIndex++).toString());
-						ucd.setUcdProcessDetails(firstRow.get(currIndex++).toString());
-						UcdProcessDTO dto = ucdDao.getByName(ucd.getUcdProcessName());
-						if(dto != null) {
-							ucd.setUcdProcessId(dto.getId());
+						String ucdName = firstRow.get(currIndex++).toString();
+						String ucdDetails = firstRow.get(currIndex++).toString();
+						
+						if(!StringUtils.isEmpty(ucdName)) {
+							ucd.setUcdProcessName(ucdName);
+							ucd.setUcdProcessDetails(ucdDetails);
+							UcdProcessDTO dto = ucdDao.getByName(ucd.getUcdProcessName());
+							if(dto != null) {
+								ucd.setUcdProcessId(dto.getId());
+							}
+							cert.getUcdProcesses().add(ucd);
 						}
-						cert.getUcdProcesses().add(ucd);
 						break;
 					case "TASK IDENTIFIER":
 						parseTasksAndParticipants(pendingCertifiedProduct, cert, currIndex);

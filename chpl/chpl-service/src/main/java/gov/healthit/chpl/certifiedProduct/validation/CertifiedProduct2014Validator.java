@@ -123,6 +123,11 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED) &&
+						cert.getSed() == null) {
+					product.getErrorMessages().add("SED is required for certification " + cert.getNumber() + ".");
+				}
+				
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
 						!cert.getNumber().equals("170.314 (g)(1)") && 
 						!cert.getNumber().equals("170.314 (g)(2)") && 

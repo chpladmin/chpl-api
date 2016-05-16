@@ -46,7 +46,7 @@ public class SwaggerConfig implements EnvironmentAware {
     }
 
     private ApiInfo apiInfo() {
-    	return new ApiInfo("CHPL", "Certified Health IT Product Listing", "1.3.1",
+    	return new ApiInfo("CHPL", "Certified Health IT Product Listing", "1.4.0",
     			"http://terms/of/service.url", "CHPL@ainq.com",
     			"License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
@@ -63,6 +63,7 @@ public class SwaggerConfig implements EnvironmentAware {
     		  regex("/announcements.*"),
     		  regex("/atls.*"),
     		  regex("/auth.*"),
+    		  regex("/certification_ids.*"),
     		  regex("/certified_products.*"),
     		  regex("/certified_product_details.*"),
     		  regex("/corrective_action_plan.*"),
