@@ -194,46 +194,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 			}
 		}
 		
-		//g1 check
-		boolean hasG1 = false;
-		for(CertificationResult cert : product.getCertificationResults()) {
-			if(cert.getNumber().equals("170.314 (g)(1)") && cert.isSuccess()) {
-				hasG1 = true;
-			}
-		}
-		boolean hasG1Complement = false;
-		for(CertificationResult cert : product.getCertificationResults()) {
-			for(int i = 0; i < g1ComplementaryCerts.length; i++) {
-				if(cert.getNumber().equals(g1ComplementaryCerts[i]) && cert.isSuccess()) {
-					hasG1Complement = true;
-				}
-			}
-		}
-		
-		if(hasG1 && !hasG1Complement) {
-			product.getErrorMessages().add("(g)(1) was found without a required related certification.");
-		}
-		
-		//g2 check
-		boolean hasG2 = false;
-		for(CertificationResult cert : product.getCertificationResults()) {
-			if(cert.getNumber().equals("170.314 (g)(2)") && cert.isSuccess()) {
-				hasG2 = true;
-			}
-		}
-		boolean hasG2Complement = false;
-		for(CertificationResult cert : product.getCertificationResults()) {
-			for(int i = 0; i < g2ComplementaryCerts.length; i++) {
-				if(cert.getNumber().equals(g2ComplementaryCerts[i]) && cert.isSuccess()) {
-					hasG2Complement = true;
-				}
-			}
-		}
-		
-		if(hasG2 && !hasG2Complement) {
-			product.getErrorMessages().add("(g)(2) was found without a required related certification.");
-		}
-		
 		//g4 check
 		boolean hasG4 = false;
 		for(CertificationResult cert : product.getCertificationResults()) {
