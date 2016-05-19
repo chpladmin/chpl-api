@@ -14,9 +14,9 @@ import java.util.Map;
 
 public abstract class Validator {
 
-	protected Map<String, Long> criteriaMet = new HashMap<String, Long>();
-	protected Map<String, Long> cqmsMet = new HashMap<String, Long>();
-	protected Map<String, Long> domainsMet = new HashMap<String, Long>();
+	protected Map<String, Integer> criteriaMet = new HashMap<String, Integer>();
+	protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>();
+	protected Map<String, Integer> domainsMet = new HashMap<String, Integer>();
 	protected SortedSet<Integer> editionYears = new TreeSet<Integer>();
 	protected String attestationYear = null;
 
@@ -70,17 +70,30 @@ public abstract class Validator {
 			// Collect criteria met
 			for (CertificationResultDetailsDTO certDetail : dto.getCertResults()) {
 				if (certDetail.getSuccess()) {
-					criteriaMet.put(certDetail.getNumber(), 1L);
+					criteriaMet.put(certDetail.getNumber(), 1);
 				}
 			}
 
 			// Collect cqms and domains met
 			for (CQMResultDetailsDTO cqmDetail : dto.getCqmResults()) {
 				if (cqmDetail.getSuccess()) {
-					cqmsMet.put(cqmDetail.getCmsId(), 1L);
-					if (null != cqmDetail.getDomain()) {
-						domainsMet.put(cqmDetail.getDomain(), 1L);
+					
+					// See what version we've already met...
+					Integer verMet = cqmsMet.get(cqmDetail.getCmsId());
+					if (null == verMet) {
+						verMet = new Integer(0);
 					}
+					
+					// ...store the version that's higher.
+					Integer ver = Integer.parseInt(cqmDetail.getVersion().substring(1));
+					if ( ver > verMet) {
+						cqmsMet.put(cqmDetail.getCmsId(), ver);
+					}
+					
+					if (null != cqmDetail.getDomain()) {
+						domainsMet.put(cqmDetail.getDomain(), 1);
+					}
+					
 				}
 			}
 			
