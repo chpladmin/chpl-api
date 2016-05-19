@@ -572,6 +572,10 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						}
 						cert.getUcdProcesses().add(ucd);
 						break;
+					default:
+						pendingCertifiedProduct.getErrorMessages().add("Invalid column title " + colTitle + " at index " + currIndex);
+						logger.error("Could not handle column " + colTitle + " at index " + currIndex + ".");
+						currIndex++;
 					}
 				}
 			}						

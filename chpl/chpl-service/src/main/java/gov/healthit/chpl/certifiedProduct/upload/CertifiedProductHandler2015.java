@@ -808,7 +808,9 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						currIndex+=2;
 						break;
 					default:
+						pendingCertifiedProduct.getErrorMessages().add("Invalid column title " + colTitle + " at index " + currIndex);
 						logger.error("Could not handle column " + colTitle + " at index " + currIndex + ".");
+						currIndex++;
 					}
 				}
 			}						
