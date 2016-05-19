@@ -9,6 +9,8 @@ _TBD_
 ### Bugs Fixed
 * 170.314 (f)(3) does not require test tools for ambulatory products but does for inpatient
 * Editing a product was requiring g1 and g2 when it should not have. 
+* Trim spaces from the ends of all fields in the upload file
+* Properly save test functionality and test tools if an invalid one was in the upload file but was edited to be a valid one during confirm.
 
 ## Version 1.4.0
 _16 May 2016_
