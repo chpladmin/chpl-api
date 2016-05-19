@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 
+_TBD_
+
+### Features Added
+* Change participant age to a range from a selectable list of ranges
+
+### Bugs Fixed
+* 170.314 (f)(3) does not require test tools for ambulatory products but does for inpatient
+* Editing a product was requiring g1 and g2 when it should not have. 
+
 ## Version 1.4.0
 _16 May 2016_
 
