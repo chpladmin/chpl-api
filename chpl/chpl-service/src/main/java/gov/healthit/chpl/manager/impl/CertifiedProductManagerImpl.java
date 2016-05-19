@@ -39,6 +39,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
+import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
@@ -60,6 +61,7 @@ import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
@@ -111,10 +113,12 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
+import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -158,6 +162,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired TestToolDAO testToolDao;
 	@Autowired TestStandardDAO testStandardDao;
 	@Autowired TestProcedureDAO testProcDao;
+	@Autowired TestFunctionalityDAO testFuncDao;
 	@Autowired UcdProcessDAO ucdDao;
 	@Autowired TestParticipantDAO testParticipantDao;
 	@Autowired TestTaskDAO testTaskDao;
@@ -491,7 +496,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							funcDto.setCertificationResultId(createdCert.getId());
 							certDao.addTestFunctionalityMapping(funcDto);
 						} else {
-							logger.error("Could not insert test functionality with null id. Number was " + func.getNumber());
+							//check again for a matching test tool because the uesr could have edited
+							//it since upload
+							TestFunctionalityDTO match = testFuncDao.getByNumber(func.getNumber());
+							if(match != null) {
+								CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
+								funcDto.setTestFunctionalityId(match.getId());
+								funcDto.setCertificationResultId(createdCert.getId());
+								certDao.addTestFunctionalityMapping(funcDto);
+							} else {
+								logger.error("Could not insert test functionality with null id. Number was " + func.getNumber());
+							}
 						}
 					}
 				}
@@ -538,7 +553,18 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							toolDto.setCertificationResultId(createdCert.getId());
 							certDao.addTestToolMapping(toolDto);
 						} else {
-							logger.error("Could not insert test tool with null id. Name was " + tool.getName());
+							//check again for a matching test tool because the user could have edited
+							//it since upload
+							TestToolDTO match = testToolDao.getByName(tool.getName());
+							if(match != null) {
+								CertificationResultTestToolDTO toolDto = new CertificationResultTestToolDTO();
+								toolDto.setTestToolId(match.getId());
+								toolDto.setTestToolVersion(tool.getVersion());
+								toolDto.setCertificationResultId(createdCert.getId());
+								certDao.addTestToolMapping(toolDto);
+							} else {
+								logger.error("Could not insert test tool with null id. Name was " + tool.getName());
+							}
 						}
 					}
 				}
@@ -592,7 +618,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 									}
 									if(existingPart == null) {
 										TestParticipantDTO tp = new TestParticipantDTO();
-										tp.setAge(certPart.getAge());
+										tp.setAgeRangeId(certPart.getAgeRangeId());
 										tp.setAssistiveTechnologyNeeds(certPart.getAssistiveTechnologyNeeds());
 										tp.setComputerExperienceMonths(certPart.getComputerExperienceMonths());
 										tp.setEducationTypeId(certPart.getEducationTypeId());
@@ -1104,10 +1130,14 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 									testParticipant.setCertTestTaskId(newTestTask.getId());
 									TestParticipantDTO tp = new TestParticipantDTO();
 									tp.setId(newTestParticipant.getTestParticipantId());
-									tp.setAge(newTestParticipant.getAge());
 									tp.setGender(newTestParticipant.getGender());
 									tp.setAssistiveTechnologyNeeds(newTestParticipant.getAssistiveTechnologyNeeds());
 									tp.setComputerExperienceMonths(newTestParticipant.getComputerExperienceMonths());
+									tp.setAgeRangeId(newTestParticipant.getAgeRangeId());
+									AgeRangeDTO age = new AgeRangeDTO();
+									age.setId(newTestParticipant.getAgeRangeId());
+									age.setAge(newTestParticipant.getAgeRange());
+									tp.setAgeRange(age);
 									tp.setEducationTypeId(newTestParticipant.getEducationTypeId());
 									EducationTypeDTO et = new EducationTypeDTO();
 									et.setId(newTestParticipant.getEducationTypeId());

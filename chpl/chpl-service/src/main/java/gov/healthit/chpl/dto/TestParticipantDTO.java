@@ -6,9 +6,10 @@ public class TestParticipantDTO {
 
 	private Long id;
 	private String gender;
-	private Integer age;
 	private Long educationTypeId;
 	private EducationTypeDTO educationType;
+	private Long ageRangeId;
+	private AgeRangeDTO ageRange;
 	private String occupation;
 	private Integer professionalExperienceMonths;
 	private Integer computerExperienceMonths;
@@ -23,11 +24,14 @@ public class TestParticipantDTO {
 	{
 		if(entity != null) {
 			this.id = entity.getId();
-			this.age = entity.getAge();
 			this.gender = entity.getGender();
 			this.educationTypeId = entity.getEducationTypeId();
 			if(entity.getEducation() != null) {
 				this.educationType = new EducationTypeDTO(entity.getEducation());
+			}
+			this.ageRangeId = entity.getAgeRangeId();
+			if(entity.getAgeRange() != null) {
+				this.ageRange = new AgeRangeDTO(entity.getAgeRange());
 			}
 			this.occupation = entity.getOccupation();
 			this.professionalExperienceMonths = entity.getProductExperienceMonths();
@@ -50,14 +54,6 @@ public class TestParticipantDTO {
 
 	public void setGender(String gender) {
 		this.gender = gender;
-	}
-
-	public Integer getAge() {
-		return age;
-	}
-
-	public void setAge(Integer age) {
-		this.age = age;
 	}
 
 	public Long getEducationTypeId() {
@@ -122,6 +118,22 @@ public class TestParticipantDTO {
 
 	public void setPendingUniqueId(String pendingUniqueId) {
 		this.pendingUniqueId = pendingUniqueId;
+	}
+
+	public Long getAgeRangeId() {
+		return ageRangeId;
+	}
+
+	public void setAgeRangeId(Long ageRangeId) {
+		this.ageRangeId = ageRangeId;
+	}
+
+	public AgeRangeDTO getAgeRange() {
+		return ageRange;
+	}
+
+	public void setAgeRange(AgeRangeDTO ageRange) {
+		this.ageRange = ageRange;
 	}
 
 }

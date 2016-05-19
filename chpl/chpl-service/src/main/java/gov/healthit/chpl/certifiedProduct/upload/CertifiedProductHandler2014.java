@@ -286,39 +286,39 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	private void parseCertifiedProductDetails(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
 		int colIndex = 0;
 		
-		String uniqueId = record.get(colIndex++);
-		pendingCertifiedProduct.setUniqueId(uniqueId.trim());
+		String uniqueId = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setUniqueId(uniqueId);
 		
-		String recordStatus = record.get(colIndex++);
+		String recordStatus = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setRecordStatus(recordStatus);
 		
 		//practice type
-		String practiceType = record.get(colIndex++);
-		pendingCertifiedProduct.setPracticeType(practiceType.trim());
+		String practiceType = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setPracticeType(practiceType);
 		PracticeTypeDTO foundPracticeType = practiceTypeDao.getByName(practiceType);
 		if(foundPracticeType != null) {
 			pendingCertifiedProduct.setPracticeTypeId(foundPracticeType.getId());
 		}
 		
 		//developer, product, version
-		String developer = record.get(colIndex++);
-		String product = record.get(colIndex++);
-		String productVersion = record.get(colIndex++);
-		pendingCertifiedProduct.setDeveloperName(developer.trim());
-		pendingCertifiedProduct.setProductName(product.trim());
-		pendingCertifiedProduct.setProductVersion(productVersion.trim());
+		String developer = record.get(colIndex++).trim();
+		String product = record.get(colIndex++).trim();
+		String productVersion = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setDeveloperName(developer);
+		pendingCertifiedProduct.setProductName(product);
+		pendingCertifiedProduct.setProductVersion(productVersion);
 
-		DeveloperDTO foundDeveloper = developerDao.getByName(developer.trim());
+		DeveloperDTO foundDeveloper = developerDao.getByName(developer);
 		if(foundDeveloper != null) {
 			pendingCertifiedProduct.setDeveloperId(foundDeveloper.getId());
 			
 			//product
-			ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product.trim());
+			ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product);
 			if(foundProduct != null) {
 				pendingCertifiedProduct.setProductId(foundProduct.getId());
 				
 				//version
-				ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(), productVersion.trim());
+				ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(), productVersion);
 				if(foundVersion != null) {
 					pendingCertifiedProduct.setProductVersionId(foundVersion.getId());
 				}
@@ -326,12 +326,12 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		}	
 		
 		//certification year
-		String certificaitonYear = record.get(colIndex++);
-		pendingCertifiedProduct.setCertificationEdition(certificaitonYear.trim());
+		String certificaitonYear = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setCertificationEdition(certificaitonYear);
 		if(!pendingCertifiedProduct.getCertificationEdition().equals("2014")) {
 			pendingCertifiedProduct.getErrorMessages().add("Expecting certification year 2014 but found '" + pendingCertifiedProduct.getCertificationEdition() + "' for product " + pendingCertifiedProduct.getUniqueId());
 		}
-		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear.trim());
+		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
 		if(foundEdition != null) {
 			pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
 		}
@@ -340,33 +340,33 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		pendingCertifiedProduct.setAcbCertificationId(record.get(colIndex++).trim());	
 		
 		//certification body
-		String acbName = record.get(colIndex++);
-		pendingCertifiedProduct.setCertificationBodyName(acbName.trim());
-		CertificationBodyDTO foundAcb = acbDao.getByName(acbName.trim());
+		String acbName = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setCertificationBodyName(acbName);
+		CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
 		if(foundAcb != null) {
 			pendingCertifiedProduct.setCertificationBodyId(foundAcb.getId());
 		} else {
-			pendingCertifiedProduct.getErrorMessages().add("No certification body with name " + acbName.trim() + " could be found.");
+			pendingCertifiedProduct.getErrorMessages().add("No certification body with name " + acbName + " could be found.");
 		}
 		
 		//testing lab
-		String atlName = record.get(colIndex++);
-		pendingCertifiedProduct.setTestingLabName(atlName.trim());
-		TestingLabDTO foundAtl = atlDao.getByName(atlName.trim());
+		String atlName = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setTestingLabName(atlName);
+		TestingLabDTO foundAtl = atlDao.getByName(atlName);
 		if(foundAtl != null) {
 			pendingCertifiedProduct.setTestingLabId(foundAtl.getId());
 		}	
 		
 		//product classification
-		String classification = record.get(colIndex++);
-		pendingCertifiedProduct.setProductClassificationName(classification.trim());
-		ProductClassificationTypeDTO foundClassification = classificationDao.getByName(classification.trim());
+		String classification = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setProductClassificationName(classification);
+		ProductClassificationTypeDTO foundClassification = classificationDao.getByName(classification);
 		if(foundClassification != null) {
 			pendingCertifiedProduct.setProductClassificationId(foundClassification.getId());
 		}
 	
 		//certification date
-		String dateStr = record.get(colIndex++);
+		String dateStr = record.get(colIndex++).trim();
 		try {
 			Date certificationDate = dateFormatter.parse(dateStr);
 			pendingCertifiedProduct.setCertificationDate(certificationDate);
@@ -419,10 +419,10 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		}		
 		
 		//report file location
-		pendingCertifiedProduct.setReportFileLocation(record.get(colIndex++));	
+		pendingCertifiedProduct.setReportFileLocation(record.get(colIndex++).trim());	
 		
 		//sed report link
-		pendingCertifiedProduct.setSedReportFileLocation(record.get(colIndex++));
+		pendingCertifiedProduct.setSedReportFileLocation(record.get(colIndex++).trim());
 		
 		String hasQmsStr = record.get(colIndex++);
 		Boolean hasQms = asBoolean(hasQmsStr);
@@ -435,14 +435,14 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		//qms modification
 		colIndex++;
 		
-		String hasIcsStr = record.get(colIndex++);
+		String hasIcsStr = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setIcs(asBoolean(hasIcsStr));
 
 		//(k)(1)  url
 		pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(colIndex++).trim());
 		
 		//(k)(2) attestation status
-		String k2AttestationStr = record.get(colIndex++);
+		String k2AttestationStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(k2AttestationStr)) {
 			if("0".equals(k2AttestationStr.trim())) {
 				pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Negative);
@@ -459,14 +459,14 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	private void parseQms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
 		int colIndex = 23;
 		if(!StringUtils.isEmpty(record.get(colIndex))) {
-			String qmsStandardName = record.get(colIndex++).toString();
-			QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName.trim());
-			String qmsMods = record.get(colIndex).toString();
+			String qmsStandardName = record.get(colIndex++).trim();
+			QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName);
+			String qmsMods = record.get(colIndex).trim();
 			
 			PendingCertifiedProductQmsStandardEntity qmsEntity = new PendingCertifiedProductQmsStandardEntity();
 			qmsEntity.setMappedProduct(pendingCertifiedProduct);
-			qmsEntity.setModification(qmsMods.trim());
-			qmsEntity.setName(qmsStandardName.trim());
+			qmsEntity.setModification(qmsMods);
+			qmsEntity.setName(qmsStandardName);
 			if(qmsStandard != null) {
 				qmsEntity.setQmsStandardId(qmsStandard.getId());
 			}
@@ -512,15 +512,15 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		int currIndex = beginIndex;
 		PendingCertificationResultEntity cert = null;
 		try {
-			cert = getCertificationResult(criteriaNumber, firstRow.get(currIndex++).toString());
+			cert = getCertificationResult(criteriaNumber, firstRow.get(currIndex++).trim());
 			
 			while(currIndex <= endIndex) {
-				String colTitle = getHeading().get(currIndex).toString();
+				String colTitle = getHeading().get(currIndex);
 				if(!StringUtils.isEmpty(colTitle)) {
 					colTitle = colTitle.trim().toUpperCase();
 					switch(colTitle) {
 					case "GAP":
-						cert.setGap(asBoolean(firstRow.get(currIndex++).toString()));
+						cert.setGap(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "STANDARD TESTED AGAINST":
 						parseTestStandards(cert, currIndex);
@@ -531,13 +531,13 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						currIndex++;
 						break;
 					case "MEASURE SUCCESSFULLY TESTED FOR G1":
-						cert.setG1Success(asBoolean(firstRow.get(currIndex++).toString()));
+						cert.setG1Success(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "MEASURE SUCCESSFULLY TESTED FOR G2":
-						cert.setG2Success(asBoolean(firstRow.get(currIndex++).toString()));
+						cert.setG2Success(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "ADDITIONAL SOFTWARE":
-						Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).toString());
+						Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
 						cert.setHasAdditionalSoftware(hasAdditionalSoftware);
 						parseAdditionalSoftware(pendingCertifiedProduct, cert, currIndex);
 						currIndex += 4; 
@@ -554,10 +554,10 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						currIndex += 3;
 						break;
 					case "SED":
-						cert.setSed(asBoolean(firstRow.get(currIndex++).toString()));
+						cert.setSed(asBoolean(firstRow.get(currIndex++).trim()));
 						
 						PendingCertificationResultUcdProcessEntity ucd = new PendingCertificationResultUcdProcessEntity();
-						String ucdProcessName = firstRow.get(currIndex++).toString();
+						String ucdProcessName = firstRow.get(currIndex++).trim();
 						if(cert.getSed().equals(Boolean.TRUE) && StringUtils.isEmpty(ucdProcessName)) {
 							pendingCertifiedProduct.getErrorMessages().add(pendingCertifiedProduct.getUniqueId() + " indicates SED should be present but no UCD was entered.");
 						} else if(cert.getSed().equals(Boolean.FALSE) && !StringUtils.isEmpty(ucdProcessName)) {
@@ -565,7 +565,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						}
 						
 						ucd.setUcdProcessName(ucdProcessName);
-						ucd.setUcdProcessDetails(firstRow.get(currIndex++).toString());
+						ucd.setUcdProcessDetails(firstRow.get(currIndex++).trim());
 						UcdProcessDTO dto = ucdDao.getByName(ucd.getUcdProcessName());
 						if(dto != null) {
 							ucd.setUcdProcessId(dto.getId());
@@ -581,7 +581,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	
 	private void parseTestStandards(PendingCertificationResultEntity cert, int tsColumn) {
 		for(CSVRecord row : getRecord()) {
-			String tsValue = row.get(tsColumn).toString();
+			String tsValue = row.get(tsColumn).trim();
 			if(!StringUtils.isEmpty(tsValue)) {
 				PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
 				tsEntity.setTestStandardName(tsValue);
@@ -596,7 +596,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	
 	private void parseTestFunctionality(PendingCertificationResultEntity cert, int tfColumn) {
 		for(CSVRecord row : getRecord()) {
-			String tfValue = row.get(tfColumn).toString();
+			String tfValue = row.get(tfColumn).trim();
 			if(!StringUtils.isEmpty(tfValue)) {
 				PendingCertificationResultTestFunctionalityEntity tfEntity = new PendingCertificationResultTestFunctionalityEntity();
 				tfEntity.setTestFunctionalityNumber(tfValue);
@@ -614,7 +614,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		int nonCpSourceColumn = asColumnBegin+2;
 		
 		for(CSVRecord row : getRecord()) {
-			String cpSourceValue = row.get(cpSourceColumn).toString().trim();
+			String cpSourceValue = row.get(cpSourceColumn).trim();
 			if(!StringUtils.isEmpty(cpSourceValue)) {
 				PendingCertificationResultAdditionalSoftwareEntity asEntity = new PendingCertificationResultAdditionalSoftwareEntity();
 				asEntity.setChplId(cpSourceValue);
@@ -635,11 +635,11 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				}
 				cert.getAdditionalSoftware().add(asEntity);
 			} 
-			String nonCpSourceValue = row.get(nonCpSourceColumn).toString();
+			String nonCpSourceValue = row.get(nonCpSourceColumn).trim();
 			if(!StringUtils.isEmpty(nonCpSourceValue)) {
 				PendingCertificationResultAdditionalSoftwareEntity asEntity = new PendingCertificationResultAdditionalSoftwareEntity();
 				asEntity.setSoftwareName(nonCpSourceValue);
-				asEntity.setSoftwareVersion(row.get(nonCpSourceColumn+1).toString());
+				asEntity.setSoftwareVersion(row.get(nonCpSourceColumn+1).trim());
 				cert.getAdditionalSoftware().add(asEntity);
 			}
 		}
@@ -653,7 +653,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	
 	private void parseTestProcedures(PendingCertificationResultEntity cert, int tpColumn) {
 		for(CSVRecord row : getRecord()) {
-			String tpValue = row.get(tpColumn).toString();
+			String tpValue = row.get(tpColumn).trim();
 			if(!StringUtils.isEmpty(tpValue)) {
 				PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
 				tpEntity.setTestProcedureVersion(tpValue);
@@ -668,19 +668,19 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	
 	private void parseTestData(PendingCertifiedProductEntity product, PendingCertificationResultEntity cert, int tdColumnBegin) {
 		for(CSVRecord row : getRecord()) {
-			String tdVersionValue = row.get(tdColumnBegin).toString();
+			String tdVersionValue = row.get(tdColumnBegin).trim();
 			if(!StringUtils.isEmpty(tdVersionValue)) {
 				PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
 				tdEntity.setVersion(tdVersionValue);
-				Boolean hasAlteration = asBoolean(row.get(tdColumnBegin+1).toString());
+				Boolean hasAlteration = asBoolean(row.get(tdColumnBegin+1).trim());
 				tdEntity.setHasAlteration(hasAlteration);
-				String alterationStr = row.get(tdColumnBegin+2).toString();
+				String alterationStr = row.get(tdColumnBegin+2).trim();
 				if(tdEntity.isHasAlteration() && StringUtils.isEmpty(alterationStr)) {
 					product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates test data was altered however no test data alteration was found."); 
 				} else if(!tdEntity.isHasAlteration() && !StringUtils.isEmpty(alterationStr)) {
 					product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates test data was not altered however a test data alteration was found."); 
 				}
-				tdEntity.setAlteration(row.get(tdColumnBegin+2).toString());
+				tdEntity.setAlteration(row.get(tdColumnBegin+2).trim());
 				cert.getTestData().add(tdEntity);
 			}
 		}
@@ -688,8 +688,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 	
 	private void parseTestTools(PendingCertificationResultEntity cert, int toolColumnBegin) {
 		for(CSVRecord row : getRecord()) {
-			String testToolName = row.get(toolColumnBegin).toString();
-			String testToolVersion = row.get(toolColumnBegin+1).toString();
+			String testToolName = row.get(toolColumnBegin).trim();
+			String testToolVersion = row.get(toolColumnBegin+1).trim();
 			if(!StringUtils.isEmpty(testToolName)) {
 				PendingCertificationResultTestToolEntity ttEntity = new PendingCertificationResultTestToolEntity();
 				ttEntity.setTestToolName(testToolName);

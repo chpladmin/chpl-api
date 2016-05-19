@@ -242,6 +242,30 @@ public class SearchViewController {
 		return searchMenuManager.getEducationTypes();
 	}
 	
+	@ApiOperation(value="Get all possible test participant age ranges in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/age_ranges", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody Set<KeyValueModel> getAgeRanges() {
+		return searchMenuManager.getAgeRanges();
+	}
+	
+	@ApiOperation(value="Get all possible test functionality options in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/test_functionality", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody Set<KeyValueModel> getTestFunctionality() {
+		return searchMenuManager.getTestFunctionality();
+	}
+	
+	@ApiOperation(value="Get all possible test tool options in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/test_tools", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody Set<KeyValueModel> getTestTools() {
+		return searchMenuManager.getTestTools();
+	}
+	
 	@ApiOperation(value="Get all search options in the CHPL", 
 			notes="This returns all of the other /data/{something} results in one single response.")
 	@RequestMapping(value="/data/search_options", method=RequestMethod.GET,

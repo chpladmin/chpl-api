@@ -8,9 +8,7 @@ import java.util.List;
 public interface AddressDAO {
 	
 	public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException;
-	
 	public AddressEntity update(AddressDTO dto) throws EntityRetrievalException;
-	
 	public void delete(Long id) throws EntityRetrievalException;
 	
 	public List<AddressDTO> findAll();	

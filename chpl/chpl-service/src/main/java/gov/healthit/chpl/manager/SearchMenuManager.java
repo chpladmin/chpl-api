@@ -17,6 +17,9 @@ public interface SearchMenuManager {
 	public Set<KeyValueModel> getDeveloperNames();
 	public Set<KeyValueModel> getCertBodyNames();
 	public Set<KeyValueModel> getEducationTypes();
+	public Set<KeyValueModel> getAgeRanges();
+	public Set<KeyValueModel> getTestFunctionality();
+	public Set<KeyValueModel> getTestTools();
 	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException;
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple);
 	public PopulateSearchOptions getPopulateSearchOptions(Boolean simple) throws EntityRetrievalException;
