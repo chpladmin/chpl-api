@@ -17,9 +17,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "test_participant")
-public class TestParticipantEntity implements Cloneable, Serializable {
-	private static final long serialVersionUID = -606995659042551741L;
-
+public class TestParticipantEntity {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
@@ -29,18 +27,18 @@ public class TestParticipantEntity implements Cloneable, Serializable {
 	@Column(name = "gender")
 	private String gender;
 
-	@Column( name = "education_type_id", nullable = false  )
+	@Column( name = "education_type_id", nullable = true  )
 	private Long educationTypeId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "education_type_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "education_type_id", nullable = true, insertable = false, updatable = false)
 	private EducationTypeEntity education;
 	
-	@Column( name = "test_participant_age_id", nullable = false  )
+	@Column( name = "test_participant_age_id", nullable = true )
 	private Long ageRangeId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_participant_age_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "test_participant_age_id", nullable = true, insertable = false, updatable = false)
 	private AgeRangeEntity ageRange;
 	
 	@Column(name = "occupation")
