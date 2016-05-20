@@ -13,7 +13,6 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 
 @Repository("testParticipantDAO")
@@ -40,7 +39,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 			entity.setDeleted(false);
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			entity.setAge(dto.getAge());
+			entity.setAgeRangeId(dto.getAgeRangeId());
 			entity.setAssistiveTechnologyNeeds(dto.getAssistiveTechnologyNeeds());
 			entity.setComputerExperienceMonths(dto.getComputerExperienceMonths());
 			entity.setEducationTypeId(dto.getEducationTypeId());
@@ -63,7 +62,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
 		
-		entity.setAge(dto.getAge());
+		entity.setAgeRangeId(dto.getAgeRangeId());
 		entity.setAssistiveTechnologyNeeds(dto.getAssistiveTechnologyNeeds());
 		entity.setComputerExperienceMonths(dto.getComputerExperienceMonths());
 		entity.setEducationTypeId(dto.getEducationTypeId());

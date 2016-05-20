@@ -80,7 +80,7 @@
 		<class>gov.healthit.chpl.entity.TestParticipantEntity</class>
 		<class>gov.healthit.chpl.entity.TestTaskEntity</class>
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
-		
+		<class>gov.healthit.chpl.entity.AgeRangeEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

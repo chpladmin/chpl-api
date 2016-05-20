@@ -144,8 +144,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 								}
 								for(PendingCertificationResultTestTaskParticipantDTO part : task.getTaskParticipants()) {
 									if(part.getTestParticipant().getEducationTypeId() == null) {
-										product.getErrorMessages().add("Found no matching eduation level for test participant (age: " + 
-												part.getTestParticipant().getAge() + " and gender: " + part.getTestParticipant().getGender() 
+										product.getErrorMessages().add("Found no matching eduation level for test participant (gender: " + part.getTestParticipant().getGender() 
+												+ ") related to " + certCriteria.getNumber() + ".");
+									}
+									if(part.getTestParticipant().getAgeRangeId() == null) {
+										product.getErrorMessages().add("Found no matching age range for test participant (gender: " + part.getTestParticipant().getGender() 
 												+ ") related to " + certCriteria.getNumber() + ".");
 									}
 								}

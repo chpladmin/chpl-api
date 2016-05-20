@@ -330,7 +330,10 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 									PendingTestParticipantDTO pt = ptDto.getTestParticipant();
 									CertificationResultTestParticipant part = new CertificationResultTestParticipant();
 									part.setUniqueId(pt.getUniqueId());
-									part.setAge(pt.getAge());
+									part.setAgeRangeId(pt.getAgeRangeId());
+									if(pt.getAgeRange() != null) {
+										part.setAgeRange(pt.getAgeRange().getAge());
+									}
 									part.setAssistiveTechnologyNeeds(pt.getAssistiveTechnologyNeeds());
 									part.setComputerExperienceMonths(pt.getComputerExperienceMonths());
 									part.setEducationTypeId(pt.getEducationTypeId());

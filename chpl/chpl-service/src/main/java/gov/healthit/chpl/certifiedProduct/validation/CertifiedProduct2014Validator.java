@@ -127,13 +127,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 						cert.getSed() == null) {
 					product.getErrorMessages().add("SED is required for certification " + cert.getNumber() + ".");
 				}
-				
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
-						!cert.getNumber().equals("170.314 (g)(1)") && 
-						!cert.getNumber().equals("170.314 (g)(2)") && 
-						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
-						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
-				}
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA) &&
 						(cert.getTestData() == null || cert.getTestData().size() == 0)) {
 					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
@@ -192,46 +185,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 			if(!hasOneCqmWithVersion) {
 				product.getErrorMessages().add("At least one CQM/version is required but was not found.");
 			}
-		}
-		
-		//g1 check
-		boolean hasG1 = false;
-		for(CertificationResult cert : product.getCertificationResults()) {
-			if(cert.getNumber().equals("170.314 (g)(1)") && cert.isSuccess()) {
-				hasG1 = true;
-			}
-		}
-		boolean hasG1Complement = false;
-		for(CertificationResult cert : product.getCertificationResults()) {
-			for(int i = 0; i < g1ComplementaryCerts.length; i++) {
-				if(cert.getNumber().equals(g1ComplementaryCerts[i]) && cert.isSuccess()) {
-					hasG1Complement = true;
-				}
-			}
-		}
-		
-		if(hasG1 && !hasG1Complement) {
-			product.getErrorMessages().add("(g)(1) was found without a required related certification.");
-		}
-		
-		//g2 check
-		boolean hasG2 = false;
-		for(CertificationResult cert : product.getCertificationResults()) {
-			if(cert.getNumber().equals("170.314 (g)(2)") && cert.isSuccess()) {
-				hasG2 = true;
-			}
-		}
-		boolean hasG2Complement = false;
-		for(CertificationResult cert : product.getCertificationResults()) {
-			for(int i = 0; i < g2ComplementaryCerts.length; i++) {
-				if(cert.getNumber().equals(g2ComplementaryCerts[i]) && cert.isSuccess()) {
-					hasG2Complement = true;
-				}
-			}
-		}
-		
-		if(hasG2 && !hasG2Complement) {
-			product.getErrorMessages().add("(g)(2) was found without a required related certification.");
 		}
 		
 		//g4 check
