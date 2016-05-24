@@ -222,18 +222,28 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			//override optional boolean values
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
 				result.setGap(null);
+			} else if(result.isGap() == null) {
+				result.setGap(Boolean.FALSE);
 			}
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
 				result.setG1Success(null);
+			} else if(result.isG1Success() == null) {
+				result.setG1Success(Boolean.FALSE);
 			}
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
 				result.setG2Success(null);
+			} else if(result.isG2Success() == null) {
+				result.setG2Success(Boolean.FALSE);
 			}
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
 				result.setApiDocumentation(null);
+			} else if(result.getApiDocumentation() == null) {
+				result.setApiDocumentation("");
 			}
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
 				result.setPrivacySecurityFramework(null);
+			} else if(result.getPrivacySecurityFramework() == null) {
+				result.setPrivacySecurityFramework("");
 			}
 			
 			//add all the other data
