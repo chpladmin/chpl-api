@@ -1,14 +1,61 @@
 package gov.healthit.chpl.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+
 public class CertificationResult {
-	
-	
 	private String number;
 	private String title;
-	private boolean success;
+	private Boolean success;
+	private Boolean gap;
+	private Boolean sed;
+	private Boolean g1Success;
+	private Boolean g2Success;
+	private String apiDocumentation;
+	private String privacySecurityFramework;
 	
-	public CertificationResult(){}
+	private List<CertificationResultUcdProcess> ucdProcesses;
+	private List<CertificationResultTestFunctionality> testFunctionality;
+	private List<CertificationResultTestProcedure> testProcedures;
+	private List<CertificationResultTestData> testDataUsed;
+	private List<CertificationResultAdditionalSoftware> additionalSoftware;
+	private List<CertificationResultTestStandard> testStandards;
+	private List<CertificationResultTestTool> testToolsUsed;
+	private List<CertificationResultTestTask> testTasks;
 	
+	public CertificationResult(){
+		ucdProcesses = new ArrayList<CertificationResultUcdProcess>();
+		 additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+		 testStandards = new ArrayList<CertificationResultTestStandard>();
+		 testToolsUsed = new ArrayList<CertificationResultTestTool>();
+		 testDataUsed = new ArrayList<CertificationResultTestData>();
+		 testProcedures = new ArrayList<CertificationResultTestProcedure>();
+		 testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+		 testTasks = new ArrayList<CertificationResultTestTask>();
+	}
+
+	public CertificationResult(CertificationResultDetailsDTO certResult) {
+		this();
+		this.setNumber(certResult.getNumber());
+		this.setSuccess(certResult.getSuccess());
+		this.setTitle(certResult.getTitle());
+		this.setGap(certResult.getGap() == null ? Boolean.FALSE : certResult.getGap());
+		this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
+		this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
+		this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
+		this.setApiDocumentation(certResult.getApiDocumentation());
+		this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
+	}
+	
+	public List<CertificationResultTestProcedure> getTestProcedures() {
+		return testProcedures;
+	}
+
+	public void setTestProcedures(List<CertificationResultTestProcedure> testProcedures) {
+		this.testProcedures = testProcedures;
+	}
 	
 	public String getNumber() {
 		return number;
@@ -22,11 +69,104 @@ public class CertificationResult {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public boolean isSuccess() {
+	public Boolean isSuccess() {
 		return success;
 	}
-	public void setSuccess(boolean successful) {
+	public void setSuccess(Boolean successful) {
 		this.success = successful;
 	}
+	public List<CertificationResultAdditionalSoftware> getAdditionalSoftware() {
+		return additionalSoftware;
+	}
+	public void setAdditionalSoftware(List<CertificationResultAdditionalSoftware> additionalSoftware) {
+		this.additionalSoftware = additionalSoftware;
+	}
+	public Boolean isGap() {
+		return gap;
+	}
+	public void setGap(Boolean gap) {
+		this.gap = gap;
+	}
+	public Boolean isSed() {
+		return sed;
+	}
+	public void setSed(Boolean sed) {
+		this.sed = sed;
+	}
+	public Boolean isG1Success() {
+		return g1Success;
+	}
+	public void setG1Success(Boolean g1Success) {
+		this.g1Success = g1Success;
+	}
+	public Boolean isG2Success() {
+		return g2Success;
+	}
+	public void setG2Success(Boolean g2Success) {
+		this.g2Success = g2Success;
+	}
+
+	public List<CertificationResultTestTool> getTestToolsUsed() {
+		return testToolsUsed;
+	}
+
+	public void setTestToolsUsed(List<CertificationResultTestTool> testToolsUsed) {
+		this.testToolsUsed = testToolsUsed;
+	}
+
+	public List<CertificationResultTestStandard> getTestStandards() {
+		return testStandards;
+	}
+
+	public void setTestStandards(List<CertificationResultTestStandard> testStandards) {
+		this.testStandards = testStandards;
+	}
 	
+	public List<CertificationResultTestData> getTestDataUsed() {
+		return testDataUsed;
+	}
+
+	public void setTestDataUsed(List<CertificationResultTestData> testDataUsed) {
+		this.testDataUsed = testDataUsed;
+	}
+
+	public List<CertificationResultTestFunctionality> getTestFunctionality() {
+		return testFunctionality;
+	}
+
+	public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
+		this.testFunctionality = testFunctionality;
+	}
+
+	public List<CertificationResultUcdProcess> getUcdProcesses() {
+		return ucdProcesses;
+	}
+
+	public void setUcdProcesses(List<CertificationResultUcdProcess> ucdProcesses) {
+		this.ucdProcesses = ucdProcesses;
+	}
+
+	public List<CertificationResultTestTask> getTestTasks() {
+		return testTasks;
+	}
+
+	public void setTestTasks(List<CertificationResultTestTask> testTasks) {
+		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
+	}
 }

@@ -9,7 +9,7 @@ public class PopulateSearchOptions {
 	private Set<KeyValueModel> certificationStatuses;
 	private Set<KeyValueModel> practiceTypeNames;
 	private Set<KeyValueModel> productNames;
-	private Set<KeyValueModel> vendorNames;
+	private Set<KeyValueModel> developerNames;
 	private Set<KeyValueModel> certBodyNames;
 	private Set<DescriptiveModel> certificationCriterionNumbers;
 	private Set<DescriptiveModel> cqmCriterionNumbers;
@@ -37,11 +37,11 @@ public class PopulateSearchOptions {
 	public void setProductNames(Set<KeyValueModel> productNames) {
 		this.productNames = productNames;
 	}
-	public Set<KeyValueModel> getVendorNames() {
-		return vendorNames;
+	public Set<KeyValueModel> getDeveloperNames() {
+		return developerNames;
 	}
-	public void setVendorNames(Set<KeyValueModel> vendorNames) {
-		this.vendorNames = vendorNames;
+	public void setDeveloperNames(Set<KeyValueModel> developerNames) {
+		this.developerNames = developerNames;
 	}
 	public Set<KeyValueModel> getCertBodyNames() {
 		return certBodyNames;

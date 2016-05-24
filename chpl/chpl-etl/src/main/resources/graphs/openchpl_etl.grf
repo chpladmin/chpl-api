@@ -247,7 +247,7 @@
 <Field name="CMS188" type="string"/>
 <Field name="CMS190" type="string"/>
 <Field name="CMS22" type="string"/>
-<Field name="CMS26V1" type="string"/>
+<Field name="CMS26" type="string"/>
 <Field name="CMS2" type="string"/>
 <Field name="CMS30" type="string"/>
 <Field name="CMS31" type="string"/>
@@ -274,7 +274,7 @@
 <Field name="CMS82" type="string"/>
 <Field name="CMS90" type="string"/>
 <Field name="CMS91" type="string"/>
-<Field name="CMS9V1" type="string"/>
+<Field name="CMS9" type="string"/>
 <Field name="Checksum" type="string"/>
 <Field eofAsDelimiter="true" name="Stored_Checksum" type="string"/>
 </Record>
@@ -609,8 +609,8 @@
 <Field name="CMS190_2" type="string"/>
 <Field name="CMS22" type="string"/>
 <Field name="CMS22_2" type="string"/>
-<Field name="CMS26V1" type="string"/>
-<Field name="CMS26V1_2" type="string"/>
+<Field name="CMS26" type="string"/>
+<Field name="CMS26_2" type="string"/>
 <Field name="CMS2" type="string"/>
 <Field name="CMS2_2" type="string"/>
 <Field name="CMS30" type="string"/>
@@ -663,8 +663,8 @@
 <Field name="CMS90_2" type="string"/>
 <Field name="CMS91" type="string"/>
 <Field name="CMS91_2" type="string"/>
-<Field name="CMS9V1" type="string"/>
-<Field name="CMS9V1_2" type="string"/>
+<Field name="CMS9" type="string"/>
+<Field name="CMS9_2" type="string"/>
 <Field eofAsDelimiter="true" name="Checksum" type="string"/>
 </Record>
 </Metadata>
@@ -937,7 +937,7 @@
 <Field name="CMS188_PN_6_Initial_Antibiotic_Select" type="string"/>
 <Field name="CMS190_VTE_2_Intensive_Care_Unit_ICU" type="string"/>
 <Field name="CMS22_Preventive_Care_and_Screening" type="string"/>
-<Field name="CMS26V1_Home_Management_Plan_of_Care_H" type="string"/>
+<Field name="CMS26_Home_Management_Plan_of_Care_H" type="string"/>
 <Field name="CMS2_Preventive_Care_and_Screening_S" type="string"/>
 <Field name="CMS30_AMI_10_Statin_Prescribed_at_Disc" type="string"/>
 <Field name="CMS31_EHDI_1a_Hearing_screening_prio" type="string"/>
@@ -964,7 +964,7 @@
 <Field name="CMS82_Maternal_depression_screening" type="string"/>
 <Field name="CMS90_Functional_status_assessment_for" type="string"/>
 <Field name="CMS91_Stroke_4_Ischemic_stroke_Throm" type="string"/>
-<Field name="CMS9V1_Exclusive_Breast_Milk_Feeding" type="string"/>
+<Field name="CMS9_Exclusive_Breast_Milk_Feeding" type="string"/>
 <Field eofAsDelimiter="true" name="Checksum" type="string"/>
 </Record>
 </Metadata>
@@ -1278,7 +1278,7 @@ function integer transform() {
 	$out.0.CMS188 = $in.0.CMS188_PN_6_Initial_Antibiotic_Select;
 	$out.0.CMS190 = $in.0.CMS190_VTE_2_Intensive_Care_Unit_ICU;
 	$out.0.CMS22 = $in.0.CMS22_Preventive_Care_and_Screening;
-	$out.0.CMS26V1 = $in.0.CMS26V1_Home_Management_Plan_of_Care_H;
+	$out.0.CMS26 = $in.0.CMS26_Home_Management_Plan_of_Care_H;
 	$out.0.CMS2 = $in.0.CMS2_Preventive_Care_and_Screening_S;
 	$out.0.CMS30 = $in.0.CMS30_AMI_10_Statin_Prescribed_at_Disc;
 	$out.0.CMS31 = $in.0.CMS31_EHDI_1a_Hearing_screening_prio;
@@ -1305,7 +1305,7 @@ function integer transform() {
 	$out.0.CMS82 = $in.0.CMS82_Maternal_depression_screening;
 	$out.0.CMS90 = $in.0.CMS90_Functional_status_assessment_for;
 	$out.0.CMS91 = $in.0.CMS91_Stroke_4_Ischemic_stroke_Throm;
-	$out.0.CMS9V1 = $in.0.CMS9V1_Exclusive_Breast_Milk_Feeding;
+	$out.0.CMS9 = $in.0.CMS9_Exclusive_Breast_Milk_Feeding;
 	$out.0.Checksum = $in.0.Checksum;
 	$out.0.Stored_Checksum = $in.1.Stored_Checksum;
 
@@ -1598,7 +1598,7 @@ function integer transform() {
 	$out.3.CMS188 = $in.0.CMS188;
 	$out.3.CMS190 = $in.0.CMS190;
 	$out.3.CMS22 = $in.0.CMS22;
-	$out.3.CMS26V1 = $in.0.CMS26V1;
+	$out.3.CMS26 = $in.0.CMS26;
 	$out.3.CMS2 = $in.0.CMS2;
 	$out.3.CMS30 = $in.0.CMS30;
 	$out.3.CMS31 = $in.0.CMS31;
@@ -1625,7 +1625,7 @@ function integer transform() {
 	$out.3.CMS82 = $in.0.CMS82;
 	$out.3.CMS90 = $in.0.CMS90;
 	$out.3.CMS91 = $in.0.CMS91;
-	$out.3.CMS9V1 = $in.0.CMS9V1;
+	$out.3.CMS9 = $in.0.CMS9;
 	$out.3.Checksum = $in.0.Checksum;
 	$out.3.Stored_Checksum = $in.0.Stored_Checksum;
 
@@ -2060,8 +2060,8 @@ function integer transform() {
 	$out.0.CMS190_2 = splitCMS($in.0.CMS190,1);
 	$out.0.CMS22 = splitCMS($in.0.CMS22,0);
 	$out.0.CMS22_2 = splitCMS($in.0.CMS22,1);
-	$out.0.CMS26V1 = splitCMS($in.0.CMS26V1,0);
-	$out.0.CMS26V1_2 = splitCMS($in.0.CMS26V1,1);
+	$out.0.CMS26 = splitCMS($in.0.CMS26,0);
+	$out.0.CMS26_2 = splitCMS($in.0.CMS26,1);
 	$out.0.CMS2 = splitCMS($in.0.CMS2,0);
 	$out.0.CMS2_2 = splitCMS($in.0.CMS2,1);
 	$out.0.CMS30 = splitCMS($in.0.CMS30,0);
@@ -2114,8 +2114,8 @@ function integer transform() {
 	$out.0.CMS90_2 = splitCMS($in.0.CMS90,1);
 	$out.0.CMS91 = splitCMS($in.0.CMS91,0);
 	$out.0.CMS91_2 = splitCMS($in.0.CMS91,1);
-	$out.0.CMS9V1 = splitCMS($in.0.CMS9V1,0);
-	$out.0.CMS9V1_2 = splitCMS($in.0.CMS9V1,1);
+	$out.0.CMS9 = splitCMS($in.0.CMS9,0);
+	$out.0.CMS9_2 = splitCMS($in.0.CMS9,1);
 	return ALL;
 }
 ]]></attr>
@@ -2125,7 +2125,7 @@ function integer transform() {
 $Edition_id != null AND $Version_id != null AND $Certbody_id != null]]></attr>
 </Node>
 <Node dbConnection="JDBC0" enabled="enabled" guiName="Save Certifed Product" guiX="1743" guiY="529" id="SAVE_CERTIFED_PRODUCT" type="DB_OUTPUT_TABLE">
-<attr name="sqlQuery"><![CDATA[BEGIN; LOCK TABLE openchpl.certified_product IN SHARE ROW EXCLUSIVE MODE; INSERT INTO openchpl.certified_product (certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, acb_certification_id, certification_status_id, report_file_location, other_acb, visible_on_chpl, last_modified_user) SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ACB_Certification_ID, $Certification_Status_Id, $Test_Report_Url, $Other_ACB, $CHPL_Display, -1 WHERE NOT EXISTS (SELECT 1 FROM openchpl.certified_product WHERE certification_edition_id = $Edition_id AND product_version_id= $Version_id AND certification_body_id = $Certbody_id AND practice_type_id = $Practice_Setting_id AND product_classification_type_id = $Product_Classification_id AND chpl_product_number = $STG_Certification_Certification_ID); COMMIT;]]></attr>
+<attr name="sqlQuery"><![CDATA[BEGIN; LOCK TABLE openchpl.certified_product IN SHARE ROW EXCLUSIVE MODE; INSERT INTO openchpl.certified_product (certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, acb_certification_id, certification_status_id, report_file_location, other_acb, visible_on_chpl, product_additional_software, last_modified_user) SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ACB_Certification_ID, $Certification_Status_Id, $Test_Report_Url, $Other_ACB, $CHPL_Display, $Additional_Software, -1 WHERE NOT EXISTS (SELECT 1 FROM openchpl.certified_product WHERE certification_edition_id = $Edition_id AND product_version_id= $Version_id AND certification_body_id = $Certbody_id AND practice_type_id = $Practice_Setting_id AND product_classification_type_id = $Product_Classification_id AND chpl_product_number = $STG_Certification_Certification_ID); COMMIT;]]></attr>
 </Node>
 <Node enabled="enabled" guiName="SimpleCopy" guiX="1565" guiY="527" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
 <Node enabled="enabled" fileURL="./cert_products_x_ids_null.txt" guiName="UniversalDataWriter" guiX="1406" guiY="680" id="UNIVERSAL_DATA_WRITER" type="DATA_WRITER"/>
@@ -2407,7 +2407,7 @@ function integer transform() {
 	$out.0.CMS188 = $in.0.CMS188;
 	$out.0.CMS190 = $in.0.CMS190;
 	$out.0.CMS22 = $in.0.CMS22;
-	$out.0.CMS26V1 = $in.0.CMS26V1;
+	$out.0.CMS26 = $in.0.CMS26;
 	$out.0.CMS2 = $in.0.CMS2;
 	$out.0.CMS30 = $in.0.CMS30;
 	$out.0.CMS31 = $in.0.CMS31;
@@ -2434,7 +2434,7 @@ function integer transform() {
 	$out.0.CMS82 = $in.0.CMS82;
 	$out.0.CMS90 = $in.0.CMS90;
 	$out.0.CMS91 = $in.0.CMS91;
-	$out.0.CMS9V1 = $in.0.CMS9V1;
+	$out.0.CMS9 = $in.0.CMS9;
 	$out.0.CMS100_2 = $in.0.CMS100_2;
 	$out.0.CMS102_2 = $in.0.CMS102_2;
 	$out.0.CMS104_2 = $in.0.CMS104_2;
@@ -2500,7 +2500,7 @@ function integer transform() {
 	$out.0.CMS188_2 = $in.0.CMS188_2;
 	$out.0.CMS190_2 = $in.0.CMS190_2;
 	$out.0.CMS22_2 = $in.0.CMS22_2;
-	$out.0.CMS26V1_2 = $in.0.CMS26V1_2;
+	$out.0.CMS26_2 = $in.0.CMS26_2;
 	$out.0.CMS2_2 = $in.0.CMS2_2;
 	$out.0.CMS30_2 = $in.0.CMS30_2;
 	$out.0.CMS31_2 = $in.0.CMS31_2;
@@ -2527,7 +2527,7 @@ function integer transform() {
 	$out.0.CMS82_2 = $in.0.CMS82_2;
 	$out.0.CMS90_2 = $in.0.CMS90_2;
 	$out.0.CMS91_2 = $in.0.CMS91_2;
-	$out.0.CMS9V1_2 = $in.0.CMS9V1_2;
+	$out.0.CMS9_2 = $in.0.CMS9_2;
 
 	return ALL;
 }
@@ -2542,7 +2542,6 @@ function integer transform() {
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE certification_result IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO certified_product_checksum (certified_product_checksum, stg_certification_certification_id) VALUES ($Checksum, $STG_Certification_Certification_ID);
-INSERT INTO openchpl.additional_software (certified_product_id, name, version, last_modified_user) SELECT $CertifiedProduct_id, $Additional_Software, -1, -1 WHERE cast ($Additional_Software as varchar(500)) IS NOT NULL;
 INSERT INTO openchpl.certification_event (certified_product_id, event_type_id, event_date, last_modified_user) SELECT $CertifiedProduct_id, event_type_id, cast ($Certification_Date as date), -1 FROM openchpl.event_type WHERE openchpl.event_type.name = 'Certification';
 
 INSERT INTO openchpl.certification_result
@@ -3117,7 +3116,35 @@ INSERT INTO openchpl.certification_result
        (certification_criterion_id, certified_product_id, success, last_modified_user)
        SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__5_, -1
        FROM openchpl.certification_criterion
-       WHERE openchpl.certification_criterion.number LIKE '170.314 (b)(5)%'
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(5)(A)'
+       AND $Practice_Setting = 'Ambulatory'
+       AND $Certification_Edition_Year = '2014'
+       AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, false, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(5)(A)'
+       AND $Practice_Setting = 'Inpatient'
+       AND $Certification_Edition_Year = '2014'
+       AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, $Criteria170_314_b__5_, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(5)(B)'
+       AND $Practice_Setting = 'Inpatient'
+       AND $Certification_Edition_Year = '2014'
+       AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
+
+INSERT INTO openchpl.certification_result
+       (certification_criterion_id, certified_product_id, success, last_modified_user)
+       SELECT certification_criterion_id, $CertifiedProduct_id, false, -1
+       FROM openchpl.certification_criterion
+       WHERE openchpl.certification_criterion.number = '170.314 (b)(5)(B)'
+       AND $Practice_Setting = 'Ambulatory'
        AND $Certification_Edition_Year = '2014'
        AND cast ($Criteria170_314_b__5_ as boolean) IS NOT NULL;
 
@@ -5091,18 +5118,18 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.cms_id = 'CMS26V1' AND
-       cqm_version.version = $CMS26V1 AND
-       cast ($CMS26V1 as varchar(25)) IS NOT NULL;
+       openchpl.cqm_criterion.cms_id = 'CMS26' AND
+       cqm_version.version = $CMS26 AND
+       cast ($CMS26 as varchar(25)) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.cms_id = 'CMS26V1' AND
-       cqm_version.version = $CMS26V1_2 AND
-       cast ($CMS26V1_2 as varchar(25)) IS NOT NULL;
+       openchpl.cqm_criterion.cms_id = 'CMS26' AND
+       cqm_version.version = $CMS26_2 AND
+       cast ($CMS26_2 as varchar(25)) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
@@ -5577,18 +5604,18 @@ INSERT INTO openchpl.cqm_result
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.cms_id = 'CMS9V1' AND
-       cqm_version.version = $CMS9V1 AND
-       cast ($CMS9V1 as varchar(25)) IS NOT NULL;
+       openchpl.cqm_criterion.cms_id = 'CMS9' AND
+       cqm_version.version = $CMS9 AND
+       cast ($CMS9 as varchar(25)) IS NOT NULL;
 
 INSERT INTO openchpl.cqm_result
        (cqm_criterion_id, success, certified_product_id, last_modified_user)
        SELECT openchpl.cqm_criterion.cqm_criterion_id, true, $CertifiedProduct_id, -1
        FROM openchpl.cqm_version, openchpl.cqm_criterion
        WHERE cqm_version.cqm_version_id = cqm_criterion.cqm_version_id AND
-       openchpl.cqm_criterion.cms_id = 'CMS9V1' AND
-       cqm_version.version = $CMS9V1_2 AND
-       cast ($CMS9V1_2 as varchar(25)) IS NOT NULL;
+       openchpl.cqm_criterion.cms_id = 'CMS9' AND
+       cqm_version.version = $CMS9_2 AND
+       cast ($CMS9_2 as varchar(25)) IS NOT NULL;
 COMMIT;
 ]]></attr>
 </Node>

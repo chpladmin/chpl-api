@@ -21,7 +21,7 @@ public interface UserManager {
 	
 	
 	public UserDTO update(User userInfo) throws UserRetrievalException;
-	
+	public UserDTO update(UserDTO user) throws UserRetrievalException ;
 	
 	public void delete(UserDTO user) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 	
@@ -51,7 +51,7 @@ public interface UserManager {
 	public void removeRole(String userName, String role) throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException;
 	public void removeAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException;
 	
-	
+	public void updateFailedLoginCount(UserDTO userToUpdate) throws UserRetrievalException;
 	public void updateUserPassword(String userName, String password) throws UserRetrievalException;
 	public String resetUserPassword(String username, String email) throws UserRetrievalException;
 	

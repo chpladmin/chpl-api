@@ -2,7 +2,9 @@ package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.entity.CQMResultEntity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CQMResultDTO {
 	
@@ -15,10 +17,14 @@ public class CQMResultDTO {
 	private Boolean success;
 	private Boolean deleted;
 	
-	public CQMResultDTO(){}
+	private List<CQMResultCriteriaDTO> criteria;
+	
+	public CQMResultDTO(){
+		criteria = new ArrayList<CQMResultCriteriaDTO>();
+	}
 	
 	public CQMResultDTO(CQMResultEntity entity){
-		
+		this();
 		this.id = entity.getId();
 		this.cqmCriterionId = entity.getCqmCriterionId();
 		this.certifiedProductId = entity.getCertifiedProductId();
@@ -78,6 +84,14 @@ public class CQMResultDTO {
 
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
+	}
+
+	public List<CQMResultCriteriaDTO> getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(List<CQMResultCriteriaDTO> criteria) {
+		this.criteria = criteria;
 	}
 
 }

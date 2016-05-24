@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -25,17 +24,16 @@ import javax.persistence.Transient;
  */
 
 @Entity
-@Table(name = "certification_criterion", schema = "openchpl")
+@Table(name = "certification_criterion")
 public class CertificationCriterionEntity implements Serializable {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = 5366674516357955978L;
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificationCriterionCertification_criterion_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "certification_criterion_id", nullable = false  )
-	@SequenceGenerator(name = "certificationCriterionCertification_criterion_idGenerator", sequenceName = "openchpl.certification_criterion_certification_criterion_id_seq", schema = "openchpl")
 	private Long id;
 
 	@Basic( optional = true )

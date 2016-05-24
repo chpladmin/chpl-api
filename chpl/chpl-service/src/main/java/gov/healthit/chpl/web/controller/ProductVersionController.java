@@ -23,7 +23,10 @@ import gov.healthit.chpl.domain.UpdateVersionsRequest;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
+@Api(value="versions")
 @RestController
 @RequestMapping("/versions")
 public class ProductVersionController {
@@ -34,6 +37,8 @@ public class ProductVersionController {
 	@Autowired 
 	CertifiedProductManager cpManager;
 	
+	@ApiOperation(value="List all versions.", 
+			notes="List all versions associated with a specific product.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required=true) Long productId) {
@@ -54,7 +59,9 @@ public class ProductVersionController {
 		}
 		return versions;
 	}
-	
+
+	@ApiOperation(value="Get information about a specific version.", 
+			notes="")
 	@RequestMapping(value="/{versionId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") Long versionId) throws EntityRetrievalException {
@@ -67,6 +74,14 @@ public class ProductVersionController {
 		return result;
 	}
 	
+	@ApiOperation(value="Update a version or merge versions.", 
+			notes="This method serves two purposes: to update a single version's information and to merge two versions into one. "
+					+ " A user of this service should pass in a single versionId to update just that version. "
+					+ " If multiple version IDs are passed in, the service performs a merge meaning that a new version "
+					+ " is created with all of the information provided and all of the certified products "
+					+ " previously assigned to the old versionIds are reassigned to the newly created version. The "
+					+ " old versions are then deleted. "
+					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")

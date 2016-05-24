@@ -96,8 +96,11 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 	@Override
 	public ProductClassificationTypeDTO getByName(String name) {
 		ProductClassificationTypeEntity entity = getEntityByName(name);
-		ProductClassificationTypeDTO dto = new ProductClassificationTypeDTO(entity);
-		return dto;
+		if(entity != null) {
+			ProductClassificationTypeDTO dto = new ProductClassificationTypeDTO(entity);
+			return dto;
+		}
+		return null;
 	}
 	
 	private void create(ProductClassificationTypeEntity entity) {

@@ -16,8 +16,7 @@
 		<class>gov.healthit.chpl.entity.CertificationBodyEntity</class>
 		<class>gov.healthit.chpl.entity.AddressEntity</class>
 		<class>gov.healthit.chpl.entity.ContactEntity</class>
-		<class>gov.healthit.chpl.entity.VendorContactMap</class>
-		<class>gov.healthit.chpl.entity.VendorEntity</class>
+		<class>gov.healthit.chpl.entity.DeveloperEntity</class>
 		<class>gov.healthit.chpl.entity.ProductEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
@@ -28,11 +27,15 @@
 		<class>gov.healthit.chpl.entity.CertificationEditionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
-		<class>gov.healthit.chpl.entity.AdditionalSoftwareEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationEventEntity</class>
 		<class>gov.healthit.chpl.entity.EventTypeEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.ActivityEntity</class>
+		<class>gov.healthit.chpl.entity.CorrectiveActionPlanEntity</class>
+		<class>gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity</class>
+		<class>gov.healthit.chpl.entity.CorrectiveActionPlanDocumentationEntity</class>
+		<class>gov.healthit.chpl.entity.ApiKeyEntity</class>
+		<class>gov.healthit.chpl.entity.ApiKeyActivityEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

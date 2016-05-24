@@ -31,6 +31,7 @@ public class InvitationDAOImpl extends BaseDAOImpl implements InvitationDAO {
 		toCreate.setCreationDate(creationDate);
 		toCreate.setDeleted(false);
 		toCreate.setAcbId(dto.getAcbId());
+		toCreate.setTestingLabId(dto.getTestingLabId());
 		toCreate.setEmailAddress(dto.getEmail());
 		toCreate.setInviteToken(dto.getInviteToken());
 		toCreate.setLastModifiedDate(new Date());

@@ -1,13 +1,9 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,10 +13,11 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.Util;
+import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.dao.InvitationDAO;
 import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
@@ -34,14 +31,18 @@ import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
+import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import io.swagger.annotations.ApiOperation;
 
 @Service
 public class InvitationManagerImpl implements InvitationManager {
@@ -58,12 +59,13 @@ public class InvitationManagerImpl implements InvitationManager {
 	@Autowired
 	private InvitationPermissionDAO invitationPermissionDao;
 	
+	@Autowired Authenticator userAuthenticator;
 	@Autowired private UserManager userManager;
 	@Autowired private CertificationBodyManager acbManager;
+	@Autowired private TestingLabManager atlManager;
 	
 	private static final Logger logger = LogManager.getLogger(InvitationManagerImpl.class);
 
-	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -72,7 +74,7 @@ public class InvitationManagerImpl implements InvitationManager {
 		InvitationDTO dto = new InvitationDTO();
 		dto.setEmail(emailAddress);
 		Date now = new Date();
-		dto.setInviteToken(md5(emailAddress + now.getTime()));
+		dto.setInviteToken(Util.md5(emailAddress + now.getTime()));
 	
 		return createInvitation(dto, permissions);
 	}
@@ -80,12 +82,12 @@ public class InvitationManagerImpl implements InvitationManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')")
-	public InvitationDTO inviteWithAcbRole(String emailAddress, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
+	public InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
 	{
 		InvitationDTO dto = new InvitationDTO();
 		dto.setEmail(emailAddress);
 		Date now = new Date();
-		dto.setInviteToken(md5(emailAddress + now.getTime()));
+		dto.setInviteToken(Util.md5(emailAddress + now.getTime()));
 		
 		return createInvitation(dto, permissions);
 	}
@@ -101,11 +103,48 @@ public class InvitationManagerImpl implements InvitationManager {
 		dto.setAcbId(acbId);
 		//could be multiple invitations for the same email so add the time to make it unique
 		Date currTime = new Date();
-		dto.setInviteToken(md5(emailAddress + currTime.getTime()));
+		dto.setInviteToken(Util.md5(emailAddress + currTime.getTime()));
 	
 		return createInvitation(dto, permissions);
 	}
 
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "(hasRole('ROLE_ATL_ADMIN') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
+	public InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
+	{
+		InvitationDTO dto = new InvitationDTO();
+		dto.setEmail(emailAddress);
+		dto.setTestingLabId(atlId);
+		//could be multiple invitations for the same email so add the time to make it unique
+		Date currTime = new Date();
+		dto.setInviteToken(Util.md5(emailAddress + currTime.getTime()));
+	
+		return createInvitation(dto, permissions);
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "("
+			+ "hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
+			+ " and "
+			+ "hasRole('ROLE_ATL_ADMIN') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)"
+			+ ")")
+	public InvitationDTO inviteWithAcbAndAtlAccess(String emailAddress, Long acbId, Long atlId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
+	{
+		InvitationDTO dto = new InvitationDTO();
+		dto.setEmail(emailAddress);
+		dto.setTestingLabId(atlId);
+		dto.setAcbId(acbId);
+		//could be multiple invitations for the same email so add the time to make it unique
+		Date currTime = new Date();
+		dto.setInviteToken(Util.md5(emailAddress + currTime.getTime()));
+	
+		return createInvitation(dto, permissions);
+	}
+	
 	private InvitationDTO createInvitation(InvitationDTO toCreate, List<String> permissions)  
 			throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException
 	{
@@ -176,7 +215,7 @@ public class InvitationManagerImpl implements InvitationManager {
 			invitation.setCreatedUserId(newUser.getId());
 			invitation.setInviteToken(null);
 			Date now = new Date();
-			invitation.setConfirmToken(md5(invitation.getEmail() + now.getTime()));
+			invitation.setConfirmToken(Util.md5(invitation.getEmail() + now.getTime()));
 			invitationDao.update(invitation);
 			return newUser;
 		} finally {
@@ -215,18 +254,28 @@ public class InvitationManagerImpl implements InvitationManager {
 	@Transactional
 	public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO toUpdate) 
 		throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
+		User loggedInUser = gov.healthit.chpl.auth.Util.getCurrentUser();
+		
+		//have to give temporary permission to see all ACBs and ATLs 
+		//because the logged in user wouldn't already have permission on them
 		Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
 		SecurityContextHolder.getContext().setAuthentication(authenticator);
-		
+			
 		handleInvitation(invitation, toUpdate);
-		
+			
 		//delete invitation and permissions, we are done with it
 		for(InvitationPermissionDTO permission : invitation.getPermissions()) {
 			invitationPermissionDao.delete(permission.getId());
 		}
 		invitationDao.delete(invitation.getId());
+			
+		//put the permissions back how they were
+		if(loggedInUser == null) {
+			SecurityContextHolder.getContext().setAuthentication(null);
+		} else {
+			SecurityContextHolder.getContext().setAuthentication(loggedInUser);
+		}
 		
-		SecurityContextHolder.getContext().setAuthentication(null);
 		return toUpdate;
 	}
 	
@@ -249,7 +298,14 @@ public class InvitationManagerImpl implements InvitationManager {
 				throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getAcbId());
 			}
 		}
-		
+		TestingLabDTO userAtl = null;
+		if(invitation.getTestingLabId() != null) {
+			userAtl = atlManager.getById(invitation.getTestingLabId());
+			if(userAtl == null) {
+				throw new InvalidArgumentsException("Could not find the testing lab with id " + invitation.getTestingLabId());
+			}
+		}
+
 		//give them permissions
 		if(invitation.getPermissions() != null && invitation.getPermissions().size() > 0) {
 			for(InvitationPermissionDTO permission : invitation.getPermissions()) {
@@ -268,9 +324,13 @@ public class InvitationManagerImpl implements InvitationManager {
 			}
 		}
 		
-		//if they are a acb admin or staff then they need to be given access to the invited acb
+		//give them access to the invited acb
 		if(userAcb != null) {
 			acbManager.addPermission(userAcb, user.getId(), BasePermission.ADMINISTRATION);
+		}
+		//give them access to the invited atl
+		if(userAtl != null) {
+			atlManager.addPermission(userAtl, user.getId(), BasePermission.ADMINISTRATION);
 		}
 	}
 	
@@ -326,25 +386,4 @@ public class InvitationManagerImpl implements InvitationManager {
 		return authenticator;
 	}
 	
-    private String md5(String input) {
-        String md5 = null;
-        if(null == input) {
-        	return null;
-        }
-         
-        try { 
-        	//Create MessageDigest object for MD5
-        	MessageDigest digest = MessageDigest.getInstance("MD5");
-         
-	        //Update input string in message digest
-	        digest.update(input.getBytes(), 0, input.length());
- 
-	        //Converts message digest value in base 16 (hex) 
-	        md5 = new BigInteger(1, digest.digest()).toString(16);
- 
-        } catch (NoSuchAlgorithmException e) {
-	       	e.printStackTrace();
-	    }
-        return md5;
-    }
 }

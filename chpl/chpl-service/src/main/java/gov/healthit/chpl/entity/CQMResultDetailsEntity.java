@@ -16,6 +16,9 @@ public class CQMResultDetailsEntity {
 	@Column( name = "cqm_result_id", nullable = false )
 	private Long id;
 	
+	@Column(name = "certified_product_id")
+    private Long certifiedProductId;
+	
 	@Basic( optional = false )
 	@Column( name = "success", nullable = false )
 	private Boolean success;
@@ -53,7 +56,6 @@ public class CQMResultDetailsEntity {
 	
 	@Column(name = "cqm_id")
 	private String cqmId;
-	
 
 	public Long getId() {
 		return id;

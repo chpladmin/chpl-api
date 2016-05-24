@@ -1,62 +1,46 @@
 package gov.healthit.chpl;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 
-import javax.servlet.MultipartConfigElement;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.oxm.Marshaller;
+import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
-
+import gov.healthit.chpl.manager.ApiKeyManager;
+import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 
 @Configuration
+@EnableWebMvc
+@EnableTransactionManagement(proxyTargetClass=true)
 @EnableWebSecurity
+@PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
-public class CHPLConfig {
+public class CHPLConfig implements EnvironmentAware {
 	
+	@Autowired private ApiKeyManager apiKeyManager;
 	
-	public static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+	@Autowired private Environment env;
 	
-	protected Properties props;
-	
-	protected void loadProperties() throws IOException {
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-		
-		if (in == null)
-		{
-			props = null;
-			throw new FileNotFoundException("Environment Properties File not found in class path.");
-		}
-		else
-		{
-			props = new Properties();
-			props.load(in);
-		}
-	}
+	@Override
+    public void setEnvironment(final Environment environment) {
+        this.env = environment;
+    }
 	
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
-		
-		if (props == null){
-			try {
-				loadProperties();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
 		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-		bean.setPersistenceUnitName(props.getProperty("persistenceUnitName"));
+		bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
 		return bean;
 	}
 	 
@@ -72,15 +56,27 @@ public class CHPLConfig {
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 	
-	 @Bean(name="multipartResolver") 
-	    public CommonsMultipartResolver getResolver() throws IOException{
+	@Bean(name="multipartResolver")
+	public CommonsMultipartResolver getResolver() throws IOException{
 	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 	         
 	        //Set the maximum allowed size (in bytes) for each individual file.
 	        resolver.setMaxUploadSize(5242880);//5MB
 	         
 	        //You may also set other available properties.
-	         
+	        
 	        return resolver;
-	    }
+	}
+	
+	@Bean
+	public APIKeyAuthenticationFilter apiKeyAuthenticationFilter()
+	{
+		return new APIKeyAuthenticationFilter(apiKeyManager);
+	}
+	
+	@Bean
+	public Marshaller marshaller()
+	{
+		return new CastorMarshaller();
+	}
 }

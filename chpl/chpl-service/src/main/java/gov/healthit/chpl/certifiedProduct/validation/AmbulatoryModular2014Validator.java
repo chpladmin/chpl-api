@@ -1,115 +1,181 @@
 package gov.healthit.chpl.certifiedProduct.validation;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.PendingCertificationCriterionDTO;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("ambulatoryModular2014Validator")
-public class AmbulatoryModular2014Validator implements PendingCertifiedProductValidator {
+public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validator {
 
-	private static final String[] g1ComplimentaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
-			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
-			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)", "170.314 (b)(2)",
-			"170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(5)", "170.314 (e)(1)", "170.314 (e)(2)",
-			"170.314 (e)(3)"};
-	private static final String[] g2ComplimentaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
-			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
-			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)", "170.314 (b)(2)",
-			"170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(5)", "170.314 (e)(1)", "170.314 (e)(2)",
-			"170.314 (e)(3)"};
-	private static final String[] g3ComplimentaryCerts = {"170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(6)",
-			"170.314 (a)(7)", "170.314 (a)(8)", "170.314 (b)(3)", "170.314 (b)(4)"};
+	private static final String[] g1ComplementaryCerts = {"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
+	private static final String[] g2ComplementaryCerts = {"170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"};
+	
+	@Override
+	public String[] getG1ComplimentaryCerts() {
+		String[] certs = super.getG1ComplimentaryCerts();
+		String[] allCerts = new String[certs.length + g1ComplementaryCerts.length];
+		
+		int allCertIndex = 0;
+
+		for(int j = 0; j < certs.length; j++) {
+			allCerts[allCertIndex] = new String(certs[j]);
+			allCertIndex++;
+		}
+		for(int j = 0; j < g1ComplementaryCerts.length; j++) {
+			allCerts[allCertIndex] = new String(g1ComplementaryCerts[j]);
+			allCertIndex++;
+		}
+		return allCerts;
+	}
+	
+	@Override
+	public String[] getG2ComplimentaryCerts() {
+		String[] certs = super.getG2ComplimentaryCerts();
+		String[] allCerts = new String[certs.length + g2ComplementaryCerts.length];
+		
+		int allCertIndex = 0;
+		for(int j = 0; j < certs.length; j++) {
+			allCerts[allCertIndex] = new String(certs[j]);
+			allCertIndex++;
+		}
+			
+		for(int j = 0; j < g2ComplementaryCerts.length; j++) {
+			allCerts[allCertIndex] = new String(g2ComplementaryCerts[j]);
+			allCertIndex++;
+		}
+		
+		return allCerts;
+	}
+	
+	@Override
+	protected void validateDemographics(PendingCertifiedProductDTO product) {
+		super.validateDemographics(product);
+		
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						!cert.getNumber().equals("170.314 (g)(1)") && 
+						!cert.getNumber().equals("170.314 (g)(2)") && 
+						!cert.getNumber().equals("170.314 (f)(3)") &&
+						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				}
+			}
+		}
+	}
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
-		//TODO:
-		//One less than all the mandatory Ambulatory certification criteria must be
-		//met. i think i don't need to check this?
+		super.validate(product);
 		
 		//check (g)(1)
 		boolean hasG1Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.getMeetsCriteria()) {
 				hasG1Cert = true;
 			}
 		}	
 		if(hasG1Cert) {
-			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g1ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g1ComplimentaryCerts[i]) &&
-							certCriteria.isMeetsCriteria()) {
-						hasAtLeastOneCertPartner = true;
+			String[] g1Certs = getG1ComplimentaryCerts();
+			boolean hasG1Complement = false;
+			for(int i = 0; i < g1Certs.length && !hasG1Complement; i++) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+					if(certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.getMeetsCriteria()) {
+						hasG1Complement = true;
 					}
 				}
 			}
 			
-			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(1) exists but a required compliemtnary certification was not found.");
+			if(!hasG1Complement) {
+				product.getWarningMessages().add("(g)(1) was found without a required related certification.");
 			}
 		}
 		
 		//check (g)(2)
 		boolean hasG2Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.isMeetsCriteria()) {
+		for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.getMeetsCriteria()) {
 				hasG2Cert = true;
 			}
 		}	
 		if(hasG2Cert) {
-			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g2ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g2ComplimentaryCerts[i]) &&
-							certCriteria.isMeetsCriteria()) {
-						hasAtLeastOneCertPartner = true;
+			String[] g2Certs = getG2ComplimentaryCerts();
+			boolean hasG2Complement = false;
+			for(int i = 0; i < g2Certs.length && !hasG2Complement; i++) {
+				for(PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+					if(certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.getMeetsCriteria()) {
+						hasG2Complement = true;
 					}
 				}
 			}
 			
-			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(2) exists but a required compliemtnary certification was not found.");
+			if(!hasG2Complement) {
+				product.getWarningMessages().add("(g)(2) was found without a required related certification.");
 			}
 		}
 		
-		//check presence of both certs
 		if(hasG1Cert && hasG2Cert) {
-			product.getErrorMessages().add("Product cannot have both 170.314 (g)(1) and 170.314 (g)(2) certification");
+			product.getWarningMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
 		}
+	}
+	
+	@Override
+	public void validate(CertifiedProductSearchDetails product) {
+		super.validate(product);
 		
-		//check (g)(3)
-		boolean hasG3Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(3)") && certCriteria.isMeetsCriteria()) {
-				hasG3Cert = true;
+		//check (g)(1)
+		boolean hasG1Cert = false;
+		for(CertificationResult certCriteria : product.getCertificationResults()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.isSuccess()) {
+				hasG1Cert = true;
 			}
 		}	
-		if(hasG3Cert) {
+		if(hasG1Cert) {
+			String[] g1Certs = getG1ComplimentaryCerts();
 			boolean hasAtLeastOneCertPartner = false;
-			for(int i = 0; i < g3ComplimentaryCerts.length && !hasAtLeastOneCertPartner; i++) {
-				for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-					if(certCriteria.getNumber().equals(g3ComplimentaryCerts[i]) &&
-							certCriteria.isMeetsCriteria()) {
+			for(int i = 0; i < g1Certs.length && !hasAtLeastOneCertPartner; i++) {
+				for(CertificationResult certCriteria : product.getCertificationResults()) {
+					if(certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.isSuccess()) {
 						hasAtLeastOneCertPartner = true;
 					}
 				}
 			}
 			
 			if(!hasAtLeastOneCertPartner) {
-				product.getErrorMessages().add("Certification criterion 170.314 (g)(3) exists but a required compliemtnary certification was not found.");
+				product.getWarningMessages().add("(g)(1) was found without a required related certification.");
 			}
 		}
 		
-		//check (g)(4)
-		boolean hasG4Cert = false;
-		for(PendingCertificationCriterionDTO certCriteria : product.getCertificationCriterion()) {
-			if(certCriteria.getNumber().equals("170.314 (g)(4)") && certCriteria.isMeetsCriteria()) {
-				hasG4Cert = true;
+		//check (g)(2)
+		boolean hasG2Cert = false;
+		for(CertificationResult certCriteria : product.getCertificationResults()) {
+			if(certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.isSuccess()) {
+				hasG2Cert = true;
+			}
+		}	
+		if(hasG2Cert) {
+			String[] g2Certs = getG2ComplimentaryCerts();
+			boolean hasAtLeastOneCertPartner = false;
+			for(int i = 0; i < g2Certs.length && !hasAtLeastOneCertPartner; i++) {
+				for(CertificationResult certCriteria : product.getCertificationResults()) {
+					if(certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.isSuccess()) {
+						hasAtLeastOneCertPartner = true;
+					}
+				}
+			}
+			
+			if(!hasAtLeastOneCertPartner) {
+				product.getWarningMessages().add("(g)(2) was found without a required related certification.");
 			}
 		}
-		if(!hasG4Cert) {
-			product.getErrorMessages().add("Certification 170.314 (g)(4) is required but was not found.");
+		
+		if(hasG1Cert && hasG2Cert) {
+			product.getWarningMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
 		}
 	}
 }

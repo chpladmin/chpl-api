@@ -7,13 +7,14 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.Size;
 
 
 /** 
@@ -39,10 +40,9 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	private Boolean deleted;
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productVersionProduct_version_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "product_version_id", nullable = false  )
-	@SequenceGenerator(name = "productVersionProduct_version_idGenerator", sequenceName = "product_version_product_version_id_seq")
 	private Long id;
     
 	@Basic( optional = false )
@@ -56,6 +56,12 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	@Basic( optional = false )
 	@Column(name = "product_id", nullable = false )
 	private Long productId;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "product_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private ProductEntity product;
+	
 	
 	@Basic( optional = true )
 	@Column(name = "version")
@@ -229,5 +235,13 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 		sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
 		sb.append("version: " + this.getVersion());
 		return sb.toString();		
+	}
+
+	public ProductEntity getProduct() {
+		return product;
+	}
+
+	public void setProduct(ProductEntity product) {
+		this.product = product;
 	}	
 }

@@ -17,11 +17,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PostPersist;
-import javax.persistence.PrePersist;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 
 /** 
@@ -35,27 +34,31 @@ import javax.persistence.Transient;
 @Table(name = "pending_certified_product")
 public class PendingCertifiedProductEntity {
 	
+	@Transient
+	private List<String> errorMessages = new ArrayList<String>();
+	
 	/**
 	 * fields we generate mostly from spreadsheet values
 	 */
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pendingCertifiedProduct_Pending_Certified_product_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
-	@SequenceGenerator(name = "pendingCertifiedProduct_Pending_Certified_product_idGenerator", 
-		sequenceName = "pending_certified_product_pending_certified_product_id_seq")
 	private Long id;
     
     @Column(name = "practice_type_id")
     private Long practiceTypeId;
     
     @Column(name = "vendor_id")
-    private Long vendorId;
+    private Long developerId;
+    
+    @Column(name = "vendor_contact_id")
+    private Long developerContactId;
     
     @Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendor_address_id", unique=true, nullable = true)
-	private AddressEntity vendorAddress;
+	private AddressEntity developerAddress;
     
     @Column(name = "product_id")
     private Long productId;
@@ -72,8 +75,8 @@ public class PendingCertifiedProductEntity {
     @Column(name = "product_classification_id")
     private Long productClassificationId;
     
-    @Column(name = "additional_software_id")
-    private Long additionalSoftwareId;
+    @Column(name = "testing_lab_id")
+    private Long testingLabId;
     
 	@Basic(optional = false) 
 	@Column( name = "certification_status_id" , nullable = false)
@@ -91,8 +94,11 @@ public class PendingCertifiedProductEntity {
     @Column(name = "practice_type")
     private String practiceType;
     
+    @Column(name = "testing_lab_name")
+    private String testingLabName;
+    
     @Column(name="vendor_name")
-    private String vendorName;
+    private String developerName;
     
     @Column(name = "product_name")
     private String productName;
@@ -111,52 +117,89 @@ public class PendingCertifiedProductEntity {
     
     @Column(name = "product_classification_name")
     private String productClassificationName;
-    
-    //TODO: no field for this one
-    @Column(name = "product_classification_module")
-    private String productClassificationModule;
-    
+
     @Column(name = "certification_date")
     private Date certificationDate;
     
     @Column(name = "vendor_street_address")
-    private String vendorStreetAddress;
+    private String developerStreetAddress;
+    
+    @Column(name = "vendor_transparency_attestation")
+	@Type(type = "gov.healthit.chpl.entity.PostgresEnumType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
+	private AttestationType transparencyAttestation;
+    
+    @Column(name = "vendor_transparency_attestation_url")
+    private String transparencyAttestationUrl;
     
     @Column(name = "vendor_city")
-    private String vendorCity;
+    private String developerCity;
     
     @Column(name = "vendor_state")
-    private String vendorState;
+    private String developerState;
     
     @Column(name = "vendor_zip_code")
-    private String vendorZipCode;
+    private String developerZipCode;
     
     @Column(name = "vendor_website")
-    private String vendorWebsite;
+    private String developerWebsite;
     
-    //TODO: maps to nothing
     @Column(name = "vendor_email")
-    private String vendorEmail;
+    private String developerEmail;
+
+    @Column(name = "vendor_contact_name")
+    private String developerContactName;
     
-    @Column(name = "additional_software")
-    private String additionalSoftware;
-    
-    //TODO: maps to nothing
-    @Column(name = "upload_notes")
-    private String uploadNotes;
+    @Column(name = "vendor_phone")
+    private String developerPhoneNumber;
     
     @Column(name = "test_report_url")
     private String reportFileLocation;
     
+    @Column(name = "sed_report_file_location")
+    private String sedReportFileLocation;
+
+    @Column(name = "sed_intended_user_description")
+    private String sedIntendedUserDescription;
+
+    @Column(name = "sed_testing_end")
+    private Date sedTestingEnd;
+	
+	@Column(name = "ics")
+	private Boolean ics;
+	
+	@Column(name = "accessibility_certified")
+	private Boolean accessibilityCertified;
+	
+	@Column(name = "terms_of_use_url")
+	private String termsOfUse;
+	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
-	private Set<PendingCertificationCriterionEntity> certificationCriterion;
+	private Set<PendingCertificationResultEntity> certificationCriterion;
     
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCqmCriterionEntity> cqmCriterion;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
+	@Basic( optional = false )
+	@Column( name = "pending_certified_product_id", nullable = false  )
+	private Set<PendingCertifiedProductQmsStandardEntity> qmsStandards;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
+	@Basic( optional = false )
+	@Column( name = "pending_certified_product_id", nullable = false  )
+	private Set<PendingCertifiedProductTargetedUserEntity> targetedUsers;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
+	@Basic( optional = false )
+	@Column( name = "pending_certified_product_id", nullable = false  )
+	private Set<PendingCertifiedProductAccessibilityStandardEntity> accessibilityStandards;
+	
+	@Transient
+	private boolean hasQms;
 	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
@@ -175,14 +218,16 @@ public class PendingCertifiedProductEntity {
 	private Boolean deleted;
 	
 	public PendingCertifiedProductEntity() {
-		certificationCriterion = new HashSet<PendingCertificationCriterionEntity>();
+		certificationCriterion = new HashSet<PendingCertificationResultEntity>();
 		cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
+		qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
+		targetedUsers = new HashSet<PendingCertifiedProductTargetedUserEntity>();
+		accessibilityStandards = new HashSet<PendingCertifiedProductAccessibilityStandardEntity>();
 	} 
 
 	public PendingCertifiedProductEntity(Long id) {
+		this();
 		this.id = id;
-		certificationCriterion = new HashSet<PendingCertificationCriterionEntity>();
-		cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
 	}
 	
 	@Transient
@@ -206,12 +251,12 @@ public class PendingCertifiedProductEntity {
 		this.practiceTypeId = practiceTypeId;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
 	public Long getProductId() {
@@ -278,12 +323,12 @@ public class PendingCertifiedProductEntity {
 		this.practiceType = practiceType;
 	}
 
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
 
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
 
 	public String getProductName() {
@@ -334,14 +379,6 @@ public class PendingCertifiedProductEntity {
 		this.productClassificationName = productClassificationName;
 	}
 
-	public String getProductClassificationModule() {
-		return productClassificationModule;
-	}
-
-	public void setProductClassificationModule(String productClassificationModule) {
-		this.productClassificationModule = productClassificationModule;
-	}
-
 	public Date getCertificationDate() {
 		return certificationDate;
 	}
@@ -350,68 +387,52 @@ public class PendingCertifiedProductEntity {
 		this.certificationDate = certificationDate;
 	}
 
-	public String getVendorStreetAddress() {
-		return vendorStreetAddress;
+	public String getDeveloperStreetAddress() {
+		return developerStreetAddress;
 	}
 
-	public void setVendorStreetAddress(String vendorStreetAddress) {
-		this.vendorStreetAddress = vendorStreetAddress;
+	public void setDeveloperStreetAddress(String developerStreetAddress) {
+		this.developerStreetAddress = developerStreetAddress;
 	}
 
-	public String getVendorCity() {
-		return vendorCity;
+	public String getDeveloperCity() {
+		return developerCity;
 	}
 
-	public void setVendorCity(String vendorCity) {
-		this.vendorCity = vendorCity;
+	public void setDeveloperCity(String developerCity) {
+		this.developerCity = developerCity;
 	}
 
-	public String getVendorState() {
-		return vendorState;
+	public String getDeveloperState() {
+		return developerState;
 	}
 
-	public void setVendorState(String vendorState) {
-		this.vendorState = vendorState;
+	public void setDeveloperState(String developerState) {
+		this.developerState = developerState;
 	}
 
-	public String getVendorZipCode() {
-		return vendorZipCode;
+	public String getDeveloperZipCode() {
+		return developerZipCode;
 	}
 
-	public void setVendorZipCode(String vendorZipCode) {
-		this.vendorZipCode = vendorZipCode;
+	public void setDeveloperZipCode(String developerZipCode) {
+		this.developerZipCode = developerZipCode;
 	}
 
-	public String getVendorWebsite() {
-		return vendorWebsite;
+	public String getDeveloperWebsite() {
+		return developerWebsite;
 	}
 
-	public void setVendorWebsite(String vendorWebsite) {
-		this.vendorWebsite = vendorWebsite;
+	public void setDeveloperWebsite(String developerWebsite) {
+		this.developerWebsite = developerWebsite;
 	}
 
-	public String getVendorEmail() {
-		return vendorEmail;
+	public String getDeveloperEmail() {
+		return developerEmail;
 	}
 
-	public void setVendorEmail(String vendorEmail) {
-		this.vendorEmail = vendorEmail;
-	}
-
-	public String getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-
-	public void setAdditionalSoftware(String additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
-
-	public String getUploadNotes() {
-		return uploadNotes;
-	}
-
-	public void setUploadNotes(String uploadNotes) {
-		this.uploadNotes = uploadNotes;
+	public void setDeveloperEmail(String developerEmail) {
+		this.developerEmail = developerEmail;
 	}
 
 	public String getReportFileLocation() {
@@ -422,11 +443,11 @@ public class PendingCertifiedProductEntity {
 		this.reportFileLocation = reportFileLocation;
 	}
 
-	public Set<PendingCertificationCriterionEntity> getCertificationCriterion() {
+	public Set<PendingCertificationResultEntity> getCertificationCriterion() {
 		return certificationCriterion;
 	}
 
-	public void setCertificationCriterion(Set<PendingCertificationCriterionEntity> certificationCriterion) {
+	public void setCertificationCriterion(Set<PendingCertificationResultEntity> certificationCriterion) {
 		this.certificationCriterion = certificationCriterion;
 	}
 
@@ -438,20 +459,12 @@ public class PendingCertifiedProductEntity {
 		this.cqmCriterion = cqmCriterion;
 	}
 
-	public AddressEntity getVendorAddress() {
-		return vendorAddress;
+	public AddressEntity getDeveloperAddress() {
+		return developerAddress;
 	}
 
-	public void setVendorAddress(AddressEntity vendorAddress) {
-		this.vendorAddress = vendorAddress;
-	}
-
-	public Long getAdditionalSoftwareId() {
-		return additionalSoftwareId;
-	}
-
-	public void setAdditionalSoftwareId(Long additionalSoftwareId) {
-		this.additionalSoftwareId = additionalSoftwareId;
+	public void setDeveloperAddress(AddressEntity developerAddress) {
+		this.developerAddress = developerAddress;
 	}
 
 	public Date getLastModifiedDate() {
@@ -492,5 +505,149 @@ public class PendingCertifiedProductEntity {
 
 	public void setStatus(Long status) {
 		this.status = status;
+	}
+
+	public Boolean getIcs() {
+		return ics;
+	}
+
+	public void setIcs(Boolean ics) {
+		this.ics = ics;
+	}
+
+	public Long getTestingLabId() {
+		return testingLabId;
+	}
+
+	public void setTestingLabId(Long testingLabId) {
+		this.testingLabId = testingLabId;
+	}
+
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+
+	public String getDeveloperContactName() {
+		return developerContactName;
+	}
+
+	public void setDeveloperContactName(String developerContactName) {
+		this.developerContactName = developerContactName;
+	}
+
+	public String getDeveloperPhoneNumber() {
+		return developerPhoneNumber;
+	}
+
+	public void setDeveloperPhoneNumber(String developerPhoneNumber) {
+		this.developerPhoneNumber = developerPhoneNumber;
+	}
+
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public Set<PendingCertifiedProductQmsStandardEntity> getQmsStandards() {
+		return qmsStandards;
+	}
+
+	public void setQmsStandards(Set<PendingCertifiedProductQmsStandardEntity> qmsStandards) {
+		this.qmsStandards = qmsStandards;
+	}
+
+	public boolean isHasQms() {
+		return hasQms;
+	}
+
+	public void setHasQms(boolean hasQms) {
+		this.hasQms = hasQms;
+	}
+
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+
+	public AttestationType getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(AttestationType transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public Long getDeveloperContactId() {
+		return developerContactId;
+	}
+
+	public void setDeveloperContactId(Long developerContactId) {
+		this.developerContactId = developerContactId;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public List<String> getErrorMessages() {
+		return errorMessages;
+	}
+
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public Set<PendingCertifiedProductTargetedUserEntity> getTargetedUsers() {
+		return targetedUsers;
+	}
+
+	public void setTargetedUsers(Set<PendingCertifiedProductTargetedUserEntity> targetedUsers) {
+		this.targetedUsers = targetedUsers;
+	}
+
+	public Set<PendingCertifiedProductAccessibilityStandardEntity> getAccessibilityStandards() {
+		return accessibilityStandards;
+	}
+
+	public void setAccessibilityStandards(Set<PendingCertifiedProductAccessibilityStandardEntity> accessibilityStandards) {
+		this.accessibilityStandards = accessibilityStandards;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 }

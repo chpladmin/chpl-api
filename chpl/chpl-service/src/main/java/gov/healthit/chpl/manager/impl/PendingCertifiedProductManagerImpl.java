@@ -5,8 +5,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
@@ -30,8 +31,8 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidator;
-import gov.healthit.chpl.certifiedProduct.validation.PendingCertifiedProductValidatorFactory;
+import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
+import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -39,20 +40,26 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service
-public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport implements PendingCertifiedProductManager {
+public class PendingCertifiedProductManagerImpl implements PendingCertifiedProductManager {
+	private static final Logger logger = LogManager.getLogger(PendingCertifiedProductManagerImpl.class);
 
+	@Autowired private CertificationResultRules certRules;
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-	@Autowired PendingCertifiedProductValidatorFactory validatorFactory;
+	@Autowired CertifiedProductValidatorFactory validatorFactory;
 	
 	@Autowired PendingCertifiedProductDAO pcpDao;
 	@Autowired CertificationStatusDAO statusDao;
@@ -70,17 +77,6 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	public void setup() {
 		loadCQMCriteria();
 	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	@PostFilter("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
-			+ "(hasPermission(filterObject, read) or hasPermission(filterObject, admin)))")
-	public List<PendingCertifiedProductDTO> getAll() {
-		List<PendingCertifiedProductDTO> all = pcpDao.findAll();
-		validate(all);
-		return all;
-	}
 
 	@Override
 	@Transactional(readOnly = true)
@@ -90,7 +86,9 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	public List<PendingCertifiedProductDTO> getPending() {
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
 		List<PendingCertifiedProductDTO> products = pcpDao.findByStatus(statusDto.getId());
+		updateCertResults(products);
 		validate(products);
+		
 		return products;
 	}
 	
@@ -98,10 +96,70 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or ((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin))")	
-	public PendingCertifiedProductDTO getById(Long id) throws EntityRetrievalException {
+	public PendingCertifiedProductDetails getById(Long id) throws EntityRetrievalException {
 		PendingCertifiedProductDTO dto = pcpDao.findById(id);
+		updateCertResults(dto);
 		validate(dto);
-		return dto;
+
+		PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(dto);
+		addAllVersionsToCmsCriterion(pcpDetails);
+		
+		return pcpDetails;
+	}
+	
+	private void updateCertResults(PendingCertifiedProductDTO dto) {
+		List<PendingCertifiedProductDTO> products = new ArrayList<PendingCertifiedProductDTO>();
+		products.add(dto);
+		updateCertResults(products);
+	}
+	
+	private void updateCertResults(List<PendingCertifiedProductDTO> products) {
+		for(PendingCertifiedProductDTO product : products) {
+			for(PendingCertificationResultDTO certResult : product.getCertificationCriterion()) {
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
+					certResult.setGap(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+					certResult.setG1Success(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+					certResult.setG2Success(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+					certResult.setApiDocumentation(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+					certResult.setPrivacySecurityFramework(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SED)) {
+					certResult.setSed(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
+					certResult.setUcdProcesses(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+					certResult.setAdditionalSoftware(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+					certResult.setTestFunctionality(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+					certResult.setTestStandards(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+					certResult.setTestData(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)) {
+					certResult.setTestProcedures(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+					certResult.setTestTools(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
+					certResult.setTestTasks(null);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -112,7 +170,27 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb) {
 		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acb.getId());
 		validate(products);
+		
 		return products;
+	}
+	
+	@Override
+	@Transactional (readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "(hasPermission(#acb, read) or hasPermission(#acb, admin)))")
+	public List<PendingCertifiedProductDetails> getDetailsByAcb(CertificationBodyDTO acb) {
+		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acb.getId());
+		validate(products);
+		
+		List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
+		for(PendingCertifiedProductDTO product : products) {
+			PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
+			addAllVersionsToCmsCriterion(pcpDetails);
+			result.add(pcpDetails);
+		}
+		
+		return result;
 	}
 	
 	@Override
@@ -128,6 +206,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		
 		//insert the record
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
+		updateCertResults(pendingCpDto);
 		//add appropriate ACLs
 		//who already has access to this ACB?
 		CertificationBodyDTO acb = acbManager.getById(acbId);
@@ -170,7 +249,7 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
 		
 		CertificationStatusDTO newStatus = statusDao.getByStatusName("Active");
-		pcpDao.updateStatus(pendingProductId, newStatus);
+		pcpDao.delete(pendingProductId, newStatus);
 		
 		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been confirmed.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, pendingCpDto);
@@ -203,12 +282,17 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 		
 		Sid recipient = new PrincipalSid(user.getSubjectName());
 		if(permissionExists(acl, recipient, permission)) {
-			logger.debug("User " + recipient + " already has permission on the pending certified product " + pcpDto.getId());
+			logger.info("User " + recipient + " already has permission on the pending certified product " + pcpDto.getId());
 		} else {
-			acl.insertAce(acl.getEntries().size(), permission, recipient, true);
-			mutableAclService.updateAcl(acl);
-			logger.debug("Added permission " + permission + " for Sid " + recipient
-					+ " pending certified product " + pcpDto);
+//			try {
+				acl.insertAce(acl.getEntries().size(), permission, recipient, true);
+				mutableAclService.updateAcl(acl);
+//				logger.info("Added permission " + permission + " for Sid " + recipient
+//						+ " pending certified product " + pcpDto);
+//			} catch(NotFoundException nfe) {
+//				logger.error("Error inserting ACE for pending certified product " + pcpDto.getId() + " with ACE values: " + 
+//						acl.getEntries().size() + ", " + permission.getPattern() + ", " + recipient.toString(), nfe);
+//			}
 		}
 	}
 	
@@ -378,15 +462,47 @@ public class PendingCertifiedProductManagerImpl extends ApplicationObjectSupport
 	
 	private void validate(List<PendingCertifiedProductDTO> products) {
 		for(PendingCertifiedProductDTO dto : products) {
-			PendingCertifiedProductValidator validator = validatorFactory.getValidator(dto);
-			validator.validate(dto);
+			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
+			if(validator != null) {
+				validator.validate(dto);
+			}
 		}
 	}
 	
 	private void validate(PendingCertifiedProductDTO... products) {
 		for(PendingCertifiedProductDTO dto : products) {
-			PendingCertifiedProductValidator validator = validatorFactory.getValidator(dto);
-			validator.validate(dto);
+			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
+			if(validator != null) {
+				validator.validate(dto);
+			}
+		}
+	}
+	
+	public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails) {
+		//now add allVersions for CMSs
+		String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
+		if (certificationEdition.startsWith("2014")){
+			List<CQMCriterion> cqms2014 = getAvailableCQMVersions();
+			for(CQMCriterion cqm : cqms2014) {
+				boolean cqmExists = false;
+				for(CQMResultDetails details : pcpDetails.getCqmResults()) {
+					if(cqm.getCmsId().equals(details.getCmsId())) {
+						cqmExists = true;
+						details.getAllVersions().add(cqm.getCqmVersion());
+					}
+				}
+				if(!cqmExists) {
+					CQMResultDetails result = new CQMResultDetails();
+					result.setCmsId(cqm.getCmsId());
+					result.setNqfNumber(cqm.getNqfNumber());
+					result.setNumber(cqm.getNumber());
+					result.setTitle(cqm.getTitle());
+					result.setSuccess(Boolean.FALSE);
+					result.setTypeId(cqm.getCqmCriterionTypeId());
+					result.getAllVersions().add(cqm.getCqmVersion());
+					pcpDetails.getCqmResults().add(result);
+				}
+			}
 		}
 	}
 }

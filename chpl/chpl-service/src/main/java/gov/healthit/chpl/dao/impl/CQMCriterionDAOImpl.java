@@ -11,7 +11,6 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CQMVersionEntity;
@@ -50,6 +49,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 			entity.setNqfNumber(dto.getNqfNumber());
 			entity.setNumber(dto.getNumber());
 			entity.setTitle(dto.getTitle());
+			entity.setRetired(dto.getRetired());
 						
 			create(entity);	
 		}
@@ -81,7 +81,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		entity.setNqfNumber(dto.getNqfNumber());
 		entity.setNumber(dto.getNumber());
 		entity.setTitle(dto.getTitle());
-					
+		entity.setRetired(dto.getRetired());
 						
 		update(entity);	
 		

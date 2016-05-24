@@ -16,8 +16,11 @@ public interface InvitationManager {
 			
 	
 	public InvitationDTO inviteAdmin(String emailAddress, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
-	
+	public InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions) 
+			throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 	public InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
+	public InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
+	public InvitationDTO inviteWithAcbAndAtlAccess(String emailAddress, Long acbId, Long atlId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
 	public InvitationDTO getByInvitationHash(String hash);
 	public InvitationDTO getById(Long id)  throws UserRetrievalException;
@@ -26,8 +29,6 @@ public interface InvitationManager {
 			throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
 			UserCreationException;
 	public UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException;
-	public InvitationDTO inviteWithAcbRole(String emailAddress, List<String> permissions) 
-			throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 	public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO user) 
 			throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException;
 }

@@ -1,50 +1,61 @@
 package gov.healthit.chpl.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CertifiedProductSearchDetails {
 	
 	private Long id;
-    private Long testingLabId;
     private String chplProductNumber;
     private String reportFileLocation;
-    private String qualityManagementSystemAtt;
+    private String sedReportFileLocation;
+    private String sedIntendedUserDescription;
+    private Date sedTestingEnd;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
     private Map<String, Object> certificationStatus = new HashMap<String, Object>();
-	private Map<String, Object> vendor = new HashMap<String, Object>();
+    private Developer developer;
 	private Map<String, Object> product = new HashMap<String, Object>();
 	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
+	private Map<String, Object> testingLab = new HashMap<String, Object>();
 	private Long certificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
+	private Integer countCorrectiveActionPlans;
+	private Integer countCurrentCorrectiveActionPlans;
+	private Integer countClosedCorrectiveActionPlans;
 	private Boolean visibleOnChpl;
-	private Boolean privacyAttestation;
+	private String termsOfUse;
+	private Boolean ics;
+	private Boolean accessibilityCertified;
+	private String productAdditionalSoftware;
+	private String transparencyAttestation;
+	private String transparencyAttestationUrl;
 	private Long lastModifiedDate;
-	private List<AdditionalSoftware> additionalSoftware = new ArrayList<AdditionalSoftware>();
+	
+	private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
+	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
+	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
-	private List<CQMCriterion> applicableCqmCriteria = new ArrayList<CQMCriterion>();
 	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
 	
+	private Set<String> warningMessages = new HashSet<String>();
+	private Set<String> errorMessages = new HashSet<String>();
 	
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Long getTestingLabId() {
-		return testingLabId;
-	}
-	public void setTestingLabId(Long testingLabId) {
-		this.testingLabId = testingLabId;
 	}
 	public String getChplProductNumber() {
 		return chplProductNumber;
@@ -57,12 +68,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
@@ -82,11 +87,11 @@ public class CertifiedProductSearchDetails {
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
 	}
-	public Map<String, Object> getVendor() {
-		return vendor;
+	public Developer getDeveloper() {
+		return developer;
 	}
-	public void setVendor(Map<String, Object> vendor) {
-		this.vendor = vendor;
+	public void setDeveloper(Developer developer) {
+		this.developer = developer;
 	}
 	public Map<String, Object> getProduct() {
 		return product;
@@ -143,18 +148,6 @@ public class CertifiedProductSearchDetails {
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
 	}
-	public List<AdditionalSoftware> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-	public void setAdditionalSoftware(List<AdditionalSoftware> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
-	public List<CQMCriterion> getApplicableCqmCriteria() {
-		return applicableCqmCriteria;
-	}
-	public void setApplicableCqmCriteria(List<CQMCriterion> applicableCqmCriteria) {
-		this.applicableCqmCriteria = applicableCqmCriteria;
-	}
 	public Boolean getVisibleOnChpl() {
 		return visibleOnChpl;
 	}
@@ -180,10 +173,113 @@ public class CertifiedProductSearchDetails {
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
 	}
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
+	public Set<String> getWarningMessages() {
+		return warningMessages;
 	}
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
+	public void setWarningMessages(Set<String> warningMessages) {
+		this.warningMessages = warningMessages;
+	}
+	public Set<String> getErrorMessages() {
+		return errorMessages;
+	}
+	public void setErrorMessages(Set<String> errorMessages) {
+		this.errorMessages = errorMessages;
+	}
+	public Integer getCountCorrectiveActionPlans() {
+		return countCorrectiveActionPlans;
+	}
+	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
+		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
+	}
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+	public String getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+	public void setTransparencyAttestation(String transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
+	}
+	public Boolean getIcs() {
+		return ics;
+	}
+	public void setIcs(Boolean ics) {
+		this.ics = ics;
+	}
+	
+	public Map<String, Object> getTestingLab() {
+		return testingLab;
+	}
+	public void setTestingLab(Map<String, Object> testingLab) {
+		this.testingLab = testingLab;
+	}
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+	public List<CertifiedProductQmsStandard> getQmsStandards() {
+		return qmsStandards;
+	}
+	public void setQmsStandards(List<CertifiedProductQmsStandard> qmsStandards) {
+		this.qmsStandards = qmsStandards;
+	}
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+	public List<CertifiedProductTargetedUser> getTargetedUsers() {
+		return targetedUsers;
+	}
+	public void setTargetedUsers(List<CertifiedProductTargetedUser> targetedUsers) {
+		this.targetedUsers = targetedUsers;
+	}
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+	public List<CertifiedProductAccessibilityStandard> getAccessibilityStandards() {
+		return accessibilityStandards;
+	}
+	public void setAccessibilityStandards(List<CertifiedProductAccessibilityStandard> accessibilityStandards) {
+		this.accessibilityStandards = accessibilityStandards;
+	}
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 }

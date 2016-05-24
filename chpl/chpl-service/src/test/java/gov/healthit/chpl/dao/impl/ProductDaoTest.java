@@ -68,21 +68,21 @@ public class ProductDaoTest extends TestCase {
 	}
 	
 	@Test
-	public void getProductByVendor() {
-		Long vendorId = 1L;
+	public void getProductByDeveloper() {
+		Long developerId = -1L;
 		List<ProductDTO> products = null;
-		products = productDao.getByVendor(vendorId);
+		products = productDao.getByDeveloper(developerId);
 		assertNotNull(products);
 		assertEquals(3, products.size());
 	}
 	
 	@Test
-	public void getProductByVendors() {
-		List<Long> vendorIds = new ArrayList<Long>();
-		vendorIds.add(1L);
-		vendorIds.add(2L);
+	public void getProductByDevelopers() {
+		List<Long> developerIds = new ArrayList<Long>();
+		developerIds.add(-1L);
+		developerIds.add(-2L);
 		List<ProductDTO> products = null;
-		products = productDao.getByVendors(vendorIds);
+		products = productDao.getByDevelopers(developerIds);
 		assertNotNull(products);
 		assertEquals(4, products.size());
 	}
@@ -90,7 +90,7 @@ public class ProductDaoTest extends TestCase {
 	@Test
 	public void updateProduct() throws EntityRetrievalException {
 		ProductDTO product = productDao.getById(1L);
-		product.setVendorId(2L);
+		product.setDeveloperId(-2L);
 		
 		ProductEntity result = null;
 		try {
@@ -103,7 +103,7 @@ public class ProductDaoTest extends TestCase {
 
 		try {
 			ProductDTO updatedProduct = productDao.getById(product.getId());
-			assertTrue(updatedProduct.getVendorId() == 2L);
+			assertTrue(updatedProduct.getDeveloperId() == -2L);
 		} catch(Exception ex) {
 			fail("could not find product!");
 			System.out.println(ex.getStackTrace());

@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -17,33 +16,47 @@ import javax.validation.constraints.NotNull;
 public class CorrectiveActionPlanEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "correctiveActionPlanCorrective_action_plan_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "corrective_action_plan_id", nullable = false  )
-	@SequenceGenerator(name = "correctiveActionPlanCorrective_action_plan_idGenerator", sequenceName = "corrective_action_plan_corrective_action_plan_id_seq", allocationSize = 1)
 	private Long id;
 	
 	@Basic( optional = false )
 	@Column(name="certified_product_id")
 	private Long certifiedProductId;
+
+	@Basic( optional = false )
+	@Column(name="surveillance_start")
+	private Date surveillanceStartDate;
 	
-	@Column(name="acb_summary")
-	private String acbSummaryDescription;
+	@Column(name="surveillance_end")
+	private Date surveillanceEndDate;
 	
-	@Column(name = "developer_summary")
-	private String developerSummaryDescription;
+	@Basic( optional = false )
+	@Column(name = "surveillance_result")
+	private Boolean surveillanceResult;
+	
+	@Basic( optional = false )
+	@Column(name = "noncompliance_determination_date")
+	private Date nonComplianceDeterminationDate;
 	
 	@Column(name = "approval_date")
 	private Date approvalDate;
 	
-	@Column(name = "effective_date")
-	private Date effectiveDate;
+	@Column(name = "start_date")
+	private Date startDate;
 	
-	@Column(name = "completion_date_estimated")
-	private Date estimatedCompletionDate;
+	@Column(name = "completion_date_required")
+	private Date requiredCompletionDate;
 	
 	@Column(name = "completion_date_actual")
 	private Date actualCompletionDate;
+	
+	@Column(name = "summary")
+	private String summary;
+	
+	@Column(name = "developer_explanation")
+	private String developerExplanation;
 	
 	@Column(name = "resolution")
 	private String resolution;
@@ -82,22 +95,6 @@ public class CorrectiveActionPlanEntity {
 		this.certifiedProductId = certifiedProductId;
 	}
 
-	public String getAcbSummaryDescription() {
-		return acbSummaryDescription;
-	}
-
-	public void setAcbSummaryDescription(String acbSummaryDescription) {
-		this.acbSummaryDescription = acbSummaryDescription;
-	}
-
-	public String getDeveloperSummaryDescription() {
-		return developerSummaryDescription;
-	}
-
-	public void setDeveloperSummaryDescription(String developerSummaryDescription) {
-		this.developerSummaryDescription = developerSummaryDescription;
-	}
-
 	public Date getApprovalDate() {
 		return approvalDate;
 	}
@@ -105,23 +102,7 @@ public class CorrectiveActionPlanEntity {
 	public void setApprovalDate(Date approvalDate) {
 		this.approvalDate = approvalDate;
 	}
-
-	public Date getEffectiveDate() {
-		return effectiveDate;
-	}
-
-	public void setEffectiveDate(Date effectiveDate) {
-		this.effectiveDate = effectiveDate;
-	}
-
-	public Date getEstimatedCompletionDate() {
-		return estimatedCompletionDate;
-	}
-
-	public void setEstimatedCompletionDate(Date estimatedCompletionDate) {
-		this.estimatedCompletionDate = estimatedCompletionDate;
-	}
-
+	
 	public Date getActualCompletionDate() {
 		return actualCompletionDate;
 	}
@@ -129,15 +110,7 @@ public class CorrectiveActionPlanEntity {
 	public void setActualCompletionDate(Date actualCompletionDate) {
 		this.actualCompletionDate = actualCompletionDate;
 	}
-
-	public String getResolution() {
-		return resolution;
-	}
-
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
-	}
-
+	
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -170,4 +143,75 @@ public class CorrectiveActionPlanEntity {
 		this.deleted = deleted;
 	}
 
+	public Date getSurveillanceStartDate() {
+		return surveillanceStartDate;
+	}
+
+	public void setSurveillanceStartDate(Date surveillanceStartDate) {
+		this.surveillanceStartDate = surveillanceStartDate;
+	}
+
+	public Date getSurveillanceEndDate() {
+		return surveillanceEndDate;
+	}
+
+	public void setSurveillanceEndDate(Date surveillanceEndDate) {
+		this.surveillanceEndDate = surveillanceEndDate;
+	}
+
+	public Boolean getSurveillanceResult() {
+		return surveillanceResult;
+	}
+
+	public void setSurveillanceResult(Boolean surveillanceResult) {
+		this.surveillanceResult = surveillanceResult;
+	}
+
+	public Date getNonComplianceDeterminationDate() {
+		return nonComplianceDeterminationDate;
+	}
+
+	public void setNonComplianceDeterminationDate(Date nonComplianceDeterminationDate) {
+		this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getRequiredCompletionDate() {
+		return requiredCompletionDate;
+	}
+
+	public void setRequiredCompletionDate(Date requiredCompletionDate) {
+		this.requiredCompletionDate = requiredCompletionDate;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getDeveloperExplanation() {
+		return developerExplanation;
+	}
+
+	public void setDeveloperExplanation(String developerExplanation) {
+		this.developerExplanation = developerExplanation;
+	}
+
+	public String getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(String resolution) {
+		this.resolution = resolution;
+	}
 }

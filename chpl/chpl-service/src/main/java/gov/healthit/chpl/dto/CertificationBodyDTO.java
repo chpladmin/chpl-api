@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class CertificationBodyDTO {
 	
-	
+	private String acbCode;
 	private Date creationDate;
 	private Boolean deleted;
 	private Long id;
@@ -20,6 +20,7 @@ public class CertificationBodyDTO {
 	
 	public CertificationBodyDTO(CertificationBodyEntity entity){
 		this.id = entity.getId();
+		this.acbCode = entity.getAcbCode();
 		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
@@ -81,6 +82,14 @@ public class CertificationBodyDTO {
 
 	public void setAddress(AddressDTO address) {
 		this.address = address;
+	}
+
+	public String getAcbCode() {
+		return acbCode;
+	}
+
+	public void setAcbCode(String acbCode) {
+		this.acbCode = acbCode;
 	}
 	
 }

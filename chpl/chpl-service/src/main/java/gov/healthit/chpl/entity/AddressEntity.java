@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -18,10 +17,9 @@ import javax.validation.constraints.Size;
 public class AddressEntity {
 	
 	@Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addressAddress_idGenerator")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column( name = "address_id", nullable = false  )
-	@SequenceGenerator(name = "addressAddress_idGenerator", sequenceName = "address_address_id_seq")
+	@Column( name = "address_id", nullable = false )
 	private Long id;
 	
 	@Basic( optional = false )

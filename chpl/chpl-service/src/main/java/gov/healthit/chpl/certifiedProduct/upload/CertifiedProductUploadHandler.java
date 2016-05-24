@@ -4,16 +4,17 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 
-import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 public interface CertifiedProductUploadHandler {
-	public PendingCertifiedProductEntity handle();
+	public PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
 	public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
-	public CSVRecord getRecord();
-	public void setRecord(CSVRecord record);
+	public List<CSVRecord> getRecord();
+	public void setRecord(List<CSVRecord> record);
 	public CSVRecord getHeading();
 	public void setHeading(CSVRecord heading);
+	public int getLastDataIndex();
+	public void setLastDataIndex(int lastDataIndex);
 }

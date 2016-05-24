@@ -1,9 +1,18 @@
 package gov.healthit.chpl.domain;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.util.StringUtils;
+
+import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 
 public class CQMResultDetails {
 	
+	private Long id;
 	private String number;
 	private String cmsId;
 	private String title;
@@ -11,20 +20,43 @@ public class CQMResultDetails {
 	private Long typeId;
 	private String domain;
 	private Boolean success;
-	private String version;
+	private Set<String> successVersions;
+	private Set<String> allVersions;
+	private List<CQMResultCertification> criteria;
 	
-	public CQMResultDetails(){}
+	public CQMResultDetails(){
+		this.successVersions = new HashSet<String>();
+		this.allVersions = new HashSet<String>();
+		this.criteria = new ArrayList<CQMResultCertification>();
+	}
 	
 	public CQMResultDetails(CQMResultDetailsDTO dto){
+		this();
+		this.id = dto.getId();
 		this.number = dto.getNumber();
 		this.cmsId = dto.getCmsId();
 		this.title = dto.getTitle();
 		this.nqfNumber = dto.getNqfNumber();
 		this.typeId = dto.getCqmCriterionTypeId();
 		this.domain = dto.getDomain();
-		this.success = dto.getSuccess();
-		this.version = dto.getVersion();
 		
+		if(!StringUtils.isEmpty(dto.getCmsId())) {
+			this.getSuccessVersions().add(dto.getVersion());
+		} else if(!StringUtils.isEmpty(dto.getNqfNumber())) {
+			this.setSuccess(dto.getSuccess());
+		}
+		
+		if(dto.getCriteria() != null && dto.getCriteria().size() > 0) {
+			for(CQMResultCriteriaDTO criteriaDTO : dto.getCriteria()) {
+				CQMResultCertification criteria = new CQMResultCertification();
+				criteria.setCertificationId(criteriaDTO.getCqmResultId());
+				criteria.setId(criteriaDTO.getId());
+				if(criteriaDTO.getCriterion() != null) {
+					criteria.setCertificationNumber(criteriaDTO.getCriterion().getNumber());
+				}
+				this.criteria.add(criteria);
+			}
+		}
 	}
 	
 	public String getNumber() {
@@ -51,20 +83,6 @@ public class CQMResultDetails {
 	public void setNqfNumber(String nqfNumber) {
 		this.nqfNumber = nqfNumber;
 	}
-	public boolean isSuccess() {
-		return success;
-	}
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
 
 	public Long getTypeId() {
 		return typeId;
@@ -80,6 +98,49 @@ public class CQMResultDetails {
 
 	public void setDomain(String domain) {
 		this.domain = domain;
+	}
+
+	public Set<String> getSuccessVersions() {
+		return successVersions;
+	}
+
+	public void setSuccessVersions(Set<String> successVersions) {
+		this.successVersions = successVersions;
+	}
+
+	public Set<String> getAllVersions() {
+		return allVersions;
+	}
+
+	public void setAllVersions(Set<String> allVersions) {
+		this.allVersions = allVersions;
+	}
+
+	public Boolean isSuccess() {
+		if(successVersions != null && successVersions.size() > 0) {
+			return true;
+		}
+		return success;
+	}
+
+	public void setSuccess(Boolean success) {
+		this.success = success;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public List<CQMResultCertification> getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(List<CQMResultCertification> criteria) {
+		this.criteria = criteria;
 	}
 	
 }

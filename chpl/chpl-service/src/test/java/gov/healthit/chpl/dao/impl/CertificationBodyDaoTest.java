@@ -61,10 +61,20 @@ public class CertificationBodyDaoTest extends TestCase {
 	}
 
 	@Test
+	public void testGetMaxAcbCode() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		String maxCode = acbDao.getMaxCode();
+		assertNotNull(maxCode);
+		assertEquals("07", maxCode);
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
 	public void testGetAllAcbs() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		List<CertificationBodyDTO> acbs = acbDao.findAll();
+		List<CertificationBodyDTO> acbs = acbDao.findAll(false);
 		assertNotNull(acbs);
 		assertEquals(7, acbs.size());
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -124,7 +134,7 @@ public class CertificationBodyDaoTest extends TestCase {
 	
 	@Test
 	public void testUpdateAcb() {
-		CertificationBodyDTO toUpdate = acbDao.findAll().get(0);
+		CertificationBodyDTO toUpdate = acbDao.findAll(false).get(0);
 		toUpdate.setName("UPDATED NAME");
 		
 		CertificationBodyDTO result = null;
@@ -147,7 +157,7 @@ public class CertificationBodyDaoTest extends TestCase {
 	
 	@Test
 	public void testDeleteAcb() throws EntityRetrievalException {
-		Long deleteId = 1L;
+		Long deleteId = -1L;
 		acbDao.delete(deleteId);
 		
 		CertificationBodyDTO deleted = acbDao.getById(deleteId);
@@ -156,7 +166,7 @@ public class CertificationBodyDaoTest extends TestCase {
 	
 	@Test
 	public void listUsersForAcb() {
-		Long acbIdWithUsers=3L;
+		Long acbIdWithUsers=-3L;
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acbIdWithUsers);
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
 		

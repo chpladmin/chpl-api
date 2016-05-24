@@ -32,6 +32,9 @@ public class InvitationEntity {
 	@Column(name = "certification_body_id")
 	private Long acbId;
 	
+	@Column(name = "testing_lab_id")
+	private Long testingLabId;
+	
 	@Column(name="invite_token", unique=true)
 	private String inviteToken;
 	
@@ -143,5 +146,13 @@ public class InvitationEntity {
 
 	public void setCreatedUserId(Long createdUserId) {
 		this.createdUserId = createdUserId;
+	}
+
+	public Long getTestingLabId() {
+		return testingLabId;
+	}
+
+	public void setTestingLabId(Long testingLabId) {
+		this.testingLabId = testingLabId;
 	}
 }

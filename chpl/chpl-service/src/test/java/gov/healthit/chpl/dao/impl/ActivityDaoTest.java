@@ -171,8 +171,8 @@ public class ActivityDaoTest extends TestCase {
 	@Test
 	@Transactional
 	public void testGetById() throws EntityRetrievalException{
-		ActivityDTO dto = activityDAO.getById(1L);
-		assertEquals((Long) dto.getId(),(Long) 1L);
+		ActivityDTO dto = activityDAO.getById(-1L);
+		assertEquals((long) dto.getId(), -1L);
 		
 	}
 	
@@ -180,7 +180,7 @@ public class ActivityDaoTest extends TestCase {
 	@Transactional
 	public void testFindAll(){
 		
-		List<ActivityDTO> results = activityDAO.findAll();
+		List<ActivityDTO> results = activityDAO.findAll(false);
 		assertEquals(5, results.size());
 	}
 	
@@ -188,7 +188,7 @@ public class ActivityDaoTest extends TestCase {
 	@Transactional
 	public void testFindByObjectId(){
 		
-		List<ActivityDTO> results = activityDAO.findByObjectId(1L, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
+		List<ActivityDTO> results = activityDAO.findByObjectId(false, 1L, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
 		assertEquals(4, results.size());
 		
 	}
@@ -197,14 +197,14 @@ public class ActivityDaoTest extends TestCase {
 	@Transactional
 	public void testFindByConcept(){
 		
-		List<ActivityDTO> results = activityDAO.findByConcept(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
+		List<ActivityDTO> results = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
 		assertEquals(4, results.size());
 		for(ActivityDTO dto : results){
 			assertEquals(dto.getConcept(), ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
 		}
 		
-		List<ActivityDTO> vendorResults = activityDAO.findByConcept(ActivityConcept.ACTIVITY_CONCEPT_VENDOR);
-		assertEquals(0, vendorResults.size());
+		List<ActivityDTO> developerResults = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
+		assertEquals(0, developerResults.size());
 		
 	}
 	
@@ -214,10 +214,10 @@ public class ActivityDaoTest extends TestCase {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		List<ActivityDTO> results = activityDAO.findAllInLastNDays(5);
+		List<ActivityDTO> results = activityDAO.findAllInLastNDays(false, 5);
 		assertEquals(0,results.size());
 		
-		List<ActivityDTO> results2 = activityDAO.findAllInLastNDays(50000);
+		List<ActivityDTO> results2 = activityDAO.findAllInLastNDays(false, 50000);
 		assertEquals(5 ,results2.size());
 		
 		ActivityDTO recent = new ActivityDTO();
@@ -230,7 +230,7 @@ public class ActivityDaoTest extends TestCase {
 		
 		ActivityDTO created = activityDAO.create(recent);
 		
-		List<ActivityDTO> results3 = activityDAO.findAllInLastNDays(5);
+		List<ActivityDTO> results3 = activityDAO.findAllInLastNDays(false, 5);
 		assertEquals(1, results3.size());
 		activityDAO.delete(created.getId());
 		ActivityDTO deleted = activityDAO.getById(created.getId());
@@ -246,7 +246,7 @@ public class ActivityDaoTest extends TestCase {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		List<ActivityDTO> results = activityDAO.findByObjectId(1L, ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
+		List<ActivityDTO> results = activityDAO.findByObjectId(false, 1L, ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
 		assertEquals(0,results.size());
 		
 		ActivityDTO recent = new ActivityDTO();
@@ -259,7 +259,7 @@ public class ActivityDaoTest extends TestCase {
 		
 		ActivityDTO created = activityDAO.create(recent);
 		
-		List<ActivityDTO> results3 = activityDAO.findByObjectId(created.getActivityObjectId(), ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
+		List<ActivityDTO> results3 = activityDAO.findByObjectId(false, created.getActivityObjectId(), ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
 		assertEquals(1, results3.size());
 		activityDAO.delete(created.getId());
 		ActivityDTO deleted = activityDAO.getById(created.getId());
@@ -275,7 +275,7 @@ public class ActivityDaoTest extends TestCase {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		List<ActivityDTO> results = activityDAO.findByConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
+		List<ActivityDTO> results = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
 		assertEquals(0,results.size());
 		
 		ActivityDTO recent = new ActivityDTO();
@@ -288,7 +288,7 @@ public class ActivityDaoTest extends TestCase {
 		
 		ActivityDTO created = activityDAO.create(recent);
 		
-		List<ActivityDTO> results3 = activityDAO.findByConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
+		List<ActivityDTO> results3 = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
 		assertEquals(1, results3.size());
 		activityDAO.delete(created.getId());
 		ActivityDTO deleted = activityDAO.getById(created.getId());

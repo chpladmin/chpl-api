@@ -1,32 +1,44 @@
 package gov.healthit.chpl.domain;
 
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class CertifiedProductSearchResult {
-	
-	
 	private Long id;
     private Long testingLabId;
+    private String testingLabName;
     private String chplProductNumber;
     private String reportFileLocation;
-    private String qualityManagementSystemAtt;
+    private String sedReportFileLocation;
+    private String sedIntendedUserDescription;
+    private Date sedTestingEnd;
     private String acbCertificationId;
     private Map<String, Object> classificationType = new HashMap<String, Object>();
     private String otherAcb;
     private Map<String, Object> certificationStatus = new HashMap<String, Object>();
-	private Map<String, Object> vendor = new HashMap<String, Object>();
+	private Map<String, Object> developer = new HashMap<String, Object>();
 	private Map<String, Object> product = new HashMap<String, Object>();
 	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	private Long certificationDate;
 	private Boolean visibleOnChpl;
-	private Boolean privacyAttestation;
+	private String termsOfUse;
+	private Boolean ics;
+	private Boolean sedTesting;
+	private Boolean qmsTesting;
+	private Boolean accessibilityCertified;
+	private String productAdditionalSoftware;
+	private String transparencyAttestation;
+	private String transparencyAttestationUrl;
 	private Integer countCerts;
 	private Integer countCqms;
+	private Integer countCorrectiveActionPlans;
+	private Integer countCurrentCorrectiveActionPlans;
+	private Integer countClosedCorrectiveActionPlans;
 	
 	public Long getId() {
 		return id;
@@ -52,12 +64,6 @@ public class CertifiedProductSearchResult {
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
 	}
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
-	}
 	public String getAcbCertificationId() {
 		return acbCertificationId;
 	}
@@ -76,11 +82,11 @@ public class CertifiedProductSearchResult {
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
 	}
-	public Map<String, Object> getVendor() {
-		return vendor;
+	public Map<String, Object> getDeveloper() {
+		return developer;
 	}
-	public void setVendor(Map<String, Object> vendor) {
-		this.vendor = vendor;
+	public void setDeveloper(Map<String, Object> developer) {
+		this.developer = developer;
 	}
 	public Map<String, Object> getProduct() {
 		return product;
@@ -136,11 +142,95 @@ public class CertifiedProductSearchResult {
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
 	}
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
+	public Integer getCountCorrectiveActionPlans() {
+		return countCorrectiveActionPlans;
 	}
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
+	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
+		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
+	}
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+	public String getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+	public void setTransparencyAttestation(String transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
+	}
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+	public Boolean getIcs() {
+		return ics;
+	}
+	public void setIcs(Boolean ics) {
+		this.ics = ics;
+	}
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
+	}
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
 	}
 	
 }

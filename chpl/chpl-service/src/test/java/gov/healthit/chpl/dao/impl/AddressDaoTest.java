@@ -49,9 +49,9 @@ public class AddressDaoTest extends TestCase {
 	
 	@Test
 	public void getAddressById() throws EntityRetrievalException {
-		AddressDTO result = addressDao.getById(1L);
+		AddressDTO result = addressDao.getById(-1L);
 		assertNotNull(result);
-		assertTrue(result.getId() == 1L);
+		assertTrue(result.getId() == -1L);
 	}
 	
 	@Test
@@ -66,32 +66,32 @@ public class AddressDaoTest extends TestCase {
 		assertNotNull(found);
 	}
 	@Test
-	public void getAddressByVendorId() {
-		Long vendorId = 1L;
+	public void getAddressByDeveloperId() {
+		Long developerId = -1L;
 		AddressDTO result = null;
 		try {
-			result = addressDao.getById(vendorId);
+			result = addressDao.getById(developerId);
 		} catch(EntityRetrievalException ex) {
 			fail("Could not find address with the id");
 		}
 		assertNotNull(result);
 		assertNotNull(result.getId());
-		assertEquals(1, result.getId().longValue());
+		assertEquals(-1, result.getId().longValue());
 	}
 	
 	@Test
 	public void updateAddress() throws EntityRetrievalException {
-		AddressDTO toUpdate = addressDao.getById(1L);
+		AddressDTO toUpdate = addressDao.getById(-1L);
 		toUpdate.setCity("Annapolis");
 		addressDao.update(toUpdate);
-		toUpdate = addressDao.getById(1L);
+		toUpdate = addressDao.getById(-1L);
 		assertNotNull(toUpdate);
 		assertEquals("Annapolis", toUpdate.getCity());
 	}
 	
 	@Test
 	public void updateAddressWithEmptyCity() throws EntityRetrievalException {
-		AddressDTO toUpdate = addressDao.getById(1L);
+		AddressDTO toUpdate = addressDao.getById(-1L);
 		toUpdate.setCity("");
 		
 		try {
@@ -99,7 +99,7 @@ public class AddressDaoTest extends TestCase {
 			fail("did not catch empty string constraint!");
 		} catch(Exception ex) {}
 		
-		AddressDTO notUpdated = addressDao.getById(1L);
+		AddressDTO notUpdated = addressDao.getById(-1L);
 		assertNotNull(notUpdated);
 		assertEquals("Baltimore", notUpdated.getCity());
 	}

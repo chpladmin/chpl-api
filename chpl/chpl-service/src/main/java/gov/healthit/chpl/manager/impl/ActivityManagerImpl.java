@@ -2,13 +2,23 @@ package gov.healthit.chpl.manager.impl;
 
 import gov.healthit.chpl.JSONUtils;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.json.User;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.manager.ActivityManager;
+
+
+
+
+
 
 
 
@@ -56,6 +66,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Autowired
 	ActivityDAO activityDAO;
 	
+	@Autowired
+	UserDAO userDAO;
+	
 	private ObjectMapper jsonMapper = new ObjectMapper();
 	private JsonFactory factory = jsonMapper.getFactory();
 	
@@ -90,7 +103,9 @@ public class ActivityManagerImpl implements ActivityManager {
 			dto.setActivityObjectId(objectId);
 			dto.setCreationDate(new Date());
 			dto.setLastModifiedDate(new Date());
-			dto.setLastModifiedUser(Util.getCurrentUser().getId());
+			if(Util.getCurrentUser() != null) {
+				dto.setLastModifiedUser(Util.getCurrentUser().getId());
+			}
 			dto.setDeleted(false);
 			
 			activityDAO.create(dto);
@@ -177,8 +192,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
-	public List<ActivityEvent> getAllActivity() throws JsonParseException, IOException {
-		List<ActivityDTO> dtos = activityDAO.findAll();
+	public List<ActivityEvent> getAllActivity(boolean showDeleted) throws JsonParseException, IOException {
+		
+		List<ActivityDTO> dtos = activityDAO.findAll(showDeleted);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -190,10 +206,10 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForObject(
+	public List<ActivityEvent> getActivityForObject(boolean showDeleted,
 			ActivityConcept concept, Long objectId) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByObjectId(objectId, concept);
+		List<ActivityDTO> dtos = activityDAO.findByObjectId(showDeleted, objectId, concept);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -206,9 +222,9 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept) throws JsonParseException, IOException {
+	public List<ActivityEvent> getActivityForConcept(boolean showDeleted, ActivityConcept concept) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByConcept(concept);
+		List<ActivityDTO> dtos = activityDAO.findByConcept(showDeleted, concept);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -220,9 +236,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
-	public List<ActivityEvent> getAllActivityInLastNDays(Integer lastNDays) throws JsonParseException, IOException {
+	public List<ActivityEvent> getAllActivityInLastNDays(boolean showDeleted, Integer lastNDays) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findAllInLastNDays(lastNDays);
+		List<ActivityDTO> dtos = activityDAO.findAllInLastNDays(showDeleted, lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -234,10 +250,10 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForObject(
+	public List<ActivityEvent> getActivityForObject(boolean showDeleted,
 			ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByObjectId(objectId, concept, lastNDays);
+		List<ActivityDTO> dtos = activityDAO.findByObjectId(showDeleted, objectId, concept, lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -249,9 +265,10 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Override
 	@Transactional
-	public List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException {
+	public List<ActivityEvent> getActivityForConcept(boolean showDeleted,
+			ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByConcept(concept, lastNDays);
+		List<ActivityDTO> dtos = activityDAO.findByConcept(showDeleted, concept, lastNDays);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -275,12 +292,15 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public Map<Long, List<ActivityEvent> > getActivityByUser() throws JsonParseException, IOException{
+	public List<UserActivity> getActivityByUser() throws JsonParseException, IOException, UserRetrievalException{
 		
 		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUser();
-		Map<Long, List<ActivityEvent> > activityEvents = new HashMap<Long, List<ActivityEvent> >();
+		List<UserActivity> userActivities = new ArrayList<UserActivity>();
 		
 		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
+			
+			UserDTO userDto = userDAO.getById(userEntry.getKey());
+			User userObj = new User(userDto);
 			
 			List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
 			
@@ -288,20 +308,28 @@ public class ActivityManagerImpl implements ActivityManager {
 				ActivityEvent event = getActivityEventFromDTO(userEventDTO);
 				userActivityEvents.add(event);
 			}
-			activityEvents.put(userEntry.getKey(), userActivityEvents);
+			
+			UserActivity userActivity = new UserActivity();
+			userActivity.setUser(userObj);
+			userActivity.setEvents(userActivityEvents);
+			userActivities.add(userActivity);
 		}
-		return activityEvents;
+		return userActivities;
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public Map<Long, List<ActivityEvent> > getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException{
+	public List<UserActivity> getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException, UserRetrievalException{
 		
 		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUserInLastNDays(nDays);
-		Map<Long, List<ActivityEvent> > activityEvents = new HashMap<Long, List<ActivityEvent> >();
+		List<UserActivity> userActivities = new ArrayList<UserActivity>();
+		
 		
 		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
+			
+			UserDTO userDto = userDAO.getById(userEntry.getKey());
+			User userObj = new User(userDto);
 			
 			List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
 			
@@ -309,10 +337,13 @@ public class ActivityManagerImpl implements ActivityManager {
 				ActivityEvent event = getActivityEventFromDTO(userEventDTO);
 				userActivityEvents.add(event);
 			}
-			activityEvents.put(userEntry.getKey(), userActivityEvents);
+			
+			UserActivity userActivity = new UserActivity();
+			userActivity.setUser(userObj);
+			userActivity.setEvents(userActivityEvents);
+			userActivities.add(userActivity);
 		}
-		return activityEvents;
-		
+		return userActivities;
 	}
 	
 	@Override

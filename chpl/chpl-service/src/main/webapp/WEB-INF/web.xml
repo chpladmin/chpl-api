@@ -8,27 +8,14 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			<!--classpath*:rest-servlet.xml, classpath*:applicationContext.xml, gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig-->
 			gov.healthit.chpl.auth.CHPLAuthenticationSecurityConfig,
-			gov.healthit.chpl.CHPLConfig,
-			<!--classpath*:applicationContext-common-authorization.xml,
-			classpath*:applicationContext-common-business.xml,
-			classpath*:applicationContext-security.xml,-->
-			<!--/WEB-INF/applicationContext.xml-->
+			gov.healthit.chpl.CHPLConfig
 		</param-value>
 	</context-param>
 
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-	
-	<!--  
-	<listener>
-    	<listener-class>
-     		org.sitenv.services.ccda.web.listener.CCDAValidationListener
-    	</listener-class>
-  	</listener>
-	-->
 
 	<servlet>
 		<servlet-name>rest</servlet-name>
@@ -36,11 +23,6 @@
 			org.springframework.web.servlet.DispatcherServlet
 		</servlet-class>
 		<load-on-startup>1</load-on-startup>
-	</servlet>
-	
-	<servlet>
-    	<servlet-name>AboutPage</servlet-name>
-    	<jsp-file>/WEB-INF/jsp/about.jsp</jsp-file>
 	</servlet>
 
 	<servlet>
@@ -51,11 +33,6 @@
 	<servlet-mapping>
 		<servlet-name>rest</servlet-name>
 		<url-pattern>/</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-    	<servlet-name>AboutPage</servlet-name>
-    	<url-pattern>/About</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>
@@ -88,6 +65,26 @@
 	</filter>
 	<filter-mapping>
   		<filter-name>CorsFilter</filter-name>
+  		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!--Check for Api Key-->
+	<!--<filter>
+  		<filter-name>ApiKeyFilter</filter-name>
+  		<filter-class>gov.healthit.chpl.registration.APIKeyAuthenticationFilter</filter-class>
+	</filter>
+	<filter-mapping>
+  		<filter-name>ApiKeyFilter</filter-name>
+  		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	-->
+	
+	<filter>
+  		<filter-name>apiKeyAuthenticationFilter</filter-name>
+  		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+  		<filter-name>apiKeyAuthenticationFilter</filter-name>
   		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 

@@ -8,5 +8,4 @@ public interface CertifiedProductSearchManager {
 
 	public SearchResponse search(
 			SearchRequest searchRequest);
-	
-}
+	}

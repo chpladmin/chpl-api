@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity;
 
-
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -8,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 
 @Entity
@@ -22,8 +23,29 @@ public class CertifiedProductDetailsEntity {
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long id;
     
+    @Column(name = "testing_lab_code")
+    private String testingLabCode;
+    
+    @Column(name = "product_code")
+    private String productCode;
+    
+    @Column(name = "version_code")
+    private String versionCode;
+    
+    @Column(name = "ics_code")
+    private String icsCode;
+    
+    @Column(name = "additional_software_code")
+    private String additionalSoftwareCode;
+    
+    @Column(name = "certified_date_code")
+    private String certifiedDateCode;
+    
     @Column(name = "testing_lab_id")
     private Long testingLabId;
+    
+    @Column(name = "testing_lab_name")
+    private String testingLabName;
     
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
@@ -31,9 +53,17 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "report_file_location")
     private String reportFileLocation;
     
-    @Column(name = "quality_management_system_att")
-    private String qualityManagementSystemAtt;
+    @Column(name = "sed_report_file_location")
+    private String sedReportFileLocation;
     
+	@Basic(optional = true) 
+    @Column(name = "sed_intended_user_description")
+    private String sedIntendedUserDescription;
+
+	@Basic(optional = true) 
+    @Column(name = "sed_testing_end")
+    private Date sedTestingEnd;
+	
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
     
@@ -67,6 +97,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_body_name")
     private String certificationBodyName;
     
+    @Column(name = "certification_body_code")
+    private String certificationBodyCode;
+    
     @Column(name = "product_classification_name")
     private String productClassificationName;
     
@@ -83,11 +116,17 @@ public class CertifiedProductDetailsEntity {
     private String productName;
     
     @Column(name = "vendor_id")
-    private Long vendorId;
+    private Long developerId;
     
     @Column(name = "vendor_name")
-    private String vendorName;
+    private String developerName;
+    
+    @Column(name = "vendor_code")
+    private String developerCode;
 
+    @Column(name = "vendor_website")
+    private String developerWebsite;
+    
     @Column(name = "certification_date")
     private Date certificationDate;
     
@@ -97,15 +136,46 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "count_cqms")
     private Integer countCqms;
     
-    @Column(name = "visible_on_chpl")
+    @Column(name = "count_corrective_action_plans")
+    private Integer countCorrectiveActionPlans;
+
+    @Column(name = "count_current_corrective_action_plans")
+    private Integer countCurrentCorrectiveActionPlans;
+    
+    @Column(name = "count_closed_corrective_action_plans")
+    private Integer countClosedCorrectiveActionPlans;
+    
+	@Column(name = "visible_on_chpl")
     private Boolean visibleOnChpl;
     
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
-
-    @Column(name = "privacy_attestation")
-	private Boolean privacyAttestation;
-    
+	 
+	@Column(name = "terms_of_use_url")
+	private String termsOfUse;
+	
+	@Column(name = "ics")
+	private Boolean ics;
+	
+	@Column(name = "sed")
+	private Boolean sedTesting;
+	
+	@Column(name = "qms")
+	private Boolean qmsTesting;
+	
+	@Column(name = "accessibility_certified")
+	private Boolean accessibilityCertified;
+	
+	@Column(name = "product_additional_software")
+	private String productAdditionalSoftware;
+	
+	@Column(name = "transparency_attestation")
+	@Type(type = "gov.healthit.chpl.entity.PostgresEnumType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
+	private AttestationType transparencyAttestation;
+	
+	@Column(name = "transparency_attestation_url")
+	private String transparencyAttestationUrl;
+	
 	public Long getId() {
 		return id;
 	}
@@ -136,14 +206,6 @@ public class CertifiedProductDetailsEntity {
 
 	public void setReportFileLocation(String reportFileLocation) {
 		this.reportFileLocation = reportFileLocation;
-	}
-
-	public String getQualityManagementSystemAtt() {
-		return qualityManagementSystemAtt;
-	}
-
-	public void setQualityManagementSystemAtt(String qualityManagementSystemAtt) {
-		this.qualityManagementSystemAtt = qualityManagementSystemAtt;
 	}
 
 	public String getAcbCertificationId() {
@@ -266,20 +328,20 @@ public class CertifiedProductDetailsEntity {
 		this.productName = productName;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
 
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
     
 	public Date getCertificationDate() {
@@ -306,6 +368,14 @@ public class CertifiedProductDetailsEntity {
 		this.countCqms = countCqms;
 	}
 	
+    public Integer getCountCorrectiveActionPlans() {
+		return countCorrectiveActionPlans;
+	}
+
+	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
+		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
+	}
+	
 	public Boolean getVisibleOnChpl() {
 		return visibleOnChpl;
 	}
@@ -330,12 +400,210 @@ public class CertifiedProductDetailsEntity {
 		this.certificationStatusName = certificationStatusName;
 	}
 
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
+//	public Set<CertificationResultDetailsEntity> getCertResults() {
+//		return certResults;
+//	}
+//
+//	public void setCertResults(Set<CertificationResultDetailsEntity> certResults) {
+//		this.certResults = certResults;
+//	}
+//
+//	public Set<CQMResultDetailsEntity> getCqmResults() {
+//		return cqmResults;
+//	}
+//
+//	public void setCqmResults(Set<CQMResultDetailsEntity> cqmResults) {
+//		this.cqmResults = cqmResults;
+//	}
+//
+//	public Set<AdditionalSoftwareEntity> getAdditionalSoftware() {
+//		return additionalSoftware;
+//	}
+//
+//	public void setAdditionalSoftware(Set<AdditionalSoftwareEntity> additionalSoftware) {
+//		this.additionalSoftware = additionalSoftware;
+//	}
+
+	public String getProductCode() {
+		return productCode;
 	}
 
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
-	
+
+	public String getVersionCode() {
+		return versionCode;
+	}
+
+	public void setVersionCode(String versionCode) {
+		this.versionCode = versionCode;
+	}
+
+	public String getAdditionalSoftwareCode() {
+		return additionalSoftwareCode;
+	}
+
+	public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+		this.additionalSoftwareCode = additionalSoftwareCode;
+	}
+
+	public String getCertifiedDateCode() {
+		return certifiedDateCode;
+	}
+
+	public void setCertifiedDateCode(String certifiedDateCode) {
+		this.certifiedDateCode = certifiedDateCode;
+	}
+
+	public String getCertificationBodyCode() {
+		return certificationBodyCode;
+	}
+
+	public void setCertificationBodyCode(String certificationBodyCode) {
+		this.certificationBodyCode = certificationBodyCode;
+	}
+
+	public String getDeveloperCode() {
+		return developerCode;
+	}
+
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
+	}
+
+	public String getIcsCode() {
+		return icsCode;
+	}
+
+	public void setIcsCode(String icsCode) {
+		this.icsCode = icsCode;
+	}
+
+	public String getTermsOfUse() {
+		return termsOfUse;
+	}
+
+	public void setTermsOfUse(String termsOfUse) {
+		this.termsOfUse = termsOfUse;
+	}
+
+	public AttestationType getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(AttestationType transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public String getTestingLabCode() {
+		return testingLabCode;
+	}
+
+	public void setTestingLabCode(String testingLabCode) {
+		this.testingLabCode = testingLabCode;
+	}
+
+	public String getTestingLabName() {
+		return testingLabName;
+	}
+
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+
+	public Boolean getIcs() {
+		return ics;
+	}
+
+	public void setIcs(Boolean ics) {
+		this.ics = ics;
+	}
+
+	public Boolean getSedTesting() {
+		return sedTesting;
+	}
+
+	public void setSedTesting(Boolean sedTesting) {
+		this.sedTesting = sedTesting;
+	}
+
+	public Boolean getQmsTesting() {
+		return qmsTesting;
+	}
+
+	public void setQmsTesting(Boolean qmsTesting) {
+		this.qmsTesting = qmsTesting;
+	}
+
+	public String getDeveloperWebsite() {
+		return developerWebsite;
+	}
+
+	public void setDeveloperWebsite(String developerWebsite) {
+		this.developerWebsite = developerWebsite;
+	}
+
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+	public Integer getCountCurrentCorrectiveActionPlans() {
+		return countCurrentCorrectiveActionPlans;
+	}
+
+	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
+		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
+	}
+
+	public Integer getCountClosedCorrectiveActionPlans() {
+		return countClosedCorrectiveActionPlans;
+	}
+
+	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
+		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
+	}	
 }

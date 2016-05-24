@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -22,10 +21,9 @@ public class CertificationStatusEntity {
 	private static final long serialVersionUID = -2928065796550377879L;
 	
     @Id 
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "certificationStatus_certification_status_idGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "certification_status_id", nullable = false  )
-	@SequenceGenerator(name = "certificationStatus_certification_status_idGenerator", sequenceName = "certification_status_certification_status_id_seq")
 	private Long id;
     
     @Basic( optional = false) 

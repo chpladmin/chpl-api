@@ -14,72 +14,80 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-public class SendMailUtil extends AuthPropertiesConsumer {
-	
+@Service("SendMailUtil")
+public class SendMailUtil {
+
 	private static final Logger logger = LogManager.getLogger(SendMailUtil.class);
+	@Autowired private Environment env;
 
 	/**
 	 * create and send the email to invite the user
 	 * @param invitation
 	 */
-	public void sendEmail(String toEmail, String subject, String htmlMessage) throws AddressException, MessagingException {
+	public void sendEmail(String[] toEmail, String subject, String htmlMessage) throws AddressException, MessagingException {
 		//do not attempt to send email if we are in a dev environment
-		String mailHost = getProps().getProperty("smtpHost");
+		String mailHost = env.getProperty("smtpHost");
 		if(StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost) || "dev".equalsIgnoreCase(mailHost)) {
 			return;
 		}
-		
+
 		 // sets SMTP server properties
         Properties properties = new Properties();
-        properties.put("mail.smtp.host", getProps().getProperty("smtpHost"));
-        properties.put("mail.smtp.port", getProps().getProperty("smtpPort"));
+        properties.put("mail.smtp.host", env.getProperty("smtpHost"));
+        properties.put("mail.smtp.port", env.getProperty("smtpPort"));
         properties.put("mail.smtp.auth", "true");
-        //properties.put("mail.smtp.starttls.enable", "true");
- 
+        properties.put("mail.smtp.starttls.enable", "true");
+
         logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
         logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
-        logger.debug("Mail Username :" + getProps().getProperty("smtpUsername"));
-        logger.debug("Mail Password: " + getProps().getProperty("smtpPassword"));
-        
+        logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
+        logger.debug("Mail Password: " + env.getProperty("smtpPassword"));
+
         // creates a new session with an authenticator
         javax.mail.Authenticator auth = new javax.mail.Authenticator() {
             public PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(getProps().getProperty("smtpUsername"), getProps().getProperty("smtpPassword"));
+                return new PasswordAuthentication(env.getProperty("smtpUsername"), env.getProperty("smtpPassword"));
             }
         };
- 
+
         Session session = Session.getInstance(properties, auth);
- 
+
         // creates a new e-mail message
         Message msg = new MimeMessage(session);
- 
-        try 
+
+        try
         {
-        	InternetAddress fromEmail = new InternetAddress(getProps().getProperty("smtpFrom"));
+        	InternetAddress fromEmail = new InternetAddress(env.getProperty("smtpFrom"));
 	        msg.setFrom(fromEmail);
-	        logger.debug("Sending email from " + getProps().getProperty("smtpFrom"));
+	        logger.debug("Sending email from " + env.getProperty("smtpFrom"));
         } catch(MessagingException ex) {
-        	logger.fatal("Invalid Email Address: " + getProps().getProperty("smtpFrom"), ex);
+        	logger.fatal("Invalid Email Address: " + env.getProperty("smtpFrom"), ex);
         	throw ex;
         }
-        
+
         try {
-        	InternetAddress toEmailaddress = new InternetAddress(toEmail);
-	        InternetAddress[] toAddresses = { toEmailaddress };
+        	InternetAddress[] toAddresses = new InternetAddress[toEmail.length];
+        	for(int i = 0; i < toEmail.length; i++) {
+            	InternetAddress toEmailaddress = new InternetAddress(toEmail[i]);
+            	toAddresses[i] = toEmailaddress;
+        	}
 	        msg.setRecipients(Message.RecipientType.TO, toAddresses);
 	        logger.debug("Sending email to " + toEmail);
         } catch (MessagingException ex) {
         	logger.fatal("Invalid Email Address: " + toEmail, ex);
         	throw ex;
         }
-	      
+
         msg.setSubject(subject);
 	    msg.setSentDate(new Date());
 	    // set plain text message
 	    msg.setContent(htmlMessage, "text/html");
-	
+
 	    // sends the e-mail
 	    Transport.send(msg);
 	}

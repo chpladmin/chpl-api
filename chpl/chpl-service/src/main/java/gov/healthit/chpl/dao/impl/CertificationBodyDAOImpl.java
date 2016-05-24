@@ -32,7 +32,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		CertificationBodyEntity entity = null;
 		try {
 			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
+				entity = this.getEntityById(dto.getId(), false);
 			}
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
@@ -50,6 +50,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 			
 			entity.setName(dto.getName());
 			entity.setWebsite(dto.getWebsite());
+			entity.setAcbCode(dto.getAcbCode());
 			
 			if(dto.getDeleted() != null) {
 				entity.setDeleted(dto.getDeleted());
@@ -83,7 +84,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Transactional
 	public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException{
 		
-		CertificationBodyEntity entity = getEntityById(dto.getId());	
+		CertificationBodyEntity entity = getEntityById(dto.getId(), true);	
 		if(entity == null) {
 			throw new EntityRetrievalException("Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
 		}
@@ -105,7 +106,16 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 			entity.setName(dto.getName());
 		}
 		
+		if(dto.getAcbCode() != null) {
+			entity.setAcbCode(dto.getAcbCode());
+		}
+		
 		if(dto.getDeleted() != null) {
+			if(!dto.getDeleted()){
+				Query query2 = entityManager.createQuery("UPDATE ActivityEntity SET deleted = false WHERE activity_object_id = :acbid");
+				query2.setParameter("acbid", dto.getId());
+				query2.executeUpdate();
+			}
 			entity.setDeleted(dto.getDeleted());
 		}
 		if(dto.getLastModifiedUser() != null) {
@@ -133,11 +143,15 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		query.setParameter("acbid", acbId);
 		query.executeUpdate();
 		
+		Query query2 = entityManager.createQuery("UPDATE ActivityEntity SET deleted = true WHERE activity_object_id = :acbid AND description NOT LIKE '%Deleted acb%' AND description NOT LIKE '%no longer marked as deleted%'");
+		query2.setParameter("acbid", acbId);
+		query2.executeUpdate();
+		
 	}
 	
-	public List<CertificationBodyDTO> findAll(){
+	public List<CertificationBodyDTO> findAll(boolean showDeleted){
 		
-		List<CertificationBodyEntity> entities = getAllEntities();
+		List<CertificationBodyEntity> entities = getAllEntities(showDeleted);
 		List<CertificationBodyDTO> acbs = new ArrayList<>();
 		
 		for (CertificationBodyEntity entity : entities) {
@@ -149,7 +163,18 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 	
 	public CertificationBodyDTO getById(Long acbId) throws EntityRetrievalException{
-		CertificationBodyEntity entity = getEntityById(acbId);
+		CertificationBodyEntity entity = getEntityById(acbId, false);
+		
+		CertificationBodyDTO dto = null;
+		if(entity != null) {
+			dto = new CertificationBodyDTO(entity);
+		}
+		return dto;
+		
+	}
+	
+	public CertificationBodyDTO getById(Long acbId, boolean includeDeleted) throws EntityRetrievalException{
+		CertificationBodyEntity entity = getEntityById(acbId, includeDeleted);
 		
 		CertificationBodyDTO dto = null;
 		if(entity != null) {
@@ -169,6 +194,19 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		return dto;
 	}
 	
+	public String getMaxCode() {
+		String maxCode = null;
+		Query query = entityManager.createQuery( "SELECT acb.acbCode "
+				+ "from CertificationBodyEntity acb "
+				+ "ORDER BY acb.acbCode DESC", String.class );
+		List<String> result = query.getResultList();
+		
+		if(result != null && result.size() > 0) {
+			maxCode = result.get(0);
+		}
+		return maxCode;
+	}
+	
 	private void create(CertificationBodyEntity acb) {
 		
 		entityManager.persist(acb);
@@ -182,17 +220,29 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	
 	}
 	
-	private List<CertificationBodyEntity> getAllEntities() {
+	private List<CertificationBodyEntity> getAllEntities(boolean showDeleted) {
 		
-		List<CertificationBodyEntity> result = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true)", CertificationBodyEntity.class).getResultList();
+		List<CertificationBodyEntity> result;
+		
+		if(showDeleted){
+			result = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address", CertificationBodyEntity.class).getResultList();
+		}else{
+			result = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true)", CertificationBodyEntity.class).getResultList();
+		}
 		return result;
 	}
 	
-	private CertificationBodyEntity getEntityById(Long entityId) throws EntityRetrievalException {
+	private CertificationBodyEntity getEntityById(Long entityId, boolean includeDeleted) throws EntityRetrievalException {
 		
 		CertificationBodyEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true) AND (certification_body_id = :entityid) ", CertificationBodyEntity.class );
+		String queryStr = "SELECT acb from CertificationBodyEntity acb "
+				+ "LEFT OUTER JOIN FETCH acb.address where "
+				+ "(certification_body_id = :entityid)";
+		if(!includeDeleted) {
+			queryStr += " AND (NOT acb.deleted = true)";
+		}
+		Query query = entityManager.createQuery(queryStr, CertificationBodyEntity.class );
 		query.setParameter("entityid", entityId);
 		List<CertificationBodyEntity> result = query.getResultList();
 		

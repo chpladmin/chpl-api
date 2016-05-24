@@ -6,10 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
@@ -22,16 +20,6 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
 	@Autowired
 	CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-	
-	@Autowired
-	private CertificationCriterionDAO certificationCriterionDAO;
-	
-	@Autowired
-	private CQMResultDetailsDAO cqmResultDetailsDAO;
-	
-	@Autowired
-	private CertificationResultDetailsDAO certificationResultDetailsDAO;
-	
 	
 	@Transactional
 	@Override
@@ -62,7 +50,14 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.getCertifyingBody().put("id", dto.getCertificationBodyId());
 			searchResult.getCertifyingBody().put("name", dto.getCertificationBodyName());
 			
-			searchResult.setChplProductNumber(dto.getChplProductNumber());
+			if(!StringUtils.isEmpty(dto.getChplProductNumber())) {
+				searchResult.setChplProductNumber(dto.getChplProductNumber());
+			} else {
+				searchResult.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
+					dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
+					"." + dto.getCertifiedDateCode());
+			}
 			
 			searchResult.getClassificationType().put("id", dto.getProductClassificationTypeId());
 			searchResult.getClassificationType().put("name", dto.getProductClassificationName());
@@ -77,17 +72,31 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.getProduct().put("versionId",dto.getProductVersionId());
 			searchResult.getProduct().put("version", dto.getProductVersion());
 			
-			searchResult.setQualityManagementSystemAtt(dto.getQualityManagementSystemAtt());
 			searchResult.setReportFileLocation(dto.getReportFileLocation());
+			searchResult.setSedReportFileLocation(dto.getSedReportFileLocation());
+			searchResult.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
+			searchResult.setSedTestingEnd(dto.getSedTestingEnd());
 			searchResult.setTestingLabId(dto.getTestingLabId());
+			searchResult.setTestingLabName(dto.getTestingLabName());
 			
-			searchResult.getVendor().put("id", dto.getVendorId());
-			searchResult.getVendor().put("name", dto.getVendorName());
+			searchResult.getDeveloper().put("id", dto.getDeveloperId());
+			searchResult.getDeveloper().put("name", dto.getDeveloperName());
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
+			searchResult.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
+			searchResult.setCountCurrentCorrectiveActionPlans(dto.getCountCurrentCorrectiveActionPlans());
+			searchResult.setCountClosedCorrectiveActionPlans(dto.getCountClosedCorrectiveActionPlans());
 			searchResult.setVisibleOnChpl(dto.getVisibleOnChpl());
-			searchResult.setPrivacyAttestation(dto.getPrivacyAttestation());
+			searchResult.setIcs(dto.getIcs());
+			searchResult.setSedTesting(dto.getSedTesting());
+			searchResult.setQmsTesting(dto.getQmsTesting());
+			searchResult.setAccessibilityCertified(dto.getAccessibilityCertified());
+			searchResult.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
+			searchResult.setTermsOfUse(dto.getTermsOfUse());
+			searchResult.setTransparencyAttestation(dto.getTransparencyAttestation());
+			searchResult.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+			
 			searchResults.add(searchResult);
 		}
 		
@@ -98,5 +107,4 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 				);
 		return response;
 	}
-	
 }

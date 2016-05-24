@@ -1,10 +1,11 @@
 package gov.healthit.chpl.auth;
 
-import gov.healthit.chpl.auth.user.User;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.User;
 
 public class Util {
 	
@@ -19,6 +20,19 @@ public class Util {
 		else {
 			return auth.getPrincipal().toString();
 		}
+	}
+	
+	public static boolean isUserRoleAdmin(){
+		User user = getCurrentUser();
+		if(user == null){
+			return false;
+		}
+		for (GrantedPermission perm : user.getPermissions()){
+			if (perm.getAuthority().equals("ROLE_ADMIN")){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static User getCurrentUser(){

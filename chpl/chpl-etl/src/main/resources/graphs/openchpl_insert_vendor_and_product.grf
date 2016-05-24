@@ -247,7 +247,7 @@
 <Field name="CMS188_PN_6_Initial_Antibiotic_Select" type="string"/>
 <Field name="CMS190_VTE_2_Intensive_Care_Unit_ICU" type="string"/>
 <Field name="CMS22_Preventive_Care_and_Screening" type="string"/>
-<Field name="CMS26V1_Home_Management_Plan_of_Care_H" type="string"/>
+<Field name="CMS26_Home_Management_Plan_of_Care_H" type="string"/>
 <Field name="CMS2_Preventive_Care_and_Screening_S" type="string"/>
 <Field name="CMS30_AMI_10_Statin_Prescribed_at_Disc" type="string"/>
 <Field name="CMS31_EHDI_1a_Hearing_screening_prio" type="string"/>
@@ -274,7 +274,7 @@
 <Field name="CMS82_Maternal_depression_screening" type="string"/>
 <Field name="CMS90_Functional_status_assessment_for" type="string"/>
 <Field name="CMS91_Stroke_4_Ischemic_stroke_Throm" type="string"/>
-<Field name="CMS9V1_Exclusive_Breast_Milk_Feeding" type="string"/>
+<Field name="CMS9_Exclusive_Breast_Milk_Feeding" type="string"/>
 <Field eofAsDelimiter="true" name="Checksum" type="string"/>
 </Record>
 </Metadata>

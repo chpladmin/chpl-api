@@ -3,18 +3,26 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductEntity;
@@ -23,10 +31,15 @@ import gov.healthit.chpl.manager.ProductManager;
 
 @Service
 public class ProductManagerImpl implements ProductManager {
-
+	private static final Logger logger = LogManager.getLogger(ProductManagerImpl.class);
+	
+	@Autowired private SendMailUtil sendMailService;
+	@Autowired private Environment env;
+	
 	@Autowired ProductDAO productDao;
 	@Autowired ProductVersionDAO versionDao;
-	
+	@Autowired DeveloperDAO devDao;
+
 	@Autowired
 	ActivityManager activityManager;
 	
@@ -44,14 +57,14 @@ public class ProductManagerImpl implements ProductManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProductDTO> getByVendor(Long vendorId) {
-		return productDao.getByVendor(vendorId);
+	public List<ProductDTO> getByDeveloper(Long developerId) {
+		return productDao.getByDeveloper(developerId);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ProductDTO> getByVendors(List<Long> vendorIds) {
-		return productDao.getByVendors(vendorIds);
+	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
+		return productDao.getByDevelopers(developerIds);
 	}
 	
 	@Override
@@ -75,9 +88,13 @@ public class ProductManagerImpl implements ProductManager {
 		
 		ProductEntity result = productDao.update(dto);
 		ProductDTO afterDto = new ProductDTO(result);
+		//the developer name is not updated at this point until after transaction commit so we have to set it
+		DeveloperDTO devDto = devDao.getById(afterDto.getDeveloperId());
+		afterDto.setDeveloperName(devDto.getName());
 		
 		String activityMsg = "Product "+dto.getName()+" was updated.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, afterDto);
+		checkSuspiciousActivity(beforeDTO, afterDto);
 		return new ProductDTO(result);
 		
 	}
@@ -99,15 +116,16 @@ public class ProductManagerImpl implements ProductManager {
 	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductDTO toDelete = productDao.getById(productId);
+		String activityMsg = "Product "+ toDelete.getName() +" was deleted.";
+
 		productDao.delete(productId);
-		String activityMsg = "Product "+productId.toString()+" was deleted.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, activityMsg, toDelete , null);
 		
 	}
 	
 	@Override
 	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();
@@ -134,6 +152,32 @@ public class ProductManagerImpl implements ProductManager {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, createdProduct.getId(), activityMsg, beforeProducts , createdProduct);
 		
 		return createdProduct;
+	}
+	
+	@Override
+	public void checkSuspiciousActivity(ProductDTO original, ProductDTO changed) {
+		String subject = "CHPL Questionable Activity";
+		String htmlMessage = "<p>Activity was detected on product " + original.getName() + ".</p>" 
+				+ "<p>To view the details of this activity go to: " + 
+				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
+		
+		boolean sendMsg = false;
+		
+		if( (original.getName() != null && changed.getName() == null) ||
+			(original.getName() == null && changed.getName() != null) ||
+			!original.getName().equals(changed.getName()) ) {
+			sendMsg = true;
+		}
+		
+		if(sendMsg) {
+			String emailAddr = env.getProperty("questionableActivityEmail");
+			String[] emailAddrs = emailAddr.split(";");
+			try {
+				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
+			} catch(MessagingException me) {
+				logger.error("Could not send questionable activity email", me);
+			}
+		}	
 	}
 	
 }

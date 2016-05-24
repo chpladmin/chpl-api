@@ -35,7 +35,8 @@ public interface UserDAO {
 	public void removePermission(String uname, String authority) throws UserRetrievalException, UserPermissionRetrievalException;
 	
 	public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException;
-
+	public void updateFailedLoginCount(String uname, int failedLoginCount) throws UserRetrievalException;
+	public void updateAccountLockedStatus(String uname, boolean locked) throws UserRetrievalException;
 	public String getEncodedPassword(UserDTO user) throws UserRetrievalException;
 
 	

@@ -24,7 +24,10 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.results.ProductResults;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
+@Api(value="products")
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -32,14 +35,16 @@ public class ProductController {
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
 	
+	@ApiOperation(value="List all products", 
+			notes="Either list all products or optionally just all products belonging to a specific developer.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody ProductResults getAllProducts(@RequestParam(required=false) Long vendorId) {
+	public @ResponseBody ProductResults getAllProducts(@RequestParam(required=false) Long developerId) {
 		
 		List<ProductDTO> productList = null;
 		
-		if(vendorId != null && vendorId > 0) {
-			productList = productManager.getByVendor(vendorId);	
+		if(developerId != null && developerId > 0) {
+			productList = productManager.getByDeveloper(developerId);	
 		} else {
 			productList = productManager.getAll();
 		}
@@ -57,6 +62,8 @@ public class ProductController {
 		return results;
 	}
 	
+	@ApiOperation(value="Get information about a specific product.", 
+			notes="")
 	@RequestMapping(value="/{productId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Product getProductById(@PathVariable("productId") Long productId) throws EntityRetrievalException {
@@ -69,6 +76,14 @@ public class ProductController {
 		return result;
 	}
 	
+	@ApiOperation(value="Update a product or merge products.", 
+			notes="This method serves two purposes: to update a single product's information and to merge two products into one. "
+					+ " A user of this service should pass in a single productId to update just that product. "
+					+ " If multiple product IDs are passed in, the service performs a merge meaning that a new product "
+					+ " is created with all of the information provided and all of the versions "
+					+ " previously assigned to the productIds specified are reassigned to the newly created product. The "
+					+ " old products are then deleted. "
+					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -81,11 +96,11 @@ public class ProductController {
 			throw new InvalidArgumentsException("At least one product id must be provided in the request.");
 		}
 		
-		if(productInfo.getProduct() == null && productInfo.getNewVendorId() != null) {
-			//no new product is specified, so we just need to update the vendor id
+		if(productInfo.getProduct() == null && productInfo.newDeveloperId() != null) {
+			//no new product is specified, so we just need to update the developer id
 			for(Long productId : productInfo.getProductIds()) {
 				ProductDTO toUpdate = productManager.getById(productId);
-				toUpdate.setVendorId(productInfo.getNewVendorId());
+				toUpdate.setDeveloperId(productInfo.newDeveloperId());
 				result = productManager.update(toUpdate);
 			}
 		} else {
@@ -95,8 +110,8 @@ public class ProductController {
 				ProductDTO newProduct = new ProductDTO();
 				newProduct.setName(productInfo.getProduct().getName());
 				newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-				if(productInfo.getNewVendorId() != null) {
-					newProduct.setVendorId(productInfo.getNewVendorId());
+				if(productInfo.newDeveloperId() != null) {
+					newProduct.setDeveloperId(productInfo.newDeveloperId());
 				}
 				result = productManager.merge(productInfo.getProductIds(), newProduct);
 				
@@ -106,9 +121,9 @@ public class ProductController {
 				toUpdate.setId(productInfo.getProductIds().get(0));
 				toUpdate.setName(productInfo.getProduct().getName());
 				toUpdate.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-				//update the vendor if an id is supplied
-				if(productInfo.getNewVendorId() != null) {
-					toUpdate.setVendorId(productInfo.getNewVendorId());
+				//update the developer if an id is supplied
+				if(productInfo.newDeveloperId() != null) {
+					toUpdate.setDeveloperId(productInfo.newDeveloperId());
 				}
 				result = productManager.update(toUpdate);
 			}	
