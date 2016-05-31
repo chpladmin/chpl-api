@@ -13,7 +13,6 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 
 @Repository("testParticipantDAO")
@@ -40,7 +39,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 			entity.setDeleted(false);
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			entity.setAge(dto.getAge());
+			entity.setAgeRangeId(dto.getAgeRangeId());
 			entity.setAssistiveTechnologyNeeds(dto.getAssistiveTechnologyNeeds());
 			entity.setComputerExperienceMonths(dto.getComputerExperienceMonths());
 			entity.setEducationTypeId(dto.getEducationTypeId());
@@ -63,7 +62,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
 		
-		entity.setAge(dto.getAge());
+		entity.setAgeRangeId(dto.getAgeRangeId());
 		entity.setAssistiveTechnologyNeeds(dto.getAssistiveTechnologyNeeds());
 		entity.setComputerExperienceMonths(dto.getComputerExperienceMonths());
 		entity.setEducationTypeId(dto.getEducationTypeId());
@@ -74,7 +73,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
 		
-		update(entity);
+		entity = update(entity);
 		return new TestParticipantDTO(entity);
 	}
 
@@ -125,21 +124,29 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 		
 	}
 	
-	private void update(TestParticipantEntity entity) {
+	private TestParticipantEntity update(TestParticipantEntity entity) {
 		
-		entityManager.merge(entity);	
+		TestParticipantEntity result = entityManager.merge(entity);	
 		entityManager.flush();
+		return result;
 	}
 	
 	private List<TestParticipantEntity> getAllEntities() {
-		return entityManager.createQuery( "from TestParticipantEntity where (NOT deleted = true) ", TestParticipantEntity.class).getResultList();
+		return entityManager.createQuery( "SELECT tpe from TestParticipantEntity tpe "
+				+ "LEFT OUTER JOIN FETCH tpe.ageRange "
+				+ "LEFT OUTER JOIN FETCH tpe.education "
+				+ "where (NOT tpe.deleted = true) ", TestParticipantEntity.class).getResultList();
 	}
 	
 	private TestParticipantEntity getEntityById(Long id) throws EntityRetrievalException {
 		
 		TestParticipantEntity entity = null;
-			
-		Query query = entityManager.createQuery( "from TestParticipantEntity where (NOT deleted = true) AND (id = :entityid) ", TestParticipantEntity.class );
+		
+		Query query =  entityManager.createQuery( "SELECT tpe from TestParticipantEntity tpe "
+				+ "LEFT OUTER JOIN FETCH tpe.ageRange "
+				+ "LEFT OUTER JOIN FETCH tpe.education "
+				+ "where (NOT tpe.deleted = true) AND (tpe.id = :entityid)", 
+			TestParticipantEntity.class);
 		query.setParameter("entityid", id);
 		List<TestParticipantEntity> result = query.getResultList();
 		

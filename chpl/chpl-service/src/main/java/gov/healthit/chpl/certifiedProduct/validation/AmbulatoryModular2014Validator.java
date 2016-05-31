@@ -1,11 +1,13 @@
 package gov.healthit.chpl.certifiedProduct.validation;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("ambulatoryModular2014Validator")
 public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validator {
@@ -48,6 +50,23 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 		}
 		
 		return allCerts;
+	}
+	
+	@Override
+	protected void validateDemographics(PendingCertifiedProductDTO product) {
+		super.validateDemographics(product);
+		
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						!cert.getNumber().equals("170.314 (g)(1)") && 
+						!cert.getNumber().equals("170.314 (g)(2)") && 
+						!cert.getNumber().equals("170.314 (f)(3)") &&
+						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				}
+			}
+		}
 	}
 	
 	@Override

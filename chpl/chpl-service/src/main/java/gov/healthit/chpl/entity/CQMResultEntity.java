@@ -20,7 +20,7 @@ import javax.persistence.Transient;
  */
 
 @Entity
-@Table(name = "cqm_result", schema = "openchpl")
+@Table(name = "cqm_result")
 public class CQMResultEntity implements Serializable {
 	
     @Id 

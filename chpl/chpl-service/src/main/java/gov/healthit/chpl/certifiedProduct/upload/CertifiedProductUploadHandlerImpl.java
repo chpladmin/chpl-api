@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AddressDAO;
+import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -58,6 +59,7 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 	@Autowired protected TestToolDAO testToolDao;
 	@Autowired protected UcdProcessDAO ucdDao;
 	@Autowired protected EducationTypeDAO educationDao;
+	@Autowired protected AgeRangeDAO ageDao;
 	
 	@Autowired private PendingCertifiedProductDAO pendingCpDao;
 	

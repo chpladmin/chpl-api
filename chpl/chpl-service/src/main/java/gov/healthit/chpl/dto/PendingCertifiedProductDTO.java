@@ -332,14 +332,20 @@ public class PendingCertifiedProductDTO {
 					for(CertificationResultTestParticipant part : task.getTestParticipants()) {
 						PendingCertificationResultTestTaskParticipantDTO crPartDto = new PendingCertificationResultTestTaskParticipantDTO();
 						PendingTestParticipantDTO partDto = new PendingTestParticipantDTO();
-						partDto.setAge(part.getAge());
 						partDto.setAssistiveTechnologyNeeds(part.getAssistiveTechnologyNeeds());
 						partDto.setComputerExperienceMonths(part.getComputerExperienceMonths());
+						
 						partDto.setEducationTypeId(part.getEducationTypeId());
 						EducationTypeDTO etDto = new EducationTypeDTO();
 						etDto.setName(part.getEducationTypeName());
 						etDto.setId(part.getEducationTypeId());
-						partDto.setEducationType(etDto);
+						
+						partDto.setAgeRangeId(part.getAgeRangeId());
+						AgeRangeDTO ageDto = new AgeRangeDTO();
+						ageDto.setAge(part.getAgeRange());
+						ageDto.setId(part.getAgeRangeId());
+						partDto.setAgeRange(ageDto);
+						
 						partDto.setGender(part.getGender());
 						partDto.setOccupation(part.getOccupation());
 						partDto.setProductExperienceMonths(part.getProductExperienceMonths());

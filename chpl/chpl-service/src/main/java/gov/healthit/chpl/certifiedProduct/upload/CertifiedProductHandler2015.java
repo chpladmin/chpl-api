@@ -15,6 +15,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
@@ -136,7 +137,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		
 		//tasks start at index 42
 		for(CSVRecord record : getRecord()) {
-			String statusStr = record.get(1);
+			String statusStr = record.get(1).trim();
 			if(!StringUtils.isEmpty(statusStr) && 
 					(FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr) ||
 					 SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
@@ -148,7 +149,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		CSVRecord firstRow = null;
 		for(int i = 0; i < getRecord().size() && firstRow == null; i++) {
 			CSVRecord currRecord = getRecord().get(i);
-			String statusStr = currRecord.get(1);
+			String statusStr = currRecord.get(1).trim();
 			if(!StringUtils.isEmpty(statusStr) && 
 					FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)) {
 				firstRow = currRecord;
@@ -344,31 +345,31 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	private void parseCertifiedProductDetails(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
 		int colIndex = 0;
 		
-		String uniqueId = record.get(colIndex++);
-		pendingCertifiedProduct.setUniqueId(uniqueId.trim());
+		String uniqueId = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setUniqueId(uniqueId);
 		
-		String recordStatus = record.get(colIndex++);
+		String recordStatus = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setRecordStatus(recordStatus);
 		
 		//developer, product, version
-		String developer = record.get(colIndex++);
-		String product = record.get(colIndex++);
-		String productVersion = record.get(colIndex++);
-		pendingCertifiedProduct.setDeveloperName(developer.trim());
-		pendingCertifiedProduct.setProductName(product.trim());
-		pendingCertifiedProduct.setProductVersion(productVersion.trim());
+		String developer = record.get(colIndex++).trim();
+		String product = record.get(colIndex++).trim();
+		String productVersion = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setDeveloperName(developer);
+		pendingCertifiedProduct.setProductName(product);
+		pendingCertifiedProduct.setProductVersion(productVersion);
 
-		DeveloperDTO foundDeveloper = developerDao.getByName(developer.trim());
+		DeveloperDTO foundDeveloper = developerDao.getByName(developer);
 		if(foundDeveloper != null) {
 			pendingCertifiedProduct.setDeveloperId(foundDeveloper.getId());
 			
 			//product
-			ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product.trim());
+			ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product);
 			if(foundProduct != null) {
 				pendingCertifiedProduct.setProductId(foundProduct.getId());
 				
 				//version
-				ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(), productVersion.trim());
+				ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(), productVersion);
 				if(foundVersion != null) {
 					pendingCertifiedProduct.setProductVersionId(foundVersion.getId());
 				}
@@ -376,12 +377,12 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		}	
 		
 		//certification year
-		String certificaitonYear = record.get(colIndex++);
-		pendingCertifiedProduct.setCertificationEdition(certificaitonYear.trim());
+		String certificaitonYear = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setCertificationEdition(certificaitonYear);
 		if(!pendingCertifiedProduct.getCertificationEdition().equals("2015")) {
 			pendingCertifiedProduct.getErrorMessages().add("Expecting certification year 2015 but found '" + pendingCertifiedProduct.getCertificationEdition() + "' for product " + pendingCertifiedProduct.getUniqueId());
 		}
-		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear.trim());
+		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
 		if(foundEdition != null) {
 			pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
 		}
@@ -390,25 +391,25 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		pendingCertifiedProduct.setAcbCertificationId(record.get(colIndex++).trim());	
 		
 		//certification body
-		String acbName = record.get(colIndex++);
-		pendingCertifiedProduct.setCertificationBodyName(acbName.trim());
-		CertificationBodyDTO foundAcb = acbDao.getByName(acbName.trim());
+		String acbName = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setCertificationBodyName(acbName);
+		CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
 		if(foundAcb != null) {
 			pendingCertifiedProduct.setCertificationBodyId(foundAcb.getId());
 		} else {
-			pendingCertifiedProduct.getErrorMessages().add("No certification body with name '" + acbName.trim() + "' could be found for product " + pendingCertifiedProduct.getUniqueId() + ".'");
+			pendingCertifiedProduct.getErrorMessages().add("No certification body with name '" + acbName + "' could be found for product " + pendingCertifiedProduct.getUniqueId() + ".'");
 		}
 		
 		//testing lab
-		String atlName = record.get(colIndex++);
-		pendingCertifiedProduct.setTestingLabName(atlName.trim());
-		TestingLabDTO foundAtl = atlDao.getByName(atlName.trim());
+		String atlName = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setTestingLabName(atlName);
+		TestingLabDTO foundAtl = atlDao.getByName(atlName);
 		if(foundAtl != null) {
 			pendingCertifiedProduct.setTestingLabId(foundAtl.getId());
 		}	
 	
 		//certification date
-		String dateStr = record.get(colIndex++);
+		String dateStr = record.get(colIndex++).trim();
 		try {
 			Date certificationDate = dateFormatter.parse(dateStr);
 			pendingCertifiedProduct.setCertificationDate(certificationDate);
@@ -466,11 +467,11 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		//qms
 		colIndex+=3;
 		
-		String hasIcsStr = record.get(colIndex++);
+		String hasIcsStr = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setIcs(asBoolean(hasIcsStr));
 
 		//accessibility certified
-		String isAccessibilityCertified = record.get(colIndex++);
+		String isAccessibilityCertified = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setAccessibilityCertified(asBoolean(isAccessibilityCertified));
 		//accessibility standards
 		colIndex++;
@@ -479,7 +480,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(colIndex++).trim());
 		
 		//(k)(2) attestation status
-		String k2AttestationStr = record.get(colIndex++);
+		String k2AttestationStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(k2AttestationStr)) {
 			if("0".equals(k2AttestationStr.trim())) {
 				pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Negative);
@@ -493,9 +494,9 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		//cqms
 		colIndex+=3;
 		
-		pendingCertifiedProduct.setSedReportFileLocation(record.get(colIndex++));
-		pendingCertifiedProduct.setSedIntendedUserDescription(record.get(colIndex++));
-		String sedTestingEnd = record.get(colIndex++);
+		pendingCertifiedProduct.setSedReportFileLocation(record.get(colIndex++).trim());
+		pendingCertifiedProduct.setSedIntendedUserDescription(record.get(colIndex++).trim());
+		String sedTestingEnd = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(sedTestingEnd)) {
 			try {
 				Date sedTestingEndDate = dateFormatter.parse(sedTestingEnd);
@@ -510,16 +511,16 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	private void parseQms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
 		int colIndex = 19;
 		if(!StringUtils.isEmpty(record.get(colIndex))) {
-			String qmsStandardName = record.get(colIndex++).toString();
-			QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName.trim());
-			String applicableCriteria = record.get(colIndex++).toString();
-			String qmsMods = record.get(colIndex).toString();
+			String qmsStandardName = record.get(colIndex++).trim();
+			QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName);
+			String applicableCriteria = record.get(colIndex++).trim();
+			String qmsMods = record.get(colIndex).trim();
 			
 			PendingCertifiedProductQmsStandardEntity qmsEntity = new PendingCertifiedProductQmsStandardEntity();
 			qmsEntity.setMappedProduct(pendingCertifiedProduct);
-			qmsEntity.setModification(qmsMods.trim());
+			qmsEntity.setModification(qmsMods);
 			qmsEntity.setApplicableCriteria(applicableCriteria);
-			qmsEntity.setName(qmsStandardName.trim());
+			qmsEntity.setName(qmsStandardName);
 			if(qmsStandard != null) {
 				qmsEntity.setQmsStandardId(qmsStandard.getId());
 			}
@@ -530,12 +531,12 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	private void parseTargetedUsers(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
 		int colIndex = 18;
 		if(!StringUtils.isEmpty(record.get(colIndex))) {
-			String targetedUserName = record.get(colIndex).toString();
-			TargetedUserDTO targetedUser = tuDao.getByName(targetedUserName.trim());
+			String targetedUserName = record.get(colIndex).trim();
+			TargetedUserDTO targetedUser = tuDao.getByName(targetedUserName);
 			
 			PendingCertifiedProductTargetedUserEntity tuEntity = new PendingCertifiedProductTargetedUserEntity();
 			tuEntity.setMappedProduct(pendingCertifiedProduct);
-			tuEntity.setName(targetedUserName.trim());
+			tuEntity.setName(targetedUserName);
 			if(targetedUser != null) {
 				tuEntity.setTargetedUserId(targetedUser.getId());
 			}
@@ -546,12 +547,12 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	private void parseAccessibilityStandards(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
 		int colIndex = 24;
 		if(!StringUtils.isEmpty(record.get(colIndex))) {
-			String accessibilityStandardName = record.get(colIndex).toString();
-			AccessibilityStandardDTO std = stdDao.getByName(accessibilityStandardName.trim());
+			String accessibilityStandardName = record.get(colIndex).trim();
+			AccessibilityStandardDTO std = stdDao.getByName(accessibilityStandardName);
 			
 			PendingCertifiedProductAccessibilityStandardEntity stdEntity = new PendingCertifiedProductAccessibilityStandardEntity();
 			stdEntity.setMappedProduct(pendingCertifiedProduct);
-			stdEntity.setName(accessibilityStandardName.trim());
+			stdEntity.setName(accessibilityStandardName);
 			if(std != null) {
 				stdEntity.setAccessibilityStandardId(std.getId());
 			}
@@ -563,24 +564,25 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		int colIndex = 33;
 		if(!StringUtils.isEmpty(record.get(colIndex))) {
 			PendingTestParticipantEntity participant = new PendingTestParticipantEntity(); 
-			participant.setUniqueId(record.get(colIndex++).toString());
-			participant.setGender(record.get(colIndex++).toString());
-			String ageStr = record.get(colIndex++).toString();
-			try {
-				Integer age = new Integer(ageStr);
-				participant.setAge(age);
-			} catch(Exception ex) {
-				logger.error("Could not parse " + ageStr + " into an integer.");
+			participant.setUniqueId(record.get(colIndex++).trim());
+			participant.setGender(record.get(colIndex++).trim());
+			String ageStr = record.get(colIndex++).trim();
+			AgeRangeDTO ageDto = ageDao.getByName(ageStr);
+			if(ageDto != null) {
+				participant.setAgeRangeId(ageDto.getId());
+			} else {
+				logger.error("Age rante '" + ageStr + "' does not match any of the allowed values.");
 			}
-			String educationLevel = record.get(colIndex++).toString();
+			
+			String educationLevel = record.get(colIndex++).trim();
 			EducationTypeDTO educationDto = educationDao.getByName(educationLevel);
 			if(educationDto != null) {
 				participant.setEducationTypeId(educationDto.getId());
 			} else {
 				logger.error("Education level '" + educationLevel + "' does not match any of the allowed options.");
 			}
-			participant.setOccupation(record.get(colIndex++).toString());
-			String profExperienceStr = record.get(colIndex++).toString();
+			participant.setOccupation(record.get(colIndex++).trim());
+			String profExperienceStr = record.get(colIndex++).trim();
 			try {
 				Integer profExperience = new Integer(profExperienceStr);
 				participant.setProfessionalExperienceMonths(profExperience);
@@ -588,7 +590,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 				logger.error("Could not parse " + profExperienceStr + " into an integer.");
 			}
 			
-			String computerExperienceStr = record.get(colIndex++).toString();
+			String computerExperienceStr = record.get(colIndex++).trim();
 			try {
 				Integer computerExperience = new Integer(computerExperienceStr);
 				participant.setComputerExperienceMonths(computerExperience);
@@ -596,7 +598,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 				logger.error("Could not parse " + computerExperienceStr + " into an integer.");
 			}
 			
-			String productExperienceStr = record.get(colIndex++).toString();
+			String productExperienceStr = record.get(colIndex++).trim();
 			try {
 				Integer productExperience = new Integer(productExperienceStr);
 				participant.setProductExperienceMonths(productExperience);
@@ -604,7 +606,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 				logger.error("Could not parse " + productExperienceStr + " into an integer.");
 			}
 			
-			participant.setAssistiveTechnologyNeeds(record.get(colIndex).toString());
+			participant.setAssistiveTechnologyNeeds(record.get(colIndex).trim());
 			this.participants.add(participant);
 		} 
 	}
@@ -616,80 +618,80 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		}
 		
 		PendingTestTaskEntity task = new PendingTestTaskEntity();
-		task.setUniqueId(record.get(colIndex++).toString());
-		task.setDescription(record.get(colIndex++).toString());
-		String successAvgStr = record.get(colIndex++).toString();
+		task.setUniqueId(record.get(colIndex++).trim());
+		task.setDescription(record.get(colIndex++).trim());
+		String successAvgStr = record.get(colIndex++).trim();
 		try {
 			Float successAvg = new Float(successAvgStr);
 			task.setTaskSuccessAverage(successAvg);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + successAvgStr + " to a Float.");
 		}
-		String successStddevStr = record.get(colIndex++).toString();
+		String successStddevStr = record.get(colIndex++).trim();
 		try {
 			Float successStddev = new Float(successStddevStr);
 			task.setTaskSuccessStddev(successStddev);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + successStddevStr + " to a Float.");
 		}
-		String taskPathDeviationObsStr = record.get(colIndex++).toString();
+		String taskPathDeviationObsStr = record.get(colIndex++).trim();
 		try {
 			Integer taskPathDeviationObs = new Integer(taskPathDeviationObsStr);
 			task.setTaskPathDeviationObserved(taskPathDeviationObs);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskPathDeviationObsStr + " to a Integer.");
 		}
-		String taskPathDeviationOptStr = record.get(colIndex++).toString();
+		String taskPathDeviationOptStr = record.get(colIndex++).trim();
 		try {
 			Integer taskPathDeviationOpt = new Integer(taskPathDeviationOptStr);
 			task.setTaskPathDeviationOptimal(taskPathDeviationOpt);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskPathDeviationOptStr + " to a Integer.");
 		}
-		String taskTimeAvgStr = record.get(colIndex++).toString();
+		String taskTimeAvgStr = record.get(colIndex++).trim();
 		try {
 			Long taskTimeAvg = new Long(taskTimeAvgStr);
 			task.setTaskTimeAvg(taskTimeAvg);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskTimeAvgStr + " to a Integer.");
 		}
-		String taskTimeStddevStr = record.get(colIndex++).toString();
+		String taskTimeStddevStr = record.get(colIndex++).trim();
 		try {
 			Integer taskTimeStddev = new Integer(taskTimeStddevStr);
 			task.setTaskTimeStddev(taskTimeStddev);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskTimeStddevStr + " to a Integer.");
 		}
-		String taskTimeDeviationAvgStr = record.get(colIndex++).toString();
+		String taskTimeDeviationAvgStr = record.get(colIndex++).trim();
 		try {
 			Integer taskTimeDeviationAvg = new Integer(taskTimeDeviationAvgStr);
 			task.setTaskTimeDeviationObservedAvg(taskTimeDeviationAvg);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskTimeDeviationAvgStr + " to a Integer.");
 		}
-		String taskTimeDeviationOptimalAvgStr = record.get(colIndex++).toString();
+		String taskTimeDeviationOptimalAvgStr = record.get(colIndex++).trim();
 		try {
 			Integer taskTimeDeviationOptimalAvg = new Integer(taskTimeDeviationOptimalAvgStr);
 			task.setTaskTimeDeviationOptimalAvg(taskTimeDeviationOptimalAvg);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskTimeDeviationOptimalAvgStr + " to a Integer.");
 		}
-		String taskErrorsAvgStr = record.get(colIndex++).toString();
+		String taskErrorsAvgStr = record.get(colIndex++).trim();
 		try {
 			Float taskErrorsAvg = new Float(taskErrorsAvgStr);
 			task.setTaskErrors(taskErrorsAvg);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskErrorsAvgStr + " to a Float.");
 		}
-		String taskErrorsStddevStr = record.get(colIndex++).toString();
+		String taskErrorsStddevStr = record.get(colIndex++).trim();
 		try {
 			Float taskErrorsStddev = new Float(taskErrorsStddevStr);
 			task.setTaskErrorsStddev(taskErrorsStddev);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskErrorsStddevStr + " to a Float.");
 		}
-		task.setTaskRatingScale(record.get(colIndex++).toString());
-		String taskRatingStr = record.get(colIndex++).toString();
+		task.setTaskRatingScale(record.get(colIndex++).trim());
+		String taskRatingStr = record.get(colIndex++).trim();
 		try {
 			Float taskRating = new Float(taskRatingStr);
 			task.setTaskRating(taskRating);
@@ -742,18 +744,18 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			cert = getCertificationResult(criteriaNumber, firstRow.get(currIndex++).toString());
 			
 			while(currIndex <= endIndex) {
-				String colTitle = getHeading().get(currIndex).toString();
+				String colTitle = getHeading().get(currIndex).trim();
 				if(!StringUtils.isEmpty(colTitle)) {
 					colTitle = colTitle.trim().toUpperCase();
 					switch(colTitle) {
 					case "GAP":
-						cert.setGap(asBoolean(firstRow.get(currIndex++).toString()));
+						cert.setGap(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "PRIVACY AND SECURITY FRAMEWORK":
-						cert.setPrivacySecurityFramework(firstRow.get(currIndex++).toString());
+						cert.setPrivacySecurityFramework(firstRow.get(currIndex++).trim());
 						break;
 					case "API DOCUMENTATION LINK":
-						cert.setApiDocumentation(firstRow.get(currIndex++).toString());
+						cert.setApiDocumentation(firstRow.get(currIndex++).trim());
 						break;
 					case "STANDARD TESTED AGAINST":
 						parseTestStandards(cert, currIndex);
@@ -764,13 +766,13 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						currIndex++;
 						break;
 					case "MEASURE SUCCESSFULLY TESTED FOR G1":
-						cert.setG1Success(asBoolean(firstRow.get(currIndex++).toString()));
+						cert.setG1Success(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "MEASURE SUCCESSFULLY TESTED FOR G2":
-						cert.setG2Success(asBoolean(firstRow.get(currIndex++).toString()));
+						cert.setG2Success(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "ADDITIONAL SOFTWARE":
-						Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).toString());
+						Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
 						cert.setHasAdditionalSoftware(hasAdditionalSoftware);
 						parseAdditionalSoftware(pendingCertifiedProduct, cert, currIndex);
 						currIndex += 6; 
@@ -788,8 +790,8 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						break;
 					case "UCD PROCESS SELECTED":
 						PendingCertificationResultUcdProcessEntity ucd = new PendingCertificationResultUcdProcessEntity();
-						String ucdName = firstRow.get(currIndex++).toString();
-						String ucdDetails = firstRow.get(currIndex++).toString();
+						String ucdName = firstRow.get(currIndex++).trim();
+						String ucdDetails = firstRow.get(currIndex++).trim();
 						
 						if(!StringUtils.isEmpty(ucdName)) {
 							ucd.setUcdProcessName(ucdName);
@@ -806,7 +808,9 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						currIndex+=2;
 						break;
 					default:
+						pendingCertifiedProduct.getErrorMessages().add("Invalid column title " + colTitle + " at index " + currIndex);
 						logger.error("Could not handle column " + colTitle + " at index " + currIndex + ".");
+						currIndex++;
 					}
 				}
 			}						
@@ -816,7 +820,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	
 	private void parseTestStandards(PendingCertificationResultEntity cert, int tsColumn) {
 		for(CSVRecord row : getRecord()) {
-			String tsValue = row.get(tsColumn).toString();
+			String tsValue = row.get(tsColumn).trim();
 			if(!StringUtils.isEmpty(tsValue)) {
 				PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
 				tsEntity.setTestStandardName(tsValue);
@@ -831,7 +835,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	
 	private void parseTestFunctionality(PendingCertificationResultEntity cert, int tfColumn) {
 		for(CSVRecord row : getRecord()) {
-			String tfValue = row.get(tfColumn).toString();
+			String tfValue = row.get(tfColumn).trim();
 			if(!StringUtils.isEmpty(tfValue)) {
 				PendingCertificationResultTestFunctionalityEntity tfEntity = new PendingCertificationResultTestFunctionalityEntity();
 				tfEntity.setTestFunctionalityNumber(tfValue);
@@ -890,7 +894,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	
 	private void parseTestProcedures(PendingCertificationResultEntity cert, int tpColumn) {
 		for(CSVRecord row : getRecord()) {
-			String tpValue = row.get(tpColumn).toString();
+			String tpValue = row.get(tpColumn).trim();
 			if(!StringUtils.isEmpty(tpValue)) {
 				PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
 				tpEntity.setTestProcedureVersion(tpValue);
@@ -905,19 +909,19 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	
 	private void parseTestData(PendingCertifiedProductEntity product, PendingCertificationResultEntity cert, int tdColumnBegin) {
 		for(CSVRecord row : getRecord()) {
-			String tdVersionValue = row.get(tdColumnBegin).toString();
+			String tdVersionValue = row.get(tdColumnBegin).trim();
 			if(!StringUtils.isEmpty(tdVersionValue)) {
 				PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
 				tdEntity.setVersion(tdVersionValue);
-				Boolean hasAlteration = asBoolean(row.get(tdColumnBegin+1).toString());
+				Boolean hasAlteration = asBoolean(row.get(tdColumnBegin+1).trim());
 				tdEntity.setHasAlteration(hasAlteration);
-				String alterationStr = row.get(tdColumnBegin+2).toString();
+				String alterationStr = row.get(tdColumnBegin+2).trim();
 				if(tdEntity.isHasAlteration() && StringUtils.isEmpty(alterationStr)) {
 					product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates test data was altered however no test data alteration was found."); 
 				} else if(!tdEntity.isHasAlteration() && !StringUtils.isEmpty(alterationStr)) {
 					product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates test data was not altered however a test data alteration was found."); 
 				}
-				tdEntity.setAlteration(row.get(tdColumnBegin+2).toString());
+				tdEntity.setAlteration(row.get(tdColumnBegin+2).trim());
 				cert.getTestData().add(tdEntity);
 			}
 		}
@@ -925,8 +929,8 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	
 	private void parseTestTools(PendingCertificationResultEntity cert, int toolColumnBegin) {
 		for(CSVRecord row : getRecord()) {
-			String testToolName = row.get(toolColumnBegin).toString();
-			String testToolVersion = row.get(toolColumnBegin+1).toString();
+			String testToolName = row.get(toolColumnBegin).trim();
+			String testToolVersion = row.get(toolColumnBegin+1).trim();
 			if(!StringUtils.isEmpty(testToolName)) {
 				PendingCertificationResultTestToolEntity ttEntity = new PendingCertificationResultTestToolEntity();
 				ttEntity.setTestToolName(testToolName);
@@ -942,7 +946,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	
 	private void parseTasksAndParticipants(PendingCertifiedProductEntity product, PendingCertificationResultEntity cert, int taskColumnBegin) {
 		for(CSVRecord row : getRecord()) {
-			String taskUniqueId = row.get(taskColumnBegin).toString();
+			String taskUniqueId = row.get(taskColumnBegin).trim();
 			if(!StringUtils.isEmpty(taskUniqueId)) {
 				PendingTestTaskEntity taskEntity = null;
 				for(PendingTestTaskEntity task : this.tasks) {
@@ -956,7 +960,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 					PendingCertificationResultTestTaskEntity certTask = new PendingCertificationResultTestTaskEntity();
 					certTask.setTestTask(taskEntity);
 					
-					String participantUniqueIdStr = row.get(taskColumnBegin+1).toString();
+					String participantUniqueIdStr = row.get(taskColumnBegin+1).trim();
 					String[] participantUniqueIds = participantUniqueIdStr.split(";");
 					for(int i = 0; i < participantUniqueIds.length; i++) {
 						PendingTestParticipantEntity participantEntity = null;

@@ -1,7 +1,20 @@
 # Release Notes
 
-## Next version
-_Date TBD_
+## Version 
+_TBD_
+
+### Features Added
+* Change participant age to a range from a selectable list of ranges
+
+### Bugs Fixed
+* 170.314 (f)(3) does not require test tools for ambulatory products but does for inpatient
+* Editing a product was requiring g1 and g2 when it should not have. 
+* Trim spaces from the ends of all fields in the upload file
+* Properly save test functionality and test tools if an invalid one was in the upload file but was edited to be a valid one during confirm.
+* Fix logging bug when invalid column header is in upload file.
+
+## Version 1.4.0
+_16 May 2016_
 
 ### Features Added
 * Added EHR Certification ID rest service
@@ -9,10 +22,13 @@ _Date TBD_
 * Added EHR Certification ID rest service verify operation
 
 ### Bugs fixed
-* Fix parsing error when spreadsheet has only a single row. 
+* Fix parsing error when spreadsheet has only a single row.
 * Only return last N days of activity as requested.
 * Fix 2015 upload file validation to catch missing UCD Process, test tasks, and test participants.
 * Fix met calculation for Certification ID 2015 Ambulatory CQM validation
+* Save sed testing end date and sed intended users on confirm
+
+---
 
 ## Version 1.3.1
 _2 May 2016_

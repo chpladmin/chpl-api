@@ -27,6 +27,7 @@
 		<class>gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultTestDataEntity</class>
@@ -80,7 +81,7 @@
 		<class>gov.healthit.chpl.entity.TestParticipantEntity</class>
 		<class>gov.healthit.chpl.entity.TestTaskEntity</class>
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
-		
+		<class>gov.healthit.chpl.entity.AgeRangeEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />

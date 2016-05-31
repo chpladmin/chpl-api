@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -19,9 +20,12 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -32,6 +36,8 @@ import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Service
@@ -53,6 +59,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	private CertificationStatusDAO certificationStatusDao;
 	
 	@Autowired private EducationTypeDAO educationTypeDao;
+	@Autowired private AgeRangeDAO ageRangeDao;
+	@Autowired private TestFunctionalityDAO testFuncDao;
+	@Autowired private TestToolDAO testToolsDao;
 	
 	@Autowired
 	private ProductClassificationTypeDAO productClassificationTypeDAO;
@@ -184,6 +193,48 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		}
 		
 		return educationTypes;
+	}
+	
+	@Transactional
+	@Override
+	public Set<KeyValueModel> getAgeRanges() {
+		
+		List<AgeRangeDTO> dtos = this.ageRangeDao.getAll();
+		Set<KeyValueModel> ageRanges = new HashSet<KeyValueModel>();
+		
+		for (AgeRangeDTO dto : dtos) {
+			ageRanges.add(new KeyValueModel(dto.getId(), dto.getAge()));
+		}
+		
+		return ageRanges;
+	}
+	
+	@Transactional
+	@Override
+	public Set<KeyValueModel> getTestFunctionality() {
+		
+		List<TestFunctionalityDTO> dtos = this.testFuncDao.findAll();
+		Set<KeyValueModel> testFuncs = new HashSet<KeyValueModel>();
+		
+		for (TestFunctionalityDTO dto : dtos) {
+			testFuncs.add(new KeyValueModel(dto.getId(), dto.getNumber()));
+		}
+		
+		return testFuncs;
+	}
+	
+	@Transactional
+	@Override
+	public Set<KeyValueModel> getTestTools() {
+		
+		List<TestToolDTO> dtos = this.testToolsDao.findAll();
+		Set<KeyValueModel> testTools = new HashSet<KeyValueModel>();
+		
+		for (TestToolDTO dto : dtos) {
+			testTools.add(new KeyValueModel(dto.getId(), dto.getName()));
+		}
+		
+		return testTools;
 	}
 	
 	@Transactional

@@ -6,6 +6,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("inpatientModular2014Validator")
 public class InpatientModular2014Validator extends CertifiedProduct2014Validator {
@@ -48,6 +49,22 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
 		}
 		
 		return allCerts;
+	}
+	
+	@Override
+	protected void validateDemographics(PendingCertifiedProductDTO product) {
+		super.validateDemographics(product);
+		
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						!cert.getNumber().equals("170.314 (g)(1)") && 
+						!cert.getNumber().equals("170.314 (g)(2)") &&
+						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				}
+			}
+		}
 	}
 	
 	@Override

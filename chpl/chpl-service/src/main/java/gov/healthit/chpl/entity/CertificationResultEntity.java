@@ -21,7 +21,7 @@ import javax.persistence.Transient;
  */
 
 @Entity
-@Table(name = "certification_result", catalog = "openchpl", schema = "openchpl")
+@Table(name = "certification_result")
 public class CertificationResultEntity  implements Serializable {
 
 	/** Serial Version UID. */
