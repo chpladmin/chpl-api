@@ -1,5 +1,7 @@
 package gov.healthit.chpl.web.controller.results;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -30,7 +32,14 @@ public class CertificationIdResults {
 			this.acb = dto.getCertificationBodyName();
 			this.vendor = dto.getDeveloperName();
 			this.classification = dto.getProductClassificationName();
-			this.additionalSoftware = dto.getProductAdditionalSoftware();
+			this.additionalSoftware = "";
+			try {
+				if (null != dto.getProductAdditionalSoftware()) {
+					this.additionalSoftware = URLEncoder.encode(dto.getProductAdditionalSoftware(), "UTF-8");
+				}
+			} catch (UnsupportedEncodingException ex) {
+				// Do nothing
+			}
 		}
 
 		public String getYear() {
