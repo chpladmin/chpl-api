@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version 
-_TBD_
+## Version 1.5.0
+_24 May 2016_
 
 ### Features Added
 * Change participant age to a range from a selectable list of ranges
