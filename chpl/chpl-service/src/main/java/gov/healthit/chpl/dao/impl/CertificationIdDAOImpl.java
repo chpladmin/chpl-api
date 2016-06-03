@@ -36,6 +36,9 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	public static String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
 	public static int CERT_ID_LENGTH = 15;
 	private static long MODIFIED_USER_ID = -4L;
+	
+	private static int ENCODED_RADIX = 36;			// The radix base for values within the Key
+	private static int ENCODED_PADDED_LENGTH = 8;	// The number if digits for each value in the Key
 
 	@Override
 	@Transactional
@@ -300,21 +303,24 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		return entity;
 	}
 
-    private static String encodeCollectionKey(List<Long> products) {
+    private static String encodeCollectionKey(List<Long> numbers) {
         
         // Sort the product numbers before we encode them so they are in order
-		Collections.sort(products);
+		Collections.sort(numbers);
         
-        // Collect Hex version of all numbers.
-		String numbers = "";
-        for (Long id : products) {
-            String encodedNumber = String.format("%05X", id);
-			numbers = numbers + encodedNumber;
+        // Collect encoded version of all numbers.
+		String numbersString = "";
+        for (Long number : numbers) {
+        	StringBuffer encodedNumber = new StringBuffer(Long.toString(number, ENCODED_RADIX));
+        	while (encodedNumber.length() < ENCODED_PADDED_LENGTH) {
+        		encodedNumber.insert(0, "0");
+        	}
+        	numbersString += encodedNumber;
         }
         
-        return numbers.toUpperCase();
+        return numbersString.toUpperCase();
     }
-
+	
 	private static String generateCertificationIdString(String year) {
 		// Form the EHR Certification ID prefix and edition year identifier.
 		// The identifier begins with the two-digit year followed by an "E" to indicate
