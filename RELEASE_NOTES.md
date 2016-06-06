@@ -9,6 +9,7 @@ _24 May 2016_
 * Added more product details to Certification ID results
 * Changed Additional Software in Certification ID results to be URL encoded
 * Added feature to Certification ID generation to prevent formation of words in IDs 
+* Changed encodeCollectionKey to implement key values of base 36 and padded to 8 digits
 
 ### Bugs Fixed
 * 170.314 (f)(3) does not require test tools for ambulatory products but does for inpatient
