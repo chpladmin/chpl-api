@@ -1,5 +1,12 @@
 # Release Notes
 
+## Version TBD
+_DATE TBD_
+
+### Features Added
+* Make test functionality optional for all certifications
+* Return vendor contact and address information with certified product details
+
 ## Version 1.5.0
 _24 May 2016_
 
