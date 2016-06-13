@@ -1,11 +1,12 @@
 # Release Notes
 
-## Version TBD
-_DATE TBD_
+## Version 1.5.1
+_13 June 2016_
 
-### Features Added
+###  Bugs Fixed
 * Make test functionality optional for all certifications
 * Return vendor contact and address information with certified product details
+* Remove URL validation via regex
 
 ## Version 1.5.0
 _24 May 2016_
