@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import javax.persistence.Query;
 
@@ -25,9 +26,19 @@ import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 @Repository("certificationIdDAO")
 public class CertificationIdDAOImpl extends BaseDAOImpl implements CertificationIdDAO {
 
-	public static String CERT_ID_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	// Note that in the ALPHA string the characters O and I have been removed. This is to
+	// prevent confusion of characters. So characters that may appear to be I/1 or O/0 will
+	// always be numeric 1 and 0.
+	//
+	// The number of possible combinations of IDs within a specific certification year is 10^34.
+	public static String CERT_ID_CHARS_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+	public static String CERT_ID_CHARS_NUMERIC = "0123456789";
+	public static String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
 	public static int CERT_ID_LENGTH = 15;
 	private static long MODIFIED_USER_ID = -4L;
+	
+	private static int ENCODED_RADIX = 36;			// The radix base for values within the Key
+	private static int ENCODED_PADDED_LENGTH = 8;	// The number if digits for each value in the Key
 
 	@Override
 	@Transactional
@@ -292,21 +303,24 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		return entity;
 	}
 
-    private static String encodeCollectionKey(List<Long> products) {
+    private static String encodeCollectionKey(List<Long> numbers) {
         
         // Sort the product numbers before we encode them so they are in order
-		Collections.sort(products);
+		Collections.sort(numbers);
         
-        // Collect Hex version of all numbers.
-		String numbers = "";
-        for (Long id : products) {
-            String encodedNumber = String.format("%05X", id);
-			numbers = numbers + encodedNumber;
+        // Collect encoded version of all numbers.
+		String numbersString = "";
+        for (Long number : numbers) {
+        	StringBuffer encodedNumber = new StringBuffer(Long.toString(number, ENCODED_RADIX));
+        	while (encodedNumber.length() < ENCODED_PADDED_LENGTH) {
+        		encodedNumber.insert(0, "0");
+        	}
+        	numbersString += encodedNumber;
         }
         
-        return numbers.toUpperCase();
+        return numbersString.toUpperCase();
     }
-
+	
 	private static String generateCertificationIdString(String year) {
 		// Form the EHR Certification ID prefix and edition year identifier.
 		// The identifier begins with the two-digit year followed by an "E" to indicate
@@ -326,8 +340,28 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		int suffixLength = (CERT_ID_LENGTH - newId.length());
 
 		// Generate the remainder of the ID
+		int alphaCount = 1;
 		for (int i = 0; i < suffixLength; ++i) {
-			newId.append(CERT_ID_CHARS.charAt(new Random().nextInt(CERT_ID_CHARS.length())));
+			char newChar = CERT_ID_CHARS.charAt(new Random().nextInt(CERT_ID_CHARS.length()));
+			
+			// In order to prevent words from forming within the ID, we do not allow strings of
+			// more than 3 sequential alpha characters. After 3 the next character is forced to
+			// to be numeric.
+
+			// Check if newChar is numeric or alpha
+			if (Pattern.matches("[0-9]", Character.toString(newChar))) {
+				alphaCount = 0;
+			} else {
+				++alphaCount;
+				// If we've already had 3 alpha characters in a row, make the next one numeric
+				if (alphaCount > 3) {
+					newChar = CERT_ID_CHARS_NUMERIC.charAt(new Random().nextInt(CERT_ID_CHARS_NUMERIC.length()));
+					alphaCount = 0;
+				}
+			}
+			
+			// Add newChar to Cert ID string
+			newId.append(newChar);
 		}
 
 		// Safeguard we have a proper ID

@@ -1,10 +1,23 @@
 # Release Notes
 
+## Version 1.5.1
+_13 June 2016_
+
+###  Bugs Fixed
+* Make test functionality optional for all certifications
+* Return vendor contact and address information with certified product details
+* Remove URL validation via regex
+
 ## Version 1.5.0
 _24 May 2016_
 
 ### Features Added
 * Change participant age to a range from a selectable list of ranges
+* Changed 2015 and 2014/2015 Certification ID validation to no longer check CQMs
+* Added more product details to Certification ID results
+* Changed Additional Software in Certification ID results to be URL encoded
+* Added feature to Certification ID generation to prevent formation of words in IDs 
+* Changed encodeCollectionKey to implement key values of base 36 and padded to 8 digits
 
 ### Bugs Fixed
 * 170.314 (f)(3) does not require test tools for ambulatory products but does for inpatient

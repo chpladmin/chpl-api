@@ -127,6 +127,45 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "vendor_website")
     private String developerWebsite;
     
+    @Column(name = "address_id")
+    private Long addressId;
+    
+    @Column(name = "street_line_1")
+    private String streetLine1;
+    
+    @Column(name = "street_line_2")
+    private String streetLine2;
+    
+    @Column(name = "city")
+    private String city;
+    
+    @Column(name = "state")
+    private String state;
+    
+    @Column(name = "zipcode")
+    private String zipcode;
+    
+    @Column(name = "country")
+    private String country;
+    
+    @Column(name = "contact_id")
+    private Long contactId;
+    
+    @Column(name = "first_name")
+    private String firstName;
+    
+    @Column(name = "last_name")
+    private String lastName;
+    
+    @Column(name = "email")
+    private String email;
+    
+    @Column(name = "phone_number")
+    private String phoneNumber;
+    
+    @Column(name = "title")
+    private String title;
+    
     @Column(name = "certification_date")
     private Date certificationDate;
     
@@ -605,5 +644,109 @@ public class CertifiedProductDetailsEntity {
 
 	public void setSedTestingEnd(Date sedTestingEnd) {
 		this.sedTestingEnd = sedTestingEnd;
+	}
+
+	public Long getAddressId() {
+		return addressId;
+	}
+
+	public void setAddressId(Long addressId) {
+		this.addressId = addressId;
+	}
+
+	public String getStreetLine1() {
+		return streetLine1;
+	}
+
+	public void setStreetLine1(String streetLine1) {
+		this.streetLine1 = streetLine1;
+	}
+
+	public String getStreetLine2() {
+		return streetLine2;
+	}
+
+	public void setStreetLine2(String streetLine2) {
+		this.streetLine2 = streetLine2;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getZipcode() {
+		return zipcode;
+	}
+
+	public void setZipcode(String zipcode) {
+		this.zipcode = zipcode;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public Long getContactId() {
+		return contactId;
+	}
+
+	public void setContactId(Long contactId) {
+		this.contactId = contactId;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}	
 }
