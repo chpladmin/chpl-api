@@ -1,5 +1,11 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features Added
+* Allow searching by certification status name
+
 ## Version 1.5.1
 _13 June 2016_
 
