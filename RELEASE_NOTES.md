@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features Added
+* Completed Lookup Certification ID API function
+
+### Bugs Fixed
+* Fixed chplProductNumber was null for 2015 products, now builds number from parts
+
 ## Version 1.5.0
 _24 May 2016_
 
