@@ -18,4 +18,6 @@ public interface CertificationIdDAO {
 	public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException;
 	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
 	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException;
+	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException;
+	
 }

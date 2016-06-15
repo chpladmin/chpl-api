@@ -170,6 +170,16 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	}
 
 	@Override
+	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
+
+		Query query = entityManager.createQuery( "select certifiedProductId from CertificationIdProductMapEntity where certificationIdId = :id ", Long.class );
+		query.setParameter("id", id);
+		List<Long> queryResult = query.getResultList();
+		return queryResult;	
+		
+	}
+	
+	@Override
 	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
 		
 		CertificationIdEntity entity = getEntityByProductIds(productIds, year);
