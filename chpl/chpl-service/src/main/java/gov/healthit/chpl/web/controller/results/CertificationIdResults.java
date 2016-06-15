@@ -5,6 +5,9 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashMap;
+
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
@@ -26,7 +29,14 @@ public class CertificationIdResults {
 			this.name = dto.getProductName();
 			this.productId = dto.getId();
 			this.version = dto.getProductVersion();
-			this.chplProductNumber = dto.getChplProductNumber();
+			if(!StringUtils.isEmpty(dto.getChplProductNumber())) {
+				this.setChplProductNumber(dto.getChplProductNumber());
+			} else {
+				this.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
+						dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+						"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
+						"." + dto.getCertifiedDateCode());
+			}
 			this.year = dto.getYear();
 			this.practiceType = dto.getPracticeTypeName();
 			this.acb = dto.getCertificationBodyName();
