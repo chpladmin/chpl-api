@@ -5,6 +5,10 @@ _Date TBD_
 
 ### Features Added
 * Allow searching by certification status name
+* Completed Lookup Certification ID API function
+
+### Bugs Fixed
+* Fixed chplProductNumber was null for 2015 products, now builds number from parts
 
 ## Version 1.5.1
 _13 June 2016_

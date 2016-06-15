@@ -14,6 +14,7 @@ public interface CertificationIdManager {
 	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
 	public CertificationIdDTO getById(Long id) throws EntityRetrievalException;
 	public CertificationIdDTO getByCertificationId(String certId) throws EntityRetrievalException;
+	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException;
 	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException;
 	public List<CertificationIdDTO> getAll();
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
