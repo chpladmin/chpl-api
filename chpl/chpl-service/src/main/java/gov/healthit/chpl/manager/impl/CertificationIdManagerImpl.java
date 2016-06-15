@@ -46,6 +46,11 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException {
 		return CertificationIdDAO.getByCertificationId(certificationId);
 	}
+	
+	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
+		return CertificationIdDAO.getProductIdsById(id);
+	}
+	
 
 	@Override
 	@Transactional(readOnly = true)

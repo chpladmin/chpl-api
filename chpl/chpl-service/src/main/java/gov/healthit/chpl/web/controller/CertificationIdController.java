@@ -38,6 +38,7 @@ import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CertificationIdManager;
+import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
 
@@ -146,10 +147,33 @@ public class CertificationIdController {
 	@ApiOperation(value="Get information about a specific EHR Certification ID.", 
 			notes="Retrieves detailed information about a specific EHR Certification ID including the list of products that make it up.")
 	@RequestMapping(value="/{certificationId}", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
-	public @ResponseBody CertificationIdResults getCertificationIdByCertificationId(@PathVariable("certificationId") String certificationId) 
+	public @ResponseBody CertificationIdLookupResults getCertificationIdByCertificationId(@PathVariable("certificationId") String certificationId) 
 	throws InvalidArgumentsException, CertificationIdException {
-		CertificationIdResults results = new CertificationIdResults();
-		results.setEhrCertificationId(certificationId);
+		
+		CertificationIdLookupResults results = new CertificationIdLookupResults();
+		
+		try {
+			// Lookup the Cert ID
+			CertificationIdDTO certDto = certificationIdManager.getByCertificationId(certificationId);
+			if (null != certDto) {
+				results.setEhrCertificationId(certDto.getCertificationId());
+				results.setYear(certDto.getYear());
+
+				// Find the products associated with the Cert ID
+				List<Long> productIds = certificationIdManager.getProductIdsById(certDto.getId());
+				List<CertifiedProductDetailsDTO> productDtos = certifiedProductManager.getDetailsByIds(productIds);
+				
+				// Add product data to results
+				List<CertificationIdLookupResults.Product> productList = results.getProducts();
+				for (CertifiedProductDetailsDTO dto : productDtos) {
+					productList.add(new CertificationIdLookupResults.Product(dto));
+				}
+			}
+			
+		} catch (EntityRetrievalException ex) {
+			throw new CertificationIdException("Unable to lookup Certification ID " + certificationId + ".");
+		}
+		
 		return results;
 	}
 
