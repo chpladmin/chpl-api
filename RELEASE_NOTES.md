@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 1.6.0
+_16 June 2016_
 
 ### Features Added
 * Allow searching by certification status name
@@ -10,6 +10,8 @@ _Date TBD_
 ### Bugs Fixed
 * Fixed chplProductNumber was null for 2015 products, now builds number from parts
 
+---
+
 ## Version 1.5.1
 _13 June 2016_
 
@@ -17,6 +19,8 @@ _13 June 2016_
 * Make test functionality optional for all certifications
 * Return vendor contact and address information with certified product details
 * Remove URL validation via regex
+
+---
 
 ## Version 1.5.0
 _24 May 2016_
@@ -36,6 +40,8 @@ _24 May 2016_
 * Properly save test functionality and test tools if an invalid one was in the upload file but was edited to be a valid one during confirm.
 * Fix logging bug when invalid column header is in upload file.
 
+---
+
 ## Version 1.4.0
 _16 May 2016_
 
@@ -53,11 +59,15 @@ _16 May 2016_
 
 ---
 
+---
+
 ## Version 1.3.1
 _2 May 2016_
 
 ### Bugs fixed
 * Increased 2015 column count to handle (a)(10) G2
+
+---
 
 ## Version 1.3.0
 _27 April 2016_
@@ -65,6 +75,8 @@ _27 April 2016_
 ### Features Added
 * Added fields to the corrective action plans
 * Changed search parameter values for searching by corrective action plan (open, closed, none)
+
+---
 
 ## Version 1.2.0
 _20 April 2016_
@@ -79,6 +91,8 @@ _20 April 2016_
 * Fix error related to merging of products.
 * Product ownership change shows up correctly in activity report.`
 * Do not allow duplicate chpl ids in the same file unless they have XXXX (new developers)
+
+---
 
 ## Version 1.1.0
 _12 April 2016_
@@ -97,6 +111,8 @@ _12 April 2016_
 * Fix activity report link email
 * Allow certification date to be changed.
 
+---
+
 ## Version 1.0.0
 _30 March 2016_
 
@@ -106,6 +122,8 @@ _30 March 2016_
 
 ### Bugs fixed
 * Allow for empty transparency attestation and url values
+
+---
 
 ## Version 0.5.0
 _25 March 2016_
@@ -118,6 +136,8 @@ _25 March 2016_
 
 ### Bugs fixed
 * Searching on criteria alone gives error
+
+---
 
 ## Version 0.4.0
 _14 March 2016_
@@ -134,17 +154,23 @@ _14 March 2016_
 ### Bugs fixed
 * Fix null value in announcement activity
 
+---
+
 ## Version 0.3.2
 _29 February 2016_
 
 ### Features added
 * Added ability to do new 2014 upload files
 
+---
+
 ## Version 0.3.1
 _22 February 2016_
 
 ### Bugs fixed
 * Added missing product number to CP manange select box
+
+---
 
 ## Version 0.3.0
 _18 February 2016_
@@ -154,6 +180,8 @@ _18 February 2016_
 * Added descriptions to API methods.
 * Changed API for certified products and certification results to match 2014 data requirements.
 * Allow multiple values for the 'hasCap' field in search.
+
+---
 
 ## Version 0.2.0
 _3 February 2016_
@@ -170,6 +198,8 @@ _3 February 2016_
 * Allow certified products with errors to be edited and remove those errors
 * Fix email content typos
 
+---
+
 ## Version 0.1.1
 _12 January 2016_
 
@@ -180,6 +210,8 @@ _12 January 2016_
 * Search on certifications / cqms
 * Allow editing of products with errors
 * Fixed various email content issues
+
+---
 
 ## Version 0.1.0
 _5 January 2016_
@@ -195,6 +227,8 @@ Bugs Fixed
 * Correct CHPL number is inserted in corrective action plan documentation activity.
 * Authorizing existing users for new roles or ACBs/ATLs is fixed 
 
+---
+
 ## Version 0.0.2
 _7 December 2015_
 
@@ -207,6 +241,8 @@ Features added or Updated
 Bugs fixed
 * ETL inserts to correct 170.314 (b)(5)(A) or (b)(5)(B) depending on Ambulatory/Inpatient
 * ETL correctly inserts CMS9 and CMS26 CQMs
+
+---
 
 ## Version 0.0.1
 _13 November 2015_
