@@ -18,6 +18,7 @@ public class SearchRequest {
 	String certificationBody = null;
 	String productClassification = null;
 	String practiceType = null;
+	String certificationStatus = null;
 	String visibleOnCHPL = "YES";
 	String hasCAP = "BOTH";
 	String orderBy = "product";
@@ -124,6 +125,12 @@ public class SearchRequest {
 	}
 	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
+	}
+	public String getCertificationStatus() {
+		return certificationStatus;
+	}
+	public void setCertificationStatus(String certificationStatus) {
+		this.certificationStatus = certificationStatus;
 	}
 	
 }

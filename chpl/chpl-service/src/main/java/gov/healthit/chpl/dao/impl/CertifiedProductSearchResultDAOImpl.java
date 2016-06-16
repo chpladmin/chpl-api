@@ -154,6 +154,19 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "vendor_name, "
 				+ "vendor_code, "
 				+ "vendor_website, " 
+				+ "address_id, "
+				+ "street_line_1, "
+				+ "street_line_2, " 
+				+ "city, " 
+				+ "state, " 
+				+ "zipcode, " 
+				+ "country, "
+				+ "contact_id, "
+				+ "first_name, "
+				+ "last_name, "
+				+ "email, "
+				+ "phone_number, "
+				+ "title, "
 				+ "certification_date, "
 				+ "count_certifications, "
 				+ "count_cqms, "
@@ -213,6 +226,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
 		}
 		
+		if(searchRequest.getCertificationStatus() != null) {
+			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		}
 		
 		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
 			queryStr += " AND (visible_on_chpl = true ) ";
@@ -281,6 +297,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
 		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
+		}
+		
 		return query;
 	}
 	
@@ -327,6 +348,19 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "vendor_name, "
 				+ "vendor_code, "
 				+ "vendor_website, " 
+				+ "address_id, "
+				+ "street_line_1, "
+				+ "street_line_2, " 
+				+ "city, " 
+				+ "state, " 
+				+ "zipcode, " 
+				+ "country, "
+				+ "contact_id, "
+				+ "first_name, "
+				+ "last_name, "
+				+ "email, "
+				+ "phone_number, "
+				+ "title, "
 				+ "certification_date, "
 				+ "count_certifications, "
 				+ "count_cqms, "
@@ -386,6 +420,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if (searchRequest.getVersion() != null) {
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
+		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
 		}
 		
 		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
@@ -455,6 +493,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
 		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
+		}
+		
 		return query;
 		
 	}
@@ -501,6 +544,19 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "vendor_name, "
 				+ "vendor_code, "
 				+ "vendor_website, " 
+				+ "address_id, "
+				+ "street_line_1, "
+				+ "street_line_2, " 
+				+ "city, " 
+				+ "state, " 
+				+ "zipcode, " 
+				+ "country, "
+				+ "contact_id, "
+				+ "first_name, "
+				+ "last_name, "
+				+ "email, "
+				+ "phone_number, "
+				+ "title, "
 				+ "certification_date, "
 				+ "count_certifications, "
 				+ "count_cqms, "
@@ -570,6 +626,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
 		}
 		
+		if(searchRequest.getCertificationStatus() != null) {
+			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		}
 		
 		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
 			queryStr += " AND (visible_on_chpl = true ) ";
@@ -641,6 +700,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
 		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
+		}
 		return query;
 	}
 	
@@ -678,6 +741,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if (searchRequest.getVersion() != null) {
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version))";
+		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
 		}
 		
 		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
@@ -741,6 +808,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
+		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
 		}
 		
 		return query;
@@ -833,6 +904,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
 		}
 		
+		if(searchRequest.getCertificationStatus() != null) {
+			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		}
+		
 		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
 			queryStr += " AND (visible_on_chpl = true ) ";
 		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
@@ -891,6 +966,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
 		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
+		}
+		
 		return query;
 	}
 	
@@ -945,6 +1025,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if (searchRequest.getVersion() != null) {
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
+		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
 		}
 		
 		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
@@ -1005,6 +1089,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
 		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
+		}
+		
 		return query;
 		
 	}
@@ -1068,6 +1157,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
 		}
 		
+		if(searchRequest.getCertificationStatus() != null) {
+			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		}
+		
 		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
 			queryStr += " AND (visible_on_chpl = true ) ";
 		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
@@ -1129,6 +1222,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
 		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
+		}
+		
 		return query;
 	}
 	
@@ -1166,6 +1264,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if (searchRequest.getVersion() != null) {
 			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
+		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
 		}
 		
 		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
@@ -1221,6 +1323,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
+		}
+		
+		if(searchRequest.getCertificationStatus() != null) {
+			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
 		}
 		return query;
 	}

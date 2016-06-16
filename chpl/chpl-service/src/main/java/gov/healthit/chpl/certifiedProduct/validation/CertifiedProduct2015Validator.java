@@ -260,10 +260,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						cert.getApiDocumentation() == null) {
 					product.getErrorMessages().add("API Documentation is required for certification " + cert.getNumber() + ".");
 				}
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED) &&
-						(cert.getTestFunctionality() == null || cert.getTestFunctionality().size() == 0)) {
-					product.getErrorMessages().add("Functionality Tested is required for certification " + cert.getNumber() + ".");
-				}
+				//jennifer asked to not make functionality tested be a required field
+//				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED) &&
+//						(cert.getTestFunctionality() == null || cert.getTestFunctionality().size() == 0)) {
+//					product.getErrorMessages().add("Functionality Tested is required for certification " + cert.getNumber() + ".");
+//				}
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
 						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
 						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");

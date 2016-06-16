@@ -21,6 +21,7 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
+import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -39,6 +40,7 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
@@ -169,6 +171,13 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		developer.setDeveloperId(dto.getDeveloperId());
 		developer.setName(dto.getDeveloperName());
 		developer.setWebsite(dto.getDeveloperWebsite());
+		
+		if(dto.getDeveloperContact() != null) {
+			developer.setContact(new Contact(dto.getDeveloperContact()));
+		}
+		 if(dto.getDeveloperAddress() != null) {
+			 developer.setAddress(new Address(dto.getDeveloperAddress()));
+		 }
 		searchDetails.setDeveloper(developer);
 		
 		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());

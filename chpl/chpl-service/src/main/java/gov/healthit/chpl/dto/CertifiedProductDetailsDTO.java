@@ -45,6 +45,8 @@ public class CertifiedProductDetailsDTO {
     private String developerName;
     private String developerCode;
     private String developerWebsite;
+    private AddressDTO developerAddress;
+    private ContactDTO developerContact;
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
@@ -111,6 +113,25 @@ public class CertifiedProductDetailsDTO {
     	this.developerName = entity.getDeveloperName();
     	this.developerCode = entity.getDeveloperCode();
     	this.developerWebsite = entity.getDeveloperWebsite();
+    	if(entity.getAddressId() != null) {
+    		this.developerAddress = new AddressDTO();
+    		this.developerAddress.setId(entity.getAddressId());
+    		this.developerAddress.setStreetLineOne(entity.getStreetLine1());
+    		this.developerAddress.setStreetLineTwo(entity.getStreetLine2());
+    		this.developerAddress.setCity(entity.getCity());
+    		this.developerAddress.setState(entity.getState());
+    		this.developerAddress.setZipcode(entity.getZipcode());
+    		this.developerAddress.setCountry(entity.getCountry());
+    	}
+    	if(entity.getContactId() != null) {
+    		this.developerContact = new ContactDTO();
+    		this.developerContact.setId(entity.getContactId());
+    		this.developerContact.setFirstName(entity.getFirstName());
+    		this.developerContact.setLastName(entity.getLastName());
+    		this.developerContact.setEmail(entity.getEmail());
+    		this.developerContact.setPhoneNumber(entity.getPhoneNumber());
+    		this.developerContact.setTitle(entity.getTitle());
+    	}
     	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.termsOfUse = entity.getTermsOfUse();
     	this.ics = entity.getIcs();
@@ -531,5 +552,21 @@ public class CertifiedProductDetailsDTO {
 
 	public void setSedTestingEnd(Date sedTestingEnd) {
 		this.sedTestingEnd = sedTestingEnd;
+	}
+
+	public AddressDTO getDeveloperAddress() {
+		return developerAddress;
+	}
+
+	public void setDeveloperAddress(AddressDTO developerAddress) {
+		this.developerAddress = developerAddress;
+	}
+
+	public ContactDTO getDeveloperContact() {
+		return developerContact;
+	}
+
+	public void setDeveloperContact(ContactDTO developerContact) {
+		this.developerContact = developerContact;
 	}
 }

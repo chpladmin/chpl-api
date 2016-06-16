@@ -5,7 +5,9 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,6 +25,8 @@ import gov.healthit.chpl.util.CertificationResultOption;
 
 public class XmlParsingTest {
 
+	static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
+
 	@Test
 	public void test() {
 		String id = "14.07.07.1446.ECAS.63.1.1.141113";
@@ -30,4 +34,12 @@ public class XmlParsingTest {
 		assertEquals(9, results.length);
 	}
 
+	@Test
+	public void testUrlRegex() {
+		Pattern urlRegex = Pattern.compile(URL_PATTERN);
+		String url = "http://www.greenway.com\\nhttp://www.greenway.com";
+		System.out.println(new Date());
+		System.out.println(urlRegex.matcher(url).matches());
+		System.out.println(new Date());
+	}
 }
