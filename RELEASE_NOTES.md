@@ -1,5 +1,10 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+* Added product id to Cert ID lookup results
+
+
 ## Version 1.6.0
 _16 June 2016_
 
