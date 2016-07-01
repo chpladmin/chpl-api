@@ -14,6 +14,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 public class CertificationIdLookupResults {
 	
 	static public class Product {
+		private Long id;
 		private String name;
 		private String version;
 		private String chplProductNumber;
@@ -24,6 +25,7 @@ public class CertificationIdLookupResults {
 		private String classification;
 
 		public Product(CertifiedProductDetailsDTO dto) {
+			this.id = dto.getId();
 			this.name = dto.getProductName();
 			this.version = dto.getProductVersion();
 			if(!StringUtils.isEmpty(dto.getChplProductNumber())) {
@@ -39,6 +41,14 @@ public class CertificationIdLookupResults {
 			this.acb = dto.getCertificationBodyName();
 			this.vendor = dto.getDeveloperName();
 			this.classification = dto.getProductClassificationName();
+		}
+		
+		public Long getId() {
+			return id;
+		}
+		
+		public void setId(Long id) {
+			this.id = id;
 		}
 
 		public String getYear() {
