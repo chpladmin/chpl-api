@@ -1,5 +1,13 @@
 # Release Notes
 
+## TBD
+_TBD_
+
+### Features Added
+* Added optional inclusion of criteria met for Certification ID details through the API
+
+---
+
 ## Version 1.6.1
 _1 July 2016_
 
