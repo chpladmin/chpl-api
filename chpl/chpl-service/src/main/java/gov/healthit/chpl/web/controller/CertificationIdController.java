@@ -148,7 +148,8 @@ public class CertificationIdController {
 			notes="Retrieves detailed information about a specific EHR Certification ID including the list of products that make it up.")
 	@RequestMapping(value="/{certificationId}", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody CertificationIdLookupResults getCertificationIdByCertificationId(@PathVariable("certificationId") String certificationId, 
-		@RequestParam(required=false,defaultValue="false") Boolean includeCriteria) 
+		@RequestParam(required=false,defaultValue="false") Boolean includeCriteria,
+		@RequestParam(required=false,defaultValue="false") Boolean includeCqms) 
 	throws InvalidArgumentsException, CertificationIdException {
 		
 		CertificationIdLookupResults results = new CertificationIdLookupResults();
@@ -170,12 +171,17 @@ public class CertificationIdController {
 					productList.add(new CertificationIdLookupResults.Product(dto));
 				}
 				
-				// Add criteria met to results
-				if (includeCriteria) {
+				// Add criteria and cqms met to results
+				if (includeCriteria || includeCqms) {
 					Validator validator = ValidatorFactory.getValidator(certDto.getYear());
 					boolean isValid = validator.validate(productDtos);
 					if (isValid) {
-						results.setCriteria(validator.getCriteriaMet().keySet());
+						if (includeCriteria) {
+							results.setCriteria(validator.getCriteriaMet().keySet());
+						}
+						if (includeCqms) {
+							results.setCqms(validator.getCqmsMet().keySet());
+						}
 					}
 				}
 				

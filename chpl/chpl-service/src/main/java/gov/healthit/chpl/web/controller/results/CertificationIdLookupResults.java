@@ -121,8 +121,8 @@ public class CertificationIdLookupResults {
 	private List<Product> products = new ArrayList<Product>();
 	private String ehrCertificationId;
 	private String year;
-	private Set<String> criteria = new HashSet<String>();
-	private Set<String> cqms = new HashSet<String>();
+	private Set<String> criteria = null;
+	private Set<String> cqms = null;
 
 	public String getYear() {
 		return this.year;
