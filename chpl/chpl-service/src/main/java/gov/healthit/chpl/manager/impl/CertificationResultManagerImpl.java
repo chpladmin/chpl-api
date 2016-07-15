@@ -400,17 +400,21 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultTestProcedureDTO> testProceduresToAdd = new ArrayList<CertificationResultTestProcedureDTO>();
 		List<CertificationResultTestProcedureDTO> testProceduresToRemove = new ArrayList<CertificationResultTestProcedureDTO>();
 
-		for (CertificationResultTestProcedureDTO toUpdateMapping : toUpdate.getTestProcedures()){
-			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getTestProcedureId() == null) {
+		for (CertificationResultTestProcedureDTO testProcedureMapping : toUpdate.getTestProcedures()){
+			if(testProcedureMapping.getId() == null && testProcedureMapping.getTestProcedureId() == null) {
 					TestProcedureDTO testProcedureToCreate = new TestProcedureDTO();
-					testProcedureToCreate.setVersion(toUpdateMapping.getTestProcedureVersion());
+					testProcedureToCreate.setVersion(testProcedureMapping.getTestProcedureVersion());
 					testProcedureToCreate = testProcedureDAO.create(testProcedureToCreate);
-					toUpdateMapping.setTestProcedureId(testProcedureToCreate.getId());
-				}
-				toUpdateMapping.setCertificationResultId(toUpdate.getId());
-				testProceduresToAdd.add(toUpdateMapping);
-			} 
+					testProcedureMapping.setTestProcedureId(testProcedureToCreate.getId());
+					testProcedureMapping.setCertificationResultId(toUpdate.getId());
+					testProceduresToAdd.add(testProcedureMapping);
+			} else if(testProcedureMapping.getId() != null) {
+				//what if the test procedure exists but needs updated?
+				TestProcedureDTO testProcedureToUpdate = new TestProcedureDTO();
+				testProcedureToUpdate.setId(testProcedureMapping.getTestProcedureId());
+				testProcedureToUpdate.setVersion(testProcedureMapping.getTestProcedureVersion());
+				testProcedureDAO.update(testProcedureToUpdate);					
+			}
 		}
 				
 		for(CertificationResultTestProcedureDTO currMapping : existingTestProcedures) {
@@ -442,20 +446,25 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultTestFunctionalityDTO> testFunctionalityToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
 		List<CertificationResultTestFunctionalityDTO> testFunctionalityToRemove = new ArrayList<CertificationResultTestFunctionalityDTO>();
 
-		for (CertificationResultTestFunctionalityDTO toUpdateMapping : toUpdate.getTestFunctionality()){
-			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getTestFunctionalityId() == null) {
-					TestFunctionalityDTO testFunc = testFunctionalityDAO.getByNumber(toUpdateMapping.getTestFunctionalityNumber());
-					if(testFunc == null) {
-						TestFunctionalityDTO testFunctionalityToCreate = new TestFunctionalityDTO();
-						testFunctionalityToCreate.setNumber(toUpdateMapping.getTestFunctionalityNumber());
-						testFunc = testFunctionalityDAO.create(testFunctionalityToCreate);
-					}
-					toUpdateMapping.setTestFunctionalityId(testFunc.getId());
+		for (CertificationResultTestFunctionalityDTO testFuncMapping : toUpdate.getTestFunctionality()){
+			if(testFuncMapping.getId() == null && testFuncMapping.getTestFunctionalityId() == null) {
+				TestFunctionalityDTO testFunc = testFunctionalityDAO.getByNumber(testFuncMapping.getTestFunctionalityNumber());
+				if(testFunc == null) {
+					TestFunctionalityDTO testFunctionalityToCreate = new TestFunctionalityDTO();
+					testFunctionalityToCreate.setNumber(testFuncMapping.getTestFunctionalityNumber());
+					testFunc = testFunctionalityDAO.create(testFunctionalityToCreate);
 				}
-				toUpdateMapping.setCertificationResultId(toUpdate.getId());
-				testFunctionalityToAdd.add(toUpdateMapping);
-			} 
+				testFuncMapping.setTestFunctionalityId(testFunc.getId());
+				testFuncMapping.setCertificationResultId(toUpdate.getId());
+				testFunctionalityToAdd.add(testFuncMapping);
+			}  else if(testFuncMapping.getId() != null) {
+				//what if the test functionality exists but needs updated?
+				TestFunctionalityDTO testFuncToUpdate = new TestFunctionalityDTO();
+				testFuncToUpdate.setId(testFuncMapping.getTestFunctionalityId());
+				testFuncToUpdate.setName(testFuncMapping.getTestFunctionalityName());
+				testFuncToUpdate.setNumber(testFuncMapping.getTestFunctionalityNumber());
+				testFunctionalityDAO.update(testFuncToUpdate);					
+			}
 		}
 				
 		for(CertificationResultTestFunctionalityDTO currMapping : existingTestFunctionality) {
