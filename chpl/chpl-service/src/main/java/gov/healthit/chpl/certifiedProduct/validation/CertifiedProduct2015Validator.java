@@ -5,16 +5,26 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.AccessibilityStandardDAO;
+import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2015Validator")
@@ -48,6 +58,10 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 
 	private static final String[] g6CertsToCheck = {"170.315 (b)(1)", "170.315 (b)(2)", "170.315 (b)(4)",
 			"170.315 (b)(6)", "170.315 (b)(9)", "170.315 (e)(1)", "170.315 (g)(9)"};
+	
+	@Autowired TestToolDAO testToolDao;
+	@Autowired TestFunctionalityDAO testFuncDao;
+	@Autowired AccessibilityStandardDAO asDao;
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
@@ -248,6 +262,15 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		if(product.getAccessibilityStandards() == null || product.getAccessibilityStandards().size() == 0) {
 			product.getErrorMessages().add("Accessibility standards are required.");
+		} else {
+			for(PendingCertifiedProductAccessibilityStandardDTO pendingStdMap : product.getAccessibilityStandards()) {
+				if(pendingStdMap.getAccessibilityStandardId() == null) {
+					AccessibilityStandardDTO foundStd = asDao.getByName(pendingStdMap.getName());
+					if(foundStd == null) {
+						product.getErrorMessages().add("Accessibility Standard '" + pendingStdMap.getName() + "' is invalid.");
+					}
+				}
+			}
 		}
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
@@ -268,7 +291,30 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
 						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
 						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				} else if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+					for(PendingCertificationResultTestToolDTO pendingToolMap : cert.getTestTools()) {
+						if(pendingToolMap.getTestToolId() == null) {
+							TestToolDTO foundTestTool = testToolDao.getByName(pendingToolMap.getName());
+							if(foundTestTool == null || foundTestTool.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + pendingToolMap.getName() + "'.");
+							}
+						}
+					}
 				}
+				
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED) &&
+						cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
+					for(PendingCertificationResultTestFunctionalityDTO pendingFuncMap : cert.getTestFunctionality()) {
+						if(pendingFuncMap.getTestFunctionalityId() == null) {
+							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumber(pendingFuncMap.getNumber());
+							if(foundTestFunc == null || foundTestFunc.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + pendingFuncMap.getNumber() + "'.");
+							}
+						}
+					}
+				}
+			
 				if((cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestData() == null || cert.getTestData().size() == 0)) {
 					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");

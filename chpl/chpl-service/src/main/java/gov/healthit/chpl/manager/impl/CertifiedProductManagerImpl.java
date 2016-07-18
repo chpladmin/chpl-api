@@ -403,16 +403,26 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		if(pendingCp.getAccessibilityStandards() != null && pendingCp.getAccessibilityStandards().size() > 0) {
 			for(PendingCertifiedProductAccessibilityStandardDTO as : pendingCp.getAccessibilityStandards()) {
 				CertifiedProductAccessibilityStandardDTO asDto = new CertifiedProductAccessibilityStandardDTO();
-				if(as.getAccessibilityStandardId() == null) {
-					AccessibilityStandardDTO toAdd = new AccessibilityStandardDTO();
-					toAdd.setName(as.getName());
-					toAdd = asDao.create(toAdd);
-					asDto.setAccessibilityStandardId(toAdd.getId());
-				} else {
-					asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
-				}
 				asDto.setCertifiedProductId(newCertifiedProduct.getId());
-				cpAccStdDao.createCertifiedProductAccessibilityStandard(asDto);
+
+				if(as.getAccessibilityStandardId() != null) {
+					asDto.setAccessibilityStandardName(as.getName());
+					asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
+				} else {
+					//check again for a matching accessibility std because the uesr could have edited
+					//it since upload
+					AccessibilityStandardDTO match = asDao.getByName(as.getName());
+					if(match != null) {
+						asDto.setAccessibilityStandardName(match.getName());
+						asDto.setAccessibilityStandardId(match.getId());
+					} 
+				}
+				
+				if(asDto.getAccessibilityStandardId() != null) {
+					cpAccStdDao.createCertifiedProductAccessibilityStandard(asDto);
+				} else {
+					logger.error("Could not insert accessibility standard with null id. Name was " + as.getName());
+				}
 			}
 		}
 				
