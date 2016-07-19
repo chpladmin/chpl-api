@@ -157,11 +157,22 @@ public class CertifiedProductController {
 		if(validator != null) {
 			validator.validate(updateRequest);
 		}
+		
+		CertifiedProductSearchDetails existingProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		//has the unique id changed? if so, make sure it is still unique
+		if(!existingProduct.getChplProductNumber().equals(updateRequest.getChplProductNumber())) {
+			try {
+				boolean isDup = cpManager.chplIdExists(updateRequest.getChplProductNumber());
+				if(isDup) {
+					updateRequest.getErrorMessages().add("The CHPL Product Number has changed. The new CHPL Product Number " + updateRequest.getChplProductNumber() + " must be unique among all other certified products but one already exists with the same ID.");
+				}
+			} catch(EntityRetrievalException ex) {}
+		}
+		
 		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {
 			throw new ValidationException(updateRequest.getErrorMessages(), updateRequest.getWarningMessages());
 		}
 		
-		CertifiedProductSearchDetails existingProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
 		Long acbId = new Long(existingProduct.getCertifyingBody().get("id").toString());
 		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id").toString());
 		
