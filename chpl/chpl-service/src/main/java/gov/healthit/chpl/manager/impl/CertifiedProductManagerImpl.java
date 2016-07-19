@@ -195,6 +195,32 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	
 	@Override
+	@Transactional(readOnly=true)
+	public boolean chplIdExists(String id) throws EntityRetrievalException {
+		if(StringUtils.isEmpty(id)) {
+			return false;
+		} 
+		
+		boolean exists = false;
+		if(id.startsWith("CHP")) {
+			CertifiedProductDTO existing = cpDao.getByChplNumber(id);
+			if(existing != null) {
+				exists = true;
+			}
+		} else {
+			try {
+				CertifiedProductDetailsDTO existing = cpDao.getByChplUniqueId(id);
+				if(existing != null) {
+					exists = true;
+				}
+			} catch(EntityRetrievalException ex){
+				logger.error("Could not look up " + id, ex);
+			}
+		}
+		return exists;
+	}
+	
+	@Override
 	@Transactional(readOnly = true)
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException {
 		List<CertifiedProductDetailsDTO> result = cpDao.getDetailsByIds(ids);

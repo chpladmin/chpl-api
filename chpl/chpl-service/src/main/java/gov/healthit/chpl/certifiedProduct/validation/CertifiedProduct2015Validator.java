@@ -12,7 +12,11 @@ import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -491,6 +495,78 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		}
 	}
 
+	protected void validateDemographics(CertifiedProductSearchDetails product) {
+		super.validateDemographics(product);
+		
+		if(product.getQmsStandards() == null || product.getQmsStandards().size() == 0) {
+			product.getErrorMessages().add("QMS Standards are required.");
+		} else {
+			for(CertifiedProductQmsStandard qms : product.getQmsStandards()) {
+				if(StringUtils.isBlank(qms.getApplicableCriteria())) {
+					product.getErrorMessages().add("Applicable criteria is required for each QMS Standard listed.");
+				}
+			}
+		}
+		
+		if(product.getAccessibilityStandards() == null || product.getAccessibilityStandards().size() == 0) {
+			product.getErrorMessages().add("Accessibility standards are required.");
+		} else {
+			for(CertifiedProductAccessibilityStandard accStd : product.getAccessibilityStandards()) {
+				if(accStd.getAccessibilityStandardId() == null) {
+					AccessibilityStandardDTO foundStd = asDao.getByName(accStd.getAccessibilityStandardName());
+					if(foundStd == null) {
+						product.getErrorMessages().add("Accessibility Standard '" + accStd.getAccessibilityStandardName() + "' is invalid.");
+					}
+				}
+			}
+		}
+		
+		for(CertificationResult cert : product.getCertificationResults()) {
+			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY) &&
+						cert.getPrivacySecurityFramework() == null) {
+					product.getErrorMessages().add("Privacy and Security Framework is required for certification " + cert.getNumber() + ".");
+				}
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.API_DOCUMENTATION) &&
+						cert.getApiDocumentation() == null) {
+					product.getErrorMessages().add("API Documentation is required for certification " + cert.getNumber() + ".");
+				}
+				
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						(cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {
+						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				} else if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
+					for(CertificationResultTestTool toolMap : cert.getTestToolsUsed()) {
+						if(toolMap.getTestToolId() == null) {
+							TestToolDTO foundTestTool = testToolDao.getByName(toolMap.getTestToolName());
+							if(foundTestTool == null || foundTestTool.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + toolMap.getTestToolName() + "'.");
+							}
+						}
+					}
+				}
+				
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED) &&
+						cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
+					for(CertificationResultTestFunctionality funcMap : cert.getTestFunctionality()) {
+						if(funcMap.getTestFunctionalityId() == null) {
+							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumber(funcMap.getName());
+							if(foundTestFunc == null || foundTestFunc.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + funcMap.getName() + "'.");
+							}
+						}
+					}
+				}
+			
+				if((cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
+					(cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {
+					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
+				}
+			}
+		}
+	}
+	
 	private boolean hasCert(String toCheck, List<String> allCerts) {
 		boolean hasCert = false;
 		for(int i = 0; i < allCerts.size() && !hasCert; i++) {
