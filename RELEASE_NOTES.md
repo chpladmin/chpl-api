@@ -6,6 +6,7 @@ _Date TBD_
 ### Features Added
 * Add validation to CHPL product update so that it matches validation done on CHPL product confirm
 * Pass errors in test tools and test functionality back to the UI
+* Add task rating standard deviation to upload, confirm, and api get/update
 
 ### Bugs Fixed
 * Check test functionality for invalid values on product confirm and edit
