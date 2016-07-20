@@ -61,6 +61,9 @@ public class TestTaskEntity implements Cloneable, Serializable {
 
 	@Column(name = "task_rating" )
 	private Float taskRating;
+	
+	@Column(name = "task_rating_stddev")
+	private Float taskRatingStddev;
 
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -223,5 +226,13 @@ public class TestTaskEntity implements Cloneable, Serializable {
 
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public Float getTaskRatingStddev() {
+		return taskRatingStddev;
+	}
+
+	public void setTaskRatingStddev(Float taskRatingStddev) {
+		this.taskRatingStddev = taskRatingStddev;
 	}
 }

@@ -18,6 +18,7 @@ public class TestTaskDTO {
 	private Float taskErrorsStddev;
 	private String taskRatingScale;
 	private Float taskRating;
+	private Float taskRatingStddev;
 
 	private String pendingUniqueId;
 	
@@ -40,6 +41,7 @@ public class TestTaskDTO {
 			this.taskErrorsStddev = entity.getTaskErrorsStddev();
 			this.taskRatingScale = entity.getTaskRatingScale();
 			this.taskRating = entity.getTaskRating();
+			this.taskRatingStddev = entity.getTaskRatingStddev();
 		}
 	}
 	
@@ -160,5 +162,13 @@ public class TestTaskDTO {
 
 	public void setPendingUniqueId(String pendingUniqueId) {
 		this.pendingUniqueId = pendingUniqueId;
+	}
+
+	public Float getTaskRatingStddev() {
+		return taskRatingStddev;
+	}
+
+	public void setTaskRatingStddev(Float taskRatingStddev) {
+		this.taskRatingStddev = taskRatingStddev;
 	}
 }

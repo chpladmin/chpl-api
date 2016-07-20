@@ -145,7 +145,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			}
 		}
 		
-		//parse criteria starts at index 56
+		//parse criteria starts at index 57
 		CSVRecord firstRow = null;
 		for(int i = 0; i < getRecord().size() && firstRow == null; i++) {
 			CSVRecord currRecord = getRecord().get(i);
@@ -157,7 +157,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		}
 		
 		if(firstRow != null) {
-			int criteriaBeginIndex = 56;
+			int criteriaBeginIndex = 57;
 			int criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
 			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct, "170.315 (a)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
 			criteriaBeginIndex = criteriaEndIndex+1;
@@ -698,6 +698,14 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskRatingStr + " to a Float.");
 		}
+		
+		String taskRatingStddevStr = record.get(colIndex++).trim();
+		try {
+			Float taskRatingStddev = new Float(taskRatingStddevStr);
+			task.setTaskRatingStddev(taskRatingStddev);
+		} catch(Exception ex) {
+			logger.error("Cannot convert " + taskRatingStddevStr + " to a Float.");
+		}
 		this.tasks.add(task);
 	}
 	
@@ -898,10 +906,10 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			if(!StringUtils.isEmpty(tpValue)) {
 				PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
 				tpEntity.setTestProcedureVersion(tpValue);
-				TestProcedureDTO tp = testProcedureDao.getByName(tpValue);
-				if(tp != null) {
-					tpEntity.setTestProcedureId(tp.getId());
-				}
+				//don't look up by name because we don't want these to be shared
+				//among certifications. they are user-entered, could be anything, and if
+				//they are shared then updating in one place could affect other places
+				//when that is not the intended behavior
 				cert.getTestProcedures().add(tpEntity);
 			}
 		}

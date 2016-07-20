@@ -3,6 +3,8 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,8 @@ import gov.healthit.chpl.manager.CertificationResultManager;
 @Service
 public class CertificationResultManagerImpl implements
 		CertificationResultManager {
-	
+	private static final Logger logger = LogManager.getLogger(CertificationResultManagerImpl.class);
+
 	@Autowired private CertificationResultDAO certResultDAO;
 	@Autowired private TestStandardDAO testStandardDAO;
 	@Autowired private TestToolDAO testToolDAO;
@@ -402,12 +405,12 @@ public class CertificationResultManagerImpl implements
 
 		for (CertificationResultTestProcedureDTO testProcedureMapping : toUpdate.getTestProcedures()){
 			if(testProcedureMapping.getId() == null && testProcedureMapping.getTestProcedureId() == null) {
-					TestProcedureDTO testProcedureToCreate = new TestProcedureDTO();
-					testProcedureToCreate.setVersion(testProcedureMapping.getTestProcedureVersion());
-					testProcedureToCreate = testProcedureDAO.create(testProcedureToCreate);
-					testProcedureMapping.setTestProcedureId(testProcedureToCreate.getId());
-					testProcedureMapping.setCertificationResultId(toUpdate.getId());
-					testProceduresToAdd.add(testProcedureMapping);
+				TestProcedureDTO testProcedureToCreate = new TestProcedureDTO();
+				testProcedureToCreate.setVersion(testProcedureMapping.getTestProcedureVersion());
+				testProcedureToCreate = testProcedureDAO.create(testProcedureToCreate);
+				testProcedureMapping.setTestProcedureId(testProcedureToCreate.getId());
+				testProcedureMapping.setCertificationResultId(toUpdate.getId());
+				testProceduresToAdd.add(testProcedureMapping);
 			} else if(testProcedureMapping.getId() != null) {
 				//what if the test procedure exists but needs updated?
 				TestProcedureDTO testProcedureToUpdate = new TestProcedureDTO();

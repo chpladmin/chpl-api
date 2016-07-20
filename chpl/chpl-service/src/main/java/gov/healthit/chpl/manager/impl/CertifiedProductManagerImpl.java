@@ -625,6 +625,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
 							tt.setTaskRating(pendingTask.getTaskRating());
 							tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
+							tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
 							tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
 							tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
 							tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
@@ -1147,6 +1148,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							tt.setTaskPathDeviationOptimal(newTestTask.getTaskPathDeviationOptimal());
 							tt.setTaskRating(newTestTask.getTaskRating());
 							tt.setTaskRatingScale(newTestTask.getTaskRatingScale());
+							tt.setTaskRatingStddev(newTestTask.getTaskRatingStddev());
 							tt.setTaskSuccessAverage(newTestTask.getTaskSuccessAverage());
 							tt.setTaskSuccessStddev(newTestTask.getTaskSuccessStddev());
 							tt.setTaskTimeAvg(newTestTask.getTaskTimeAvg());

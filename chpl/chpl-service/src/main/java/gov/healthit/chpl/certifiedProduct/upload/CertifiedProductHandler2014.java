@@ -661,10 +661,10 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			if(!StringUtils.isEmpty(tpValue)) {
 				PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
 				tpEntity.setTestProcedureVersion(tpValue);
-				TestProcedureDTO tp = testProcedureDao.getByName(tpValue);
-				if(tp != null) {
-					tpEntity.setTestProcedureId(tp.getId());
-				}
+				//don't look up by name because we don't want these to be shared
+				//among certifications. they are user-entered, could be anything, and if
+				//they are shared then updating in one place could affect other places
+				//when that is not the intended behavior
 				cert.getTestProcedures().add(tpEntity);
 			}
 		}
