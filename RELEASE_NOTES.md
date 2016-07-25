@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 1.7.0
+_25 july 2016_
 
 ### Features Added
 * Add validation to CHPL product update so that it matches validation done on CHPL product confirm
@@ -12,6 +12,7 @@ _Date TBD_
 * Check test functionality for invalid values on product confirm and edit
 * Check test tools for invalid values on product confirm and edit
 
+---
 
 ## Version 1.6.1
 _1 July 2016_
