@@ -317,6 +317,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 						task.setTaskPathDeviationOptimal(tt.getTaskPathDeviationOptimal());
 						task.setTaskRating(tt.getTaskRating());
 						task.setTaskRatingScale(tt.getTaskRatingScale());
+						task.setTaskRatingStddev(tt.getTaskRatingStddev());
 						task.setTaskSuccessAverage(tt.getTaskSuccessAverage());
 						task.setTaskSuccessStddev(tt.getTaskSuccessStddev());
 						task.setTaskTimeAvg(tt.getTaskTimeAvg());

@@ -22,6 +22,7 @@ public class CertificationResultTestTask {
 	private Float taskErrorsStddev;
 	private String taskRatingScale;
 	private Float taskRating;
+	private Float taskRatingStddev;
 	private List<CertificationResultTestParticipant> testParticipants;
 
 	public CertificationResultTestTask() {
@@ -47,6 +48,7 @@ public class CertificationResultTestTask {
 			this.taskErrorsStddev = dto.getTestTask().getTaskErrorsStddev();
 			this.taskRatingScale = dto.getTestTask().getTaskRatingScale();
 			this.taskRating = dto.getTestTask().getTaskRating();
+			this.taskRatingStddev = dto.getTestTask().getTaskRatingStddev();
 		}
 	}
 	
@@ -184,5 +186,13 @@ public class CertificationResultTestTask {
 
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
+	}
+
+	public Float getTaskRatingStddev() {
+		return taskRatingStddev;
+	}
+
+	public void setTaskRatingStddev(Float taskRatingStddev) {
+		this.taskRatingStddev = taskRatingStddev;
 	}
 }

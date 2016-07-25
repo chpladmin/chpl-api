@@ -66,7 +66,7 @@ public class CertifiedProductDaoTest {
 	public void getAllCertifiedProducts() {
 		List<CertifiedProductDetailsDTO> results = productDao.findAll();
 		assertNotNull(results);
-		assertEquals(4, results.size());
+		assertEquals(5, results.size());
 	}
 	
 	@Test
@@ -88,7 +88,7 @@ public class CertifiedProductDaoTest {
 		List<CertifiedProductDetailsDTO> products = null;
 		products = productDao.getDetailsByVersionId(versionId);
 		assertNotNull(products);
-		assertEquals(1, products.size());
+		assertEquals(2, products.size());
 	}
 	
 //	@Test

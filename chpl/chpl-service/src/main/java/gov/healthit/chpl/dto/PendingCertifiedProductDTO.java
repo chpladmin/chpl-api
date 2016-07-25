@@ -320,6 +320,7 @@ public class PendingCertifiedProductDTO {
 					taskDto.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal());
 					taskDto.setTaskRating(task.getTaskRating());
 					taskDto.setTaskRatingScale(task.getTaskRatingScale());
+					taskDto.setTaskRatingStddev(task.getTaskRatingStddev());
 					taskDto.setTaskSuccessAverage(task.getTaskSuccessAverage());
 					taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev());
 					taskDto.setTaskTimeAvg(task.getTaskTimeAvg());

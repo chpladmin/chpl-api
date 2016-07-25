@@ -46,6 +46,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 			entity.setTaskPathDeviationOptimal(dto.getTaskPathDeviationOptimal());
 			entity.setTaskRating(dto.getTaskRating());
 			entity.setTaskRatingScale(dto.getTaskRatingScale());
+			entity.setTaskRatingStddev(dto.getTaskRatingStddev());
 			entity.setTaskSuccessAverage(dto.getTaskSuccessAverage());
 			entity.setTaskSuccessStddev(dto.getTaskSuccessStddev());
 			entity.setTaskTimeAvg(dto.getTaskTimeAvg());
@@ -74,6 +75,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 		entity.setTaskPathDeviationOptimal(dto.getTaskPathDeviationOptimal());
 		entity.setTaskRating(dto.getTaskRating());
 		entity.setTaskRatingScale(dto.getTaskRatingScale());
+		entity.setTaskRatingStddev(dto.getTaskRatingStddev());
 		entity.setTaskSuccessAverage(dto.getTaskSuccessAverage());
 		entity.setTaskSuccessStddev(dto.getTaskSuccessStddev());
 		entity.setTaskTimeAvg(dto.getTaskTimeAvg());
