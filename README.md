@@ -4,6 +4,14 @@ The CHPL api
 
 # Installation instructions
 
+## Install required software
+
+Java 1.8.0
+Postgres 9.4.4
+mvn 3.3.3
+Tomcat 8.0.24
+Eclipse (latest)
+
 ## Clone the repository
 
 ```sh
