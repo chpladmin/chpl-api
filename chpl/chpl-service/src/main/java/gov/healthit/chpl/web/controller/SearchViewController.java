@@ -26,6 +26,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -238,32 +239,96 @@ public class SearchViewController {
 			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/education_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getEducationTypes() {
-		return searchMenuManager.getEducationTypes();
+	public @ResponseBody SearchOption getEducationTypes() {
+		Set<KeyValueModel> data = searchMenuManager.getEducationTypes();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
 	}
 	
 	@ApiOperation(value="Get all possible test participant age ranges in the CHPL", 
 			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/age_ranges", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getAgeRanges() {
-		return searchMenuManager.getAgeRanges();
+	public @ResponseBody SearchOption getAgeRanges() {
+		Set<KeyValueModel> data = searchMenuManager.getAgeRanges();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
 	}
 	
 	@ApiOperation(value="Get all possible test functionality options in the CHPL", 
 			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/test_functionality", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getTestFunctionality() {
-		return searchMenuManager.getTestFunctionality();
+	public @ResponseBody SearchOption getTestFunctionality() {
+		Set<KeyValueModel> data = searchMenuManager.getTestFunctionality();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
 	}
 	
 	@ApiOperation(value="Get all possible test tool options in the CHPL", 
 			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/test_tools", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getTestTools() {
-		return searchMenuManager.getTestTools();
+	public @ResponseBody SearchOption getTestTools() {
+		Set<KeyValueModel> data = searchMenuManager.getTestTools();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible test standard options in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/test_standards", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchOption getTestStandards() {
+		Set<KeyValueModel> data = searchMenuManager.getTestStandards();
+		SearchOption result = new SearchOption();
+		result.setExpandable(true);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible qms standard options in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/qms_standards", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchOption getQmsStandards() {
+		Set<KeyValueModel> data = searchMenuManager.getQmsStandards();
+		SearchOption result = new SearchOption();
+		result.setExpandable(true);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible UCD process options in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/ucd_processes", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchOption getUcdProcesses() {
+		Set<KeyValueModel> data = searchMenuManager.getUcdProcesses();
+		SearchOption result = new SearchOption();
+		result.setExpandable(true);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible accessibility standard options in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/accessibility_standards", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchOption getAccessibilityStandards() {
+		Set<KeyValueModel> data = searchMenuManager.getAccessibilityStandards();
+		SearchOption result = new SearchOption();
+		result.setExpandable(true);
+		result.setData(data);
+		return result;
 	}
 	
 	@ApiOperation(value="Get all search options in the CHPL", 

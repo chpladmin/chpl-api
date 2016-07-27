@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -20,11 +21,15 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -36,8 +41,11 @@ import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Service
@@ -61,7 +69,11 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Autowired private EducationTypeDAO educationTypeDao;
 	@Autowired private AgeRangeDAO ageRangeDao;
 	@Autowired private TestFunctionalityDAO testFuncDao;
+	@Autowired private TestStandardDAO testStandardDao;
 	@Autowired private TestToolDAO testToolsDao;
+	@Autowired private AccessibilityStandardDAO asDao;
+	@Autowired private UcdProcessDAO ucdDao;
+	@Autowired private QmsStandardDAO qmsDao;
 	
 	@Autowired
 	private ProductClassificationTypeDAO productClassificationTypeDAO;
@@ -237,6 +249,50 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return testTools;
 	}
 	
+	@Override
+	public Set<KeyValueModel> getAccessibilityStandards() {
+		List<AccessibilityStandardDTO> dtos = this.asDao.findAll();
+		Set<KeyValueModel> standards = new HashSet<KeyValueModel>();
+		
+		for(AccessibilityStandardDTO dto : dtos) {
+			standards.add(new KeyValueModel(dto.getId(), dto.getName()));
+		}
+		return standards;
+	}
+
+	@Override
+	public Set<KeyValueModel> getUcdProcesses() {
+		List<UcdProcessDTO> dtos = this.ucdDao.findAll();
+		Set<KeyValueModel> ucds = new HashSet<KeyValueModel>();
+		
+		for(UcdProcessDTO dto : dtos) {
+			ucds.add(new KeyValueModel(dto.getId(), dto.getName()));
+		}
+		return ucds;
+	}
+
+	@Override
+	public Set<KeyValueModel> getQmsStandards() {
+		List<QmsStandardDTO> dtos = this.qmsDao.findAll();
+		Set<KeyValueModel> qms = new HashSet<KeyValueModel>();
+		
+		for(QmsStandardDTO dto : dtos) {
+			qms.add(new KeyValueModel(dto.getId(), dto.getName()));
+		}
+		return qms;
+	}
+
+	@Override
+	public Set<KeyValueModel> getTestStandards() {
+		List<TestStandardDTO> dtos = testStandardDao.findAll();
+		Set<KeyValueModel> std = new HashSet<KeyValueModel>();
+		
+		for(TestStandardDTO dto : dtos) {
+			std.add(new KeyValueModel(dto.getId(), dto.getName()));
+		}
+		return std;
+	}
+	
 	@Transactional
 	@Override
 	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException{
@@ -306,5 +362,4 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return searchOptions;
 		
 	}
-
 }

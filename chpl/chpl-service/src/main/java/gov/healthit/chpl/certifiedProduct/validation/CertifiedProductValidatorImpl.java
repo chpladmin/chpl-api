@@ -336,10 +336,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("ICS is required.");
 		}
 		
-		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
-				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
-			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
-		}
+//		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
+//				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
+//			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
+//		}
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getMeetsCriteria() == null) {
@@ -389,10 +389,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("ICS is required.");
 		}
 		
-		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
-				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
-			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
-		}
+//		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
+//				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
+//			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
+//		}
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
 			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {

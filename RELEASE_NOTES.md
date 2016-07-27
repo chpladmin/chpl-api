@@ -5,6 +5,15 @@ _Date TBD_
 
 ### Features Added
 * Allow updating of accessibility standards list
+* Added /data/test_standards
+* Added /data/qms_standards
+* Added /data/ucd_processes
+* Added /data/accessibility_standards
+
+* Modified /data/education_types (breaks backwards compatibility)
+* Modified /data/age_ranges (breaks backwards compatibility)
+* Modified /data/test_functionality (breaks backwards compatibility)
+* Modified /data/test_tools (breaks backwards compatibility)
 
 ### Bugs Fixed
 
