@@ -2,6 +2,9 @@
 
 # Extract, Transform, Load Component of OpenDataCHPL
 
+This ETL is currently deprecated. One could attempt to run it but no guarantees!
+
+
 This ETL extracts the current CHPL data from a provided Excel file, transforms it as necessary to fit the OpenDataCHPL data model, and loads that data into a PostgreSQL database.
 
 The process diagram is such: ![process diagram](process.png)

@@ -441,7 +441,14 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					if(match != null) {
 						asDto.setAccessibilityStandardName(match.getName());
 						asDto.setAccessibilityStandardId(match.getId());
-					} 
+					} else {
+						//if it wasn't there then create it
+						AccessibilityStandardDTO asToCreate = new AccessibilityStandardDTO();
+						asToCreate.setName(as.getName());
+						match = asDao.create(asToCreate);
+						asDto.setAccessibilityStandardId(match.getId());
+						asDto.setAccessibilityStandardName(match.getName());
+					}
 				}
 				
 				if(asDto.getAccessibilityStandardId() != null) {

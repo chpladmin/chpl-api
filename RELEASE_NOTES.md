@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features Added
+* Allow updating of accessibility standards list
+
+### Bugs Fixed
+
 ## Version 1.7.0
 _25 july 2016_
 
