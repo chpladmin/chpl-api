@@ -4,7 +4,9 @@
 _Date TBD_
 
 ### Features Added
+* The searchTerm parameter of a certified product search may now be a CHP- id or a 9-part unique ID or an ACB certification ID number. Wildcards are not supported.
 * Allow updating of accessibility standards list
+
 * Added /data/test_standards
 * Added /data/qms_standards
 * Added /data/ucd_processes
