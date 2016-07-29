@@ -501,15 +501,6 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		if(product.getAccessibilityStandards() == null || product.getAccessibilityStandards().size() == 0) {
 			product.getErrorMessages().add("Accessibility standards are required.");
-		} else {
-			for(CertifiedProductAccessibilityStandard accStd : product.getAccessibilityStandards()) {
-				if(accStd.getAccessibilityStandardId() == null) {
-					AccessibilityStandardDTO foundStd = asDao.getByName(accStd.getAccessibilityStandardName());
-					if(foundStd == null) {
-						product.getErrorMessages().add("Accessibility Standard '" + accStd.getAccessibilityStandardName() + "' is invalid.");
-					}
-				}
-			}
 		}
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
