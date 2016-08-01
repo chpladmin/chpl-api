@@ -213,26 +213,25 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			beforeDevelopers.add(developerDao.getById(developerId));
 		}
 		
+		
 		//check if the transparency attestation for each developer is conflicting
+		List<CertificationBodyDTO> allAcbs = acbManager.getAll(false);
 		AttestationType transparencyAttestation = null;
 		for(DeveloperDTO dev : beforeDevelopers) {
-			if(dev.getTransparencyAttestationMappings() != null &&
-					dev.getTransparencyAttestationMappings().size() > 0) {
-				for(DeveloperACBMapDTO taMap : dev.getTransparencyAttestationMappings()) {
-					if(!StringUtils.isEmpty(taMap.getTransparencyAttestation())) {
-						AttestationType currAtt = AttestationType.valueOf(taMap.getTransparencyAttestation().toUpperCase());
-						if(transparencyAttestation == null) {
-							transparencyAttestation = currAtt;
-						} else if(currAtt != transparencyAttestation) {
-							throw new EntityCreationException("Cannot create a new developer because conflicting transparency attestations were found among ACBs.");
-						}
+			for(CertificationBodyDTO acb : allAcbs) {
+				DeveloperACBMapDTO taMap = developerDao.getTransparencyMapping(dev.getId(), acb.getId());
+				if(taMap != null && !StringUtils.isEmpty(taMap.getTransparencyAttestation())) {
+					AttestationType currAtt = AttestationType.valueOf(taMap.getTransparencyAttestation());
+					if(transparencyAttestation == null) {
+						transparencyAttestation = currAtt;
+					} else if(currAtt != transparencyAttestation) {
+						throw new EntityCreationException("Cannot create a new developer because conflicting transparency attestations were found among ACBs.");
 					}
 				}
 			}
 		}
 		
 		if(transparencyAttestation != null) {
-			List<CertificationBodyDTO> allAcbs = acbManager.getAll(false);
 			for(CertificationBodyDTO acb : allAcbs) {
 				DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
 				devMap.setAcbId(acb.getId());
