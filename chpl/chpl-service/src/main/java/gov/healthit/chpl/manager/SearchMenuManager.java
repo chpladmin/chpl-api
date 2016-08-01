@@ -19,6 +19,7 @@ public interface SearchMenuManager {
 	public Set<KeyValueModel> getAccessibilityStandards();
 	public Set<KeyValueModel> getUcdProcesses();
 	public Set<KeyValueModel> getQmsStandards();
+	public Set<KeyValueModel> getTargetedUesrs();
 	public Set<KeyValueModel> getEducationTypes();
 	public Set<KeyValueModel> getAgeRanges();
 	public Set<KeyValueModel> getTestFunctionality();
