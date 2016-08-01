@@ -307,6 +307,18 @@ public class SearchViewController {
 		return result;
 	}
 	
+	@ApiOperation(value="Get all possible targeted user options in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/targeted_users", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchOption getTargetedUsers() {
+		Set<KeyValueModel> data = searchMenuManager.getTargetedUesrs();
+		SearchOption result = new SearchOption();
+		result.setExpandable(true);
+		result.setData(data);
+		return result;
+	}
+	
 	@ApiOperation(value="Get all possible UCD process options in the CHPL", 
 			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/ucd_processes", method=RequestMethod.GET,
