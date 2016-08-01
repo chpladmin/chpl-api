@@ -31,9 +31,11 @@ public interface CertificationResultDAO {
 	
 	public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId);
 	public CertificationResultTestStandardDTO addTestStandardMapping(CertificationResultTestStandardDTO dto) throws EntityCreationException;
+	public CertificationResultTestStandardDTO lookupTestStandardMapping(Long certificationResultId, Long testStandardId);
 	public void deleteTestStandardMapping(Long mappingId);
 	
 	public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId);
+	public CertificationResultTestToolDTO lookupTestToolMapping(Long certificationResultId, Long testToolId);
 	public CertificationResultTestToolDTO addTestToolMapping(CertificationResultTestToolDTO dto) throws EntityCreationException;
 	public CertificationResultTestToolDTO updateTestToolMapping(CertificationResultTestToolDTO dto);
 	public void deleteTestToolMapping(Long mappingId);
@@ -48,11 +50,14 @@ public interface CertificationResultDAO {
 	public void deleteTestProcedureMapping(Long mappingId);
 	
 	public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(Long certificationResultId);
+	public CertificationResultTestFunctionalityDTO lookupTestFunctionalityMapping(Long certificationResultId, Long testFunctionalityId);
 	public CertificationResultTestFunctionalityDTO addTestFunctionalityMapping(CertificationResultTestFunctionalityDTO dto) throws EntityCreationException;
 	public void deleteTestFunctionalityMapping(Long mappingId);
 	
 	public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId);
+	public CertificationResultUcdProcessDTO lookupUcdProcessMapping(Long certificationResultId, Long ucdProcessId);
 	public CertificationResultUcdProcessDTO addUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityCreationException;
+	public CertificationResultUcdProcessDTO updateUcdProcessMapping(CertificationResultUcdProcessDTO dto);
 	public void deleteUcdProcessMapping(Long mappingId);
 	
 	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);

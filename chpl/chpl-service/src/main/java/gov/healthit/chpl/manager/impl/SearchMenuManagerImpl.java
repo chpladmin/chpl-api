@@ -22,6 +22,7 @@ import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
+import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
@@ -42,6 +43,7 @@ import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
+import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
@@ -74,6 +76,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Autowired private AccessibilityStandardDAO asDao;
 	@Autowired private UcdProcessDAO ucdDao;
 	@Autowired private QmsStandardDAO qmsDao;
+	@Autowired private TargetedUserDAO tuDao;
 	
 	@Autowired
 	private ProductClassificationTypeDAO productClassificationTypeDAO;
@@ -280,6 +283,17 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			qms.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
 		return qms;
+	}
+	
+	@Override
+	public Set<KeyValueModel> getTargetedUesrs() {
+		List<TargetedUserDTO> dtos = this.tuDao.findAll();
+		Set<KeyValueModel> standards = new HashSet<KeyValueModel>();
+		
+		for(TargetedUserDTO dto : dtos) {
+			standards.add(new KeyValueModel(dto.getId(), dto.getName()));
+		}
+		return standards;
 	}
 
 	@Override
