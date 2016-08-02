@@ -17,6 +17,8 @@ _Date TBD_
 * Modified /data/test_functionality (breaks backwards compatibility)
 * Modified /data/test_tools (breaks backwards compatibility)
 
+* Removed visibleOnChpl field
+
 ### Bugs Fixed
 
 ## Version 1.7.0
