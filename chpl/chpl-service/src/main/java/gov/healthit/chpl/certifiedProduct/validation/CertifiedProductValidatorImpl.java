@@ -400,10 +400,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						cert.isGap() == null) {
 					product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
 				}
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
-						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
-				}
+				//Jennifer asked to take out the test procedure validation for existing products
+				//so that when users are on the edit screen, they are not required
+				//to have test procedures for all certifications
+//				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
+//						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
+//					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
+//				}
 			}
 		}
 	}
