@@ -13,7 +13,9 @@ import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
+import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
+import gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity;
 
 @Repository(value="certifiedProductAccessibilityStandardDao")
@@ -64,6 +66,18 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
 		return dtos;
 	}
 	
+	@Override
+	public CertifiedProductAccessibilityStandardDTO lookupMapping(Long certifiedProductId, Long accStdId)
+			throws EntityRetrievalException {
+		List<CertifiedProductAccessibilityStandardEntity> entities = findSpecificMapping(certifiedProductId, accStdId);
+
+		CertifiedProductAccessibilityStandardDTO result = null;
+		if(entities != null && entities.size() > 0) {
+			result = new CertifiedProductAccessibilityStandardDTO(entities.get(0));
+		}
+		return result;
+	}
+	
 	private CertifiedProductAccessibilityStandardEntity getEntityById(Long id) throws EntityRetrievalException {
 		CertifiedProductAccessibilityStandardEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT accStd from CertifiedProductAccessibilityStandardEntity accStd "
@@ -93,4 +107,19 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
 		return result;
 	}
 	
+	private List<CertifiedProductAccessibilityStandardEntity> findSpecificMapping(Long productId, Long accStdId) throws EntityRetrievalException {
+		Query query = entityManager.createQuery( "SELECT accStd from "
+				+ "CertifiedProductAccessibilityStandardEntity accStd "
+				+ "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
+				+ "where (NOT accStd.deleted = true) "
+				+ "AND (certified_product_id = :productId) "
+				+ "AND (accStd.accessibilityStandardId = :accStdId)", 
+				CertifiedProductAccessibilityStandardEntity.class );
+
+		query.setParameter("productId", productId);
+		query.setParameter("accStdId", accStdId);
+		List<CertifiedProductAccessibilityStandardEntity> result = query.getResultList();
+		
+		return result;
+	}
 }

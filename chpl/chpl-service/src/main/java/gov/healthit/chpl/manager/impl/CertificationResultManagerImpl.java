@@ -3,10 +3,13 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
@@ -29,6 +32,7 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
@@ -42,7 +46,8 @@ import gov.healthit.chpl.manager.CertificationResultManager;
 @Service
 public class CertificationResultManagerImpl implements
 		CertificationResultManager {
-	
+	private static final Logger logger = LogManager.getLogger(CertificationResultManagerImpl.class);
+
 	@Autowired private CertificationResultDAO certResultDAO;
 	@Autowired private TestStandardDAO testStandardDAO;
 	@Autowired private TestToolDAO testToolDAO;
@@ -184,28 +189,39 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultUcdProcessDTO> ucdProcessesToAdd = new ArrayList<CertificationResultUcdProcessDTO>();
 		List<CertificationResultUcdProcessDTO> ucdProcessesToRemove = new ArrayList<CertificationResultUcdProcessDTO>();
 
-		for (CertificationResultUcdProcessDTO toUpdateMapping : toUpdate.getUcdProcesses()){
-			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getUcdProcessId() == null) {
-					UcdProcessDTO ucdProc = ucdDao.getByName(toUpdateMapping.getUcdProcessName());
-					if(ucdProc == null) {
-						UcdProcessDTO ucdToCreate = new UcdProcessDTO();
-						ucdToCreate.setName(toUpdateMapping.getUcdProcessName());
-						ucdProc = ucdDao.create(ucdToCreate);
-					}
-					toUpdateMapping.setUcdProcessId(ucdProc.getId());
-				}
-				toUpdateMapping.setCertificationResultId(toUpdate.getId());
-				toUpdateMapping.setUcdProcessDetails(toUpdateMapping.getUcdProcessDetails());
-				ucdProcessesToAdd.add(toUpdateMapping);
-			} 
+		for (CertificationResultUcdProcessDTO newUcdProc : toUpdate.getUcdProcesses()){
+			UcdProcessDTO ucdProc = null;
+			if(newUcdProc.getUcdProcessId() != null) {
+				ucdProc = ucdDao.getById(newUcdProc.getUcdProcessId());
+			}
+			if(ucdProc == null && !StringUtils.isEmpty(newUcdProc.getUcdProcessName())) {
+				ucdProc = ucdDao.getByName(newUcdProc.getUcdProcessName());
+			}
+
+			if(ucdProc == null) {
+				UcdProcessDTO ucdToCreate = new UcdProcessDTO();
+				ucdToCreate.setName(newUcdProc.getUcdProcessName());
+				ucdProc = ucdDao.create(ucdToCreate);
+			}
+			newUcdProc.setUcdProcessId(ucdProc.getId());
+			
+			//does a mapping for this qms std already exist??
+			CertificationResultUcdProcessDTO existingMapping = certResultDAO.
+					lookupUcdProcessMapping(newUcdProc.getCertificationResultId(), newUcdProc.getUcdProcessId());
+			if(existingMapping == null) {
+				//if the mapping doesn't exist between this std and this product, add it
+				ucdProcessesToAdd.add(newUcdProc);
+			} else {
+				//it exists so update it
+				certResultDAO.updateUcdProcessMapping(newUcdProc);
+			}
 		}
 				
 		for(CertificationResultUcdProcessDTO currMapping : existingUcdProcesses) {
 			boolean isInUpdate = false;
 			for (CertificationResultUcdProcessDTO toUpdateMapping : toUpdate.getUcdProcesses()){
-				if(toUpdateMapping.getId() != null && 
-						toUpdateMapping.getId().longValue() == currMapping.getId().longValue()) {
+				if(toUpdateMapping.getUcdProcessId() != null && 
+						toUpdateMapping.getUcdProcessId().longValue() == currMapping.getUcdProcessId().longValue()) {
 					isInUpdate = true;
 				}
 			}
@@ -215,6 +231,7 @@ public class CertificationResultManagerImpl implements
 		}
 					
 		for(CertificationResultUcdProcessDTO toAdd : ucdProcessesToAdd) {
+			toAdd.setCertificationResultId(toUpdate.getId());
 			certResultDAO.addUcdProcessMapping(toAdd);
 		}
 		for(CertificationResultUcdProcessDTO toRemove : ucdProcessesToRemove) {
@@ -272,27 +289,35 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
 		List<CertificationResultTestStandardDTO> testStandardsToRemove = new ArrayList<CertificationResultTestStandardDTO>();
 
-		for (CertificationResultTestStandardDTO toUpdateMapping : toUpdate.getTestStandards()){
-			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getTestStandardId() == null) {
-					TestStandardDTO testStd = testStandardDAO.getByNumber(toUpdateMapping.getTestStandardName());
-					if(testStd == null) {
-						TestStandardDTO testStandardToCreate = new TestStandardDTO();
-						testStandardToCreate.setName(toUpdateMapping.getTestStandardName());
-						testStd = testStandardDAO.create(testStandardToCreate);
-					}
-					toUpdateMapping.setTestStandardId(testStd.getId());
-				}
-				toUpdateMapping.setCertificationResultId(toUpdate.getId());
-				testStandardsToAdd.add(toUpdateMapping);
+		for (CertificationResultTestStandardDTO newTestStd : toUpdate.getTestStandards()){
+			TestStandardDTO testStd = null;
+			if(newTestStd.getTestStandardId() != null) {
+				testStd = testStandardDAO.getById(newTestStd.getTestStandardId());
+			}
+			if(testStd == null && !StringUtils.isEmpty(newTestStd.getTestStandardName())) {
+				testStd = testStandardDAO.getByNumber(newTestStd.getTestStandardName());
+			}
+			if(testStd == null) {
+				TestStandardDTO testStandardToCreate = new TestStandardDTO();
+				testStandardToCreate.setName(newTestStd.getTestStandardName());
+				testStandardToCreate.setDescription(newTestStd.getTestStandardDescription());
+				testStd = testStandardDAO.create(testStandardToCreate);
+			}
+			newTestStd.setTestStandardId(testStd.getId()); 
+			//does a mapping for this test std already exist??
+			CertificationResultTestStandardDTO existingMapping = certResultDAO.
+					lookupTestStandardMapping(newTestStd.getCertificationResultId(), newTestStd.getTestStandardId());
+			if(existingMapping == null) {
+				//if the mapping doesn't exist between this std and this product, add it
+				testStandardsToAdd.add(newTestStd);
 			} 
 		}
 				
 		for(CertificationResultTestStandardDTO currMapping : existingTestStandards) {
 			boolean isInUpdate = false;
 			for (CertificationResultTestStandardDTO toUpdateMapping : toUpdate.getTestStandards()){
-				if(toUpdateMapping.getId() != null && 
-						toUpdateMapping.getId().longValue() == currMapping.getId().longValue()) {
+				if(toUpdateMapping.getTestStandardId() != null && 
+						toUpdateMapping.getTestStandardId().longValue() == currMapping.getTestStandardId().longValue()) {
 					isInUpdate = true;
 				}
 			}
@@ -302,6 +327,7 @@ public class CertificationResultManagerImpl implements
 		}
 					
 		for(CertificationResultTestStandardDTO toAdd : testStandardsToAdd) {
+			toAdd.setCertificationResultId(toUpdate.getId());
 			certResultDAO.addTestStandardMapping(toAdd);
 		}
 		for(CertificationResultTestStandardDTO toRemove : testStandardsToRemove) {
@@ -317,27 +343,33 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultTestToolDTO> testToolsToAdd = new ArrayList<CertificationResultTestToolDTO>();
 		List<CertificationResultTestToolDTO> testToolsToRemove = new ArrayList<CertificationResultTestToolDTO>();
 
-		for (CertificationResultTestToolDTO toUpdateMapping : toUpdate.getTestTools()){
-			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getTestToolId() == null) {
-					TestToolDTO testToolToCreate = new TestToolDTO();
-					testToolToCreate.setName(toUpdateMapping.getTestToolName());
-					testToolToCreate = testToolDAO.create(testToolToCreate);
-					toUpdateMapping.setTestToolId(testToolToCreate.getId());
+		for (CertificationResultTestToolDTO newTestToolMapping : toUpdate.getTestTools()){
+			TestToolDTO testTool = null;
+			if(newTestToolMapping.getTestToolId() != null) {
+				testTool = testToolDAO.getById(newTestToolMapping.getTestToolId());
+			}
+			if(testTool == null && !StringUtils.isEmpty(newTestToolMapping.getTestToolName())) {
+				testTool = testToolDAO.getByName(newTestToolMapping.getTestToolName());
+			}
+			
+			if(testTool != null) {
+				//do not create a new one
+				newTestToolMapping.setTestToolId(testTool.getId());
+				
+				CertificationResultTestToolDTO existingMapping = certResultDAO.lookupTestToolMapping(newTestToolMapping.getCertificationResultId(), newTestToolMapping.getTestToolId());
+				if(existingMapping == null) {
+					testToolsToAdd.add(newTestToolMapping);
+				} else {
+					certResultDAO.updateTestToolMapping(newTestToolMapping);
 				}
-				toUpdateMapping.setCertificationResultId(toUpdate.getId());
-				testToolsToAdd.add(toUpdateMapping);
-			} else {
-				toUpdateMapping.setCertificationResultId(toUpdate.getId());
-				certResultDAO.updateTestToolMapping(toUpdateMapping);
 			}
 		}
 				
 		for(CertificationResultTestToolDTO currMapping : existingTestTools) {
 			boolean isInUpdate = false;
 			for (CertificationResultTestToolDTO toUpdateMapping : toUpdate.getTestTools()){
-				if(toUpdateMapping.getId() != null && 
-						toUpdateMapping.getId().longValue() == currMapping.getId().longValue()) {
+				if(toUpdateMapping.getTestToolId() != null && 
+						toUpdateMapping.getTestToolId().longValue() == currMapping.getTestToolId().longValue()) {
 					isInUpdate = true;
 				}
 			}
@@ -347,6 +379,7 @@ public class CertificationResultManagerImpl implements
 		}
 					
 		for(CertificationResultTestToolDTO toAdd : testToolsToAdd) {
+			toAdd.setCertificationResultId(toUpdate.getId());
 			certResultDAO.addTestToolMapping(toAdd);
 		}
 		for(CertificationResultTestToolDTO toRemove : testToolsToRemove) {
@@ -400,17 +433,21 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultTestProcedureDTO> testProceduresToAdd = new ArrayList<CertificationResultTestProcedureDTO>();
 		List<CertificationResultTestProcedureDTO> testProceduresToRemove = new ArrayList<CertificationResultTestProcedureDTO>();
 
-		for (CertificationResultTestProcedureDTO toUpdateMapping : toUpdate.getTestProcedures()){
-			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getTestProcedureId() == null) {
-					TestProcedureDTO testProcedureToCreate = new TestProcedureDTO();
-					testProcedureToCreate.setVersion(toUpdateMapping.getTestProcedureVersion());
-					testProcedureToCreate = testProcedureDAO.create(testProcedureToCreate);
-					toUpdateMapping.setTestProcedureId(testProcedureToCreate.getId());
-				}
-				toUpdateMapping.setCertificationResultId(toUpdate.getId());
-				testProceduresToAdd.add(toUpdateMapping);
-			} 
+		for (CertificationResultTestProcedureDTO testProcedureMapping : toUpdate.getTestProcedures()){
+			if(testProcedureMapping.getId() == null && testProcedureMapping.getTestProcedureId() == null) {
+				TestProcedureDTO testProcedureToCreate = new TestProcedureDTO();
+				testProcedureToCreate.setVersion(testProcedureMapping.getTestProcedureVersion());
+				testProcedureToCreate = testProcedureDAO.create(testProcedureToCreate);
+				testProcedureMapping.setTestProcedureId(testProcedureToCreate.getId());
+				testProcedureMapping.setCertificationResultId(toUpdate.getId());
+				testProceduresToAdd.add(testProcedureMapping);
+			} else if(testProcedureMapping.getId() != null) {
+				//what if the test procedure exists but needs updated?
+				TestProcedureDTO testProcedureToUpdate = new TestProcedureDTO();
+				testProcedureToUpdate.setId(testProcedureMapping.getTestProcedureId());
+				testProcedureToUpdate.setVersion(testProcedureMapping.getTestProcedureVersion());
+				testProcedureDAO.update(testProcedureToUpdate);					
+			}
 		}
 				
 		for(CertificationResultTestProcedureDTO currMapping : existingTestProcedures) {
@@ -442,27 +479,31 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultTestFunctionalityDTO> testFunctionalityToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
 		List<CertificationResultTestFunctionalityDTO> testFunctionalityToRemove = new ArrayList<CertificationResultTestFunctionalityDTO>();
 
-		for (CertificationResultTestFunctionalityDTO toUpdateMapping : toUpdate.getTestFunctionality()){
-			if(toUpdateMapping.getId() == null) {
-				if(toUpdateMapping.getTestFunctionalityId() == null) {
-					TestFunctionalityDTO testFunc = testFunctionalityDAO.getByNumber(toUpdateMapping.getTestFunctionalityNumber());
-					if(testFunc == null) {
-						TestFunctionalityDTO testFunctionalityToCreate = new TestFunctionalityDTO();
-						testFunctionalityToCreate.setNumber(toUpdateMapping.getTestFunctionalityNumber());
-						testFunc = testFunctionalityDAO.create(testFunctionalityToCreate);
-					}
-					toUpdateMapping.setTestFunctionalityId(testFunc.getId());
-				}
-				toUpdateMapping.setCertificationResultId(toUpdate.getId());
-				testFunctionalityToAdd.add(toUpdateMapping);
-			} 
+		for (CertificationResultTestFunctionalityDTO newTestFuncMapping : toUpdate.getTestFunctionality()){
+			TestFunctionalityDTO testFunc = null;
+			if(newTestFuncMapping.getTestFunctionalityId() != null) {
+				testFunc = testFunctionalityDAO.getById(newTestFuncMapping.getTestFunctionalityId());
+			}
+			if(testFunc == null && !StringUtils.isEmpty(newTestFuncMapping.getTestFunctionalityNumber())) {
+				testFunc = testFunctionalityDAO.getByNumber(newTestFuncMapping.getTestFunctionalityNumber());
+			}
+			
+			if(testFunc != null) {
+				//do not create a new one
+				newTestFuncMapping.setTestFunctionalityId(testFunc.getId());
+				
+				CertificationResultTestFunctionalityDTO existingMapping = certResultDAO.lookupTestFunctionalityMapping(newTestFuncMapping.getCertificationResultId(), newTestFuncMapping.getTestFunctionalityId());
+				if(existingMapping == null) {
+					testFunctionalityToAdd.add(newTestFuncMapping);
+				} 
+			}
 		}
 				
 		for(CertificationResultTestFunctionalityDTO currMapping : existingTestFunctionality) {
 			boolean isInUpdate = false;
 			for (CertificationResultTestFunctionalityDTO toUpdateMapping : toUpdate.getTestFunctionality()){
-				if(toUpdateMapping.getId() != null && 
-						toUpdateMapping.getId().longValue() == currMapping.getId().longValue()) {
+				if(toUpdateMapping.getTestFunctionalityId() != null && 
+						toUpdateMapping.getTestFunctionalityId().longValue() == currMapping.getTestFunctionalityId().longValue()) {
 					isInUpdate = true;
 				}
 			}
@@ -472,6 +513,7 @@ public class CertificationResultManagerImpl implements
 		}
 					
 		for(CertificationResultTestFunctionalityDTO toAdd : testFunctionalityToAdd) {
+			toAdd.setCertificationResultId(toUpdate.getId());
 			certResultDAO.addTestFunctionalityMapping(toAdd);
 		}
 		for(CertificationResultTestFunctionalityDTO toRemove : testFunctionalityToRemove) {

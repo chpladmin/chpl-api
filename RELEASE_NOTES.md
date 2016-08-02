@@ -1,10 +1,36 @@
 # Release Notes
 
-## TBD
-_TBD_
+## Version TBD
+_Date TBD_
 
 ### Features Added
 * Added optional inclusion of criteria met for Certification ID details through the API
+* The searchTerm parameter of a certified product search may now be a CHP- id or a 9-part unique ID or an ACB certification ID number. Wildcards are not supported.
+* Allow updating of accessibility standards list
+
+* Added /data/test_standards
+* Added /data/qms_standards
+* Added /data/ucd_processes
+* Added /data/accessibility_standards
+
+* Modified /data/education_types (breaks backwards compatibility)
+* Modified /data/age_ranges (breaks backwards compatibility)
+* Modified /data/test_functionality (breaks backwards compatibility)
+* Modified /data/test_tools (breaks backwards compatibility)
+
+### Bugs Fixed
+
+## Version 1.7.0
+_25 july 2016_
+
+### Features Added
+* Add validation to CHPL product update so that it matches validation done on CHPL product confirm
+* Pass errors in test tools and test functionality back to the UI
+* Add task rating standard deviation to upload, confirm, and api get/update
+
+### Bugs Fixed
+* Check test functionality for invalid values on product confirm and edit
+* Check test tools for invalid values on product confirm and edit
 
 ---
 

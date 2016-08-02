@@ -198,9 +198,5 @@
       <name>project</name>
       <url>file:${project.basedir}/repo</url>
     </repository>
-    <repository>
-      <id>opencast-public</id>
-      <url>http://repository.opencastproject.org/nexus/content/repositories/public/</url>
-    </repository>
   </repositories>
 </project>

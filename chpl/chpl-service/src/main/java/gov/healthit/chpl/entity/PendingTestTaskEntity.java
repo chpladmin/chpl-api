@@ -62,6 +62,9 @@ public class PendingTestTaskEntity {
 	@Column(name = "task_rating" )
 	private Float taskRating;
 	
+	@Column(name = "task_rating_stddev" )
+	private Float taskRatingStddev;
+	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -229,5 +232,13 @@ public class PendingTestTaskEntity {
 
 	public void setTaskRating(Float taskRating) {
 		this.taskRating = taskRating;
+	}
+
+	public Float getTaskRatingStddev() {
+		return taskRatingStddev;
+	}
+
+	public void setTaskRatingStddev(Float taskRatingStddev) {
+		this.taskRatingStddev = taskRatingStddev;
 	}
 }

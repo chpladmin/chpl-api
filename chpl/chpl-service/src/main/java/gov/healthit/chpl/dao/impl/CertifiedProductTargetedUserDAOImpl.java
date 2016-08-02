@@ -12,7 +12,9 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity;
 
 @Repository(value="certifiedProductTargetedUserDao")
@@ -63,6 +65,18 @@ public class CertifiedProductTargetedUserDAOImpl extends BaseDAOImpl
 		return dtos;
 	}
 	
+	@Override
+	public CertifiedProductTargetedUserDTO lookupMapping(Long certifiedProductId, Long tuId)
+			throws EntityRetrievalException {
+		List<CertifiedProductTargetedUserEntity> entities = findSpecificMapping(certifiedProductId, tuId);
+
+		CertifiedProductTargetedUserDTO result = null;
+		if(entities != null && entities.size() > 0) {
+			result = new CertifiedProductTargetedUserDTO(entities.get(0));
+		}
+		return result;
+	}
+	
 	private CertifiedProductTargetedUserEntity getEntityById(Long id) throws EntityRetrievalException {
 		CertifiedProductTargetedUserEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT tu from CertifiedProductTargetedUserEntity tu "
@@ -85,6 +99,21 @@ public class CertifiedProductTargetedUserDAOImpl extends BaseDAOImpl
 				CertifiedProductTargetedUserEntity.class );
 
 		query.setParameter("entityid", productId);
+		List<CertifiedProductTargetedUserEntity> result = query.getResultList();
+		
+		return result;
+	}
+	
+	private List<CertifiedProductTargetedUserEntity> findSpecificMapping(Long productId, Long tuId) throws EntityRetrievalException {
+		Query query = entityManager.createQuery( "SELECT tu from CertifiedProductTargetedUserEntity tu "
+				+ "LEFT OUTER JOIN FETCH tu.targetedUser "
+				+ "where (NOT tu.deleted = true) "
+				+ "AND (certified_product_id = :productId) "
+				+ "AND (tu.targetedUserId = :tuId)", 
+				CertifiedProductTargetedUserEntity.class );
+
+		query.setParameter("productId", productId);
+		query.setParameter("tuId", tuId);
 		List<CertifiedProductTargetedUserEntity> result = query.getResultList();
 		
 		return result;

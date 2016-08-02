@@ -195,6 +195,32 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	
 	@Override
+	@Transactional(readOnly=true)
+	public boolean chplIdExists(String id) throws EntityRetrievalException {
+		if(StringUtils.isEmpty(id)) {
+			return false;
+		} 
+		
+		boolean exists = false;
+		if(id.startsWith("CHP")) {
+			CertifiedProductDTO existing = cpDao.getByChplNumber(id);
+			if(existing != null) {
+				exists = true;
+			}
+		} else {
+			try {
+				CertifiedProductDetailsDTO existing = cpDao.getByChplUniqueId(id);
+				if(existing != null) {
+					exists = true;
+				}
+			} catch(EntityRetrievalException ex){
+				logger.error("Could not look up " + id, ex);
+			}
+		}
+		return exists;
+	}
+	
+	@Override
 	@Transactional(readOnly = true)
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException {
 		List<CertifiedProductDetailsDTO> result = cpDao.getDetailsByIds(ids);
@@ -403,16 +429,33 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		if(pendingCp.getAccessibilityStandards() != null && pendingCp.getAccessibilityStandards().size() > 0) {
 			for(PendingCertifiedProductAccessibilityStandardDTO as : pendingCp.getAccessibilityStandards()) {
 				CertifiedProductAccessibilityStandardDTO asDto = new CertifiedProductAccessibilityStandardDTO();
-				if(as.getAccessibilityStandardId() == null) {
-					AccessibilityStandardDTO toAdd = new AccessibilityStandardDTO();
-					toAdd.setName(as.getName());
-					toAdd = asDao.create(toAdd);
-					asDto.setAccessibilityStandardId(toAdd.getId());
-				} else {
-					asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
-				}
 				asDto.setCertifiedProductId(newCertifiedProduct.getId());
-				cpAccStdDao.createCertifiedProductAccessibilityStandard(asDto);
+
+				if(as.getAccessibilityStandardId() != null) {
+					asDto.setAccessibilityStandardName(as.getName());
+					asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
+				} else {
+					//check again for a matching accessibility std because the uesr could have edited
+					//it since upload
+					AccessibilityStandardDTO match = asDao.getByName(as.getName());
+					if(match != null) {
+						asDto.setAccessibilityStandardName(match.getName());
+						asDto.setAccessibilityStandardId(match.getId());
+					} else {
+						//if it wasn't there then create it
+						AccessibilityStandardDTO asToCreate = new AccessibilityStandardDTO();
+						asToCreate.setName(as.getName());
+						match = asDao.create(asToCreate);
+						asDto.setAccessibilityStandardId(match.getId());
+						asDto.setAccessibilityStandardName(match.getName());
+					}
+				}
+				
+				if(asDto.getAccessibilityStandardId() != null) {
+					cpAccStdDao.createCertifiedProductAccessibilityStandard(asDto);
+				} else {
+					logger.error("Could not insert accessibility standard with null id. Name was " + as.getName());
+				}
 			}
 		}
 				
@@ -589,6 +632,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
 							tt.setTaskRating(pendingTask.getTaskRating());
 							tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
+							tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
 							tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
 							tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
 							tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
@@ -755,14 +799,29 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		List<CertifiedProductQmsStandardDTO> qmsToRemove = new ArrayList<CertifiedProductQmsStandardDTO>();
 		
 		for (CertifiedProductQmsStandardDTO newQmsStandard : newQmsStandards){
-			QmsStandardDTO qms = qmsDao.getByName(newQmsStandard.getQmsStandardName());
+			//try to look up by id and name
+			QmsStandardDTO qms = null;
+			if(newQmsStandard.getQmsStandardId() != null) {
+				qms = qmsDao.getById(newQmsStandard.getQmsStandardId());
+			} 
+			if(qms == null && !StringUtils.isEmpty(newQmsStandard.getQmsStandardName())) {
+				qms = qmsDao.getByName(newQmsStandard.getQmsStandardName());
+			}
+			
+			//if we haven't found it by id or name, create it
 			if(qms == null) {
 				QmsStandardDTO toCreate = new QmsStandardDTO();
 				toCreate.setName(newQmsStandard.getQmsStandardName());
 				qms = qmsDao.create(toCreate);
 			}
-			if(newQmsStandard.getId() == null) {
-				newQmsStandard.setQmsStandardId(qms.getId());
+			newQmsStandard.setQmsStandardId(qms.getId());
+
+			
+			//does a mapping for this qms std already exist??
+			CertifiedProductQmsStandardDTO existingMapping = cpQmsDao.
+					lookupMapping(newQmsStandard.getCertifiedProductId(), newQmsStandard.getQmsStandardId());
+			if(existingMapping == null) {
+				//if the mapping doesn't exist between this std and this product, add it
 				qmsToAdd.add(newQmsStandard);
 			} else {
 				//it exists so update it
@@ -773,8 +832,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductQmsStandardDTO currQms : beforeQms) {
 			boolean isInUpdate = false;
 			for (CertifiedProductQmsStandardDTO newQms : newQmsStandards){
-				if(newQms.getId() != null && 
-						newQms.getId().longValue() == currQms.getId().longValue()) {
+				if(newQms.getQmsStandardId() != null && 
+						newQms.getQmsStandardId().longValue() == currQms.getQmsStandardId().longValue()) {
 					isInUpdate = true;
 				}
 			}
@@ -806,14 +865,26 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		List<CertifiedProductTargetedUserDTO> tusToRemove = new ArrayList<CertifiedProductTargetedUserDTO>();
 		
 		for (CertifiedProductTargetedUserDTO newTu : newTargetedUsers){
-			TargetedUserDTO tu = targetedUserDao.getByName(newTu.getTargetedUserName());
+			TargetedUserDTO tu = null;
+			if(newTu.getTargetedUserId() != null) {
+				tu = targetedUserDao.getById(newTu.getTargetedUserId());
+			}
+			if(tu == null && !StringUtils.isEmpty(newTu.getTargetedUserName())) {
+				tu = targetedUserDao.getByName(newTu.getTargetedUserName());
+			}
+			
+			//if we haven't found it by id or name, create it
 			if(tu == null) {
 				TargetedUserDTO toCreate = new TargetedUserDTO();
 				toCreate.setName(newTu.getTargetedUserName());
 				tu = targetedUserDao.create(toCreate);
 			}
-			if(newTu.getId() == null) {
-				newTu.setTargetedUserId(tu.getId());
+			newTu.setTargetedUserId(tu.getId());
+
+			//if there's no mapping
+			CertifiedProductTargetedUserDTO existingMapping = cpTargetedUserDao.
+					lookupMapping(newTu.getCertifiedProductId(), newTu.getTargetedUserId());
+			if(existingMapping == null) {
 				tusToAdd.add(newTu);
 			} 
 		}
@@ -821,8 +892,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductTargetedUserDTO currTu : beforeTUs) {
 			boolean isInUpdate = false;
 			for (CertifiedProductTargetedUserDTO newTu : newTargetedUsers){
-				if(newTu.getId() != null && 
-						newTu.getId().longValue() == currTu.getId().longValue()) {
+				if(newTu.getTargetedUserId() != null && 
+						newTu.getTargetedUserId().longValue() == currTu.getTargetedUserId().longValue()) {
 					isInUpdate = true;
 				}
 			}
@@ -854,14 +925,26 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		List<CertifiedProductAccessibilityStandardDTO> stdsToRemove = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
 		
 		for (CertifiedProductAccessibilityStandardDTO newStd : newStandards){
-			AccessibilityStandardDTO as = asDao.getByName(newStd.getAccessibilityStandardName());
+			AccessibilityStandardDTO as = null;
+			if(newStd.getAccessibilityStandardId() != null) {
+				as = asDao.getById(newStd.getAccessibilityStandardId());
+			}
+			if(as == null && !StringUtils.isEmpty(newStd.getAccessibilityStandardName())) {
+				as = asDao.getByName(newStd.getAccessibilityStandardName());
+			}
+
+			//if not found by id or name, create it
 			if(as == null) {
 				AccessibilityStandardDTO toCreate = new AccessibilityStandardDTO();
 				toCreate.setName(newStd.getAccessibilityStandardName());
 				as = asDao.create(toCreate);
 			}
-			if(newStd.getId() == null) {
-				newStd.setAccessibilityStandardId(as.getId());
+			newStd.setAccessibilityStandardId(as.getId());
+
+			//if no mapping existed before, add it
+			CertifiedProductAccessibilityStandardDTO existingMapping = cpAccStdDao.
+					lookupMapping(newStd.getCertifiedProductId(), newStd.getAccessibilityStandardId());
+			if(existingMapping == null) {
 				stdsToAdd.add(newStd);
 			} 
 		}
@@ -869,8 +952,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		for(CertifiedProductAccessibilityStandardDTO currStd : beforeStds) {
 			boolean isInUpdate = false;
 			for (CertifiedProductAccessibilityStandardDTO newStd : newStandards){
-				if(newStd.getId() != null && 
-						newStd.getId().longValue() == currStd.getId().longValue()) {
+				if(newStd.getAccessibilityStandardId() != null && 
+						newStd.getAccessibilityStandardId().longValue() == currStd.getAccessibilityStandardId().longValue()) {
 					isInUpdate = true;
 				}
 			}
@@ -1111,6 +1194,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							tt.setTaskPathDeviationOptimal(newTestTask.getTaskPathDeviationOptimal());
 							tt.setTaskRating(newTestTask.getTaskRating());
 							tt.setTaskRatingScale(newTestTask.getTaskRatingScale());
+							tt.setTaskRatingStddev(newTestTask.getTaskRatingStddev());
 							tt.setTaskSuccessAverage(newTestTask.getTaskSuccessAverage());
 							tt.setTaskSuccessStddev(newTestTask.getTaskSuccessStddev());
 							tt.setTaskTimeAvg(newTestTask.getTaskTimeAvg());
