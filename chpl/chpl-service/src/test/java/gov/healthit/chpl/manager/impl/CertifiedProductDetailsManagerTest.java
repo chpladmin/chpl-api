@@ -252,14 +252,6 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		assertEquals("Test Developer 1", detail.getDeveloper().getName());
 		assertEquals(1, new Long(detail.getProduct().get("id").toString()).longValue());
 	}
-	
-	@Test
-	@Transactional
-	public void testCertifiedProductDetailsVisibleOnChpl() throws EntityRetrievalException{
-		
-		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertTrue(detail.getVisibleOnChpl());
-	}
 
 	@Test
 	@Transactional

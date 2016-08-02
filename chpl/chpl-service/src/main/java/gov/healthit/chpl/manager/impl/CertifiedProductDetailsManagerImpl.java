@@ -180,7 +180,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		 }
 		searchDetails.setDeveloper(developer);
 		
-		searchDetails.setVisibleOnChpl(dto.getVisibleOnChpl());
 		searchDetails.setIcs(dto.getIcs());
 		searchDetails.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 		searchDetails.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());

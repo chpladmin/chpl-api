@@ -98,7 +98,6 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setCertificationBody("InfoGard");
-		searchRequest.setVisibleOnCHPL("BOTH");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
 		assertEquals(5, response.getResults().size());
 		
@@ -128,7 +127,6 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
-		searchRequest.setVisibleOnCHPL("BOTH");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
 		assertEquals(5, response.getResults().size());
 		
@@ -143,14 +141,8 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	public void testSearchVisibleOnCHPL(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setVisibleOnCHPL("YES");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
 		assertEquals(3, response.getResults().size());
-		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getVisibleOnChpl());
-		}
-		
 	}
 	
 	@Test
@@ -167,7 +159,6 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		searchRequest.setCertificationBody("InfoGard");
 		searchRequest.setProductClassification("Complete EHR");
 		searchRequest.setPracticeType("Ambulatory");
-		searchRequest.setVisibleOnCHPL("YES");
 		searchRequest.setOrderBy("product");
 		searchRequest.setSortDescending(true);
 		searchRequest.setPageNumber(0);

@@ -32,7 +32,6 @@ public class CertifiedProductDTO {
 	private Long testingLabId;
 	private Long certificationStatusId;
 	private String otherAcb;
-	private Boolean visibleOnChpl;
 	private String termsOfUse;
 	private String transparencyAttestationUrl;
 	private Boolean ics;
@@ -70,7 +69,6 @@ public class CertifiedProductDTO {
 		this.testingLabId = entity.getTestingLabId();		
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
-		this.setVisibleOnChpl(entity.getVisibleOnChpl());
 		this.setTermsOfUse(entity.getTermsOfUse());
 		this.setIcs(entity.getIcs());
 		this.setSedTesting(entity.getSedTesting());
@@ -185,14 +183,6 @@ public class CertifiedProductDTO {
 
 	public void setOtherAcb(String otherAcb) {
 		this.otherAcb = otherAcb;
-	}
-
-	public Boolean getVisibleOnChpl() {
-		return visibleOnChpl;
-	}
-
-	public void setVisibleOnChpl(Boolean visibleOnChpl) {
-		this.visibleOnChpl = visibleOnChpl;
 	}
 
 	public String getProductCode() {
