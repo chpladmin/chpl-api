@@ -336,10 +336,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("ICS is required.");
 		}
 		
-		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
-				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
-			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
-		}
+//		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
+//				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
+//			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
+//		}
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getMeetsCriteria() == null) {
@@ -389,10 +389,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("ICS is required.");
 		}
 		
-		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
-				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
-			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
-		}
+//		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
+//				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
+//			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
+//		}
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
 			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
@@ -400,10 +400,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						cert.isGap() == null) {
 					product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
 				}
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
-						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
-				}
+				//Jennifer asked to take out the test procedure validation for existing products
+				//so that when users are on the edit screen, they are not required
+				//to have test procedures for all certifications
+//				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
+//						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
+//					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
+//				}
 			}
 		}
 	}

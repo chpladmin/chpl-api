@@ -81,6 +81,18 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 		return dtos;
 	}
 	
+	@Override
+	public CertifiedProductQmsStandardDTO lookupMapping(Long certifiedProductId, Long qmsStandardId)
+			throws EntityRetrievalException {
+		List<CertifiedProductQmsStandardEntity> entities = findSpecificMapping(certifiedProductId, qmsStandardId);
+
+		CertifiedProductQmsStandardDTO result = null;
+		if(entities != null && entities.size() > 0) {
+			result = new CertifiedProductQmsStandardDTO(entities.get(0));
+		}
+		return result;
+	}
+	
 	private CertifiedProductQmsStandardEntity getEntityById(Long id) throws EntityRetrievalException {
 		CertifiedProductQmsStandardEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT qms from CertifiedProductQmsStandardEntity qms "
@@ -108,4 +120,18 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 		return result;
 	}
 	
+	private List<CertifiedProductQmsStandardEntity> findSpecificMapping(Long productId, Long qmsId) throws EntityRetrievalException {
+		Query query = entityManager.createQuery( "SELECT qms from CertifiedProductQmsStandardEntity qms "
+				+ "LEFT OUTER JOIN FETCH qms.qmsStandard "
+				+ "where (NOT qms.deleted = true) "
+				+ "AND (certified_product_id = :productId) "
+				+ "AND (qms.qmsStandardId = :qmsId)",
+				CertifiedProductQmsStandardEntity.class );
+
+		query.setParameter("productId", productId);
+		query.setParameter("qmsId", qmsId);
+		List<CertifiedProductQmsStandardEntity> result = query.getResultList();
+		
+		return result;
+	}
 }

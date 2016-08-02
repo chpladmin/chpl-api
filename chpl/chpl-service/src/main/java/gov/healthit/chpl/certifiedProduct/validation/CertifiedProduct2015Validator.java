@@ -266,16 +266,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		if(product.getAccessibilityStandards() == null || product.getAccessibilityStandards().size() == 0) {
 			product.getErrorMessages().add("Accessibility standards are required.");
-		} else {
-			for(PendingCertifiedProductAccessibilityStandardDTO pendingStdMap : product.getAccessibilityStandards()) {
-				if(pendingStdMap.getAccessibilityStandardId() == null) {
-					AccessibilityStandardDTO foundStd = asDao.getByName(pendingStdMap.getName());
-					if(foundStd == null) {
-						product.getErrorMessages().add("Accessibility Standard '" + pendingStdMap.getName() + "' is invalid.");
-					}
-				}
-			}
-		}
+		} //accessibility standards do not have to match the set list of standards. 
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
@@ -510,15 +501,6 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		if(product.getAccessibilityStandards() == null || product.getAccessibilityStandards().size() == 0) {
 			product.getErrorMessages().add("Accessibility standards are required.");
-		} else {
-			for(CertifiedProductAccessibilityStandard accStd : product.getAccessibilityStandards()) {
-				if(accStd.getAccessibilityStandardId() == null) {
-					AccessibilityStandardDTO foundStd = asDao.getByName(accStd.getAccessibilityStandardName());
-					if(foundStd == null) {
-						product.getErrorMessages().add("Accessibility Standard '" + accStd.getAccessibilityStandardName() + "' is invalid.");
-					}
-				}
-			}
 		}
 		
 		for(CertificationResult cert : product.getCertificationResults()) {

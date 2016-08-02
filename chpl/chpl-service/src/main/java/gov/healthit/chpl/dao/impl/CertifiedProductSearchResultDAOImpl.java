@@ -203,7 +203,27 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getSearchTerm() != null){
-			queryStr += " AND ((UPPER(vendor_name) LIKE UPPER(:searchterm)) OR (UPPER(product_name) LIKE UPPER(:searchterm) ) )";
+			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
+				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
+			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
+				queryStr += " AND year = '20' || :yearCode "
+						+ " AND testing_lab_code = :atlCode "
+						+ " AND certification_body_code = :acbCode "
+						+ " AND vendor_code = :developerCode "
+						+ " AND UPPER(product_code) = UPPER(:productCode) "
+						+ " AND UPPER(version_code) = UPPER(:versionCode) "
+						+ " AND ics_code = :icsCode "
+						+ " AND additional_software_code = :additionalSoftwareCode "
+						+ " AND certified_date_code = :certifiedDateCode ";
+			} else {
+				queryStr += " AND ("
+						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
+						+ "OR "
+						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
+						+ "OR "
+						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
+						+ ")";
+			}
 		}
 		
 		if (searchRequest.getCertificationEdition() != null) {
@@ -266,8 +286,21 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		// Use hashset in case list contains duplicates
 		query.setParameter("ncqms", new HashSet<String>(searchRequest.getCqms()).size());
 		
-		if (searchRequest.getSearchTerm() != null){
-			query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+		if (searchRequest.getSearchTerm() != null){			
+			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
+				String[] idParts = searchRequest.getSearchTerm().split("\\.");
+				query.setParameter("yearCode", idParts[0]);
+				query.setParameter("atlCode", idParts[1]);
+				query.setParameter("acbCode", idParts[2]);
+				query.setParameter("developerCode", idParts[3]);
+				query.setParameter("productCode", idParts[4]);
+				query.setParameter("versionCode", idParts[5]);
+				query.setParameter("icsCode", idParts[6]);
+				query.setParameter("additionalSoftwareCode", idParts[7]);
+				query.setParameter("certifiedDateCode", idParts[8]);
+			} else {
+				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+			}
 		}
 		
 		if (searchRequest.getDeveloper() != null){
@@ -399,7 +432,27 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getSearchTerm() != null){
-			queryStr += " AND ((UPPER(vendor_name) LIKE UPPER(:searchterm)) OR (UPPER(product_name) LIKE UPPER(:searchterm) ) )";
+			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
+				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
+			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
+				queryStr += " AND year = '20' || :yearCode "
+						+ " AND testing_lab_code = :atlCode "
+						+ " AND certification_body_code = :acbCode "
+						+ " AND vendor_code = :developerCode "
+						+ " AND UPPER(product_code) = UPPER(:productCode) "
+						+ " AND UPPER(version_code) = UPPER(:versionCode) "
+						+ " AND ics_code = :icsCode "
+						+ " AND additional_software_code = :additionalSoftwareCode "
+						+ " AND certified_date_code = :certifiedDateCode ";
+			} else {
+				queryStr += " AND ("
+						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
+						+ "OR "
+						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
+						+ "OR "
+						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
+						+ ")";
+			}
 		}
 		
 		if (searchRequest.getCertificationEdition() != null) {
@@ -457,8 +510,21 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
-		if (searchRequest.getSearchTerm() != null){
-			query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+		if (searchRequest.getSearchTerm() != null){			
+			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
+				String[] idParts = searchRequest.getSearchTerm().split("\\.");
+				query.setParameter("yearCode", idParts[0]);
+				query.setParameter("atlCode", idParts[1]);
+				query.setParameter("acbCode", idParts[2]);
+				query.setParameter("developerCode", idParts[3]);
+				query.setParameter("productCode", idParts[4]);
+				query.setParameter("versionCode", idParts[5]);
+				query.setParameter("icsCode", idParts[6]);
+				query.setParameter("additionalSoftwareCode", idParts[7]);
+				query.setParameter("certifiedDateCode", idParts[8]);
+			} else {
+				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+			}
 		}
 		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
@@ -603,7 +669,27 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getSearchTerm() != null){
-			queryStr += " AND ((UPPER(vendor_name) LIKE UPPER(:searchterm)) OR (UPPER(product_name) LIKE UPPER(:searchterm) ) )";
+			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
+				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
+			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
+				queryStr += " AND year = '20' || :yearCode "
+						+ " AND testing_lab_code = :atlCode "
+						+ " AND certification_body_code = :acbCode "
+						+ " AND vendor_code = :developerCode "
+						+ " AND UPPER(product_code) = UPPER(:productCode) "
+						+ " AND UPPER(version_code) = UPPER(:versionCode) "
+						+ " AND ics_code = :icsCode "
+						+ " AND additional_software_code = :additionalSoftwareCode "
+						+ " AND certified_date_code = :certifiedDateCode ";
+			} else {
+				queryStr += " AND ("
+						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
+						+ "OR "
+						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
+						+ "OR "
+						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
+						+ ")";
+			}
 		}
 		
 		if (searchRequest.getCertificationEdition() != null) {
@@ -661,8 +747,21 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
-		if (searchRequest.getSearchTerm() != null){
-			query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+		if (searchRequest.getSearchTerm() != null){			
+			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
+				String[] idParts = searchRequest.getSearchTerm().split("\\.");
+				query.setParameter("yearCode", idParts[0]);
+				query.setParameter("atlCode", idParts[1]);
+				query.setParameter("acbCode", idParts[2]);
+				query.setParameter("developerCode", idParts[3]);
+				query.setParameter("productCode", idParts[4]);
+				query.setParameter("versionCode", idParts[5]);
+				query.setParameter("icsCode", idParts[6]);
+				query.setParameter("additionalSoftwareCode", idParts[7]);
+				query.setParameter("certifiedDateCode", idParts[8]);
+			} else {
+				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+			}
 		}
 		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
@@ -719,8 +818,28 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
 		}
 		
-		if (searchRequest.getSearchTerm() != null){
-			queryStr += " AND ((UPPER(vendor_name) LIKE UPPER(:searchterm)) OR (UPPER(product_name) LIKE UPPER(:searchterm) ) )";
+		if (searchRequest.getSearchTerm() != null){	
+			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
+				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
+			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
+				queryStr += " AND year = '20' || :yearCode "
+						+ " AND testing_lab_code = :atlCode "
+						+ " AND certification_body_code = :acbCode "
+						+ " AND vendor_code = :developerCode "
+						+ " AND UPPER(product_code) = UPPER(:productCode) "
+						+ " AND UPPER(version_code) = UPPER(:versionCode) "
+						+ " AND ics_code = :icsCode "
+						+ " AND additional_software_code = :additionalSoftwareCode "
+						+ " AND certified_date_code = :certifiedDateCode ";
+			} else {
+				queryStr += " AND ("
+						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
+						+ "OR "
+						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
+						+ "OR "
+						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
+						+ ")";
+			}
 		}
 		
 		if (searchRequest.getCertificationEdition() != null) {
@@ -778,8 +897,21 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		Query query = entityManager.createQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
-		if (searchRequest.getSearchTerm() != null){
-			query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+		if (searchRequest.getSearchTerm() != null){			
+			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
+				String[] idParts = searchRequest.getSearchTerm().split("\\.");
+				query.setParameter("yearCode", idParts[0]);
+				query.setParameter("atlCode", idParts[1]);
+				query.setParameter("acbCode", idParts[2]);
+				query.setParameter("developerCode", idParts[3]);
+				query.setParameter("productCode", idParts[4]);
+				query.setParameter("versionCode", idParts[5]);
+				query.setParameter("icsCode", idParts[6]);
+				query.setParameter("additionalSoftwareCode", idParts[7]);
+				query.setParameter("certifiedDateCode", idParts[8]);
+			} else {
+				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+			}
 		}
 		
 		if (searchRequest.getDeveloper() != null){
@@ -881,7 +1013,27 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getSearchTerm() != null){
-			queryStr += " AND ((UPPER(vendor_name) LIKE UPPER(:searchterm)) OR (UPPER(product_name) LIKE UPPER(:searchterm) ) )";
+			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
+				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
+			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
+				queryStr += " AND year = '20' || :yearCode "
+						+ " AND testing_lab_code = :atlCode "
+						+ " AND certification_body_code = :acbCode "
+						+ " AND vendor_code = :developerCode "
+						+ " AND UPPER(product_code) = UPPER(:productCode) "
+						+ " AND UPPER(version_code) = UPPER(:versionCode) "
+						+ " AND ics_code = :icsCode "
+						+ " AND additional_software_code = :additionalSoftwareCode "
+						+ " AND certified_date_code = :certifiedDateCode ";
+			} else {
+				queryStr += " AND ("
+						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
+						+ "OR "
+						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
+						+ "OR "
+						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
+						+ ")";
+			}
 		}
 		
 		if (searchRequest.getCertificationEdition() != null) {
@@ -930,8 +1082,21 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		Query query = entityManager.createNativeQuery(queryStr);
 		
-		if (searchRequest.getSearchTerm() != null){
-			query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+		if (searchRequest.getSearchTerm() != null){			
+			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
+				String[] idParts = searchRequest.getSearchTerm().split("\\.");
+				query.setParameter("yearCode", idParts[0]);
+				query.setParameter("atlCode", idParts[1]);
+				query.setParameter("acbCode", idParts[2]);
+				query.setParameter("developerCode", idParts[3]);
+				query.setParameter("productCode", idParts[4]);
+				query.setParameter("versionCode", idParts[5]);
+				query.setParameter("icsCode", idParts[6]);
+				query.setParameter("additionalSoftwareCode", idParts[7]);
+				query.setParameter("certifiedDateCode", idParts[8]);
+			} else {
+				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+			}
 		}
 		
 		query.setParameter("cqms", searchRequest.getCqms());
@@ -1004,7 +1169,27 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getSearchTerm() != null){
-			queryStr += " AND ((UPPER(vendor_name) LIKE UPPER(:searchterm)) OR (UPPER(product_name) LIKE UPPER(:searchterm) ) )";
+			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
+				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
+			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
+				queryStr += " AND year = '20' || :yearCode "
+						+ " AND testing_lab_code = :atlCode "
+						+ " AND certification_body_code = :acbCode "
+						+ " AND vendor_code = :developerCode "
+						+ " AND UPPER(product_code) = UPPER(:productCode) "
+						+ " AND UPPER(version_code) = UPPER(:versionCode) "
+						+ " AND ics_code = :icsCode "
+						+ " AND additional_software_code = :additionalSoftwareCode "
+						+ " AND certified_date_code = :certifiedDateCode ";
+			} else {
+				queryStr += " AND ("
+						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
+						+ "OR "
+						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
+						+ "OR "
+						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
+						+ ")";
+			}
 		}
 		
 		if (searchRequest.getCertificationEdition() != null) {
@@ -1053,8 +1238,21 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		Query query = entityManager.createNativeQuery(queryStr);
 		
-		if (searchRequest.getSearchTerm() != null){
-			query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+		if (searchRequest.getSearchTerm() != null){			
+			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
+				String[] idParts = searchRequest.getSearchTerm().split("\\.");
+				query.setParameter("yearCode", idParts[0]);
+				query.setParameter("atlCode", idParts[1]);
+				query.setParameter("acbCode", idParts[2]);
+				query.setParameter("developerCode", idParts[3]);
+				query.setParameter("productCode", idParts[4]);
+				query.setParameter("versionCode", idParts[5]);
+				query.setParameter("icsCode", idParts[6]);
+				query.setParameter("additionalSoftwareCode", idParts[7]);
+				query.setParameter("certifiedDateCode", idParts[8]);
+			} else {
+				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+			}
 		}
 		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
@@ -1134,7 +1332,27 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getSearchTerm() != null){
-			queryStr += " AND ((UPPER(vendor_name) LIKE UPPER(:searchterm)) OR (UPPER(product_name) LIKE UPPER(:searchterm) ) )";
+			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
+				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
+			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
+				queryStr += " AND year = '20' || :yearCode "
+						+ " AND testing_lab_code = :atlCode "
+						+ " AND certification_body_code = :acbCode "
+						+ " AND vendor_code = :developerCode "
+						+ " AND UPPER(product_code) = UPPER(:productCode) "
+						+ " AND UPPER(version_code) = UPPER(:versionCode) "
+						+ " AND ics_code = :icsCode "
+						+ " AND additional_software_code = :additionalSoftwareCode "
+						+ " AND certified_date_code = :certifiedDateCode ";
+			} else {
+				queryStr += " AND ("
+						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
+						+ "OR "
+						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
+						+ "OR "
+						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
+						+ ")";
+			}
 		}
 		
 		if (searchRequest.getCertificationEdition() != null) {
@@ -1183,8 +1401,21 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			
 		Query query = entityManager.createNativeQuery(queryStr);
 		
-		if (searchRequest.getSearchTerm() != null){
-			query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+		if (searchRequest.getSearchTerm() != null){			
+			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
+				String[] idParts = searchRequest.getSearchTerm().split("\\.");
+				query.setParameter("yearCode", idParts[0]);
+				query.setParameter("atlCode", idParts[1]);
+				query.setParameter("acbCode", idParts[2]);
+				query.setParameter("developerCode", idParts[3]);
+				query.setParameter("productCode", idParts[4]);
+				query.setParameter("versionCode", idParts[5]);
+				query.setParameter("icsCode", idParts[6]);
+				query.setParameter("additionalSoftwareCode", idParts[7]);
+				query.setParameter("certifiedDateCode", idParts[8]);
+			} else {
+				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+			}
 		}
 		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
@@ -1243,7 +1474,27 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 		
 		if (searchRequest.getSearchTerm() != null){
-			queryStr += " AND ((UPPER(vendor_name) LIKE UPPER(:searchterm)) OR (UPPER(product_name) LIKE UPPER(:searchterm) ) )";
+			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
+				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
+			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
+				queryStr += " AND year = '20' || :yearCode "
+						+ " AND testing_lab_code = :atlCode "
+						+ " AND certification_body_code = :acbCode "
+						+ " AND vendor_code = :developerCode "
+						+ " AND UPPER(product_code) = UPPER(:productCode) "
+						+ " AND UPPER(version_code) = UPPER(:versionCode) "
+						+ " AND ics_code = :icsCode "
+						+ " AND additional_software_code = :additionalSoftwareCode "
+						+ " AND certified_date_code = :certifiedDateCode ";
+			} else {
+				queryStr += " AND ("
+						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
+						+ "OR "
+						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
+						+ "OR "
+						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
+						+ ")";
+			}
 		}
 		
 		if (searchRequest.getCertificationEdition() != null) {
@@ -1293,8 +1544,21 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		Query query = entityManager.createQuery(queryStr);
 		
 		
-		if (searchRequest.getSearchTerm() != null){
-			query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+		if (searchRequest.getSearchTerm() != null){			
+			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
+				String[] idParts = searchRequest.getSearchTerm().split("\\.");
+				query.setParameter("yearCode", idParts[0]);
+				query.setParameter("atlCode", idParts[1]);
+				query.setParameter("acbCode", idParts[2]);
+				query.setParameter("developerCode", idParts[3]);
+				query.setParameter("productCode", idParts[4]);
+				query.setParameter("versionCode", idParts[5]);
+				query.setParameter("icsCode", idParts[6]);
+				query.setParameter("additionalSoftwareCode", idParts[7]);
+				query.setParameter("certifiedDateCode", idParts[8]);
+			} else {
+				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
+			}
 		}
 		
 		if (searchRequest.getDeveloper() != null){

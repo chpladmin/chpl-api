@@ -53,9 +53,10 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		}
 		if(StringUtils.isEmpty(product.getReportFileLocation())) {
 			product.getErrorMessages().add("Test Report URL is required but was not found.");
-		} else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {
-			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
-		}
+		} 
+//		else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {
+//			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
+//		}
 		
 		// check cqms
 		boolean isCqmRequired = false;
@@ -147,9 +148,10 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		}
 		if(StringUtils.isEmpty(product.getReportFileLocation())) {
 			product.getErrorMessages().add("Test Report URL is required but was not found.");
-		} else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {
-			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
-		}
+		} 
+//		else if(urlRegex.matcher(product.getReportFileLocation()).matches() == false) {
+//			product.getErrorMessages().add("Test Report URL provided is not a valid URL format.");
+//		}
 		
 		//check sed/ucd/tasks
 		for(CertificationResult cert : product.getCertificationResults()) {
