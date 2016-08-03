@@ -1,10 +1,15 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features Added
+* Added optional inclusion of criteria met for Certification ID details through the API
+
 ## Version 2.0.0
 _2 August 2016_
 
 ### Features Added
-* Added optional inclusion of criteria met for Certification ID details through the API
 * The searchTerm parameter of a certified product search may now be a CHP- id or a 9-part unique ID or an ACB certification ID number. Wildcards are not supported.
 * Allow updating of accessibility standards list
 
