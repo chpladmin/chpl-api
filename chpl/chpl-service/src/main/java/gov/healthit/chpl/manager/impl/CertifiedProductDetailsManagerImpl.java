@@ -374,6 +374,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				result.setNqfNumber(cqmResultDTO.getNqfNumber());
 				result.setNumber(cqmResultDTO.getNumber());
 				result.setTitle(cqmResultDTO.getTitle());
+				result.setDescription(cqmResultDTO.getDescription());
 				result.setTypeId(cqmResultDTO.getCqmCriterionTypeId());
 				if(!dto.getYear().equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
 					result.getSuccessVersions().add(cqmResultDTO.getVersion());
@@ -401,6 +402,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 					result.setNqfNumber(cqm.getNqfNumber());
 					result.setNumber(cqm.getNumber());
 					result.setTitle(cqm.getTitle());
+					result.setDescription(cqm.getDescription());
 					result.setSuccess(Boolean.FALSE);
 					result.getAllVersions().add(cqm.getCqmVersion());
 					result.setTypeId(cqm.getCqmCriterionTypeId());
