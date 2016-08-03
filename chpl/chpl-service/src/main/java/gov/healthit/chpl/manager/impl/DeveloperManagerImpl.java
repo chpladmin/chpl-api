@@ -225,7 +225,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 					if(transparencyAttestation == null) {
 						transparencyAttestation = currAtt;
 					} else if(currAtt != transparencyAttestation) {
-						throw new EntityCreationException("Cannot create a new developer because conflicting transparency attestations were found among ACBs.");
+						throw new EntityCreationException("Cannot complete merge because " + acb.getName() + " has a conflicting transparency attestation for these developers.");
 					}
 				}
 			}

@@ -247,6 +247,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		} else {
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -322,7 +324,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 	}
@@ -465,6 +467,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		} else {
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -540,7 +544,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 		
@@ -691,6 +695,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		} else {
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -769,7 +775,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		return query;
 	}
 	
@@ -831,6 +837,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		} else {
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -901,7 +909,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 	}
@@ -1015,6 +1023,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		} else {
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -1081,7 +1091,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 	}
@@ -1161,6 +1171,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		} else {
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 				
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -1227,7 +1239,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 		
@@ -1314,6 +1326,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		} else {
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -1383,7 +1397,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 	}
@@ -1446,6 +1460,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		} else {
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -1508,7 +1524,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
+		
 		return query;
 	}
 	
