@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Fetaures Added
+* By default do not return retired products. Still allow searching for retired products.
+* Remove visibleOnChpl filter from queries (not backwards compatible)
+* Adjust developer merge code to automatically select transparency attestations for each ACB/Developer, throwing an error if an ACB has inconsistent attestations already defined for the developers being merged.
+* Add descriptions to CQMs in /details results.
+* Add descriptions to test standards and test functionality in /data/test_functionality
+
 ## Version 2.0.0
 _2 August 2016_
 
@@ -16,8 +26,6 @@ _2 August 2016_
 * Modified /data/age_ranges (breaks backwards compatibility)
 * Modified /data/test_functionality (breaks backwards compatibility)
 * Modified /data/test_tools (breaks backwards compatibility)
-
-* Removed visibleOnChpl field
 
 ### Bugs Fixed
 
