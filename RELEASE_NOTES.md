@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 2.0.0
+_2 August 2016_
 
 ### Features Added
 * Added optional inclusion of criteria met for Certification ID details through the API
