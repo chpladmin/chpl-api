@@ -216,9 +216,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		//check if the transparency attestation for each developer is conflicting
 		List<CertificationBodyDTO> allAcbs = acbManager.getAll(false);
-		AttestationType transparencyAttestation = null;
-		for(DeveloperDTO dev : beforeDevelopers) {
-			for(CertificationBodyDTO acb : allAcbs) {
+		for(CertificationBodyDTO acb : allAcbs) {
+			AttestationType transparencyAttestation = null;
+			for(DeveloperDTO dev : beforeDevelopers) {
 				DeveloperACBMapDTO taMap = developerDao.getTransparencyMapping(dev.getId(), acb.getId());
 				if(taMap != null && !StringUtils.isEmpty(taMap.getTransparencyAttestation())) {
 					AttestationType currAtt = AttestationType.valueOf(taMap.getTransparencyAttestation());
@@ -229,16 +229,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
 					}
 				}
 			}
-		}
-		
-		if(transparencyAttestation != null) {
-			for(CertificationBodyDTO acb : allAcbs) {
+			
+			if(transparencyAttestation != null) {
 				DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
 				devMap.setAcbId(acb.getId());
 				devMap.setAcbName(acb.getName());
 				devMap.setTransparencyAttestation(transparencyAttestation.name());
 				developerToCreate.getTransparencyAttestationMappings().add(devMap);
-			}
+			}	
 		}
 		
 		DeveloperDTO createdDeveloper = create(developerToCreate);
