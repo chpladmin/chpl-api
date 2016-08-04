@@ -239,24 +239,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 			product.getErrorMessages().add("A test result summary URL is required.");
 		}
 		
-		for(CertificationResult cert : product.getCertificationResults()) {
-			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
-				boolean gapEligibleAndTrue = false;
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
-						cert.isGap() == Boolean.TRUE) {
-					gapEligibleAndTrue = true;
-				}
-				
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED) &&
-						cert.isSed() == null) {
-					product.getErrorMessages().add("SED is required for certification " + cert.getNumber() + ".");
-				}
-				if(!gapEligibleAndTrue && 
-						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA) &&
-						(cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {
-					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
-				}
-			}
-		}
+		//this is not supposed to matcht the list of things checked for pending products
 	}
 }
