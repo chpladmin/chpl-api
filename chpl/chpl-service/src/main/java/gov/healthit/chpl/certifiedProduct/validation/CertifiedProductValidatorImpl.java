@@ -392,10 +392,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(product.getProduct() == null || StringUtils.isEmpty(product.getProduct().get("version"))) {
 			product.getErrorMessages().add("A product version is required.");
 		}
-
-		if(product.getIcs() == null) {
-			product.getErrorMessages().add("ICS is required.");
-		}
 		
 //		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
 //				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
