@@ -349,7 +349,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						cert.getGap() == null) {
 					product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
 				}
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
+				
+				boolean gapEligibleAndTrue = false;
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
+						cert.getGap() == Boolean.TRUE) {
+					gapEligibleAndTrue = true;
+				}
+				
+				if(!gapEligibleAndTrue && 
+						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
 						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
 					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
 				}
