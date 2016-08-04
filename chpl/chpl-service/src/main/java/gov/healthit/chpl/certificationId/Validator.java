@@ -32,6 +32,18 @@ public abstract class Validator {
 		return this.percents;
 	}
 	
+	public Map<String, Integer> getCriteriaMet() {
+		return this.criteriaMet;
+	}
+
+	public Map<String, Integer> getCqmsMet() {
+		return this.cqmsMet;
+	}
+
+	public Map<String, Integer> getDomainsMet() {
+		return this.domainsMet;
+	}
+	
 	public String getAttestationYear() {
 		return this.attestationYear;
 	}

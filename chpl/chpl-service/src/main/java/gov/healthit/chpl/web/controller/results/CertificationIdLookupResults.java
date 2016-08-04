@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
@@ -119,6 +121,8 @@ public class CertificationIdLookupResults {
 	private List<Product> products = new ArrayList<Product>();
 	private String ehrCertificationId;
 	private String year;
+	private Set<String> criteria = null;
+	private Set<String> cqms = null;
 
 	public String getYear() {
 		return this.year;
@@ -142,6 +146,22 @@ public class CertificationIdLookupResults {
 	
 	public void setEhrCertificationId(String ehrCertificationId) {
 		this.ehrCertificationId = ehrCertificationId;
+	}
+
+	public Set<String> getCriteria() {
+		return this.criteria;
+	}
+
+	public void setCriteria(Set<String> criteria) {
+		this.criteria = criteria;
+	}
+	
+	public Set<String> getCqms() {
+		return this.cqms;
+	}
+
+	public void setCqms(Set<String> cqms) {
+		this.cqms = cqms;
 	}
 	
 }

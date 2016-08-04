@@ -147,7 +147,9 @@ public class CertificationIdController {
 	@ApiOperation(value="Get information about a specific EHR Certification ID.", 
 			notes="Retrieves detailed information about a specific EHR Certification ID including the list of products that make it up.")
 	@RequestMapping(value="/{certificationId}", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
-	public @ResponseBody CertificationIdLookupResults getCertificationIdByCertificationId(@PathVariable("certificationId") String certificationId) 
+	public @ResponseBody CertificationIdLookupResults getCertificationIdByCertificationId(@PathVariable("certificationId") String certificationId, 
+		@RequestParam(required=false,defaultValue="false") Boolean includeCriteria,
+		@RequestParam(required=false,defaultValue="false") Boolean includeCqms) 
 	throws InvalidArgumentsException, CertificationIdException {
 		
 		CertificationIdLookupResults results = new CertificationIdLookupResults();
@@ -168,6 +170,21 @@ public class CertificationIdController {
 				for (CertifiedProductDetailsDTO dto : productDtos) {
 					productList.add(new CertificationIdLookupResults.Product(dto));
 				}
+				
+				// Add criteria and cqms met to results
+				if (includeCriteria || includeCqms) {
+					Validator validator = ValidatorFactory.getValidator(certDto.getYear());
+					boolean isValid = validator.validate(productDtos);
+					if (isValid) {
+						if (includeCriteria) {
+							results.setCriteria(validator.getCriteriaMet().keySet());
+						}
+						if (includeCqms) {
+							results.setCqms(validator.getCqmsMet().keySet());
+						}
+					}
+				}
+				
 			}
 			
 		} catch (EntityRetrievalException ex) {
