@@ -9,6 +9,7 @@ _Date TBD_
 * Adjust developer merge code to automatically select transparency attestations for each ACB/Developer, throwing an error if an ACB has inconsistent attestations already defined for the developers being merged.
 * Add descriptions to CQMs in /details results.
 * Add descriptions to test standards and test functionality in /data/test_functionality
+* For criteria that are eligible for and meet GAP, test tools, test procedure, and test data are not required.
 
 ## Version 2.0.0
 _2 August 2016_

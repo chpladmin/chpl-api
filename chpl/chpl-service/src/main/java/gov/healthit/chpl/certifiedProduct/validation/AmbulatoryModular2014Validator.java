@@ -58,7 +58,14 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+				boolean gapEligibleAndTrue = false;
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
+						cert.getGap() == Boolean.TRUE) {
+					gapEligibleAndTrue = true;
+				}
+				
+				if(!gapEligibleAndTrue && 
+						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
 						!cert.getNumber().equals("170.314 (g)(1)") && 
 						!cert.getNumber().equals("170.314 (g)(2)") && 
 						!cert.getNumber().equals("170.314 (f)(3)") &&
@@ -121,6 +128,30 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 		
 		if(hasG1Cert && hasG2Cert) {
 			product.getWarningMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
+		}
+	}
+	
+	@Override
+	protected void validateDemographics(CertifiedProductSearchDetails product) {
+		super.validateDemographics(product);
+		
+		for(CertificationResult cert : product.getCertificationResults()) {
+			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+				boolean gapEligibleAndTrue = false;
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
+						cert.isGap() == Boolean.TRUE) {
+					gapEligibleAndTrue = true;
+				}
+				
+				if(!gapEligibleAndTrue && 
+						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+						!cert.getNumber().equals("170.314 (g)(1)") && 
+						!cert.getNumber().equals("170.314 (g)(2)") && 
+						!cert.getNumber().equals("170.314 (f)(3)") &&
+						(cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {
+						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
+				}
+			}
 		}
 	}
 	
