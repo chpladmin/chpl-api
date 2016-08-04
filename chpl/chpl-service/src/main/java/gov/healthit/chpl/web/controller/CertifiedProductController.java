@@ -204,7 +204,6 @@ public class CertifiedProductController {
 		toUpdate.setSedTestingEnd(updateRequest.getSedTestingEnd());
 		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
 		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
-		toUpdate.setVisibleOnChpl(updateRequest.getVisibleOnChpl());
 		toUpdate.setTermsOfUse(updateRequest.getTermsOfUse());
 		toUpdate.setIcs(updateRequest.getIcs());
 		toUpdate.setAccessibilityCertified(updateRequest.getAccessibilityCertified());

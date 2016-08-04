@@ -25,7 +25,6 @@ public class CertifiedProductSearchResult {
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	private Long certificationDate;
-	private Boolean visibleOnChpl;
 	private String termsOfUse;
 	private Boolean ics;
 	private Boolean sedTesting;
@@ -129,12 +128,6 @@ public class CertifiedProductSearchResult {
 	}
 	public void setCountCqms(Integer countCqms) {
 		this.countCqms = countCqms;
-	}
-	public Boolean getVisibleOnChpl() {
-		return visibleOnChpl;
-	}
-	public void setVisibleOnChpl(Boolean visibleOnChpl) {
-		this.visibleOnChpl = visibleOnChpl;
 	}
 	public Map<String, Object> getCertificationStatus() {
 		return certificationStatus;

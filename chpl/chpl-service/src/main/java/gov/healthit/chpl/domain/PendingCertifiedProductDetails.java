@@ -172,7 +172,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			this.setCountCqms(cqmCount);
 		}
 		
-		this.setVisibleOnChpl(false);
 		this.setTransparencyAttestation(dto.getTransparencyAttestation());
 		this.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		

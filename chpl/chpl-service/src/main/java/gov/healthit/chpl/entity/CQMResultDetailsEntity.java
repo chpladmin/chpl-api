@@ -35,6 +35,9 @@ public class CQMResultDetailsEntity {
 	
 	@Column( name = "title")
 	private String title;
+	
+	@Column(name = "description")
+	private String description;
 		
 	@Column( name = "nqf_number")
 	private String nqfNumber;
@@ -151,6 +154,22 @@ public class CQMResultDetailsEntity {
 
 	public void setCqmId(String cqmId) {
 		this.cqmId = cqmId;
+	}
+
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }

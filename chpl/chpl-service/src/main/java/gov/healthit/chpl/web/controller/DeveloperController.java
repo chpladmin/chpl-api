@@ -103,13 +103,6 @@ public class DeveloperController {
 			toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
 			toCreate.setName(developerInfo.getDeveloper().getName());
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
-			for(TransparencyAttestationMap attMap : developerInfo.getDeveloper().getTransparencyAttestations()) {
-				DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
-				devMap.setAcbId(attMap.getAcbId());
-				devMap.setAcbName(attMap.getAcbName());
-				devMap.setTransparencyAttestation(attMap.getAttestation());
-				toCreate.getTransparencyAttestationMappings().add(devMap);
-			}
 			
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
 			if(developerAddress != null) {

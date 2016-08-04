@@ -53,7 +53,6 @@ public class CertifiedProductDetailsDTO {
     private Integer countCorrectiveActionPlans;
     private Integer countCurrentCorrectiveActionPlans;
     private Integer countClosedCorrectiveActionPlans;
-    private Boolean visibleOnChpl;
     private Date lastModifiedDate;
 	private String termsOfUse;
 	private Boolean ics;
@@ -132,7 +131,6 @@ public class CertifiedProductDetailsDTO {
     		this.developerContact.setPhoneNumber(entity.getPhoneNumber());
     		this.developerContact.setTitle(entity.getTitle());
     	}
-    	this.visibleOnChpl = entity.getVisibleOnChpl();
     	this.termsOfUse = entity.getTermsOfUse();
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
@@ -297,12 +295,6 @@ public class CertifiedProductDetailsDTO {
 	}
 	public void setCountCqms(Integer countCqms) {
 		this.countCqms = countCqms;
-	}
-	public Boolean getVisibleOnChpl() {
-		return visibleOnChpl;
-	}
-	public void setVisibleOnChpl(Boolean visibleOnChpl) {
-		this.visibleOnChpl = visibleOnChpl;
 	}
 
 	public Date getLastModifiedDate() {
