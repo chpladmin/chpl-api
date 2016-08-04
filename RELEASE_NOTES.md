@@ -10,6 +10,7 @@ _Date TBD_
 * Add descriptions to CQMs in /details results.
 * Add descriptions to test standards and test functionality in /data/test_functionality
 * For criteria that are eligible for and meet GAP, test tools, test procedure, and test data are not required.
+* ICS is no longer required when editing 2014 products.
 
 ## Version 2.0.0
 _2 August 2016_

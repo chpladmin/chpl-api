@@ -497,6 +497,10 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 	protected void validateDemographics(CertifiedProductSearchDetails product) {
 		super.validateDemographics(product);
 		
+		if(product.getIcs() == null) {
+			product.getErrorMessages().add("ICS is required.");
+		}
+		
 		if(product.getQmsStandards() == null || product.getQmsStandards().size() == 0) {
 			product.getErrorMessages().add("QMS Standards are required.");
 		} else {
