@@ -284,7 +284,7 @@ public class Validator20142015 extends Validator {
 	//**********************************************************************
 	// isCriteriaCqmValid
 	//
-	// Must match at least one of the 3 sets.
+	// Must match all 3 (c) criteria.
 	//**********************************************************************
 	protected boolean isCriteriaCqmValid() {
 		int cqmCritCount = 0;
@@ -314,7 +314,7 @@ public class Validator20142015 extends Validator {
 	//**********************************************************************
 	// isCriteriaPSValid
 	//
-	// Must match at least one of the 8 pairs.
+	// Must match all 8 (d) criteria.
 	//**********************************************************************
 	protected boolean isCriteriaPSValid() {
 		
