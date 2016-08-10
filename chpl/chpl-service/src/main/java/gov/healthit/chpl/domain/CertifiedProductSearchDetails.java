@@ -32,7 +32,6 @@ public class CertifiedProductSearchDetails {
 	private Integer countCorrectiveActionPlans;
 	private Integer countCurrentCorrectiveActionPlans;
 	private Integer countClosedCorrectiveActionPlans;
-	private Boolean visibleOnChpl;
 	private String termsOfUse;
 	private Boolean ics;
 	private Boolean accessibilityCertified;
@@ -147,12 +146,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
-	}
-	public Boolean getVisibleOnChpl() {
-		return visibleOnChpl;
-	}
-	public void setVisibleOnChpl(Boolean visibleOnChpl) {
-		this.visibleOnChpl = visibleOnChpl;
 	}
 	public List<CertificationEvent> getCertificationEvents(){
 		return certificationEvents;

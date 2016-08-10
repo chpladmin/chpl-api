@@ -184,9 +184,6 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "count_closed_corrective_action_plans")
     private Integer countClosedCorrectiveActionPlans;
     
-	@Column(name = "visible_on_chpl")
-    private Boolean visibleOnChpl;
-    
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
 	 
@@ -413,14 +410,6 @@ public class CertifiedProductDetailsEntity {
 
 	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
 		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
-	
-	public Boolean getVisibleOnChpl() {
-		return visibleOnChpl;
-	}
-
-	public void setVisibleOnChpl(Boolean visibleOnChpl) {
-		this.visibleOnChpl = visibleOnChpl;
 	}
 
 	public Date getLastModifiedDate() {

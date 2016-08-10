@@ -349,7 +349,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						cert.getGap() == null) {
 					product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
 				}
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
+				
+				boolean gapEligibleAndTrue = false;
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
+						cert.getGap() == Boolean.TRUE) {
+					gapEligibleAndTrue = true;
+				}
+				
+				if(!gapEligibleAndTrue && 
+						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
 						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
 					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
 				}
@@ -383,10 +391,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		
 		if(product.getProduct() == null || StringUtils.isEmpty(product.getProduct().get("version"))) {
 			product.getErrorMessages().add("A product version is required.");
-		}
-
-		if(product.getIcs() == null) {
-			product.getErrorMessages().add("ICS is required.");
 		}
 		
 //		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 

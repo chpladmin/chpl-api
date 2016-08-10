@@ -1,23 +1,36 @@
 # Release Notes
 
+## Version 3.0.0
+_10 August 2016_
+
+### Features Added
+* By default do not return retired products. Still allow searching for retired products.
+* Remove visibleOnChpl filter from queries (not backwards compatible)
+* Adjust developer merge code to automatically select transparency attestations for each ACB/Developer, throwing an error if an ACB has inconsistent attestations already defined for the developers being merged.
+* Add descriptions to CQMs in /details results.
+* Add descriptions to test standards and test functionality in /data/test_functionality
+* For criteria that are eligible for and meet GAP, test tools, test procedure, and test data are not required.
+* ICS is no longer required when editing 2014 products.
+* Added optional inclusion of criteria met for Certification ID details through the API
+
+---
+
 ## Version 2.0.0
 _2 August 2016_
 
 ### Features Added
 * The searchTerm parameter of a certified product search may now be a CHP- id or a 9-part unique ID or an ACB certification ID number. Wildcards are not supported.
 * Allow updating of accessibility standards list
-
 * Added /data/test_standards
 * Added /data/qms_standards
 * Added /data/ucd_processes
 * Added /data/accessibility_standards
-
 * Modified /data/education_types (breaks backwards compatibility)
 * Modified /data/age_ranges (breaks backwards compatibility)
 * Modified /data/test_functionality (breaks backwards compatibility)
 * Modified /data/test_tools (breaks backwards compatibility)
 
-### Bugs Fixed
+---
 
 ## Version 1.7.0
 _25 july 2016_

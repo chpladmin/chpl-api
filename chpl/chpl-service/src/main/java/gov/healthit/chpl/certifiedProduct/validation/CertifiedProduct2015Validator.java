@@ -270,6 +270,12 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+				boolean gapEligibleAndTrue = false;
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
+						cert.getGap() == Boolean.TRUE) {
+					gapEligibleAndTrue = true;
+				}
+				
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY) &&
 						cert.getPrivacySecurityFramework() == null) {
 					product.getErrorMessages().add("Privacy and Security Framework is required for certification " + cert.getNumber() + ".");
@@ -283,7 +289,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 //						(cert.getTestFunctionality() == null || cert.getTestFunctionality().size() == 0)) {
 //					product.getErrorMessages().add("Functionality Tested is required for certification " + cert.getNumber() + ".");
 //				}
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+				if(!gapEligibleAndTrue && 
+						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
 						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
 						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
 				} else if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
@@ -310,7 +317,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
-				if((cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
+				if(!gapEligibleAndTrue && 
+					(cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestData() == null || cert.getTestData().size() == 0)) {
 					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
 				}
@@ -489,6 +497,10 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 	protected void validateDemographics(CertifiedProductSearchDetails product) {
 		super.validateDemographics(product);
 		
+		if(product.getIcs() == null) {
+			product.getErrorMessages().add("ICS is required.");
+		}
+		
 		if(product.getQmsStandards() == null || product.getQmsStandards().size() == 0) {
 			product.getErrorMessages().add("QMS Standards are required.");
 		} else {
@@ -505,6 +517,12 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
 			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+				boolean gapEligibleAndTrue = false;
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
+						cert.isGap() == Boolean.TRUE) {
+					gapEligibleAndTrue = true;
+				}
+				
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY) &&
 						cert.getPrivacySecurityFramework() == null) {
 					product.getErrorMessages().add("Privacy and Security Framework is required for certification " + cert.getNumber() + ".");
@@ -514,7 +532,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					product.getErrorMessages().add("API Documentation is required for certification " + cert.getNumber() + ".");
 				}
 				
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
+				if(!gapEligibleAndTrue && 
+						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
 						(cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {
 						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
 				} else if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
@@ -541,7 +560,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
-				if((cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
+				if(!gapEligibleAndTrue && 
+					(cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {
 					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
 				}

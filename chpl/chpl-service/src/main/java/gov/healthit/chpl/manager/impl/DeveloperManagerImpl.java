@@ -26,6 +26,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.Developer;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.DeveloperEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -48,9 +50,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Autowired private SendMailUtil sendMailService;
 	@Autowired private Environment env;
 	
-	@Autowired
-	DeveloperDAO developerDao;
-	
+	@Autowired DeveloperDAO developerDao;	
 	@Autowired ProductDAO productDao;
 	@Autowired CertificationBodyManager acbManager;
 
@@ -213,7 +213,33 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			beforeDevelopers.add(developerDao.getById(developerId));
 		}
 		
-		DeveloperDTO createdDeveloper = developerDao.create(developerToCreate);
+		
+		//check if the transparency attestation for each developer is conflicting
+		List<CertificationBodyDTO> allAcbs = acbManager.getAll(false);
+		for(CertificationBodyDTO acb : allAcbs) {
+			AttestationType transparencyAttestation = null;
+			for(DeveloperDTO dev : beforeDevelopers) {
+				DeveloperACBMapDTO taMap = developerDao.getTransparencyMapping(dev.getId(), acb.getId());
+				if(taMap != null && !StringUtils.isEmpty(taMap.getTransparencyAttestation())) {
+					AttestationType currAtt = AttestationType.getValue(taMap.getTransparencyAttestation());
+					if(transparencyAttestation == null) {
+						transparencyAttestation = currAtt;
+					} else if(currAtt != transparencyAttestation) {
+						throw new EntityCreationException("Cannot complete merge because " + acb.getName() + " has a conflicting transparency attestation for these developers.");
+					}
+				}
+			}
+			
+			if(transparencyAttestation != null) {
+				DeveloperACBMapDTO devMap = new DeveloperACBMapDTO();
+				devMap.setAcbId(acb.getId());
+				devMap.setAcbName(acb.getName());
+				devMap.setTransparencyAttestation(transparencyAttestation.name());
+				developerToCreate.getTransparencyAttestationMappings().add(devMap);
+			}	
+		}
+		
+		DeveloperDTO createdDeveloper = create(developerToCreate);
 		// - search for any products assigned to the list of developers passed in
 		List<ProductDTO> developerProducts = productDao.getByDevelopers(developerIdsToMerge);
 		// - reassign those products to the new developer

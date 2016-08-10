@@ -14,6 +14,7 @@ public class CQMResultDetailsDTO {
 	private String number;
 	private String cmsId;
 	private String title;
+	private String description;
 	private String nqfNumber;
 	private Long cqmCriterionTypeId;
 	private String domain;
@@ -34,6 +35,7 @@ public class CQMResultDetailsDTO {
 		this.number = entity.getNumber();
 		this.cmsId = entity.getCmsId();
 		this.title = entity.getTitle();
+		this.description = entity.getDescription();
 		this.nqfNumber = entity.getNqfNumber();
 		this.cqmCriterionTypeId = entity.getCqmCriterionTypeId();
 		this.domain = entity.getDomain();
@@ -117,6 +119,14 @@ public class CQMResultDetailsDTO {
 
 	public void setCriteria(List<CQMResultCriteriaDTO> criteria) {
 		this.criteria = criteria;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }

@@ -103,9 +103,6 @@ public class CertifiedProductEntity {
 	@Column(name ="certification_status_id", nullable = false)
 	private Long certificationStatusId;
 	
-	@Column(name = "visible_on_chpl")
-	private Boolean visibleOnChpl;
-	
 	@Column(name = "terms_of_use_url")
 	private String termsOfUse;
 	
@@ -243,14 +240,6 @@ public class CertifiedProductEntity {
 
 	public void setCertificationStatusId(Long certificationStatusId) {
 		this.certificationStatusId = certificationStatusId;
-	}
-	
-	public Boolean getVisibleOnChpl() {
-		return visibleOnChpl;
-	}
-
-	public void setVisibleOnChpl(Boolean visibleOnChpl) {
-		this.visibleOnChpl = visibleOnChpl;
 	}
 
 	public String getProductCode() {

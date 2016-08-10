@@ -16,6 +16,7 @@ public class CQMResultDetails {
 	private String number;
 	private String cmsId;
 	private String title;
+	private String description;
 	private String nqfNumber;
 	private Long typeId;
 	private String domain;
@@ -36,6 +37,7 @@ public class CQMResultDetails {
 		this.number = dto.getNumber();
 		this.cmsId = dto.getCmsId();
 		this.title = dto.getTitle();
+		this.description = dto.getDescription();
 		this.nqfNumber = dto.getNqfNumber();
 		this.typeId = dto.getCqmCriterionTypeId();
 		this.domain = dto.getDomain();
@@ -141,6 +143,14 @@ public class CQMResultDetails {
 
 	public void setCriteria(List<CQMResultCertification> criteria) {
 		this.criteria = criteria;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }

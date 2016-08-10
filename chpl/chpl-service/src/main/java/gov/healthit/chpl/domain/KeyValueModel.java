@@ -5,11 +5,16 @@ import org.springframework.util.StringUtils;
 public class KeyValueModel {
 	private Long id;
 	private String name;
+	private String description;
 	
 	public KeyValueModel() {}
 	public KeyValueModel(Long id, String name) {
 		this.id = id;
 		this.name = name;
+	}
+	public KeyValueModel(Long id, String name, String description) {
+		this(id, name);
+		this.description = description;
 	}
 	
 	public Long getId() {
@@ -47,5 +52,11 @@ public class KeyValueModel {
 			return 0;
 		}
 		return this.getName().hashCode();
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

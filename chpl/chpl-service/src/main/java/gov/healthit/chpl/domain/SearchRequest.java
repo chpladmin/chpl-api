@@ -19,7 +19,6 @@ public class SearchRequest {
 	String productClassification = null;
 	String practiceType = null;
 	String certificationStatus = null;
-	String visibleOnCHPL = "YES";
 	String hasCAP = "BOTH";
 	String orderBy = "product";
 	Boolean sortDescending = false;
@@ -101,12 +100,6 @@ public class SearchRequest {
 	}
 	public void setSortDescending(Boolean sortDescending) {
 		this.sortDescending = sortDescending;
-	}
-	public String getVisibleOnCHPL() {
-		return visibleOnCHPL;
-	}
-	public void setVisibleOnCHPL(String visibleOnCHPL) {
-		this.visibleOnCHPL = visibleOnCHPL;
 	}
 	public String getHasCAP() {
 		return hasCAP;

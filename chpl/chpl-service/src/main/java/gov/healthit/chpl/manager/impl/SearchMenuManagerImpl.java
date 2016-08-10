@@ -232,7 +232,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		Set<KeyValueModel> testFuncs = new HashSet<KeyValueModel>();
 		
 		for (TestFunctionalityDTO dto : dtos) {
-			testFuncs.add(new KeyValueModel(dto.getId(), dto.getNumber()));
+			testFuncs.add(new KeyValueModel(dto.getId(), dto.getNumber(), dto.getName()));
 		}
 		
 		return testFuncs;
@@ -246,7 +246,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		Set<KeyValueModel> testTools = new HashSet<KeyValueModel>();
 		
 		for (TestToolDTO dto : dtos) {
-			testTools.add(new KeyValueModel(dto.getId(), dto.getName()));
+			testTools.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
 		}
 		
 		return testTools;
@@ -302,7 +302,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		Set<KeyValueModel> std = new HashSet<KeyValueModel>();
 		
 		for(TestStandardDTO dto : dtos) {
-			std.add(new KeyValueModel(dto.getId(), dto.getName()));
+			std.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
 		}
 		return std;
 	}

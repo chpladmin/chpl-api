@@ -133,7 +133,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "other_acb, "
 				+ "certification_status_id, "
 				+ "deleted, "
-				+ "visible_on_chpl, "
 				+ "terms_of_use_url, "
 				+ "product_additional_software, "
 				+ "ics, "
@@ -248,16 +247,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		}
-		
-		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
-			queryStr += " AND (visible_on_chpl = true ) ";
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
-			queryStr += " AND (visible_on_chpl = false ) ";	
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("both")){
-			// Add nothing to the query here. We want all results
 		} else {
-			queryStr += " AND (visible_on_chpl = true ) ";
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -333,7 +324,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 	}
@@ -360,7 +351,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "other_acb, "
 				+ "certification_status_id, "
 				+ "deleted, "
-				+ "visible_on_chpl, "
 				+ "terms_of_use_url, "
 				+ "product_additional_software, "
 				+ "ics, "
@@ -477,16 +467,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		}
-		
-		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
-			queryStr += " AND (visible_on_chpl = true ) ";
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
-			queryStr += " AND (visible_on_chpl = false ) ";	
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("both")){
-			// Add nothing to the query here. We want all results
 		} else {
-			queryStr += " AND (visible_on_chpl = true ) ";
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -562,7 +544,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 		
@@ -589,7 +571,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "other_acb, "
 				+ "certification_status_id, "
 				+ "deleted, "
-				+ "visible_on_chpl, "
 				+ "terms_of_use_url, "
 				+ "product_additional_software, "
 				+ "ics, "
@@ -714,18 +695,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
+		} else {
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
-		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
-			queryStr += " AND (visible_on_chpl = true ) ";
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
-			queryStr += " AND (visible_on_chpl = false ) ";	
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("both")){
-			// Add nothing to the query here. We want all results
-		} else {
-			queryStr += " AND (visible_on_chpl = true ) ";
-		}
-
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
 			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
 				queryStr += " AND (count_current_corrective_action_plans > 0) ";
@@ -802,7 +775,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		return query;
 	}
 	
@@ -864,16 +837,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		}
-		
-		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
-			queryStr += " AND (visible_on_chpl = true ) ";
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
-			queryStr += " AND (visible_on_chpl = false ) ";	
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("both")){
-			// Add nothing to the query here. We want all results
 		} else {
-			queryStr += " AND (visible_on_chpl = true ) ";
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -944,7 +909,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 	}
@@ -1058,16 +1023,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		}
-		
-		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
-			queryStr += " AND (visible_on_chpl = true ) ";
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
-			queryStr += " AND (visible_on_chpl = false ) ";	
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("both")){
-			// Add nothing to the query here. We want all results
 		} else {
-			queryStr += " AND (visible_on_chpl = true ) ";
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -1134,7 +1091,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 	}
@@ -1214,16 +1171,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		}
-		
-		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
-			queryStr += " AND (visible_on_chpl = true ) ";
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
-			queryStr += " AND (visible_on_chpl = false ) ";	
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("both")){
-			// Add nothing to the query here. We want all results
 		} else {
-			queryStr += " AND (visible_on_chpl = true ) ";
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 				
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -1290,7 +1239,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 		
@@ -1377,16 +1326,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		}
-		
-		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
-			queryStr += " AND (visible_on_chpl = true ) ";
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
-			queryStr += " AND (visible_on_chpl = false ) ";	
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("both")){
-			// Add nothing to the query here. We want all results
 		} else {
-			queryStr += " AND (visible_on_chpl = true ) ";
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -1456,7 +1397,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
 		
 		return query;
 	}
@@ -1519,16 +1460,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		}
-		
-		if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("yes") ){
-			queryStr += " AND (visible_on_chpl = true ) ";
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("no")){
-			queryStr += " AND (visible_on_chpl = false ) ";	
-		} else if (searchRequest.getVisibleOnCHPL().toLowerCase().startsWith("both")){
-			// Add nothing to the query here. We want all results
 		} else {
-			queryStr += " AND (visible_on_chpl = true ) ";
+			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
 		}
 		
 		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
@@ -1591,7 +1524,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getCertificationStatus() != null) {
 			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		}
+		} 
+		
 		return query;
 	}
 	
