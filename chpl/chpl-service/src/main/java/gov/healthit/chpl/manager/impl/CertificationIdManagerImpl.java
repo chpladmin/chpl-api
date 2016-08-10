@@ -1,5 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +87,22 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 		String activityMsg = "CertificationId "+dto.getCertificationId()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null, result);
 		return result;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CMS_STAFF')")
+	public String getAllAsCsvString() {
+		DateFormat csvDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		List<CertificationIdDTO> dtos = CertificationIdDAO.findAll();
+		
+		StringBuffer buf = new StringBuffer("EHR Certification ID, Date Created" + System.lineSeparator());
+		for(CertificationIdDTO dto : dtos) {
+			buf.append(dto.getCertificationId() + ", " + 
+					csvDateFormat.format(dto.getCreationDate()) + 
+					System.lineSeparator());
+		}
+		return buf.toString();
 	}
 
 }

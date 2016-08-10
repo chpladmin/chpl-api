@@ -1,5 +1,11 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features Added
+* Added a new service certification_ids/report/downloadAll to generate a document in CSV format with all certification ids and the date they were created 
+
 ## Version 3.0.0
 _10 August 2016_
 

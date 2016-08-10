@@ -1,8 +1,16 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +19,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
- 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.DateFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -220,6 +231,31 @@ public class CertificationIdController {
 		}
 		
 		return results;
+	}
+	
+	@ApiOperation(value="Generate and download a CSV file with all EHR Certification IDs "
+			+ "ever created along with the creation date of each.")
+	@RequestMapping(value="/report/downloadAll", method=RequestMethod.GET, produces="text/csv")
+	public void downloadAll(HttpServletRequest request, HttpServletResponse response) throws IOException {	
+		DateFormat format = new SimpleDateFormat("yyyyMMdd");
+		String date = format.format(new Date());
+		String streamedFilenanme = "ehr_certification_id_report_" + date + ".csv";
+		
+		String contents = certificationIdManager.getAllAsCsvString();
+		
+		// set content attributes for the response
+		response.setContentType("text/csv");
+		response.setContentLength((int) contents.length());
+	 
+		// set headers for the response
+		String headerKey = "Content-Disposition";
+		String headerValue = String.format("attachment; filename=\"%s\"", streamedFilenanme);
+		response.setHeader(headerKey, headerValue);
+	 
+		// get output stream of the response
+		PrintWriter outWriter = new PrintWriter(response.getOutputStream());
+		outWriter.write(contents);
+		outWriter.close();
 	}
 
 }
