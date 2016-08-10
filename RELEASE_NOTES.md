@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 3.0.0
+_10 August 2016_
 
 ### Features Added
 * By default do not return retired products. Still allow searching for retired products.
@@ -21,12 +21,10 @@ _2 August 2016_
 ### Features Added
 * The searchTerm parameter of a certified product search may now be a CHP- id or a 9-part unique ID or an ACB certification ID number. Wildcards are not supported.
 * Allow updating of accessibility standards list
-
 * Added /data/test_standards
 * Added /data/qms_standards
 * Added /data/ucd_processes
 * Added /data/accessibility_standards
-
 * Modified /data/education_types (breaks backwards compatibility)
 * Modified /data/age_ranges (breaks backwards compatibility)
 * Modified /data/test_functionality (breaks backwards compatibility)
