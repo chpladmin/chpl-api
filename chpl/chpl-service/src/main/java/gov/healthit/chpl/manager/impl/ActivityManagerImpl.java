@@ -236,9 +236,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional
-	public List<ActivityEvent> getAllActivityInLastNDays(boolean showDeleted, Integer lastNDays) throws JsonParseException, IOException {
+	public List<ActivityEvent> getAllActivityInDateRange(boolean showDeleted, Date startDate, Date endDate) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findAllInLastNDays(showDeleted, lastNDays);
+		List<ActivityDTO> dtos = activityDAO.findAllInDateRange(showDeleted, startDate, endDate);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -251,9 +251,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	@Transactional
 	public List<ActivityEvent> getActivityForObject(boolean showDeleted,
-			ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException {
+			ActivityConcept concept, Long objectId, Date startDate, Date endDate) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByObjectId(showDeleted, objectId, concept, lastNDays);
+		List<ActivityDTO> dtos = activityDAO.findByObjectId(showDeleted, objectId, concept, startDate, endDate);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -266,9 +266,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	@Transactional
 	public List<ActivityEvent> getActivityForConcept(boolean showDeleted,
-			ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException {
+			ActivityConcept concept, Date startDate, Date endDate) throws JsonParseException, IOException {
 		
-		List<ActivityDTO> dtos = activityDAO.findByConcept(showDeleted, concept, lastNDays);
+		List<ActivityDTO> dtos = activityDAO.findByConcept(showDeleted, concept, startDate, endDate);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 		
 		for (ActivityDTO dto : dtos){
@@ -320,9 +320,9 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public List<UserActivity> getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException, UserRetrievalException{
+	public List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate) throws JsonParseException, IOException, UserRetrievalException{
 		
-		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUserInLastNDays(nDays);
+		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUserInDateRange(startDate, endDate);
 		List<UserActivity> userActivities = new ArrayList<UserActivity>();
 		
 		
@@ -364,11 +364,11 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public List<ActivityEvent> getActivityForUserInLastNDays(Long userId, Integer nDays) throws JsonParseException, IOException{
+	public List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
 		
-		for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId, nDays)){
+		for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId, startDate, endDate)){
 			ActivityEvent event = getActivityEventFromDTO(userEventDTO);
 			userActivityEvents.add(event);
 		}

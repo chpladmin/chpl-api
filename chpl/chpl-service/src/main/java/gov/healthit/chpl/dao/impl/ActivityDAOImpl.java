@@ -168,9 +168,9 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 	
 	@Override
-	public List<ActivityDTO> findAllInLastNDays(boolean showDeleted, Integer lastNDays) {
+	public List<ActivityDTO> findAllInDateRange(boolean showDeleted, Date startDate, Date endDate) {
 		
-		List<ActivityEntity> entities = this.getAllEntitiesInLastNDays(showDeleted, lastNDays);
+		List<ActivityEntity> entities = this.getAllEntitiesInDateRange(showDeleted, startDate, endDate);
 		List<ActivityDTO> activities = new ArrayList<>();
 		
 		for (ActivityEntity entity : entities) {
@@ -181,9 +181,9 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 	
 	@Override
-	public List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Integer lastNDays) {
+	public List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Date startDate, Date endDate) {
 		
-		List<ActivityEntity> entities = this.getEntitiesByObjectId(showDeleted, objectId, concept, lastNDays);
+		List<ActivityEntity> entities = this.getEntitiesByObjectId(showDeleted, objectId, concept, startDate, endDate);
 		List<ActivityDTO> activities = new ArrayList<>();
 		
 		for (ActivityEntity entity : entities) {
@@ -194,9 +194,9 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 	
 	@Override
-	public List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept, Integer lastNDays) {
+	public List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate) {
 		
-		List<ActivityEntity> entities = this.getEntitiesByConcept(showDeleted, concept, lastNDays);
+		List<ActivityEntity> entities = this.getEntitiesByConcept(showDeleted, concept, startDate, endDate);
 		List<ActivityDTO> activities = new ArrayList<>();
 		
 		for (ActivityEntity entity : entities) {
@@ -208,9 +208,9 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	
 	
 	@Override
-	public List<ActivityDTO> findByUserId(Long userId, Integer lastNDays) {
+	public List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate) {
 		
-		List<ActivityEntity> entities = this.getEntitiesByUserId(false, userId, lastNDays);
+		List<ActivityEntity> entities = this.getEntitiesByUserId(false, userId, startDate, endDate);
 		List<ActivityDTO> activities = new ArrayList<>();
 		
 		for (ActivityEntity entity : entities) {
@@ -258,11 +258,11 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 	
 	@Override
-	public Map<Long, List<ActivityDTO> > findAllByUserInLastNDays(Integer lastNDays){
+	public Map<Long, List<ActivityDTO> > findAllByUserInDateRange(Date startDate, Date endDate){
 		
 		Map<Long, List<ActivityDTO> > activityByUser = new HashMap<Long, List<ActivityDTO> >();
 		
-		List<ActivityEntity> entities = this.getAllEntitiesInLastNDays(false, lastNDays);
+		List<ActivityEntity> entities = this.getAllEntitiesInDateRange(false, startDate, endDate);
 		
 		for (ActivityEntity entity : entities) {
 			
@@ -359,89 +359,82 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		return result;
 	}
 	
-	private List<ActivityEntity> getEntitiesByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Integer lastNDays) {
-
-		Calendar cal = new GregorianCalendar();
-		cal.add(Calendar.DAY_OF_MONTH, -lastNDays);
-		Date nDaysAgo = cal.getTime();
-
-		Query query = null;
-
-		if(showDeleted){
-			query = entityManager.createQuery(
-					"from ActivityEntity where "
-							+ "(activity_object_id = :objectid)  "
-							+ "AND (activity_object_concept_id = :conceptid) "
-							+ "AND (activity_date >= :startdate) "
-							+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class );
-			query.setParameter("objectid", objectId);
-			query.setParameter("conceptid", concept.getId());
-			query.setParameter("startdate", nDaysAgo);
-		}else{
-			query = entityManager.createQuery(
-					"from ActivityEntity where (NOT deleted = true) "
-							+ "AND (activity_object_id = :objectid)  "
-							+ "AND (activity_object_concept_id = :conceptid) "
-							+ "AND (activity_date >= :startdate) "
-							+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class );
-			query.setParameter("objectid", objectId);
-			query.setParameter("conceptid", concept.getId());
-			query.setParameter("startdate", nDaysAgo);
+	private List<ActivityEntity> getEntitiesByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Date startDate, Date endDate) {
+		String queryStr = "from ActivityEntity where "
+				+ "(activity_object_id = :objectid)  "
+				+ "AND (activity_object_concept_id = :conceptid) ";
+		if(!showDeleted) {
+			queryStr += "AND (NOT deleted = true) ";
+		}
+		if(startDate != null) {
+			queryStr += "AND (activity_date >= :startDate) ";
+		}
+		if(endDate != null) {
+			queryStr += "AND (activity_date <= :endDate) ";
+		}
+		Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
+		query.setParameter("objectid", objectId);
+		query.setParameter("conceptid", concept.getId());
+		if(startDate != null) {
+			query.setParameter("startDate", startDate);
+		}
+		if(endDate != null) {
+			query.setParameter("endDate", endDate);
 		}
 		List<ActivityEntity> result = query.getResultList();
 		return result;
 	}
 	
-	private List<ActivityEntity> getEntitiesByConcept(boolean showDeleted, ActivityConcept concept, Integer lastNDays) {
-
-
-		Calendar cal = new GregorianCalendar();
-		cal.add(Calendar.DAY_OF_MONTH, -lastNDays);
-		Date nDaysAgo = cal.getTime();
-
-		Query query = null;
-
-		if(showDeleted){
-			query = entityManager.createQuery( "from ActivityEntity where "
-					+ "(activity_object_concept_id = :conceptid) "
-					+ "AND (activity_date >= :startdate) "
-					+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class );
-			query.setParameter("conceptid", concept.getId());
-			query.setParameter("startdate", nDaysAgo);
-		}else{
-			query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) "
-					+ "AND (activity_object_concept_id = :conceptid) "
-					+ "AND (activity_date >= :startdate) "
-					+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class );
-			query.setParameter("conceptid", concept.getId());
-			query.setParameter("startdate", nDaysAgo);
+	private List<ActivityEntity> getEntitiesByConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate) {
+		String queryStr = "from ActivityEntity where "
+				+ "(activity_object_concept_id = :conceptid) ";
+		if(!showDeleted) {
+			queryStr += "AND (NOT deleted = true) ";
+		}
+		if(startDate != null) {
+			queryStr += "AND (activity_date >= :startDate) ";
+		}
+		if(endDate != null) {
+			queryStr += "AND (activity_date <= :endDate) ";
+		}
+		Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
+		query.setParameter("conceptid", concept.getId());
+		if(startDate != null) {
+			query.setParameter("startDate", startDate);
+		}
+		if(endDate != null) {
+			query.setParameter("endDate", endDate);
 		}
 		List<ActivityEntity> result = query.getResultList();
 		return result;
 	}
 	
-	private List<ActivityEntity> getAllEntitiesInLastNDays(boolean showDeleted, Integer lastNDays) {
-
-		Calendar cal = new GregorianCalendar();
-		cal.add(Calendar.DAY_OF_MONTH, -lastNDays);
-		Date nDaysAgo = cal.getTime();
-
-		Query query = null;
-
-		if(showDeleted){
-			query = entityManager.createQuery( "from ActivityEntity where "
-					+ "(activity_date >= :startdate) "
-					+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class);
-			query.setParameter("startdate", nDaysAgo);
-		}else{
-			query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) "
-					+ "AND (activity_date >= :startdate) "
-					+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class);
-			query.setParameter("startdate", nDaysAgo);
+	private List<ActivityEntity> getAllEntitiesInDateRange(boolean showDeleted, Date startDate, Date endDate) {
+		String queryStr = "FROM ActivityEntity WHERE ";
+		if(!showDeleted) {
+			queryStr += "(NOT deleted = true) ";
 		}
-
+		if(startDate != null) {
+			if(!queryStr.endsWith("WHERE ")) {
+				queryStr += "AND ";
+			}
+			queryStr += "(activity_date >= :startDate) ";
+		}
+		if(endDate != null) {
+			if(!queryStr.endsWith("WHERE ")) {
+				queryStr += "AND ";
+			}
+			queryStr += "(activity_date <= :endDate)";
+		}
+		
+		Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
+		if(startDate != null) {
+			query.setParameter("startDate", startDate);
+		}
+		if(endDate != null) {
+			query.setParameter("endDate", endDate);
+		}
 		List<ActivityEntity> result = query.getResultList();
-
 		return result;
 	}
 	
@@ -460,30 +453,28 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		return result;
 	}
 	
-	private List<ActivityEntity> getEntitiesByUserId(boolean showDeleted, Long userId, Integer lastNDays) {
-
-
-		Calendar cal = new GregorianCalendar();
-		cal.add(Calendar.DAY_OF_MONTH, -lastNDays);
-		Date nDaysAgo = cal.getTime();
-
-		Query query = null;
-
-		if(showDeleted){
-			query = entityManager.createQuery( "from ActivityEntity where "
-					+ "(last_modified_user = :userid) "
-					+ "AND (activity_date >= :startdate) "
-					+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class );
-			query.setParameter("userid", userId);
-			query.setParameter("startdate", nDaysAgo);
-		}else{
-			query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) "
-					+ "AND (last_modified_user = :userid) "
-					+ "AND (activity_date >= :startdate) "
-					+ "AND (activity_date <= CURRENT_DATE + 1) ", ActivityEntity.class );
-			query.setParameter("userid", userId);
-			query.setParameter("startdate", nDaysAgo);
+	private List<ActivityEntity> getEntitiesByUserId(boolean showDeleted, Long userId, Date startDate, Date endDate) {
+		String queryStr = "from ActivityEntity where "
+				+ "(last_modified_user = :userid) ";
+		if(!showDeleted) {
+			queryStr += "AND (NOT deleted = true) ";
 		}
+		if(startDate != null) {
+			queryStr += "AND (activity_date >= :startDate) ";
+		}
+		if(endDate != null) {
+			queryStr += "AND (activity_date <= :endDate) ";
+		}
+		
+		Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
+		query.setParameter("userid", userId);
+		if(startDate != null) {
+			query.setParameter("startDate", startDate);
+		}
+		if(endDate != null) {
+			query.setParameter("endDate", endDate);
+		}
+
 		List<ActivityEntity> result = query.getResultList();
 		return result;
 	}
