@@ -40,6 +40,7 @@ import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -233,29 +234,16 @@ public class CertificationIdController {
 		return results;
 	}
 	
-	@ApiOperation(value="Generate and download a CSV file with all EHR Certification IDs "
-			+ "ever created along with the creation date of each.")
-	@RequestMapping(value="/report/downloadAll", method=RequestMethod.GET, produces="text/csv")
-	public void downloadAll(HttpServletRequest request, HttpServletResponse response) throws IOException {	
-		DateFormat format = new SimpleDateFormat("yyyyMMdd");
-		String date = format.format(new Date());
-		String streamedFilenanme = "ehr_certification_id_report_" + date + ".csv";
+	@ApiOperation(value="Return all certification ids along with the date they were created.")
+	@RequestMapping(value="/all", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
+	public List<SimpleCertificationId> getAll() throws IOException {	
+		List<CertificationIdDTO> allCertificationIds = certificationIdManager.getAll();
 		
-		String contents = certificationIdManager.getAllAsCsvString();
-		
-		// set content attributes for the response
-		response.setContentType("text/csv");
-		response.setContentLength((int) contents.length());
-	 
-		// set headers for the response
-		String headerKey = "Content-Disposition";
-		String headerValue = String.format("attachment; filename=\"%s\"", streamedFilenanme);
-		response.setHeader(headerKey, headerValue);
-	 
-		// get output stream of the response
-		PrintWriter outWriter = new PrintWriter(response.getOutputStream());
-		outWriter.write(contents);
-		outWriter.close();
+		List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
+		for(CertificationIdDTO dto : allCertificationIds) {
+			results.add(new SimpleCertificationId(dto));
+		}
+		return results;
 	}
 
 }
