@@ -5,6 +5,7 @@ _Date TBD_
 
 ### Features Added
 * Added a new service certification_ids/report/downloadAll to generate a document in CSV format with all certification ids and the date they were created 
+* Change all /activity calls that used to accept a lastNDays parameter to accept start and end parameters instead. Start and end are longs and treated as timestamps. (Not backwards compatible)
 
 ## Version 3.0.0
 _10 August 2016_

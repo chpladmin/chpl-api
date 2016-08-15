@@ -24,13 +24,13 @@ public interface ActivityManager {
 	public List<ActivityEvent> getAllActivity(boolean showDeleted) throws JsonParseException, IOException;
 	public List<ActivityEvent> getActivityForObject(boolean showDeleted, ActivityConcept concept, Long objectId) throws JsonParseException, IOException;
 	public List<ActivityEvent> getActivityForConcept(boolean showDeleted, ActivityConcept concept) throws JsonParseException, IOException;
-	public List<ActivityEvent> getAllActivityInLastNDays(boolean showDeleted, Integer lastNDays) throws JsonParseException, IOException;
-	public List<ActivityEvent> getActivityForObject(boolean showDeleted, ActivityConcept concept, Long objectId, Integer lastNDays) throws JsonParseException, IOException;
-	public List<ActivityEvent> getActivityForConcept(boolean showDeleted, ActivityConcept concept, Integer lastNDays) throws JsonParseException, IOException;
+	public List<ActivityEvent> getAllActivityInDateRange(boolean showDeleted, Date startDate, Date endDate) throws JsonParseException, IOException;
+	public List<ActivityEvent> getActivityForObject(boolean showDeleted, ActivityConcept concept, Long objectId, Date startDate, Date endDate) throws JsonParseException, IOException;
+	public List<ActivityEvent> getActivityForConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate) throws JsonParseException, IOException;
 	public void deleteActivity(Long toDelete) throws EntityRetrievalException;
 	public List<UserActivity> getActivityByUser() throws JsonParseException, IOException, UserRetrievalException;
-	public List<UserActivity> getActivityByUserInLastNDays(Integer nDays) throws JsonParseException, IOException, UserRetrievalException;
+	public List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate) throws JsonParseException, IOException, UserRetrievalException;
 	public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException;
-	public List<ActivityEvent> getActivityForUserInLastNDays(Long userId, Integer nDays) throws JsonParseException, IOException;
+	public List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate) throws JsonParseException, IOException;
 	
 }

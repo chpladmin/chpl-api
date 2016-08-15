@@ -142,7 +142,7 @@ public class ActivityManagerTest extends TestCase {
 	@Test
 	public void testGetAllActivityInLastNDays() throws EntityCreationException, EntityRetrievalException, IOException{
 		
-		Integer lastNDays = 5;
+		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
@@ -163,7 +163,7 @@ public class ActivityManagerTest extends TestCase {
 				"Test",
 				timestamp
 				);
-		List<ActivityEvent> events = activityManager.getAllActivityInLastNDays(false, lastNDays);
+		List<ActivityEvent> events = activityManager.getAllActivityInDateRange(false, fiveDaysAgo, null);
 		
 		activityManager.deleteActivity(events.get(0).getId());
 		assertEquals(1, events.size());
@@ -188,9 +188,9 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
-	public void testGetActivityForObjectLastNDays() throws EntityCreationException, EntityRetrievalException, IOException{
+	public void testGetActivityForObjectDateRange() throws EntityCreationException, EntityRetrievalException, IOException{
 		
-		Integer lastNDays = 5;
+		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
@@ -209,7 +209,9 @@ public class ActivityManagerTest extends TestCase {
 				"Test",
 				timestamp
 				);
-		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, developer.getId() , lastNDays);
+		List<ActivityEvent> events = activityManager.getActivityForObject(false, 
+				ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, developer.getId() , 
+				fiveDaysAgo, null);
 		
 		activityManager.deleteActivity(events.get(0).getId());
 		assertEquals(1, events.size());
@@ -234,8 +236,9 @@ public class ActivityManagerTest extends TestCase {
 	public void testGetActivityForConceptLastNDays() throws EntityCreationException, EntityRetrievalException, JsonParseException, IOException{
 		
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
-		Integer lastNDays = 5;
-		List<ActivityEvent> events = activityManager.getActivityForConcept(false, concept, lastNDays);
+		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
+
+		List<ActivityEvent> events = activityManager.getActivityForConcept(false, concept, fiveDaysAgo, null);
 		assertEquals(0, events.size());
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -272,7 +275,8 @@ public class ActivityManagerTest extends TestCase {
 				timestamp2
 				);
 		
-		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, lastNDays);
+		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, 
+				ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, fiveDaysAgo, new Date());
 		
 		assertEquals(1, events2.size());
 	}
