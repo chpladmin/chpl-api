@@ -221,7 +221,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			for(DeveloperDTO dev : beforeDevelopers) {
 				DeveloperACBMapDTO taMap = developerDao.getTransparencyMapping(dev.getId(), acb.getId());
 				if(taMap != null && !StringUtils.isEmpty(taMap.getTransparencyAttestation())) {
-					AttestationType currAtt = AttestationType.valueOf(taMap.getTransparencyAttestation());
+					AttestationType currAtt = AttestationType.getValue(taMap.getTransparencyAttestation());
 					if(transparencyAttestation == null) {
 						transparencyAttestation = currAtt;
 					} else if(currAtt != transparencyAttestation) {

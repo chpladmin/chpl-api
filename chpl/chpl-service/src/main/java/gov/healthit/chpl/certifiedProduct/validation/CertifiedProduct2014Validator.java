@@ -124,11 +124,18 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+				boolean gapEligibleAndTrue = false;
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
+						cert.getGap() == Boolean.TRUE) {
+					gapEligibleAndTrue = true;
+				}
+				
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED) &&
 						cert.getSed() == null) {
 					product.getErrorMessages().add("SED is required for certification " + cert.getNumber() + ".");
 				}
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA) &&
+				if(!gapEligibleAndTrue && 
+						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA) &&
 						(cert.getTestData() == null || cert.getTestData().size() == 0)) {
 					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
 				}
@@ -222,5 +229,16 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		if(hasG3Complement && !hasG3) {
 			product.getErrorMessages().add("A certification that requires (g)(3) was found but (g)(3) was not.");
 		}
+	}
+	
+	@Override
+	protected void validateDemographics(CertifiedProductSearchDetails product) {
+		super.validateDemographics(product);
+		
+		if(StringUtils.isEmpty(product.getReportFileLocation())) {
+			product.getErrorMessages().add("A test result summary URL is required.");
+		}
+		
+		//this is not supposed to matcht the list of things checked for pending products
 	}
 }

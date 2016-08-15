@@ -1,8 +1,16 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +19,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
- 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.swing.text.DateFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +40,7 @@ import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -147,7 +159,9 @@ public class CertificationIdController {
 	@ApiOperation(value="Get information about a specific EHR Certification ID.", 
 			notes="Retrieves detailed information about a specific EHR Certification ID including the list of products that make it up.")
 	@RequestMapping(value="/{certificationId}", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
-	public @ResponseBody CertificationIdLookupResults getCertificationIdByCertificationId(@PathVariable("certificationId") String certificationId) 
+	public @ResponseBody CertificationIdLookupResults getCertificationIdByCertificationId(@PathVariable("certificationId") String certificationId, 
+		@RequestParam(required=false,defaultValue="false") Boolean includeCriteria,
+		@RequestParam(required=false,defaultValue="false") Boolean includeCqms) 
 	throws InvalidArgumentsException, CertificationIdException {
 		
 		CertificationIdLookupResults results = new CertificationIdLookupResults();
@@ -168,6 +182,21 @@ public class CertificationIdController {
 				for (CertifiedProductDetailsDTO dto : productDtos) {
 					productList.add(new CertificationIdLookupResults.Product(dto));
 				}
+				
+				// Add criteria and cqms met to results
+				if (includeCriteria || includeCqms) {
+					Validator validator = ValidatorFactory.getValidator(certDto.getYear());
+					boolean isValid = validator.validate(productDtos);
+					if (isValid) {
+						if (includeCriteria) {
+							results.setCriteria(validator.getCriteriaMet().keySet());
+						}
+						if (includeCqms) {
+							results.setCqms(validator.getCqmsMet().keySet());
+						}
+					}
+				}
+				
 			}
 			
 		} catch (EntityRetrievalException ex) {
@@ -202,6 +231,18 @@ public class CertificationIdController {
 			throw new InvalidArgumentsException("No EHR Certification IDs specified in request body.");
 		}
 		
+		return results;
+	}
+	
+	@ApiOperation(value="Return all certification ids along with the date they were created.")
+	@RequestMapping(value="/all", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
+	public List<SimpleCertificationId> getAll() throws IOException {	
+		List<CertificationIdDTO> allCertificationIds = certificationIdManager.getAll();
+		
+		List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
+		for(CertificationIdDTO dto : allCertificationIds) {
+			results.add(new SimpleCertificationId(dto));
+		}
 		return results;
 	}
 
