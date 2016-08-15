@@ -17,6 +17,7 @@ import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.impl.ApiKeyActivityDAOImpl;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
@@ -131,7 +132,6 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		return activity;
 	}
 	
-	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -162,8 +162,6 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		}
 		return activity;
 	}
-	
-	
 
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -201,26 +199,38 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		return activity;
 	}
 	
+	/* Gets API key activity within the constraints of the provided parameters
+	 * Parameters: 
+	 * String apiKeyFilter - string of API key(s)
+	 * Integer pageNumber - The page for the API key activity
+	 * Integer pageSize - Number of API keys on the page
+	 * boolean dateAscending - True if dateAscending; false if dateDescending
+	 * Long startDate - Start date, in milliseconds, for API key creation
+	 * Long endDate - End date, in milliseconds, for API key creation
+	 * Returns: list of ApiKeyActivity
+	 */
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public List<ApiKeyActivity> getApiKeyActivity(Integer pageNumber, Integer pageSize) throws EntityRetrievalException {
-		
-		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll(pageNumber, pageSize) ;
+	public List<ApiKeyActivity> getApiKeyActivity
+	(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli) 
+			throws EntityRetrievalException {		
+		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.getApiKeyActivity
+				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
 		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
 		
 		for (ApiKeyActivityDTO dto : activityDTOs){
-			
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
 			if (apiKey == null){
 				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
 			}
 			
 			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
-				
+			
 			apiKeyActivity.setApiKey(apiKey.getApiKey());
 			apiKeyActivity.setApiKeyId(apiKey.getId());	
 			apiKeyActivity.setEmail(apiKey.getEmail());
 			apiKeyActivity.setName(apiKey.getNameOrganization());
+			
 			apiKeyActivity.setId(dto.getId());
 			apiKeyActivity.setCreationDate(dto.getCreationDate());
 			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
@@ -229,5 +239,4 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		}
 		return activity;
 	}
-	
 }

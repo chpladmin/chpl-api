@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 
 @Api(value="api-key")
 @RestController
@@ -111,6 +111,16 @@ public class ApiKeyController {
 		return keys;
 	}
 	
+	/** Gets a list of filtered API key activities
+	 * Parameters:
+	 * String apiKeyFilter - String of API key(s)
+	 * Integer pageNumber - page of the API key
+	 * Integer pageSize - size of the page
+	 * boolean dateAscending - true if API key creation date is sorted in ascending order; false if descending
+	 * Long startDate - Filter out keys before the creation start date
+	 * Long endDate - Filter out keys after the creation end date
+	 * Returns: List of API key activities
+	 */
 	@ApiOperation(value="View the calls made per API key.", 
 			notes="This service is only available to CHPL users with ROLE_ADMIN.")
 	@RequestMapping(value="/activity", method= RequestMethod.POST, 
@@ -118,8 +128,12 @@ public class ApiKeyController {
 			produces="application/json; charset=utf-8")
 	public List<ApiKeyActivity> listActivity(
 			@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-			@RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException
-	{
+			@RequestParam(value = "pageSize", required = false) Integer pageSize ,
+			@RequestParam(value = "filter", required = false) String apiKeyFilter,
+			@RequestParam(value = "dateAscending", required = false) boolean dateAscending,
+			@RequestParam(value = "startDate", required = false) Long startDateMilli,
+			@RequestParam(value = "endDate", required=false) Long endDateMilli) throws EntityRetrievalException
+	{		
 		if (pageNumber == null){
 			pageNumber = 0;
 		}
@@ -128,7 +142,22 @@ public class ApiKeyController {
 			pageSize = 100;
 		}
 		
-		List<ApiKeyActivity> activity = apiKeyManager.getApiKeyActivity(pageNumber, pageSize);
+		if (apiKeyFilter == null || apiKeyFilter.isEmpty()){
+			apiKeyFilter = "";
+		}
+				
+		if (startDateMilli == null){
+			Date beginningOfTime = new Date(0);
+			startDateMilli = beginningOfTime.getTime();
+		}
+		
+		if (endDateMilli == null){
+			Date now = new Date();
+			endDateMilli = now.getTime();
+		}
+		
+		List<ApiKeyActivity> activity = apiKeyManager.getApiKeyActivity
+				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
 		
 		return activity;
 		
@@ -171,5 +200,4 @@ public class ApiKeyController {
 		String[] toEmails = {email};
 		sendMailService.sendEmail(toEmails, subject, htmlMessage);
 	}
-	
 }

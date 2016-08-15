@@ -3,9 +3,12 @@ package gov.healthit.chpl.dao.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -157,7 +160,6 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		return dtos;
 	}
 	
-	
 	private void create(ApiKeyActivityEntity entity) {
 		
 		entityManager.persist(entity);
@@ -224,5 +226,94 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		return result;
 		
 	}
-	
+
+	/** Gets a list of ApiKeyActivityDTOs using parameters to filter API keys by 
+	 * creation start & end dates
+	 * Also sorts results in ascending or descending order
+	 * Parameters:
+	 * String apiKeyFilter - String of API key(s)
+	 * Integer pageNumber - page of the API key
+	 * Integer pageSize - size of the page
+	 * boolean dateAscending - true if API key creation date is sorted in ascending order; 
+	 * false if descending
+	 * Long startDate - Filter out keys before the creation start date
+	 * Long endDate - Filter out keys after the creation end date
+	 * Returns: List of ApiKeyActivityDTOs
+	 */
+	@Override
+	public List<ApiKeyActivityDTO> getApiKeyActivity
+	(String keyString, Integer pageNumber, Integer pageSize,
+			boolean dateAscending, Long startDate, Long endDate) {
+		List<ApiKeyActivityEntity> entities = getActivityEntitiesByKeyStringWithFilter
+				(keyString, pageNumber, pageSize, dateAscending, startDate, endDate);
+		List<ApiKeyActivityDTO> dtos = new ArrayList<ApiKeyActivityDTO>();
+		
+		for (ApiKeyActivityEntity entity : entities){
+			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+
+	/** Gets activity entities by an API key string. Uses parameters that filter by 
+	 * start and endDate.
+	 * Parameters:
+	 * String apiKeyFilter - String of API key(s)
+	 * Integer pageNumber - page of the API key
+	 * Integer pageSize - size of the page
+	 * boolean dateAscending - true if API key creation date is sorted in ascending order; 
+	 * false if descending
+	 * Long startDate - Filter out keys before the creation start date
+	 * Long endDate - Filter out keys after the creation end date
+	 * Returns: List of ApiKeyActivityEntity
+	 */
+	public List<ApiKeyActivityEntity> getActivityEntitiesByKeyStringWithFilter
+	(String apiKeyFilter, Integer pageNumber,
+			Integer pageSize, boolean dateAscending, long startDateMilli, long endDateMilli) {
+		Date startDate = new Date(startDateMilli);
+		Date endDate = new Date(endDateMilli);
+		
+		String queryStr = 
+				"FROM ApiKeyActivityEntity a "
+				+ "WHERE (NOT a.deleted = true) "
+				+ "AND a.creationDate >= "
+				+ ":startDate "
+				+ "AND a.creationDate <= :endDate ";
+		
+		if (apiKeyFilter.contains("!")){
+			apiKeyFilter = apiKeyFilter.substring(1);
+			if(!apiKeyFilter.isEmpty()){
+				queryStr += "AND a.apiKeyId NOT IN "
+						+ "(SELECT id FROM ApiKeyEntity WHERE apiKey = '" + apiKeyFilter + "') ";
+			}
+			
+			if(dateAscending){
+				queryStr+= "ORDER BY a.creationDate ASC";
+			}
+			else{
+				queryStr+= "ORDER BY a.creationDate DESC";
+			}
+			
+		}
+		else{
+			if(!apiKeyFilter.isEmpty()){
+				queryStr += "AND a.apiKeyId IN "
+						+ "(SELECT id FROM ApiKeyEntity WHERE apiKey = '" + apiKeyFilter + "') ";
+			}
+			
+			if(dateAscending){
+				queryStr+= "ORDER BY a.creationDate ASC";
+			}
+			else{
+				queryStr+= "ORDER BY a.creationDate DESC";
+			}
+		}
+		Query query = entityManager.createQuery(queryStr, ApiKeyActivityEntity.class);
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
+		query.setMaxResults(pageSize);
+	    query.setFirstResult(pageNumber * pageSize);
+	    List<ApiKeyActivityEntity> result = query.getResultList();
+	    return result;		
+	}
 }

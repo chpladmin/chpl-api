@@ -1,15 +1,22 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.ApiKeyActivityDAO;
+import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.impl.ApiKeyActivityDAOImpl;
 import gov.healthit.chpl.domain.ApiKeyActivity;
+import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 import gov.healthit.chpl.manager.ApiKeyManager;
+import gov.healthit.chpl.web.controller.ApiKeyController;
 import junit.framework.TestCase;
 
 import org.junit.BeforeClass;
@@ -38,10 +45,19 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 public class ApiKeyManagerTest extends TestCase {
 
 	@Autowired
+	private ApiKeyController apiKeyController;
+	
 	private ApiKeyManager apiKeyManager;
 	
-	private static JWTAuthenticatedUser adminUser;
+	private ApiKeyActivityDAO apiKeyActivityDAO;
 	
+	private ApiKeyActivityDAOImpl apiKeyActivityDAOImpl;
+	
+	private ApiKeyDTO apiKeyDTO;
+	
+	private ApiKeyDAO apiKeyDAO;
+	
+	private static JWTAuthenticatedUser adminUser;
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -344,16 +360,44 @@ public class ApiKeyManagerTest extends TestCase {
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal6");
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal7");
 		
-		
 		int pageSize = 2;
 		int pageNumber = 1;
-		int finalSize = apiKeyManager.getApiKeyActivity(pageNumber, pageSize).size();
+		boolean dateAscending = true;
+		Date beginningOfTime = new Date(0);
+		Long startTime = beginningOfTime.getTime();
+		Long endTime = now.getTime();
+		
+		int finalSize = apiKeyManager.getApiKeyActivity
+				("", pageNumber, pageSize, dateAscending, startTime, endTime).size();
 		assertEquals(pageSize, finalSize);
 		
 		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
+	@Test
+	public void testThatApiKeyFilterParameterFiltersResults() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		Date currentDate = new Date();
+		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		// Create one activity with apiKey = 12909a978483dfb8ecd0596c98ae9094 and one activity with a different apiKey, 88f231cbf2ae45810b1177f5f4ddf297
+		
+		
+		// Simulate API inputs. The activitiesList should NOT contain an activity with an APIKey == apiKeyFilter
+		String apiKeyFilter = "!12909a978483dfb8ecd0596c98ae9094";
+		Integer pageNumber = 0;
+		Integer pageSize = 100;
+		boolean dateAscending = true;
+		long startDateMilli = 0; // beginning of time
+		long endDateMilli = currentDate.getTime(); // current time
+		
+		List<ApiKeyActivity> activitiesList = apiKeyController.listActivity(pageNumber, pageSize, apiKeyFilter, dateAscending, startDateMilli, endDateMilli);
+		
+		for(ApiKeyActivity activity : activitiesList){
+			assertNotSame("The API Key Filter did not filter out the API key", "12909a978483dfb8ecd0596c98ae9094", activity.getApiKey());
+		}
+	}
 	
 	@Test
 	public void testGetApiKeyActivityWithKeyAndPaging() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
@@ -383,8 +427,7 @@ public class ApiKeyManagerTest extends TestCase {
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal4");
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal5");
 		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal6");
-		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal7");
-		
+		apiKeyManager.logApiKeyActivity(toCreate.getApiKey(), "/rest/some/call?someQuery=someVal7");	
 		
 		int pageSize = 2;
 		int pageNumber = 1;
