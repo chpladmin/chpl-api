@@ -12,8 +12,8 @@ import java.util.Properties;
 
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;

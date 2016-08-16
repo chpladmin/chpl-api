@@ -1,33 +1,27 @@
-<?xml version="1.0"?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
- 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
- 
-    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}:%L] %m%n" />
-        </layout>
-    </appender>
- 
-    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
-        <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
-            <param name="FileNamePattern" value="${catalina.home}/logs/CHPLService.%d{yyyy-MM-dd}.log" />
-        </rollingPolicy>
- 
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}:%L] %m%n" />
-        </layout>
-    </appender>
-    
-    <category name="org.springframework">
-    	<priority value="debug" />
-    </category>
- 
- 
-    <root>
-        <priority value="DEBUG" />
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
-    </root>
-    
-</log4j:configuration>
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug" name="CHPLService" packages="">
+  <Appenders>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout>
+        <Pattern>%p %C %m%n</Pattern>
+      </PatternLayout>
+    </Console>
+  </Appenders>
+  <Loggers>
+  	<Logger name="org.jose4j" level="WARN" additivity="false">
+  		<AppenderRef ref="STDOUT" />
+  	</Logger>
+    	 <Logger name="org.hibernate" level="INFO" additivity="false">
+      <AppenderRef ref="STDOUT"/>
+    </Logger>
+    <Logger name="org.springframework" level="INFO" additivity="false">
+      <AppenderRef ref="STDOUT"/>
+    </Logger>
+    <Logger name="gov.healthit.chpl" level="DEBUG" additivity="false">
+      <AppenderRef ref="STDOUT"/>
+    </Logger>
+    <Root level="DEBUG">
+      <AppenderRef ref="STDOUT"/>
+    </Root>
+  </Loggers>
+</Configuration>

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;

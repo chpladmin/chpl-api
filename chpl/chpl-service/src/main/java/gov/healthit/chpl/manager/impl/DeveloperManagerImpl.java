@@ -2,13 +2,14 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import javax.mail.MessagingException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PostFilter;
@@ -60,6 +61,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Override
 	@Transactional(readOnly = true)
 	public List<DeveloperDTO> getAll() {
+		Date begin = new Date();
+		logger.debug("Begin /developers call");
 		List<DeveloperDTO> allDevelopers = developerDao.findAll();
 		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs == null || availableAcbs.size() == 0) {
@@ -82,6 +85,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				}
 			}
 		}
+		Date end = new Date();
+		long millis = end.getTime() - begin.getTime();
+		logger.debug("End /developers in " + (millis/1000) + " seconds.");
 		return allDevelopers;
 	}
 
