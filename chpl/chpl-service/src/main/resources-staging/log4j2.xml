@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn" monitorInterval="300" name="CHPL-Service-STG" packages="">
 	<Properties>
-	    <Property name="logDir">${env:CATALINA_HOME}/logs</Property>
+	    <Property name="logDir">${sys:catalina.home}/logs</Property>
 	</Properties>
   <Appenders>
-  <File name="FILE" fileName="${logDir}/chplservice.log">
+    <RollingFile name="FILE" fileName="${logDir}/chplservice.log"
+                 filePattern="logs/chplservice-%d{MM-dd-yyyy}-%i.log.gz">
       <PatternLayout>
         <Pattern>%d %p %C %m%n</Pattern>
       </PatternLayout>
-    </File>
+      <Policies>
+        <TimeBasedTriggeringPolicy />
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30"/>
+    </RollingFile>
   </Appenders>
   <Loggers>
   	<Logger name="org.jose4j" level="ERROR" additivity="false">
