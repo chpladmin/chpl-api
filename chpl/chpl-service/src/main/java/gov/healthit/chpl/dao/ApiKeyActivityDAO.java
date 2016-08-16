@@ -18,5 +18,5 @@ public interface ApiKeyActivityDAO {
 			boolean dateAscending, Long startDate, Long endDate);
 	public List<ApiKeyActivityEntity> getActivityEntitiesByKeyStringWithFilter
 	(String apiKeyFilter, Integer pageNumber,
-			Integer pageSize, boolean dateAscending, long startDateMilli, long endDateMilli);
+			Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli);
 }

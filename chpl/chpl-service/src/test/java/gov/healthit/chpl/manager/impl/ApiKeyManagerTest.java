@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,9 +11,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.impl.ApiKeyActivityDAOImpl;
 import gov.healthit.chpl.domain.ApiKeyActivity;
-import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
-import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.web.controller.ApiKeyController;
 import junit.framework.TestCase;
@@ -48,14 +45,6 @@ public class ApiKeyManagerTest extends TestCase {
 	private ApiKeyController apiKeyController;
 	
 	private ApiKeyManager apiKeyManager;
-	
-	private ApiKeyActivityDAO apiKeyActivityDAO;
-	
-	private ApiKeyActivityDAOImpl apiKeyActivityDAOImpl;
-	
-	private ApiKeyDTO apiKeyDTO;
-	
-	private ApiKeyDAO apiKeyDAO;
 	
 	private static JWTAuthenticatedUser adminUser;
 	

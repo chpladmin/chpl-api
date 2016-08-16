@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -111,16 +110,6 @@ public class ApiKeyController {
 		return keys;
 	}
 	
-	/** Gets a list of filtered API key activities
-	 * Parameters:
-	 * String apiKeyFilter - String of API key(s)
-	 * Integer pageNumber - page of the API key
-	 * Integer pageSize - size of the page
-	 * boolean dateAscending - true if API key creation date is sorted in ascending order; false if descending
-	 * Long startDate - Filter out keys before the creation start date
-	 * Long endDate - Filter out keys after the creation end date
-	 * Returns: List of API key activities
-	 */
 	@ApiOperation(value="View the calls made per API key.", 
 			notes="This service is only available to CHPL users with ROLE_ADMIN.")
 	@RequestMapping(value="/activity", method= RequestMethod.POST, 
@@ -142,25 +131,14 @@ public class ApiKeyController {
 			pageSize = 100;
 		}
 		
-		if (apiKeyFilter == null || apiKeyFilter.isEmpty()){
-			apiKeyFilter = "";
-		}
-				
-		if (startDateMilli == null){
-			Date beginningOfTime = new Date(0);
-			startDateMilli = beginningOfTime.getTime();
-		}
-		
-		if (endDateMilli == null){
-			Date now = new Date();
-			endDateMilli = now.getTime();
+		if (apiKeyFilter != null && apiKeyFilter.isEmpty()){
+			apiKeyFilter = null;
 		}
 		
 		List<ApiKeyActivity> activity = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
 		
-		return activity;
-		
+		return activity;	
 	}
 	
 	@ApiOperation(value="View the calls made by a specific API key.", 
