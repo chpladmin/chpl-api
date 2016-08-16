@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" monitorInterval="300" name="CHPL-Service-DEV" packages="">
+	<Properties>
+		<!-- NOTE: if you work in a Windows environment and use git bash to start Tomcat, 
+		this environment variable will not resolve properly. 
+		${env:CATALINA_HOME} turns into something like /c/Users/username/apache-tomcat
+		and log4j seems to not know what to do with that. The solution here is to start
+		Tomcat with the Windows command prompt. CATALINA_HOME then resolves to something like 
+		C:\Users\uesrname\apache-tomcat which log4j can handle. -->
+	    <Property name="logDir">${env:CATALINA_HOME}/logs</Property>
+	</Properties>
+  <Appenders>
+  <File name="FILE" fileName="${logDir}/chplservice.log">
+      <PatternLayout>
+        <Pattern>%d %p %C %m%n</Pattern>
+      </PatternLayout>
+    </File>
+  </Appenders>
+  <Loggers>
+  	<Logger name="org.jose4j" level="WARN" additivity="false">
+  		<AppenderRef ref="FILE" />
+  	</Logger>
+    	 <Logger name="org.hibernate" level="INFO" additivity="false">
+      <AppenderRef ref="FILE"/>
+    </Logger>
+    <Logger name="org.springframework" level="INFO" additivity="false">
+      <AppenderRef ref="FILE"/>
+    </Logger>
+    <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
+      <AppenderRef ref="FILE"/>
+    </Logger>
+    <Root level="INFO">
+      <AppenderRef ref="FILE"/>
+    </Root>
+  </Loggers>
+</Configuration>
