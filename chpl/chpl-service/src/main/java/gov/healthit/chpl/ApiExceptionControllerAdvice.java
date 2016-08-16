@@ -13,8 +13,8 @@ import gov.healthit.chpl.web.controller.ValidationException;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,36 +27,43 @@ public class ApiExceptionControllerAdvice {
 
 	@ExceptionHandler(EntityRetrievalException.class)
 	public ResponseEntity<ErrorJSONObject> exception(EntityRetrievalException e) {
+		logger.error(e.getMessage(), e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(EntityCreationException.class)
 	public ResponseEntity<ErrorJSONObject> exception(EntityCreationException e) {
+		logger.error(e.getMessage(), e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(InvalidArgumentsException.class)
 	public ResponseEntity<ErrorJSONObject> exception(InvalidArgumentsException e) {
+		logger.error(e.getMessage(), e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@ExceptionHandler(AddressException.class)
 	public ResponseEntity<ErrorJSONObject> exception(AddressException e) {
+		logger.error("Could not send email", e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Could not send email. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@ExceptionHandler(UpdateTestingLabException.class )
 	public ResponseEntity<ErrorJSONObject> exception(UpdateTestingLabException e) {
+		logger.error("Could not update testing lab - access denied.");
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access Denied"), HttpStatus.FORBIDDEN);
 	}
 	
 	@ExceptionHandler(UpdateCertifiedBodyException.class )
 	public ResponseEntity<ErrorJSONObject> exception(UpdateCertifiedBodyException e) {
+		logger.error("Could not update ACB - access denied.");
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access Denied"), HttpStatus.FORBIDDEN);
 	}
 	
 	@ExceptionHandler(MessagingException.class)
 	public ResponseEntity<ErrorJSONObject> exception(MessagingException e) {
+		logger.error("Could not send email", e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Could not send email. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
@@ -70,7 +77,7 @@ public class ApiExceptionControllerAdvice {
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorJSONObject> exception(Exception e) {
-		e.printStackTrace();
+		logger.error("Caught exception.", e);		
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
