@@ -12,6 +12,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 
@@ -169,7 +170,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 	
 	}
 	
-	private List<ApiKeyActivityEntity> getAllEntities() {
+	public List<ApiKeyActivityEntity> getAllEntities() {
 		
 		List<ApiKeyActivityEntity> result = entityManager.createQuery( "from ApiKeyActivityEntity where (NOT deleted = true) ", ApiKeyActivityEntity.class).getResultList();
 		return result;
@@ -266,23 +267,8 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 	public List<ApiKeyActivityEntity> getActivityEntitiesByKeyStringWithFilter
 	(String apiKeyFilter, Integer pageNumber,
 			Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli) {
-		boolean isStartDateNull = false;
-		boolean isEndDateNull = false;
-		boolean isApiKeyFilterNull = false;
 		Date startDate = new Date();
 		Date endDate = new Date();
-		
-		if(startDateMilli == null){
-			isStartDateNull = true;
-		}
-		
-		if(endDateMilli == null){
-			isEndDateNull = true;
-		}
-		
-		if(apiKeyFilter == null){
-			isApiKeyFilterNull = true;
-		}
 		
 		String queryStr = 
 				"FROM ApiKeyActivityEntity a "
@@ -295,35 +281,38 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 			endDate = new Date(endDateMilli);
 			queryStr += "AND a.creationDate <= :endDate ";
 		}
-		if(isApiKeyFilterNull == false && !apiKeyFilter.isEmpty()){
+		if(apiKeyFilter != null && !apiKeyFilter.isEmpty() && apiKeyFilter.length() > 1){
 			queryStr +=	"AND a.apiKeyId ";
 				if (apiKeyFilter.substring(0,1).contentEquals("!")){
 					apiKeyFilter = apiKeyFilter.substring(1);
 					queryStr += "NOT IN ";
-		}
+				}
 				else{
-			queryStr += "IN ";
-		}
-			queryStr += "(SELECT id FROM ApiKeyEntity WHERE apiKey = '" + apiKeyFilter + "') ";
+					queryStr += "IN ";
+				}
+			queryStr += "(SELECT id FROM ApiKeyEntity WHERE apiKey = :apiKeyFilter) ";
 		}
 		queryStr+= "ORDER BY a.creationDate ";
 		if(dateAscending){
 			queryStr+= "ASC";
 		}
 		else{
-			queryStr+= "DESC";
+			queryStr+= "DESC"; 
 		}
 		
 		Query query = entityManager.createQuery(queryStr, ApiKeyActivityEntity.class);
-		if(isStartDateNull == false){
+		if(startDateMilli != null){
 			query.setParameter("startDate", startDate);
 		}
-		if(isEndDateNull == false){
+		if(endDateMilli != null){
 			query.setParameter("endDate", endDate);
+		}
+		if(apiKeyFilter != null && !apiKeyFilter.isEmpty() && apiKeyFilter.length() > 1){
+			query.setParameter("apiKeyFilter", apiKeyFilter);
 		}
 		query.setMaxResults(pageSize);
 	    query.setFirstResult(pageNumber * pageSize);
 	    List<ApiKeyActivityEntity> result = query.getResultList();
-	    return result;		
+	    return result;
 	}
 }

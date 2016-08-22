@@ -215,7 +215,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
 		
 		for (ApiKeyActivityDTO dto : activityDTOs){
-			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
+			ApiKeyDTO apiKey = findKey(dto.getApiKeyId()); 
 			if (apiKey == null){
 				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
 			}
