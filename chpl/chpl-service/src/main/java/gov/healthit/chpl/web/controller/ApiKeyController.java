@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-
 @Api(value="api-key")
 @RestController
 @RequestMapping("/key")
@@ -118,8 +117,12 @@ public class ApiKeyController {
 			produces="application/json; charset=utf-8")
 	public List<ApiKeyActivity> listActivity(
 			@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-			@RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException
-	{
+			@RequestParam(value = "pageSize", required = false) Integer pageSize ,
+			@RequestParam(value = "filter", required = false) String apiKeyFilter,
+			@RequestParam(value = "dateAscending", required = false) boolean dateAscending,
+			@RequestParam(value = "startDate", required = false) Long startDateMilli,
+			@RequestParam(value = "endDate", required=false) Long endDateMilli) throws EntityRetrievalException
+	{		
 		if (pageNumber == null){
 			pageNumber = 0;
 		}
@@ -128,10 +131,14 @@ public class ApiKeyController {
 			pageSize = 100;
 		}
 		
-		List<ApiKeyActivity> activity = apiKeyManager.getApiKeyActivity(pageNumber, pageSize);
+		if (apiKeyFilter != null && apiKeyFilter.isEmpty()){
+			apiKeyFilter = null;
+		}
 		
-		return activity;
+		List<ApiKeyActivity> activity = apiKeyManager.getApiKeyActivity
+				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
 		
+		return activity;	
 	}
 	
 	@ApiOperation(value="View the calls made by a specific API key.", 
@@ -171,5 +178,4 @@ public class ApiKeyController {
 		String[] toEmails = {email};
 		sendMailService.sendEmail(toEmails, subject, htmlMessage);
 	}
-	
 }

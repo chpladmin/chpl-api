@@ -15,6 +15,7 @@ import javax.mail.internet.AddressException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -41,6 +42,12 @@ public class ApiExceptionControllerAdvice {
 	public ResponseEntity<ErrorJSONObject> exception(InvalidArgumentsException e) {
 		logger.error(e.getMessage(), e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(TypeMismatchException.class)
+	public ResponseEntity<ErrorJSONObject> typeMismatchException(TypeMismatchException e) {
+		logger.error(e.getMessage(), e);
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(AddressException.class)
