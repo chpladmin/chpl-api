@@ -249,6 +249,15 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				product.getErrorMessages().add("170.315 (h)(1) was found so 170.315 (b)(1) is required but was not found.");
 			}
 		}
+		
+		// check that For 170.315(d)(3), GAP cannot = 1
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getNumber().equals("170.315 (d)(3)")) {
+				if(cert.getGap() != null && cert.getGap().equals(Boolean.TRUE)) {
+					product.getErrorMessages().add("170.315 (d)(3) cannot mark GAP as true.");
+				}
+			}
+		}
 	}
 
 	protected void validateDemographics(PendingCertifiedProductDTO product) {
@@ -490,6 +499,15 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 			boolean hasB1 = hasCert("170.315 (b)(1)", allMetCerts);
 			if(!hasB1) {
 				product.getErrorMessages().add("170.315 (h)(1) was found so 170.315 (b)(1) is required but was not found.");
+			}
+		}
+		
+		// check that For 170.315(d)(3), GAP cannot = 1
+		for(CertificationResult cert : product.getCertificationResults()) {
+			if(cert.getNumber().equals("170.315 (d)(3)")) {
+				if(cert.isGap() != null && cert.isGap().equals(Boolean.TRUE)) {
+					product.getErrorMessages().add("170.315 (d)(3) cannot mark GAP as true.");
+				}
 			}
 		}
 	}
