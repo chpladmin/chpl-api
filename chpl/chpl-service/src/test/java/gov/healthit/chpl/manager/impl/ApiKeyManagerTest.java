@@ -8,12 +8,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -23,8 +25,10 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.impl.ApiKeyActivityDAOImpl;
 import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import junit.framework.TestCase;
 
@@ -39,6 +43,12 @@ public class ApiKeyManagerTest extends TestCase {
 	@Autowired
 	private ApiKeyManager apiKeyManager;
 	
+	@Autowired
+	private ApiKeyTestHelper apiKeyActivityTestHelper;
+	
+	@Autowired
+	private ApiKeyActivityDAOImpl apiKeyActivityDAOImpl;
+	
 	private static JWTAuthenticatedUser adminUser;
 	
 	@BeforeClass
@@ -51,6 +61,8 @@ public class ApiKeyManagerTest extends TestCase {
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void testCreateKey() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
 		
@@ -78,6 +90,8 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void testDeleteKey() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
 		
@@ -108,6 +122,8 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void testDeleteByApiKey() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
 		
@@ -138,7 +154,8 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
-	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void testFindByApiKey() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
 		
@@ -164,6 +181,8 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void testFind() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
 		
@@ -190,6 +209,8 @@ public class ApiKeyManagerTest extends TestCase {
 		
 	}
 	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void testFindAll() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
 		
@@ -219,6 +240,8 @@ public class ApiKeyManagerTest extends TestCase {
 		
 	}
 	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void TestLogApiKeyActivity() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
 	
@@ -246,6 +269,8 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void testGetApiKeyActivity() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		
@@ -278,6 +303,8 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void testGetApiKeyActivityByKey() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		
@@ -318,6 +345,8 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 * */
+	//@Transactional
+	//@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_pageSize_numActivitiesMatchesPageSize() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -351,7 +380,7 @@ public class ApiKeyManagerTest extends TestCase {
 		int pageSize = 2;
 		boolean dateAscending = true;
 		Long startTime = new Date(0).getTime();
-		Long endTime = now.getTime();
+		Long endTime = null;
 		
 		int finalSize = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startTime, endTime).size();
@@ -368,18 +397,19 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_apiKeyFilter_filtersResults() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date now = new Date();
 		
 		// Simulate API inputs
-		String apiKeyFilter = "d334d18ed41f028f953cba15154700a4"; // Valid API Key in openchpl_test DB
+		String apiKeyFilter = "88f231cbf2ae45810b1177f5f4ddf297"; // Valid API Key in openchpl_test DB
 		Integer pageNumber = 0;
 		Integer pageSize = 100;
 		boolean dateAscending = true;
 		long startDateMilli = 0; // beginning of time
-		long endDateMilli = now.getTime(); // current time
+		Long endDateMilli = null;
 		
 		List<ApiKeyActivity> activitiesList = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
@@ -397,18 +427,19 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_apiKeyFilter_withExclamationFiltersResults() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date now = new Date();
 		
 		// Simulate API inputs
-		String apiKeyFilter = "!d334d18ed41f028f953cba15154700a4"; // Valid API Key in openchpl_test DB
+		String apiKeyFilter = "!12909a978483dfb8ecd0596c98ae9094"; // Valid API Key in openchpl_test DB
 		Integer pageNumber = 0;
 		Integer pageSize = 100;
 		boolean dateAscending = true;
 		long startDateMilli = 0; // beginning of time
-		long endDateMilli = now.getTime(); // current time
+		Long endDateMilli = null;
 		
 		List<ApiKeyActivity> activitiesList = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
@@ -428,21 +459,22 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_apiKeyFilter_blankReturnsAllResults() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date now = new Date();
 		
 		// Simulate API inputs
-		String apiKeyFilter = ""; // Valid API Key in openchpl_test DB
+		String apiKeyFilter = "";
 		Integer pageNumber = 0;
 		Integer pageSize = 100;
 		boolean dateAscending = true;
 		long startDateMilli = 0; // beginning of time
-		long endDateMilli = now.getTime(); // current time
+		Long endDateMilli = null;
 		
 		assertTrue(apiKeyManager.getApiKeyActivity
-				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli).size() == pageSize);
+				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli).size() == apiKeyActivityDAOImpl.getAllEntities().size());
 	}
 	
 	/** Description: Tests the apiKeyFilter parameter in the 
@@ -452,10 +484,11 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_apiKeyFilter_nullReturnsAllResults() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date now = new Date();
 		
 		// Simulate API inputs
 		String apiKeyFilter = null; // Valid API Key in openchpl_test DB
@@ -463,10 +496,10 @@ public class ApiKeyManagerTest extends TestCase {
 		Integer pageSize = 100;
 		boolean dateAscending = true;
 		long startDateMilli = 0; // beginning of time
-		long endDateMilli = now.getTime(); // current time
+		Long endDateMilli = null; // end of time
 		
 		assertTrue(apiKeyManager.getApiKeyActivity
-				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli).size() == pageSize);
+				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli).size() == apiKeyActivityDAOImpl.getAllEntities().size());
 	}
 	
 	/** Description: Tests the apiKeyFilter parameter in the 
@@ -474,23 +507,32 @@ public class ApiKeyManagerTest extends TestCase {
 	 * method when passing in '!' without an API key. 
 	 * Expected Result: All API key activity results
 	 * Assumptions:
+	 * Assumes there are less than 100 API key activity entities. If there were more, then pageSize would need to be increased
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_apiKeyFilter_exclamationWithoutApiKeyReturnsAllResults() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date now = new Date();
+		
+		ApiKeyActivityEntity newestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(false);
+		int totalNumberOfApiKeyActivityEntities = apiKeyActivityDAOImpl.getAllEntities().size();
 		
 		// Simulate API inputs
-		String apiKeyFilter = "!"; // Valid API Key in openchpl_test DB
+		String apiKeyFilter = "!";
 		Integer pageNumber = 0;
 		Integer pageSize = 100;
 		boolean dateAscending = true;
 		long startDateMilli = 0; // beginning of time
-		long endDateMilli = now.getTime(); // current time
+		long endDateMilli = newestApiKeyActivity.getCreationDate().getTime();
 		
-		assertTrue(apiKeyManager.getApiKeyActivity
-				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli).size() == pageSize);
+		int numActivitiesReturnedFromGetApiKeyActivity = apiKeyManager.getApiKeyActivity
+				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli).size();
+		
+		assertTrue("The number of API key activities returned should be " + totalNumberOfApiKeyActivityEntities + 
+				" but is " + numActivitiesReturnedFromGetApiKeyActivity, 
+				numActivitiesReturnedFromGetApiKeyActivity == totalNumberOfApiKeyActivityEntities);
 	}
 	
 	/** Description: Tests the dateAscending parameter in the 
@@ -500,21 +542,24 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_dateAscending_trueReturnsResultsAsOldestToNewest() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date now = new Date();
 		Long previousActivityTime = null;
 		Long currentActivityTime = null;
 		int counter = 0;
 		
+		ApiKeyActivityEntity newestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(false);
+		
 		// Simulate API inputs
-		String apiKeyFilter = null; // Valid API Key in openchpl_test DB
+		String apiKeyFilter = null; 
 		Integer pageNumber = 0;
 		Integer pageSize = 100;
 		boolean dateAscending = true;
 		long startDateMilli = 0; // beginning of time
-		long endDateMilli = now.getTime(); // current time
+		long endDateMilli = newestApiKeyActivity.getCreationDate().getTime();
 		
 		List<ApiKeyActivity> activitiesList = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
@@ -536,21 +581,22 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_dateAscending_falseReturnsResultsAsNewestToOldest() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date now = new Date();
 		Long previousActivityTime = null;
 		Long currentActivityTime = null;
 		int counter = 0;
 		
 		// Simulate API inputs
-		String apiKeyFilter = null; // Valid API Key in openchpl_test DB
+		String apiKeyFilter = null;
 		Integer pageNumber = 0;
 		Integer pageSize = 100;
 		boolean dateAscending = false;
 		long startDateMilli = 0; // beginning of time
-		long endDateMilli = now.getTime(); // current time
+		Long endDateMilli = null; // end of time
 		
 		List<ApiKeyActivity> activitiesList = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
@@ -572,21 +618,22 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_startDate_noResultsPriorToStartDate() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date now = new Date();
 		Long currentActivityTime = null;
 		
+		ApiKeyActivityEntity apiKeyActivity = apiKeyActivityTestHelper.getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest();
+		
 		// Simulate API inputs
-		String apiKeyFilter = null; // Valid API Key in openchpl_test DB
+		String apiKeyFilter = null;
 		Integer pageNumber = 0;
 		Integer pageSize = 100;
 		boolean dateAscending = true;
-		// startDateMilli = milli time of 2016/07/27 10:46:51 that is > creation_date of some API key activities 
-		// and < creation_date of other API key activities
-		long startDateMilli = 1469630811000L; 
-		long endDateMilli = now.getTime(); // current time
+		long startDateMilli = apiKeyActivity.getCreationDate().getTime(); 
+		Long endDateMilli = null; // end of time
 		
 		List<ApiKeyActivity> activitiesList = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
@@ -606,22 +653,27 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_startDate_ReturnsApiKeyActivityWithCreationDateEqualToStartDate() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long currentActivityTime = null;
 		
+		ApiKeyActivityEntity oldestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(true);
+		
 		// Simulate API inputs
-		String apiKeyFilter = null; // Valid API Key in openchpl_test DB
+		String apiKeyFilter = null;
 		Integer pageNumber = 0;
 		Integer pageSize = 100;
 		boolean dateAscending = true;
-		long startDateMilli = 1470757666349L; 
+		long startDateMilli = oldestApiKeyActivity.getCreationDate().getTime(); 
 		long endDateMilli = startDateMilli;
 		
 		List<ApiKeyActivity> activitiesList = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
-		assertTrue("Activities list should contain one activity", activitiesList.size() == 1);
+		assertTrue("Activities list should contain one activity but contained " + 
+				activitiesList.size() + " activities", activitiesList.size() == 1);
 		
 		for(ApiKeyActivity activity : activitiesList){
 			currentActivityTime = activity.getCreationDate().getTime();
@@ -638,18 +690,22 @@ public class ApiKeyManagerTest extends TestCase {
 	 * An API key activity exists with creation_date <= the value of endDateMilli
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getApiKeyActivity_endDate_ReturnsApiKeyActivitiesWithCreationDateLessThanOrEqualToEndDate() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long currentActivityTime = null;
 		
+		ApiKeyActivityEntity apiKeyActivity = apiKeyActivityTestHelper.getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest();
+		
 		// Simulate API inputs
-		String apiKeyFilter = null; // Valid API Key in openchpl_test DB
+		String apiKeyFilter = null;
 		Integer pageNumber = 0;
 		Integer pageSize = 100;
 		boolean dateAscending = true;
 		long startDateMilli = 0; 
-		long endDateMilli = 1470757666349L;
+		long endDateMilli = apiKeyActivity.getCreationDate().getTime();
 		
 		List<ApiKeyActivity> activitiesList = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
@@ -662,6 +718,8 @@ public class ApiKeyManagerTest extends TestCase {
 	}
 	// [endRegion]
 	
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void testGetApiKeyActivityWithKeyAndPaging() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		
@@ -699,5 +757,6 @@ public class ApiKeyManagerTest extends TestCase {
 		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
+	// [endRegion]
 	
 }
