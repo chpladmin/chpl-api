@@ -385,6 +385,7 @@ public class ActivityManagerImpl implements ActivityManager {
 		event.setActivityDate(dto.getActivityDate());
 		event.setActivityObjectId(dto.getActivityObjectId());
 		event.setConcept(dto.getConcept());			
+		event.setResponsibleUser(dto.getUser() == null ? null : new User(dto.getUser()));
 		
 		JsonNode originalJSON = null;
 		if (dto.getOriginalData()!= null){

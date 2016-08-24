@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 
+import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.domain.ActivityConcept;
 
 import java.util.Date;
@@ -16,6 +17,7 @@ public class ActivityEvent {
 	private Date activityDate;
 	private Long activityObjectId;
 	private ActivityConcept concept;
+	private User responsibleUser;
 	
 	public ActivityEvent(){}
 	
@@ -60,5 +62,13 @@ public class ActivityEvent {
 	}
 	public void setNewData(JsonNode newData) {
 		this.newData = newData;
+	}
+
+	public User getResponsibleUser() {
+		return responsibleUser;
+	}
+
+	public void setResponsibleUser(User responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 }

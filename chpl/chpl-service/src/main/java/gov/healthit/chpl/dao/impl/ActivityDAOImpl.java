@@ -300,12 +300,13 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	private ActivityEntity getEntityById(boolean showDeleted, Long id) throws EntityRetrievalException {
 		
 		ActivityEntity entity = null;
-		Query query = null;
-		if(showDeleted){
-			query = entityManager.createQuery( "from ActivityEntity where (activity_id = :entityid) ", ActivityEntity.class );
-		}else{
-			query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) AND (activity_id = :entityid) ", ActivityEntity.class );
+		String queryStr = "from ActivityEntity ae "
+				+ "LEFT OUTER JOIN FETCH ae.user "
+				+ "where (ae.id = :entityid) ";
+		if(!showDeleted) {
+			queryStr += " AND (NOT ae.deleted = true)";
 		}
+		Query query = entityManager.createQuery(queryStr);
 		query.setParameter("entityid", id);
 		List<ActivityEntity> result = query.getResultList();
 		
@@ -320,13 +321,14 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 
 	private List<ActivityEntity> getEntitiesByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept) {
-		
-		Query query = null;
-		if(showDeleted){
-			query = entityManager.createQuery( "from ActivityEntity where (activity_object_id = :objectid)  AND (activity_object_concept_id = :conceptid) ", ActivityEntity.class );
-		}else{
-			query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) AND (activity_object_id = :objectid)  AND (activity_object_concept_id = :conceptid) ", ActivityEntity.class );
+		String queryStr = "from ActivityEntity ae "
+				+ "LEFT OUTER JOIN FETCH ae.user "
+				+ "where (ae.activityObjectId = :objectid)  "
+				+ "AND (ae.activityObjectConceptId = :conceptid) ";
+		if(!showDeleted) {
+			queryStr += " AND (NOT ae.deleted = true)";
 		}
+		Query query = entityManager.createQuery(queryStr);
 		query.setParameter("objectid", objectId);
 		query.setParameter("conceptid", concept.getId());
 		List<ActivityEntity> result = query.getResultList();
@@ -334,43 +336,42 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 	
 	private List<ActivityEntity> getEntitiesByConcept(boolean showDeleted, ActivityConcept concept) {
-		
-		Query query = null;
-		
-		if(showDeleted){
-			query = entityManager.createQuery( "from ActivityEntity where (activity_object_concept_id = :conceptid) ", ActivityEntity.class );
-		}else{
-			query = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) AND (activity_object_concept_id = :conceptid) ", ActivityEntity.class );
+		String queryStr = "from ActivityEntity ae "
+				+ "LEFT OUTER JOIN FETCH ae.user "
+				+ "WHERE (ae.activityObjectConceptId = :conceptid) ";
+		if(!showDeleted) {
+			queryStr += " AND (NOT ae.deleted = true)";
 		}
+		Query query = entityManager.createQuery(queryStr);
 		query.setParameter("conceptid", concept.getId());
 		List<ActivityEntity> result = query.getResultList();
 		return result;
 	}
 	
 	private List<ActivityEntity> getAllEntities(boolean showDeleted) {
-		
-		List<ActivityEntity> result = null;
-		
-		if(showDeleted){
-			result = entityManager.createQuery( "from ActivityEntity ", ActivityEntity.class).getResultList();
-		}else{
-			result = entityManager.createQuery( "from ActivityEntity where (NOT deleted = true) ", ActivityEntity.class).getResultList();
+		String queryStr = "from ActivityEntity ae "
+				+ "LEFT OUTER JOIN FETCH ae.user ";
+		if(!showDeleted) {
+			queryStr += " WHERE (NOT ae.deleted = true)";
 		}
+		Query query = entityManager.createQuery(queryStr);
+		List<ActivityEntity> result = query.getResultList();
 		return result;
 	}
 	
 	private List<ActivityEntity> getEntitiesByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Date startDate, Date endDate) {
-		String queryStr = "from ActivityEntity where "
-				+ "(activity_object_id = :objectid)  "
-				+ "AND (activity_object_concept_id = :conceptid) ";
+		String queryStr = "from ActivityEntity ae "
+				+ "LEFT OUTER JOIN FETCH ae.user " 
+				+ "WHERE (ae.activityObjectId = :objectid)  "
+				+ "AND (ae.activityObjectConceptId = :conceptid) ";
 		if(!showDeleted) {
-			queryStr += "AND (NOT deleted = true) ";
+			queryStr += "AND (NOT ae.deleted = true) ";
 		}
 		if(startDate != null) {
-			queryStr += "AND (activity_date >= :startDate) ";
+			queryStr += "AND (ae.activityDate >= :startDate) ";
 		}
 		if(endDate != null) {
-			queryStr += "AND (activity_date <= :endDate) ";
+			queryStr += "AND (ae.activityDate <= :endDate) ";
 		}
 		Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
 		query.setParameter("objectid", objectId);
@@ -386,16 +387,17 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 	
 	private List<ActivityEntity> getEntitiesByConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate) {
-		String queryStr = "from ActivityEntity where "
-				+ "(activity_object_concept_id = :conceptid) ";
+		String queryStr = "from ActivityEntity ae "
+				+ "LEFT OUTER JOIN FETCH ae.user " 
+				+ "WHERE (ae.activityObjectConceptId = :conceptid) ";
 		if(!showDeleted) {
-			queryStr += "AND (NOT deleted = true) ";
+			queryStr += "AND (NOT ae.deleted = true) ";
 		}
 		if(startDate != null) {
-			queryStr += "AND (activity_date >= :startDate) ";
+			queryStr += "AND (ae.activityDate >= :startDate) ";
 		}
 		if(endDate != null) {
-			queryStr += "AND (activity_date <= :endDate) ";
+			queryStr += "AND (ae.activityDate <= :endDate) ";
 		}
 		Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
 		query.setParameter("conceptid", concept.getId());
@@ -410,21 +412,23 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 	
 	private List<ActivityEntity> getAllEntitiesInDateRange(boolean showDeleted, Date startDate, Date endDate) {
-		String queryStr = "FROM ActivityEntity WHERE ";
+		String queryStr = "FROM ActivityEntity ae "
+				+ "LEFT OUTER JOIN FETCH ae.user " 
+				+ "WHERE ";
 		if(!showDeleted) {
-			queryStr += "(NOT deleted = true) ";
+			queryStr += "(NOT ae.deleted = true) ";
 		}
 		if(startDate != null) {
 			if(!queryStr.endsWith("WHERE ")) {
 				queryStr += "AND ";
 			}
-			queryStr += "(activity_date >= :startDate) ";
+			queryStr += "(ae.activityDate >= :startDate) ";
 		}
 		if(endDate != null) {
 			if(!queryStr.endsWith("WHERE ")) {
 				queryStr += "AND ";
 			}
-			queryStr += "(activity_date <= :endDate)";
+			queryStr += "(ae.activityDate <= :endDate)";
 		}
 		
 		Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
@@ -439,31 +443,31 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 	
 	private List<ActivityEntity> getEntitiesByUserId(boolean showDeleted, Long userId) {
-
-		Query query = null;
-
-		if(showDeleted){
-			query = entityManager.createQuery("from ActivityEntity where (last_modified_user = :userid) ", ActivityEntity.class );
-			query.setParameter("userid", userId);
-		}else{
-			query = entityManager.createQuery("from ActivityEntity where (NOT deleted = true) AND (last_modified_user = :userid) ", ActivityEntity.class );
-			query.setParameter("userid", userId);
+		String queryStr = "from ActivityEntity ae "
+				+ "LEFT OUTER JOIN FETCH ae.user "
+				+ "WHERE (ae.lastModifiedUser = :userid) ";
+		if(!showDeleted) {
+			queryStr += " AND (NOT ae.deleted = true)";
 		}
+		Query query = entityManager.createQuery(queryStr);
+		query.setParameter("userid", userId);
+
 		List<ActivityEntity> result = query.getResultList();
 		return result;
 	}
 	
 	private List<ActivityEntity> getEntitiesByUserId(boolean showDeleted, Long userId, Date startDate, Date endDate) {
-		String queryStr = "from ActivityEntity where "
-				+ "(last_modified_user = :userid) ";
+		String queryStr = "from ActivityEntity ae "
+				+ "LEFT OUTER JOIN FETCH ae.user "
+				+ "WHERE (ae.lastModifiedUser = :userid) ";
 		if(!showDeleted) {
-			queryStr += "AND (NOT deleted = true) ";
+			queryStr += " AND (NOT ae.deleted = true)";
 		}
 		if(startDate != null) {
-			queryStr += "AND (activity_date >= :startDate) ";
+			queryStr += "AND (ae.activityDate >= :startDate) ";
 		}
 		if(endDate != null) {
-			queryStr += "AND (activity_date <= :endDate) ";
+			queryStr += "AND (ae.activityDate <= :endDate) ";
 		}
 		
 		Query query = entityManager.createQuery(queryStr, ActivityEntity.class);
