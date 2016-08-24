@@ -584,7 +584,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			participant.setOccupation(record.get(colIndex++).trim());
 			String profExperienceStr = record.get(colIndex++).trim();
 			try {
-				Integer profExperience = new Integer(profExperienceStr);
+				Integer profExperience = Math.round(new Float(profExperienceStr));
 				participant.setProfessionalExperienceMonths(profExperience);
 			}catch(Exception ex) {
 				logger.error("Could not parse " + profExperienceStr + " into an integer.");
@@ -592,7 +592,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			
 			String computerExperienceStr = record.get(colIndex++).trim();
 			try {
-				Integer computerExperience = new Integer(computerExperienceStr);
+				Integer computerExperience = Math.round(new Float(computerExperienceStr));
 				participant.setComputerExperienceMonths(computerExperience);
 			}catch(Exception ex) {
 				logger.error("Could not parse " + computerExperienceStr + " into an integer.");
@@ -600,7 +600,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			
 			String productExperienceStr = record.get(colIndex++).trim();
 			try {
-				Integer productExperience = new Integer(productExperienceStr);
+				Integer productExperience = Math.round(new Float(productExperienceStr));
 				participant.setProductExperienceMonths(productExperience);
 			}catch(Exception ex) {
 				logger.error("Could not parse " + productExperienceStr + " into an integer.");
@@ -636,42 +636,42 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		}
 		String taskPathDeviationObsStr = record.get(colIndex++).trim();
 		try {
-			Integer taskPathDeviationObs = new Integer(taskPathDeviationObsStr);
+			Integer taskPathDeviationObs = Math.round(new Float(taskPathDeviationObsStr));
 			task.setTaskPathDeviationObserved(taskPathDeviationObs);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskPathDeviationObsStr + " to a Integer.");
 		}
 		String taskPathDeviationOptStr = record.get(colIndex++).trim();
 		try {
-			Integer taskPathDeviationOpt = new Integer(taskPathDeviationOptStr);
+			Integer taskPathDeviationOpt = Math.round(new Float(taskPathDeviationOptStr));
 			task.setTaskPathDeviationOptimal(taskPathDeviationOpt);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskPathDeviationOptStr + " to a Integer.");
 		}
 		String taskTimeAvgStr = record.get(colIndex++).trim();
 		try {
-			Long taskTimeAvg = new Long(taskTimeAvgStr);
-			task.setTaskTimeAvg(taskTimeAvg);
+			Integer taskTimeAvg = Math.round(new Float(taskTimeAvgStr));
+			task.setTaskTimeAvg(new Long(taskTimeAvg));
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskTimeAvgStr + " to a Integer.");
 		}
 		String taskTimeStddevStr = record.get(colIndex++).trim();
 		try {
-			Integer taskTimeStddev = new Integer(taskTimeStddevStr);
+			Integer taskTimeStddev = Math.round(new Float(taskTimeStddevStr));
 			task.setTaskTimeStddev(taskTimeStddev);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskTimeStddevStr + " to a Integer.");
 		}
 		String taskTimeDeviationAvgStr = record.get(colIndex++).trim();
 		try {
-			Integer taskTimeDeviationAvg = new Integer(taskTimeDeviationAvgStr);
+			Integer taskTimeDeviationAvg = Math.round(new Float(taskTimeDeviationAvgStr));
 			task.setTaskTimeDeviationObservedAvg(taskTimeDeviationAvg);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskTimeDeviationAvgStr + " to a Integer.");
 		}
 		String taskTimeDeviationOptimalAvgStr = record.get(colIndex++).trim();
 		try {
-			Integer taskTimeDeviationOptimalAvg = new Integer(taskTimeDeviationOptimalAvgStr);
+			Integer taskTimeDeviationOptimalAvg = Math.round(new Float(taskTimeDeviationOptimalAvgStr));
 			task.setTaskTimeDeviationOptimalAvg(taskTimeDeviationOptimalAvg);
 		} catch(Exception ex) {
 			logger.error("Cannot convert " + taskTimeDeviationOptimalAvgStr + " to a Integer.");

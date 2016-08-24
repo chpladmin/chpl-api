@@ -58,7 +58,7 @@
 	    <dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 	
-	<!-- Allow Cross domain requests (critical for the API)  - We may want to filter the connection method at some point -->
+	<!-- Allow Cross domain requests (critical for the API)  - We may want to filter the connection method at some point 
 	<filter>
   		<filter-name>CorsFilter</filter-name>
   		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
@@ -67,7 +67,7 @@
   		<filter-name>CorsFilter</filter-name>
   		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+	-->
 	<!--Check for Api Key-->
 	<!--<filter>
   		<filter-name>ApiKeyFilter</filter-name>

@@ -42,4 +42,27 @@ public class XmlParsingTest {
 		System.out.println(urlRegex.matcher(url).matches());
 		System.out.println(new Date());
 	}
+	
+	@Test
+	public void parseInt() {
+		String intStr = "1.0";
+		try {
+			Float taskPathDeviationObs = new Float(intStr);
+			Integer intVal = Math.round(taskPathDeviationObs);
+			System.out.println(intVal);
+		} catch(Exception ex) {
+			fail("Cannot parse " + intStr + " as integer.");
+		}
+	}
+	
+	@Test
+	public void parseFloat() {
+		String floatStr = "1";
+		try {
+			Float taskPathDeviationObs = Float.parseFloat(floatStr);
+			System.out.println(taskPathDeviationObs);
+		} catch(Exception ex) {
+			fail("Cannot parse " + floatStr + " as float.");
+		}
+	}
 }
