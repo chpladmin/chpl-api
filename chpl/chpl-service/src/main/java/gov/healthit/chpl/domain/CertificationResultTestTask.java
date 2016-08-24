@@ -3,9 +3,16 @@ package gov.healthit.chpl.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import gov.healthit.chpl.web.controller.CertifiedProductController;
 
 public class CertificationResultTestTask {
+	private static final Logger logger = LogManager.getLogger(CertificationResultTestTask.class);
+
 	private Long id;
 	private String uniqueId;
 	private Long testTaskId;
@@ -96,50 +103,86 @@ public class CertificationResultTestTask {
 		return taskPathDeviationObserved;
 	}
 
-	public void setTaskPathDeviationObserved(Integer taskPathDeviationObserved) {
-		this.taskPathDeviationObserved = taskPathDeviationObserved;
-	}
+	public void setTaskPathDeviationObserved(String value) {
+		if(!StringUtils.isEmpty(value)) {
+	        try {
+	        	taskPathDeviationObserved = Math.round(new Float(value));
+	        } catch (NumberFormatException e) {
+	        	logger.error("can't parse " + value + " as a float or integer.");
+	        }
+		}
+    }
 
 	public Integer getTaskPathDeviationOptimal() {
 		return taskPathDeviationOptimal;
 	}
-
-	public void setTaskPathDeviationOptimal(Integer taskPathDeviationOptimal) {
-		this.taskPathDeviationOptimal = taskPathDeviationOptimal;
-	}
-
+	
+	public void setTaskPathDeviationOptimal(String value) {
+		if(!StringUtils.isEmpty(value)) {
+	        try {
+	        	taskPathDeviationOptimal = Math.round(new Float(value));
+	        } catch (NumberFormatException e) {
+	        	logger.error("can't parse " + value + " as a float or integer.");
+	        }
+		}
+    }
+	
 	public Long getTaskTimeAvg() {
 		return taskTimeAvg;
 	}
-
-	public void setTaskTimeAvg(Long taskTimeAvg) {
-		this.taskTimeAvg = taskTimeAvg;
-	}
-
+	
+	public void setTaskTimeAvg(String value) {
+		if(!StringUtils.isEmpty(value)) {
+	        try {
+	        	taskTimeAvg = new Long(Math.round(new Float(value)));
+	        } catch (NumberFormatException e) {
+	        	logger.error("can't parse " + value + " as a float or integer.");
+	        }
+		}
+    }
+	
 	public Integer getTaskTimeStddev() {
 		return taskTimeStddev;
 	}
 
-	public void setTaskTimeStddev(Integer taskTimeStddev) {
-		this.taskTimeStddev = taskTimeStddev;
-	}
-
+	public void setTaskTimeStddev(String value) {
+		if(!StringUtils.isEmpty(value)) {
+	        try {
+	        	taskTimeStddev = Math.round(new Float(value));
+	        } catch (NumberFormatException e) {
+	        	logger.error("can't parse " + value + " as a float or integer.");
+	        }
+		}
+    }
+	
 	public Integer getTaskTimeDeviationObservedAvg() {
 		return taskTimeDeviationObservedAvg;
 	}
-
-	public void setTaskTimeDeviationObservedAvg(Integer taskTimeDeviationObservedAvg) {
-		this.taskTimeDeviationObservedAvg = taskTimeDeviationObservedAvg;
-	}
-
+	
+	public void setTaskTimeDeviationObservedAvg(String value) {
+		if(!StringUtils.isEmpty(value)) {
+	        try {
+	        	taskTimeDeviationObservedAvg = Math.round(new Float(value));
+	        } catch (NumberFormatException e) {
+	        	logger.error("can't parse " + value + " as a float or integer.");
+	        }
+		}
+    }
+	
 	public Integer getTaskTimeDeviationOptimalAvg() {
 		return taskTimeDeviationOptimalAvg;
 	}
 
-	public void setTaskTimeDeviationOptimalAvg(Integer taskTimeDeviationOptimalAvg) {
-		this.taskTimeDeviationOptimalAvg = taskTimeDeviationOptimalAvg;
-	}
-
+	public void setTaskTimeDeviationOptimalAvg(String value) {
+		if(!StringUtils.isEmpty(value)) {
+			try {
+	        	taskTimeDeviationOptimalAvg = Math.round(new Float(value));
+	        } catch (NumberFormatException e) {
+	        	logger.error("can't parse " + value + " as a float or integer.");
+	        }	
+		}
+    }
+	
 	public Float getTaskErrors() {
 		return taskErrors;
 	}
