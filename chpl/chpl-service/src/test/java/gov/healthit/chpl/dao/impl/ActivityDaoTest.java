@@ -186,6 +186,18 @@ public class ActivityDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	public void testFindOne_userExists(){
+		
+		List<ActivityDTO> results = activityDAO.findAll(false);
+		assertTrue(results.size() > 0);
+		ActivityDTO result = results.get(1);
+		assertNotNull(result.getUser());
+		assertNotNull(result.getUser().getFirstName());
+		assertNotNull(result.getUser().getLastName());
+	}
+	
+	@Test
+	@Transactional
 	public void testFindByObjectId(){
 		
 		List<ActivityDTO> results = activityDAO.findByObjectId(false, 1L, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
