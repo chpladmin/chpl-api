@@ -13,6 +13,7 @@ _Date TBD_
 * Do not allow 170.315 (d)(3) to mark GAP as true 
 * Added 'responsibleUser' field with all user data for /activity reports
 * Removed CORSFilter in web.xml; this was preventing some ajax calls from other domains
+* Add developer object to /activity/product calls using the developer present in "newData"
 
 ### Bugs fixed
 * Upload field values for SED parsed as integers but entered as floats were not saved. Fixed.
