@@ -135,10 +135,10 @@ public class ApiKeyController {
 			apiKeyFilter = null;
 		}
 		
-		List<ApiKeyActivity> activity = apiKeyManager.getApiKeyActivity
+		List<ApiKeyActivity> apiKeyActivitiesList = apiKeyManager.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
 		
-		return activity;	
+		return apiKeyActivitiesList;	
 	}
 	
 	@ApiOperation(value="View the calls made by a specific API key.", 
