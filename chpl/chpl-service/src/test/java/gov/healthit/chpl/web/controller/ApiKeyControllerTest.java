@@ -124,4 +124,46 @@ public class ApiKeyControllerTest {
 				newestApiKeyActivityCreationDate == newestApiKeyActivityEntity.getCreationDate().getTime());
 	}
 	
+	/** Description: Tests the pageNumber parameter in the 
+	 * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli) 
+	 * method when passing in &pageNumber=2 and &pageSize = 1
+	 * Expected Result: Returns a new api key activity for each page
+	 * Assumptions:
+	 * An API key activity exists with creation_date <= the value of endDateMilli
+	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_listActivity_pageNumber_returnsNewAPIKeyActivityForEachPage() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		// Simulate API inputs
+		String apiKeyFilter = null;
+		Integer pageNumber = 0;
+		Integer pageSize = 3;
+		boolean dateAscending = true;
+		long startDateMilli = 0; 
+		Long endDateMilli = null;
+		
+		List<ApiKeyActivity> activitiesListPage0 = apiKeyController.listActivity
+				(pageNumber, pageSize, apiKeyFilter, dateAscending, startDateMilli, endDateMilli);
+		assertTrue("Activities list should contain some activities", activitiesListPage0.size() > 0);
+		
+		pageNumber = 1;
+		
+		List<ApiKeyActivity> activitiesListPage1 = apiKeyController.listActivity
+				(pageNumber, pageSize, apiKeyFilter, dateAscending, startDateMilli, endDateMilli);
+		assertTrue("Activities list should contain some activities", activitiesListPage1.size() > 0);
+		
+		for(ApiKeyActivity activityPage0 : activitiesListPage0){
+			for(ApiKeyActivity activityPage1 : activitiesListPage1){
+				assertNotSame("The API activity id in one page should not be included on a subsequent page: "
+						+ "first page shows API activity id = " + activityPage0.getId()
+						+ " and second page shows API activity id = " + activityPage1.getId(), 
+						activityPage0.getId(), activityPage1.getId());
+			}
+		}
+	}
+	
 }
