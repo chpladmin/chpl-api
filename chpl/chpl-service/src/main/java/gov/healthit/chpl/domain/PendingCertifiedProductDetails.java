@@ -312,17 +312,17 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 						task.setDescription(tt.getDescription());
 						task.setTaskErrors(tt.getTaskErrors());
 						task.setTaskErrorsStddev(tt.getTaskErrorsStddev());
-						task.setTaskPathDeviationObserved(tt.getTaskPathDeviationObserved());
-						task.setTaskPathDeviationOptimal(tt.getTaskPathDeviationOptimal());
+						task.setTaskPathDeviationObserved(tt.getTaskPathDeviationObserved()== null ? "" : tt.getTaskPathDeviationObserved()+"");
+						task.setTaskPathDeviationOptimal(tt.getTaskPathDeviationOptimal() == null ? "" : tt.getTaskPathDeviationOptimal()+"");
 						task.setTaskRating(tt.getTaskRating());
 						task.setTaskRatingScale(tt.getTaskRatingScale());
 						task.setTaskRatingStddev(tt.getTaskRatingStddev());
 						task.setTaskSuccessAverage(tt.getTaskSuccessAverage());
 						task.setTaskSuccessStddev(tt.getTaskSuccessStddev());
-						task.setTaskTimeAvg(tt.getTaskTimeAvg());
-						task.setTaskTimeDeviationObservedAvg(tt.getTaskTimeDeviationObservedAvg());
-						task.setTaskTimeDeviationOptimalAvg(tt.getTaskTimeDeviationOptimalAvg());
-						task.setTaskTimeStddev(tt.getTaskTimeStddev());
+						task.setTaskTimeAvg(tt.getTaskTimeAvg() == null ? "" : tt.getTaskTimeAvg()+"");
+						task.setTaskTimeDeviationObservedAvg(tt.getTaskTimeDeviationObservedAvg() == null ? "" : tt.getTaskTimeDeviationObservedAvg()+"");
+						task.setTaskTimeDeviationOptimalAvg(tt.getTaskTimeDeviationOptimalAvg() == null ? "" : tt.getTaskTimeDeviationOptimalAvg()+"");
+						task.setTaskTimeStddev(tt.getTaskTimeStddev() == null ? "" : tt.getTaskTimeStddev()+"");
 						
 						if(ttDto.getTaskParticipants() != null) {
 							for(PendingCertificationResultTestTaskParticipantDTO ptDto : ttDto.getTaskParticipants()) {
@@ -335,15 +335,15 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 										part.setAgeRange(pt.getAgeRange().getAge());
 									}
 									part.setAssistiveTechnologyNeeds(pt.getAssistiveTechnologyNeeds());
-									part.setComputerExperienceMonths(pt.getComputerExperienceMonths());
+									part.setComputerExperienceMonths(pt.getComputerExperienceMonths() == null ? "" : pt.getComputerExperienceMonths()+"");
 									part.setEducationTypeId(pt.getEducationTypeId());
 									if(pt.getEducationType() != null) {
 										part.setEducationTypeName(pt.getEducationType().getName());
 									}
 									part.setGender(pt.getGender());
 									part.setOccupation(pt.getOccupation());
-									part.setProductExperienceMonths(pt.getProductExperienceMonths());
-									part.setProfessionalExperienceMonths(pt.getProfessionalExperienceMonths());
+									part.setProductExperienceMonths(pt.getProductExperienceMonths() == null ? "" : pt.getProductExperienceMonths()+"");
+									part.setProfessionalExperienceMonths(pt.getProfessionalExperienceMonths() == null ? "" : pt.getProfessionalExperienceMonths()+"");
 									task.getTestParticipants().add(part);
 								}
 							}
