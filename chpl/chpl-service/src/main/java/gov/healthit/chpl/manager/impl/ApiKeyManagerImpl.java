@@ -209,10 +209,10 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ApiKeyActivity> getApiKeyActivity
 	(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli) 
-			throws EntityRetrievalException {		
+			throws EntityRetrievalException {	
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.getApiKeyActivity
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
-		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
+		List<ApiKeyActivity> apiKeyActivitiesList = new ArrayList<ApiKeyActivity>();
 		
 		for (ApiKeyActivityDTO dto : activityDTOs){
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId()); 
@@ -231,8 +231,8 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 			apiKeyActivity.setCreationDate(dto.getCreationDate());
 			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
 				
-			activity.add(apiKeyActivity);
+			apiKeyActivitiesList.add(apiKeyActivity);
 		}
-		return activity;
+		return apiKeyActivitiesList;
 	}
 }
