@@ -7,48 +7,27 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.ActivityDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.ProductActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.ActivityManager;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,12 +41,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ActivityManagerImpl implements ActivityManager {
+	private static final Logger logger = LogManager.getLogger(ActivityManagerImpl.class);
 
 	@Autowired
 	ActivityDAO activityDAO;
 	
 	@Autowired
 	UserDAO userDAO;
+	
+	@Autowired DeveloperDAO devDao;
 	
 	private ObjectMapper jsonMapper = new ObjectMapper();
 	private JsonFactory factory = jsonMapper.getFactory();
@@ -377,8 +359,12 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 
 	private ActivityEvent getActivityEventFromDTO(ActivityDTO dto) throws JsonParseException, IOException{
-		
-		ActivityEvent event = new ActivityEvent();
+		ActivityEvent event = null;
+		if(dto.getConcept() == ActivityConcept.ACTIVITY_CONCEPT_PRODUCT) {
+			event = new ProductActivityEvent();
+		} else {
+			event = new ActivityEvent();
+		}
 		
 		event.setId(dto.getId());
 		event.setDescription(dto.getDescription());
@@ -402,6 +388,20 @@ public class ActivityManagerImpl implements ActivityManager {
 		event.setOriginalData(originalJSON);
 		event.setNewData(newJSON);
 		
+		if(event instanceof ProductActivityEvent && event.getNewData() != null) {
+			JsonNode devIdNode = event.getNewData().get("developerId");
+			Long devId = devIdNode.asLong();
+			if(devId != null) {
+				try {
+					DeveloperDTO dev = devDao.getById(devId);
+					if(dev != null) {
+						((ProductActivityEvent)event).setDeveloper(new Developer(dev));
+					}
+				} catch(EntityRetrievalException ex) {
+					logger.error("Could not get developer with id " + devId);
+				}
+			}
+		}
 		return event;
 	}
 
