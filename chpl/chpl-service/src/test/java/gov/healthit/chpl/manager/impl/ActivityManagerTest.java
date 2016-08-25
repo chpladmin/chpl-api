@@ -14,6 +14,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.ProductActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -230,6 +231,17 @@ public class ActivityManagerTest extends TestCase {
 		List<ActivityEvent> events3 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
 		assertEquals(0, events3.size());
 		
+	}
+	
+	@Test
+	public void testGetActivityForConcept_developerNameIsFetched() throws JsonParseException, IOException{
+		List<ActivityEvent> events = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
+		assertEquals(1, events.size());
+		assertTrue(events.get(0) instanceof ProductActivityEvent);
+		ProductActivityEvent event = (ProductActivityEvent)events.get(0);
+		assertNotNull(event.getDeveloper());
+		assertNotNull(event.getDeveloper().getName());
+		assertEquals("Test Developer 1", event.getDeveloper().getName());
 	}
 	
 	@Test

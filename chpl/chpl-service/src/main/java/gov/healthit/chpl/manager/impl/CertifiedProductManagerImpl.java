@@ -635,7 +635,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
 							tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
 							tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
-							tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskPathDeviationObserved());
+							tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
 							tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
 							tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
 							
