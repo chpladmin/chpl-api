@@ -19,6 +19,7 @@ _Date TBD_
 * Upload field values for SED parsed as integers but entered as floats were not saved. Fixed.
 * Task success avg was getting mixed up with Task errors avg
 * Task time deviation optimal avg was getting mixed up with task path deviation optimal avg
+* Test Task Participant Product & Professional experience was getting mixed up
 
 ---
 

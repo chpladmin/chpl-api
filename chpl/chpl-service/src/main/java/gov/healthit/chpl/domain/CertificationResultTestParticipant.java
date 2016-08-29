@@ -41,7 +41,7 @@ public class CertificationResultTestParticipant {
 				this.ageRange = dto.getTestParticipant().getAgeRange().getAge();
 			}
 			this.occupation = dto.getTestParticipant().getOccupation();
-			this.professionalExperienceMonths = dto.getTestParticipant().getProductExperienceMonths();
+			this.professionalExperienceMonths = dto.getTestParticipant().getProfessionalExperienceMonths();
 			this.computerExperienceMonths = dto.getTestParticipant().getComputerExperienceMonths();
 			this.productExperienceMonths = dto.getTestParticipant().getProductExperienceMonths();
 			this.assistiveTechnologyNeeds = dto.getTestParticipant().getAssistiveTechnologyNeeds();
