@@ -34,7 +34,7 @@ public class TestParticipantDTO {
 				this.ageRange = new AgeRangeDTO(entity.getAgeRange());
 			}
 			this.occupation = entity.getOccupation();
-			this.professionalExperienceMonths = entity.getProductExperienceMonths();
+			this.professionalExperienceMonths = entity.getProfessionalExperienceMonths();
 			this.computerExperienceMonths = entity.getComputerExperienceMonths();
 			this.productExperienceMonths = entity.getProductExperienceMonths();
 			this.assistiveTechnologyNeeds = entity.getAssistiveTechnologyNeeds();

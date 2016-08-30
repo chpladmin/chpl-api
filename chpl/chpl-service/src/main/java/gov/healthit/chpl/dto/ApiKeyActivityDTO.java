@@ -28,7 +28,6 @@ public class ApiKeyActivityDTO {
 		
 	}
 	
-	
 	public Long getId() {
 		return id;
 	}

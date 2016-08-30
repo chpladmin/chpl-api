@@ -1,8 +1,14 @@
 package gov.healthit.chpl.domain;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 
 public class CertificationResultTestParticipant {
+	private static final Logger logger = LogManager.getLogger(CertificationResultTestParticipant.class);
+
 	private Long id;
 	private String uniqueId;
 	private Long testParticipantId;
@@ -35,7 +41,7 @@ public class CertificationResultTestParticipant {
 				this.ageRange = dto.getTestParticipant().getAgeRange().getAge();
 			}
 			this.occupation = dto.getTestParticipant().getOccupation();
-			this.professionalExperienceMonths = dto.getTestParticipant().getProductExperienceMonths();
+			this.professionalExperienceMonths = dto.getTestParticipant().getProfessionalExperienceMonths();
 			this.computerExperienceMonths = dto.getTestParticipant().getComputerExperienceMonths();
 			this.productExperienceMonths = dto.getTestParticipant().getProductExperienceMonths();
 			this.assistiveTechnologyNeeds = dto.getTestParticipant().getAssistiveTechnologyNeeds();
@@ -86,26 +92,44 @@ public class CertificationResultTestParticipant {
 		return professionalExperienceMonths;
 	}
 
-	public void setProfessionalExperienceMonths(Integer professionalExperienceMonths) {
-		this.professionalExperienceMonths = professionalExperienceMonths;
-	}
-
+	public void setProfessionalExperienceMonths(String value) {
+		if(!StringUtils.isEmpty(value)) {
+	        try {
+	        	professionalExperienceMonths = Math.round(new Float(value));
+	        } catch (NumberFormatException e) {
+	           logger.error("can't parse " + value + " as a float or integer.");
+	        }
+		}
+    }
+	
 	public Integer getComputerExperienceMonths() {
 		return computerExperienceMonths;
 	}
-
-	public void setComputerExperienceMonths(Integer computerExperienceMonths) {
-		this.computerExperienceMonths = computerExperienceMonths;
-	}
-
+	
+	public void setComputerExperienceMonths(String value) {
+		if(!StringUtils.isEmpty(value)) {
+	        try {
+	        	computerExperienceMonths = Math.round(new Float(value));
+	        } catch (NumberFormatException e) {
+	           logger.error("can't parse " + value + " as a float or integer.");
+	        }
+		}
+    }
+	
 	public Integer getProductExperienceMonths() {
 		return productExperienceMonths;
 	}
 
-	public void setProductExperienceMonths(Integer productExperienceMonths) {
-		this.productExperienceMonths = productExperienceMonths;
-	}
-
+	public void setProductExperienceMonths(String value) {
+		if(!StringUtils.isEmpty(value)) {
+	        try {
+	        	productExperienceMonths = Math.round(new Float(value));
+	        } catch (NumberFormatException e) {
+	           logger.error("can't parse " + value + " as a float or integer.");
+	        }
+		}
+    }
+	
 	public String getAssistiveTechnologyNeeds() {
 		return assistiveTechnologyNeeds;
 	}

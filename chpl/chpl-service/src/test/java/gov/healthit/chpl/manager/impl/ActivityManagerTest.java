@@ -14,6 +14,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.ProductActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -142,7 +143,7 @@ public class ActivityManagerTest extends TestCase {
 	@Test
 	public void testGetAllActivityInLastNDays() throws EntityCreationException, EntityRetrievalException, IOException{
 		
-		Integer lastNDays = 5;
+		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
@@ -163,7 +164,7 @@ public class ActivityManagerTest extends TestCase {
 				"Test",
 				timestamp
 				);
-		List<ActivityEvent> events = activityManager.getAllActivityInLastNDays(false, lastNDays);
+		List<ActivityEvent> events = activityManager.getAllActivityInDateRange(false, fiveDaysAgo, null);
 		
 		activityManager.deleteActivity(events.get(0).getId());
 		assertEquals(1, events.size());
@@ -188,9 +189,9 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
-	public void testGetActivityForObjectLastNDays() throws EntityCreationException, EntityRetrievalException, IOException{
+	public void testGetActivityForObjectDateRange() throws EntityCreationException, EntityRetrievalException, IOException{
 		
-		Integer lastNDays = 5;
+		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
@@ -209,7 +210,9 @@ public class ActivityManagerTest extends TestCase {
 				"Test",
 				timestamp
 				);
-		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, developer.getId() , lastNDays);
+		List<ActivityEvent> events = activityManager.getActivityForObject(false, 
+				ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, developer.getId() , 
+				fiveDaysAgo, null);
 		
 		activityManager.deleteActivity(events.get(0).getId());
 		assertEquals(1, events.size());
@@ -231,11 +234,23 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
+	public void testGetActivityForConcept_developerNameIsFetched() throws JsonParseException, IOException{
+		List<ActivityEvent> events = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
+		assertEquals(1, events.size());
+		assertTrue(events.get(0) instanceof ProductActivityEvent);
+		ProductActivityEvent event = (ProductActivityEvent)events.get(0);
+		assertNotNull(event.getDeveloper());
+		assertNotNull(event.getDeveloper().getName());
+		assertEquals("Test Developer 1", event.getDeveloper().getName());
+	}
+	
+	@Test
 	public void testGetActivityForConceptLastNDays() throws EntityCreationException, EntityRetrievalException, JsonParseException, IOException{
 		
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
-		Integer lastNDays = 5;
-		List<ActivityEvent> events = activityManager.getActivityForConcept(false, concept, lastNDays);
+		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
+
+		List<ActivityEvent> events = activityManager.getActivityForConcept(false, concept, fiveDaysAgo, null);
 		assertEquals(0, events.size());
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -272,7 +287,8 @@ public class ActivityManagerTest extends TestCase {
 				timestamp2
 				);
 		
-		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, lastNDays);
+		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, 
+				ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, fiveDaysAgo, new Date());
 		
 		assertEquals(1, events2.size());
 	}

@@ -30,7 +30,7 @@ public class TestTaskDTO {
 			this.id = entity.getId();
 			this.description = entity.getDescription();
 			this.taskSuccessAverage = entity.getTaskSuccessAverage();
-			this.taskSuccessStddev = entity.getTaskErrorsStddev();
+			this.taskSuccessStddev = entity.getTaskSuccessStddev();
 			this.taskPathDeviationObserved = entity.getTaskPathDeviationObserved();
 			this.taskPathDeviationOptimal = entity.getTaskPathDeviationOptimal();
 			this.taskTimeAvg = entity.getTaskTimeAvg();

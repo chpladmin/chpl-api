@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

@@ -1,8 +1,8 @@
 package gov.healthit.chpl.dao;
 
 import java.util.List;
-
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
+import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 
 public interface ApiKeyActivityDAO {
 
@@ -14,6 +14,9 @@ public interface ApiKeyActivityDAO {
 	public List<ApiKeyActivityDTO> findByKeyId(Long apiKeyId);
 	public List<ApiKeyActivityDTO> findByKeyId(Long apiKeyId, Integer pageNumber, Integer pageSize);
 	public ApiKeyActivityDTO getById(Long id) throws EntityRetrievalException;
-	
-	
+	public List<ApiKeyActivityDTO> getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize,
+			boolean dateAscending, Long startDate, Long endDate);
+	public List<ApiKeyActivityEntity> getActivityEntitiesByKeyStringWithFilter
+	(String apiKeyFilter, Integer pageNumber,
+			Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli);
 }

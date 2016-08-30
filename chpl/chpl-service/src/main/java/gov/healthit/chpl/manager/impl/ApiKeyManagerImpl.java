@@ -5,14 +5,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -131,7 +128,6 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		return activity;
 	}
 	
-	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -162,8 +158,6 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		}
 		return activity;
 	}
-	
-	
 
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -201,33 +195,44 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		return activity;
 	}
 	
+	/* Gets API key activity within the constraints of the provided parameters
+	 * Parameters: 
+	 * String apiKeyFilter - string of API key(s)
+	 * Integer pageNumber - The page for the API key activity
+	 * Integer pageSize - Number of API keys on the page
+	 * boolean dateAscending - True if dateAscending; false if dateDescending
+	 * Long startDate - Start date, in milliseconds, for API key creation
+	 * Long endDate - End date, in milliseconds, for API key creation
+	 * Returns: list of ApiKeyActivity
+	 */
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public List<ApiKeyActivity> getApiKeyActivity(Integer pageNumber, Integer pageSize) throws EntityRetrievalException {
-		
-		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll(pageNumber, pageSize) ;
-		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
+	public List<ApiKeyActivity> getApiKeyActivity
+	(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli) 
+			throws EntityRetrievalException {	
+		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.getApiKeyActivity
+				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
+		List<ApiKeyActivity> apiKeyActivitiesList = new ArrayList<ApiKeyActivity>();
 		
 		for (ApiKeyActivityDTO dto : activityDTOs){
-			
-			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
+			ApiKeyDTO apiKey = findKey(dto.getApiKeyId()); 
 			if (apiKey == null){
 				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
 			}
 			
 			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
-				
+			
 			apiKeyActivity.setApiKey(apiKey.getApiKey());
 			apiKeyActivity.setApiKeyId(apiKey.getId());	
 			apiKeyActivity.setEmail(apiKey.getEmail());
 			apiKeyActivity.setName(apiKey.getNameOrganization());
+			
 			apiKeyActivity.setId(dto.getId());
 			apiKeyActivity.setCreationDate(dto.getCreationDate());
 			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
 				
-			activity.add(apiKeyActivity);
+			apiKeyActivitiesList.add(apiKeyActivity);
 		}
-		return activity;
+		return apiKeyActivitiesList;
 	}
-	
 }

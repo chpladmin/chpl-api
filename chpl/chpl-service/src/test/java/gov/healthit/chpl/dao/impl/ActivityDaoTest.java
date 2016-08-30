@@ -186,6 +186,18 @@ public class ActivityDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	public void testFindOne_userExists(){
+		
+		List<ActivityDTO> results = activityDAO.findAll(false);
+		assertTrue(results.size() > 0);
+		ActivityDTO result = results.get(1);
+		assertNotNull(result.getUser());
+		assertNotNull(result.getUser().getFirstName());
+		assertNotNull(result.getUser().getLastName());
+	}
+	
+	@Test
+	@Transactional
 	public void testFindByObjectId(){
 		
 		List<ActivityDTO> results = activityDAO.findByObjectId(false, 1L, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
@@ -213,11 +225,11 @@ public class ActivityDaoTest extends TestCase {
 	public void testFindAllInLastNDays() throws EntityCreationException, EntityRetrievalException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
-		List<ActivityDTO> results = activityDAO.findAllInLastNDays(false, 5);
+		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
+		List<ActivityDTO> results = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date());
 		assertEquals(0,results.size());
 		
-		List<ActivityDTO> results2 = activityDAO.findAllInLastNDays(false, 50000);
+		List<ActivityDTO> results2 = activityDAO.findAllInDateRange(false, null, new Date());
 		assertEquals(5 ,results2.size());
 		
 		ActivityDTO recent = new ActivityDTO();
@@ -230,7 +242,7 @@ public class ActivityDaoTest extends TestCase {
 		
 		ActivityDTO created = activityDAO.create(recent);
 		
-		List<ActivityDTO> results3 = activityDAO.findAllInLastNDays(false, 5);
+		List<ActivityDTO> results3 = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date());
 		assertEquals(1, results3.size());
 		activityDAO.delete(created.getId());
 		ActivityDTO deleted = activityDAO.getById(created.getId());
@@ -245,8 +257,8 @@ public class ActivityDaoTest extends TestCase {
 	public void testFindByObjectIdInLastNDays() throws EntityCreationException, EntityRetrievalException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
-		List<ActivityDTO> results = activityDAO.findByObjectId(false, 1L, ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
+		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
+		List<ActivityDTO> results = activityDAO.findByObjectId(false, 1L, ActivityConcept.ACTIVITY_CONCEPT_ATL, fiveDaysAgo, null);
 		assertEquals(0,results.size());
 		
 		ActivityDTO recent = new ActivityDTO();
@@ -259,7 +271,7 @@ public class ActivityDaoTest extends TestCase {
 		
 		ActivityDTO created = activityDAO.create(recent);
 		
-		List<ActivityDTO> results3 = activityDAO.findByObjectId(false, created.getActivityObjectId(), ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
+		List<ActivityDTO> results3 = activityDAO.findByObjectId(false, created.getActivityObjectId(), ActivityConcept.ACTIVITY_CONCEPT_ATL, fiveDaysAgo, null);
 		assertEquals(1, results3.size());
 		activityDAO.delete(created.getId());
 		ActivityDTO deleted = activityDAO.getById(created.getId());
@@ -274,8 +286,8 @@ public class ActivityDaoTest extends TestCase {
 	public void testFindByConceptInLastNDays() throws EntityCreationException, EntityRetrievalException{;
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
-		List<ActivityDTO> results = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
+		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
+		List<ActivityDTO> results = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_ATL, fiveDaysAgo, new Date());
 		assertEquals(0,results.size());
 		
 		ActivityDTO recent = new ActivityDTO();
@@ -288,7 +300,7 @@ public class ActivityDaoTest extends TestCase {
 		
 		ActivityDTO created = activityDAO.create(recent);
 		
-		List<ActivityDTO> results3 = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_ATL, 5);
+		List<ActivityDTO> results3 = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_ATL, fiveDaysAgo, null);
 		assertEquals(1, results3.size());
 		activityDAO.delete(created.getId());
 		ActivityDTO deleted = activityDAO.getById(created.getId());

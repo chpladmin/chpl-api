@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -635,7 +635,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
 							tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
 							tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
-							tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskPathDeviationObserved());
+							tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
 							tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
 							tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
 							

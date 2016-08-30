@@ -1,5 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +62,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = true) 
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CMS_STAFF')")
 	public List<CertificationIdDTO> getAll() {
 		return CertificationIdDAO.findAll();
 	}
@@ -86,5 +89,4 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null, result);
 		return result;
 	}
-
 }
