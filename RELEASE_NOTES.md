@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features added
+* Add optional argument 'edition' to /download call. 
+  * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download. 
+  * Downloads chpl-all by default
+
+---
+
 ## Version 4.0.0
 _30 August 2016_
 
