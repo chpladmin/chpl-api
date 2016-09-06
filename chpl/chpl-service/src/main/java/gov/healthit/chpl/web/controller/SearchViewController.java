@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchRequest;
@@ -215,7 +216,7 @@ public class SearchViewController {
 			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getProductNames() {
+	public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
 		return searchMenuManager.getProductNames();
 	}
 	
@@ -223,7 +224,7 @@ public class SearchViewController {
 			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/developers", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getDeveloperNames() {
+	public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
 		return searchMenuManager.getDeveloperNames();
 	}
 	

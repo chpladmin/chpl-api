@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dto;
 
+import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.entity.DeveloperEntity;
 
@@ -20,6 +21,7 @@ public class DeveloperDTO {
 	private String name;
 	private String website;
 	private List<DeveloperACBMapDTO> transparencyAttestationMappings;
+	private Statuses statuses;
 	
 	public DeveloperDTO(){
 		this.transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
@@ -118,6 +120,14 @@ public class DeveloperDTO {
 
 	public void setTransparencyAttestationMappings(List<DeveloperACBMapDTO> transparencyAttestationMappings) {
 		this.transparencyAttestationMappings = transparencyAttestationMappings;
+	}
+	
+	public Statuses getStatuses(){
+		return statuses;
+	}
+	
+	public void setStatuses(Statuses statuses){
+		this.statuses = statuses;
 	}
 
 }

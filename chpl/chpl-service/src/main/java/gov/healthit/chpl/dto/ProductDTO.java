@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dto;
 
+import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductEntity;
 
 import java.util.Date;
@@ -18,6 +19,7 @@ public class ProductDTO {
 	private String reportFileLocation;
 	private Long developerId;
 	private String developerName;
+	private Statuses statuses;
 	
 	public ProductDTO(){}
 	public ProductDTO(ProductEntity entity){
@@ -95,6 +97,12 @@ public class ProductDTO {
 	}
 	public void setDeveloperName(String developerName) {
 		this.developerName = developerName;
+	}
+	public Statuses getStatuses(){
+		return statuses;
+	}
+	public void setStatuses(Statuses statuses) {
+		this.statuses = statuses;
 	}
 	
 }
