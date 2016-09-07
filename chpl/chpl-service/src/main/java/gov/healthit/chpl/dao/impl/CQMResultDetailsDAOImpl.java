@@ -22,7 +22,7 @@ public class CQMResultDetailsDAOImpl extends BaseDAOImpl implements
 	public List<CQMResultDetailsDTO> getCQMResultDetailsByCertifiedProductId(Long certifiedProductId)throws EntityRetrievalException {
 		
 		List<CQMResultDetailsEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
-		List<CQMResultDetailsDTO> dtos = new ArrayList<CQMResultDetailsDTO>();
+		List<CQMResultDetailsDTO> dtos = new ArrayList<CQMResultDetailsDTO>(entities.size());
 		
 		for (CQMResultDetailsEntity entity : entities){
 			dtos.add(new CQMResultDetailsDTO(entity));

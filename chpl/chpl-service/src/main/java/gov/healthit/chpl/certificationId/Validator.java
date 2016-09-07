@@ -14,9 +14,9 @@ import java.util.Map;
 
 public abstract class Validator {
 
-	protected Map<String, Integer> criteriaMet = new HashMap<String, Integer>();
-	protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>();
-	protected Map<String, Integer> domainsMet = new HashMap<String, Integer>();
+	protected Map<String, Integer> criteriaMet = new HashMap<String, Integer>(100);
+	protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>(100);
+	protected Map<String, Integer> domainsMet = new HashMap<String, Integer>(10);
 	protected SortedSet<Integer> editionYears = new TreeSet<Integer>();
 	protected String attestationYear = null;
 
