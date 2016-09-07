@@ -481,9 +481,9 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails) {
 		//now add allVersions for CMSs
 		String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
-		if (certificationEdition.startsWith("2014")){
-			List<CQMCriterion> cqms2014 = getAvailableCQMVersions();
-			for(CQMCriterion cqm : cqms2014) {
+		if (!certificationEdition.startsWith("2011")){
+			List<CQMCriterion> cqms = getAvailableCQMVersions();
+			for(CQMCriterion cqm : cqms) {
 				boolean cqmExists = false;
 				for(CQMResultDetails details : pcpDetails.getCqmResults()) {
 					if(cqm.getCmsId().equals(details.getCmsId())) {
@@ -497,9 +497,10 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 					result.setNqfNumber(cqm.getNqfNumber());
 					result.setNumber(cqm.getNumber());
 					result.setTitle(cqm.getTitle());
+					result.setDescription(cqm.getDescription());
 					result.setSuccess(Boolean.FALSE);
-					result.setTypeId(cqm.getCqmCriterionTypeId());
 					result.getAllVersions().add(cqm.getCqmVersion());
+					result.setTypeId(cqm.getCqmCriterionTypeId());
 					pcpDetails.getCqmResults().add(result);
 				}
 			}

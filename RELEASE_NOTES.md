@@ -4,9 +4,13 @@
 _Date TBD_
 
 ### Features added
-* Add optional argument 'edition' to /download call. 
-  * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download. 
+* Add optional argument 'edition' to /download call.
+  * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download.
   * Downloads chpl-all by default
+* Allowed c3/c4 to be connected to CQMs
+
+### Bugs fixed
+* Pending 2015 products can now have CQM versions modified
 
 ---
 
