@@ -8,6 +8,9 @@ _Date TBD_
   * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download. 
   * Downloads chpl-all by default
 
+### Bugs Fixed
+* Re-factored Certification Id web services to improve performance
+
 ---
 
 ## Version 4.0.0

@@ -3,6 +3,7 @@ package gov.healthit.chpl.certificationId;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import gov.healthit.chpl.dto.CQMMetDTO;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,8 +62,8 @@ public abstract class Validator {
 	// validate
 	//
 	//**********************************************************************
-	public boolean validate(List<CertifiedProductDetailsDTO> productDtos) {
-		this.collectMetData(productDtos);
+	public boolean validate(List<String> certDtos, List<CQMMetDTO> cqmDtos, List<Integer> years) {
+		this.collectMetData(certDtos, cqmDtos, years);
 		this.attestationYear = Validator.calculateAttestationYear(this.editionYears);
 		this.valid = this.onValidate();
 		this.calculatePercentages();
@@ -73,43 +74,41 @@ public abstract class Validator {
 	// collectMetData
 	//
 	//**********************************************************************
-	protected void collectMetData(List<CertifiedProductDetailsDTO> productDtos) {
-		for (CertifiedProductDetailsDTO dto : productDtos) {
+	protected void collectMetData(List<String> certDtos, List<CQMMetDTO> cqmDtos, List<Integer> years) {
 
-			// Collect the certification years
-			editionYears.add(new Integer(dto.getYear()));
-			
-			// Collect criteria met
-			for (CertificationResultDetailsDTO certDetail : dto.getCertResults()) {
-				if (certDetail.getSuccess()) {
-					criteriaMet.put(certDetail.getNumber(), 1);
-				}
+		// Collect the certification years
+		editionYears.addAll(years);
+		
+		// Collect criteria met
+		if (null != certDtos) {
+			criteriaMet = new HashMap<String, Integer>(certDtos.size());
+			for (String certDetail : certDtos) {
+				criteriaMet.put(certDetail, 1);
 			}
-
-			// Collect cqms and domains met
-			for (CQMResultDetailsDTO cqmDetail : dto.getCqmResults()) {
-				if (cqmDetail.getSuccess()) {
-					
-					// See what version we've already met...
-					Integer verMet = cqmsMet.get(cqmDetail.getCmsId());
-					if (null == verMet) {
-						verMet = new Integer(0);
-					}
-					
-					// ...store the version that's higher.
-					Integer ver = Integer.parseInt(cqmDetail.getVersion().substring(1));
-					if ( ver > verMet) {
-						cqmsMet.put(cqmDetail.getCmsId(), ver);
-					}
-					
-					if (null != cqmDetail.getDomain()) {
-						domainsMet.put(cqmDetail.getDomain(), 1);
-					}
-					
-				}
-			}
-			
 		}
+
+		// Collect cqms and domains met
+		if (null != cqmDtos) {
+			cqmsMet = new HashMap<String, Integer>(cqmDtos.size());
+			for (CQMMetDTO cqmDetail : cqmDtos) {
+				// See what version we've already met...
+				Integer verMet = cqmsMet.get(cqmDetail.getCmsId());
+				if (null == verMet) {
+					verMet = new Integer(0);
+				}
+				
+				// ...store the version that's higher.
+				Integer ver = Integer.parseInt(cqmDetail.getVersion().substring(1));
+				if ( ver > verMet) {
+					cqmsMet.put(cqmDetail.getCmsId(), ver);
+				}
+				
+				if (null != cqmDetail.getDomain()) {
+					domainsMet.put(cqmDetail.getDomain(), 1);
+				}
+			}
+		}
+
 	}
 	
 	//**********************************************************************
