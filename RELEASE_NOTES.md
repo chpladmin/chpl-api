@@ -11,6 +11,7 @@ _Date TBD_
 * TO DO DURING THE RELEASE: create a file (can call it cleantomcat) in /etc/cron.daily and chmod a+x the file. Contents of the file are listed as a comment in OCD-811. The command deletes files that have not been written to since X days ago. The number near the end of the command is X.
 * Updated /activity API endpoint to incorporate new parameters to filter by API-Key, sort dateAscending, and filter by start & end date.
 * Do not allow 170.315 (d)(3) to mark GAP as true 
+* Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated.
 
 ---
 
