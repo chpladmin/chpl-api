@@ -4,6 +4,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.KeyValueModelStatuses;
 
 import java.util.Set;
 
@@ -13,8 +14,8 @@ public interface SearchMenuManager {
 	public Set<KeyValueModel> getEditionNames(Boolean simple);
 	public Set<KeyValueModel> getCertificationStatuses();
 	public Set<KeyValueModel> getPracticeTypeNames();
-	public Set<KeyValueModel> getProductNames();
-	public Set<KeyValueModel> getDeveloperNames();
+	public Set<KeyValueModelStatuses> getProductNames();
+	public Set<KeyValueModelStatuses> getDeveloperNames();
 	public Set<KeyValueModel> getCertBodyNames();
 	public Set<KeyValueModel> getAccessibilityStandards();
 	public Set<KeyValueModel> getUcdProcesses();

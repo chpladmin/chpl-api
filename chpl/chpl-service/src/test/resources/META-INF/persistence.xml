@@ -12,13 +12,18 @@
 		<class>gov.healthit.chpl.auth.entity.UserPermissionEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationBodyEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
 		<class>gov.healthit.chpl.entity.TestingLabEntity</class>
 		<class>gov.healthit.chpl.entity.AddressEntity</class>
 		<class>gov.healthit.chpl.entity.AccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.ContactEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperEntity</class>
+		<class>gov.healthit.chpl.entity.DeveloperCertificationStatusesEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperACBMapEntity</class>
+		<class>gov.healthit.chpl.entity.PracticeTypeEntity</class>
 		<class>gov.healthit.chpl.entity.ProductEntity</class>
+		<class>gov.healthit.chpl.entity.ProductClassificationTypeEntity</class>
+		<class>gov.healthit.chpl.entity.ProductCertificationStatusesEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
 		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>
 		<class>gov.healthit.chpl.entity.AccessibilityStandardEntity</class>

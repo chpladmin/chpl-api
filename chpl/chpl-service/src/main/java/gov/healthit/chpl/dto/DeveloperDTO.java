@@ -1,11 +1,11 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.domain.TransparencyAttestationMap;
-import gov.healthit.chpl.entity.DeveloperEntity;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import gov.healthit.chpl.domain.Statuses;
+import gov.healthit.chpl.entity.DeveloperEntity;
 
 public class DeveloperDTO {
 
@@ -20,6 +20,7 @@ public class DeveloperDTO {
 	private String name;
 	private String website;
 	private List<DeveloperACBMapDTO> transparencyAttestationMappings;
+	private Statuses statuses;
 	
 	public DeveloperDTO(){
 		this.transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
@@ -41,9 +42,12 @@ public class DeveloperDTO {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.name = entity.getName();
 		this.website = entity.getWebsite();
-		
+		this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(), 
+				entity.getDeveloperCertificationStatusesEntity().getRetired(), 
+				entity.getDeveloperCertificationStatusesEntity().getWithdrawn(), 
+				entity.getDeveloperCertificationStatusesEntity().getTerminated(), 
+				entity.getDeveloperCertificationStatusesEntity().getSuspended());
 	}
-	
 	
 	public Long getId() {
 		return id;
@@ -118,6 +122,14 @@ public class DeveloperDTO {
 
 	public void setTransparencyAttestationMappings(List<DeveloperACBMapDTO> transparencyAttestationMappings) {
 		this.transparencyAttestationMappings = transparencyAttestationMappings;
+	}
+	
+	public Statuses getStatuses(){
+		return statuses;
+	}
+	
+	public void setStatuses(Statuses statuses){
+		this.statuses = statuses;
 	}
 
 }
