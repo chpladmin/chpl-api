@@ -357,7 +357,6 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		}
 		return criterionNames;
 	}
-	
 
 	@Transactional
 	@Override

@@ -22,6 +22,38 @@ public class KeyValueModelStatuses extends KeyValueModel {
 		this.statuses = statuses;
 	}
 	
+	public Long getId(){
+		return this.id;
+	}
+	
+	public void setId(Long id){
+		this.id = id;
+	}
+	
+	public String getName(){
+		return this.name;
+	}
+	
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	public String getDescription(){
+		return this.description;
+	}
+	
+	public void setDescription(String description){
+		this.description = description;
+	}
+	
+	public Statuses getStatuses(){
+		return this.statuses;
+	}
+	
+	public void setStatuses(Statuses statuses){
+		this.statuses = statuses;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DescriptiveModel))
