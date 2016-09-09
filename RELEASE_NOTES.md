@@ -8,6 +8,7 @@ _Date TBD_
   * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download.
   * Downloads chpl-all by default
 * Allowed c3/c4 to be connected to CQMs
+* Added error messages for c1/2/3/4-CQM mismatch
 
 ### Bugs fixed
 * Pending 2015 products can now have CQM versions modified

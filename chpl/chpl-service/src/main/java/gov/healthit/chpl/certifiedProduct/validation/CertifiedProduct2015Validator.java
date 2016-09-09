@@ -18,6 +18,8 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CQMResultCertification;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
@@ -27,6 +29,8 @@ import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
+import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -96,9 +100,49 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		errors = checkSpecificCriteriaForErrors("170.315 (e)(1)", allMetCerts, Arrays.asList(e1ComplimentaryCerts));
 		product.getErrorMessages().addAll(errors);
 		
-		//check for (e)(2) or (e)(3) certs
-		boolean meetsE2Criterion = hasCert("170.315 (e)(2)", allMetCerts);;
-		boolean meetsE3Criterion = hasCert("170.315 (e)(3)", allMetCerts);;
+        //check for (c)(1), (c)(2), (c)(3), (c)(4)
+        boolean meetsC1Criterion = hasCert("170.315 (c)(1)", allMetCerts);
+        boolean meetsC2Criterion = hasCert("170.315 (c)(2)", allMetCerts);
+        boolean meetsC3Criterion = hasCert("170.315 (c)(3)", allMetCerts);
+        boolean meetsC4Criterion = hasCert("170.315 (c)(4)", allMetCerts);
+        boolean hasC1Cqm = false;
+        boolean hasC2Cqm = false;
+        boolean hasC3Cqm = false;
+        boolean hasC4Cqm = false;
+        for(PendingCqmCriterionDTO cqm : product.getCqmCriterion()) {
+            List<String> certifications = new ArrayList<String>();
+            for(PendingCqmCertificationCriterionDTO criteria : cqm.getCertifications()) {
+                certifications.add(criteria.getCertificationCriteriaNumber());
+            }
+            hasC1Cqm = hasC1Cqm || hasCert("170.315 (c)(1)", certifications);
+            hasC2Cqm = hasC2Cqm || hasCert("170.315 (c)(2)", certifications);
+            hasC3Cqm = hasC3Cqm || hasCert("170.315 (c)(3)", certifications);
+            hasC4Cqm = hasC4Cqm || hasCert("170.315 (c)(4)", certifications);
+        }
+        if (meetsC1Criterion && !hasC1Cqm) {
+            product.getErrorMessages().add("Certification criterion 170.315 (c)(1) was found but no matching Clinical Quality Measurement was found.");
+        } else if (!meetsC1Criterion && hasC1Cqm) {
+            product.getErrorMessages().add("A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(1), but the product does not attest to that criterion.");
+        }
+        if (meetsC2Criterion && !hasC2Cqm) {
+            product.getErrorMessages().add("Certification criterion 170.315 (c)(2) was found but no matching Clinical Quality Measurement was found.");
+        } else if (!meetsC2Criterion && hasC2Cqm) {
+            product.getErrorMessages().add("A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(2), but the product does not attest to that criterion.");
+        }
+        if (meetsC3Criterion && !hasC3Cqm) {
+            product.getErrorMessages().add("Certification criterion 170.315 (c)(3) was found but no matching Clinical Quality Measurement was found.");
+        } else if (!meetsC3Criterion && hasC3Cqm) {
+            product.getErrorMessages().add("A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(3), but the product does not attest to that criterion.");
+        }
+        if (meetsC4Criterion && !hasC4Cqm) {
+            product.getErrorMessages().add("Certification criterion 170.315 (c)(4) was found but no matching Clinical Quality Measurement was found.");
+        } else if (!meetsC4Criterion && hasC4Cqm) {
+            product.getErrorMessages().add("A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(4), but the product does not attest to that criterion.");
+        }
+
+        //check for (e)(2) or (e)(3) certs
+		boolean meetsE2Criterion = hasCert("170.315 (e)(2)", allMetCerts);
+		boolean meetsE3Criterion = hasCert("170.315 (e)(3)", allMetCerts);
 		if(meetsE2Criterion || meetsE3Criterion) {
 			for(int i = 0; i < e2Ore3ComplimentaryCerts.length; i++) {
 				boolean hasComplimentaryCert = false;
@@ -372,9 +416,50 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		errors = checkSpecificCriteriaForErrors("170.315 (e)(1)", allMetCerts, Arrays.asList(e1ComplimentaryCerts));
 		product.getErrorMessages().addAll(errors);
 		
+        //check for (c)(1), (c)(2), (c)(3), (c)(4)
+        boolean meetsC1Criterion = hasCert("170.315 (c)(1)", allMetCerts);
+        boolean meetsC2Criterion = hasCert("170.315 (c)(2)", allMetCerts);
+        boolean meetsC3Criterion = hasCert("170.315 (c)(3)", allMetCerts);
+        boolean meetsC4Criterion = hasCert("170.315 (c)(4)", allMetCerts);
+        boolean hasC1Cqm = false;
+        boolean hasC2Cqm = false;
+        boolean hasC3Cqm = false;
+        boolean hasC4Cqm = false;
+
+        for(CQMResultDetails cqm : product.getCqmResults()) {
+            List<String> certifications = new ArrayList<String>();
+            for(CQMResultCertification criteria : cqm.getCriteria()) {
+                certifications.add(criteria.getCertificationNumber());
+            }
+            hasC1Cqm = hasC1Cqm || hasCert("170.315 (c)(1)", certifications);
+            hasC2Cqm = hasC2Cqm || hasCert("170.315 (c)(2)", certifications);
+            hasC3Cqm = hasC3Cqm || hasCert("170.315 (c)(3)", certifications);
+            hasC4Cqm = hasC4Cqm || hasCert("170.315 (c)(4)", certifications);
+        }
+        if (meetsC1Criterion && !hasC1Cqm) {
+            product.getErrorMessages().add("Certification criterion 170.315 (c)(1) was found but no matching Clinical Quality Measurement was found.");
+        } else if (!meetsC1Criterion && hasC1Cqm) {
+            product.getErrorMessages().add("A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(1), but the product does not attest to that criterion.");
+        }
+        if (meetsC2Criterion && !hasC2Cqm) {
+            product.getErrorMessages().add("Certification criterion 170.315 (c)(2) was found but no matching Clinical Quality Measurement was found.");
+        } else if (!meetsC2Criterion && hasC2Cqm) {
+            product.getErrorMessages().add("A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(2), but the product does not attest to that criterion.");
+        }
+        if (meetsC3Criterion && !hasC3Cqm) {
+            product.getErrorMessages().add("Certification criterion 170.315 (c)(3) was found but no matching Clinical Quality Measurement was found.");
+        } else if (!meetsC3Criterion && hasC3Cqm) {
+            product.getErrorMessages().add("A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(3), but the product does not attest to that criterion.");
+        }
+        if (meetsC4Criterion && !hasC4Cqm) {
+            product.getErrorMessages().add("Certification criterion 170.315 (c)(4) was found but no matching Clinical Quality Measurement was found.");
+        } else if (!meetsC4Criterion && hasC4Cqm) {
+            product.getErrorMessages().add("A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(4), but the product does not attest to that criterion.");
+        }
+
 		//check for (e)(2) or (e)(3) certs
-		boolean meetsE2Criterion = hasCert("170.315 (e)(2)", allMetCerts);;
-		boolean meetsE3Criterion = hasCert("170.315 (e)(3)", allMetCerts);	
+		boolean meetsE2Criterion = hasCert("170.315 (e)(2)", allMetCerts);
+		boolean meetsE3Criterion = hasCert("170.315 (e)(3)", allMetCerts);
 		if(meetsE2Criterion || meetsE3Criterion) {
 			for(int i = 0; i < e2Ore3ComplimentaryCerts.length; i++) {
 				boolean hasComplimentaryCert = false;
