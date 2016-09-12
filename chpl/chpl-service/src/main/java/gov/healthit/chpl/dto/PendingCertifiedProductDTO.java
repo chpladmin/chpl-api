@@ -325,7 +325,7 @@ public class PendingCertifiedProductDTO {
 					taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev());
 					taskDto.setTaskTimeAvg(task.getTaskTimeAvg());
 					taskDto.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg());
-					taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskPathDeviationOptimal());
+					taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg());
 					taskDto.setTaskTimeStddev(task.getTaskTimeStddev());
 					taskDto.setUniqueId(task.getUniqueId());
 					crTaskDto.setPendingTestTask(taskDto);

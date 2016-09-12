@@ -1057,6 +1057,10 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 							cert = certDao.getByName("170.315 (c)(1)");
 						} else if(currCriteria.equals("c2")) {
 							cert = certDao.getByName("170.315 (c)(2)");
+						} else if(currCriteria.equals("c3")) {
+							cert = certDao.getByName("170.315 (c)(3)");
+						} else if(currCriteria.equals("c4")) {
+							cert = certDao.getByName("170.315 (c)(4)");
 						}
 						if(cert != null) {
 							PendingCqmCertificationCriteriaEntity certEntity = new PendingCqmCertificationCriteriaEntity();

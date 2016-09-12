@@ -14,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -70,7 +72,8 @@ public class SearchViewController {
 					+ "tool of their choosing.")
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="application/xml")
-	public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {	
+	public void download(@RequestParam(value="edition", required=false) String edition, 
+			HttpServletRequest request, HttpServletResponse response) throws IOException {	
 		String downloadFileLocation = env.getProperty("downloadFolderPath");
 		File downloadFile = new File(downloadFileLocation);
 		if(!downloadFile.exists() || !downloadFile.canRead()) {
@@ -85,18 +88,33 @@ public class SearchViewController {
 				response.getWriter().write("No files for download were found in directory " + downloadFileLocation);
 				return;
 			} else {
+				if(!StringUtils.isEmpty(edition)) {
+					//make sure it's a 4 character year
+					edition = edition.trim();
+					if(!edition.startsWith("20")) {
+						edition = "20"+edition;
+					}
+				} else {
+					edition = "all";
+				}
+				
 				File newestFile = null;
 				for(int i = 0; i < children.length; i++) {
-					if(newestFile == null) {
-						newestFile = children[i];
-					} else {
-						if(children[i].lastModified() > newestFile.lastModified()) {
+					if(children[i].getName().contains("-" + edition + "-")) {
+						if(newestFile == null) {
 							newestFile = children[i];
+						} else {
+							if(children[i].lastModified() > newestFile.lastModified()) {
+								newestFile = children[i];
+							}
 						}
 					}
 				}
 				if(newestFile != null) {
 					downloadFile = newestFile;
+				} else {
+					response.getWriter().write("Downloadable files exist, but none were found for certification edition " + edition);
+					return;
 				}
 			}
 		}

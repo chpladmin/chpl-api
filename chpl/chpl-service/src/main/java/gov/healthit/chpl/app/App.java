@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.transform.stream.StreamResult;
@@ -64,8 +66,10 @@ public class App {
 		 App app = new App();
 		 app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
 		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-        
-        CertifiedProductDownloadResponse result = new CertifiedProductDownloadResponse();
+		 
+		 //maps the year to the list of products for that year
+		 Map<String, CertifiedProductDownloadResponse> resultMap = 
+				 new HashMap<String, CertifiedProductDownloadResponse>();
         
         //write out the file to a different location so as not to 
         //overwrite the existing download file
@@ -76,10 +80,20 @@ public class App {
 			try {
 				
 				CertifiedProductSearchDetails product = app.getCpdManager().getCertifiedProductDetails(currProduct.getId());
-				result.getProducts().add(product);
+				String certificationYear = product.getCertificationEdition().get("name").toString();
+				certificationYear = certificationYear.trim();
+				if(!certificationYear.startsWith("20")) {
+					certificationYear = "20" + certificationYear;
+				}
+				
+				if(resultMap.get(certificationYear) == null) {
+					CertifiedProductDownloadResponse yearResult = new CertifiedProductDownloadResponse();
+					resultMap.put(certificationYear, yearResult);
+				}
+				((CertifiedProductDownloadResponse)resultMap.get(certificationYear)).getProducts().add(product);
 				
 			} catch(EntityRetrievalException ex) {
-				//logger.error("Could not certified product details for certified product " + currProduct.getId());
+				logger.error("Could not certified product details for certified product " + currProduct.getId());
 			}
 		}
         
@@ -95,7 +109,44 @@ public class App {
         }
         
         Date now = new Date();
-        String newFileName = downloadFolder.getAbsolutePath() + File.separator + "chpl-" + app.getTimestampFormat().format(now) + ".xml";
+        //write out a separate file for each edition
+        for(String year : resultMap.keySet()) {
+	        String newFileName = downloadFolder.getAbsolutePath() + File.separator + 
+	        		"chpl-" + year + "-" + app.getTimestampFormat().format(now) + ".xml";
+	        File newFile = new File(newFileName);
+	        if(!newFile.exists()) {
+	        	newFile.createNewFile();
+	        } else {
+	        	newFile.delete();
+	        }
+	        
+	        FileOutputStream os = null;
+	        try {
+	            os = new FileOutputStream(newFile);
+	            CertifiedProductDownloadResponse result = resultMap.get(year);
+	            Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+	            marshaller.setClassesToBeBound(result.getClass());
+	            marshaller.marshal(result, new StreamResult(os));
+	
+	        } catch(FileNotFoundException ex) {
+	        	logger.error("file not found " + newFile);
+	        } finally {
+	            if (os != null) {
+	                try { os.close(); } catch(IOException ignore) {}
+	            }
+	        }
+        }
+        
+        //write out a file containing all of the products
+        CertifiedProductDownloadResponse allResults = new CertifiedProductDownloadResponse();
+        for(String year : resultMap.keySet()) { 
+        	CertifiedProductDownloadResponse result = resultMap.get(year);
+        	allResults.getProducts().addAll(result.getProducts());
+        	result.getProducts().clear();
+        }
+        
+        String newFileName = downloadFolder.getAbsolutePath() + File.separator + 
+        		"chpl-all-" + app.getTimestampFormat().format(now) + ".xml";
         File newFile = new File(newFileName);
         if(!newFile.exists()) {
         	newFile.createNewFile();
@@ -105,17 +156,17 @@ public class App {
         
         FileOutputStream os = null;
         try {
-            os = new FileOutputStream(newFile);
-            Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-            marshaller.setClassesToBeBound(result.getClass());
-            marshaller.marshal(result, new StreamResult(os));
+        	os = new FileOutputStream(newFile);
+        	Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        	marshaller.setClassesToBeBound(allResults.getClass());
+        	marshaller.marshal(allResults, new StreamResult(os));
 
         } catch(FileNotFoundException ex) {
         	logger.error("file not found " + newFile);
         } finally {
-            if (os != null) {
-                try { os.close(); } catch(IOException ignore) {}
-            }
+        	if (os != null) {
+        		try { os.close(); } catch(IOException ignore) {}
+        	}
         }
         
         context.close();

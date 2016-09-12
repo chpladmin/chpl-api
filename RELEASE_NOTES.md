@@ -3,15 +3,39 @@
 ## Version TBD
 _Date TBD_
 
+### Features added
+* Add optional argument 'edition' to /download call.
+  * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download.
+  * Downloads chpl-all by default
+* Allowed c3/c4 to be connected to CQMs
+* Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated.
+### Bugs fixed
+* Pending 2015 products can now have CQM versions modified
+
+---
+
+## Version 4.0.0
+_30 August 2016_
+
 ### Features Added
-* Added a new service certification_ids/all to generate JSON with two fields - the certification ID and the date created. This includes all certification IDS ever and could be large. 
+* Added a new service certification_ids/all to generate JSON with two fields - the certification ID and the date created. This includes all certification IDS ever and could be large.
 * Change all /activity calls that used to accept a lastNDays parameter to accept start and end parameters instead. Start and end are longs and treated as timestamps. (Not backwards compatible)
 * Set up log4j2 and set hopefully appropriate log levels
 * TO DO DURING THE RELEASE: change the questionable activity email recipients to just be the ONC_CHPL@hhs.gov email (i.e. remove onc.certification@hhs.gov)
 * TO DO DURING THE RELEASE: create a file (can call it cleantomcat) in /etc/cron.daily and chmod a+x the file. Contents of the file are listed as a comment in OCD-811. The command deletes files that have not been written to since X days ago. The number near the end of the command is X.
 * Updated /activity API endpoint to incorporate new parameters to filter by API-Key, sort dateAscending, and filter by start & end date.
 * Do not allow 170.315 (d)(3) to mark GAP as true 
-* Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated.
+* Do not allow 170.315 (d)(3) to mark GAP as true
+* Added 'responsibleUser' field with all user data for /activity reports
+* Removed CORSFilter in web.xml; this was preventing some ajax calls from other domains
+* Add developer object to /activity/product calls using the developer present in "newData"
+
+### Bugs fixed
+* Upload field values for SED parsed as integers but entered as floats were not saved. Fixed.
+* Task success avg was getting mixed up with Task errors avg
+* Task time deviation optimal avg was getting mixed up with task path deviation optimal avg
+* Test Task Participant Product & Professional experience was getting mixed up
+>>>>>>> upstream/development
 
 ---
 
@@ -99,12 +123,12 @@ _24 May 2016_
 * Changed 2015 and 2014/2015 Certification ID validation to no longer check CQMs
 * Added more product details to Certification ID results
 * Changed Additional Software in Certification ID results to be URL encoded
-* Added feature to Certification ID generation to prevent formation of words in IDs 
+* Added feature to Certification ID generation to prevent formation of words in IDs
 * Changed encodeCollectionKey to implement key values of base 36 and padded to 8 digits
 
 ### Bugs Fixed
 * 170.314 (f)(3) does not require test tools for ambulatory products but does for inpatient
-* Editing a product was requiring g1 and g2 when it should not have. 
+* Editing a product was requiring g1 and g2 when it should not have.
 * Trim spaces from the ends of all fields in the upload file
 * Properly save test functionality and test tools if an invalid one was in the upload file but was edited to be a valid one during confirm.
 * Fix logging bug when invalid column header is in upload file.
@@ -125,8 +149,6 @@ _16 May 2016_
 * Fix 2015 upload file validation to catch missing UCD Process, test tasks, and test participants.
 * Fix met calculation for Certification ID 2015 Ambulatory CQM validation
 * Save sed testing end date and sed intended users on confirm
-
----
 
 ---
 
@@ -289,12 +311,12 @@ Features added or Updated
 * Added terms of use and api documentation to the certified product apis.
 * Added ability to update transparencyAttestation field per vendor and ACB combination. ADMINs can update the transparencyAttestation for all vendor/ACB combinations and anyone else can only update that field for the ACBs to which they have access.
 * Added transparencyAttestation to the fields that come back with certified product details and search results. It is inferred from the vendor/ACB mapping.
-* Added APIs for testing labs, found under /atls urls. 
+* Added APIs for testing labs, found under /atls urls.
 * Complete CHPL Product Number for 2015 products with testing lab code.
 
 Bugs Fixed
 * Correct CHPL number is inserted in corrective action plan documentation activity.
-* Authorizing existing users for new roles or ACBs/ATLs is fixed 
+* Authorizing existing users for new roles or ACBs/ATLs is fixed
 
 ---
 
