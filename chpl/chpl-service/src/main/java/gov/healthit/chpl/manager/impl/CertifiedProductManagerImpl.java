@@ -223,17 +223,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Override
 	@Transactional(readOnly = true)
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException {
-		List<CertifiedProductDetailsDTO> result = cpDao.getDetailsByIds(ids);
-		
-		// Get result details
-		for (CertifiedProductDetailsDTO dto : result) {
-			List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
-			dto.setCertResults(certificationResultDetailsDTOs);
-			List<CQMResultDetailsDTO> cqmResultDetailsDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(dto.getId());
-			dto.setCqmResults(cqmResultDetailsDTOs);
-		}
-		
-		return result;
+		return cpDao.getDetailsByIds(ids);
 	}
 	
 	@Override

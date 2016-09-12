@@ -13,6 +13,9 @@ _Date TBD_
 ### Bugs fixed
 * Pending 2015 products can now have CQM versions modified
 
+### Bugs Fixed
+* Re-factored Certification Id web services to improve performance
+
 ---
 
 ## Version 4.0.0

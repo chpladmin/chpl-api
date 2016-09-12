@@ -46,6 +46,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -82,23 +83,12 @@ public class CertificationIdController {
 			products = null;
 		}
 
-		List<Long> certProductIds = new ArrayList<Long>();
-		if (null != products) {
-			String[] productArray = products.trim().split("\\|");
-			for (String id : productArray) {
-				if (null != id)
-					certProductIds.add(new Long(id));
-			}
-		}
-		
-		CertificationIdResults results = new CertificationIdResults();
-
 		// Lookup specified products
+		List<Long> productIdList = new ArrayList<Long>();
 		List<CertifiedProductDetailsDTO> productDtos = new ArrayList<CertifiedProductDetailsDTO>();
 		if (null != products) {
 			try {
 			String[] productArray = products.trim().split("\\|");
-			List<Long> productIdList = new ArrayList<Long>();
 			if (productArray.length > 0) {
 				for (String id : productArray) {
 					if (null != id)
@@ -112,6 +102,7 @@ public class CertificationIdController {
 		}
 
 		// Add products to results
+		CertificationIdResults results = new CertificationIdResults();
 		SortedSet<Integer> yearSet = new TreeSet<Integer>();
 		List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
 		for (CertifiedProductDetailsDTO dto : productDtos) {
@@ -125,7 +116,14 @@ public class CertificationIdController {
 			
 		// Validate the collection
 		Validator validator = ValidatorFactory.getValidator(year);
-		boolean isValid = validator.validate(productDtos);
+		
+		// Lookup Criteria for Validating
+		List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(productIdList);
+		
+		// Lookup CQMs for Validating
+		List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
+		
+		boolean isValid = validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(yearSet));
 		results.setIsValid(isValid);
 		results.setMetPercentages(validator.getPercents());
 		results.setMetCounts(validator.getCounts());
@@ -134,13 +132,13 @@ public class CertificationIdController {
 		if (validator.isValid()) {
 			CertificationIdDTO idDto = null;
 			try {
-				idDto = certificationIdManager.getByProductIds(certProductIds, year);
+				idDto = certificationIdManager.getByProductIds(productIdList, year);
 				if (null != idDto) {
 					results.setEhrCertificationId(idDto.getCertificationId());
 				} else {
 					if ((create) && (results.getIsValid())) {
 						// Generate a new ID
-						idDto = certificationIdManager.create(certProductIds, year);
+						idDto = certificationIdManager.create(productIdList, year);
 						results.setEhrCertificationId(idDto.getCertificationId());
 					}
 				}
@@ -176,17 +174,29 @@ public class CertificationIdController {
 				// Find the products associated with the Cert ID
 				List<Long> productIds = certificationIdManager.getProductIdsById(certDto.getId());
 				List<CertifiedProductDetailsDTO> productDtos = certifiedProductManager.getDetailsByIds(productIds);
-				
+
+				SortedSet<Integer> yearSet = new TreeSet<Integer>();
+				List<Long> certProductIds = new ArrayList<Long>();
+
 				// Add product data to results
 				List<CertificationIdLookupResults.Product> productList = results.getProducts();
 				for (CertifiedProductDetailsDTO dto : productDtos) {
 					productList.add(new CertificationIdLookupResults.Product(dto));
+					yearSet.add(new Integer(dto.getYear()));
+					certProductIds.add(dto.getId());
 				}
-				
+
 				// Add criteria and cqms met to results
 				if (includeCriteria || includeCqms) {
 					Validator validator = ValidatorFactory.getValidator(certDto.getYear());
-					boolean isValid = validator.validate(productDtos);
+					
+					// Lookup Criteria for Validating
+					List<String> criteriaDtos = certificationIdManager.getCriteriaNumbersMetByCertifiedProductIds(certProductIds);
+					
+					// Lookup CQMs for Validating
+					List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(certProductIds);
+
+					boolean isValid = validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(yearSet));
 					if (isValid) {
 						if (includeCriteria) {
 							results.setCriteria(validator.getCriteriaMet().keySet());

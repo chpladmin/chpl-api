@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationIdDTO;
+import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationIdManager;
@@ -52,7 +53,18 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
 		return CertificationIdDAO.getProductIdsById(id);
 	}
-	
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds) {
+		return CertificationIdDAO.getCriteriaNumbersMetByCertifiedProductIds(productIds);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
+		return 	CertificationIdDAO.getCqmsMetByCertifiedProductIds(productIds);
+	}
 
 	@Override
 	@Transactional(readOnly = true)
