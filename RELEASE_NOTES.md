@@ -8,7 +8,7 @@ _Date TBD_
   * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download.
   * Downloads chpl-all by default
 * Allowed c3/c4 to be connected to CQMs
-* Added Statuses object with number of active/retired/withdrawn/suspended/terminated certified products per developer or product
+* Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated.
 
 ### Bugs fixed
 * Pending 2015 products can now have CQM versions modified
@@ -38,8 +38,6 @@ _30 August 2016_
 * Test Task Participant Product & Professional experience was getting mixed up
 =======
 * Do not allow 170.315 (d)(3) to mark GAP as true 
-* Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated.
->>>>>>> OCD-875
 
 ---
 
