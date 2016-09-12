@@ -69,12 +69,13 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 	 * @param lastModifiedDate Date object;
 	 * @param lastModifiedUser Long object;
 	 */
-	public ProductCertificationStatusesEntity(Long id, Integer active, Integer retired, Integer withdrawn, Integer terminated) {
+	public ProductCertificationStatusesEntity(Long id, Integer active, Integer retired, Integer withdrawn, Integer terminated, Integer suspended) {
 		this.id = id;
 		this.active = active;
 		this.retired = retired;
 		this.withdrawn = withdrawn;
 		this.terminated = terminated;
+		this.suspended = suspended;
 	}
 	
 	/**
