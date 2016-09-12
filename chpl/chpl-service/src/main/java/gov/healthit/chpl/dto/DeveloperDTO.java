@@ -42,11 +42,13 @@ public class DeveloperDTO {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.name = entity.getName();
 		this.website = entity.getWebsite();
-		this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(), 
-				entity.getDeveloperCertificationStatusesEntity().getRetired(), 
-				entity.getDeveloperCertificationStatusesEntity().getWithdrawn(), 
-				entity.getDeveloperCertificationStatusesEntity().getTerminated(), 
-				entity.getDeveloperCertificationStatusesEntity().getSuspended());
+		if(entity.getDeveloperCertificationStatusesEntity() != null){
+			this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(), 
+					entity.getDeveloperCertificationStatusesEntity().getRetired(), 
+					entity.getDeveloperCertificationStatusesEntity().getWithdrawn(), 
+					entity.getDeveloperCertificationStatusesEntity().getTerminated(), 
+					entity.getDeveloperCertificationStatusesEntity().getSuspended());
+		}
 	}
 	
 	public Long getId() {
