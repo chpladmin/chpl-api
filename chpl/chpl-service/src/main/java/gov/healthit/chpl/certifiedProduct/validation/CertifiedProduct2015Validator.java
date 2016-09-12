@@ -5,28 +5,27 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.domain.CQMResultCertification;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
@@ -37,6 +36,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2015Validator")
 public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl {
+	private static final Logger logger = LogManager.getLogger(CertifiedProduct2015Validator.class);
 
 	private static final String[] aComplimentaryCerts = {"170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)",
 			"170.315 (d)(4)", "170.315 (d)(5)", "170.315 (d)(6)", "170.315 (d)(7)"};
@@ -110,14 +110,14 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
         boolean hasC3Cqm = false;
         boolean hasC4Cqm = false;
         for(PendingCqmCriterionDTO cqm : product.getCqmCriterion()) {
-            List<String> certifications = new ArrayList<String>();
+            List<String> cqmCerts = new ArrayList<String>();
             for(PendingCqmCertificationCriterionDTO criteria : cqm.getCertifications()) {
-                certifications.add(criteria.getCertificationCriteriaNumber());
+                cqmCerts.add(criteria.getCertificationCriteriaNumber());
             }
-            hasC1Cqm = hasC1Cqm || hasCert("170.315 (c)(1)", certifications);
-            hasC2Cqm = hasC2Cqm || hasCert("170.315 (c)(2)", certifications);
-            hasC3Cqm = hasC3Cqm || hasCert("170.315 (c)(3)", certifications);
-            hasC4Cqm = hasC4Cqm || hasCert("170.315 (c)(4)", certifications);
+            hasC1Cqm = hasC1Cqm || hasCert("170.315 (c)(1)", cqmCerts);
+            hasC2Cqm = hasC2Cqm || hasCert("170.315 (c)(2)", cqmCerts);
+            hasC3Cqm = hasC3Cqm || hasCert("170.315 (c)(3)", cqmCerts);
+            hasC4Cqm = hasC4Cqm || hasCert("170.315 (c)(4)", cqmCerts);
         }
         if (meetsC1Criterion && !hasC1Cqm) {
             product.getErrorMessages().add("Certification criterion 170.315 (c)(1) was found but no matching Clinical Quality Measurement was found.");
