@@ -57,7 +57,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
 			}
 			if(dto.getContact() != null) {
-				ContactEntity contact = null;
 				if(dto.getContact().getId() != null) {
 					Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
 					query.setParameter("entityid", dto.getContact().getId());
@@ -96,7 +95,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			} else {
 				entity.setCreationDate(new Date());
 			}
-			
+
 			create(entity);
 			return new DeveloperDTO(entity);
 		}	
@@ -139,7 +138,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 		
 		if(dto.getContact() != null) {
-			ContactEntity contact = null;
 			if(dto.getContact().getId() != null) {
 				Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
 				query.setParameter("entityid", dto.getContact().getId());

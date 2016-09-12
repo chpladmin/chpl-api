@@ -59,7 +59,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 	*/
 	@Transient
 	public Class<?> getClassType() {
-		return DeveloperEntity.class;
+		return ProductCertificationStatusesEntity.class;
 	}
 	
 	/** Constructor taking a given ID.

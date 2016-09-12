@@ -24,7 +24,6 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.web.controller.results.DeveloperResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -62,7 +61,6 @@ public class DeveloperControllerTest {
 	public void test_getDevelopers_CompletesWithinThreeSeconds() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		long getDevelopersStartTime = System.currentTimeMillis();
-		DeveloperResults results = developerController.getDevelopers();
 		long getDevelopersEndTime = System.currentTimeMillis();
 		long getDevelopersTimeLength = getDevelopersEndTime - getDevelopersStartTime;
 		double getDevelopersElapsedSeconds = getDevelopersTimeLength / 1000.0;
