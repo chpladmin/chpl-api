@@ -702,8 +702,20 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						if(pendingCqm.getCertifications() != null) {
 							for(PendingCqmCertificationCriterionDTO cert : pendingCqm.getCertifications()) {
 								CQMResultCriteriaDTO certDto = new CQMResultCriteriaDTO();
-								certDto.setCriterionId(cert.getCertificationId());
-								cqmResultToCreate.getCriteria().add(certDto);
+								if(!StringUtils.isEmpty(cert.getCertificationId())) {
+									certDto.setCriterionId(cert.getCertificationId());
+									cqmResultToCreate.getCriteria().add(certDto);
+								} else if(!StringUtils.isEmpty(cert.getCertificationCriteriaNumber())){
+									CertificationCriterionDTO critDto = certCriterionDao.getByName(cert.getCertificationCriteriaNumber());
+									if(critDto != null) {
+										certDto.setCriterionId(critDto.getId());
+										cqmResultToCreate.getCriteria().add(certDto);
+									} else {
+										logger.error("Could not find a matching certification criterion for '" + cert.getCertificationCriteriaNumber() + "'.");
+									}
+								} else {
+									logger.error("Neither certification id or number was specified.");
+								}
 							}
 						}
 						cqmResultDAO.create(cqmResultToCreate);
