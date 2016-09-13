@@ -66,7 +66,6 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@Column( nullable = false  )
 	private Boolean deleted;
 	
-	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
@@ -75,6 +74,11 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@NotNull
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "vendor_id", unique=true, nullable = true, insertable = false, updatable = false)
+	private DeveloperCertificationStatusesEntity developerCertificationStatuses;
  	
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -106,11 +110,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		this.lastModifiedDate = lastModifiedDate;
 		this.lastModifiedUser = lastModifiedUser;
 	}
-	
- 
 
-
- 
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
 	*/
@@ -143,8 +143,6 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		return this.creationDate;
 		
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: creationDate.
@@ -162,8 +160,6 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		return this.deleted;
 		
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: deleted.
@@ -181,8 +177,6 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		return this.id;
 		
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: id.
@@ -200,8 +194,6 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		return this.lastModifiedDate;
 		
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: lastModifiedDate.
@@ -219,8 +211,6 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		return this.lastModifiedUser;
 		
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: lastModifiedUser.
@@ -238,9 +228,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		return this.name;
 		
 	}
-	
 
-  
 	 /**  
 	 * Set the value related to the column: name.
 	 * @param name the name value you wish to set
@@ -257,9 +245,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		return this.website;
 		
 	}
-	
 
-  
 	 /**  
 	 * Set the value related to the column: website.
 	 * @param website the website value you wish to set
@@ -267,7 +253,14 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	public void setWebsite(final String website) {
 		this.website = website;
 	}
-
+	
+	public DeveloperCertificationStatusesEntity getDeveloperCertificationStatusesEntity(){
+		return this.developerCertificationStatuses;
+	}
+	
+	public void setDeveloperCertificationStatuses(DeveloperCertificationStatusesEntity developerCertificationStatusesEntity){
+		this.developerCertificationStatuses = developerCertificationStatusesEntity;
+	}
 
 	/** Provides toString implementation.
 	 * @see java.lang.Object#toString()
