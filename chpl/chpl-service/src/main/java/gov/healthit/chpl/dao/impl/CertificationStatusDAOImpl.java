@@ -1,23 +1,16 @@
 package gov.healthit.chpl.dao.impl;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationStatusDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationStatusDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.CertificationResultEntity;
-import gov.healthit.chpl.entity.CertificationStatusEntity;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+
+import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.entity.CertificationStatusEntity;
 
 @Repository("certificationStatusDAO")
 public class CertificationStatusDAOImpl extends BaseDAOImpl implements CertificationStatusDAO {

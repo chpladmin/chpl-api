@@ -8,6 +8,7 @@ import javax.persistence.Query;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,6 +35,7 @@ import gov.healthit.chpl.entity.ApiKeyActivityEntity;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
 @Component
+@Ignore
 public class ApiKeyTestHelper {
 	@PersistenceContext
 	@Autowired
