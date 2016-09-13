@@ -8,7 +8,7 @@ _Date TBD_
   * Generate the chpl-all file as well as a chpl-{edition} file for each edition present in the database for download.
   * Downloads chpl-all by default
 * Allowed c3/c4 to be connected to CQMs
-
+* Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated.
 ### Bugs fixed
 * Pending 2015 products can now have CQM versions modified
 
@@ -24,6 +24,7 @@ _30 August 2016_
 * TO DO DURING THE RELEASE: change the questionable activity email recipients to just be the ONC_CHPL@hhs.gov email (i.e. remove onc.certification@hhs.gov)
 * TO DO DURING THE RELEASE: create a file (can call it cleantomcat) in /etc/cron.daily and chmod a+x the file. Contents of the file are listed as a comment in OCD-811. The command deletes files that have not been written to since X days ago. The number near the end of the command is X.
 * Updated /activity API endpoint to incorporate new parameters to filter by API-Key, sort dateAscending, and filter by start & end date.
+* Do not allow 170.315 (d)(3) to mark GAP as true 
 * Do not allow 170.315 (d)(3) to mark GAP as true
 * Added 'responsibleUser' field with all user data for /activity reports
 * Removed CORSFilter in web.xml; this was preventing some ajax calls from other domains
@@ -34,6 +35,7 @@ _30 August 2016_
 * Task success avg was getting mixed up with Task errors avg
 * Task time deviation optimal avg was getting mixed up with task path deviation optimal avg
 * Test Task Participant Product & Professional experience was getting mixed up
+>>>>>>> upstream/development
 
 ---
 

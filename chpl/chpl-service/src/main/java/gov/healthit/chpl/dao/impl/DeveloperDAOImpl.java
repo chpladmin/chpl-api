@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,19 +16,16 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.ContactDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.AttestationType;
-import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperEntity;
-import gov.healthit.chpl.entity.ProductEntity;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
@@ -62,7 +57,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
 			}
 			if(dto.getContact() != null) {
-				ContactEntity contact = null;
 				if(dto.getContact().getId() != null) {
 					Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
 					query.setParameter("entityid", dto.getContact().getId());
@@ -101,7 +95,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			} else {
 				entity.setCreationDate(new Date());
 			}
-			
+
 			create(entity);
 			return new DeveloperDTO(entity);
 		}	
@@ -144,7 +138,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 		
 		if(dto.getContact() != null) {
-			ContactEntity contact = null;
 			if(dto.getContact().getId() != null) {
 				Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
 				query.setParameter("entityid", dto.getContact().getId());
@@ -311,13 +304,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	private void create(DeveloperEntity entity) {
-		
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
-	private void update(DeveloperEntity entity) {
-		
+	private void update(DeveloperEntity entity) {	
 		entityManager.merge(entity);	
 		entityManager.flush();
 	}
@@ -327,9 +318,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
 				+ "where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
 		return result;
-		
 	}
 
 	private DeveloperEntity getEntityById(Long id) throws EntityRetrievalException {
