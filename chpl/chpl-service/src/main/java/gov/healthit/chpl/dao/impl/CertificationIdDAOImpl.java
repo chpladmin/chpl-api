@@ -151,6 +151,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		if ((null != productIds) && (productIds.size() > 0)) {
 			Query query = entityManager.createQuery( "SELECT new gov.healthit.chpl.dto.CQMMetDTO(crde.cmsId, crde.version, crde.domain) FROM CQMResultDetailsEntity AS crde"
 					+ " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :productIds "
+					+ " AND crde.cmsId IS NOT NULL"
 					+ " GROUP BY crde.cmsId, crde.version, crde.domain");
 			query.setParameter("productIds", productIds);
 			dtos = query.getResultList();
