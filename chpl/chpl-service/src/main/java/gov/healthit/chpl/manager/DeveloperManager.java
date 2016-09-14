@@ -8,9 +8,11 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 
 public interface DeveloperManager {
 	public List<DeveloperDTO> getAll();
+	public List<DeveloperACBMapDTO> getAllTransparencies();
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException;
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;

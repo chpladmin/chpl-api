@@ -67,7 +67,16 @@ public class DeveloperController {
 		results.setDevelopers(developers);
 		return results;
 	}
-	
+
+    @ApiOperation(value="List all developer/transparency mappings in the system.",
+			notes="")
+	@RequestMapping(value="/transparencies", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<DeveloperACBMapDTO> getDeveloperTransparencies(){
+		List<DeveloperACBMapDTO> developerList = developerManager.getAllTransparencies();
+		return developerList;
+	}
+
 	@ApiOperation(value="Get information about a specific developer.", 
 			notes="")
 	@RequestMapping(value="/{developerId}", method=RequestMethod.GET,

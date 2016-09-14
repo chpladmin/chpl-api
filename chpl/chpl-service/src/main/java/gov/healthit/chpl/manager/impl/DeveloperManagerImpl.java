@@ -91,6 +91,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		return allDevelopers;
 	}
 
+    @Override
+    @Transactional(readOnly = true)
+	public List<DeveloperACBMapDTO> getAllTransparencies() {
+		List<DeveloperACBMapDTO> allDevelopers = developerDao.getAllTransparencyMappings();
+		return allDevelopers;
+	}
+
 	@Override
 	@Transactional(readOnly = true)
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException {
