@@ -330,11 +330,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				}
 				
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY) &&
-						cert.getPrivacySecurityFramework() == null) {
+						StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
 					product.getErrorMessages().add("Privacy and Security Framework is required for certification " + cert.getNumber() + ".");
 				}
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.API_DOCUMENTATION) &&
-						cert.getApiDocumentation() == null) {
+						StringUtils.isEmpty(cert.getApiDocumentation())) {
 					product.getErrorMessages().add("API Documentation is required for certification " + cert.getNumber() + ".");
 				}
 				//jennifer asked to not make functionality tested be a required field
@@ -627,11 +627,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				}
 				
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY) &&
-						cert.getPrivacySecurityFramework() == null) {
+						StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
 					product.getErrorMessages().add("Privacy and Security Framework is required for certification " + cert.getNumber() + ".");
 				}
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.API_DOCUMENTATION) &&
-						cert.getApiDocumentation() == null) {
+						StringUtils.isEmpty(cert.getApiDocumentation())) {
 					product.getErrorMessages().add("API Documentation is required for certification " + cert.getNumber() + ".");
 				}
 				

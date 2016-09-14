@@ -14,6 +14,7 @@ _Date TBD_
 
 ### Bugs fixed
 * Pending 2015 products can now have CQM versions modified
+* API Documentation Link is now correctly validated on upload and edit 
 
 ---
 
