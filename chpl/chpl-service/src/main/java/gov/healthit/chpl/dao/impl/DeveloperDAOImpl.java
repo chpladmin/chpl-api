@@ -412,22 +412,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 
 	private List<DeveloperACBTransparencyMapEntity> getTransparencyMappingEntities() {
-		List<DeveloperACBTransparencyMapEntity> result = entityManager.createQuery( "FROM DeveloperACBTransparencyMapEntity",/*
-
-                                                                                   "SELECT ROW_NUMBER() OVER () AS id"
-                + "  certification_body.certification_body_id, "
-                + "  certification_body.name AS acb_name, "
-                + "  acb_vendor_map.transparency_attestation, "
-                + "  vendor.name AS developer_name, "
-                + "  vendor.vendor_id"
-                + "FROM openchpl.vendor "
-                + "LEFT JOIN openchpl.acb_vendor_map "
-                + "ON acb_vendor_map.vendor_id = vendor.vendor_id"
-                + "LEFT JOIN openchpl.certification_body "
-                + "ON acb_vendor_map.certification_body_id = certification_body.certification_body_id "
-                + "WHERE "
-                + "  (certification_body.deleted = false OR certification_body.deleted IS NULL) AND "
-                + "  vendor.deleted = false", */DeveloperACBTransparencyMapEntity.class).getResultList();
+		List<DeveloperACBTransparencyMapEntity> result = entityManager.createQuery( "FROM DeveloperACBTransparencyMapEntity",DeveloperACBTransparencyMapEntity.class).getResultList();
 		return result;
 	}
 }

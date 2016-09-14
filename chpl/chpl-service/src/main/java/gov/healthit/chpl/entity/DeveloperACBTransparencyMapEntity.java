@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "acb_vendor_transparency_mappings", schema="openchpl")
+@Table(name = "acb_developer_transparency_mappings", schema="openchpl")
 public class DeveloperACBTransparencyMapEntity {
 
 	@Id
