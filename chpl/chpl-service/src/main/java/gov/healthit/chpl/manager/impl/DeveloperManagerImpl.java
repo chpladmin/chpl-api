@@ -124,14 +124,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
 					developerMappingToCreate.setAcbId(acb.getId());
 					developerMappingToCreate.setDeveloperId(before.getId());
 					for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-						if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
+						if(attMap.getAcbName().equals(acb.getName())) {
 							developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());;
 							developerDao.createTransparencyMapping(developerMappingToCreate);
 						}
 					}
 				} else {
 					for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-						if(attMap.getAcbId().longValue() == acb.getId().longValue()) {
+						if(attMap.getAcbName().equals(acb.getName())) {
 							existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
 							developerDao.updateTransparencyMapping(existingMap);
 						}
