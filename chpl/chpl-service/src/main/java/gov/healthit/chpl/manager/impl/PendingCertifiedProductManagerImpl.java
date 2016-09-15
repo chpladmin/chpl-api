@@ -207,6 +207,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		//insert the record
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
 		updateCertResults(pendingCpDto);
+		//pendingCpDto = pcpDao.findById(pendingCpDto.getId());
+		
 		//add appropriate ACLs
 		//who already has access to this ACB?
 		CertificationBodyDTO acb = acbManager.getById(acbId);
