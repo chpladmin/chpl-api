@@ -17,63 +17,19 @@ public class CertificationIdResults {
 		private String name;
 		private Long productId;
 		private String version;
-		private String chplProductNumber;
-		private String year;
-		private String practiceType;
-		private String acb;
-		private String vendor;
-		private String classification;
-		private String additionalSoftware;
 
 		public Product(CertifiedProductDetailsDTO dto) {
 			this.name = dto.getProductName();
 			this.productId = dto.getId();
 			this.version = dto.getProductVersion();
-			if(!StringUtils.isEmpty(dto.getChplProductNumber())) {
-				this.setChplProductNumber(dto.getChplProductNumber());
-			} else {
-				this.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
-						dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
-						"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
-						"." + dto.getCertifiedDateCode());
-			}
-			this.year = dto.getYear();
-			this.practiceType = dto.getPracticeTypeName();
-			this.acb = dto.getCertificationBodyName();
-			this.vendor = dto.getDeveloperName();
-			this.classification = dto.getProductClassificationName();
-			this.additionalSoftware = "";
-			try {
-				if (null != dto.getProductAdditionalSoftware()) {
-					this.additionalSoftware = URLEncoder.encode(dto.getProductAdditionalSoftware(), "UTF-8");
-				}
-			} catch (UnsupportedEncodingException ex) {
-				// Do nothing
-			}
 		}
 
-		public String getYear() {
-			return this.year;
-		}
-		
-		public void setYear(String year) {
-			this.year = year;
-		}
-		
 		public String getVersion() {
 			return this.version;
 		}
 		
 		public void setVersion(String version) {
 			this.version = version;
-		}
-		
-		public String getChplProductNumber() {
-			return this.chplProductNumber;
-		}
-		
-		public void setChplProductNumber(String chplProductNumber) {
-			this.chplProductNumber = chplProductNumber;
 		}
 
 		public String getName() {
@@ -91,46 +47,7 @@ public class CertificationIdResults {
 		public void setProductId(Long id) {
 			this.productId = id;
 		}
-		
-		public String getPracticeType() {
-			return this.practiceType;
-		}
-		
-		public void setPracticeType(String practiceType) {
-			this.practiceType = practiceType;
-		}
-		
-		public String getAcb() {
-			return this.acb;
-		}
-		
-		public void setAcb(String acb) {
-			this.acb = acb;
-		}
-		
-		public String getVendor() {
-			return this.vendor;
-		}
 
-		public void setVendor(String vendor) {
-			this.vendor = vendor;
-		}
-		
-		public String getClassification() {
-			return this.classification;
-		}
-		
-		public void setClassification(String classification) {
-			this.classification = classification;
-		}
-		
-		public String getAdditionalSoftware() {
-			return this.additionalSoftware;
-		}
-		
-		public void setAdditionalSoftware(String software) {
-			this.additionalSoftware = software;
-		}
 	}
 	
 	private List<Product> products;
