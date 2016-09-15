@@ -29,6 +29,7 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -156,13 +157,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<KeyValueModel> getProductNames() {
+	public Set<KeyValueModelStatuses> getProductNames() {
 		
 		List<ProductDTO> productDTOs = this.productDAO.findAll();
-		Set<KeyValueModel> productNames = new HashSet<KeyValueModel>();
+		Set<KeyValueModelStatuses> productNames = new HashSet<KeyValueModelStatuses>();
 		
 		for (ProductDTO dto : productDTOs) {
-			productNames.add(new KeyValueModel(dto.getId(), dto.getName()));
+			productNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
 		}
 		
 		return productNames;
@@ -170,13 +171,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<KeyValueModel> getDeveloperNames() {
+	public Set<KeyValueModelStatuses> getDeveloperNames() {
 		
 		List<DeveloperDTO> developerDTOs = this.developerDAO.findAll();
-		Set<KeyValueModel> developerNames = new HashSet<KeyValueModel>();
+		Set<KeyValueModelStatuses> developerNames = new HashSet<KeyValueModelStatuses>();
 		
 		for (DeveloperDTO dto : developerDTOs) {
-			developerNames.add(new KeyValueModel(dto.getId(), dto.getName()));
+			developerNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
 		}
 		
 		return developerNames;
@@ -356,7 +357,6 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		}
 		return criterionNames;
 	}
-	
 
 	@Transactional
 	@Override

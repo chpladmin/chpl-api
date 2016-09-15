@@ -1,18 +1,21 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -108,5 +111,38 @@ public class ProductDaoTest extends TestCase {
 			fail("could not find product!");
 			System.out.println(ex.getStackTrace());
 		}
+	}
+	
+	/** Description: Tests that the productDAO can create a new product based on the productDTO
+	 * Expected Result: product is created successfully: 
+	 * result is non-null
+	 * result has a non-null id
+	 * Result id > 0
+	 * ProductDAO returns non-null product id
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void createProduct() throws EntityRetrievalException {
+		ProductDTO product = new ProductDTO();
+		product.setCreationDate(new Date());
+		product.setDeleted(false);
+		product.setLastModifiedDate(new Date());
+		product.setLastModifiedUser(-2L);
+		product.setName("Unit Test Developer!");
+		product.setDeveloperId(-1L);
+		
+		ProductDTO result = null;
+		try {
+			result = productDao.create(product);
+		} catch(Exception ex) {
+			fail("could not create product!");
+			System.err.println(ex.getStackTrace());
+		}
+		
+		assertNotNull(result);
+		assertNotNull(result.getId());
+		assertTrue(result.getId() > 0L);
+		assertNotNull(productDao.getById(result.getId()));
 	}
 }

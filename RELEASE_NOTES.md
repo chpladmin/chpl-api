@@ -9,12 +9,15 @@ _Date TBD_
   * Downloads chpl-all by default
 * Allowed c3/c4 to be connected to CQMs
 * Added error messages for c1/2/3/4-CQM mismatch
+* Re-factored Certification Id web services to improve performance
+* Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated.
+* Updated /developers call to be faster
+* Changed /developers/update to update transparency attestation based on acb name, not acb ID
 
 ### Bugs fixed
 * Pending 2015 products can now have CQM versions modified
-
-### Bugs Fixed
-* Re-factored Certification Id web services to improve performance
+* API Documentation Link is now correctly validated on upload and edit 
+* Added new style product number to CAP Activity Report descriptions
 
 ---
 
