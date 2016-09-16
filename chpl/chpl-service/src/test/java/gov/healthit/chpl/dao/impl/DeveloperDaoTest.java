@@ -1,14 +1,17 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
+import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,14 +20,16 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.AddressDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -232,5 +237,36 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(dto);
 		assertEquals("N/A", dto.getTransparencyAttestation());
 		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	/** Description: Tests the getByCreationDate(startDate, endDate) method
+	 * Verifies that results are returned
+	 * Verifies that results are after the startDate and before the endDate
+	 * Expected Result: One or more results
+	 * All results have a creationDate after the startDate and before the endDate
+	 * Assumptions:
+	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+	 * @throws ParseException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_getByCreationDate_ReturnsValidDevelopers() throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ParseException{
+		SecurityContextHolder.getContext().setAuthentication(authUser);
+		
+		SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
+		isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		
+		Date startDate = isoFormat.parse("2016-01-01");
+		Date endDate = isoFormat.parse("2016-09-16");
+		
+		List<DeveloperDTO> result = developerDao.getByCreationDate(startDate, endDate);
+		
+		assertTrue("getByCreationDate() should return valid DeveloperDTO results but returned " + result.size(), result.size() > 0);
+		for(DeveloperDTO dto : result){
+			assertTrue("startDate of " + startDate + " should be before " + dto.getCreationDate(), startDate.before(dto.getCreationDate()));
+			assertTrue("endDate of " + endDate + " should be after " + dto.getCreationDate(), endDate.after(dto.getCreationDate()));
+		}
+
 	}
 }
