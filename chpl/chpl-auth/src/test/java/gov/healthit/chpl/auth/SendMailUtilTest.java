@@ -1,15 +1,13 @@
 package gov.healthit.chpl.auth;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.mail.MessagingException;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,6 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 public class SendMailUtilTest {
 
 	private static JWTAuthenticatedUser adminUser;
-	private static final String DEFAULT_PROPERTIES_FILE = "environment.auth.test.properties";
 	@Autowired
 	private SendMailUtil sendMailUtil;
 
@@ -49,18 +46,6 @@ public class SendMailUtilTest {
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-
-		Properties props = null;
-		InputStream in = SendMailUtilTest.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-
-		if (in == null) {
-			props = null;
-			throw new FileNotFoundException("Environment Properties File not found in class path.");
-		} else {
-			props = new Properties();
-			props.load(in);
-			in.close();
-		}
 	}
 
 	/**
@@ -76,7 +61,7 @@ public class SendMailUtilTest {
 	@Transactional
 	@Rollback(true)
 	@Test
-	// @Ignore
+	@Ignore
 	public void test_sendMailUtil_sendEmailWithAttachments() throws MessagingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		String[] emailRecipients = new String[2];

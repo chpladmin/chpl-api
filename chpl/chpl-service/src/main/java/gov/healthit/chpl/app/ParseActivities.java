@@ -17,10 +17,10 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
-@Component("app")
+@Component("parseActivities")
 public class ParseActivities{
 	private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-	private static final Logger logger = LogManager.getLogger(App.class);
+	private static final Logger logger = LogManager.getLogger(ParseActivities.class);
 	
 	public ParseActivities(){
 		
@@ -62,9 +62,9 @@ public class ParseActivities{
 		 //init spring classes
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		 System.out.println(context.getClassLoader());
-		 App app = new App();
-		 app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
-		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
+//		 App app = new App();
+//		 app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
+//		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
 		 
 	}
 

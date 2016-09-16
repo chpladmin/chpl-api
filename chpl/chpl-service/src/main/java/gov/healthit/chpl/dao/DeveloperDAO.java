@@ -5,6 +5,7 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.DeveloperEntity;
 
+import java.util.Date;
 import java.util.List;
 
 public interface DeveloperDAO {
@@ -22,6 +23,7 @@ public interface DeveloperDAO {
 	public DeveloperDTO getByName(String name);
 	public DeveloperDTO getByCode(String code);
 	public DeveloperDTO getByCertifiedProduct(CertifiedProductDTO cpDto) throws EntityRetrievalException;
+	public List<DeveloperDTO> getByCreationDate(Date startDate, Date endDate);
 	
 	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
 	public void deleteTransparencyMapping(Long vendorId, Long acbId);
