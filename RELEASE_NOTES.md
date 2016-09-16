@@ -13,6 +13,8 @@ _Date TBD_
 * Added statuses object that shows aggregate number of certified products associated with each developer and product. These objects will allow the website search page to filter on a developer/product's number of certified products that are active/retired/withdrawn/suspended/terminated.
 * Updated /developers call to be faster
 * Changed /developers/update to update transparency attestation based on acb name, not acb ID
+* Re-factored Certification Id API controller to support new operations ("create", "search", "verify(GET)")
+* Changed /certification_ids/all operation to just /certification_ids
 
 ### Bugs fixed
 * Pending 2015 products can now have CQM versions modified

@@ -249,6 +249,9 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> productIds) throws EntityRetrievalException {
+		if ((null == productIds) || (productIds.size() == 0))
+			return new ArrayList<CertifiedProductDetailsDTO>();
+
 		Query prodQuery = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) "
 				+ "and certified_product_id in (:productIds)", CertifiedProductDetailsEntity.class );
 		prodQuery.setParameter("productIds", productIds);
