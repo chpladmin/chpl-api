@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao;
 
 import gov.healthit.chpl.dto.CertificationIdDTO;
+import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.entity.CertificationIdEntity;
 
 import java.util.HashMap;
@@ -19,5 +20,6 @@ public interface CertificationIdDAO {
 	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
 	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException;
 	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException;
-	
+	public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds);
+	public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds);
 }

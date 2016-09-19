@@ -25,6 +25,7 @@ public class CertificationIdLookupResults {
 		private String acb;
 		private String vendor;
 		private String classification;
+		private String additionalSoftware;
 
 		public Product(CertifiedProductDetailsDTO dto) {
 			this.id = dto.getId();
@@ -43,6 +44,14 @@ public class CertificationIdLookupResults {
 			this.acb = dto.getCertificationBodyName();
 			this.vendor = dto.getDeveloperName();
 			this.classification = dto.getProductClassificationName();
+            this.additionalSoftware = "";
+            try {
+                if (null != dto.getProductAdditionalSoftware()) {
+                    this.additionalSoftware = URLEncoder.encode(dto.getProductAdditionalSoftware(), "UTF-8");
+                }
+            } catch (UnsupportedEncodingException ex) {
+                // Do nothing
+            }
 		}
 		
 		public Long getId() {
@@ -115,6 +124,14 @@ public class CertificationIdLookupResults {
 		
 		public void setClassification(String classification) {
 			this.classification = classification;
+		}
+
+		public String getAdditionalSoftware() {
+			return this.additionalSoftware;
+		}
+
+		public void setAdditionalSoftware(String additionalSoftware) {
+			this.additionalSoftware = additionalSoftware;
 		}
 	}
 	

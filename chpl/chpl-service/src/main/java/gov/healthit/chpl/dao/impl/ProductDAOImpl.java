@@ -6,21 +6,21 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.ProductEntity;
-import gov.healthit.chpl.entity.DeveloperEntity;
 
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
+	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
 	
 	@Override
 	@Transactional
@@ -214,9 +214,11 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	private List<ProductEntity> getAllEntities() {
 		
 		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
-				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.productCertificationStatuses "
 				+ "where (NOT pe.deleted = true) ", 
 				ProductEntity.class).getResultList();
+		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
 		
 	}

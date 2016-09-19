@@ -40,8 +40,11 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class DeveloperDaoTest extends TestCase {
 
-	@Autowired private DeveloperDAO developerDao;
-	@Autowired private AddressDAO addressDao;
+	@Autowired 
+	private DeveloperDAO developerDao;
+	
+	@Autowired 
+	private AddressDAO addressDao;
 	
 	private static JWTAuthenticatedUser authUser;
 

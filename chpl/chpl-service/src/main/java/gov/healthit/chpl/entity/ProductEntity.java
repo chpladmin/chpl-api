@@ -77,6 +77,11 @@ public class ProductEntity implements Serializable {
 	@JoinColumn(name = "vendor_id", unique=true, nullable = true, insertable=false, updatable=false)
 	private DeveloperEntity developer;
 	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "product_id", unique=true, nullable = true, insertable = false, updatable = false)
+	private ProductCertificationStatusesEntity productCertificationStatuses;
+	
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -90,7 +95,6 @@ public class ProductEntity implements Serializable {
 	public ProductEntity(Long id) {
 		this.id = id;
 	} 
-
  
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
@@ -99,7 +103,6 @@ public class ProductEntity implements Serializable {
 	public Class<?> getClassType() {
 		return ProductEntity.class;
 	}
- 
 
 	 /**
 	 * Return the value associated with the column: creationDate.
@@ -107,7 +110,6 @@ public class ProductEntity implements Serializable {
 	 */
 	public Date getCreationDate() {
 		return this.creationDate;
-		
 	}
 	
 	 /**  
@@ -124,10 +126,7 @@ public class ProductEntity implements Serializable {
 	 */
 	public Boolean isDeleted() {
 		return this.deleted;
-		
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: deleted.
@@ -143,11 +142,8 @@ public class ProductEntity implements Serializable {
 	 */
 	public Long getId() {
 		return this.id;
-		
 	}
 	
-
-  
 	 /**  
 	 * Set the value related to the column: id.
 	 * @param id the id value you wish to set
@@ -163,8 +159,6 @@ public class ProductEntity implements Serializable {
 	public Date getLastModifiedDate() {
 		return this.lastModifiedDate;
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: lastModifiedDate.
@@ -233,8 +227,6 @@ public class ProductEntity implements Serializable {
 		return this.reportFileLocation;
 		
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: reportFileLocation.
@@ -252,8 +244,6 @@ public class ProductEntity implements Serializable {
 		return this.developerId;
 		
 	}
-	
-
   
 	 /**  
 	 * Set the value related to the column: developer.
@@ -262,7 +252,22 @@ public class ProductEntity implements Serializable {
 	public void setDeveloperId(Long developerId) {
 		this.developerId = developerId;
 	}
-
+	
+	/**
+	 * Return the value associated with the column: statuses.
+	 * @return A ProductCertificationStatuses object (this.productCertificationStatuses)
+	 */
+	public ProductCertificationStatusesEntity getProductCertificationStatusesEntity(){
+		return this.productCertificationStatuses;
+	}
+	
+	/**  
+	 * Set the value related to the column: statuses.
+	 * @param productCertificationStatuses the set of aggregate counts for this product's certification statuses
+	 */
+	public void setProductCertificationStatuses(ProductCertificationStatusesEntity productCertificationStatusesEntity){
+		this.productCertificationStatuses = productCertificationStatusesEntity;
+	}
 
 	/** Provides toString implementation.
 	 * @see java.lang.Object#toString()

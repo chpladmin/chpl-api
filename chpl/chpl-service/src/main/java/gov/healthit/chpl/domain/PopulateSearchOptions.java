@@ -8,8 +8,8 @@ public class PopulateSearchOptions {
 	private Set<KeyValueModel> editions;
 	private Set<KeyValueModel> certificationStatuses;
 	private Set<KeyValueModel> practiceTypeNames;
-	private Set<KeyValueModel> productNames;
-	private Set<KeyValueModel> developerNames;
+	private Set<KeyValueModelStatuses> productNames;
+	private Set<KeyValueModelStatuses> developerNames;
 	private Set<KeyValueModel> certBodyNames;
 	private Set<DescriptiveModel> certificationCriterionNumbers;
 	private Set<DescriptiveModel> cqmCriterionNumbers;
@@ -31,16 +31,16 @@ public class PopulateSearchOptions {
 	public void setPracticeTypeNames(Set<KeyValueModel> practiceTypeNames) {
 		this.practiceTypeNames = practiceTypeNames;
 	}
-	public Set<KeyValueModel> getProductNames() {
+	public Set<KeyValueModelStatuses> getProductNames() {
 		return productNames;
 	}
-	public void setProductNames(Set<KeyValueModel> productNames) {
+	public void setProductNames(Set<KeyValueModelStatuses> productNames) {
 		this.productNames = productNames;
 	}
-	public Set<KeyValueModel> getDeveloperNames() {
+	public Set<KeyValueModelStatuses> getDeveloperNames() {
 		return developerNames;
 	}
-	public void setDeveloperNames(Set<KeyValueModel> developerNames) {
+	public void setDeveloperNames(Set<KeyValueModelStatuses> developerNames) {
 		this.developerNames = developerNames;
 	}
 	public Set<KeyValueModel> getCertBodyNames() {

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.KeyValueModel;
+import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchRequest;
@@ -34,7 +36,6 @@ import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Tag;
 
 @Api
 @RestController
@@ -71,7 +72,8 @@ public class SearchViewController {
 					+ "tool of their choosing.")
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="application/xml")
-	public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {	
+	public void download(@RequestParam(value="edition", required=false) String edition, 
+			HttpServletRequest request, HttpServletResponse response) throws IOException {	
 		String downloadFileLocation = env.getProperty("downloadFolderPath");
 		File downloadFile = new File(downloadFileLocation);
 		if(!downloadFile.exists() || !downloadFile.canRead()) {
@@ -86,18 +88,33 @@ public class SearchViewController {
 				response.getWriter().write("No files for download were found in directory " + downloadFileLocation);
 				return;
 			} else {
+				if(!StringUtils.isEmpty(edition)) {
+					//make sure it's a 4 character year
+					edition = edition.trim();
+					if(!edition.startsWith("20")) {
+						edition = "20"+edition;
+					}
+				} else {
+					edition = "all";
+				}
+				
 				File newestFile = null;
 				for(int i = 0; i < children.length; i++) {
-					if(newestFile == null) {
-						newestFile = children[i];
-					} else {
-						if(children[i].lastModified() > newestFile.lastModified()) {
+					if(children[i].getName().contains("-" + edition + "-")) {
+						if(newestFile == null) {
 							newestFile = children[i];
+						} else {
+							if(children[i].lastModified() > newestFile.lastModified()) {
+								newestFile = children[i];
+							}
 						}
 					}
 				}
 				if(newestFile != null) {
 					downloadFile = newestFile;
+				} else {
+					response.getWriter().write("Downloadable files exist, but none were found for certification edition " + edition);
+					return;
 				}
 			}
 		}
@@ -215,7 +232,7 @@ public class SearchViewController {
 			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getProductNames() {
+	public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
 		return searchMenuManager.getProductNames();
 	}
 	
@@ -223,7 +240,7 @@ public class SearchViewController {
 			notes="This is useful for knowing what values one might possibly search for.")
 	@RequestMapping(value="/data/developers", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Set<KeyValueModel> getDeveloperNames() {
+	public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
 		return searchMenuManager.getDeveloperNames();
 	}
 	
