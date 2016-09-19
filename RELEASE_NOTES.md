@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 5.0.0
+_19 September 2016_
 
 ### Features added
 * Add optional argument 'edition' to /download call.
