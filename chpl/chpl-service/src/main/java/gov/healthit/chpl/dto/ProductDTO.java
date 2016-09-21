@@ -35,9 +35,9 @@ public class ProductDTO {
 		if(entity.getProductCertificationStatusesEntity() != null){
 			this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(), 
 					entity.getProductCertificationStatusesEntity().getRetired(), 
-					entity.getProductCertificationStatusesEntity().getWithdrawn(), 
-					entity.getProductCertificationStatusesEntity().getTerminated(), 
-					entity.getProductCertificationStatusesEntity().getSuspended());
+					entity.getProductCertificationStatusesEntity().getWithdrawnByDeveloper(), 
+					entity.getProductCertificationStatusesEntity().getWithdrawnByAcb(), 
+					entity.getProductCertificationStatusesEntity().getSuspendedByAcb());
 		}
 		
 		if(entity.getDeveloper() != null) {
