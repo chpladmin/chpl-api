@@ -3,18 +3,18 @@ package gov.healthit.chpl.domain;
 public class Statuses {
 	private Integer active;
 	private Integer retired;
-	private Integer withdrawn;
-	private Integer terminated;
-	private Integer suspended;
+	private Integer withdrawnByDeveloper;
+	private Integer withdrawnByAcb;
+	private Integer suspendedByAcb;
 	
 	public Statuses(){}
 	
-	public Statuses(Integer active, Integer retired, Integer withdrawn, Integer terminated, Integer suspended){
+	public Statuses(Integer active, Integer retired, Integer withdrawnByDeveloper, Integer withdrawnByAcb, Integer suspendedByAcb){
 		this.active = active;
 		this.retired = retired;
-		this.withdrawn = withdrawn;
-		this.terminated = terminated;
-		this.suspended = suspended;
+		this.withdrawnByDeveloper = withdrawnByDeveloper;
+		this.withdrawnByAcb = withdrawnByAcb;
+		this.suspendedByAcb = suspendedByAcb;
 	}
 	
 	public Integer getActive(){
@@ -33,27 +33,27 @@ public class Statuses {
 		this.retired = retired;
 	}
 	
-	public Integer getWithdrawn(){
-		return this.withdrawn;
+	public Integer getWithdrawnByDeveloper(){
+		return this.withdrawnByDeveloper;
 	}
 	
-	public void setWithdrawn(Integer withdrawn){
-		this.withdrawn = withdrawn;
+	public void setWithdrawnByDeveloper(Integer withdrawnByDeveloper){
+		this.withdrawnByDeveloper = withdrawnByDeveloper;
 	}
 	
-	public Integer getTerminated(){
-		return this.terminated;
+	public Integer getWithdrawnByAcb(){
+		return this.withdrawnByAcb;
 	}
 	
-	public void setTerminated(Integer terminated){
-		this.terminated = terminated;
+	public void setWithdrawnByAcb(Integer withdrawnByAcb){
+		this.withdrawnByAcb = withdrawnByAcb;
 	}
 	
-	public Integer getSuspended(){
-		return this.suspended;
+	public Integer getSuspendedByAcb(){
+		return this.suspendedByAcb;
 	}
 	
-	public void setSuspended(Integer suspended){
-		this.suspended = suspended;
+	public void setSuspendedByAcb(Integer suspendedByAcb){
+		this.suspendedByAcb = suspendedByAcb;
 	}
 }
