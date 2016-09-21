@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -18,6 +20,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -49,6 +52,10 @@ public class ParseActivities{
 		isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Properties props = null;
 		InputStream in = App.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+		HashMap <Date, ActivitiesOutput> outputMap = new HashMap <Date, ActivitiesOutput>();
+		SendMailUtil sendMailUtil = new SendMailUtil();
+		String htmlMessage = null;
+		String toEmail = null;
 		
 		// Check # of command-line arguments
 		switch(numArgs){
@@ -151,12 +158,15 @@ public class ParseActivities{
 			 Integer totalCertifiedProducts_2015 = developerCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 
 			 // Populate ActivitiesOutput
-			 //ActivitiesOutput activitiesOutput = new ActivitiesOutput();
-			 //activitiesOutput.setTotalDevelopers(totalDevelopers);
+			 ActivitiesOutput activitiesOutput = new ActivitiesOutput();
+			 activitiesOutput.setTotalDevelopers(totalDevelopers);
+			 activitiesOutput.setTotalProducts(totalProducts);
+			 activitiesOutput.setTotalCPs(totalCertifiedProducts);
+			 activitiesOutput.setTotalCPs_2014(totalCertifiedProducts_2014);
+			 activitiesOutput.setTotalCPs_2015(totalCertifiedProducts_2015);
 			 
 			 // Populate outputMap
-			 HashMap <Date, ActivitiesOutput> outputMap = new HashMap <Date, ActivitiesOutput>();
-			 //outputMap.put(counterDate, value);
+			 outputMap.put(counterDate, activitiesOutput);
 			 
 			// decrement calendar by 7 days
 			 calendarCounter.add(Calendar.DATE, -numDaysInPeriod);
@@ -170,8 +180,24 @@ public class ParseActivities{
 		 }
 		 
 		 // Generate HTML for email using outputMap
+		 //htmlMessage.
 		 
+		 // Send email
+		 String emailSubject = "CHPL - Weekly Summary Statistics Report";
+		 String[] emailTo = props.getProperty("summaryEmail").toString().split(";");
 		 
+		 //= props.getProperty("summaryEmail");
+		 sendMailUtil.sendEmail(emailTo, emailSubject, htmlMessage);
+		 
+	}
+	
+	public static void printMap(Map mp){
+		Iterator it = mp.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pair = (Map.Entry)it.next();
+	        System.out.println(pair.getKey() + " = " + pair.getValue());
+	        it.remove(); // avoids a ConcurrentModificationException
+	    }
 	}
 	
 	public DeveloperDAO getDeveloperDAO() {
