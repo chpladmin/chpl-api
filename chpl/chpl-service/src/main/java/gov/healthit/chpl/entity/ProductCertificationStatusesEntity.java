@@ -34,14 +34,14 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 	@Column(name = "retired", nullable = false)
 	private Integer retired;
 	
-	@Column(name = "withdrawn", nullable = false)
-	private Integer withdrawn;
+	@Column(name = "withdrawn_by_developer", nullable = false)
+	private Integer withdrawnByDeveloper;
 	
-	@Column(name = "terminated", nullable = false)
-	private Integer terminated;
+	@Column(name = "withdrawn_by_acb", nullable = false)
+	private Integer withdrawnByAcb;
 	
-	@Column(name = "suspended", nullable = false)
-	private Integer suspended;
+	@Column(name = "suspended_by_acb", nullable = false)
+	private Integer suspendedByAcb;
 	
 	public ProductCertificationStatusesEntity(){
 		
@@ -69,13 +69,13 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 	 * @param lastModifiedDate Date object;
 	 * @param lastModifiedUser Long object;
 	 */
-	public ProductCertificationStatusesEntity(Long id, Integer active, Integer retired, Integer withdrawn, Integer terminated, Integer suspended) {
+	public ProductCertificationStatusesEntity(Long id, Integer active, Integer retired, Integer withdrawnByDeveloper, Integer withdrawnByAcb, Integer suspendedByAcb) {
 		this.id = id;
 		this.active = active;
 		this.retired = retired;
-		this.withdrawn = withdrawn;
-		this.terminated = terminated;
-		this.suspended = suspended;
+		this.withdrawnByDeveloper = withdrawnByDeveloper;
+		this.withdrawnByAcb = withdrawnByAcb;
+		this.suspendedByAcb = suspendedByAcb;
 	}
 	
 	/**
@@ -127,51 +127,51 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 	}
 	
 	/**
-	 * Return the value associated with the column: withdrawn.
-	 * @return A Integer object (this.withdrawn)
+	 * Return the value associated with the column: withdrawnByDeveloper.
+	 * @return A Integer object (this.withdrawnByDeveloper)
 	 */
-	public Integer getWithdrawn(){
-		return this.withdrawn;
+	public Integer getWithdrawnByDeveloper(){
+		return this.withdrawnByDeveloper;
 	}
 	
 	/**  
-	 * Set the value related to the column: withdrawn.
-	 * @param withdrawn - the aggregate count of withdrawn certification_statuses
+	 * Set the value related to the column: withdrawnByDeveloper.
+	 * @param withdrawnByDeveloper - the aggregate count of withdrawnByDeveloper certification_statuses
 	 */
-	public void setWithdrawn(Integer withdrawn){
-		this.withdrawn = withdrawn;
+	public void setWithdrawnByDeveloper(Integer withdrawnByDeveloper){
+		this.withdrawnByDeveloper = withdrawnByDeveloper;
 	}
 	
 	/**
-	 * Return the value associated with the column: terminated.
-	 * @return A Integer object (this.terminated)
+	 * Return the value associated with the column: withdrawnByAcb.
+	 * @return A Integer object (this.withdrawnByAcb)
 	 */
-	public Integer getTerminated(){
-		return this.terminated;
+	public Integer getWithdrawnByAcb(){
+		return this.withdrawnByAcb;
 	}
 	
 	/**  
-	 * Set the value related to the column: terminated.
-	 * @param terminated - the aggregate count of terminated certification_statuses
+	 * Set the value related to the column: withdrawnByAcb.
+	 * @param withdrawnByAcb - the aggregate count of withdrawnByAcb certification_statuses
 	 */
-	public void setTerminated(Integer terminated){
-		this.terminated = terminated;
+	public void setWithdrawnByAcb(Integer withdrawnByAcb){
+		this.withdrawnByAcb = withdrawnByAcb;
 	}
 	
 	/**
-	 * Return the value associated with the column: suspended.
-	 * @return A Integer object (this.suspended)
+	 * Return the value associated with the column: suspendedByAcb.
+	 * @return A Integer object (this.suspendedByAcb)
 	 */
-	public Integer getSuspended(){
-		return this.suspended;
+	public Integer getSuspendedByAcb(){
+		return this.suspendedByAcb;
 	}
 	
 	/**  
-	 * Set the value related to the column: suspended.
-	 * @param suspended - the aggregate count of suspended certification_statuses
+	 * Set the value related to the column: suspendedByAcb.
+	 * @param suspendedByAcb - the aggregate count of suspendedByAcb certification_statuses
 	 */
-	public void setSuspended(Integer suspended){
-		this.suspended = suspended;
+	public void setSuspendedByAcb(Integer suspendedByAcb){
+		this.suspendedByAcb = suspendedByAcb;
 	}
 	
 	/** Provides toString implementation.
@@ -185,8 +185,9 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 		sb.append("id: " + this.getId() + ", ");
 		sb.append("active: " + this.getActive() + ", ");
 		sb.append("retired: " + this.getRetired() + ", ");
-		sb.append("withdrawn: " + this.getWithdrawn() + ", ");
-		sb.append("terminated: " + this.getTerminated());
+		sb.append("withdrawnByDeveloper: " + this.getWithdrawnByDeveloper() + ", ");
+		sb.append("withdrawnByAcb: " + this.getWithdrawnByAcb());
+		sb.append("suspendedByAcb: " + this.getSuspendedByAcb());
 		return sb.toString();		
 	}
 }
