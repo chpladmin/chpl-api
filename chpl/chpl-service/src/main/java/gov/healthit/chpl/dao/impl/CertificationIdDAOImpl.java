@@ -21,6 +21,8 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CQMMetDTO;
+import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
+import gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity;
 import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 
@@ -198,6 +200,18 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	}
 
 	@Override
+	public List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts() {
+		List<CertificationIdAndCertifiedProductEntity> entities = getAllCertificationIdsWithProductsEntities();
+		
+		List<CertificationIdAndCertifiedProductDTO> results = new ArrayList<CertificationIdAndCertifiedProductDTO>();
+		for(CertificationIdAndCertifiedProductEntity entity : entities) {
+			CertificationIdAndCertifiedProductDTO dto = new CertificationIdAndCertifiedProductDTO(entity);
+			results.add(dto);
+		}
+		return results;
+	}
+	
+	@Override
 	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
 
 		Query query = entityManager.createQuery( "select certifiedProductId from CertificationIdProductMapEntity where certificationIdId = :id ", Long.class );
@@ -358,6 +372,11 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         
         return numbersString.toUpperCase();
     }
+	
+	private List<CertificationIdAndCertifiedProductEntity> getAllCertificationIdsWithProductsEntities() {
+		
+		return entityManager.createQuery("from CertificationIdAndCertifiedProductEntity", CertificationIdAndCertifiedProductEntity.class).getResultList();
+	}
 	
 	private static String generateCertificationIdString(String year) {
 		// Form the EHR Certification ID prefix and edition year identifier.
