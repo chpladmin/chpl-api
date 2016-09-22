@@ -7,11 +7,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
@@ -54,6 +56,7 @@ public class ParseActivities{
 		InputStream in = App.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 		HashMap <Date, ActivitiesOutput> outputMap = new HashMap <Date, ActivitiesOutput>();
 		SendMailUtil sendMailUtil = new SendMailUtil();
+		StringBuilder stringBuilder = new StringBuilder();
 		String htmlMessage = null;
 		String toEmail = null;
 		
@@ -137,6 +140,9 @@ public class ParseActivities{
 		 // Note2: totals for each each value of ActivitiesOutput are rolling values that show totals up to the key value
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		 calendarCounter.setTime(endDate);
+		 stringBuilder.append("+-----------+------------------+----------------+----------------+----------------+\n"
+				   +  		  "| Date	   | Total Developers | Total Products | Total 2014 CPs | Total 2015 CPs |\n"
+				   +  		  "+-----------+------------------+----------------+----------------+----------------+\n");
 		 while(startDate.before(calendarCounter.getTime())){
 			 Date counterDate = calendarCounter.getTime();
 			 TimePeriod timePeriod = new TimePeriod(counterDate, numDaysInPeriod);
@@ -165,40 +171,51 @@ public class ParseActivities{
 			 activitiesOutput.setTotalCPs_2014(totalCertifiedProducts_2014);
 			 activitiesOutput.setTotalCPs_2015(totalCertifiedProducts_2015);
 			 
-			 // Populate outputMap
+			 // Populate string for email
 			 outputMap.put(counterDate, activitiesOutput);
+			 Integer endDateDay = timePeriod.getEndDate().getDay();
+			 String endDateMonth = timePeriod.getMonthForInt(timePeriod.getEndDate().getMonth());
+			 Integer endDateYear = timePeriod.getEndDate().getYear();
+			 String dateOutput = endDateDay.toString() + " " + endDateMonth.toString() + " " + endDateYear.toString();
 			 
-			// decrement calendar by 7 days
-			 calendarCounter.add(Calendar.DATE, -numDaysInPeriod);
-			 // Test output
-			 System.out.println(timePeriod.getStartDate().toString() + " - " + timePeriod.getEndDate().toString() + "\n");
-			 System.out.println("Total developers: " + totalDevelopers + "\n");
-			 System.out.println("Total products: " + totalProducts + "\n");
-			 System.out.println("Total certified products: " + totalCertifiedProducts + "\n");
-			 System.out.println("Total certified products in 2014: " + certifiedProductCount_2014 + "\n");
-			 System.out.println("Total certified products in 2015: " + certifiedProductCount_2015 + "\n");
+			 // calendarCounter.DAY_OF_WEEK + " " + timePeriod.getMonthForInt(calendarCounter.MONTH) + " " + calendarCounter.YEAR
+			 //String appendedString = String.format("|%11s|%19d|%17d|%17d|%16d|", dateOutput, totalDevelopers, totalProducts, totalCertifiedProducts_2014, totalCertifiedProducts_2015);
+			 stringBuilder.append(String.format("|%11s|%19d|%17d|%17d|%16d|\n", dateOutput, totalDevelopers, totalProducts, totalCertifiedProducts_2014, totalCertifiedProducts_2015));
+			 stringBuilder.append("+-----------+------------------+----------------+----------------+----------------+\n");
+			 
+			 // decrement calendar by 7 days
+			 calendarCounter.add(Calendar.DATE, -numDaysInPeriod);	 
+			
+//			 System.out.println(timePeriod.getStartDate().toString() + " - " + timePeriod.getEndDate().toString() + "\n");
+//			 System.out.println("Total developers: " + totalDevelopers + "\n");
+//			 System.out.println("Total products: " + totalProducts + "\n");
+//			 System.out.println("Total certified products: " + totalCertifiedProducts + "\n");
+//			 System.out.println("Total certified products in 2014: " + certifiedProductCount_2014 + "\n");
+//			 System.out.println("Total certified products in 2015: " + certifiedProductCount_2015 + "\n");
 		 }
 		 
 		 // Generate HTML for email using outputMap
-		 //htmlMessage.
+		 System.out.print(stringBuilder);
+
+		 
+		 //Set<Date> hashSet = outputMap.keySet();
 		 
 		 // Send email
-		 String emailSubject = "CHPL - Weekly Summary Statistics Report";
-		 String[] emailTo = props.getProperty("summaryEmail").toString().split(";");
-		 
-		 //= props.getProperty("summaryEmail");
-		 sendMailUtil.sendEmail(emailTo, emailSubject, htmlMessage);
+//		 String emailSubject = "CHPL - Weekly Summary Statistics Report";
+//		 String[] emailTo = props.getProperty("summaryEmail").toString().split(";");
+//		 sendMailUtil.sendEmail(emailTo, emailSubject, htmlMessage);
 		 
 	}
 	
-	public static void printMap(Map mp){
-		Iterator it = mp.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
-	        System.out.println(pair.getKey() + " = " + pair.getValue());
-	        it.remove(); // avoids a ConcurrentModificationException
-	    }
-	}
+//	public String populateEmailFromMap(String emailMessage, Map mp){
+//		Iterator it = mp.entrySet().iterator();
+//	    while (it.hasNext()) {
+//	        Map.Entry pair = (Map.Entry)it.next();
+//	        System.out.println(pair.getKey() + " = " + pair.getValue());
+//	        it.remove(); // avoids a ConcurrentModificationException
+//	    }
+//	    return emailMessage;
+//	}
 	
 	public DeveloperDAO getDeveloperDAO() {
 		return developerDAO;

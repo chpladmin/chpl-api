@@ -1,5 +1,6 @@
 package gov.healthit.chpl.app;
 
+import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -54,4 +55,14 @@ public class TimePeriod {
 	public void setNumDaysInPeriod(Integer numDays){
 		this.numDaysInPeriod = numDays;
 	}
+	
+	public String getMonthForInt(int num) {
+        String month = "wrong";
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        if (num >= 0 && num <= 11 ) {
+            month = months[num];
+        }
+        return month;
+    }
 }
