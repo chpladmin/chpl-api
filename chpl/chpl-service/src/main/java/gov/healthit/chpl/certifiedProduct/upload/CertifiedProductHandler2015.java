@@ -38,6 +38,8 @@ import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.CertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
@@ -1065,6 +1067,11 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						if(cert != null) {
 							PendingCqmCertificationCriteriaEntity certEntity = new PendingCqmCertificationCriteriaEntity();
 							certEntity.setCertificationId(cert.getId());
+							CertificationCriterionEntity criteriaEntity = new CertificationCriterionEntity();
+							criteriaEntity.setId(cert.getId());
+							criteriaEntity.setNumber(cert.getNumber());
+							criteriaEntity.setTitle(cert.getTitle());
+							certEntity.setCertificationCriteria(criteriaEntity);
 							currResult.getCertifications().add(certEntity);
 						} else {
 							product.getErrorMessages().add("Could not find a certification criteria matching " + currCriteria + " for product " + product.getUniqueId());

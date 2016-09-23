@@ -152,16 +152,16 @@ public class ParseActivities{
 			 Integer totalDevelopers = developerCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 // Get aggregate count for products
 			 AggregateCount productCount = new AggregateCount(productDTOs);
-			 Integer totalProducts = developerCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
+			 Integer totalProducts = productCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 // Get aggregate count for certified products
 			 AggregateCount certifiedProductCount = new AggregateCount(certifiedProductDTOs);
-			 Integer totalCertifiedProducts = developerCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
+			 Integer totalCertifiedProducts = certifiedProductCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 // Get aggregate count for CPs_2014
 			 AggregateCount certifiedProductCount_2014 = new AggregateCount(certifiedProductDTOs_2014);
-			 Integer totalCertifiedProducts_2014 = developerCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
+			 Integer totalCertifiedProducts_2014 = certifiedProductCount_2014.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 // Get aggregate count for CPs_2015
 			 AggregateCount certifiedProductCount_2015 = new AggregateCount(certifiedProductDTOs_2015);
-			 Integer totalCertifiedProducts_2015 = developerCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
+			 Integer totalCertifiedProducts_2015 = certifiedProductCount_2015.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 
 			 // Populate ActivitiesOutput
 			 ActivitiesOutput activitiesOutput = new ActivitiesOutput();
@@ -204,7 +204,7 @@ public class ParseActivities{
 //		 String emailSubject = "CHPL - Weekly Summary Statistics Report";
 //		 String[] emailTo = props.getProperty("summaryEmail").toString().split(";");
 //		 sendMailUtil.sendEmail(emailTo, emailSubject, htmlMessage);
-		 
+		 context.close();
 	}
 	
 //	public String populateEmailFromMap(String emailMessage, Map mp){

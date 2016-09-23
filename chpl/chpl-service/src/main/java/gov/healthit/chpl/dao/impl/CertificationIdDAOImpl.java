@@ -20,6 +20,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
+import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 
@@ -132,6 +133,33 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		
 	}
 
+	@Override
+	public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds) {
+		List<String> results = new ArrayList<String>();
+		if ((null != productIds) && (productIds.size() > 0)) {
+			Query query = entityManager.createQuery( "SELECT number FROM CertificationResultDetailsEntity WHERE success = TRUE AND deleted = FALSE AND certified_product_id IN :productIds GROUP BY number",
+						String.class);
+			query.setParameter("productIds", productIds);
+			results = query.getResultList();
+		}
+		return results;
+	}
+	
+	@Override
+	public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
+		List<CQMMetDTO> dtos = new ArrayList<CQMMetDTO>();
+		if ((null != productIds) && (productIds.size() > 0)) {
+			Query query = entityManager.createQuery( "SELECT new gov.healthit.chpl.dto.CQMMetDTO(crde.cmsId, crde.version, crde.domain) FROM CQMResultDetailsEntity AS crde"
+					+ " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :productIds "
+					+ " AND crde.cmsId IS NOT NULL"
+					+ " GROUP BY crde.cmsId, crde.version, crde.domain");
+			query.setParameter("productIds", productIds);
+			dtos = query.getResultList();
+		}
+		
+		return dtos;
+	}
+	
 	@Override
 	public List<CertificationIdDTO> findAll() {
 		

@@ -43,18 +43,16 @@ import io.swagger.annotations.Authorization;
 @RestController
 @RequestMapping("/developers")
 public class DeveloperController {
-	
+
 	@Autowired DeveloperManager developerManager;
 	@Autowired ProductManager productManager;
 	@Autowired CertifiedProductManager cpManager;
-	
-	@ApiOperation(value="List all developers in the system.", 
-			notes="")
-	@RequestMapping(value="/", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
+
+	@ApiOperation(value="List all developers in the system.", notes="")
+	@RequestMapping(value="/", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public @ResponseBody DeveloperResults getDevelopers(){
-		List<DeveloperDTO> developerList = developerManager.getAll();		
-		
+		List<DeveloperDTO> developerList = developerManager.getAll();
+
 		List<Developer> developers = new ArrayList<Developer>();
 		if(developerList != null && developerList.size() > 0) {
 			for(DeveloperDTO dto : developerList) {
@@ -62,12 +60,12 @@ public class DeveloperController {
 				developers.add(result);
 			}
 		}
-		
+
 		DeveloperResults results = new DeveloperResults();
 		results.setDevelopers(developers);
 		return results;
 	}
-	
+
 	@ApiOperation(value="Get information about a specific developer.", 
 			notes="")
 	@RequestMapping(value="/{developerId}", method=RequestMethod.GET,

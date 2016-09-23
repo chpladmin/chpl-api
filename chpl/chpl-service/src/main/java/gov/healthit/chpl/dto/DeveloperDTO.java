@@ -45,9 +45,9 @@ public class DeveloperDTO {
 		if(entity.getDeveloperCertificationStatusesEntity() != null){
 			this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(), 
 					entity.getDeveloperCertificationStatusesEntity().getRetired(), 
-					entity.getDeveloperCertificationStatusesEntity().getWithdrawn(), 
-					entity.getDeveloperCertificationStatusesEntity().getTerminated(), 
-					entity.getDeveloperCertificationStatusesEntity().getSuspended());
+					entity.getDeveloperCertificationStatusesEntity().getWithdrawnByDeveloper(), 
+					entity.getDeveloperCertificationStatusesEntity().getWithdrawnByAcb(), 
+					entity.getDeveloperCertificationStatusesEntity().getSuspendedByAcb());
 		}
 	}
 	

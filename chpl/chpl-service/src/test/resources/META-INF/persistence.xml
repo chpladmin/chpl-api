@@ -43,6 +43,7 @@
 		<class>gov.healthit.chpl.entity.CQMResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperACBMapEntity</class>
+		<class>gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperCertificationStatusesEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperEntity</class>
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>

@@ -148,7 +148,8 @@ public class SearchMenuManagerTest {
 	 * Verifies that each developer has a statuses object
 	 * Verifies that each property of the statuses object is non-null
 	 * Expected Result: Each developer has a statuses object with a non-null value
-	 * Each statuses object has a valid integer value for active, retired, withdrawn, suspended, and terminated
+	 * Each statuses object has a valid integer value for active, retired, withdrawn by developer, 
+	 * suspended by acb, and withdrawn by acb
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
@@ -167,14 +168,14 @@ public class SearchMenuManagerTest {
 			assertTrue("Statuses.retired should not be null", status.getRetired() != null);
 			assertTrue("Statuses.retired should be >= 0", status.getRetired() >= 0);
 			
-			assertTrue("Statuses.withdrawn should not be null", status.getWithdrawn() != null);
-			assertTrue("Statuses.withdrawn should be >= 0", status.getWithdrawn() >= 0);
+			assertTrue("Statuses.withdrawnByDeveloper should not be null", status.getWithdrawnByDeveloper() != null);
+			assertTrue("Statuses.withdrawnByDeveloper should be >= 0", status.getWithdrawnByDeveloper() >= 0);
 			
-			assertTrue("Statuses.suspended should not be null", status.getSuspended() != null);
-			assertTrue("Statuses.suspended should be >= 0", status.getSuspended() >= 0);
+			assertTrue("Statuses.suspendedByAcb should not be null", status.getSuspendedByAcb() != null);
+			assertTrue("Statuses.suspendedByAcb should be >= 0", status.getSuspendedByAcb() >= 0);
 			
-			assertTrue("Statuses.terminated should not be null", status.getTerminated() != null);
-			assertTrue("Statuses.terminated should be >= 0", status.getTerminated() >= 0);
+			assertTrue("Statuses.withdrawnByAcb should not be null", status.getWithdrawnByAcb() != null);
+			assertTrue("Statuses.withdrawnByAcb should be >= 0", status.getWithdrawnByAcb() >= 0);
 		}
 	}
 	
@@ -182,7 +183,8 @@ public class SearchMenuManagerTest {
 	 * Verifies that each product has a statuses object
 	 * Verifies that each property of the statuses object is non-null
 	 * Expected Result: Each product has a statuses object with a non-null value
-	 * Each statuses object has a valid integer value for active, retired, withdrawn, suspended, and terminated
+	 * Each statuses object has a valid integer value for active, retired, withdrawn by developer, 
+	 * suspended by acb, and withdrawn by acb
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
@@ -201,14 +203,14 @@ public class SearchMenuManagerTest {
 			assertTrue("Statuses.retired should not be null", status.getRetired() != null);
 			assertTrue("Statuses.retired should be >= 0", status.getRetired() >= 0);
 			
-			assertTrue("Statuses.withdrawn should not be null", status.getWithdrawn() != null);
-			assertTrue("Statuses.withdrawn should be >= 0", status.getWithdrawn() >= 0);
+			assertTrue("Statuses.withdrawnByDeveloper should not be null", status.getWithdrawnByDeveloper() != null);
+			assertTrue("Statuses.withdrawnByDeveloper should be >= 0", status.getWithdrawnByDeveloper() >= 0);
 			
-			assertTrue("Statuses.suspended should not be null", status.getSuspended() != null);
-			assertTrue("Statuses.suspended should be >= 0", status.getSuspended() >= 0);
+			assertTrue("Statuses.suspendedByAcb should not be null", status.getSuspendedByAcb() != null);
+			assertTrue("Statuses.suspendedByAcb should be >= 0", status.getSuspendedByAcb() >= 0);
 			
-			assertTrue("Statuses.terminated should not be null", status.getTerminated() != null);
-			assertTrue("Statuses.terminated should be >= 0", status.getTerminated() >= 0);
+			assertTrue("Statuses.withdrawnByAcb should not be null", status.getWithdrawnByAcb() != null);
+			assertTrue("Statuses.withdrawnByAcb should be >= 0", status.getWithdrawnByAcb() >= 0);
 		}
 	}
 }
