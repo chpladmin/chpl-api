@@ -92,7 +92,6 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setQmsTesting(dto.getQmsTesting());
 			searchResult.setAccessibilityCertified(dto.getAccessibilityCertified());
 			searchResult.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
-			searchResult.setTermsOfUse(dto.getTermsOfUse());
 			searchResult.setTransparencyAttestation(dto.getTransparencyAttestation());
 			searchResult.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 			

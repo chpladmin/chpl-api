@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
