@@ -32,7 +32,6 @@ public class CertifiedProductSearchDetails {
 	private Integer countCorrectiveActionPlans;
 	private Integer countCurrentCorrectiveActionPlans;
 	private Integer countClosedCorrectiveActionPlans;
-	private String termsOfUse;
 	private Boolean ics;
 	private Boolean accessibilityCertified;
 	private String productAdditionalSoftware;
@@ -184,12 +183,7 @@ public class CertifiedProductSearchDetails {
 	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
 		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
 	}
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
-	}
+
 	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}

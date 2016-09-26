@@ -32,7 +32,6 @@ public class CertifiedProductDTO {
 	private Long testingLabId;
 	private Long certificationStatusId;
 	private String otherAcb;
-	private String termsOfUse;
 	private String transparencyAttestationUrl;
 	private Boolean ics;
 	private Boolean sedTesting;
@@ -69,7 +68,6 @@ public class CertifiedProductDTO {
 		this.testingLabId = entity.getTestingLabId();		
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
-		this.setTermsOfUse(entity.getTermsOfUse());
 		this.setIcs(entity.getIcs());
 		this.setSedTesting(entity.getSedTesting());
 		this.setQmsTesting(entity.getQmsTesting());
@@ -223,14 +221,6 @@ public class CertifiedProductDTO {
 
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
-	}
-
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
 	}
 
 	public Boolean getTransparencyAttestation() {

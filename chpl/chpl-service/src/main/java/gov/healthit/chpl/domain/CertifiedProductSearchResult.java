@@ -25,7 +25,6 @@ public class CertifiedProductSearchResult {
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	private Long certificationDate;
-	private String termsOfUse;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
@@ -140,12 +139,6 @@ public class CertifiedProductSearchResult {
 	}
 	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
 		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
 	}
 	public String getTransparencyAttestation() {
 		return transparencyAttestation;

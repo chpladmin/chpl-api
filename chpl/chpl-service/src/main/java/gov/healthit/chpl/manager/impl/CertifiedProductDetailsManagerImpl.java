@@ -185,7 +185,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		searchDetails.setTransparencyAttestation(dto.getTransparencyAttestation());
 
-		searchDetails.setTermsOfUse(dto.getTermsOfUse());
 		searchDetails.setLastModifiedDate(dto.getLastModifiedDate().getTime());
 		
 		searchDetails.setCountCerts(dto.getCountCertifications());
