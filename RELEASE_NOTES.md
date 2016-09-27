@@ -5,6 +5,7 @@ _Date TBD_
 
 ### Features Added
 * Changed certification status names previously known as Suspended, Terminated, and Withdrawn.
+* Created Java program to send weekly email with aggregate counts for developers, products, certified products, and 2014 + 2015 CPs
 
 ### Bugs Fixed
 
