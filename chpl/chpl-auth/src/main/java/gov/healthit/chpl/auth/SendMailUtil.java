@@ -55,17 +55,26 @@ public class SendMailUtil {
 		properties.put("mail.smtp.port", env.getProperty("smtpPort"));
 		properties.put("mail.smtp.auth", "true");
 		properties.put("mail.smtp.starttls.enable", "true");
+		properties.put("smtpUsername", env.getProperty("smtpUsername"));
+		properties.put("smtpPassword", env.getProperty("smtpPassword"));
+		properties.put("smtpFrom", env.getProperty("smtpFrom"));
 
 		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
 		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
 		logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
 		logger.debug("Mail Password: " + env.getProperty("smtpPassword"));
 
+		sendEmail(toEmail, subject, htmlMessage, properties);
+	}
+
+	public void sendEmail(String[] toEmail, String subject, String htmlMessage, Properties properties)
+			throws AddressException, MessagingException {
 		// creates a new session with an authenticator
 		javax.mail.Authenticator auth = new javax.mail.Authenticator() {
 			@Override
 			public PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(env.getProperty("smtpUsername"), env.getProperty("smtpPassword"));
+				return new PasswordAuthentication(properties.getProperty("smtpUsername"),
+						properties.getProperty("smtpPassword"));
 			}
 		};
 
@@ -75,11 +84,11 @@ public class SendMailUtil {
 		Message msg = new MimeMessage(session);
 
 		try {
-			InternetAddress fromEmail = new InternetAddress(env.getProperty("smtpFrom"));
+			InternetAddress fromEmail = new InternetAddress(properties.getProperty("smtpFrom"));
 			msg.setFrom(fromEmail);
-			logger.debug("Sending email from " + env.getProperty("smtpFrom"));
+			logger.debug("Sending email from " + properties.getProperty("smtpFrom"));
 		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + env.getProperty("smtpFrom"), ex);
+			logger.fatal("Invalid Email Address: " + properties.getProperty("smtpFrom"), ex);
 			throw ex;
 		}
 

@@ -1,24 +1,37 @@
 package gov.healthit.chpl.app;
 
+import java.util.Properties;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 
+@Component("email")
 public class Email {
 	@Autowired
 	SendMailUtil sendMailUtil;
-	String[] emailTo = {"dlucas@ainq.com"};
-	String emailSubject;
-	String emailMessage;
-	
+	private String[] emailTo;
+	private String emailSubject;
+	private String emailMessage;
+	private Properties props;
+
 	public Email(){
 	}
 	
 	public void sendSummaryEmail() throws AddressException, MessagingException {
-		sendMailUtil.sendEmail(emailTo, emailSubject, emailMessage);
+		sendMailUtil.sendEmail(emailTo, emailSubject, emailMessage, props);
+	}
+	
+	public SendMailUtil getSendMailUtil(){
+		return this.sendMailUtil;
+	}
+	
+	public void setSendMailUtil(SendMailUtil sendMailUtil){
+		this.sendMailUtil = sendMailUtil;
 	}
 	
 	public String getEmailSubject(){
@@ -45,4 +58,11 @@ public class Email {
 		this.emailMessage = emailMessage;
 	}
 	
+	public Properties getProps() {
+		return props;
+	}
+
+	public void setProps(Properties props) {
+		this.props = props;
+	}
 }

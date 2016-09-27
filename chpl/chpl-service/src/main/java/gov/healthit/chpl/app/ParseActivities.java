@@ -11,22 +11,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.BeforeClass;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.ContextConfiguration;
 
-import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -42,59 +32,19 @@ public class ParseActivities{
 	private DeveloperDAO developerDAO;
 	private CertifiedProductDAO certifiedProductDAO;
 	private ProductDAO productDAO;
-	// 22 character wide columnOutline
+	private Email email;
+	private static Date startDate;
+	private static Date endDate;
+	private static Integer numDaysInPeriod = 7;
 	
 	public ParseActivities(){
 	}
 
 	public static void main( String[] args ) throws Exception {
-		// Command-line argument [0]
-		Date startDate = new Date();
-		// Command-line argument [1]
-		Date endDate = new Date();
-		// Command-line argument [2]
-		Integer numDaysInPeriod = 7;
-		Integer numArgs = args.length;
-		SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
-		isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		ParseActivities parseActivities = new ParseActivities();
+		parseActivities.setCommandLineArgs(args);
 		Properties props = null;
 		InputStream in = App.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-		
-		//StringBuilder stringBuilder = new StringBuilder();
-		
-		// Check # of command-line arguments
-		switch(numArgs){
-		case 0:
-			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
-		case 1:
-			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
-		case 2:
-			try{
-				startDate = isoFormat.parse(args[0]);
-				endDate = isoFormat.parse(args[1]);
-			}
-			catch(ParseException e){
-				throw new ParseException("Please enter startDate and endDate command-line arguments in the format of yyyy-MM-dd", e.getErrorOffset());
-			}
-			break;
-		case 3:
-			try{
-				startDate = isoFormat.parse(args[0]);
-				endDate = isoFormat.parse(args[1]);
-			}
-			catch(ParseException e){
-				throw new ParseException("Please enter startDate and endDate command-line arguments in the format of yyyy-MM-dd", e.getErrorOffset());
-			}
-			try{
-				Integer numDaysArg = Integer.parseInt(args[2]);
-				numDaysInPeriod = numDaysArg;
-			} catch(NumberFormatException e){
-				System.out.println("Third command line argument could not be parsed to integer. " + e.getMessage());
-			}
-			break;
-		default:
-			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
-		}	
 		
 		// Load properties from Environment.properties
 		if (in == null) {
@@ -106,6 +56,11 @@ public class ParseActivities{
 			in.close();
 		}
 		
+		props.put("mail.smtp.host", props.getProperty("smtpHost"));
+		props.put("mail.smtp.port", props.getProperty("smtpPort"));
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+		
 		//set up data source context
 		 LocalContext ctx = LocalContextFactory.createLocalContext(props.getProperty("dbDriverClass"));
 		 ctx.addDataSource(props.getProperty("dataSourceName"),props.getProperty("dataSourceConnection"), 
@@ -114,10 +69,11 @@ public class ParseActivities{
 		 //init spring classes
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		 System.out.println(context.getClassLoader());
-		 ParseActivities parseActivities = new ParseActivities();
+
 		 parseActivities.setDeveloperDAO((DeveloperDAO)context.getBean("developerDAO"));
 		 parseActivities.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
 		 parseActivities.setProductDAO((ProductDAO)context.getBean("productDAO"));
+		 parseActivities.setEmail((Email)context.getBean("email"));
 		 
 		 // get DTOs
 		 List<DeveloperDTO> developerDTOs = parseActivities.developerDAO.findAll();
@@ -136,14 +92,14 @@ public class ParseActivities{
 			 }
 		 }
 		 
-		 // Get endDate for most recent week (defined as Sunday-Saturday)
+		 // Get endDate for most recent week
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		 calendarCounter.setTime(endDate);
 		 
-		 Table table = new Table();
-		 table.setColumnOutline("+---------------------");
-		 table.generateTableHeader();
+
 		 
+		 // Get activities
+		 List<ActivitiesOutput> activitiesList = new ArrayList<ActivitiesOutput>();
 		 while(startDate.before(calendarCounter.getTime())){
 			 Date counterDate = calendarCounter.getTime();
 			 TimePeriod timePeriod = new TimePeriod(counterDate, numDaysInPeriod);
@@ -172,21 +128,80 @@ public class ParseActivities{
 			 activitiesOutput.setTotalCPs_2014(totalCertifiedProducts_2014);
 			 activitiesOutput.setTotalCPs_2015(totalCertifiedProducts_2015);
 			 
-			 table.generateTableDataRow(activitiesOutput, timePeriod);
+			 activitiesList.add(activitiesOutput);
+			 
+			 //table.generateTableDataRow(activitiesOutput, timePeriod);
 			 
 			 // decrement calendar by 7 days
 			 calendarCounter.add(Calendar.DATE, -numDaysInPeriod);	 
 		 } 
 		 
-		 System.out.print(table.getTable().toString());
+		 // Generate comma separated data for table creation
+		 List<String> commaSeparatedRowOutput = new ArrayList<String>();
+		 for(ActivitiesOutput activity : activitiesList){
+			 commaSeparatedRowOutput.add(activity.getTotalDevelopers() + "," + activity.getTotalProducts() + "," + activity.getTotalCPs() + "," + 
+		 activity.getTotalCPs_2014() + "," + activity.getTotalCPs_2015());
+		 }
+		 
+		 // set table headers
+		 List<String> tableHeaders = new ArrayList<String>();
+		 tableHeaders.add("Date");
+		 tableHeaders.add("Total Developers");
+		 tableHeaders.add("Total Products");
+		 tableHeaders.add("Total CPs");
+		 tableHeaders.add("Total 2014 CPs");
+		 tableHeaders.add("Total 2015 CPs");
+		 
+		 Table table = new Table(commaSeparatedRowOutput, tableHeaders, '+', '-');
+
+		 
+		 //System.out.print(table.getTable().toString());
 		 
 		 // Send email
-		 Email email = new Email();
-		 email.setEmailTo(props.getProperty("summaryEmail").toString().split(";"));
-		 email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
-		 email.setEmailMessage(table.getTable().toString());
-		 email.sendSummaryEmail();
+		 parseActivities.email.setEmailTo(props.getProperty("summaryEmail").toString().split(";"));
+		 parseActivities.email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
+		 parseActivities.email.setEmailMessage(table.getTable().toString());
+		 parseActivities.email.setProps(props);
+		 parseActivities.email.sendSummaryEmail();
 		 context.close();
+	}
+	
+	private void setCommandLineArgs(String[] args) throws Exception{
+		SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
+		isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		Integer numArgs = args.length;
+		switch(numArgs){
+		case 0:
+			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
+		case 1:
+			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
+		case 2:
+			try{
+				ParseActivities.startDate = isoFormat.parse(args[0]);
+				ParseActivities.endDate = isoFormat.parse(args[1]);
+			}
+			catch(ParseException e){
+				throw new ParseException("Please enter startDate and endDate command-line arguments in the format of yyyy-MM-dd", e.getErrorOffset());
+			}
+			break;
+		case 3:
+			try{
+				ParseActivities.startDate = isoFormat.parse(args[0]);
+				ParseActivities.endDate = isoFormat.parse(args[1]);
+			}
+			catch(ParseException e){
+				throw new ParseException("Please enter startDate and endDate command-line arguments in the format of yyyy-MM-dd", e.getErrorOffset());
+			}
+			try{
+				Integer numDaysArg = Integer.parseInt(args[2]);
+				ParseActivities.numDaysInPeriod = numDaysArg;
+			} catch(NumberFormatException e){
+				System.out.println("Third command line argument could not be parsed to integer. " + e.getMessage());
+			}
+			break;
+		default:
+			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
+		}
 	}
 	
 	public DeveloperDAO getDeveloperDAO() {
@@ -211,6 +226,14 @@ public class ParseActivities{
 
 	public void setProductDAO(ProductDAO productDAO) {
 		this.productDAO = productDAO;
+	}
+	
+	public Email getEmail(){
+		return email;
+	}
+	
+	public void setEmail(Email email){
+		this.email = email;
 	}
 
 }
