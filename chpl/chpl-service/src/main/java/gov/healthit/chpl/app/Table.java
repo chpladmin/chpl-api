@@ -1,39 +1,96 @@
 package gov.healthit.chpl.app;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+@Component("table")
 public class Table {
-	private String tableOutline;
+	//private Map<TableHeader, List<String>> headerWithCommaSeparatedOutputList = new LinkedHashMap();
+	private List<TableHeader> tableHeaders = new ArrayList<TableHeader>();
+	private TableOutline tableOutline = new TableOutline();
+	//private String tableOutline;
 	private List<String> formattedOutputRows = new ArrayList<String>();
 	private StringBuilder tableBuilder = new StringBuilder();
-	private char outlineStartChar;
-	private char outlineMiddleChars;
-	List<String> headerNames = new ArrayList<String>();
-	List<String> commaSeparatedOutputList = new ArrayList<String>();
+	private String table;
+	private TableFormatting tableFormatting = new TableFormatting();
+	private List<Map<String, String>> tableRows = new LinkedList<Map<String, String>>();
+	//private char outlineStartChar;
+	//private char outlineMiddleChars;
+	//Map<String, Integer> headerNamesWithColumnWidth = new LinkedHashMap<String, Integer>();
+	//List<String> commaSeparatedOutputList = new ArrayList<String>();
 	private String tableHeader;
 	
 	public Table(){}
 	
-	public Table(List<String> commaSeparatedOutputList, List<String> headerNames, char outlineStartChar, char outlineMiddleChars){
-		this.commaSeparatedOutputList = commaSeparatedOutputList;
-		this.headerNames = headerNames;
-		this.outlineStartChar = outlineStartChar;
-		this.outlineMiddleChars = outlineMiddleChars;
-		setTableOutline(generateTableOutline());
-		for(String header : headerNames){
-			headerNames.add(header);
-		}
-		setTableHeader(generateTableHeader());
-		setFormattedOutputRows(generateFormattedOutputRows());
+	public Table(List<TableHeader> tableHeaders, TableOutline tableOutline, ){
 		
-//		for(Object obj : outputList){
-//			tableBuilder.append(tableOutline);
-//		}
+	}
+	
+	public Table(List<String> commaSeparatedOutputList, List<TableHeader> tableHeaders, TableOutline tableOutline){
+		setTableHeaders(tableHeaders);
+//		setTableHeaders(tableHeaders);
+//		setCommaSeparatedOutputList(commaSeparatedOutputList);
+//		setHeaderNamesWithColumnWidth(headerNamesWithColumnWidth);
+//		setOutlineStartChar(outlineStartChar);
+//		setOutlineMiddleChars(outlineMiddleChars);
+//		setTableOutline(generateTableOutline());
+//		setTableHeader(generateTableHeader());
+//		setFormattedOutputRows(generateFormattedOutputRows());
+//		setTable(generateTable());
+	}
+	
+	public List<TableHeader> getTableHeaders() {
+		return tableHeaders;
+	}
+
+	public void setTableHeaders(List<TableHeader> tableHeaders) {
+		this.tableHeaders = tableHeaders;
+	}
+	
+	public char getOutlineStartChar() {
+		return outlineStartChar;
+	}
+
+	public void setOutlineStartChar(char outlineStartChar) {
+		this.outlineStartChar = outlineStartChar;
+	}
+
+	public char getOutlineMiddleChars() {
+		return outlineMiddleChars;
+	}
+
+	public void setOutlineMiddleChars(char outlineMiddleChars) {
+		this.outlineMiddleChars = outlineMiddleChars;
+	}
+	
+	public List<String> getCommaSeparatedOutputList() {
+		return commaSeparatedOutputList;
+	}
+
+	public void setCommaSeparatedOutputList(List<String> commaSeparatedOutputList) {
+		this.commaSeparatedOutputList = commaSeparatedOutputList;
+	}
+	
+	public Map<String, Integer> getHeaderNamesWithColumnWidth(){
+		return this.headerNamesWithColumnWidth;
+	}
+	
+	public void setHeaderNamesWithColumnWidth(Map<String, Integer> headerNamesWithColumnWidth){
+		this.headerNamesWithColumnWidth = headerNamesWithColumnWidth;
 	}
 	
 	public String getTable(){
 		return this.tableBuilder.toString();
+	}
+	
+	public void setTable(String table){
+		this.table = table;
 	}
 	
 	public void setTableOutline(String tableOutline){
@@ -48,33 +105,17 @@ public class Table {
 		this.formattedOutputRows = formattedOutputRows;
 	}
 	
-	public List<String> generateFormattedOutputRows(){
-		String htmlPreText = "<pre><br>";
-		String htmlPostText = "</br></pre>";
-		List<String> fmtOutputRows = new ArrayList<String>();
-		for(String row : commaSeparatedOutputList){
-			StringBuilder outputRow = new StringBuilder();
-			int i = 0;
-			for(String field : row.split(",")){
-				int headerLength = headerNames.get(i).length();
-				outputRow.append(String.format("|%" + headerLength + "d" + htmlPostText, field));
-			}
-			outputRow.append("|");
-			fmtOutputRows.add(htmlPreText + outputRow + htmlPostText);
-		}
-		
-		return fmtOutputRows;
-	}
-	
 	public String generateTableHeader(){
 		StringBuilder headerLine = new StringBuilder();
 		 String htmlPreText = "<pre><br>";
 		 String htmlPostText = "</br></pre>";
 		 headerLine.append(htmlPreText);
+		 
+		 for(Map.Entry<String, Integer> entry : headerNamesWithColumnWidth.entrySet()){
+			 String header = entry.getKey();
+			 headerLine.append("|" + header);
+		 }
 		
-		for(String header : headerNames){
-			headerLine.append("|" + header);
-		}
 		headerLine.append("|");
 		headerLine.append(htmlPostText);
 
@@ -82,39 +123,37 @@ public class Table {
 		
 	}
 	
+	public String generateTable(){
+		tableBuilder.append(tableOutline);
+		tableBuilder.append(tableHeader);
+		tableBuilder.append(tableOutline);
+		for(String row : formattedOutputRows){
+			tableBuilder.append(row);
+			tableBuilder.append(tableOutline);
+		}
+		
+		table = tableBuilder.toString();
+		
+		return table;
+	}
+	
+	
+	
 	public String generateTableOutline(){
 		StringBuilder outline = new StringBuilder();
 		String htmlPreText = "<pre><br>";
 		String htmlPostText = "</br></pre>";
 		outline.append(htmlPreText);
 		
-		for(String header : headerNames){
-			// Create top outline for this column header
-			outline.append(createOutline(header.length() + 1));
-		}
+		for(Map.Entry<String, Integer> entry : headerNamesWithColumnWidth.entrySet()){
+			 Integer width = entry.getValue();
+			 outline.append(createOutline(width));
+		 }
+		
 		 outline.append(htmlPostText);
 
 		 return outline.toString();
 	}
-
-//	public String generateTableDataRow(ActivitiesOutput activitiesOutput, TimePeriod timePeriod){
-//		 String dateOutput = timePeriod.getEndDate().toString().substring(0, 10);
-//		 String dateSize = "%20s";
-//		 String totalDevelopersSize = "%22s";
-//		 String totalProductsSize = "%22s";
-//		 String totalCPsSize = "%22s";
-//		 String total2014CPsSize = "%22s";
-//		 String total2015CPsSize = "%22s";
-//		 
-//		 tableBuilder.append(String.format
-//				 ("<pre><br>" + dateSize + totalDevelopersSize + totalProductsSize + totalCPsSize + total2014CPsSize + total2015CPsSize + "</br></pre>\n", 
-//				 dateOutput, activitiesOutput.getTotalDevelopers(), activitiesOutput.getTotalProducts(), activitiesOutput.getTotalCPs(), 
-//				 activitiesOutput.getTotalCPs_2014(), activitiesOutput.getTotalCPs_2015()));
-//		 
-//		 //tableBuilder.append("<pre><br>" + columnOutline + columnOutline + columnOutline + columnOutline + columnOutline + columnOutline + "</br></pre>\n");
-//		
-//		return tableBuilder.toString();
-//	}
 	
 	private StringBuilder createOutline(Integer length){
 		StringBuilder outline = new StringBuilder();
@@ -128,6 +167,14 @@ public class Table {
 			}
 		}
 		return outline;
+	}
+
+	public TableFormatting getTableFormatting() {
+		return tableFormatting;
+	}
+
+	public void setTableFormatting(TableFormatting tableFormatting) {
+		this.tableFormatting = tableFormatting;
 	}
 	
 }

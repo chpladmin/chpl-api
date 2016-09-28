@@ -7,7 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -56,6 +58,7 @@ public class ParseActivities{
 			in.close();
 		}
 		
+		// Load email properties
 		props.put("mail.smtp.host", props.getProperty("smtpHost"));
 		props.put("mail.smtp.port", props.getProperty("smtpPort"));
 		props.put("mail.smtp.auth", "true");
@@ -96,8 +99,6 @@ public class ParseActivities{
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		 calendarCounter.setTime(endDate);
 		 
-
-		 
 		 // Get activities
 		 List<ActivitiesOutput> activitiesList = new ArrayList<ActivitiesOutput>();
 		 while(startDate.before(calendarCounter.getTime())){
@@ -121,16 +122,12 @@ public class ParseActivities{
 			 Integer totalCertifiedProducts_2015 = certifiedProductCount_2015.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 
 			 // Populate ActivitiesOutput
-			 ActivitiesOutput activitiesOutput = new ActivitiesOutput();
-			 activitiesOutput.setTotalDevelopers(totalDevelopers);
-			 activitiesOutput.setTotalProducts(totalProducts);
-			 activitiesOutput.setTotalCPs(totalCertifiedProducts);
-			 activitiesOutput.setTotalCPs_2014(totalCertifiedProducts_2014);
-			 activitiesOutput.setTotalCPs_2015(totalCertifiedProducts_2015);
+			 String dateString = counterDate.toString().substring(0, 10) + " " + counterDate.toString().substring(24, 28);
+			 ActivitiesOutput activitiesOutput = new ActivitiesOutput(dateString, totalDevelopers, totalProducts, totalCertifiedProducts, 
+					 totalCertifiedProducts_2014, totalCertifiedProducts_2015);
 			 
+			 // Add an activitiesOutput record to activitiesList
 			 activitiesList.add(activitiesOutput);
-			 
-			 //table.generateTableDataRow(activitiesOutput, timePeriod);
 			 
 			 // decrement calendar by 7 days
 			 calendarCounter.add(Calendar.DATE, -numDaysInPeriod);	 
@@ -144,25 +141,25 @@ public class ParseActivities{
 		 }
 		 
 		 // set table headers
-		 List<String> tableHeaders = new ArrayList<String>();
-		 tableHeaders.add("Date");
-		 tableHeaders.add("Total Developers");
-		 tableHeaders.add("Total Products");
-		 tableHeaders.add("Total CPs");
-		 tableHeaders.add("Total 2014 CPs");
-		 tableHeaders.add("Total 2015 CPs");
+		 Map<String, Integer> headerNamesWithColumnWidth = new LinkedHashMap<String, Integer>();
+		 headerNamesWithColumnWidth.put("Date", 17);
+		 headerNamesWithColumnWidth.put("Total Developers", 17);
+		 headerNamesWithColumnWidth.put("Total Products", 15);
+		 headerNamesWithColumnWidth.put("Total CPs", 10);
+		 headerNamesWithColumnWidth.put("Total 2014 CPs", 15);
+		 headerNamesWithColumnWidth.put("Total 2015 CPs", 15);
 		 
-		 Table table = new Table(commaSeparatedRowOutput, tableHeaders, '+', '-');
-
-		 
-		 //System.out.print(table.getTable().toString());
+		 // Generate table
+		 char tableOutlineStartChar = '+';
+		 char tableOutlineMiddleChars = '-';
+		 Table table = new Table(commaSeparatedRowOutput, headerNamesWithColumnWidth, tableOutlineStartChar, tableOutlineMiddleChars);
 		 
 		 // Send email
 		 parseActivities.email.setEmailTo(props.getProperty("summaryEmail").toString().split(";"));
 		 parseActivities.email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
 		 parseActivities.email.setEmailMessage(table.getTable().toString());
 		 parseActivities.email.setProps(props);
-		 parseActivities.email.sendSummaryEmail();
+		 parseActivities.email.sendEmail();
 		 context.close();
 	}
 	

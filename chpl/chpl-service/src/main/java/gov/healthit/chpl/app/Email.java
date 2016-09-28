@@ -22,7 +22,7 @@ public class Email {
 	public Email(){
 	}
 	
-	public void sendSummaryEmail() throws AddressException, MessagingException {
+	public void sendEmail() throws AddressException, MessagingException {
 		sendMailUtil.sendEmail(emailTo, emailSubject, emailMessage, props);
 	}
 	
