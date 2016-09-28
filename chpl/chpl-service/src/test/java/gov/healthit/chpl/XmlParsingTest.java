@@ -36,12 +36,19 @@ public class XmlParsingTest {
 
 	@Test
 	public void testProductCodeValidation() {
-		boolean result = "ht75_A".matches("[A-Za-z0-9_]+");
+		boolean result = "ht75_A".matches("^\\w+$");
 		assertTrue(result);
-		result = "^$THD".matches("[A-Za-z0-9_]+");
+		result = "^$THD".matches("^\\w+$");
 		assertFalse(result);
-		result = "____".matches("[A-Za-z0-9_]+");
+		result = "____".matches("^\\w+$");
 		assertTrue(result);
+		
+		result = "4".matches("^\\d+$");
+		assertTrue(result);
+		result = "55".matches("^\\d+$");
+		assertTrue(result);
+		result = "t".matches("^\\d+$");
+		assertFalse(result);
 	}
 	
 	@Test

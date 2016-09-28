@@ -131,15 +131,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add(ex.getMessage());
 		}
 		
-		if(StringUtils.isEmpty(productCode) || !productCode.matches("[A-Za-z0-9_]+")) {
+		if(StringUtils.isEmpty(productCode) || !productCode.matches("^\\w+$")) {
 			product.getErrorMessages().add("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 		}
 		
-		if(StringUtils.isEmpty(versionCode) || !versionCode.matches("[A-Za-z0-9_]+")) {
+		if(StringUtils.isEmpty(versionCode) || !versionCode.matches("^\\w+$")) {
 			product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 		}
 		
-		if(StringUtils.isEmpty(icsCode) || !icsCode.matches("[0-9]")) {
+		if(StringUtils.isEmpty(icsCode) || !icsCode.matches("^\\d+$")) {
 			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
 		}
 			
@@ -208,15 +208,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			String additionalSoftwareCode = uniqueIdParts[7];
 			String certifiedDateCode = uniqueIdParts[8];
 			
-			if(StringUtils.isEmpty(productCode) || !productCode.matches("[A-Za-z0-9_]+")) {
+			if(StringUtils.isEmpty(productCode) || !productCode.matches("^\\w+$")) {
 				product.getErrorMessages().add("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 			}
 			
-			if(StringUtils.isEmpty(versionCode) || !versionCode.matches("[A-Za-z0-9_]+")) {
+			if(StringUtils.isEmpty(versionCode) || !versionCode.matches("^\\w+$")) {
 				product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 			}
 			
-			if(StringUtils.isEmpty(icsCode) || !icsCode.matches("[0-9]")) {
+			if(StringUtils.isEmpty(icsCode) || !icsCode.matches("^\\d+$")) {
 				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
 			}
 			
