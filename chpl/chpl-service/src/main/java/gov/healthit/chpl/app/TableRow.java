@@ -1,42 +1,46 @@
 package gov.healthit.chpl.app;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+@Component("tableRow")
 public class TableRow extends Table {
 	private Map<String, String> keyValueTableRows = new LinkedHashMap<String, String>();
 	private Map<String, String> formattedKeyValueTableRows = new LinkedHashMap<String, String>();
-	private TableFormatting tableFormatting = new TableFormatting();
 	
 	public TableRow(){}
 	
-	public TableRow(Map<String, String> keyValueTableRows, TableFormatting tableFormatting){
+	public TableRow(Map<String, String> keyValueTableRows, TableFormatting tableFormatting, List<TableHeader> tableHeaders){
 		setKeyValueTableRows(keyValueTableRows);
-		setFormattedKeyValueTableRows(generateFormattedOutputRows());
+		setFormattedKeyValueTableRows(generateFormattedOutputRows(tableFormatting, tableHeaders));
 	}
 	
-	public Map<String, String> generateFormattedOutputRows(){
-		String htmlPreText = "<pre><br>";
-		String htmlPostText = "</br></pre>";
-		List<String> fmtOutputRows = new ArrayList<String>();
-		for(String row : commaSeparatedOutputList){
+	public Map<String, String> generateFormattedOutputRows(TableFormatting tableFormatting, List<TableHeader> tableHeaders){
+		Map<String, String> fmtOutputRows = new LinkedHashMap<String, String>();
+		
+		for(Map.Entry<String, String> entry : keyValueTableRows.entrySet()){
 			StringBuilder outputRow = new StringBuilder();
 			int i = 0;
-			for(String field : row.split(",")){
-				//headerNamesWithColumnWidth.entrySet().;
-				//headerNamesWithColumnWidth.entrySet().
-				//Integer headerLength = super.headerNames.get(i).length();
-				String headerLengthString = headerLength.toString();
-				String headerFormat = "|%" + headerLengthString + "s";
-				outputRow.append(String.format(headerFormat, field));
-				i++;
+			// add key to outputRow
+			Integer keyWidth = tableHeaders.get(i).getHeaderWidth();
+			String keyWidthString = keyWidth.toString();
+			String keyColumnFormat = "%-" + keyWidthString + tableHeaders.get(i).getTableHeaderTypeAsCharForFormatting();
+			outputRow.append(String.format(keyColumnFormat, tableFormatting.getColumnSeparator() + entry.getKey()));
+			
+			for(String field : entry.getValue().split(String.valueOf(tableFormatting.getFieldDelimiter()))){
+				++i;
+				// add each field in Map to outputRow
+				Integer columnWidth = tableHeaders.get(i).getHeaderWidth();
+				String columnWidthString = columnWidth.toString();
+				String columnFormat =  "%-" + columnWidthString + tableHeaders.get(i).getTableHeaderTypeAsCharForFormatting();
+				outputRow.append(String.format(columnFormat, tableFormatting.getColumnSeparator() + field));
+			}
+			outputRow.append(tableFormatting.getColumnSeparator());
+			fmtOutputRows.put(entry.getKey(), tableFormatting.getHtmlPreText() + outputRow + tableFormatting.getHtmlPostText());
 		}
-			outputRow.append("|");
-			fmtOutputRows.add(htmlPreText + outputRow + htmlPostText);
-		}
-		
 		return fmtOutputRows;
 	}
 

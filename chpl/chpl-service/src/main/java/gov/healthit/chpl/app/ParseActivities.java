@@ -1,13 +1,16 @@
 package gov.healthit.chpl.app;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -48,35 +51,18 @@ public class ParseActivities{
 		Properties props = null;
 		InputStream in = App.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 		
-		// Load properties from Environment.properties
-		if (in == null) {
-			props = null;
-			throw new FileNotFoundException("Environment Properties File not found in class path.");
-		} else {
-			props = new Properties();
-			props.load(in);
-			in.close();
-		}
 		
-		// Load email properties
-		props.put("mail.smtp.host", props.getProperty("smtpHost"));
-		props.put("mail.smtp.port", props.getProperty("smtpPort"));
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
+		props = loadProperties(props, in);
+		props = loadEmailProperties(props);
 		
 		//set up data source context
 		 LocalContext ctx = LocalContextFactory.createLocalContext(props.getProperty("dbDriverClass"));
 		 ctx.addDataSource(props.getProperty("dataSourceName"),props.getProperty("dataSourceConnection"), 
 				 props.getProperty("dataSourceUsername"), props.getProperty("dataSourcePassword"));
 		 
-		 //init spring classes
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		 System.out.println(context.getClassLoader());
-
-		 parseActivities.setDeveloperDAO((DeveloperDAO)context.getBean("developerDAO"));
-		 parseActivities.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-		 parseActivities.setProductDAO((ProductDAO)context.getBean("productDAO"));
-		 parseActivities.setEmail((Email)context.getBean("email"));
+		 
+		 initializeSpringClasses(parseActivities, context);
 		 
 		 // get DTOs
 		 List<DeveloperDTO> developerDTOs = parseActivities.developerDAO.findAll();
@@ -87,23 +73,43 @@ public class ParseActivities{
 		 List<CertifiedProductDetailsDTO> certifiedProductDTOs_2014 = new ArrayList<CertifiedProductDetailsDTO>();
 		 List<CertifiedProductDetailsDTO> certifiedProductDTOs_2015 = new ArrayList<CertifiedProductDetailsDTO>();
 		 for(CertifiedProductDetailsDTO dto : certifiedProductDTOs){
-			 if(dto.getYear() == "2014"){
+			 if(dto.getYear().equals("2014")){
 				 certifiedProductDTOs_2014.add(dto);
 			 }
-			 else if(dto.getYear() == "2015"){
+			 else if(dto.getYear().equals("2015")){
 				 certifiedProductDTOs_2015.add(dto);
 			 }
 		 }
 		 
-		 // Get endDate for most recent week
+		 List<ActivitiesOutput> activitiesList = getActivities(developerDTOs, productDTOs, certifiedProductDTOs, certifiedProductDTOs_2014, certifiedProductDTOs_2015);
+		 
+		 Table outputTable = getTable(activitiesList);
+		 
+		 // Send email
+		 parseActivities.email.setEmailTo(props.getProperty("summaryEmail").toString().split(";"));
+		 parseActivities.email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
+		 parseActivities.email.setEmailMessage(outputTable.getTable());
+		 parseActivities.email.setProps(props);
+		 parseActivities.email.sendEmail();
+		 context.close();
+	}
+	
+//	List<DeveloperDTO> developerDTOs = parseActivities.developerDAO.findAll();
+//	 List<CertifiedProductDetailsDTO> certifiedProductDTOs = parseActivities.certifiedProductDAO.findAll();
+//	 List<ProductDTO> productDTOs = parseActivities.productDAO.findAll();
+//	 
+//	 // Populate CPs_2014 and CPs_2015
+//	 List<CertifiedProductDetailsDTO> certifiedProductDTOs_2014 = new ArrayList<CertifiedProductDetailsDTO>();
+//	 List<CertifiedProductDetailsDTO> certifiedProductDTOs_2015 = new ArrayList<CertifiedProductDetailsDTO>();
+	private static List<ActivitiesOutput> getActivities(List<DeveloperDTO> developerDTOs, List<ProductDTO> productDTOs, List<CertifiedProductDetailsDTO> certifiedProductDTOs,
+			List<CertifiedProductDetailsDTO> certifiedProductDTOs_2014, List<CertifiedProductDetailsDTO> certifiedProductDTOs_2015){
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		 calendarCounter.setTime(endDate);
 		 
-		 // Get activities
-		 List<ActivitiesOutput> activitiesList = new ArrayList<ActivitiesOutput>();
+		List<ActivitiesOutput> activitiesList = new LinkedList<ActivitiesOutput>();
 		 while(startDate.before(calendarCounter.getTime())){
 			 Date counterDate = calendarCounter.getTime();
-			 TimePeriod timePeriod = new TimePeriod(counterDate, numDaysInPeriod);
+			 TimePeriod timePeriod = new TimePeriod(startDate, counterDate);
 
 			 // Get aggregate count for developers
 			 AggregateCount developerCount = new AggregateCount(developerDTOs);
@@ -121,8 +127,9 @@ public class ParseActivities{
 			 AggregateCount certifiedProductCount_2015 = new AggregateCount(certifiedProductDTOs_2015);
 			 Integer totalCertifiedProducts_2015 = certifiedProductCount_2015.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 
-			 // Populate ActivitiesOutput
+			 // Format date string: dow mon dd yyyy
 			 String dateString = counterDate.toString().substring(0, 10) + " " + counterDate.toString().substring(24, 28);
+			// Populate ActivitiesOutput
 			 ActivitiesOutput activitiesOutput = new ActivitiesOutput(dateString, totalDevelopers, totalProducts, totalCertifiedProducts, 
 					 totalCertifiedProducts_2014, totalCertifiedProducts_2015);
 			 
@@ -132,35 +139,53 @@ public class ParseActivities{
 			 // decrement calendar by 7 days
 			 calendarCounter.add(Calendar.DATE, -numDaysInPeriod);	 
 		 } 
-		 
-		 // Generate comma separated data for table creation
-		 List<String> commaSeparatedRowOutput = new ArrayList<String>();
-		 for(ActivitiesOutput activity : activitiesList){
-			 commaSeparatedRowOutput.add(activity.getTotalDevelopers() + "," + activity.getTotalProducts() + "," + activity.getTotalCPs() + "," + 
-		 activity.getTotalCPs_2014() + "," + activity.getTotalCPs_2015());
+		 return activitiesList;
+	}
+	
+	private static Table getTable(List<ActivitiesOutput> activitiesList){
+		 // Generate key-value map for table creation
+		 Map<String, String> tableRows = new LinkedHashMap<String, String>();
+		 char fieldDelimiter = ',';
+		 for (ActivitiesOutput activity : activitiesList){
+			 tableRows.put(activity.getDate(), activity.getTotalDevelopers().toString() + fieldDelimiter + activity.getTotalProducts().toString()
+					 + fieldDelimiter + activity.getTotalCPs().toString() + fieldDelimiter + activity.getTotalCPs_2014().toString() + fieldDelimiter + 
+					 activity.getTotalCPs_2015().toString());
 		 }
 		 
-		 // set table headers
-		 Map<String, Integer> headerNamesWithColumnWidth = new LinkedHashMap<String, Integer>();
-		 headerNamesWithColumnWidth.put("Date", 17);
-		 headerNamesWithColumnWidth.put("Total Developers", 17);
-		 headerNamesWithColumnWidth.put("Total Products", 15);
-		 headerNamesWithColumnWidth.put("Total CPs", 10);
-		 headerNamesWithColumnWidth.put("Total 2014 CPs", 15);
-		 headerNamesWithColumnWidth.put("Total 2015 CPs", 15);
+		 // Initialize all table headers
+		 TableHeader dateHeader = new TableHeader("Date", 17, String.class);
+		 TableHeader totalDevsHeader = new TableHeader("Total Developers", 17, String.class);
+		 TableHeader totalProdsHeader = new TableHeader("Total Products", 15, String.class);
+		 TableHeader totalCPsHeader = new TableHeader("Total CPs", 10, String.class);
+		 TableHeader totalCPs2014Header = new TableHeader("Total 2014 CPs", 15, String.class);
+		 TableHeader totalCPs2015Header = new TableHeader("Total 2015 CPs", 15, String.class);
 		 
-		 // Generate table
-		 char tableOutlineStartChar = '+';
-		 char tableOutlineMiddleChars = '-';
-		 Table table = new Table(commaSeparatedRowOutput, headerNamesWithColumnWidth, tableOutlineStartChar, tableOutlineMiddleChars);
+		 // Initialize a list of table headers
+		 List<TableHeader> tableHeaders = new LinkedList<TableHeader>();
+		 tableHeaders.addAll(Arrays.asList(dateHeader, totalDevsHeader, totalProdsHeader, totalCPsHeader, totalCPs2014Header, totalCPs2015Header));
 		 
-		 // Send email
-		 parseActivities.email.setEmailTo(props.getProperty("summaryEmail").toString().split(";"));
-		 parseActivities.email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
-		 parseActivities.email.setEmailMessage(table.getTable().toString());
-		 parseActivities.email.setProps(props);
-		 parseActivities.email.sendEmail();
-		 context.close();
+		 // Prepare table formatting constructor arguments
+		 String htmlPreText = "<pre><br>";
+		 String htmlPostText = "</br></pre>";
+		 char columnSeparator = '|';
+		 
+		// Initialize table formatting
+		 TableFormatting tableFormatting = new TableFormatting(htmlPreText, htmlPostText, columnSeparator, fieldDelimiter);
+		 
+		// Initialize table outline
+		 char startChar = '+';
+		 char middleChars = '-';
+		 TableOutline tableOutline = new TableOutline(startChar, middleChars, tableHeaders, tableFormatting);
+		 
+		 // Initialize table header line
+		 TableHeaderLine tableHeaderLine = new TableHeaderLine(tableHeaders, tableFormatting);
+		 
+		 // Initialize table row
+		 TableRow tableRow = new TableRow(tableRows, tableFormatting, tableHeaders);
+		 
+		 // Table(TableHeaderLine tableHeaderLine, TableOutline tableOutline, TableFormatting tableFormatting, TableRow tableRows)
+		 Table table = new Table(tableHeaderLine, tableOutline, tableRow);
+		 return table;
 	}
 	
 	private void setCommandLineArgs(String[] args) throws Exception{
@@ -199,6 +224,35 @@ public class ParseActivities{
 		default:
 			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
 		}
+	}
+	
+	private static void initializeSpringClasses(ParseActivities parseActivities, AbstractApplicationContext context){
+		 System.out.println(context.getClassLoader());
+
+		 parseActivities.setDeveloperDAO((DeveloperDAO)context.getBean("developerDAO"));
+		 parseActivities.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
+		 parseActivities.setProductDAO((ProductDAO)context.getBean("productDAO"));
+		 parseActivities.setEmail((Email)context.getBean("email"));
+	}
+	
+	private static Properties loadEmailProperties(Properties props){
+		props.put("mail.smtp.host", props.getProperty("smtpHost"));
+		props.put("mail.smtp.port", props.getProperty("smtpPort"));
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+		return props;
+	}
+	
+	private static Properties loadProperties(Properties props, InputStream in) throws IOException{
+		if (in == null) {
+			props = null;
+			throw new FileNotFoundException("Environment Properties File not found in class path.");
+		} else {
+			props = new Properties();
+			props.load(in);
+			in.close();
+		}
+		return props;
 	}
 	
 	public DeveloperDAO getDeveloperDAO() {
