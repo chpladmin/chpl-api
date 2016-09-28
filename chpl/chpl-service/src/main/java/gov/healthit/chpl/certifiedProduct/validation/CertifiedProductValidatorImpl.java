@@ -136,7 +136,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		
 		if(StringUtils.isEmpty(versionCode) || !versionCode.matches("[A-Za-z0-9_]+")) {
-			product.getErrorMessages().add("The version code is reuqired and may only contain the characters A-Z, a-z, 0-9, and _");
+			product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 		}
 		
 		if(StringUtils.isEmpty(icsCode) || !icsCode.matches("[0-9]")) {
@@ -213,7 +213,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 			
 			if(StringUtils.isEmpty(versionCode) || !versionCode.matches("[A-Za-z0-9_]+")) {
-				product.getErrorMessages().add("The version code is reuqired and may only contain the characters A-Z, a-z, 0-9, and _");
+				product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 			}
 			
 			if(StringUtils.isEmpty(icsCode) || !icsCode.matches("[0-9]")) {
