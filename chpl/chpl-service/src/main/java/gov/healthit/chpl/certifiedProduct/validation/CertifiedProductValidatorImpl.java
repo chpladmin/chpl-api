@@ -67,6 +67,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String atlCode = uniqueIdParts[1];
 		String acbCode = uniqueIdParts[2];
 		String developerCode = uniqueIdParts[3];
+		String productCode = uniqueIdParts[4];
+		String versionCode = uniqueIdParts[5];
 		String icsCode = uniqueIdParts[6];
 		String additionalSoftwareCode = uniqueIdParts[7];
 		String certifiedDateCode = uniqueIdParts[8];
@@ -129,6 +131,18 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add(ex.getMessage());
 		}
 		
+		if(StringUtils.isEmpty(productCode) || !productCode.matches("[A-Za-z0-9_]+")) {
+			product.getErrorMessages().add("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
+		}
+		
+		if(StringUtils.isEmpty(versionCode) || !versionCode.matches("[A-Za-z0-9_]+")) {
+			product.getErrorMessages().add("The version code is reuqired and may only contain the characters A-Z, a-z, 0-9, and _");
+		}
+		
+		if(StringUtils.isEmpty(icsCode) || !icsCode.matches("[0-9]")) {
+			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
+		}
+			
 		if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
 			product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
 		} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
@@ -188,9 +202,23 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(uniqueIdParts != null && uniqueIdParts.length == 9) {
 			
 			//validate that these pieces match up with data
+			String productCode = uniqueIdParts[4];
+			String versionCode = uniqueIdParts[5];
 			String icsCode = uniqueIdParts[6];
 			String additionalSoftwareCode = uniqueIdParts[7];
 			String certifiedDateCode = uniqueIdParts[8];
+			
+			if(StringUtils.isEmpty(productCode) || !productCode.matches("[A-Za-z0-9_]+")) {
+				product.getErrorMessages().add("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
+			}
+			
+			if(StringUtils.isEmpty(versionCode) || !versionCode.matches("[A-Za-z0-9_]+")) {
+				product.getErrorMessages().add("The version code is reuqired and may only contain the characters A-Z, a-z, 0-9, and _");
+			}
+			
+			if(StringUtils.isEmpty(icsCode) || !icsCode.matches("[0-9]")) {
+				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
+			}
 			
 			if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
 				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");

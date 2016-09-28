@@ -35,6 +35,16 @@ public class XmlParsingTest {
 	}
 
 	@Test
+	public void testProductCodeValidation() {
+		boolean result = "ht75_A".matches("[A-Za-z0-9_]+");
+		assertTrue(result);
+		result = "^$THD".matches("[A-Za-z0-9_]+");
+		assertFalse(result);
+		result = "____".matches("[A-Za-z0-9_]+");
+		assertTrue(result);
+	}
+	
+	@Test
 	public void testUrlRegex() {
 		Pattern urlRegex = Pattern.compile(URL_PATTERN);
 		String url = "http://www.greenway.com\\nhttp://www.greenway.com";
