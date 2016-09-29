@@ -138,6 +138,30 @@ public class SendMailUtil {
 		logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
 		logger.debug("Mail Password: " + env.getProperty("smtpPassword"));
 
+		sendEmail(toEmail, subject, htmlMessage, files, properties);
+	}
+
+	public void sendEmail(String[] toEmail, String subject, String htmlMessage, List<File> files, Properties props)
+			throws AddressException, MessagingException {
+		// do not attempt to send email if we are in a dev environment
+		String mailHost = env.getProperty("smtpHost");
+		if (StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost)
+				|| "dev".equalsIgnoreCase(mailHost)) {
+			return;
+		}
+
+		// sets SMTP server properties
+		Properties properties = new Properties();
+		properties.put("mail.smtp.host", env.getProperty("smtpHost"));
+		properties.put("mail.smtp.port", env.getProperty("smtpPort"));
+		properties.put("mail.smtp.auth", "true");
+		properties.put("mail.smtp.starttls.enable", "true");
+
+		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
+		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
+		logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
+		logger.debug("Mail Password: " + env.getProperty("smtpPassword"));
+
 		// creates a new session with an authenticator
 		javax.mail.Authenticator auth = new javax.mail.Authenticator() {
 			@Override

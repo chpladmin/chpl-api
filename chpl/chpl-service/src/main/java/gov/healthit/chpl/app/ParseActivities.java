@@ -51,7 +51,6 @@ public class ParseActivities{
 		Properties props = null;
 		InputStream in = App.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 		
-		
 		props = loadProperties(props, in);
 		props = loadEmailProperties(props);
 		
@@ -94,13 +93,6 @@ public class ParseActivities{
 		 context.close();
 	}
 	
-//	List<DeveloperDTO> developerDTOs = parseActivities.developerDAO.findAll();
-//	 List<CertifiedProductDetailsDTO> certifiedProductDTOs = parseActivities.certifiedProductDAO.findAll();
-//	 List<ProductDTO> productDTOs = parseActivities.productDAO.findAll();
-//	 
-//	 // Populate CPs_2014 and CPs_2015
-//	 List<CertifiedProductDetailsDTO> certifiedProductDTOs_2014 = new ArrayList<CertifiedProductDetailsDTO>();
-//	 List<CertifiedProductDetailsDTO> certifiedProductDTOs_2015 = new ArrayList<CertifiedProductDetailsDTO>();
 	private static List<ActivitiesOutput> getActivities(List<DeveloperDTO> developerDTOs, List<ProductDTO> productDTOs, List<CertifiedProductDetailsDTO> certifiedProductDTOs,
 			List<CertifiedProductDetailsDTO> certifiedProductDTOs_2014, List<CertifiedProductDetailsDTO> certifiedProductDTOs_2015){
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -278,12 +270,12 @@ public class ParseActivities{
 	public void setProductDAO(ProductDAO productDAO) {
 		this.productDAO = productDAO;
 	}
-	
-	public Email getEmail(){
+
+	public Email getEmail() {
 		return email;
 	}
-	
-	public void setEmail(Email email){
+
+	public void setEmail(Email email) {
 		this.email = email;
 	}
 

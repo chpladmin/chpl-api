@@ -6,6 +6,8 @@ _Date TBD_
 ### Features Added
 * Changed certification status names previously known as Suspended, Terminated, and Withdrawn.
 * Created Java program to send weekly email with aggregate counts for developers, products, certified products, and 2014 + 2015 CPs
+	* weekly email will be sent to Jennifer Hui who will package it with the weekly status report
+	* [TEMPLATE] for deployment, update the properties.environment summaryEmail property to send to jhui@ainq.com
 
 ### Bugs Fixed
 
