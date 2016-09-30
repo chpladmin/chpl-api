@@ -9,6 +9,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CQMMetDTO;
+import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 
 public interface CertificationIdManager {
 	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
@@ -17,6 +18,7 @@ public interface CertificationIdManager {
 	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException;
 	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException;
 	public List<CertificationIdDTO> getAll();
+	public List<CertificationIdAndCertifiedProductDTO> getAllWithProducts();
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds);

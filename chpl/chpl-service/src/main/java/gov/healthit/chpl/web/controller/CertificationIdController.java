@@ -26,6 +26,7 @@ import javax.swing.text.DateFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -43,12 +45,14 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
+import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.CertificationIdManager;
@@ -78,11 +82,37 @@ public class CertificationIdController {
 	@Secured({"ROLE_ADMIN", "ROLE_CMS_STAFF"})
 	@ApiOperation(value="Retrieves a list of all CMS EHR Certification IDs along with the date they were created.")
 	@RequestMapping(value="/", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
-	public List<SimpleCertificationId> getAll() throws IOException {	
-		List<CertificationIdDTO> allCertificationIds = certificationIdManager.getAll();
+	public List<SimpleCertificationId> getAll() throws IOException {
 		List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
-		for(CertificationIdDTO dto : allCertificationIds) {
-			results.add(new SimpleCertificationId(dto));
+		if(Util.isUserRoleAdmin()) {
+			List<CertificationIdAndCertifiedProductDTO> allCertificationIds = certificationIdManager.getAllWithProducts();
+			for(CertificationIdAndCertifiedProductDTO ehr : allCertificationIds) {
+				SimpleCertificationId cert = new SimpleCertificationId();
+				cert.setCertificationId(ehr.getCertificationId());
+				cert.setCreated(ehr.getCreationDate());
+				int index = results.indexOf(cert);
+				if(index >= 0) {
+					SimpleCertificationIdWithProducts currResult = (SimpleCertificationIdWithProducts)results.get(index);
+					if(StringUtils.isEmpty(currResult.getProducts())) {
+						currResult.setProducts(ehr.getChplProductNumber());
+					} else {
+						String currProducts = currResult.getProducts();
+						currProducts = currProducts + ";" + ehr.getChplProductNumber();
+						currResult.setProducts(currProducts);
+					}
+				} else {
+					SimpleCertificationIdWithProducts currResult = new SimpleCertificationIdWithProducts();
+					currResult.setCertificationId(ehr.getCertificationId());
+					currResult.setCreated(ehr.getCreationDate());
+					currResult.setProducts(ehr.getChplProductNumber());
+					results.add(currResult);
+				}
+			}
+		} else {
+			List<CertificationIdDTO> allCertificationIds = certificationIdManager.getAll();
+			for(CertificationIdDTO dto : allCertificationIds) {
+				results.add(new SimpleCertificationId(dto));
+			}
 		}
 		return results;
 	}

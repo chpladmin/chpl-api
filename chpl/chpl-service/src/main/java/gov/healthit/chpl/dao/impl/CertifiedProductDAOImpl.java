@@ -55,7 +55,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			entity.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 			entity.setTestingLabId(dto.getTestingLabId());
 			entity.setOtherAcb(dto.getOtherAcb());
-			entity.setTermsOfUse(dto.getTermsOfUse());
 			entity.setIcs(dto.getIcs());
 			entity.setSedTesting(dto.getSedTesting());
 			entity.setQmsTesting(dto.getQmsTesting());
@@ -126,7 +125,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 		entity.setTestingLabId(dto.getTestingLabId());
 		entity.setOtherAcb(dto.getOtherAcb());
-		entity.setTermsOfUse(dto.getTermsOfUse());
 		entity.setIcs(dto.getIcs());
 		entity.setSedTesting(dto.getSedTesting());
 		entity.setQmsTesting(dto.getQmsTesting());
