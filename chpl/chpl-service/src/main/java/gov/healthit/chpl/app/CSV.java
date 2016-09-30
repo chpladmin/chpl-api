@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -34,14 +33,6 @@ public class CSV {
 		writeToCSV(formattedStringToWriteToCSV);
 		closePrintWriter();
 	}
-	
-//	public CSV(List<String> commaSeparatedStringsToWriteToCSV, File file) throws FileNotFoundException, IllegalArgumentException, IllegalAccessException{
-//		setFile(file);
-//		PrintWriter printWriter = new PrintWriter(file);
-//		setPrintWriter(printWriter);
-//		appendCommaSeparatedStringsToCSV(commaSeparatedStringsToWriteToCSV);
-//		closePrintWriter();
-//	}
 	
 	private void writeToCSV(String stringToWrite){
 		pw.write(stringToWrite);
@@ -77,7 +68,6 @@ public class CSV {
 	/**
 	 * Gets a list of comma separated lines using a list of objects with a common field name for those objects. 
 	 * Each line is an object, and for each object the provided field name is output as comma separated.
-	 * A newline character is added to the end of each line.
 	 * @param List<T> list
 	 * @param fieldName
 	 * @return
@@ -97,7 +87,6 @@ public class CSV {
 			}
 			i++;	
 		}
-		commaSeparatedList.add("\n");
 		
 		return commaSeparatedList;
 	}
@@ -141,20 +130,20 @@ public class CSV {
 	 */
 	public static <T> List<String> getCommaSeparatedListWithFields(List<T> list, List<Field> fields){
 		List<String> commaSeparatedList = new LinkedList<String>();
-		
+		int objCounter = 0;
 		for(Object obj : list){
 			int i = 0;
 			for(Field field : fields){
-				String fieldValue = ReflectiveHelper.get(obj, field.getName());
-				if(i == 0){
-					commaSeparatedList.add(fieldValue);
+				String fieldValue = ReflectiveHelper.get(obj, field.getName()).toString();
+				if(i == 0 && objCounter > 0){
+					commaSeparatedList.add("\n" + fieldValue);
 				}
 				else{
-					commaSeparatedList.add(',' + fieldValue.toString());
+					commaSeparatedList.add(fieldValue);
 				}
-				i++;	
+				i++;
 			}
-			commaSeparatedList.add("\n");
+			objCounter++;
 		}
 		
 		return commaSeparatedList;

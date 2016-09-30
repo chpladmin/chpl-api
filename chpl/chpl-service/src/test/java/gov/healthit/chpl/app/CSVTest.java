@@ -2,20 +2,12 @@ package gov.healthit.chpl.app;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -37,8 +29,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 @DatabaseSetup("classpath:data/testData.xml") 
 public class CSVTest {
 
-	@Autowired 
-	private CSV csv;
+//	@Autowired 
+//	private CSV csv;
 	
 	/** Description: Tests the 
 	 * Expected Result: 

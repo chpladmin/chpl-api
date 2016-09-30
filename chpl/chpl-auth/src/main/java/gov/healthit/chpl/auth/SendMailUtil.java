@@ -99,9 +99,9 @@ public class SendMailUtil {
 				toAddresses[i] = toEmailaddress;
 			}
 			msg.setRecipients(Message.RecipientType.TO, toAddresses);
-			logger.debug("Sending email to " + toEmail);
+			logger.debug("Sending email to " + toEmail.toString());
 		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + toEmail, ex);
+			logger.fatal("Invalid Email Address: " + toEmail.toString(), ex);
 			throw ex;
 		}
 
@@ -144,7 +144,7 @@ public class SendMailUtil {
 	public void sendEmail(String[] toEmail, String subject, String htmlMessage, List<File> files, Properties props)
 			throws AddressException, MessagingException {
 		// do not attempt to send email if we are in a dev environment
-		String mailHost = env.getProperty("smtpHost");
+		String mailHost = props.getProperty("smtpHost");
 		if (StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost)
 				|| "dev".equalsIgnoreCase(mailHost)) {
 			return;
@@ -152,21 +152,21 @@ public class SendMailUtil {
 
 		// sets SMTP server properties
 		Properties properties = new Properties();
-		properties.put("mail.smtp.host", env.getProperty("smtpHost"));
-		properties.put("mail.smtp.port", env.getProperty("smtpPort"));
+		properties.put("mail.smtp.host", props.getProperty("smtpHost"));
+		properties.put("mail.smtp.port", props.getProperty("smtpPort"));
 		properties.put("mail.smtp.auth", "true");
 		properties.put("mail.smtp.starttls.enable", "true");
 
 		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
 		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
-		logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
-		logger.debug("Mail Password: " + env.getProperty("smtpPassword"));
+		logger.debug("Mail Username :" + props.getProperty("smtpUsername"));
+		logger.debug("Mail Password: " + props.getProperty("smtpPassword"));
 
 		// creates a new session with an authenticator
 		javax.mail.Authenticator auth = new javax.mail.Authenticator() {
 			@Override
 			public PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(env.getProperty("smtpUsername"), env.getProperty("smtpPassword"));
+				return new PasswordAuthentication(props.getProperty("smtpUsername"), props.getProperty("smtpPassword"));
 			}
 		};
 
@@ -176,11 +176,11 @@ public class SendMailUtil {
 		Message msg = new MimeMessage(session);
 
 		try {
-			InternetAddress fromEmail = new InternetAddress(env.getProperty("smtpFrom"));
+			InternetAddress fromEmail = new InternetAddress(props.getProperty("smtpFrom"));
 			msg.setFrom(fromEmail);
-			logger.debug("Sending email from " + env.getProperty("smtpFrom"));
+			logger.debug("Sending email from " + props.getProperty("smtpFrom"));
 		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + env.getProperty("smtpFrom"), ex);
+			logger.fatal("Invalid Email Address: " + props.getProperty("smtpFrom"), ex);
 			throw ex;
 		}
 
@@ -191,9 +191,9 @@ public class SendMailUtil {
 				toAddresses[i] = toEmailaddress;
 			}
 			msg.setRecipients(Message.RecipientType.TO, toAddresses);
-			logger.debug("Sending email to " + toEmail);
+			logger.debug("Sending email to " + toEmail.toString());
 		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + toEmail, ex);
+			logger.fatal("Invalid Email Address: " + toEmail.toString(), ex);
 			throw ex;
 		}
 
@@ -201,7 +201,7 @@ public class SendMailUtil {
 		msg.setSentDate(new Date());
 
 		BodyPart messageBodyPartWithMessage = new MimeBodyPart();
-		messageBodyPartWithMessage.setText(htmlMessage);
+		messageBodyPartWithMessage.setContent(htmlMessage, "text/html");
 
 		Multipart multipart = new MimeMultipart();
 		multipart.addBodyPart(messageBodyPartWithMessage);
@@ -212,6 +212,7 @@ public class SendMailUtil {
 			DataSource source = new FileDataSource(file);
 			messageBodyPart.setDataHandler(new DataHandler(source));
 			messageBodyPart.setFileName(file.getName());
+
 			multipart.addBodyPart(messageBodyPart);
 		}
 

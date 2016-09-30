@@ -52,6 +52,14 @@ public class Email {
 		sendMailUtil.sendEmail(emailTo, emailSubject, emailMessage, files, props);
 	}
 	
+	public void sendEmail(String[] emailTo, String emailSubject, String emailMessage, List<File> files) throws AddressException, MessagingException{
+		sendMailUtil.sendEmail(emailTo, emailSubject, emailMessage, files);
+	}
+	
+	public void sendEmail(String[] emailTo, String emailSubject, String emailMessage) throws AddressException, MessagingException {
+		sendMailUtil.sendEmail(emailTo, emailSubject, emailMessage);
+	}
+	
 	public SendMailUtil getSendMailUtil(){
 		return this.sendMailUtil;
 	}

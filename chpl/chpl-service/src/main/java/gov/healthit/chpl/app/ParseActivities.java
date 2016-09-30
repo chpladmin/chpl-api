@@ -55,10 +55,8 @@ public class ParseActivities{
 	private List<TableHeader> tableHeaders;
 	public List<ActivitiesOutput> activitiesList;
 	private CSV csv;
-	private List<String> tableHeaderFieldNames;
-	private List<String> commaSeparatedOutput;
-	private Map<List<ActivitiesOutput>, List<String>> activitiesOutputFieldsMap;
-	private Map<List<TableHeader>, List<String>> tableHeaderFieldsMap;
+	//private List<String> tableHeaderFieldNames;
+	private String commaSeparatedOutput;
 	private List<ActivitiesOutput> summaryActivitiesList;
 	private Table summaryOutputTable;
 	private TimePeriod summaryTimePeriod;
@@ -96,21 +94,19 @@ public class ParseActivities{
 		 parseActivities.setCertifiedProductDetailsDTOs(parseActivities);
 		 parseActivities.activitiesList = parseActivities.getActivitiesByPeriodUsingStartAndEndDate(parseActivities);
 		 parseActivities.setTableHeaders(parseActivities.getTableHeaders(parseActivities));
-		 parseActivities.setTableHeaderFieldNames(parseActivities.getTableHeaderFieldNames(parseActivities));
-		 //parseActivities.setTableHeaderFieldsMap(parseActivities.getTableHeaderFieldsMap(parseActivities));
-		 //parseActivities.setActivitiesOutputFieldsMap(parseActivities.getActivitiesOutputFieldsMap(parseActivities));
+		 //parseActivities.setTableHeaderFieldNames(parseActivities.getTableHeaderFieldNames(parseActivities));
 		 parseActivities.setCommaSeparatedOutput(parseActivities.getCommaSeparatedOutput(parseActivities));
 		 parseActivities.setCSV(parseActivities.getCSV(parseActivities, "summaryCounts.csv"));
-		 parseActivities.getSummaryActivities(parseActivities);
+		 parseActivities.setSummaryActivities(parseActivities.getSummaryActivities(parseActivities));
 		 parseActivities.summaryOutputTable = parseActivities.getFormattedTable(parseActivities, parseActivities.summaryActivitiesList, parseActivities.tableHeaders);
 		 parseActivities.setFiles(parseActivities.getFiles(parseActivities));
 		 parseActivities.setEmailProperties(parseActivities);
 		 parseActivities.email.sendEmail(parseActivities.email.getEmailTo(), parseActivities.email.getEmailSubject(), parseActivities.email.getEmailMessage(), 
-				 parseActivities.email.getProps(), parseActivities.email.getFiles());
+				  parseActivities.email.getProps(), parseActivities.email.getFiles());
 		 context.close();
 	}
 	
-	public void getSummaryActivities(ParseActivities parseActivities){
+	public List<ActivitiesOutput> getSummaryActivities(ParseActivities parseActivities){
 		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		calendarCounter.setTime(endDate);
 		
@@ -147,6 +143,11 @@ public class ParseActivities{
 			 // decrement calendar by 7 days
 			 calendarCounter.add(Calendar.DATE, -parseActivities.numDaysInSummaryEmail);	 
 		 } 
+		return activitiesList;
+	}
+	
+	public void setSummaryActivities(List<ActivitiesOutput> summaryActivitiesList){
+		this.summaryActivitiesList = summaryActivitiesList;
 	}
 	
 	/**
@@ -317,10 +318,7 @@ public class ParseActivities{
 	
 	public CSV getCSV(ParseActivities parseActivities, String fileName) 
 			throws FileNotFoundException, IllegalArgumentException, IllegalAccessException{
-			 
-			 // Create CSV with output
 			 File csvFile = new File(fileName);
-			 //File csvFile = new File("summaryCounts.csv");
 			 CSV csv = new CSV(parseActivities.commaSeparatedOutput.toString(), csvFile); 
 			 return csv;
 	}
@@ -432,47 +430,22 @@ public class ParseActivities{
 		return parseActivities.tableHeaders;
 	}
 	
-	public List<String> getTableHeaderFieldNames(ParseActivities parseActivities){
-		return Arrays.asList(dateHeader.getHeaderName(), totalDevsHeader.getHeaderName(), totalProdsHeader.getHeaderName(), 
-				 totalCPsHeader.getHeaderName(), totalCPs2014Header.getHeaderName(), totalCPs2015Header.getHeaderName());
-	}
-	
-	public void setTableHeaderFieldNames(List<String> tableHeaderFieldNames){
-		this.tableHeaderFieldNames = tableHeaderFieldNames;
-	}
-	
-	public List<String> getCommaSeparatedOutput(ParseActivities parseActivities){
-		List<Field> fields = new ArrayList<Field>(ReflectiveHelper.getInheritedPrivateFields(ActivitiesOutput.class));
-		
+	public String getCommaSeparatedOutput(ParseActivities parseActivities){
+		 List<Field> fields = new ArrayList<Field>(ReflectiveHelper.getInheritedPrivateFields(ActivitiesOutput.class));
 		 List<String> commaSeparatedTableHeaders = new LinkedList<String>(CSV.getCommaSeparatedList(parseActivities.tableHeaders, "headerName"));
 		 List<String> commaSeparatedActivitiesOutput = new LinkedList<String>(CSV.getCommaSeparatedListWithFields(parseActivities.activitiesList, fields));
 		 List<String> headerAndBody = new LinkedList<String>(commaSeparatedTableHeaders);
+		 // Add newline to first record of activities output to separate header from rows
+		 StringBuilder firstIndexString = new StringBuilder();
+		 firstIndexString.append("\n" + commaSeparatedActivitiesOutput.get(0));
+		 commaSeparatedActivitiesOutput.remove(0);
+		 commaSeparatedActivitiesOutput.add(0, firstIndexString.toString());
 		 headerAndBody.addAll(commaSeparatedActivitiesOutput);
-		 return headerAndBody;
+		 return headerAndBody.toString().replace("[", "").replace("]", "");
 	}
 	
-	public void setCommaSeparatedOutput(List<String> commaSeparatedOutput){
+	public void setCommaSeparatedOutput(String commaSeparatedOutput){
 		this.commaSeparatedOutput = commaSeparatedOutput;
-	}
-	
-	public Map<List<TableHeader>, List<String>> getTableHeaderFieldsMap(ParseActivities parseActivities){
-		Map<List<TableHeader>, List<String>> tableHeaderFieldsMap = new LinkedHashMap<List<TableHeader>, List<String>>();
-		 tableHeaderFieldsMap.put(tableHeaders, tableHeaderFieldNames);
-		return tableHeaderFieldsMap;
-	}
-	
-	public void setTableHeaderFieldsMap(Map<List<TableHeader>, List<String>> tableHeaderFieldsMap){
-		this.tableHeaderFieldsMap = tableHeaderFieldsMap;
-	}
-	
-	public Map<List<ActivitiesOutput>, List<String>> getActivitiesOutputFieldsMap(ParseActivities parseActivities){
-		 Map<List<ActivitiesOutput>, List<String>> activitiesOutputFieldsMap = new LinkedHashMap<List<ActivitiesOutput>, List<String>>();
-		 activitiesOutputFieldsMap.put(activitiesList, tableHeaderFieldNames);
-		 return activitiesOutputFieldsMap;
-	}
-	
-	public void setActivitiesOutputFieldsMap(Map<List<ActivitiesOutput>, List<String>> activitiesOutputFieldsMap){
-		this.activitiesOutputFieldsMap = activitiesOutputFieldsMap;
 	}
 
 }

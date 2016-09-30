@@ -93,9 +93,6 @@ public class ParseActivitiesTest {
 		 parseActivities.setCertifiedProductDetailsDTOs(parseActivities);
 		 parseActivities.activitiesList = parseActivities.getActivitiesByPeriodUsingStartAndEndDate(parseActivities);
 		 parseActivities.setTableHeaders(parseActivities.getTableHeaders(parseActivities));
-		 parseActivities.setTableHeaderFieldNames(parseActivities.getTableHeaderFieldNames(parseActivities));
-		 parseActivities.setTableHeaderFieldsMap(parseActivities.getTableHeaderFieldsMap(parseActivities));
-		 parseActivities.setActivitiesOutputFieldsMap(parseActivities.getActivitiesOutputFieldsMap(parseActivities));
 		//List<String> commaSeparatedOutput = parseActivities.getCommaSeparatedOutput(parseActivities);
 		//assertNotNull("getCommaSeparatedOutput returned null results", commaSeparatedOutput);
 		//Assert.assertTrue("getCommaSeparatedOutput should return valid results", commaSeparatedOutput.size() > 0);
