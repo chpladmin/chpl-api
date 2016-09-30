@@ -315,6 +315,27 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		DeveloperEntity ve = (DeveloperEntity)result;
 		return new DeveloperDTO(ve);
 	}
+	
+	public List<DeveloperDTO> getByCreationDate(Date startDate, Date endDate){
+		Query getDeveloperByCreationDate = entityManager.createQuery( "FROM "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
+				+ "WHERE (NOT v.deleted = true) "
+				+ "AND v.creationDate BETWEEN :startDate AND :endDate", DeveloperEntity.class);
+		getDeveloperByCreationDate.setParameter("startDate", startDate);
+		getDeveloperByCreationDate.setParameter("endDate", endDate);
+		List<DeveloperEntity> result = getDeveloperByCreationDate.getResultList();
+		
+		List<DeveloperDTO> dtos = new ArrayList<>();
+		
+		for (DeveloperEntity entity : result) {
+			DeveloperDTO dto = new DeveloperDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
 
 	private void create(DeveloperEntity entity) {
 		entityManager.persist(entity);
