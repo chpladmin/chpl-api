@@ -6,11 +6,22 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Provides reflective utility methods
+ * @author dlucas
+ *
+ */
 @Component("reflectiveHelper")
 public class ReflectiveHelper {
 	
 	public ReflectiveHelper(){}
 	
+	/**
+	 * Uses an object and field name to return the value of the object for the given field
+	 * @param object
+	 * @param fieldName
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <V> V get(Object object, String fieldName) {
 	    Class<?> clazz = object.getClass();
@@ -28,6 +39,11 @@ public class ReflectiveHelper {
 	    return null;
 	}
 	
+	/**
+	 * Gets all fields for a given class
+	 * @param type
+	 * @return
+	 */
 	public static List<Field> getInheritedPrivateFields(Class<?> type) {
 	    List<Field> result = new ArrayList<Field>();
 

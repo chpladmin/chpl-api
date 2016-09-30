@@ -4,6 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * TableOutline object that can be used to provide an outline between rows of data in a table
+ * @author dlucas
+ *
+ */
 @Component("tableOutline")
 public class TableOutline extends Table {
 	private char outlineStartChar;
@@ -13,10 +18,52 @@ public class TableOutline extends Table {
 	public TableOutline(){
 	}
 	
+	/**
+	 * Creates a TableOutline object
+	 * @param outlineStartChar - the first character for the outline (displayed at the start of each column)
+	 * @param outlineMiddleChars - the characters displayed between the start and end of each column
+	 * @param tableHeaders - Used to determine the width of each column of the tableOutline
+	 * @param tableFormatting - Used to obtain the html formatting for the outline
+	 */
 	public TableOutline(char outlineStartChar, char outlineMiddleChars, List<TableHeader> tableHeaders, TableFormatting tableFormatting){
 		setOutlineStartChar(outlineStartChar);
 		setOutlineMiddleChars(outlineMiddleChars);
 		setOutline(buildOutline(tableHeaders, tableFormatting));
+	}
+	
+	/**
+	 * Create an outline and return the result as a string
+	 * @param tableHeaders - Used to determine the width of each column of the tableOutline
+	 * @param tableFormatting - Used to obtain the html formatting for the outline
+	 * @return
+	 */
+	private String buildOutline(List<TableHeader> tableHeaders, TableFormatting tableFormatting){
+		StringBuilder outlineBuilder = new StringBuilder();
+		outlineBuilder.append(tableFormatting.getHtmlPreText());
+		for(TableHeader tableHeader : tableHeaders){
+			outlineBuilder.append(createOutline(tableHeader.getHeaderWidth()));
+		}
+		outlineBuilder.append(outlineStartChar + tableFormatting.getHtmlPostText());
+		return outlineBuilder.toString();
+	}
+	
+	/**
+	 * Creates a column portion of the given line of the outline using the length of the column
+	 * @param length
+	 * @return
+	 */
+	private StringBuilder createOutline(Integer length){
+		StringBuilder outline = new StringBuilder();
+		
+		for(int i = 0; i < length; i++){
+			if(i == 0){
+				outline.append(outlineStartChar);
+			}
+			else{
+				outline.append(outlineMiddleChars);
+			}
+		}
+		return outline;
 	}
 	
 	public char getOutlineStartChar() {
@@ -31,30 +78,6 @@ public class TableOutline extends Table {
 	}
 	public void setOutlineMiddleChars(char outlineMiddleChars) {
 		this.outlineMiddleChars = outlineMiddleChars;
-	}
-	
-	private String buildOutline(List<TableHeader> tableHeaders, TableFormatting tableFormatting){
-		StringBuilder outlineBuilder = new StringBuilder();
-		outlineBuilder.append(tableFormatting.getHtmlPreText());
-		for(TableHeader tableHeader : tableHeaders){
-			outlineBuilder.append(createOutline(tableHeader.getHeaderWidth(), tableFormatting));
-		}
-		outlineBuilder.append(outlineStartChar + tableFormatting.getHtmlPostText());
-		return outlineBuilder.toString();
-	}
-	
-	private StringBuilder createOutline(Integer length, TableFormatting tableFormatting){
-		StringBuilder outline = new StringBuilder();
-		
-		for(int i = 0; i < length; i++){
-			if(i == 0){
-				outline.append(outlineStartChar);
-			}
-			else{
-				outline.append(outlineMiddleChars);
-			}
-		}
-		return outline;
 	}
 
 	public String getOutline() {

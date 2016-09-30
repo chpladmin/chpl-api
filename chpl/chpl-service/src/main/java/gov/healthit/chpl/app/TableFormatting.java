@@ -2,6 +2,11 @@ package gov.healthit.chpl.app;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Contains properties for a table's formatting
+ * @author dlucas
+ *
+ */
 @Component("tableFormatting")
 public class TableFormatting extends Table {
 	private String htmlPreText;
@@ -12,6 +17,14 @@ public class TableFormatting extends Table {
 	
 	public TableFormatting(){}
 	
+	/**
+	 * Creates a TableFormatting object with the given properties
+	 * @param htmlPreText - inserted before each row of the table
+	 * @param htmlPostText - inserted after each row of the table
+	 * @param columnSeparator - inserted before each field for each row of the table (i.e. |field1|field2)
+	 * @param fieldDelimiter - The character that delimits each field of the table (i.e. comma separated)
+	 * @param justification - determines the justification of the output of the table (i.e. left or right justified)
+	 */
 	public TableFormatting(String htmlPreText, String htmlPostText, char columnSeparator, char fieldDelimiter, Justification justification){
 		setHtmlPreText(htmlPreText);
 		setHtmlPostText(htmlPostText);

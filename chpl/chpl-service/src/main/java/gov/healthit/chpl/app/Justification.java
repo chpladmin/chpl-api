@@ -1,5 +1,10 @@
 package gov.healthit.chpl.app;
 
+/**
+ * Provides justification properties for a table
+ * @author dlucas
+ *
+ */
 public class Justification extends TableFormatting {
 	private Boolean isLeftJustified;
 	private Boolean isRightJustified;
@@ -7,6 +12,12 @@ public class Justification extends TableFormatting {
 	
 	public Justification(){}
 	
+	/**
+	 * Initialize a Justification object for a table. Can be left or right justified
+	 * @param isLeftJustified
+	 * @param isRightJustified
+	 * @throws Exception
+	 */
 	public Justification(Boolean isLeftJustified, Boolean isRightJustified) throws Exception{
 		if(isLeftJustified == true && isRightJustified == true){
 			throw new Exception("Cannot have left and right justification set as true");

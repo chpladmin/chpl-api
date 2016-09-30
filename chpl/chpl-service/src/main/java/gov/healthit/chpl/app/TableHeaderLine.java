@@ -4,12 +4,22 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * The entire header to be displayed as the first row of output to a table
+ * @author dlucas
+ *
+ */
 @Component("tableHeaderLine")
 public class TableHeaderLine {
 	private String headerLine;
 	
 	public TableHeaderLine(){}
 	
+	/**
+	 * Creates a TableHeaderLine object
+	 * @param tableHeaders - list of Tableheader objects
+	 * @param tableFormatting - TableFormatting object to be used in creation of the TableHeaderLine
+	 */
 	public TableHeaderLine(List<TableHeader> tableHeaders, TableFormatting tableFormatting){
 		setHeaderLine(generateTableHeader(tableHeaders, tableFormatting));
 	}

@@ -6,6 +6,11 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * TableRow object with properties for each row of output for a table
+ * @author dlucas
+ *
+ */
 @Component("tableRow")
 public class TableRow extends Table {
 	private Map<String, String> keyValueTableRows = new LinkedHashMap<String, String>();
@@ -13,11 +18,23 @@ public class TableRow extends Table {
 	
 	public TableRow(){}
 	
+	/**
+	 * Creates a TableRow object
+	 * @param keyValueTableRows - Contains a string key and string value for each line of output for the table
+	 * @param tableFormatting - used to determine justification of row output, column separator, html formatting, etc
+	 * @param tableHeaders - list of TableHeader objects used to determine the width for each column of data output
+	 */
 	public TableRow(Map<String, String> keyValueTableRows, TableFormatting tableFormatting, List<TableHeader> tableHeaders){
 		setKeyValueTableRows(keyValueTableRows);
 		setFormattedKeyValueTableRows(generateFormattedOutputRows(tableFormatting, tableHeaders));
 	}
 	
+	/**
+	 * Generates formatted rows of output for each line of a table
+	 * @param tableFormatting - the formatting to use for each line of output
+	 * @param tableHeaders - used to determine the width of each column of output for the table
+	 * @return
+	 */
 	public Map<String, String> generateFormattedOutputRows(TableFormatting tableFormatting, List<TableHeader> tableHeaders){
 		Map<String, String> fmtOutputRows = new LinkedHashMap<String, String>();
 		

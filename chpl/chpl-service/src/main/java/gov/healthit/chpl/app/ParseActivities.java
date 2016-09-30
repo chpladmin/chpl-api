@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
@@ -35,7 +33,6 @@ import gov.healthit.chpl.dto.ProductDTO;
 @Component("parseActivities")
 public class ParseActivities{
 	private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-	private static final Logger logger = LogManager.getLogger(ParseActivities.class);
 	private Email email;
 	public DeveloperDAO developerDAO;
 	public CertifiedProductDAO certifiedProductDAO;
@@ -55,7 +52,6 @@ public class ParseActivities{
 	private List<TableHeader> tableHeaders;
 	public List<ActivitiesOutput> activitiesList;
 	private CSV csv;
-	//private List<String> tableHeaderFieldNames;
 	private String commaSeparatedOutput;
 	private List<ActivitiesOutput> summaryActivitiesList;
 	private Table summaryOutputTable;
@@ -92,13 +88,12 @@ public class ParseActivities{
 		 parseActivities.certifiedProductDTOs = parseActivities.certifiedProductDAO.findAll();
 		 parseActivities.productDTOs = parseActivities.productDAO.findAll();
 		 parseActivities.setCertifiedProductDetailsDTOs(parseActivities);
-		 parseActivities.activitiesList = parseActivities.getActivitiesByPeriodUsingStartAndEndDate(parseActivities);
+		 parseActivities.setActivitiesList(parseActivities.getActivitiesByPeriodUsingStartAndEndDate(parseActivities));
 		 parseActivities.setTableHeaders(parseActivities.getTableHeaders(parseActivities));
-		 //parseActivities.setTableHeaderFieldNames(parseActivities.getTableHeaderFieldNames(parseActivities));
 		 parseActivities.setCommaSeparatedOutput(parseActivities.getCommaSeparatedOutput(parseActivities));
 		 parseActivities.setCSV(parseActivities.getCSV(parseActivities, "summaryCounts.csv"));
 		 parseActivities.setSummaryActivities(parseActivities.getSummaryActivities(parseActivities));
-		 parseActivities.summaryOutputTable = parseActivities.getFormattedTable(parseActivities, parseActivities.summaryActivitiesList, parseActivities.tableHeaders);
+		 parseActivities.setSummaryOutputTable(parseActivities.getFormattedTable(parseActivities, parseActivities.summaryActivitiesList, parseActivities.tableHeaders));
 		 parseActivities.setFiles(parseActivities.getFiles(parseActivities));
 		 parseActivities.setEmailProperties(parseActivities);
 		 parseActivities.email.sendEmail(parseActivities.email.getEmailTo(), parseActivities.email.getEmailSubject(), parseActivities.email.getEmailMessage(), 
@@ -106,6 +101,13 @@ public class ParseActivities{
 		 context.close();
 	}
 	
+	/**
+	 * Gets a list of ActivitiesOutput for the ParseActivities object.
+	 * Requires setting the following first: endDate, summaryTimePeriod, developerDTOs, productDTOs, certifiedProductDTOs, 
+	 * certifiedProductDTOs_2014, certifiedProductDTOs_2015, activitiesList, and numDaysInEmail
+	 * @param parseActivities
+	 * @return
+	 */
 	public List<ActivitiesOutput> getSummaryActivities(ParseActivities parseActivities){
 		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		calendarCounter.setTime(endDate);
@@ -144,10 +146,6 @@ public class ParseActivities{
 			 calendarCounter.add(Calendar.DATE, -parseActivities.numDaysInSummaryEmail);	 
 		 } 
 		return activitiesList;
-	}
-	
-	public void setSummaryActivities(List<ActivitiesOutput> summaryActivitiesList){
-		this.summaryActivitiesList = summaryActivitiesList;
 	}
 	
 	/**
@@ -247,6 +245,12 @@ public class ParseActivities{
 		 return table;
 	}
 	
+	/**
+	 * Sets the startDate, endDate, and numDaysInPeriod using the command-line arguments
+	 * @param args
+	 * @param parseActivities
+	 * @throws Exception
+	 */
 	public void setCommandLineArgs(String[] args, ParseActivities parseActivities) throws Exception{
 		SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
 		isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -287,6 +291,11 @@ public class ParseActivities{
 		}
 	}
 	
+	/**
+	 * Get relevant beans
+	 * @param parseActivities
+	 * @param context
+	 */
 	public void initializeSpringClasses(ParseActivities parseActivities, AbstractApplicationContext context){
 		 System.out.println(context.getClassLoader());
 
@@ -296,6 +305,11 @@ public class ParseActivities{
 		 parseActivities.setEmail((Email)context.getBean("email"));
 	}
 	
+	/**
+	 * Set the ParseActivities.Properties (props) to prepare for sending an email
+	 * @param parseActivities
+	 * @return
+	 */
 	public Properties loadEmailProperties(ParseActivities parseActivities){
 		props.put("mail.smtp.host", props.getProperty("smtpHost"));
 		props.put("mail.smtp.port", props.getProperty("smtpPort"));
@@ -304,6 +318,13 @@ public class ParseActivities{
 		return props;
 	}
 	
+	/**
+	 * Set the ParseActivities.Properties (props) using an InputStream to get all properties from the InputStream
+	 * @param parseActivities
+	 * @param in
+	 * @return
+	 * @throws IOException
+	 */
 	public Properties loadProperties(ParseActivities parseActivities, InputStream in) throws IOException{
 		if (in == null) {
 			parseActivities.props = null;
@@ -316,11 +337,155 @@ public class ParseActivities{
 		return parseActivities.props;
 	}
 	
+	/**
+	 * Gets a CSV using a list of comma separated output strings and a fileName
+	 * @param parseActivities
+	 * @param fileName
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
 	public CSV getCSV(ParseActivities parseActivities, String fileName) 
 			throws FileNotFoundException, IllegalArgumentException, IllegalAccessException{
 			 File csvFile = new File(fileName);
 			 CSV csv = new CSV(parseActivities.commaSeparatedOutput.toString(), csvFile); 
 			 return csv;
+	}
+
+	/**
+	 * Gets the summary email TimePeriod (with start & end date) using a config property set in ParseActivities.numDaysInSummaryEmail.
+	 * @param parseActivities
+	 * @return
+	 */
+	public TimePeriod getSummaryTimePeriod(ParseActivities parseActivities) {
+		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		calendarCounter.setTime(endDate);
+		Date summaryEndDate = calendarCounter.getTime();
+		calendarCounter.add(Calendar.DATE, -numDaysInSummaryEmail);
+		Date summaryStartDate = calendarCounter.getTime();
+		// Reset calendarCounter to endDate
+		calendarCounter.add(Calendar.DATE, numDaysInSummaryEmail);
+		return new TimePeriod(summaryStartDate, summaryEndDate);
+	}
+
+	/**
+	 * Uses the ParseActivities Properties (props) object to get the summaryEmailPeriodInDays. Defaults to 7
+	 * @param parseActivities
+	 * @return
+	 */
+	public Integer getNumDaysInSummaryEmail(ParseActivities parseActivities) {
+		return Integer.parseInt(parseActivities.props.getProperty("summaryEmailPeriodInDays", "7"));
+	}
+	
+	/**
+	 * Sets the ParseActivities object's certifiedProductDTOs_2014 and certifiedProductDTOs_2015 using the certifiedProductDTOs and each dto's "year"
+	 * @param parseActivities
+	 */
+	public void setCertifiedProductDetailsDTOs(ParseActivities parseActivities){
+		certifiedProductDTOs_2014 = new ArrayList<CertifiedProductDetailsDTO>();
+		certifiedProductDTOs_2015 = new ArrayList<CertifiedProductDetailsDTO>();
+		for(CertifiedProductDetailsDTO dto : parseActivities.certifiedProductDTOs){
+			 if(dto.getYear().equals("2014")){
+				 certifiedProductDTOs_2014.add(dto);
+			 }
+			 else if(dto.getYear().equals("2015")){
+				 certifiedProductDTOs_2015.add(dto);
+			 }
+		 }
+	}
+
+	/**
+	 * Gets a list of files with the parseActivities.csv
+	 * @param parseActivities
+	 * @return
+	 */
+	public List<File> getFiles(ParseActivities parseActivities) {
+		List<File> files = new ArrayList<File>();
+		 files.add(parseActivities.csv.getFile());
+		return files;
+	}
+
+	/**
+	 * Sets the email properties that are specific to the ParseActivities application
+	 * @param parseActivities
+	 */
+	public void setEmailProperties(ParseActivities parseActivities){
+		 parseActivities.email.setEmailTo(parseActivities.props.getProperty("summaryEmail").toString().split(";"));
+		 parseActivities.email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
+		 parseActivities.email.setEmailMessage(parseActivities.summaryOutputTable.getTable());
+		 parseActivities.email.setProps(parseActivities.props);
+		 parseActivities.email.setFiles(parseActivities.files);
+	}
+	
+	/**
+	 * Defines ParseActivities table headers and puts them into a list<TableHeader> object that is returned
+	 * @param parseActivities
+	 * @return
+	 */
+	public List<TableHeader> getTableHeaders(ParseActivities parseActivities){
+		parseActivities.dateHeader = new TableHeader("Date", 17, String.class);
+		parseActivities.totalDevsHeader = new TableHeader("Total Developers", 17, String.class);
+		parseActivities.totalProdsHeader = new TableHeader("Total Products", 15, String.class);
+		parseActivities.totalCPsHeader = new TableHeader("Total CPs", 10, String.class);
+		parseActivities.totalCPs2014Header = new TableHeader("Total 2014 CPs", 15, String.class);
+		parseActivities.totalCPs2015Header = new TableHeader("Total 2015 CPs", 15, String.class);
+		
+		parseActivities.tableHeaders = new LinkedList<TableHeader>();
+		parseActivities.tableHeaders.addAll(Arrays.asList(dateHeader, totalDevsHeader, totalProdsHeader, totalCPsHeader, totalCPs2014Header, totalCPs2015Header));
+		return parseActivities.tableHeaders;
+	}
+	
+	/**
+	 * Gets a string with comma separated output using the ParseActivities List<TableHeader> + the headerName and the activitiesList. 
+	 * Combines the table header with the activitiesList and returns the result as a string.
+	 * @param parseActivities
+	 * @return
+	 */
+	public String getCommaSeparatedOutput(ParseActivities parseActivities){
+		 List<Field> fields = new ArrayList<Field>(ReflectiveHelper.getInheritedPrivateFields(ActivitiesOutput.class));
+		 List<String> commaSeparatedTableHeaders = new LinkedList<String>(CSV.getCommaSeparatedList(parseActivities.tableHeaders, "headerName"));
+		 List<String> commaSeparatedActivitiesOutput = new LinkedList<String>(CSV.getCommaSeparatedListWithFields(parseActivities.activitiesList, fields));
+		 List<String> headerAndBody = new LinkedList<String>(commaSeparatedTableHeaders);
+		 // Add newline to first record of activities output to separate header from rows
+		 StringBuilder firstIndexString = new StringBuilder();
+		 firstIndexString.append("\n" + commaSeparatedActivitiesOutput.get(0));
+		 commaSeparatedActivitiesOutput.remove(0);
+		 commaSeparatedActivitiesOutput.add(0, firstIndexString.toString());
+		 headerAndBody.addAll(commaSeparatedActivitiesOutput);
+		 return headerAndBody.toString().replace("[", "").replace("]", "");
+	}
+	
+	public void setCommaSeparatedOutput(String commaSeparatedOutput){
+		this.commaSeparatedOutput = commaSeparatedOutput;
+	}
+	
+	public void setSummaryOutputTable(Table table){
+		this.summaryOutputTable = table;
+	}
+	
+	public void setActivitiesList(List<ActivitiesOutput> activitiesList){
+		this.activitiesList = activitiesList;
+	}
+	
+	public void setSummaryActivities(List<ActivitiesOutput> summaryActivitiesList){
+		this.summaryActivitiesList = summaryActivitiesList;
+	}
+	
+	public void setTableHeaders(List<TableHeader> tableHeaders){
+		this.tableHeaders = tableHeaders;
+	}
+	
+	public void setFiles(List<File> files) {
+		this.files = files;
+	}
+	
+	public void setNumDaysInSummaryEmail(ParseActivities parseActivities, Integer numDaysInSummaryEmail) {
+		parseActivities.numDaysInSummaryEmail = numDaysInSummaryEmail;
+	}
+	
+	public void setSummaryTimePeriod(TimePeriod summaryTimePeriod) {
+		this.summaryTimePeriod = summaryTimePeriod;
 	}
 	
 	public void setCSV(CSV csv){
@@ -357,95 +522,6 @@ public class ParseActivities{
 
 	public void setEmail(Email email) {
 		this.email = email;
-	}
-
-	public TimePeriod getSummaryTimePeriod(ParseActivities parseActivities) {
-		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		calendarCounter.setTime(endDate);
-		Date summaryEndDate = calendarCounter.getTime();
-		calendarCounter.add(Calendar.DATE, -numDaysInSummaryEmail);
-		Date summaryStartDate = calendarCounter.getTime();
-		// Reset calendarCounter to endDate
-		calendarCounter.add(Calendar.DATE, numDaysInSummaryEmail);
-		return new TimePeriod(summaryStartDate, summaryEndDate);
-	}
-
-	public void setSummaryTimePeriod(TimePeriod summaryTimePeriod) {
-		this.summaryTimePeriod = summaryTimePeriod;
-	}
-
-	public Integer getNumDaysInSummaryEmail(ParseActivities parseActivities) {
-		return Integer.parseInt(parseActivities.props.getProperty("summaryEmailPeriodInDays", "7"));
-	}
-
-	public void setNumDaysInSummaryEmail(ParseActivities parseActivities, Integer numDaysInSummaryEmail) {
-		parseActivities.numDaysInSummaryEmail = numDaysInSummaryEmail;
-	}
-	
-	public void setCertifiedProductDetailsDTOs(ParseActivities parseActivities){
-		certifiedProductDTOs_2014 = new ArrayList<CertifiedProductDetailsDTO>();
-		certifiedProductDTOs_2015 = new ArrayList<CertifiedProductDetailsDTO>();
-		for(CertifiedProductDetailsDTO dto : parseActivities.certifiedProductDTOs){
-			 if(dto.getYear().equals("2014")){
-				 certifiedProductDTOs_2014.add(dto);
-			 }
-			 else if(dto.getYear().equals("2015")){
-				 certifiedProductDTOs_2015.add(dto);
-			 }
-		 }
-	}
-
-	public List<File> getFiles(ParseActivities parseActivities) {
-		List<File> files = new ArrayList<File>();
-		 files.add(parseActivities.csv.getFile());
-		return files;
-	}
-
-	public void setFiles(List<File> files) {
-		this.files = files;
-	}
-	
-	public void setEmailProperties(ParseActivities parseActivities){
-		 parseActivities.email.setEmailTo(parseActivities.props.getProperty("summaryEmail").toString().split(";"));
-		 parseActivities.email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
-		 parseActivities.email.setEmailMessage(parseActivities.summaryOutputTable.getTable());
-		 parseActivities.email.setProps(parseActivities.props);
-		 parseActivities.email.setFiles(parseActivities.files);
-	}
-	
-	public void setTableHeaders(List<TableHeader> tableHeaders){
-		this.tableHeaders = tableHeaders;
-	}
-	
-	public List<TableHeader> getTableHeaders(ParseActivities parseActivities){
-		parseActivities.dateHeader = new TableHeader("Date", 17, String.class);
-		parseActivities.totalDevsHeader = new TableHeader("Total Developers", 17, String.class);
-		parseActivities.totalProdsHeader = new TableHeader("Total Products", 15, String.class);
-		parseActivities.totalCPsHeader = new TableHeader("Total CPs", 10, String.class);
-		parseActivities.totalCPs2014Header = new TableHeader("Total 2014 CPs", 15, String.class);
-		parseActivities.totalCPs2015Header = new TableHeader("Total 2015 CPs", 15, String.class);
-		
-		parseActivities.tableHeaders = new LinkedList<TableHeader>();
-		parseActivities.tableHeaders.addAll(Arrays.asList(dateHeader, totalDevsHeader, totalProdsHeader, totalCPsHeader, totalCPs2014Header, totalCPs2015Header));
-		return parseActivities.tableHeaders;
-	}
-	
-	public String getCommaSeparatedOutput(ParseActivities parseActivities){
-		 List<Field> fields = new ArrayList<Field>(ReflectiveHelper.getInheritedPrivateFields(ActivitiesOutput.class));
-		 List<String> commaSeparatedTableHeaders = new LinkedList<String>(CSV.getCommaSeparatedList(parseActivities.tableHeaders, "headerName"));
-		 List<String> commaSeparatedActivitiesOutput = new LinkedList<String>(CSV.getCommaSeparatedListWithFields(parseActivities.activitiesList, fields));
-		 List<String> headerAndBody = new LinkedList<String>(commaSeparatedTableHeaders);
-		 // Add newline to first record of activities output to separate header from rows
-		 StringBuilder firstIndexString = new StringBuilder();
-		 firstIndexString.append("\n" + commaSeparatedActivitiesOutput.get(0));
-		 commaSeparatedActivitiesOutput.remove(0);
-		 commaSeparatedActivitiesOutput.add(0, firstIndexString.toString());
-		 headerAndBody.addAll(commaSeparatedActivitiesOutput);
-		 return headerAndBody.toString().replace("[", "").replace("]", "");
-	}
-	
-	public void setCommaSeparatedOutput(String commaSeparatedOutput){
-		this.commaSeparatedOutput = commaSeparatedOutput;
 	}
 
 }
