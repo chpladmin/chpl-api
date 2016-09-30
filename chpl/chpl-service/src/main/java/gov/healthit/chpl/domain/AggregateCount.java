@@ -1,9 +1,10 @@
 package gov.healthit.chpl.domain;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import gov.healthit.chpl.app.ReflectiveHelper;
 
 /** Description: Provides aggregate counts for objects
  * 
@@ -31,7 +32,7 @@ public class AggregateCount {
 	public Integer getCountDuringPeriodUsingField(Date startDate, Date endDate, String fieldName) {
 		Integer counter = 0;
 		for(Object obj : objectList){
-				Date objectDate = get(obj, fieldName);
+				Date objectDate = ReflectiveHelper.get(obj, fieldName);
 				if((objectDate.after(startDate) || objectDate.equals(startDate)) && (objectDate.before(endDate) || objectDate.equals(endDate))){
 					counter++;
 				}
@@ -42,29 +43,12 @@ public class AggregateCount {
 	public Integer getCountBeforeEndDateUsingField(Date endDate, String fieldName) {
 		Integer counter = 0;
 		for(Object obj : objectList){
-				Date objectDate = get(obj, fieldName);
+				Date objectDate = ReflectiveHelper.get(obj, fieldName);
 				if((objectDate.before(endDate) || objectDate.equals(endDate))){
 					counter++;
 				}
 		}	
 		return counter;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <V> V get(Object object, String fieldName) {
-	    Class<?> clazz = object.getClass();
-	    while (clazz != null) {
-	        try {
-	            Field field = clazz.getDeclaredField(fieldName);
-	            field.setAccessible(true);
-	            return (V) field.get(object);
-	        } catch (NoSuchFieldException e) {
-	            clazz = clazz.getSuperclass();
-	        } catch (Exception e) {
-	            throw new IllegalStateException(e);
-	        }
-	    }
-	    return null;
 	}
 	
 }

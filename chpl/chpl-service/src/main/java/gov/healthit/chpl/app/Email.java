@@ -1,5 +1,8 @@
 package gov.healthit.chpl.app;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.MessagingException;
@@ -18,12 +21,35 @@ public class Email {
 	private String emailSubject;
 	private String emailMessage;
 	private Properties props;
+	private List<File> files;
 
 	public Email(){
 	}
 	
-	public void sendEmail() throws AddressException, MessagingException {
+	public Email(String[] emailTo, String emailSubject, String emailMessage, Properties props, File file){
+		setEmailTo(emailTo);
+		setEmailSubject(emailSubject);
+		setEmailMessage(emailMessage);
+		setProps(props);
+		List<File> files = new ArrayList<File>();
+		files.add(file);
+		setFiles(files);
+	}
+	
+	public Email(String[] emailTo, String emailSubject, String emailMessage, Properties props, List<File> files){
+		setEmailTo(emailTo);
+		setEmailSubject(emailSubject);
+		setEmailMessage(emailMessage);
+		setProps(props);
+		this.files = files;
+	}
+	
+	public void sendEmail(String[] emailTo, String emailSubject, String emailMessage, Properties props) throws AddressException, MessagingException {
 		sendMailUtil.sendEmail(emailTo, emailSubject, emailMessage, props);
+	}
+	
+	public void sendEmail(String[] emailTo, String emailSubject, String emailMessage, Properties props, List<File> files) throws AddressException, MessagingException{
+		sendMailUtil.sendEmail(emailTo, emailSubject, emailMessage, files, props);
 	}
 	
 	public SendMailUtil getSendMailUtil(){
@@ -64,5 +90,13 @@ public class Email {
 
 	public void setProps(Properties props) {
 		this.props = props;
+	}
+
+	public List<File> getFiles() {
+		return files;
+	}
+
+	public void setFiles(List<File> files) {
+		this.files = files;
 	}
 }

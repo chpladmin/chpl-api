@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component("tableHeader")
 public class TableHeader extends Table{
-	private String headerName;
+	public String headerName;
 	private Integer headerWidth;
 	private Class<?> dataType;
 	

@@ -72,4 +72,5 @@ public class ActivitiesOutput {
 	public void setTotalCPs_2015(Integer totalCPs_2015){
 		this.totalCPs_2015 = totalCPs_2015;
 	}
+	
 }

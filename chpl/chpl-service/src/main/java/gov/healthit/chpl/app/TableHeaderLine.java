@@ -14,6 +14,14 @@ public class TableHeaderLine {
 		setHeaderLine(generateTableHeader(tableHeaders, tableFormatting));
 	}
 	
+	/**
+	 * Creates the header line for a table using a list of tableHeaders and a TableFormatting object
+	 * Each header in the list of tableHeaders is put into a single line string
+	 * TableFormatting allows adding HTML formatting to each line
+	 * @param tableHeaders
+	 * @param tableFormatting
+	 * @return
+	 */
 	public String generateTableHeader(List<TableHeader> tableHeaders, TableFormatting tableFormatting){
 		StringBuilder headerLine = new StringBuilder();
 		
@@ -21,7 +29,7 @@ public class TableHeaderLine {
 
 		 for(TableHeader tableHeader : tableHeaders){
 			 String columnWidth = tableHeader.getHeaderWidth().toString();
-			 String columnFormat =  "%-" + columnWidth + tableHeader.getTableHeaderTypeAsCharForFormatting();
+			 String columnFormat =  "%" + tableFormatting.getJustification().getStringFormatJustification() + columnWidth + tableHeader.getTableHeaderTypeAsCharForFormatting();
 			 headerLine.append(String.format(columnFormat, tableFormatting.getColumnSeparator() + tableHeader.getHeaderName()));
 		 }
 		

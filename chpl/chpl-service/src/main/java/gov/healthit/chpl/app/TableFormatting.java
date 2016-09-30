@@ -8,14 +8,16 @@ public class TableFormatting extends Table {
 	private String htmlPostText;
 	private char columnSeparator;
 	private char fieldDelimiter;
+	private Justification justification;
 	
 	public TableFormatting(){}
 	
-	public TableFormatting(String htmlPreText, String htmlPostText, char columnSeparator, char fieldDelimiter){
+	public TableFormatting(String htmlPreText, String htmlPostText, char columnSeparator, char fieldDelimiter, Justification justification){
 		setHtmlPreText(htmlPreText);
 		setHtmlPostText(htmlPostText);
 		setColumnSeparator(columnSeparator);
 		setFieldDelimiter(fieldDelimiter);
+		setJustification(justification);
 	}
 
 	public String getHtmlPreText() {
@@ -48,5 +50,13 @@ public class TableFormatting extends Table {
 
 	public void setFieldDelimiter(char fieldDelimiter) {
 		this.fieldDelimiter = fieldDelimiter;
+	}
+
+	public Justification getJustification() {
+		return justification;
+	}
+
+	public void setJustification(Justification justification) {
+		this.justification = justification;
 	}
 }

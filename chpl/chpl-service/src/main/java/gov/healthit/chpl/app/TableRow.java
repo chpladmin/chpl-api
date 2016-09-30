@@ -27,7 +27,7 @@ public class TableRow extends Table {
 			// add key to outputRow
 			Integer keyWidth = tableHeaders.get(i).getHeaderWidth();
 			String keyWidthString = keyWidth.toString();
-			String keyColumnFormat = "%-" + keyWidthString + tableHeaders.get(i).getTableHeaderTypeAsCharForFormatting();
+			String keyColumnFormat = "%" + tableFormatting.getJustification().getStringFormatJustification() + keyWidthString + tableHeaders.get(i).getTableHeaderTypeAsCharForFormatting();
 			outputRow.append(String.format(keyColumnFormat, tableFormatting.getColumnSeparator() + entry.getKey()));
 			
 			for(String field : entry.getValue().split(String.valueOf(tableFormatting.getFieldDelimiter()))){
@@ -35,7 +35,7 @@ public class TableRow extends Table {
 				// add each field in Map to outputRow
 				Integer columnWidth = tableHeaders.get(i).getHeaderWidth();
 				String columnWidthString = columnWidth.toString();
-				String columnFormat =  "%-" + columnWidthString + tableHeaders.get(i).getTableHeaderTypeAsCharForFormatting();
+				String columnFormat =  "%" + tableFormatting.getJustification().getStringFormatJustification() + columnWidthString + tableHeaders.get(i).getTableHeaderTypeAsCharForFormatting();
 				outputRow.append(String.format(columnFormat, tableFormatting.getColumnSeparator() + field));
 			}
 			outputRow.append(tableFormatting.getColumnSeparator());
