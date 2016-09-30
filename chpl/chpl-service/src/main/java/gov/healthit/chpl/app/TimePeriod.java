@@ -31,6 +31,20 @@ public class TimePeriod {
 		 this.endDate = c.getTime();
 	}
 	
+	public TimePeriod(Date startDate, Date endDate){
+		 Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		 // set time to midnight
+		 c.set(Calendar.HOUR_OF_DAY, 0);
+		 c.set(Calendar.MINUTE, 0);
+		 c.set(Calendar.SECOND, 0);
+		 c.set(Calendar.HOUR_OF_DAY, 0);
+		 
+		 c.setTime(startDate);
+		 this.startDate = c.getTime();
+		 c.setTime(endDate);
+		 this.endDate = c.getTime();
+	}
+	
 	public Date getStartDate(){
 		return this.startDate;
 	}

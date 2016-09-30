@@ -6,6 +6,7 @@ package gov.healthit.chpl.app;
  *
  */
 public class ActivitiesOutput {
+	private String date;
 	private Integer totalDevelopers;
 	private Integer totalProducts;
 	private Integer totalCPs;
@@ -15,12 +16,21 @@ public class ActivitiesOutput {
 	public ActivitiesOutput(){
 	}
 	
-	public ActivitiesOutput(Integer totalDevelopers, Integer totalProducts, Integer totalCPs, Integer totalCPs_2014, Integer totalCPs_2015){
+	public ActivitiesOutput(String date, Integer totalDevelopers, Integer totalProducts, Integer totalCPs, Integer totalCPs_2014, Integer totalCPs_2015){
+		this.date = date;
 		this.totalDevelopers = totalDevelopers;
 		this.totalProducts = totalProducts;
 		this.totalCPs = totalCPs;
 		this.totalCPs_2014 = totalCPs_2014;
 		this.totalCPs_2015 = totalCPs_2015;
+	}
+	
+	public String getDate(){
+		return this.date;
+	}
+	
+	public void setDate(String date){
+		this.date = date;
 	}
 	
 	public Integer getTotalDevelopers(){
@@ -62,4 +72,5 @@ public class ActivitiesOutput {
 	public void setTotalCPs_2015(Integer totalCPs_2015){
 		this.totalCPs_2015 = totalCPs_2015;
 	}
+	
 }
