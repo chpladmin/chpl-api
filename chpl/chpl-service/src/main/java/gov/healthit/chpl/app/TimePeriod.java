@@ -4,6 +4,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+/**
+ * TimePeriod objects with properties for a given segment in time
+ * @author dlucas
+ *
+ */
 public class TimePeriod {
 	private Date startDate;
 	private Date endDate;
@@ -12,6 +17,11 @@ public class TimePeriod {
 	public TimePeriod(){
 	}
 	
+	/**
+	 * Creates a TimePeriod object using an endDate and the number of days to go back
+	 * @param endDate - the last day to be included in the time period
+	 * @param numDaysToGoBack - the number of days to go back from the end date to determine the start date of the time period
+	 */
 	public TimePeriod(Date endDate, Integer numDaysToGoBack){		
 		this.setNumDaysInPeriod(numDaysToGoBack);
 		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -31,6 +41,11 @@ public class TimePeriod {
 		 this.endDate = c.getTime();
 	}
 	
+	/**
+	 * Creates a TimePeriod object using a start and end date
+	 * @param startDate - the first day to be included in the time period
+	 * @param endDate - the last day to be included in the time period
+	 */
 	public TimePeriod(Date startDate, Date endDate){
 		 Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		 // set time to midnight

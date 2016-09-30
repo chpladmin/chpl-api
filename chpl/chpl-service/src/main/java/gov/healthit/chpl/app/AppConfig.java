@@ -11,8 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-//NOTE: WE ONLY NEED THE DAO METHODS FOR THIS 
-
 @Configuration
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(basePackages = {

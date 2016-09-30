@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
@@ -40,6 +41,7 @@ public class CSVTest {
 	@Transactional
 	@Rollback(true)
 	@Test
+	@Ignore
 	public void test_getCommaSeparatedList_ReturnsValidResult() throws Exception{
 		TableHeader dateHeader = new TableHeader("Date", 17, String.class);
 		TableHeader totalDevsHeader = new TableHeader("Total Developers", 17, String.class);

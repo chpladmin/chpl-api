@@ -9,6 +9,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Contains properties and methods for CSV (Comma Separated Value)
+ * @author dlucas
+ *
+ */
 @Component("csv")
 public class CSV {
 	private File file;
@@ -42,29 +47,6 @@ public class CSV {
 		pw.close();
 	}
 	
-//	/**
-//	 * Takes list of comma separated value strings and appends them to the CSV
-//	 * @param strList
-//	 * @throws FileNotFoundException
-//	 * @throws IllegalArgumentException
-//	 * @throws IllegalAccessException
-//	 */
-//	private void appendCommaSeparatedStringsToCSV(List<String> strList) throws FileNotFoundException, IllegalArgumentException, IllegalAccessException{	
-//		int i = 0;
-//		for(String str : strList){
-//			if(i == 0){	
-//				sb.append(str);
-//			}
-//			else{
-//				sb.append("\n" + str);
-//			}
-//			i++;
-//		}
-//
-//        writeToCSV(sb.toString());
-//	}
-	
-	
 	/**
 	 * Gets a list of comma separated lines using a list of objects with a common field name for those objects. 
 	 * Each line is an object, and for each object the provided field name is output as comma separated.
@@ -86,35 +68,6 @@ public class CSV {
 				}
 			}
 			i++;	
-		}
-		
-		return commaSeparatedList;
-	}
-	
-	/**
-	 * Gets a list of comma separated lines using a list of objects with a common field name for those objects. 
-	 * Each line is an object, and for each object the provided field name is output as comma separated.
-	 * A newline character is added to the end of each line.
-	 * @param List<T> list
-	 * @param fieldName
-	 * @return
-	 */
-	public static <T> List<String> getCommaSeparatedList(List<T> list, List<String> fieldNames){
-		List<String> commaSeparatedList = new LinkedList<String>();
-		
-		for(Object obj : list){
-			int i = 0;
-			for(String fieldName : fieldNames){
-				String fieldValue = ReflectiveHelper.get(obj, fieldName);
-				if(i == 0){
-					commaSeparatedList.add(fieldValue);
-				}
-				else{
-					commaSeparatedList.add(',' + fieldValue.toString());
-				}
-				i++;	
-			}
-			commaSeparatedList.add("\n");
 		}
 		
 		return commaSeparatedList;

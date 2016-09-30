@@ -1,6 +1,7 @@
 package gov.healthit.chpl.auth;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -28,6 +29,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+/**
+ * Utility class for email sending
+ * 
+ * @author dlucas
+ *
+ */
 @Service("SendMailUtil")
 public class SendMailUtil {
 
@@ -36,7 +43,8 @@ public class SendMailUtil {
 	private Environment env;
 
 	/**
-	 * create and send the email to invite the user
+	 * create and send an email with the provided string[] toEmails, subject and
+	 * html message
 	 * 
 	 * @param invitation
 	 */
@@ -67,6 +75,17 @@ public class SendMailUtil {
 		sendEmail(toEmail, subject, htmlMessage, properties);
 	}
 
+	/**
+	 * Send an email with the given properties, as well as the string[] toEmail,
+	 * subject, and html message
+	 * 
+	 * @param toEmail
+	 * @param subject
+	 * @param htmlMessage
+	 * @param properties
+	 * @throws AddressException
+	 * @throws MessagingException
+	 */
 	public void sendEmail(String[] toEmail, String subject, String htmlMessage, Properties properties)
 			throws AddressException, MessagingException {
 		// creates a new session with an authenticator
@@ -99,9 +118,9 @@ public class SendMailUtil {
 				toAddresses[i] = toEmailaddress;
 			}
 			msg.setRecipients(Message.RecipientType.TO, toAddresses);
-			logger.debug("Sending email to " + toEmail.toString());
+			logger.debug("Sending email to " + Arrays.toString(toEmail));
 		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + toEmail.toString(), ex);
+			logger.fatal("Invalid Email Address: " + Arrays.toString(toEmail), ex);
 			throw ex;
 		}
 
@@ -115,7 +134,15 @@ public class SendMailUtil {
 	}
 
 	/**
-	 * create and send an email with file attachments
+	 * Send an email with files, in addition to the toEmail, subject, and html
+	 * message
+	 * 
+	 * @param toEmail
+	 * @param subject
+	 * @param htmlMessage
+	 * @param files
+	 * @throws AddressException
+	 * @throws MessagingException
 	 */
 	public void sendEmail(String[] toEmail, String subject, String htmlMessage, List<File> files)
 			throws AddressException, MessagingException {
@@ -141,6 +168,18 @@ public class SendMailUtil {
 		sendEmail(toEmail, subject, htmlMessage, files, properties);
 	}
 
+	/**
+	 * Send an email using the given properties and list of files to attach.
+	 * Also uses the toEmail, subject and htmlMessage
+	 * 
+	 * @param toEmail
+	 * @param subject
+	 * @param htmlMessage
+	 * @param files
+	 * @param props
+	 * @throws AddressException
+	 * @throws MessagingException
+	 */
 	public void sendEmail(String[] toEmail, String subject, String htmlMessage, List<File> files, Properties props)
 			throws AddressException, MessagingException {
 		// do not attempt to send email if we are in a dev environment
@@ -191,9 +230,9 @@ public class SendMailUtil {
 				toAddresses[i] = toEmailaddress;
 			}
 			msg.setRecipients(Message.RecipientType.TO, toAddresses);
-			logger.debug("Sending email to " + toEmail.toString());
+			logger.debug("Sending email to " + Arrays.toString(toEmail));
 		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + toEmail.toString(), ex);
+			logger.fatal("Invalid Email Address: " + Arrays.toString(toEmail), ex);
 			throw ex;
 		}
 
