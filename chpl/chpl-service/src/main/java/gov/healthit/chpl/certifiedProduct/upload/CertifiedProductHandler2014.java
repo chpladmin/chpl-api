@@ -31,6 +31,7 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
@@ -543,7 +544,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						currIndex += 4; 
 						break;
 					case "TEST TOOL NAME":
-						parseTestTools(cert, currIndex);
+						parseTestTools(pendingCertifiedProduct, cert, currIndex);
 						currIndex += 2;
 					case "TEST PROCEDURE VERSION":
 						parseTestProcedures(cert, currIndex);
@@ -690,7 +691,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		}
 	}
 	
-	private void parseTestTools(PendingCertificationResultEntity cert, int toolColumnBegin) {
+	private void parseTestTools(PendingCertifiedProductEntity product, PendingCertificationResultEntity cert, int toolColumnBegin) {
 		for(CSVRecord row : getRecord()) {
 			String testToolName = row.get(toolColumnBegin).trim();
 			String testToolVersion = row.get(toolColumnBegin+1).trim();
@@ -700,6 +701,9 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				ttEntity.setTestToolVersion(testToolVersion);
 				TestToolDTO testTool = testToolDao.getByName(testToolName);
 				if(testTool != null) {
+					if(testTool.isRetired()) {
+						product.getErrorMessages().add("Test tool '" + testToolName + "' has been retired. Please remove it from the upload file and add a different test tool if necessary.");
+					}
 					ttEntity.setTestToolId(testTool.getId());
 				}
 				cert.getTestTools().add(ttEntity);

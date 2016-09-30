@@ -27,6 +27,9 @@ public class TestToolEntity {
 	@Column(name = "description")
 	private String description;
 
+	@Column(name = "retired")
+	private Boolean retired;
+	
 	public Long getId() {
 		return id;
 	}
@@ -90,5 +93,13 @@ public class TestToolEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public Boolean getRetired() {
+		return retired;
+	}
+
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
 	}
 }

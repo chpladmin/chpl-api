@@ -8,6 +8,7 @@ _Date TBD_
 * Updated /certification_ids/ call. Still returns the list of certification_ids and the date each was created. If user is ROLE_ADMIN, also returns a semi-colon separated list of CHPL product numbers with each certification_id.
 * Remove terms of use and api documentation from certified products.
 * Check product code, version code, and ICS code against specific sets of characters to make sure no special characters are used.
+* Add retired flag for test tools. Do not allow products to change associations with retired test tools.
 
 ### Bugs Fixed
 
