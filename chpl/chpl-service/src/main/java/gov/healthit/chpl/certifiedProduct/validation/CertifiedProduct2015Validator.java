@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
@@ -32,6 +33,8 @@ import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2015Validator")
@@ -70,6 +73,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 	@Autowired TestToolDAO testToolDao;
 	@Autowired TestFunctionalityDAO testFuncDao;
 	@Autowired AccessibilityStandardDAO asDao;
+	@Autowired CertifiedProductDetailsManager cpdManager;
 	
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
@@ -353,6 +357,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							TestToolDTO foundTestTool = testToolDao.getByName(pendingToolMap.getName());
 							if(foundTestTool == null || foundTestTool.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + pendingToolMap.getName() + "'.");
+							} else if(foundTestTool.isRetired()) {
+								product.getErrorMessages().add("Cannot use test tool '" + foundTestTool.getName() + "' since it is retired. Please choose a different test tool for " + cert.getNumber() + ".");
 							}
 						}
 					}
@@ -618,6 +624,48 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 			product.getErrorMessages().add("Accessibility standards are required.");
 		}
 		
+		//have to get the old product to compare previous and current test tools
+		CertifiedProductSearchDetails oldProduct = null;
+		try {
+				oldProduct = cpdManager.getCertifiedProductDetails(product.getId());
+		} catch(EntityRetrievalException ex) {
+			logger.error("Could not find certified product details with id " + product.getId(), ex);
+		}
+		
+		//we do have to check for retired test tools here because users are not allowed to:
+		//1. remove a retired test tool that was previously used, or 
+		//2. add a retired test tool that was not previously used, or
+		//3. change the test tool version of a retired test tool
+		for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
+			if(oldCert.isSuccess() != null && oldCert.isSuccess() == Boolean.TRUE && oldCert.getTestToolsUsed() != null) {
+				for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
+					TestToolDTO testTool = testToolDao.getById(oldTestTool.getTestToolId());
+					if(testTool.isRetired()) {
+						boolean certStillExists = false;
+						boolean certHasRetiredTool = false;
+						//make sure this test tool still exists in the passed in product/cert
+						//because users are not allowed to remove exisitng test tools if they are retired
+						for(CertificationResult cert : product.getCertificationResults()) {
+							if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+								if(cert.getNumber().equals(oldCert.getNumber())) {
+									certStillExists = true;
+									for(CertificationResultTestTool newTestTool : cert.getTestToolsUsed()) {
+										if(newTestTool.getTestToolId().equals(oldTestTool.getTestToolId())) {
+											certHasRetiredTool = true;
+										}
+									}
+								}
+							}
+						}
+						if(certStillExists && !certHasRetiredTool) {
+							product.getErrorMessages().add("Certification " + oldCert.getNumber() + " exists but is missing the required test tool '" + testTool.getName() + "'. This tool was present before and cannt be removed since it is retired.");
+						}
+					}
+				}
+			}
+		}
+		
+		//now check all the new certs for whatever is required
 		for(CertificationResult cert : product.getCertificationResults()) {
 			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
 				boolean gapEligibleAndTrue = false;
@@ -646,6 +694,34 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							TestToolDTO foundTestTool = testToolDao.getByName(toolMap.getTestToolName());
 							if(foundTestTool == null || foundTestTool.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + toolMap.getTestToolName() + "'.");
+							} else if(foundTestTool.isRetired() && oldProduct != null) {
+								//this retired tool is acceptable if it is not new 
+								//and the version has not been changed
+								boolean certMatch = false;
+								boolean retiredToolMatch = false;
+								boolean versionMatch = true;
+								for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
+									if(oldCert.getNumber().equals(cert.getNumber())) {
+										certMatch = true;
+										for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
+											if(oldTestTool.getTestToolId().equals(foundTestTool.getId())) {
+												retiredToolMatch = true;
+												
+												if(!oldTestTool.getTestToolVersion().equals(toolMap.getTestToolVersion())) {
+													versionMatch = false;
+												}
+											}
+										}
+									}
+								}
+								
+								if(!certMatch) {
+									product.getErrorMessages().add("Cannot add a retired product to " + cert.getNumber());
+								} else if(certMatch && !retiredToolMatch) {
+									product.getErrorMessages().add("Certification " + cert.getNumber() + " has test tool " + foundTestTool.getName() + " but did not have that before. Retired test tools cannot be added to products.");
+								} else if(certMatch && retiredToolMatch && !versionMatch) {
+									product.getErrorMessages().add("Certification " + cert.getNumber() + " cannot change the test tool version for " + foundTestTool.getName() + " since that test tool is retired.");
+								}
 							}
 						}
 					}

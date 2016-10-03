@@ -8,6 +8,7 @@ public class CertificationResultTestToolDTO {
 	private Long testToolId;
 	private String testToolName;
 	private String testToolVersion;
+	private boolean retired;
 	private Boolean deleted;
 	
 	public CertificationResultTestToolDTO(){}
@@ -19,6 +20,7 @@ public class CertificationResultTestToolDTO {
 		this.testToolVersion = entity.getVersion();
 		if(entity.getTestTool() != null) {
 			this.testToolName = entity.getTestTool().getName();
+			this.retired = entity.getTestTool().getRetired();
 		}
 		this.deleted = entity.getDeleted();
 	}
@@ -69,6 +71,14 @@ public class CertificationResultTestToolDTO {
 
 	public void setTestToolVersion(String testToolVersion) {
 		this.testToolVersion = testToolVersion;
+	}
+
+	public boolean isRetired() {
+		return retired;
+	}
+
+	public void setRetired(boolean retired) {
+		this.retired = retired;
 	}
 
 }

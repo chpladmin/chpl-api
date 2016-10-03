@@ -11,6 +11,7 @@ _Date TBD_
 * Created Java program to send weekly email with aggregate counts for developers, products, certified products, and 2014 + 2015 CPs
 	* weekly email will be sent to Jennifer Hui who will package it with the weekly status report
 	* [TEMPLATE] for deployment, update the properties.environment summaryEmail property to send to jhui@ainq.com
+* Add retired flag for test tools. Do not allow products to change associations with retired test tools.
 
 ### Bugs Fixed
 

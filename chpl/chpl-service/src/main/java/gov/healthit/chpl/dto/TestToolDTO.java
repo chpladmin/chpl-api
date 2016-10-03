@@ -6,6 +6,7 @@ public class TestToolDTO {
 	private Long id;
 	private String name;
 	private String description;
+	private boolean retired;
 	
 	public TestToolDTO(){}
 	
@@ -13,6 +14,7 @@ public class TestToolDTO {
 		this.id = entity.getId();
 		this.name = entity.getName();
 		this.description = entity.getDescription();
+		this.retired = entity.getRetired();
 	}
 
 	public Long getId() {
@@ -37,5 +39,13 @@ public class TestToolDTO {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public boolean isRetired() {
+		return retired;
+	}
+
+	public void setRetired(boolean retired) {
+		this.retired = retired;
 	}
 }
