@@ -55,7 +55,6 @@ public class CertifiedProductDetailsDTO {
     private Integer countCurrentCorrectiveActionPlans;
     private Integer countClosedCorrectiveActionPlans;
     private Date lastModifiedDate;
-	private String termsOfUse;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
@@ -133,7 +132,6 @@ public class CertifiedProductDetailsDTO {
     		this.developerContact.setPhoneNumber(entity.getPhoneNumber());
     		this.developerContact.setTitle(entity.getTitle());
     	}
-    	this.termsOfUse = entity.getTermsOfUse();
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
@@ -409,14 +407,6 @@ public class CertifiedProductDetailsDTO {
 
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
-	}
-
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
 	}
 
 	public String getTransparencyAttestation() {

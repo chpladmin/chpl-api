@@ -31,6 +31,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -247,7 +248,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		Set<KeyValueModel> testTools = new HashSet<KeyValueModel>();
 		
 		for (TestToolDTO dto : dtos) {
-			testTools.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
+			TestTool tt = new TestTool(dto.getId(), dto.getName(), dto.getDescription());
+			tt.setRetired(dto.isRetired());
+			testTools.add(tt);
 		}
 		
 		return testTools;

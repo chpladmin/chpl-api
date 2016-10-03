@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -25,7 +22,6 @@ import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
@@ -79,7 +75,6 @@ public class PendingCertifiedProductDTO {
     private Date sedTestingEnd;
 	private Boolean ics;
 	private Boolean accessibilityCertified;
-	private String termsOfUseUrl;
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	
@@ -190,7 +185,6 @@ public class PendingCertifiedProductDTO {
 		this.sedTestingEnd = details.getSedTestingEnd();
 		this.ics = details.getIcs();
 		this.accessibilityCertified = details.getAccessibilityCertified();
-		this.termsOfUseUrl = details.getTermsOfUse();
 		this.transparencyAttestation = details.getTransparencyAttestation();
 		this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
 		this.accessibilityCertified = details.getAccessibilityCertified();
@@ -438,7 +432,6 @@ public class PendingCertifiedProductDTO {
 		this.sedTestingEnd = entity.getSedTestingEnd();
 		this.ics = entity.getIcs();
 		this.accessibilityCertified = entity.getAccessibilityCertified();
-		this.termsOfUseUrl = entity.getTermsOfUse();
 		if(entity.getTransparencyAttestation() != null) {
 			this.transparencyAttestation = entity.getTransparencyAttestation().toString();
 		}
@@ -791,14 +784,6 @@ public class PendingCertifiedProductDTO {
 
 	public void setQmsStandards(List<PendingCertifiedProductQmsStandardDTO> qmsStandards) {
 		this.qmsStandards = qmsStandards;
-	}
-
-	public String getTermsOfUseUrl() {
-		return termsOfUseUrl;
-	}
-
-	public void setTermsOfUseUrl(String termsOfUseUrl) {
-		this.termsOfUseUrl = termsOfUseUrl;
 	}
 
 	public String getTransparencyAttestation() {

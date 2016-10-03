@@ -189,10 +189,7 @@ public class CertifiedProductDetailsEntity {
     
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
-	 
-	@Column(name = "terms_of_use_url")
-	private String termsOfUse;
-	
+
 	@Column(name = "ics")
 	private Boolean ics;
 	
@@ -518,15 +515,7 @@ public class CertifiedProductDetailsEntity {
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
 	}
-
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
-	}
-
+	
 	public AttestationType getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
