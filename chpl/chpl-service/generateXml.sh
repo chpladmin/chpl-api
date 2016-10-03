@@ -17,7 +17,7 @@ IFS=$(echo -en "\n\b")
 # put header info into log, then output application info into log file
 echo "XML generation at: " $TIMESTAMP >> $log
 echo "####################################" >> $log
-java -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.App > $log
+java -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.App >> $log
 echo "####################################" >> $log
 
 # restore filename delimiters
