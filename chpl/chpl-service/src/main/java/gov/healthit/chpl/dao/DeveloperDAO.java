@@ -23,7 +23,6 @@ public interface DeveloperDAO {
 	public DeveloperDTO getByName(String name);
 	public DeveloperDTO getByCode(String code);
 	public DeveloperDTO getByCertifiedProduct(CertifiedProductDTO cpDto) throws EntityRetrievalException;
-	public List<DeveloperDTO> getByCreationDate(Date startDate, Date endDate);
 	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
 	public void deleteTransparencyMapping(Long vendorId, Long acbId);
 	public DeveloperACBMapDTO getTransparencyMapping(Long vendorId, Long acbId);
