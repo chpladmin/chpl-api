@@ -15,6 +15,7 @@ _Date TBD_
 	* weekly email will be sent to Jennifer Hui who will package it with the weekly status report
 	* [TEMPLATE] for deployment, update the properties.environment summaryEmail property to send to jhui@ainq.com
 * Add retired flag for test tools. Do not allow products to change associations with retired test tools.
+* Add script to generate weekly summary email that is run as scheduled cron job
 
 ---
 
