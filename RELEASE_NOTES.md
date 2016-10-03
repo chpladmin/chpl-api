@@ -5,6 +5,9 @@ _Date TBD_
 
 ### Features Added
 * Changed certification status names previously known as Suspended, Terminated, and Withdrawn.
+* Created Java program to send weekly email with aggregate counts for developers, products, certified products, and 2014 + 2015 CPs
+	* weekly email will be sent to weekly addresses defined in summary email
+	* [TEMPLATE] for deployment, update the properties.environment to add summaryEmail property
 * Updated /certification_ids/ call. Still returns the list of certification_ids and the date each was created. If user is ROLE_ADMIN, also returns a semi-colon separated list of CHPL product numbers with each certification_id.
 * Remove terms of use and api documentation from certified products.
 * Check product code, version code, and ICS code against specific sets of characters to make sure no special characters are used.
@@ -12,8 +15,6 @@ _Date TBD_
 	* weekly email will be sent to Jennifer Hui who will package it with the weekly status report
 	* [TEMPLATE] for deployment, update the properties.environment summaryEmail property to send to jhui@ainq.com
 * Add retired flag for test tools. Do not allow products to change associations with retired test tools.
-
-### Bugs Fixed
 
 ---
 

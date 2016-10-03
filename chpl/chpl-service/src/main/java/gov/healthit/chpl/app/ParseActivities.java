@@ -73,30 +73,34 @@ public class ParseActivities{
 	 */
 	public static void main( String[] args ) throws Exception {
 		ParseActivities parseActivities = new ParseActivities();
-		parseActivities.setCommandLineArgs(args, parseActivities);
-		InputStream in = App.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-		parseActivities.loadProperties(parseActivities, in);
-		parseActivities.loadEmailProperties(parseActivities);
+		
+		parseActivities.setCommandLineArgs(args);
+		InputStream in = ParseActivities.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+		parseActivities.loadProperties(in);
+		parseActivities.loadEmailProperties();
 		parseActivities.ctx = LocalContextFactory.createLocalContext(parseActivities.props.getProperty("dbDriverClass"));
-		parseActivities.ctx.addDataSource(parseActivities.props.getProperty("dataSourceName"),parseActivities.props.getProperty("dataSourceConnection"), 
+		parseActivities.ctx.addDataSource(parseActivities.props.getProperty("dataSourceName"),
+				parseActivities.props.getProperty("dataSourceConnection"), 
 				 parseActivities.props.getProperty("dataSourceUsername"), parseActivities.props.getProperty("dataSourcePassword"));
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		 parseActivities.initializeSpringClasses(parseActivities, context);
-		 parseActivities.setNumDaysInSummaryEmail(parseActivities, parseActivities.getNumDaysInSummaryEmail(parseActivities));
-		 parseActivities.setSummaryTimePeriod(parseActivities.getSummaryTimePeriod(parseActivities));
+		 parseActivities.initializeSpringClasses(context);
+		 parseActivities.setNumDaysInSummaryEmail(parseActivities.getNumDaysInSummaryEmail());
+		 parseActivities.setSummaryTimePeriod(parseActivities.getSummaryTimePeriod());
 		 parseActivities.developerDTOs = parseActivities.developerDAO.findAll();
 		 parseActivities.certifiedProductDTOs = parseActivities.certifiedProductDAO.findAll();
 		 parseActivities.productDTOs = parseActivities.productDAO.findAll();
-		 parseActivities.setCertifiedProductDetailsDTOs(parseActivities);
-		 parseActivities.setActivitiesList(parseActivities.getActivitiesByPeriodUsingStartAndEndDate(parseActivities));
-		 parseActivities.setTableHeaders(parseActivities.getTableHeaders(parseActivities));
-		 parseActivities.setCommaSeparatedOutput(parseActivities.getCommaSeparatedOutput(parseActivities));
-		 parseActivities.setCSV(parseActivities.getCSV(parseActivities, "summaryCounts.csv"));
-		 parseActivities.setSummaryActivities(parseActivities.getSummaryActivities(parseActivities));
-		 parseActivities.setSummaryOutputTable(parseActivities.getFormattedTable(parseActivities, parseActivities.summaryActivitiesList, parseActivities.tableHeaders));
-		 parseActivities.setFiles(parseActivities.getFiles(parseActivities));
-		 parseActivities.setEmailProperties(parseActivities);
-		 parseActivities.email.sendEmail(parseActivities.email.getEmailTo(), parseActivities.email.getEmailSubject(), parseActivities.email.getEmailMessage(), 
+		 parseActivities.setCertifiedProductDetailsDTOs();
+		 parseActivities.setActivitiesList(parseActivities.getActivitiesByPeriodUsingStartAndEndDate());
+		 parseActivities.setTableHeaders(parseActivities.getTableHeaders());
+		 parseActivities.setCommaSeparatedOutput(parseActivities.getCommaSeparatedOutput());
+		 parseActivities.setCSV(parseActivities.getCSV(parseActivities.props.getProperty("downloadFolderPath").toString() + "\\summaryCounts.csv"));
+		 parseActivities.setSummaryActivities(parseActivities.getSummaryActivities());
+		 parseActivities.setSummaryOutputTable(parseActivities.getFormattedTable(parseActivities.summaryActivitiesList, 
+				 parseActivities.tableHeaders));
+		 parseActivities.setFiles(parseActivities.getFiles());
+		 parseActivities.setEmailProperties();
+		 parseActivities.email.sendEmail(parseActivities.email.getEmailTo(), parseActivities.email.getEmailSubject(), 
+				 parseActivities.email.getEmailMessage(), 
 				  parseActivities.email.getProps(), parseActivities.email.getFiles());
 		 context.close();
 	}
@@ -107,12 +111,13 @@ public class ParseActivities{
 	 * certifiedProductDTOs_2014, certifiedProductDTOs_2015, activitiesList, and numDaysInEmail
 	 * @param parseActivities
 	 * @return
+	 * @throws ParseException 
 	 */
-	public List<ActivitiesOutput> getSummaryActivities(ParseActivities parseActivities){
+	public List<ActivitiesOutput> getSummaryActivities() throws ParseException{
 		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		calendarCounter.setTime(endDate);
 		
-		parseActivities.activitiesList = new LinkedList<ActivitiesOutput>();
+		activitiesList = new LinkedList<ActivitiesOutput>();
 		
 		while(summaryTimePeriod.getStartDate().before(calendarCounter.getTime())){
 			 Date counterDate = summaryTimePeriod.getEndDate();
@@ -133,9 +138,10 @@ public class ParseActivities{
 			 AggregateCount certifiedProductCount_2015 = new AggregateCount(certifiedProductDTOs_2015);
 			 Integer totalCertifiedProducts_2015 = certifiedProductCount_2015.getCountDuringPeriodUsingField(startDate, summaryTimePeriod.getEndDate(), "creationDate");
 			 
-			 // Format date string: dow mon dd yyyy
-			 String dateString = counterDate.toString().substring(0, 10) + " " + counterDate.toString().substring(24, 28);
-			// Populate ActivitiesOutput
+			 SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
+			 dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			 String dateString = dateFormat.format(counterDate);
+			 
 			 ActivitiesOutput activitiesOutput = new ActivitiesOutput(dateString, totalDevelopers, totalProducts, totalCertifiedProducts, 
 					 totalCertifiedProducts_2014, totalCertifiedProducts_2015);
 			 
@@ -143,7 +149,7 @@ public class ParseActivities{
 			 activitiesList.add(activitiesOutput);
 			 
 			 // decrement calendar by 7 days
-			 calendarCounter.add(Calendar.DATE, -parseActivities.numDaysInSummaryEmail);	 
+			 calendarCounter.add(Calendar.DATE, -numDaysInSummaryEmail);	 
 		 } 
 		return activitiesList;
 	}
@@ -159,8 +165,9 @@ public class ParseActivities{
 	 * @param certifiedProductDTOs_2014
 	 * @param certifiedProductDTOs_2015
 	 * @return
+	 * @throws ParseException 
 	 */
-	public List<ActivitiesOutput> getActivitiesByPeriodUsingStartAndEndDate(ParseActivities parseActivities){
+	public List<ActivitiesOutput> getActivitiesByPeriodUsingStartAndEndDate() throws ParseException{
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		 calendarCounter.setTime(endDate); 
 		 
@@ -185,9 +192,10 @@ public class ParseActivities{
 			 AggregateCount certifiedProductCount_2015 = new AggregateCount(certifiedProductDTOs_2015);
 			 Integer totalCertifiedProducts_2015 = certifiedProductCount_2015.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 
-			 // Format date string: dow mon dd yyyy
-			 String dateString = counterDate.toString().substring(0, 10) + " " + counterDate.toString().substring(24, 28);
-			// Populate ActivitiesOutput
+			 SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
+			 dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			 String dateString = dateFormat.format(counterDate);
+
 			 ActivitiesOutput activitiesOutput = new ActivitiesOutput(dateString, totalDevelopers, totalProducts, totalCertifiedProducts, 
 					 totalCertifiedProducts_2014, totalCertifiedProducts_2015);
 			 
@@ -207,7 +215,7 @@ public class ParseActivities{
 	 * @return
 	 * @throws Exception
 	 */
-	public Table getFormattedTable(ParseActivities parseActivities, List<ActivitiesOutput> activitiesList, List<TableHeader> tableHeaders) throws Exception{
+	public Table getFormattedTable(List<ActivitiesOutput> activitiesList, List<TableHeader> tableHeaders) throws Exception{
 		 // Generate key-value map for table creation
 		 Map<String, String> tableRows = new LinkedHashMap<String, String>();
 		 char fieldDelimiter = ',';
@@ -251,7 +259,7 @@ public class ParseActivities{
 	 * @param parseActivities
 	 * @throws Exception
 	 */
-	public void setCommandLineArgs(String[] args, ParseActivities parseActivities) throws Exception{
+	public void setCommandLineArgs(String[] args) throws Exception{
 		SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
 		isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Integer numArgs = args.length;
@@ -262,9 +270,9 @@ public class ParseActivities{
 			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
 		case 2:
 			try{
-				parseActivities.startDate = isoFormat.parse(args[0]);
-				parseActivities.endDate = isoFormat.parse(args[1]);
-				parseActivities.numDaysInPeriod = 7;
+				startDate = isoFormat.parse(args[0]);
+				endDate = isoFormat.parse(args[1]);
+				numDaysInPeriod = 7;
 			}
 			catch(ParseException e){
 				throw new ParseException("Please enter startDate and endDate command-line arguments in the format of yyyy-MM-dd", e.getErrorOffset());
@@ -272,16 +280,16 @@ public class ParseActivities{
 			break;
 		case 3:
 			try{
-				parseActivities.startDate = isoFormat.parse(args[0]);
-				parseActivities.endDate = isoFormat.parse(args[1]);
-				parseActivities.numDaysInPeriod = 7;
+				startDate = isoFormat.parse(args[0]);
+				endDate = isoFormat.parse(args[1]);
+				numDaysInPeriod = 7;
 			}
 			catch(ParseException e){
 				throw new ParseException("Please enter startDate and endDate command-line arguments in the format of yyyy-MM-dd", e.getErrorOffset());
 			}
 			try{
 				Integer numDaysArg = Integer.parseInt(args[2]);
-				parseActivities.numDaysInPeriod = numDaysArg;
+				numDaysInPeriod = numDaysArg;
 			} catch(NumberFormatException e){
 				System.out.println("Third command line argument could not be parsed to integer. " + e.getMessage());
 			}
@@ -296,13 +304,13 @@ public class ParseActivities{
 	 * @param parseActivities
 	 * @param context
 	 */
-	public void initializeSpringClasses(ParseActivities parseActivities, AbstractApplicationContext context){
+	public void initializeSpringClasses(AbstractApplicationContext context){
 		 System.out.println(context.getClassLoader());
 
-		 parseActivities.setDeveloperDAO((DeveloperDAO)context.getBean("developerDAO"));
-		 parseActivities.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-		 parseActivities.setProductDAO((ProductDAO)context.getBean("productDAO"));
-		 parseActivities.setEmail((Email)context.getBean("email"));
+		 setDeveloperDAO((DeveloperDAO)context.getBean("developerDAO"));
+		 setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
+		 setProductDAO((ProductDAO)context.getBean("productDAO"));
+		 setEmail((Email)context.getBean("email"));
 	}
 	
 	/**
@@ -310,7 +318,7 @@ public class ParseActivities{
 	 * @param parseActivities
 	 * @return
 	 */
-	public Properties loadEmailProperties(ParseActivities parseActivities){
+	public Properties loadEmailProperties(){
 		props.put("mail.smtp.host", props.getProperty("smtpHost"));
 		props.put("mail.smtp.port", props.getProperty("smtpPort"));
 		props.put("mail.smtp.auth", "true");
@@ -325,16 +333,16 @@ public class ParseActivities{
 	 * @return
 	 * @throws IOException
 	 */
-	public Properties loadProperties(ParseActivities parseActivities, InputStream in) throws IOException{
+	public Properties loadProperties(InputStream in) throws IOException{
 		if (in == null) {
-			parseActivities.props = null;
+			props = null;
 			throw new FileNotFoundException("Environment Properties File not found in class path.");
 		} else {
-			parseActivities.props = new Properties();
-			parseActivities.props.load(in);
+			props = new Properties();
+			props.load(in);
 			in.close();
 		}
-		return parseActivities.props;
+		return props;
 	}
 	
 	/**
@@ -346,10 +354,10 @@ public class ParseActivities{
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public CSV getCSV(ParseActivities parseActivities, String fileName) 
+	public CSV getCSV(String fileName) 
 			throws FileNotFoundException, IllegalArgumentException, IllegalAccessException{
 			 File csvFile = new File(fileName);
-			 CSV csv = new CSV(parseActivities.commaSeparatedOutput.toString(), csvFile); 
+			 CSV csv = new CSV(commaSeparatedOutput.toString(), csvFile); 
 			 return csv;
 	}
 
@@ -358,7 +366,7 @@ public class ParseActivities{
 	 * @param parseActivities
 	 * @return
 	 */
-	public TimePeriod getSummaryTimePeriod(ParseActivities parseActivities) {
+	public TimePeriod getSummaryTimePeriod() {
 		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		calendarCounter.setTime(endDate);
 		Date summaryEndDate = calendarCounter.getTime();
@@ -374,18 +382,18 @@ public class ParseActivities{
 	 * @param parseActivities
 	 * @return
 	 */
-	public Integer getNumDaysInSummaryEmail(ParseActivities parseActivities) {
-		return Integer.parseInt(parseActivities.props.getProperty("summaryEmailPeriodInDays", "7"));
+	public Integer getNumDaysInSummaryEmail() {
+		return Integer.parseInt(props.getProperty("summaryEmailPeriodInDays", "7"));
 	}
 	
 	/**
 	 * Sets the ParseActivities object's certifiedProductDTOs_2014 and certifiedProductDTOs_2015 using the certifiedProductDTOs and each dto's "year"
 	 * @param parseActivities
 	 */
-	public void setCertifiedProductDetailsDTOs(ParseActivities parseActivities){
+	public void setCertifiedProductDetailsDTOs(){
 		certifiedProductDTOs_2014 = new ArrayList<CertifiedProductDetailsDTO>();
 		certifiedProductDTOs_2015 = new ArrayList<CertifiedProductDetailsDTO>();
-		for(CertifiedProductDetailsDTO dto : parseActivities.certifiedProductDTOs){
+		for(CertifiedProductDetailsDTO dto : certifiedProductDTOs){
 			 if(dto.getYear().equals("2014")){
 				 certifiedProductDTOs_2014.add(dto);
 			 }
@@ -400,9 +408,9 @@ public class ParseActivities{
 	 * @param parseActivities
 	 * @return
 	 */
-	public List<File> getFiles(ParseActivities parseActivities) {
+	public List<File> getFiles() {
 		List<File> files = new ArrayList<File>();
-		 files.add(parseActivities.csv.getFile());
+		 files.add(csv.getFile());
 		return files;
 	}
 
@@ -410,12 +418,12 @@ public class ParseActivities{
 	 * Sets the email properties that are specific to the ParseActivities application
 	 * @param parseActivities
 	 */
-	public void setEmailProperties(ParseActivities parseActivities){
-		 parseActivities.email.setEmailTo(parseActivities.props.getProperty("summaryEmail").toString().split(";"));
-		 parseActivities.email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
-		 parseActivities.email.setEmailMessage(parseActivities.summaryOutputTable.getTable());
-		 parseActivities.email.setProps(parseActivities.props);
-		 parseActivities.email.setFiles(parseActivities.files);
+	public void setEmailProperties(){
+		 email.setEmailTo(props.getProperty("summaryEmail").toString().split(";"));
+		 email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
+		 email.setEmailMessage(summaryOutputTable.getTable());
+		 email.setProps(props);
+		 email.setFiles(files);
 	}
 	
 	/**
@@ -423,17 +431,17 @@ public class ParseActivities{
 	 * @param parseActivities
 	 * @return
 	 */
-	public List<TableHeader> getTableHeaders(ParseActivities parseActivities){
-		parseActivities.dateHeader = new TableHeader("Date", 17, String.class);
-		parseActivities.totalDevsHeader = new TableHeader("Total Developers", 17, String.class);
-		parseActivities.totalProdsHeader = new TableHeader("Total Products", 15, String.class);
-		parseActivities.totalCPsHeader = new TableHeader("Total CPs", 10, String.class);
-		parseActivities.totalCPs2014Header = new TableHeader("Total 2014 CPs", 15, String.class);
-		parseActivities.totalCPs2015Header = new TableHeader("Total 2015 CPs", 15, String.class);
+	public List<TableHeader> getTableHeaders(){
+		dateHeader = new TableHeader("Date", 17, String.class);
+		totalDevsHeader = new TableHeader("Total Developers", 17, String.class);
+		totalProdsHeader = new TableHeader("Total Products", 15, String.class);
+		totalCPsHeader = new TableHeader("Total CPs", 10, String.class);
+		totalCPs2014Header = new TableHeader("Total 2014 CPs", 15, String.class);
+		totalCPs2015Header = new TableHeader("Total 2015 CPs", 15, String.class);
 		
-		parseActivities.tableHeaders = new LinkedList<TableHeader>();
-		parseActivities.tableHeaders.addAll(Arrays.asList(dateHeader, totalDevsHeader, totalProdsHeader, totalCPsHeader, totalCPs2014Header, totalCPs2015Header));
-		return parseActivities.tableHeaders;
+		tableHeaders = new LinkedList<TableHeader>();
+		tableHeaders.addAll(Arrays.asList(dateHeader, totalDevsHeader, totalProdsHeader, totalCPsHeader, totalCPs2014Header, totalCPs2015Header));
+		return tableHeaders;
 	}
 	
 	/**
@@ -442,10 +450,10 @@ public class ParseActivities{
 	 * @param parseActivities
 	 * @return
 	 */
-	public String getCommaSeparatedOutput(ParseActivities parseActivities){
+	public String getCommaSeparatedOutput(){
 		 List<Field> fields = new ArrayList<Field>(ReflectiveHelper.getInheritedPrivateFields(ActivitiesOutput.class));
-		 List<String> commaSeparatedTableHeaders = new LinkedList<String>(CSV.getCommaSeparatedList(parseActivities.tableHeaders, "headerName"));
-		 List<String> commaSeparatedActivitiesOutput = new LinkedList<String>(CSV.getCommaSeparatedListWithFields(parseActivities.activitiesList, fields));
+		 List<String> commaSeparatedTableHeaders = new LinkedList<String>(CSV.getCommaSeparatedList(tableHeaders, "headerName"));
+		 List<String> commaSeparatedActivitiesOutput = new LinkedList<String>(CSV.getCommaSeparatedListWithFields(activitiesList, fields));
 		 List<String> headerAndBody = new LinkedList<String>(commaSeparatedTableHeaders);
 		 // Add newline to first record of activities output to separate header from rows
 		 StringBuilder firstIndexString = new StringBuilder();
@@ -480,8 +488,8 @@ public class ParseActivities{
 		this.files = files;
 	}
 	
-	public void setNumDaysInSummaryEmail(ParseActivities parseActivities, Integer numDaysInSummaryEmail) {
-		parseActivities.numDaysInSummaryEmail = numDaysInSummaryEmail;
+	public void setNumDaysInSummaryEmail(Integer numDaysInSummaryEmail) {
+		this.numDaysInSummaryEmail = numDaysInSummaryEmail;
 	}
 	
 	public void setSummaryTimePeriod(TimePeriod summaryTimePeriod) {

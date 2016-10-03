@@ -66,9 +66,9 @@ public class ParseActivitiesTest {
 	public void test_getCommaSeparatedOutput_ReturnsValidResult() throws Exception{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		String[] args = {"2015-01-01", "2016-09-29", "7"};
-		parseActivities.setCommandLineArgs(args, parseActivities);
+		parseActivities.setCommandLineArgs(args);
 		InputStream in = App.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-		parseActivities.loadProperties(parseActivities, in);
+		parseActivities.loadProperties(in);
 		Properties props;
 		if (in == null) {
 			props = null;
@@ -82,16 +82,16 @@ public class ParseActivitiesTest {
 		ctx.addDataSource(props.getProperty("dataSourceName"),props.getProperty("dataSourceConnection"), 
 				 props.getProperty("dataSourceUsername"), props.getProperty("dataSourcePassword"));
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		 parseActivities.initializeSpringClasses(parseActivities, context);
-		 parseActivities.setNumDaysInSummaryEmail(parseActivities, parseActivities.getNumDaysInSummaryEmail(parseActivities));
-		 parseActivities.setSummaryTimePeriod(parseActivities.getSummaryTimePeriod(parseActivities));
+		 parseActivities.initializeSpringClasses(context);
+		 parseActivities.setNumDaysInSummaryEmail(parseActivities.getNumDaysInSummaryEmail());
+		 parseActivities.setSummaryTimePeriod(parseActivities.getSummaryTimePeriod());
 		 parseActivities.developerDTOs = parseActivities.developerDAO.findAll();
 		 parseActivities.certifiedProductDTOs = parseActivities.certifiedProductDAO.findAll();
 		 parseActivities.productDTOs = parseActivities.productDAO.findAll();
-		 parseActivities.setCertifiedProductDetailsDTOs(parseActivities);
-		 parseActivities.activitiesList = parseActivities.getActivitiesByPeriodUsingStartAndEndDate(parseActivities);
-		 parseActivities.setTableHeaders(parseActivities.getTableHeaders(parseActivities));
-		 String commaSeparatedOutput = parseActivities.getCommaSeparatedOutput(parseActivities);
+		 parseActivities.setCertifiedProductDetailsDTOs();
+		 parseActivities.activitiesList = parseActivities.getActivitiesByPeriodUsingStartAndEndDate();
+		 parseActivities.setTableHeaders(parseActivities.getTableHeaders());
+		 String commaSeparatedOutput = parseActivities.getCommaSeparatedOutput();
 		 assertNotNull("getCommaSeparatedOutput returned null results", commaSeparatedOutput);
 		 assertTrue("getCommaSeparatedOutput should return valid results", commaSeparatedOutput.length() > 0);
 	}

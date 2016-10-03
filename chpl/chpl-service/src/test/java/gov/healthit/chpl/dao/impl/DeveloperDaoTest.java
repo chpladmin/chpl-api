@@ -239,34 +239,4 @@ public class DeveloperDaoTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
-	/** Description: Tests the getByCreationDate(startDate, endDate) method
-	 * Verifies that results are returned
-	 * Verifies that results are after the startDate and before the endDate
-	 * Expected Result: One or more results
-	 * All results have a creationDate after the startDate and before the endDate
-	 * Assumptions:
-	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
-	 * @throws ParseException 
-	 */
-	@Transactional
-	@Rollback(true)
-	@Test
-	public void test_getByCreationDate_ReturnsValidDevelopers() throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ParseException{
-		SecurityContextHolder.getContext().setAuthentication(authUser);
-		
-		SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
-		isoFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-		
-		Date startDate = isoFormat.parse("2016-01-01");
-		Date endDate = isoFormat.parse("2016-09-16");
-		
-		List<DeveloperDTO> result = developerDao.getByCreationDate(startDate, endDate);
-		
-		assertTrue("getByCreationDate() should return valid DeveloperDTO results but returned " + result.size(), result.size() > 0);
-		for(DeveloperDTO dto : result){
-			assertTrue("startDate of " + startDate + " should be before " + dto.getCreationDate(), startDate.before(dto.getCreationDate()));
-			assertTrue("endDate of " + endDate + " should be after " + dto.getCreationDate(), endDate.after(dto.getCreationDate()));
-		}
-
-	}
 }
