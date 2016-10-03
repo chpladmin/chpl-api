@@ -166,6 +166,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "title")
     private String title;
     
+    @Column(name = "creation_date")
+    private Date creationDate;
+    
     @Column(name = "certification_date")
     private Date certificationDate;
     
@@ -407,6 +410,14 @@ public class CertifiedProductDetailsEntity {
 
 	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
 		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
+	}
+	
+	public Date getCreationDate(){
+		return creationDate;
+	}
+	
+	public void setCreationDate(Date creationDate){
+		this.creationDate = creationDate;
 	}
 
 	public Date getLastModifiedDate() {

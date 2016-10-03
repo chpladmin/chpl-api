@@ -47,6 +47,7 @@ public class CertifiedProductDetailsDTO {
     private String developerWebsite;
     private AddressDTO developerAddress;
     private ContactDTO developerContact;
+    private Date creationDate;
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
@@ -83,6 +84,7 @@ public class CertifiedProductDetailsDTO {
     	this.versionCode = entity.getVersionCode();
     	this.icsCode = entity.getIcsCode();
     	this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
+    	this.creationDate = entity.getCreationDate();
     	this.certifiedDateCode = entity.getCertifiedDateCode();
     	this.acbCertificationId = entity.getAcbCertificationId();
     	this.certificationBodyId = entity.getCertificationBodyId();
@@ -269,6 +271,12 @@ public class CertifiedProductDetailsDTO {
 	}
 	public void setPracticeTypeName(String practiceTypeName) {
 		this.practiceTypeName = practiceTypeName;
+	}
+	public Date getCreationDate(){
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate){
+		this.creationDate = creationDate;
 	}
 	public Date getCertificationDate() {
 		return certificationDate;
