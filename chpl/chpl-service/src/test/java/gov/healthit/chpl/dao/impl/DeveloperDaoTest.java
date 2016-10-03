@@ -65,7 +65,7 @@ public class DeveloperDaoTest extends TestCase {
 	public void getAllDevelopers() {
 		List<DeveloperDTO> results = developerDao.findAll();
 		assertNotNull(results);
-		assertEquals(3, results.size());
+		assertEquals(7, results.size());
 	}
 
 	@Test
