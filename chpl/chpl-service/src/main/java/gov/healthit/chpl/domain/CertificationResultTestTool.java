@@ -7,7 +7,8 @@ public class CertificationResultTestTool {
 	private Long testToolId;
 	private String testToolName;
 	private String testToolVersion;
-
+	private boolean retired;
+	
 	public CertificationResultTestTool() {
 		super();
 	}
@@ -17,6 +18,7 @@ public class CertificationResultTestTool {
 		this.testToolId = dto.getTestToolId();
 		this.testToolName = dto.getTestToolName();
 		this.testToolVersion = dto.getTestToolVersion();
+		this.retired = dto.isRetired();
 	}
 	
 	public Long getId() {
@@ -49,5 +51,13 @@ public class CertificationResultTestTool {
 
 	public void setTestToolVersion(String testToolVersion) {
 		this.testToolVersion = testToolVersion;
+	}
+
+	public boolean isRetired() {
+		return retired;
+	}
+
+	public void setRetired(boolean retired) {
+		this.retired = retired;
 	}
 }
