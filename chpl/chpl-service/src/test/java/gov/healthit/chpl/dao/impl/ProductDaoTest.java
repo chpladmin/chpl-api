@@ -59,7 +59,7 @@ public class ProductDaoTest extends TestCase {
 
 	@Test
 	public void getProductById() {
-		Long productId = 1L;
+		Long productId = -1L;
 		ProductDTO product = null;
 		try {
 			product = productDao.getById(productId);
@@ -67,7 +67,7 @@ public class ProductDaoTest extends TestCase {
 			fail("Could not find product with id " + productId);
 		}
 		assertNotNull(product);
-		assertEquals(1, product.getId().longValue());
+		assertEquals(-1, product.getId().longValue());
 	}
 	
 	@Test
@@ -92,7 +92,7 @@ public class ProductDaoTest extends TestCase {
 	
 	@Test
 	public void updateProduct() throws EntityRetrievalException {
-		ProductDTO product = productDao.getById(1L);
+		ProductDTO product = productDao.getById(-1L);
 		product.setDeveloperId(-2L);
 		
 		ProductEntity result = null;
