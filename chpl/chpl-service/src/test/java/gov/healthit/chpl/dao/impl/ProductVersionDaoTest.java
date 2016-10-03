@@ -68,7 +68,7 @@ public class ProductVersionDaoTest extends TestCase {
 	
 	@Test
 	public void getVersionByProduct() {
-		Long productId = 1L;
+		Long productId = -1L;
 		List<ProductVersionDTO> versions = null;
 		versions = versionDao.getByProductId(productId);
 		assertNotNull(versions);
