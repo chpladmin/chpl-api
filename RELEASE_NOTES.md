@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 5.1.0
+_4 October 2016_
+
+### Features Added
+* Changed certification status names previously known as Suspended, Terminated, and Withdrawn.
+* Created Java program to send weekly email with aggregate counts for developers, products, certified products, and 2014 + 2015 CPs
+	* weekly email will be sent to weekly addresses defined in summary email
+	* [TEMPLATE] for deployment, update the properties.environment to add summaryEmail property
+* Updated /certification_ids/ call. Still returns the list of certification_ids and the date each was created. If user is ROLE_ADMIN, also returns a semi-colon separated list of CHPL product numbers with each certification_id.
+* Remove terms of use and api documentation from certified products.
+* Check product code, version code, and ICS code against specific sets of characters to make sure no special characters are used.
+* Add retired flag for test tools. Do not allow products to change associations with retired test tools.
+* Add script to generate weekly summary email that is run as scheduled cron job
+
+---
+
 ## Version 5.0.0
 _19 September 2016_
 
@@ -33,6 +49,7 @@ _30 August 2016_
 * TO DO DURING THE RELEASE: change the questionable activity email recipients to just be the ONC_CHPL@hhs.gov email (i.e. remove onc.certification@hhs.gov)
 * TO DO DURING THE RELEASE: create a file (can call it cleantomcat) in /etc/cron.daily and chmod a+x the file. Contents of the file are listed as a comment in OCD-811. The command deletes files that have not been written to since X days ago. The number near the end of the command is X.
 * Updated /activity API endpoint to incorporate new parameters to filter by API-Key, sort dateAscending, and filter by start & end date.
+
 * Do not allow 170.315 (d)(3) to mark GAP as true
 * Added 'responsibleUser' field with all user data for /activity reports
 * Removed CORSFilter in web.xml; this was preventing some ajax calls from other domains

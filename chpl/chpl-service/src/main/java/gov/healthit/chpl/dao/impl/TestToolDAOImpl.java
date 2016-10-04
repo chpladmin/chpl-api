@@ -23,12 +23,8 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 			throws EntityCreationException, EntityRetrievalException {
 		
 		TestToolEntity entity = null;
-		try {
-			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
-			}
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
+		if (dto.getId() != null){
+			entity = this.getEntityById(dto.getId());
 		}
 		
 		if (entity != null) {
@@ -41,6 +37,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
 			entity.setDescription(dto.getDescription());
+			entity.setRetired(false);
 			
 			create(entity);
 			return new TestToolDTO(entity);
@@ -58,6 +55,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 		
 		entity.setName(dto.getName());
 		entity.setDescription(dto.getDescription());
+		entity.setRetired(dto.isRetired());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
 		
@@ -79,8 +77,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 	}
 
 	@Override
-	public TestToolDTO getById(Long id)
-			throws EntityRetrievalException {
+	public TestToolDTO getById(Long id) {
 		
 		TestToolDTO dto = null;
 		TestToolEntity entity = getEntityById(id);
@@ -134,18 +131,13 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 		return entityManager.createQuery( "from TestToolEntity where (NOT deleted = true) ", TestToolEntity.class).getResultList();
 	}
 	
-	private TestToolEntity getEntityById(Long id) throws EntityRetrievalException {
+	private TestToolEntity getEntityById(Long id) {
 		
 		TestToolEntity entity = null;
 			
 		Query query = entityManager.createQuery( "from TestToolEntity where (NOT deleted = true) AND (test_tool_id = :entityid) ", TestToolEntity.class );
 		query.setParameter("entityid", id);
 		List<TestToolEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate test tool id in database.");
-		}
-		
 		if (result.size() > 0){
 			entity = result.get(0);
 		}

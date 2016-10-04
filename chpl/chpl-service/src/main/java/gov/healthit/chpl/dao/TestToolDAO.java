@@ -11,6 +11,6 @@ public interface TestToolDAO {
 	public void delete(Long id) throws EntityRetrievalException;
 	
 	public List<TestToolDTO> findAll();
-	public TestToolDTO getById(Long id) throws EntityRetrievalException;
+	public TestToolDTO getById(Long id);
 	public TestToolDTO getByName(String name );
 }

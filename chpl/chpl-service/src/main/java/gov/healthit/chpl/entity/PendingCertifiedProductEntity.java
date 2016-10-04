@@ -169,10 +169,7 @@ public class PendingCertifiedProductEntity {
 	
 	@Column(name = "accessibility_certified")
 	private Boolean accessibilityCertified;
-	
-	@Column(name = "terms_of_use_url")
-	private String termsOfUse;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
@@ -569,14 +566,6 @@ public class PendingCertifiedProductEntity {
 
 	public void setHasQms(boolean hasQms) {
 		this.hasQms = hasQms;
-	}
-
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
 	}
 
 	public AttestationType getTransparencyAttestation() {

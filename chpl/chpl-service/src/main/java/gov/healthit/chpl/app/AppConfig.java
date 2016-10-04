@@ -11,18 +11,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-//NOTE: WE ONLY NEED THE DAO METHODS FOR THIS 
-
 @Configuration
 @EnableTransactionManagement(proxyTargetClass=true)
 @ComponentScan(basePackages = {
 		"org.springframework.security.**",
+		"org.springframework.core.env.**",
 		"gov.healthit.chpl.util.**",
-		"gov.healthit.chpl.auth.dao.**",
+		"gov.healthit.chpl.auth.**",
 		"gov.healthit.chpl.dao.**", 
 		"gov.healthit.chpl.entity.**",
 		"gov.healthit.chpl.auth.manager.**",
-		"gov.healthit.chpl.manager.**"}, 
+		"gov.healthit.chpl.manager.**",
+		"gov.healthit.chpl.app.**"}, 
 	lazyInit=true,
 	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class AppConfig {

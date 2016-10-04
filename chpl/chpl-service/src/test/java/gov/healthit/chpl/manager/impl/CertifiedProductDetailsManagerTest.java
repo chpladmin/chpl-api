@@ -238,7 +238,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
 		assertEquals("Test Product 1", detail.getProduct().get("name"));
-		assertEquals(1, new Long(detail.getProduct().get("id").toString()).longValue());
+		assertEquals(-1, new Long(detail.getProduct().get("id").toString()).longValue());
 		assertEquals("1.0.0", detail.getProduct().get("version"));
 		assertEquals(1, new Long(detail.getProduct().get("versionId").toString()).longValue());
 		
@@ -250,7 +250,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
 		assertEquals("Test Developer 1", detail.getDeveloper().getName());
-		assertEquals(1, new Long(detail.getProduct().get("id").toString()).longValue());
+		assertEquals(-1, new Long(detail.getProduct().get("id").toString()).longValue());
 	}
 
 	@Test

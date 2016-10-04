@@ -20,6 +20,7 @@ import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CQMMetDTO;
+import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationIdManager;
@@ -79,6 +80,13 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 		return CertificationIdDAO.findAll();
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public List<CertificationIdAndCertifiedProductDTO> getAllWithProducts() {
+		return CertificationIdDAO.getAllCertificationIdsWithProducts();
+	}
+	
 	@Override
 	@Transactional(readOnly = false)
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {

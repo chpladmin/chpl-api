@@ -103,9 +103,6 @@ public class CertifiedProductEntity {
 	@Column(name ="certification_status_id", nullable = false)
 	private Long certificationStatusId;
 	
-	@Column(name = "terms_of_use_url")
-	private String termsOfUse;
-	
 	@Column(name = "transparency_attestation_url")
 	private String transparencyAttestationUrl;
 	
@@ -280,14 +277,6 @@ public class CertifiedProductEntity {
 
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
-	}
-
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
 	}
 
 	public Boolean getIcs() {

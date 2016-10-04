@@ -47,6 +47,7 @@ public class CertifiedProductDetailsDTO {
     private String developerWebsite;
     private AddressDTO developerAddress;
     private ContactDTO developerContact;
+    private Date creationDate;
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
@@ -54,7 +55,6 @@ public class CertifiedProductDetailsDTO {
     private Integer countCurrentCorrectiveActionPlans;
     private Integer countClosedCorrectiveActionPlans;
     private Date lastModifiedDate;
-	private String termsOfUse;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
@@ -84,6 +84,7 @@ public class CertifiedProductDetailsDTO {
     	this.versionCode = entity.getVersionCode();
     	this.icsCode = entity.getIcsCode();
     	this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
+    	this.creationDate = entity.getCreationDate();
     	this.certifiedDateCode = entity.getCertifiedDateCode();
     	this.acbCertificationId = entity.getAcbCertificationId();
     	this.certificationBodyId = entity.getCertificationBodyId();
@@ -131,7 +132,6 @@ public class CertifiedProductDetailsDTO {
     		this.developerContact.setPhoneNumber(entity.getPhoneNumber());
     		this.developerContact.setTitle(entity.getTitle());
     	}
-    	this.termsOfUse = entity.getTermsOfUse();
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
@@ -272,6 +272,12 @@ public class CertifiedProductDetailsDTO {
 	public void setPracticeTypeName(String practiceTypeName) {
 		this.practiceTypeName = practiceTypeName;
 	}
+	public Date getCreationDate(){
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate){
+		this.creationDate = creationDate;
+	}
 	public Date getCertificationDate() {
 		return certificationDate;
 	}
@@ -401,14 +407,6 @@ public class CertifiedProductDetailsDTO {
 
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
-	}
-
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
 	}
 
 	public String getTransparencyAttestation() {

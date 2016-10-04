@@ -166,6 +166,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "title")
     private String title;
     
+    @Column(name = "creation_date")
+    private Date creationDate;
+    
     @Column(name = "certification_date")
     private Date certificationDate;
     
@@ -186,10 +189,7 @@ public class CertifiedProductDetailsEntity {
     
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
-	 
-	@Column(name = "terms_of_use_url")
-	private String termsOfUse;
-	
+
 	@Column(name = "ics")
 	private Boolean ics;
 	
@@ -411,6 +411,14 @@ public class CertifiedProductDetailsEntity {
 	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
 		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
 	}
+	
+	public Date getCreationDate(){
+		return creationDate;
+	}
+	
+	public void setCreationDate(Date creationDate){
+		this.creationDate = creationDate;
+	}
 
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
@@ -507,15 +515,7 @@ public class CertifiedProductDetailsEntity {
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
 	}
-
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
-	}
-
+	
 	public AttestationType getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
