@@ -200,8 +200,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
 		if(existingId != null) {
-			CertificationStatusDTO newStatus = statusDao.getByStatusName("Withdrawn");
-			pcpDao.delete(existingId, newStatus);
+			pcpDao.delete(existingId);
 		}
 		
 		//insert the record
@@ -232,9 +231,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
-		
-		CertificationStatusDTO newStatus = statusDao.getByStatusName("Withdrawn");
-		pcpDao.delete(pendingProductId, newStatus);
+		pcpDao.delete(pendingProductId);
 		
 		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been rejected.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, null);
@@ -249,9 +246,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	public void confirm(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
-		
-		CertificationStatusDTO newStatus = statusDao.getByStatusName("Active");
-		pcpDao.delete(pendingProductId, newStatus);
+		pcpDao.delete(pendingProductId);
 		
 		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been confirmed.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, pendingCpDto);
