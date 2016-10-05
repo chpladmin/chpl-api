@@ -1,5 +1,13 @@
 # Release Notes
 
+### Version TBD
+_Date TBD_
+
+### Bugs Fixed
+* Addressed issue with rejecting or overwriting pending products. Re-uploading and rejecting should be functional again. Pending products will only be marked as deleted and will no longer have their status changed from 'Pending'
+
+---
+
 ## Version 5.1.0
 _4 October 2016_
 

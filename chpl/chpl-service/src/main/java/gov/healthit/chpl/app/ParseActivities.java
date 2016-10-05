@@ -93,7 +93,7 @@ public class ParseActivities{
 		 parseActivities.setActivitiesList(parseActivities.getActivitiesByPeriodUsingStartAndEndDate());
 		 parseActivities.setTableHeaders(parseActivities.getTableHeaders());
 		 parseActivities.setCommaSeparatedOutput(parseActivities.getCommaSeparatedOutput());
-		 parseActivities.setCSV(parseActivities.getCSV(parseActivities.props.getProperty("downloadFolderPath").toString() + "\\summaryCounts.csv"));
+		 parseActivities.setCSV(parseActivities.getCSV(parseActivities.props.getProperty("downloadFolderPath").toString() + File.separator + "summaryCounts.csv"));
 		 parseActivities.setSummaryActivities(parseActivities.getSummaryActivities());
 		 parseActivities.setSummaryOutputTable(parseActivities.getFormattedTable(parseActivities.summaryActivitiesList, 
 				 parseActivities.tableHeaders));

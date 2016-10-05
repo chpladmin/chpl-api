@@ -231,12 +231,11 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 
 	@Override
 	@Transactional
-	public void delete(Long pendingProductId, CertificationStatusDTO reason) throws EntityRetrievalException {
+	public void delete(Long pendingProductId) throws EntityRetrievalException {
 		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
 		if(entity == null) {
 			throw new EntityRetrievalException("No pending certified product exists with id " + pendingProductId);
 		}
-		entity.setStatus(reason.getId());
 		entity.setDeleted(true);
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
