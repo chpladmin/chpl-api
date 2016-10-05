@@ -9,7 +9,7 @@ import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 public interface PendingCertifiedProductDAO {
 	
 	public PendingCertifiedProductDTO create(PendingCertifiedProductEntity product) throws EntityCreationException;
-	public void delete(Long pendingProductId, CertificationStatusDTO reason) throws EntityRetrievalException;
+	public void delete(Long pendingProductId) throws EntityRetrievalException;
 	public void updateStatus(Long pendingProductId, CertificationStatusDTO reason) throws EntityRetrievalException;
 	public List<PendingCertifiedProductDTO> findAll();
 	public List<PendingCertifiedProductDTO> findByStatus(Long statusId);
