@@ -178,19 +178,19 @@ public class ParseActivities{
 
 			 // Get aggregate count for developers
 			 AggregateCount developerCount = new AggregateCount(developerDTOs);
-			 Integer totalDevelopers = developerCount.getCountDuringPeriod(startDate, timePeriod.getEndDate(), "creationDate", "lastModifiedDate", "deleted");
+			 Integer totalDevelopers = developerCount.getCountDuringPeriod(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate", "lastModifiedDate", "deleted");
 			 // Get aggregate count for products
 			 AggregateCount productCount = new AggregateCount(productDTOs);
-			 Integer totalProducts = productCount.getCountDuringPeriod(startDate, timePeriod.getEndDate(), "creationDate", "lastModifiedDate", "deleted");
+			 Integer totalProducts = productCount.getCountDuringPeriod(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate", "lastModifiedDate", "deleted");
 			 // Get aggregate count for certified products
 			 AggregateCount certifiedProductCount = new AggregateCount(certifiedProductDTOs);
-			 Integer totalCertifiedProducts = certifiedProductCount.getCountDuringPeriodUsingField(startDate, timePeriod.getEndDate(), "creationDate");
+			 Integer totalCertifiedProducts = certifiedProductCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 // Get aggregate count for CPs_2014
 			 AggregateCount certifiedProductCount_2014 = new AggregateCount(certifiedProductDTOs_2014);
-			 Integer totalCertifiedProducts_2014 = certifiedProductCount_2014.getCountDuringPeriodUsingField(startDate, timePeriod.getEndDate(), "creationDate");
+			 Integer totalCertifiedProducts_2014 = certifiedProductCount_2014.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 // Get aggregate count for CPs_2015
 			 AggregateCount certifiedProductCount_2015 = new AggregateCount(certifiedProductDTOs_2015);
-			 Integer totalCertifiedProducts_2015 = certifiedProductCount_2015.getCountDuringPeriodUsingField(startDate, timePeriod.getEndDate(), "creationDate");
+			 Integer totalCertifiedProducts_2015 = certifiedProductCount_2015.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
 			 
 			 SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
 			 dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
