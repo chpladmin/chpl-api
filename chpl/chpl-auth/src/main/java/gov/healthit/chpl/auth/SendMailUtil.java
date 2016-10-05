@@ -70,7 +70,6 @@ public class SendMailUtil {
 		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
 		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
 		logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
-		logger.debug("Mail Password: " + env.getProperty("smtpPassword"));
 
 		sendEmail(toEmail, subject, htmlMessage, properties);
 	}
@@ -163,7 +162,6 @@ public class SendMailUtil {
 		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
 		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
 		logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
-		logger.debug("Mail Password: " + env.getProperty("smtpPassword"));
 
 		sendEmail(toEmail, subject, htmlMessage, files, properties);
 	}
@@ -199,7 +197,6 @@ public class SendMailUtil {
 		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
 		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
 		logger.debug("Mail Username :" + props.getProperty("smtpUsername"));
-		logger.debug("Mail Password: " + props.getProperty("smtpPassword"));
 
 		// creates a new session with an authenticator
 		javax.mail.Authenticator auth = new javax.mail.Authenticator() {

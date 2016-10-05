@@ -86,9 +86,9 @@ public class ParseActivities{
 		 parseActivities.initializeSpringClasses(context);
 		 parseActivities.setNumDaysInSummaryEmail(parseActivities.getNumDaysInSummaryEmail());
 		 parseActivities.setSummaryTimePeriod(parseActivities.getSummaryTimePeriod());
-		 parseActivities.developerDTOs = parseActivities.developerDAO.findAll();
+		 parseActivities.developerDTOs = parseActivities.developerDAO.findAllIncludingDeleted();
 		 parseActivities.certifiedProductDTOs = parseActivities.certifiedProductDAO.findAll();
-		 parseActivities.productDTOs = parseActivities.productDAO.findAll();
+		 parseActivities.productDTOs = parseActivities.productDAO.findAllIncludingDeleted();
 		 parseActivities.setCertifiedProductDetailsDTOs();
 		 parseActivities.setActivitiesList(parseActivities.getActivitiesByPeriodUsingStartAndEndDate());
 		 parseActivities.setTableHeaders(parseActivities.getTableHeaders());
@@ -124,10 +124,10 @@ public class ParseActivities{
 
 			 // Get aggregate count for developers
 			 AggregateCount developerCount = new AggregateCount(developerDTOs);
-			 Integer totalDevelopers = developerCount.getCountDuringPeriodUsingField(startDate, summaryTimePeriod.getEndDate(), "creationDate");
+			 Integer totalDevelopers = developerCount.getCountDuringPeriod(startDate, summaryTimePeriod.getEndDate(), "creationDate", "lastModifiedDate", "deleted");
 			 // Get aggregate count for products
 			 AggregateCount productCount = new AggregateCount(productDTOs);
-			 Integer totalProducts = productCount.getCountDuringPeriodUsingField(startDate, summaryTimePeriod.getEndDate(), "creationDate");
+			 Integer totalProducts = productCount.getCountDuringPeriod(startDate, summaryTimePeriod.getEndDate(), "creationDate", "lastModifiedDate", "deleted");
 			 // Get aggregate count for certified products
 			 AggregateCount certifiedProductCount = new AggregateCount(certifiedProductDTOs);
 			 Integer totalCertifiedProducts = certifiedProductCount.getCountDuringPeriodUsingField(startDate, summaryTimePeriod.getEndDate(), "creationDate");
@@ -178,19 +178,19 @@ public class ParseActivities{
 
 			 // Get aggregate count for developers
 			 AggregateCount developerCount = new AggregateCount(developerDTOs);
-			 Integer totalDevelopers = developerCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
+			 Integer totalDevelopers = developerCount.getCountDuringPeriod(startDate, timePeriod.getEndDate(), "creationDate", "lastModifiedDate", "deleted");
 			 // Get aggregate count for products
 			 AggregateCount productCount = new AggregateCount(productDTOs);
-			 Integer totalProducts = productCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
+			 Integer totalProducts = productCount.getCountDuringPeriod(startDate, timePeriod.getEndDate(), "creationDate", "lastModifiedDate", "deleted");
 			 // Get aggregate count for certified products
 			 AggregateCount certifiedProductCount = new AggregateCount(certifiedProductDTOs);
-			 Integer totalCertifiedProducts = certifiedProductCount.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
+			 Integer totalCertifiedProducts = certifiedProductCount.getCountDuringPeriodUsingField(startDate, timePeriod.getEndDate(), "creationDate");
 			 // Get aggregate count for CPs_2014
 			 AggregateCount certifiedProductCount_2014 = new AggregateCount(certifiedProductDTOs_2014);
-			 Integer totalCertifiedProducts_2014 = certifiedProductCount_2014.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
+			 Integer totalCertifiedProducts_2014 = certifiedProductCount_2014.getCountDuringPeriodUsingField(startDate, timePeriod.getEndDate(), "creationDate");
 			 // Get aggregate count for CPs_2015
 			 AggregateCount certifiedProductCount_2015 = new AggregateCount(certifiedProductDTOs_2015);
-			 Integer totalCertifiedProducts_2015 = certifiedProductCount_2015.getCountDuringPeriodUsingField(timePeriod.getStartDate(), timePeriod.getEndDate(), "creationDate");
+			 Integer totalCertifiedProducts_2015 = certifiedProductCount_2015.getCountDuringPeriodUsingField(startDate, timePeriod.getEndDate(), "creationDate");
 			 
 			 SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
 			 dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -265,7 +265,6 @@ public class ParseActivities{
 		Integer numArgs = args.length;
 		switch(numArgs){
 		case 0:
-			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
 		case 1:
 			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
 		case 2:
