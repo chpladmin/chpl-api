@@ -2,6 +2,9 @@ package gov.healthit.chpl.web.controller;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +18,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -25,6 +29,8 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SearchResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -47,6 +53,79 @@ public class SearchViewControllerTest {
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+	}
+	
+	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by cqms
+	 * 
+	 * Expected Result: Completes without error and returns some SearchResponse records
+	 */
+	@Transactional
+	@Rollback(true) 
+	@Test
+	public void test_advancedSearch_refineByCqms_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		SearchRequest searchFilters = new SearchRequest();
+		List<String> cqms = new ArrayList<String>();
+		cqms.add("0001");
+		searchFilters.setCqms(cqms);
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setSortDescending(true);
+		
+		SearchResponse searchResponse = new SearchResponse();
+		searchResponse = searchViewController.advancedSearch(searchFilters);
+		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
+	}
+	
+	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by certification criteria
+	 * 
+	 * Expected Result: Completes without error and returns some SearchResponse records
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_advancedSearch_refineByCertificationCriteria_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		SearchRequest searchFilters = new SearchRequest();
+		List<String> certificationCriteria = new ArrayList<String>();
+		certificationCriteria.add("170.315 (a)(1)");
+		
+		searchFilters.setCertificationCriteria(certificationCriteria);
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setSortDescending(true);
+		
+		SearchResponse searchResponse = new SearchResponse();
+		searchResponse = searchViewController.advancedSearch(searchFilters);
+		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
+	}
+	
+	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by certification criteria AND cqms
+	 * 
+	 * Expected Result: Completes without error and returns some SearchResponse records
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_advancedSearch_refineByCertificationCriteriaAndCqms_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		SearchRequest searchFilters = new SearchRequest();
+		List<String> certificationCriteria = new ArrayList<String>();
+		certificationCriteria.add("170.314 (a)(3)");
+		List<String> cqms = new ArrayList<String>();
+		cqms.add("0001");
+		searchFilters.setCqms(cqms);
+		searchFilters.setCertificationCriteria(certificationCriteria);
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setSortDescending(true);
+		
+		SearchResponse searchResponse = new SearchResponse();
+		searchResponse = searchViewController.advancedSearch(searchFilters);
+		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
 	}
 
 	/** Description: Tests that the getPopulateSearchData(boolean required) method returns without error, 
