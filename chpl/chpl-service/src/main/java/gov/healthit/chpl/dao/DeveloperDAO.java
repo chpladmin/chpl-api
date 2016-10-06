@@ -18,6 +18,7 @@ public interface DeveloperDAO {
 	public void delete(Long id) throws EntityRetrievalException;
 
 	public List<DeveloperDTO> findAll();
+	public List<DeveloperDTO> findAllIncludingDeleted();
 
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException;
 	public DeveloperDTO getByName(String name);
