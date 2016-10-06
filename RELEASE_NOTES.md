@@ -1,7 +1,23 @@
 # Release Notes
 
-## Version TBD
+## Next Version
 _Date TBD_
+
+### Bugs Fixed
+* Allowed searching by CQM or Criteria again
+
+---
+
+## Version 5.1.1
+_5 October 2016_
+
+### Bugs Fixed
+* Addressed issue with rejecting or overwriting pending products. Re-uploading and rejecting should be functional again. Pending products will only be marked as deleted and will no longer have their status changed from 'Pending'
+
+---
+
+## Version 5.1.0
+_4 October 2016_
 
 ### Features Added
 * Changed certification status names previously known as Suspended, Terminated, and Withdrawn.
@@ -13,6 +29,7 @@ _Date TBD_
 * Check product code, version code, and ICS code against specific sets of characters to make sure no special characters are used.
 * Add retired flag for test tools. Do not allow products to change associations with retired test tools.
 * Updated the algorithm for calculating weekly aggregate counts in order to take into account deleted developers/products
+* Add script to generate weekly summary email that is run as scheduled cron job
 
 ---
 
@@ -49,10 +66,7 @@ _30 August 2016_
 * TO DO DURING THE RELEASE: change the questionable activity email recipients to just be the ONC_CHPL@hhs.gov email (i.e. remove onc.certification@hhs.gov)
 * TO DO DURING THE RELEASE: create a file (can call it cleantomcat) in /etc/cron.daily and chmod a+x the file. Contents of the file are listed as a comment in OCD-811. The command deletes files that have not been written to since X days ago. The number near the end of the command is X.
 * Updated /activity API endpoint to incorporate new parameters to filter by API-Key, sort dateAscending, and filter by start & end date.
-<<<<<<< HEAD
 
-=======
->>>>>>> upstream/development
 * Do not allow 170.315 (d)(3) to mark GAP as true
 * Added 'responsibleUser' field with all user data for /activity reports
 * Removed CORSFilter in web.xml; this was preventing some ajax calls from other domains

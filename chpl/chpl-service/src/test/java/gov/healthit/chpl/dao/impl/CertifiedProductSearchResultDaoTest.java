@@ -237,7 +237,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 			assertEquals("CHP-024050",product.getChplProductNumber());
 			assertEquals(2, product.getCertificationEditionId().intValue());
 			assertEquals("Test Developer 1", product.getDeveloperName());
-			assertEquals(4, product.getCountCertifications().intValue());
+			assertEquals(3, product.getCountCertifications().intValue());
 			assertEquals(0, product.getCountCqms().intValue());
 			
 		} catch (EntityRetrievalException e) {
