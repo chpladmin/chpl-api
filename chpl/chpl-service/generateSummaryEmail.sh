@@ -14,10 +14,14 @@ log=target/log.$TIMESTAMP.txt
 SAVEIFS=$IFS
 IFS=$(echo -en "\n\b")
 
+# get current time as formatted timestamp to input as command-line argument
+ENDDATE=$(date "+%F")
+
 # put header info into log, then output application info into log file
-echo "XML generation at: " $TIMESTAMP >> $log
+echo "Generate summary email at: " $TIMESTAMP >> $log
 echo "####################################" >> $log
-java -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.App >> $log
+# ParseActivities application takes three parameters: startDate, endDate, numDaysInPeriod. The dates have this format: yyyy-mm-dd
+java -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.ParseActivities 2016-04-01 $ENDDATE 7 >> $log
 echo "####################################" >> $log
 
 # restore filename delimiters
