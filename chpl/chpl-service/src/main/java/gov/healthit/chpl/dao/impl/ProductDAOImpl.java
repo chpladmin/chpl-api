@@ -139,6 +139,17 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		}
 		return dtos;
 	}
+	
+	public List<ProductDTO> findAllIncludingDeleted() {
+		List<ProductEntity> entities = getAllEntitiesIncludingDeleted();
+		List<ProductDTO> dtos = new ArrayList<>();
+		
+		for (ProductEntity entity : entities) {
+			ProductDTO dto = new ProductDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
 
 	@Override
 	public ProductDTO getById(Long id) throws EntityRetrievalException {
@@ -221,6 +232,15 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
 		
+	}
+	
+	private List<ProductEntity> getAllEntitiesIncludingDeleted() {
+		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
+				+ "LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.productCertificationStatuses ", 
+				ProductEntity.class).getResultList();
+		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
+		return result;
 	}
 	
 	private ProductEntity getEntityById(Long id) throws EntityRetrievalException {
