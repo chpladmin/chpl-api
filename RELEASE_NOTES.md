@@ -1,7 +1,7 @@
 # Release Notes
 
-## Next Version
-_Date TBD_
+## Version 5.1.2
+_7 October 2016_
 
 ### Bugs Fixed
 * Allowed searching by CQM or Criteria again
