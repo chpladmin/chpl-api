@@ -243,6 +243,18 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 		return dtos;
 	}
+	
+	public List<DeveloperDTO> findAllIncludingDeleted() {
+
+		List<DeveloperEntity> entities = getAllEntitiesIncludingDeleted();
+		List<DeveloperDTO> dtos = new ArrayList<>();
+
+		for (DeveloperEntity entity : entities) {
+			DeveloperDTO dto = new DeveloperDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
 
 	@Override
 	public DeveloperACBMapDTO getTransparencyMapping(Long developerId, Long acbId) {
@@ -333,6 +345,14 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "LEFT OUTER JOIN FETCH v.contact "
 				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
 				+ "where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
+		return result;
+	}
+	
+	private List<DeveloperEntity> getAllEntitiesIncludingDeleted() {
+		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from "
+				+ "DeveloperEntity v "
+				+ "LEFT OUTER JOIN FETCH v.address "
+				+ "LEFT OUTER JOIN FETCH v.contact ", DeveloperEntity.class).getResultList();
 		return result;
 	}
 
