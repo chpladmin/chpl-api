@@ -5,6 +5,8 @@ _Date TBD_
 
 ### Features Added
 * Updated the algorithm for calculating weekly aggregate counts in order to take into account deleted developers/products
+* Generating simple CSV files for quicker download and viewing than the large XML files
+* Added "format" parameter to the download API endpoint which can be blank and will default to xml. Either xml or csv may be specified.
 
 ---
 
