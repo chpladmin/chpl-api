@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features Added
+* Updated the algorithm for calculating weekly aggregate counts in order to take into account deleted developers/products
+
+---
+
 ## Version 5.1.2
 _7 October 2016_
 
@@ -28,7 +36,6 @@ _4 October 2016_
 * Remove terms of use and api documentation from certified products.
 * Check product code, version code, and ICS code against specific sets of characters to make sure no special characters are used.
 * Add retired flag for test tools. Do not allow products to change associations with retired test tools.
-* Updated the algorithm for calculating weekly aggregate counts in order to take into account deleted developers/products
 * Add script to generate weekly summary email that is run as scheduled cron job
 
 ---
