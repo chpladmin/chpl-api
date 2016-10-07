@@ -35,6 +35,16 @@ public class XmlParsingTest {
 	}
 
 	@Test
+	public void filenameMatcherTest() {
+		boolean result = "chpl-2011-20161007-122654.csv".matches("^chpl-" + "2011" + "-.+\\." + "csv"+"$");
+		assertTrue(result);
+		result = "chpl-2011-20161007-122654.csv".matches("^chpl-" + "2014" + "-.+\\." + "csv"+"$");
+		assertFalse(result);
+		result = "chpl-2011-20161007-122654.csv".matches("^chpl-" + "2011" + "-.+\\." + "xml"+"$");
+		assertFalse(result);
+	}
+	
+	@Test
 	public void testProductCodeValidation() {
 		boolean result = "ht75_A".matches("^\\w+$");
 		assertTrue(result);
