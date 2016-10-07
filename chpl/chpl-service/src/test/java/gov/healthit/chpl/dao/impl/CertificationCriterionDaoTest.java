@@ -208,7 +208,6 @@ public class CertificationCriterionDaoTest extends TestCase {
 		List<CertificationCriterionDTO> dtos = certificationCriterionDAO.findAll();
 		assertNotNull(dtos);
 		assertTrue(dtos.size() > 0);
-		assertEquals(59, dtos.size());
 		SecurityContextHolder.getContext().setAuthentication(null);
 		
 	}
