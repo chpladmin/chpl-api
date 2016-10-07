@@ -21,10 +21,15 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.app.presenter.CertifiedProduct2014CsvPresenter;
+import gov.healthit.chpl.app.presenter.CertifiedProductCsvPresenter;
+import gov.healthit.chpl.app.presenter.CertifiedProductXmlPresenter;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
@@ -36,6 +41,7 @@ public class App {
 	private SimpleDateFormat timestampFormat;
 	private CertifiedProductDetailsManager cpdManager;
 	private CertifiedProductDAO certifiedProductDAO;
+	private CertificationCriterionDAO criteriaDao;
 	
     public App() {
     	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -66,6 +72,7 @@ public class App {
 		 App app = new App();
 		 app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
 		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
+		 app.setCriteriaDao((CertificationCriterionDAO)context.getBean("certificationCriterionDAO"));
 		 
 		 //maps the year to the list of products for that year
 		 Map<String, CertifiedProductDownloadResponse> resultMap = 
@@ -76,7 +83,7 @@ public class App {
         List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findAll();
 		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
 		//for(int i = 1; i < 10; i++) {
-		//	CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
+			//CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
 			try {
 				
 				CertifiedProductSearchDetails product = app.getCpdManager().getCertifiedProductDetails(currProduct.getId());
@@ -111,30 +118,36 @@ public class App {
         Date now = new Date();
         //write out a separate file for each edition
         for(String year : resultMap.keySet()) {
-	        String newFileName = downloadFolder.getAbsolutePath() + File.separator + 
+	        //present as xml
+	        String xmlFilename = downloadFolder.getAbsolutePath() + File.separator + 
 	        		"chpl-" + year + "-" + app.getTimestampFormat().format(now) + ".xml";
-	        File newFile = new File(newFileName);
-	        if(!newFile.exists()) {
-	        	newFile.createNewFile();
+	        File xmlFile = new File(xmlFilename);
+	        if(!xmlFile.exists()) {
+	        	xmlFile.createNewFile();
 	        } else {
-	        	newFile.delete();
+	        	xmlFile.delete();
 	        }
+	        CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
+	        xmlPresenter.presentAsFile(xmlFile, resultMap.get(year));
 	        
-	        FileOutputStream os = null;
-	        try {
-	            os = new FileOutputStream(newFile);
-	            CertifiedProductDownloadResponse result = resultMap.get(year);
-	            Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-	            marshaller.setClassesToBeBound(result.getClass());
-	            marshaller.marshal(result, new StreamResult(os));
-	
-	        } catch(FileNotFoundException ex) {
-	        	logger.error("file not found " + newFile);
-	        } finally {
-	            if (os != null) {
-	                try { os.close(); } catch(IOException ignore) {}
-	            }
+	        //present as csv
+	        String csvFilename = downloadFolder.getAbsolutePath() + File.separator + 
+	        		"chpl-" + year + "-" + app.getTimestampFormat().format(now) + ".csv";
+	        File csvFile = new File(csvFilename);
+	        if(!csvFile.exists()) {
+	        	csvFile.createNewFile();
+	        } else {
+	        	csvFile.delete();
 	        }
+	        CertifiedProductCsvPresenter csvPresenter = null;
+	        if(year.equals("2014")) {
+	        	csvPresenter = new CertifiedProduct2014CsvPresenter();
+	        } else {
+	        	csvPresenter = new CertifiedProductCsvPresenter();
+	        }
+	        List<CertificationCriterionDTO> criteria = app.getCriteriaDao().findByCertificationEditionYear(year);
+	        csvPresenter.setApplicableCriteria(criteria);
+	        csvPresenter.presentAsFile(csvFile, resultMap.get(year));
         }
         
         //write out a file containing all of the products
@@ -153,21 +166,8 @@ public class App {
         } else {
         	newFile.delete();
         }
-        
-        FileOutputStream os = null;
-        try {
-        	os = new FileOutputStream(newFile);
-        	Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        	marshaller.setClassesToBeBound(allResults.getClass());
-        	marshaller.marshal(allResults, new StreamResult(os));
-
-        } catch(FileNotFoundException ex) {
-        	logger.error("file not found " + newFile);
-        } finally {
-        	if (os != null) {
-        		try { os.close(); } catch(IOException ignore) {}
-        	}
-        }
+        CertifiedProductXmlPresenter presenter = new CertifiedProductXmlPresenter();
+        presenter.presentAsFile(newFile, allResults);
         
         context.close();
 	}
@@ -194,5 +194,13 @@ public class App {
 
 	public void setCpdManager(CertifiedProductDetailsManager cpdManager) {
 		this.cpdManager = cpdManager;
+	}
+
+	public CertificationCriterionDAO getCriteriaDao() {
+		return criteriaDao;
+	}
+
+	public void setCriteriaDao(CertificationCriterionDAO criteriaDao) {
+		this.criteriaDao = criteriaDao;
 	}
 }
