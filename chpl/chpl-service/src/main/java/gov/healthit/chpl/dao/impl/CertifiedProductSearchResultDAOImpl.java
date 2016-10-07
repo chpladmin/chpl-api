@@ -116,6 +116,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		String queryStr = "SELECT "
 				+ "b.certified_product_id_cqms as \"certified_product_id\", " 
+				+ "creation_date, " 
 				+ "certification_edition_id, " 
 				+ "product_version_id, "
 				+ "certification_body_id, " 
@@ -333,6 +334,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		String queryStr = "SELECT "
 				+ "c.certified_product_id as \"certified_product_id\", " 
+				+ "creation_date, " 
 				+ "certification_edition_id, " 
 				+ "product_version_id, "
 				+ "certification_body_id," 
@@ -552,6 +554,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		String queryStr = "SELECT "
 				+ "c.cpid as \"certified_product_id\", "
+				+ "creation_date, " 
 				+ "certification_edition_id, " 
 				+ "product_version_id, " 
 				+ "testing_lab_id, "
