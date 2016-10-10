@@ -1,8 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import org.springframework.util.StringUtils;
 
-public class KeyValueModel {
+public class KeyValueModel implements Serializable {
+	private static final long serialVersionUID = -6175366628840719513L;
 	private Long id;
 	private String name;
 	private String description;

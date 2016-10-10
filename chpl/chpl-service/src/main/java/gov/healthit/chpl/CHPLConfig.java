@@ -3,6 +3,10 @@ package gov.healthit.chpl;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,6 +29,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass=true)
 @EnableWebSecurity
+@EnableCaching
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLConfig implements EnvironmentAware {
@@ -79,4 +85,18 @@ public class CHPLConfig implements EnvironmentAware {
 	{
 		return new CastorMarshaller();
 	}
+	
+	@Bean
+	public CacheManager cacheManager() {
+		return new EhCacheCacheManager(ehCacheCacheManager().getObject());
+	}
+
+	@Bean
+	public EhCacheManagerFactoryBean ehCacheCacheManager() {
+		EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
+		cmfb.setConfigLocation(new ClassPathResource("ehcache.xml"));
+		cmfb.setShared(true);
+		return cmfb;
+	}
+	
 }

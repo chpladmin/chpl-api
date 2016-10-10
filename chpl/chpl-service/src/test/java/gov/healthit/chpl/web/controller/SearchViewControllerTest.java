@@ -127,7 +127,7 @@ public class SearchViewControllerTest {
 		searchResponse = searchViewController.advancedSearch(searchFilters);
 		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
 	}
-
+	
 	/** Description: Tests that the getPopulateSearchData(boolean required) method returns without error, 
 	 * gets valid developerNames/productNames, 
 	 * and returns within 3 seconds
@@ -138,10 +138,10 @@ public class SearchViewControllerTest {
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_getPopulateSearchData_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+	public void test_getPopulateSearchData_simpleAsTrue_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		long getPopulateSearchDataStartTime = System.currentTimeMillis();
-		Boolean required = false;
+		Boolean required = true;
 		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required);
 		long getPopulateSearchDataEndTime = System.currentTimeMillis();
 		long getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
@@ -152,7 +152,20 @@ public class SearchViewControllerTest {
 		
 		System.out.println("searchViewController.getPopulateSearchData() should complete within 3 seconds. It took " + getPopulateSearchDataTimeLength
 				+ " millis or " + getPopulateSearchElapsedSeconds + " seconds");
-		assertTrue("DeveloperController.getDevelopers() should complete within 3 seconds but took " + getPopulateSearchDataTimeLength
-				+ " millis or " + getPopulateSearchElapsedSeconds + " seconds", getPopulateSearchElapsedSeconds < 3);
+		
+		// now try again to test caching
+		getPopulateSearchDataStartTime = System.currentTimeMillis();
+		required = true;
+		results = searchViewController.getPopulateSearchData(required);
+		getPopulateSearchDataEndTime = System.currentTimeMillis();
+		getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
+		getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
+		
+		assertTrue("Returned " + results.getDeveloperNames().size() + " developers but should return more than 0", results.getDeveloperNames().size() > 0);
+		assertTrue("Returned " + results.getProductNames().size() + " products but should return more than 0", results.getProductNames().size() > 0);
+		
+		System.out.println("searchViewController.getPopulateSearchData() should complete immediately due to caching. It took "
+		+ getPopulateSearchDataTimeLength + " millis or " + getPopulateSearchElapsedSeconds + " seconds");
+		assertTrue("DeveloperController.getDevelopers() should complete in 0 seconds due to caching", getPopulateSearchDataTimeLength < 10);
 	}
 }
