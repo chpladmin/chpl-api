@@ -166,6 +166,6 @@ public class SearchViewControllerTest {
 		
 		System.out.println("searchViewController.getPopulateSearchData() should complete immediately due to caching. It took "
 		+ getPopulateSearchDataTimeLength + " millis or " + getPopulateSearchElapsedSeconds + " seconds");
-		assertTrue("DeveloperController.getDevelopers() should complete in 0 seconds due to caching", getPopulateSearchDataTimeLength < 10);
+		assertTrue("DeveloperController.getDevelopers() should complete in 0 seconds due to caching", getPopulateSearchDataTimeLength < 100);
 	}
 }
