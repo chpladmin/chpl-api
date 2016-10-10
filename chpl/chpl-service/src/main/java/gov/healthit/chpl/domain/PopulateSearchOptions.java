@@ -1,9 +1,10 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class PopulateSearchOptions {
-
+public class PopulateSearchOptions implements Serializable {
+	private static final long serialVersionUID = 448737963706046739L;
 	private Set<KeyValueModel> productClassifications;
 	private Set<KeyValueModel> editions;
 	private Set<KeyValueModel> certificationStatuses;
