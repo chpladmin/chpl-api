@@ -89,19 +89,19 @@
 			<version>1.5.4</version>
 		</dependency>
 		
-		
 		<dependency>
 		<groupId>net.sf.ehcache</groupId>
 		<artifactId>ehcache</artifactId>
 		<version>2.9.0</version>
 		</dependency>
 
-        <!-- Optional for caching. Used to log stuff -->
+        <!-- Optional for caching. Used to log stuff 
         <dependency>
 		<groupId>ch.qos.logback</groupId>
 		<artifactId>logback-classic</artifactId>
 		<version>1.0.13</version>
 		</dependency>
+        -->
 
 		<!-- Spring caching framework inside this -->
 		<dependency>
@@ -122,7 +122,6 @@
 			<artifactId>jose4j</artifactId>
 			<version>0.4.1</version>
 		</dependency>
-		
 		
 		<dependency>
 		  <groupId>com.fasterxml.jackson.core</groupId>
@@ -178,7 +177,6 @@
 			<artifactId>castor-xml</artifactId>
 			<version>1.4.0</version>
 		</dependency>
-		
 		
 		<!-- for unit/integration testing of the dao calls -->
 
