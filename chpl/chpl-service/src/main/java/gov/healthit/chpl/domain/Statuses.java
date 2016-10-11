@@ -1,6 +1,9 @@
 package gov.healthit.chpl.domain;
 
-public class Statuses {
+import java.io.Serializable;
+
+public class Statuses implements Serializable {
+	private static final long serialVersionUID = -7091471050071142764L;
 	private Integer active;
 	private Integer retired;
 	private Integer withdrawnByDeveloper;
