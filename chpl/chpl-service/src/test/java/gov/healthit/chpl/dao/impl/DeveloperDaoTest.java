@@ -201,7 +201,7 @@ public class DeveloperDaoTest extends TestCase {
 		DeveloperDTO developer = developerDao.findAll().get(0);
 		developer.setName("UPDATED NAME");
 		
-		DeveloperEntity result = null;
+		DeveloperDTO result = null;
 		try {
 			result = developerDao.update(developer);
 		} catch(Exception ex) {

@@ -1,12 +1,9 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -14,9 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,23 +20,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.TransparencyAttestationMap;
-import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.AttestationType;
-import gov.healthit.chpl.entity.DeveloperEntity;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -107,42 +96,73 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		}
 		return developer;
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
-		DeveloperDTO before = getById(developer.getId());
-		DeveloperEntity result = developerDao.update(developer);
+		DeveloperDTO beforeDev = getById(developer.getId());
+		DeveloperDTO updatedDeveloper = null;
 		
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() > 0) {
-			for(CertificationBodyDTO acb : availableAcbs) {
-				DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
-				if(existingMap == null) {
-					DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
-					developerMappingToCreate.setAcbId(acb.getId());
-					developerMappingToCreate.setDeveloperId(before.getId());
-					for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-						if(attMap.getAcbName().equals(acb.getName())) {
-							developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());;
-							developerDao.createTransparencyMapping(developerMappingToCreate);
+		//if the before status is not Active and the user is not ROLE_ADMIN
+		//then nothing can be changed
+		if(!beforeDev.getStatus().equals(DeveloperStatusType.Active) && !Util.isUserRoleAdmin()) {
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " because its status is not Active.");
+			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to update an inactive developer.");
+		} 
+		
+		//determine if the status flag has been changed.
+		//only users with ROLE_ADMIN are allowed to change it
+		if(!beforeDev.getStatus().equals(developer.getStatus()) && !Util.isUserRoleAdmin()) {
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " status from " + beforeDev.getStatus() + " to " + developer.getStatus());
+			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status.");
+		} else if(!beforeDev.getStatus().equals(DeveloperStatusType.Active) && 
+				  !developer.getStatus().equals(DeveloperStatusType.Active) &&
+				  Util.isUserRoleAdmin()) {
+			//if the developer is not active and not going to be active
+			//only its status can be updated
+			updatedDeveloper = developerDao.updateStatus(developer);
+		}
+		
+		//if either the before or updated statuses are active and the user is ROLE_ADMIN
+		//OR if before status is active and user is not ROLE_ADMIN - proceed
+		if( ((beforeDev.getStatus().equals(DeveloperStatusType.Active) 
+				|| developer.getStatus().equals(DeveloperStatusType.Active)) 
+			  && Util.isUserRoleAdmin()) 
+			||
+			(beforeDev.getStatus().equals(DeveloperStatusType.Active) && !Util.isUserRoleAdmin())) {
+			
+			//if the developer is active proceed with updates as usual
+			updatedDeveloper = developerDao.update(developer);
+			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
+			if(availableAcbs != null && availableAcbs.size() > 0) {
+				for(CertificationBodyDTO acb : availableAcbs) {
+					DeveloperACBMapDTO existingMap = developerDao.getTransparencyMapping(developer.getId(), acb.getId());
+					if(existingMap == null) {
+						DeveloperACBMapDTO developerMappingToCreate = new DeveloperACBMapDTO();
+						developerMappingToCreate.setAcbId(acb.getId());
+						developerMappingToCreate.setDeveloperId(beforeDev.getId());
+						for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+							if(attMap.getAcbName().equals(acb.getName())) {
+								developerMappingToCreate.setTransparencyAttestation(attMap.getTransparencyAttestation());;
+								developerDao.createTransparencyMapping(developerMappingToCreate);
+							}
 						}
-					}
-				} else {
-					for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
-						if(attMap.getAcbName().equals(acb.getName())) {
-							existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
-							developerDao.updateTransparencyMapping(existingMap);
+					} else {
+						for(DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
+							if(attMap.getAcbName().equals(acb.getName())) {
+								existingMap.setTransparencyAttestation(attMap.getTransparencyAttestation());
+								developerDao.updateTransparencyMapping(existingMap);
+							}
 						}
 					}
 				}
 			}
 		}
 		
-		DeveloperDTO after = getById(result.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", before, after);
-		checkSuspiciousActivity(before, after);
+		DeveloperDTO after = getById(updatedDeveloper.getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", beforeDev, after);
+		checkSuspiciousActivity(beforeDev, after);
 		return after;
 	}
 	
@@ -173,6 +193,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	public void delete(DeveloperDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO toDelete = developerDao.getById(dto.getId());
+		
+		if(toDelete.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+		
 		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs != null && availableAcbs.size() > 0) {
 			for(CertificationBodyDTO acb : availableAcbs) {
@@ -189,6 +216,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	public void delete(Long developerId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO toDelete = developerDao.getById(developerId);
+		
+		if(toDelete.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+		
 		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 		if(availableAcbs != null && availableAcbs.size() > 0) {
 			for(CertificationBodyDTO acb : availableAcbs) {
@@ -209,6 +243,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			beforeDevelopers.add(developerDao.getById(developerId));
 		}
 		
+		//check for any non-active developers and throw an error if any are found
+		for(DeveloperDTO beforeDeveloper : beforeDevelopers) {
+			if(!beforeDeveloper.getStatus().equals(DeveloperStatusType.Active)) {
+				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of " + beforeDeveloper.getStatus();
+				logger.error(msg);
+				throw new EntityCreationException(msg);
+			}
+		}
 		
 		//check if the transparency attestation for each developer is conflicting
 		List<CertificationBodyDTO> allAcbs = acbManager.getAll(false);

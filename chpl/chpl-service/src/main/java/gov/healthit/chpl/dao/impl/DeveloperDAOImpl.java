@@ -27,11 +27,13 @@ import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity;
 import gov.healthit.chpl.entity.DeveloperEntity;
+import gov.healthit.chpl.entity.DeveloperStatusEntity;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
+	private static final String DEFAULT_STATUS = "Active";
 	@Autowired AddressDAO addressDao;
 	@Autowired ContactDAO contactDao;
 
@@ -72,7 +74,18 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 			entity.setName(dto.getName());
 			entity.setWebsite(dto.getWebsite());
-
+			
+			//set the status; will be Active by default
+			Query query = entityManager.createQuery("from DeveloperStatusEntity a where name = '" + DEFAULT_STATUS + "'", DeveloperStatusEntity.class);
+			List<DeveloperStatusEntity> statusResult = query.getResultList();
+			if(statusResult != null && statusResult.size() > 0) {
+				entity.setStatus(statusResult.get(0));
+			} else {
+				String msg = "Could not find the " + DEFAULT_STATUS + " status to create the new developer " + dto.getName();
+				logger.error(msg);
+				throw new EntityCreationException(msg);
+			}
+			
 			if(dto.getDeleted() != null) {
 				entity.setDeleted(dto.getDeleted());
 			} else {
@@ -116,10 +129,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		entityManager.flush();
 		return new DeveloperACBMapDTO(mapping);
 	}
-
+	
 	@Override
-	@Transactional
-	public DeveloperEntity update(DeveloperDTO dto) throws EntityRetrievalException {
+	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException {
 		DeveloperEntity entity = this.getEntityById(dto.getId());
 
 		if(entity == null) {
@@ -188,9 +200,31 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 
 		update(entity);
-		return entity;
+		return new DeveloperDTO(entity);
 	}
 
+	@Override
+	public DeveloperDTO updateStatus(DeveloperDTO toUpdate) throws EntityRetrievalException {
+		DeveloperEntity entityToUpdate = this.getEntityById(toUpdate.getId());
+		if(entityToUpdate == null) {
+			throw new EntityRetrievalException("Developer with id " + toUpdate.getId() + " does not exist");
+		}
+		
+		//set the status
+		Query query = entityManager.createQuery("from DeveloperStatusEntity a where name = '" + toUpdate.getStatus() + "'", DeveloperStatusEntity.class);
+		List<DeveloperStatusEntity> statusResult = query.getResultList();
+		if(statusResult != null && statusResult.size() > 0) {
+			entityToUpdate.setStatus(statusResult.get(0));
+		} else {
+			String msg = "Could not find the " + toUpdate.getStatus() + " status to create the new developer " + toUpdate.getId();
+			logger.error(msg);
+			throw new EntityRetrievalException(msg);
+		}
+		
+		update(entityToUpdate);
+		return new DeveloperDTO(entityToUpdate);
+	}
+	
 	@Override
 	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto) {
 		DeveloperACBMapEntity mapping = getTransparencyMappingEntity(dto.getDeveloperId(), dto.getAcbId());
@@ -343,6 +377,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "LEFT OUTER JOIN FETCH v.status "
 				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
 				+ "where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
 		return result;
@@ -364,6 +399,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "LEFT OUTER JOIN FETCH v.status "
 				+ "where (NOT v.deleted = true) AND (vendor_id = :entityid) ", DeveloperEntity.class );
 		query.setParameter("entityid", id);
 		List<DeveloperEntity> result = query.getResultList();
@@ -385,6 +421,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "LEFT OUTER JOIN FETCH v.status "
 				+ "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class );
 		query.setParameter("name", name);
 		List<DeveloperEntity> result = query.getResultList();
@@ -404,6 +441,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "LEFT OUTER JOIN FETCH v.status "
 				+ "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class );
 		query.setParameter("code", code);
 		List<DeveloperEntity> result = query.getResultList();

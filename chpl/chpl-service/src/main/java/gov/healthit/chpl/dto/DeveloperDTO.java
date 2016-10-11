@@ -13,6 +13,7 @@ public class DeveloperDTO {
 	private Long id;
 	private AddressDTO address;
 	private ContactDTO contact;
+	private String status;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
@@ -36,6 +37,10 @@ public class DeveloperDTO {
 		if(entity.getContact() != null) {
 			this.contact = new ContactDTO(entity.getContact());
 		}
+		if(entity.getStatus() != null && entity.getStatus().getName() != null) {
+			this.status = entity.getStatus().getName().toString();
+		}
+		
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -132,6 +137,14 @@ public class DeveloperDTO {
 	
 	public void setStatuses(Statuses statuses){
 		this.statuses = statuses;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

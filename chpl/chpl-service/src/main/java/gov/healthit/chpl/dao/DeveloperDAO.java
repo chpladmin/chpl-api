@@ -5,7 +5,6 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.DeveloperEntity;
 
-import java.util.Date;
 import java.util.List;
 
 public interface DeveloperDAO {
@@ -13,8 +12,9 @@ public interface DeveloperDAO {
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException;
 	public DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto);
 
-	public DeveloperEntity update(DeveloperDTO dto) throws EntityRetrievalException;
-
+	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException;
+	public DeveloperDTO updateStatus(DeveloperDTO toUpdate) throws EntityRetrievalException;
+	
 	public void delete(Long id) throws EntityRetrievalException;
 
 	public List<DeveloperDTO> findAll();
