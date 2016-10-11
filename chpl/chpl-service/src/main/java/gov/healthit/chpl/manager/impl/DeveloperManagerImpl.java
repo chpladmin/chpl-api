@@ -132,7 +132,6 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			||
 			(beforeDev.getStatus().equals(DeveloperStatusType.Active) && !Util.isUserRoleAdmin())) {
 			
-			//if the developer is active proceed with updates as usual
 			updatedDeveloper = developerDao.update(developer);
 			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 			if(availableAcbs != null && availableAcbs.size() > 0) {
