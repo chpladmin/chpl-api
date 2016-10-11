@@ -8,8 +8,11 @@ import javax.sql.DataSource;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.ehcache.EhCacheFactoryBean;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -45,6 +49,7 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 //@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 @PropertySource("classpath:/environment.test.properties")
+@EnableCaching
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLTestConfig implements EnvironmentAware {
@@ -150,19 +155,33 @@ public class CHPLTestConfig implements EnvironmentAware {
 	}
 	
 	@Bean
-	public EhCacheManagerFactoryBean ehCacheManagerFactoryBean(){
-		EhCacheManagerFactoryBean bean = new EhCacheManagerFactoryBean();
-		bean.setShared(true);
-		return bean;
+	public CacheManager cacheManager() {
+		return new EhCacheCacheManager(ehCacheCacheManager().getObject());
+	}
+
+	@Bean
+	public EhCacheManagerFactoryBean ehCacheCacheManager() {
+		EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
+		cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
+		cmfb.setShared(true);
+		return cmfb;
 	}
 	
 	@Bean
 	public EhCacheFactoryBean ehCacheFactoryBean(){
 		EhCacheFactoryBean bean = new EhCacheFactoryBean();
-		bean.setCacheManager(ehCacheManagerFactoryBean().getObject());
+		bean.setCacheManager(ehCacheCacheManager().getObject());
 		//bean.setCacheName("aclCache");
-		bean.setCacheName(env.getProperty("authAclCacheName"));
-		
+		//bean.setCacheName(env.getProperty("authAclCacheName"));
+		return bean;
+	}
+	
+	@Bean
+	public EhCacheBasedAclCache aclCache(){
+		EhCacheBasedAclCache bean = new EhCacheBasedAclCache(
+				ehCacheFactoryBean().getObject(),
+				defaultPermissionGrantingStrategy(), 
+				aclAuthorizationStrategyImpl());
 		return bean;
 	}
 	
@@ -191,29 +210,16 @@ public class CHPLTestConfig implements EnvironmentAware {
 	}
 	
 	@Bean
-	public EhCacheBasedAclCache aclCache(){
-		
-		EhCacheBasedAclCache bean = new EhCacheBasedAclCache(
-				ehCacheFactoryBean().getObject(),
-				defaultPermissionGrantingStrategy(), 
-				aclAuthorizationStrategyImpl());
-		return bean;
-	}
-
-	
-	@Bean
 	public SimpleGrantedAuthority roleAdminGrantedAuthority(){
 		SimpleGrantedAuthority bean = new SimpleGrantedAuthority("ROLE_ADMINISTRATOR");
 		return bean;
 	}
-	
 	
 	@Bean 
 	public AclAuthorizationStrategyImpl aclAuthorizationStrategyImplAdmin(){
 		AclAuthorizationStrategyImpl bean = new AclAuthorizationStrategyImpl(roleAdminGrantedAuthority());
 		return bean;
 	}
-	
 	
 	@Bean
 	public BasicLookupStrategy lookupStrategy() throws Exception {
@@ -228,7 +234,6 @@ public class CHPLTestConfig implements EnvironmentAware {
 		return bean;
 	}
 	
-	
 	@Bean
 	public JdbcMutableAclService mutableAclService() throws Exception{
 		
@@ -241,7 +246,6 @@ public class CHPLTestConfig implements EnvironmentAware {
 		return bean;
 	}
 	
-	
 	@Bean
 	public AclPermissionEvaluator permissionEvaluator() throws Exception{
 		AclPermissionEvaluator bean = new AclPermissionEvaluator(mutableAclService());
@@ -253,7 +257,6 @@ public class CHPLTestConfig implements EnvironmentAware {
 		AclPermissionCacheOptimizer bean = new AclPermissionCacheOptimizer(mutableAclService());
 		return bean;
 	}
-	
 	
 	@Bean
 	public DefaultMethodSecurityExpressionHandler expressionHandler() throws Exception {
