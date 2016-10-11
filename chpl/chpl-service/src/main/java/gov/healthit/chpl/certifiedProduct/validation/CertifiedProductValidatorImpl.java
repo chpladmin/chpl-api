@@ -26,6 +26,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
@@ -102,6 +103,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			if(product.getDeveloperId() != null && !developerCode.matches("X+")) {
 				DeveloperDTO developer = developerDao.getById(product.getDeveloperId());
 				if(developer != null) {
+					if(!developer.getStatus().equals(DeveloperStatusType.Active)) {
+						product.getErrorMessages().add("The developer " + developer.getName() + " has a status of " + developer.getStatus() + ". Certified products belonging to this developer cannot be created until its status returns to Active.");
+					}
 					if(!developer.getDeveloperCode().equals(developerCode)) {
 						product.getErrorMessages().add("The developer code '" + developerCode + "' does not match the assigned developer code for " + product.getDeveloperName() + ": '" + developer.getDeveloperCode() + "'.");
 					}
@@ -207,6 +211,21 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			String icsCode = uniqueIdParts[6];
 			String additionalSoftwareCode = uniqueIdParts[7];
 			String certifiedDateCode = uniqueIdParts[8];
+			
+			try {
+				if(product.getDeveloper() != null && product.getDeveloper().getDeveloperId() != null) {
+					DeveloperDTO developer = developerDao.getById(product.getDeveloper().getDeveloperId());
+					if(developer != null) {
+						if(!developer.getStatus().equals(DeveloperStatusType.Active)) {
+							product.getErrorMessages().add("The developer " + developer.getName() + " has a status of " + developer.getStatus() + ". Certified products belonging to this developer cannot be created until its status returns to Active.");
+						}
+					} else {
+						product.getErrorMessages().add("Could not find developer with id " + product.getDeveloper().getDeveloperId());
+					}
+				}
+			} catch(EntityRetrievalException ex) {
+				product.getErrorMessages().add("Could not find distinct developer with id " + product.getDeveloper().getDeveloperId());
+			}
 			
 			if(StringUtils.isEmpty(productCode) || !productCode.matches("^\\w+$")) {
 				product.getErrorMessages().add("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");

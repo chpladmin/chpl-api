@@ -13,7 +13,7 @@ public class DeveloperDTO {
 	private Long id;
 	private AddressDTO address;
 	private ContactDTO contact;
-	private String status;
+	private DeveloperStatusDTO status;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
@@ -37,8 +37,8 @@ public class DeveloperDTO {
 		if(entity.getContact() != null) {
 			this.contact = new ContactDTO(entity.getContact());
 		}
-		if(entity.getStatus() != null && entity.getStatus().getName() != null) {
-			this.status = entity.getStatus().getName().toString();
+		if(entity.getStatus() != null) {
+			this.status = new DeveloperStatusDTO(entity.getStatus());
 		}
 		
 		this.creationDate = entity.getCreationDate();
@@ -139,11 +139,11 @@ public class DeveloperDTO {
 		this.statuses = statuses;
 	}
 
-	public String getStatus() {
+	public DeveloperStatusDTO getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(DeveloperStatusDTO status) {
 		this.status = status;
 	}
 

@@ -25,6 +25,7 @@ import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -71,9 +72,23 @@ public class ProductManagerImpl implements ProductManager {
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		//check that the developer of this product is Active
+		if(dto.getDeveloperId() == null) {
+			throw new EntityCreationException("Cannot create a product without a developer ID.");
+		}
+			
+		DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
+		if(dev == null) {
+			throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
+		}
+		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "The product " + dto.getName()+ " cannot be created since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+			
 		
 		ProductDTO result = productDao.create(dto);
-		
 		String activityMsg = "Product "+dto.getName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, null, result);
 		return result;
@@ -85,6 +100,21 @@ public class ProductManagerImpl implements ProductManager {
 	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductDTO beforeDTO = productDao.getById(dto.getId());
+		
+		//check that the developer of this product is Active
+		if(beforeDTO.getDeveloperId() == null) {
+			throw new EntityCreationException("Cannot update a product without a developer ID.");
+		}
+			
+		DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
+		if(dev == null) {
+			throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
+		}
+		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "The product " + beforeDTO.getName()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
 		
 		ProductEntity result = productDao.update(dto);
 		ProductDTO afterDto = new ProductDTO(result);
@@ -103,7 +133,23 @@ public class ProductManagerImpl implements ProductManager {
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
+		ProductDTO beforeDTO = productDao.getById(dto.getId());
+
+		//check that the developer of this product is Active
+		if(beforeDTO.getDeveloperId() == null) {
+			throw new EntityCreationException("Cannot delete a product without a developer ID.");
+		}
+					
+		DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
+		if(dev == null) {
+			throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
+		}
+		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "The product " + beforeDTO.getName()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+				
 		delete(dto.getId());
 		String activityMsg = "Product "+dto.getName()+" was deleted.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), activityMsg, dto, null);
@@ -116,8 +162,22 @@ public class ProductManagerImpl implements ProductManager {
 	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductDTO toDelete = productDao.getById(productId);
+		//check that the developer of this product is Active
+		if(toDelete.getDeveloperId() == null) {
+			throw new EntityCreationException("Cannot delete a product without a developer ID.");
+		}
+					
+		DeveloperDTO dev = devDao.getById(toDelete.getDeveloperId());
+		if(dev == null) {
+			throw new EntityRetrievalException("Cannot find developer with id " + toDelete.getDeveloperId());
+		}
+		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "The product " + toDelete.getName()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+		
 		String activityMsg = "Product "+ toDelete.getName() +" was deleted.";
-
 		productDao.delete(productId);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, activityMsg, toDelete , null);
 		
@@ -131,6 +191,16 @@ public class ProductManagerImpl implements ProductManager {
 		List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();
 		for(Long productId : productIdsToMerge) {
 			beforeProducts.add(productDao.getById(productId));
+		}
+		
+		for(ProductDTO beforeProduct : beforeProducts) {
+			Long devId = beforeProduct.getDeveloperId();
+			DeveloperDTO dev = devDao.getById(devId);
+			if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+				String msg = "The product " + beforeProduct.getName()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+				logger.error(msg);
+				throw new EntityCreationException(msg);
+			}
 		}
 		
 		ProductDTO createdProduct = productDao.create(toCreate);

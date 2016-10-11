@@ -342,8 +342,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		return dto;
 	}
 
-	public DeveloperDTO getByCertifiedProduct(CertifiedProductDTO cpDto) throws EntityRetrievalException {
-		if(cpDto == null || cpDto.getProductVersionId() == null) {
+	@Override
+	public DeveloperDTO getByVersion(Long productVersionId) throws EntityRetrievalException {
+		if(productVersionId == null) {
 			throw new EntityRetrievalException("Version ID cannot be null!");
 		}
 		Query getDeveloperByVersionIdQuery = entityManager.createQuery(
@@ -353,7 +354,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "AND pve.id = :versionId "
 				+ "AND pve.productId = pe.id "
 				+ "AND ve.id = pe.developerId ", DeveloperEntity.class);
-		getDeveloperByVersionIdQuery.setParameter("versionid", cpDto.getProductVersionId());
+		getDeveloperByVersionIdQuery.setParameter("versionid", productVersionId);
 		Object result = getDeveloperByVersionIdQuery.getSingleResult();
 		if(result == null) {
 			return null;

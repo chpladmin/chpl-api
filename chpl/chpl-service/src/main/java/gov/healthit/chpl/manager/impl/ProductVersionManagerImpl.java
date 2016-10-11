@@ -17,12 +17,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
@@ -34,6 +39,8 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Autowired private SendMailUtil sendMailService;
 	
 	@Autowired private ProductVersionDAO dao;
+	@Autowired private DeveloperDAO devDao;
+	@Autowired private ProductDAO prodDao;
 	@Autowired private CertifiedProductDAO cpDao;
 	@Autowired private Environment env;
 	@Autowired private ActivityManager activityManager;
@@ -66,6 +73,24 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		//check that the developer of this version is Active
+		if(dto.getProductId() == null) {
+			throw new EntityCreationException("Cannot create a version without a product ID.");
+		}
+		ProductDTO prod = prodDao.getById(dto.getProductId());	
+		if(prod == null) {
+			throw new EntityRetrievalException("Cannot find product with id " + dto.getProductId());
+		}
+		DeveloperDTO dev = devDao.getById(prod.getDeveloperId());
+		if(dev == null) {
+			throw new EntityRetrievalException("Cannot find developer with id " + prod.getDeveloperId());
+		}
+		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "The version " + dto.getVersion() + " cannot be created since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+		
 		ProductVersionDTO created = dao.create(dto);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, created.getId(), "Product Version "+dto.getVersion()+" added for product "+dto.getProductId(), null, created);
 		return created;
@@ -77,6 +102,17 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	public ProductVersionDTO update(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		ProductVersionDTO before = dao.getById(dto.getId());
+		//check that the developer of this version is Active	
+		DeveloperDTO dev = devDao.getByVersion(before.getId());
+		if(dev == null) {
+			throw new EntityRetrievalException("Cannot find developer of version id " + before.getId());
+		}
+		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "The version " + before.getVersion()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+		
 		ProductVersionEntity result = dao.update(dto);
 		ProductVersionDTO after = new ProductVersionDTO(result);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, after.getId(), "Product Version "+dto.getVersion()+" updated for product "+dto.getProductId(), before, after);
@@ -88,6 +124,19 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public void delete(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		ProductVersionDTO before = dao.getById(dto.getId());
+		
+		//check that the developer of this version is Active	
+		DeveloperDTO dev = devDao.getByVersion(before.getId());
+		if(dev == null) {
+			throw new EntityRetrievalException("Cannot find developer of version id " + before.getId());
+		}
+		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "The version " + before.getVersion()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+		
 		delete(dto.getId());
 	}
 
@@ -97,6 +146,17 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	public void delete(Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		ProductVersionDTO toDelete = dao.getById(id);
+		//check that the developer of this version is Active	
+		DeveloperDTO dev = devDao.getByVersion(toDelete.getId());
+		if(dev == null) {
+			throw new EntityRetrievalException("Cannot find developer of version id " + toDelete.getId());
+		}
+		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+			String msg = "The version " + toDelete.getVersion()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+				
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, toDelete.getId(), "Product Version "+toDelete.getVersion()+" deleted for product "+toDelete.getProductId(), toDelete, null);
 		dao.delete(id);
 	}
@@ -110,6 +170,20 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
 		for(Long versionId : versionIdsToMerge) {
 			beforeVersions.add(dao.getById(versionId));
+		}
+		
+		//make sure all versions come from an Active developer
+		for(ProductVersionDTO version : beforeVersions) {
+			//check that the developer of this version is Active	
+			DeveloperDTO dev = devDao.getByVersion(version.getId());
+			if(dev == null) {
+				throw new EntityRetrievalException("Cannot find developer of version id " + version.getId());
+			}
+			if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
+				String msg = "The version " + version.getVersion()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+				logger.error(msg);
+				throw new EntityCreationException(msg);
+			}
 		}
 		
 		ProductVersionDTO createdVersion = dao.create(toCreate);
