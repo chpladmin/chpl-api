@@ -138,7 +138,7 @@ public class SearchViewControllerTest {
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_getPopulateSearchData_simpleAsTrue_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+	public void test_getPopulateSearchData_simpleAsTrue_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		long getPopulateSearchDataStartTime = System.currentTimeMillis();
 		Boolean required = true;

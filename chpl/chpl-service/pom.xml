@@ -95,13 +95,12 @@
 		<version>2.9.0</version>
 		</dependency>
 
-        <!-- Optional for caching. Used to log stuff 
+        <!-- Optional for caching. Used to log stuff -->
         <dependency>
 		<groupId>ch.qos.logback</groupId>
 		<artifactId>logback-classic</artifactId>
 		<version>1.0.13</version>
 		</dependency>
-        -->
 
 		<!-- Spring caching framework inside this -->
 		<dependency>
@@ -139,6 +138,25 @@
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
 			<version>2.10.0</version>
+		</dependency>
+		
+		<!-- Spring AOP + AspectJ -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.9</version>
 		</dependency>
 		
 		<dependency>

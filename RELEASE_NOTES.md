@@ -3,6 +3,11 @@
 ## Next Version
 _Date TBD_
 
+### Features Added
+* Added caching to searchOptions API call to speed up search page
+
+---
+
 ### Bugs Fixed
 * Allowed searching by CQM or Criteria again
 
