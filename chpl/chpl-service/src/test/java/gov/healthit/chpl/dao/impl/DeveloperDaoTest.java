@@ -1,10 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,7 +17,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -28,12 +24,11 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.entity.DeveloperEntity;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -66,6 +61,10 @@ public class DeveloperDaoTest extends TestCase {
 		List<DeveloperDTO> results = developerDao.findAll();
 		assertNotNull(results);
 		assertEquals(7, results.size());
+		DeveloperDTO first = results.get(0);
+		assertNotNull(first.getStatus());
+		assertEquals(1, first.getStatus().getId().longValue());
+		assertEquals(DeveloperStatusType.Active.toString(), first.getStatus().getStatusName());
 	}
 
 	@Test
@@ -81,6 +80,7 @@ public class DeveloperDaoTest extends TestCase {
 		assertEquals(-1, developer.getId().longValue());
 		assertNotNull(developer.getAddress());
 		assertEquals(-1, developer.getAddress().getId().longValue());
+		assertNotNull(developer.getStatus());
 	}
 	
 	@Test
@@ -95,9 +95,12 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(developer);
 		assertEquals(-3, developer.getId().longValue());
 		assertNull(developer.getAddress());
+		assertNotNull(developer.getStatus());
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void createDeveloperWithoutAddress() throws EntityRetrievalException {
 		DeveloperDTO developer = new DeveloperDTO();
 		developer.setCreationDate(new Date());
@@ -118,11 +121,15 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(result);
 		assertNotNull(result.getId());
 		assertTrue(result.getId() > 0L);
-		assertNull(developer.getAddress());
+		assertNull(result.getAddress());
 		assertNotNull(developerDao.getById(result.getId()));
+		assertNotNull(result.getStatus());
+		assertEquals(1, result.getStatus().getId().longValue());
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void createDeveloperWithNewAddress() {
 		DeveloperDTO developer = new DeveloperDTO();
 		developer.setCreationDate(new Date());
@@ -161,6 +168,8 @@ public class DeveloperDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void createDeveloperWithExistingAddress() {
 		DeveloperDTO developer = new DeveloperDTO();
 		developer.setCreationDate(new Date());
@@ -197,11 +206,13 @@ public class DeveloperDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void updateDeveloper() {
 		DeveloperDTO developer = developerDao.findAll().get(0);
 		developer.setName("UPDATED NAME");
 		
-		DeveloperEntity result = null;
+		DeveloperDTO result = null;
 		try {
 			result = developerDao.update(developer);
 		} catch(Exception ex) {
@@ -221,6 +232,7 @@ public class DeveloperDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void createDeveloperAcbMap() {
 		SecurityContextHolder.getContext().setAuthentication(authUser);
 		DeveloperDTO developer = developerDao.findAll().get(0);

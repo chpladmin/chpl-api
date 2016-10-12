@@ -13,6 +13,7 @@ public class Developer {
 	private String website;
 	private Address address;
 	private Contact contact;
+	private DeveloperStatus status;
 	private String lastModifiedDate;
 	private List<TransparencyAttestationMap> transparencyAttestations;
 	
@@ -32,6 +33,8 @@ public class Developer {
 		if(dto.getContact() != null) {
 			this.contact = new Contact(dto.getContact());
 		}
+		this.status = new DeveloperStatus(dto.getStatus());
+		
 		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
 		if(dto.getTransparencyAttestationMappings() != null && dto.getTransparencyAttestationMappings().size() > 0) {
 			for(DeveloperACBMapDTO map : dto.getTransparencyAttestationMappings()) {
@@ -98,5 +101,13 @@ public class Developer {
 
 	public void setTransparencyAttestations(List<TransparencyAttestationMap> transparencyAttestations) {
 		this.transparencyAttestations = transparencyAttestations;
+	}
+
+	public DeveloperStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(DeveloperStatus status) {
+		this.status = status;
 	}
 }
