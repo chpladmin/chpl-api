@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.entity.DeveloperStatusEntity;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 
 @Repository("developerStatusDAO")
 public class DeveloperStatusDAOImpl extends BaseDAOImpl implements DeveloperStatusDAO {
@@ -52,11 +53,11 @@ public class DeveloperStatusDAOImpl extends BaseDAOImpl implements DeveloperStat
 		
 	}
 	
-	private List<DeveloperStatusEntity> getAllEntities() {
+	List<DeveloperStatusEntity> getAllEntities() {
 		return entityManager.createQuery( "from DeveloperStatusEntity where (NOT deleted = true) ", DeveloperStatusEntity.class).getResultList();
 	}
 	
-	private DeveloperStatusEntity getEntityById(Long id) {
+	DeveloperStatusEntity getEntityById(Long id) {
 		
 		DeveloperStatusEntity entity = null;
 			
@@ -70,11 +71,11 @@ public class DeveloperStatusDAOImpl extends BaseDAOImpl implements DeveloperStat
 		return entity;
 	}
 	
-	private List<DeveloperStatusEntity> getEntitiesByName(String name) {
+	List<DeveloperStatusEntity> getEntitiesByName(String name) {
 		
 		Query query = entityManager.createQuery( "from DeveloperStatusEntity where "
-				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", DeveloperStatusEntity.class );
-		query.setParameter("name", name.toUpperCase());
+				+ "(NOT deleted = true) AND (name LIKE :name) ", DeveloperStatusEntity.class );
+		query.setParameter("name", DeveloperStatusType.getValue(name));
 		List<DeveloperStatusEntity> result = query.getResultList();
 		
 		return result;

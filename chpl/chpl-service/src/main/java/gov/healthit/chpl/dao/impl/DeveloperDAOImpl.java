@@ -17,9 +17,9 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.AttestationType;
@@ -28,17 +28,18 @@ import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity;
 import gov.healthit.chpl.entity.DeveloperEntity;
 import gov.healthit.chpl.entity.DeveloperStatusEntity;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
-	private static final String DEFAULT_STATUS = "Active";
+	private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
 	@Autowired AddressDAO addressDao;
 	@Autowired ContactDAO contactDao;
+	@Autowired DeveloperStatusDAO statusDao;
 
 	@Override
-	@Transactional
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
 
 		DeveloperEntity entity = null;
@@ -76,10 +77,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			entity.setWebsite(dto.getWebsite());
 			
 			//set the status; will be Active by default
-			Query query = entityManager.createQuery("from DeveloperStatusEntity a where name = '" + DEFAULT_STATUS + "'", DeveloperStatusEntity.class);
-			List<DeveloperStatusEntity> statusResult = query.getResultList();
-			if(statusResult != null && statusResult.size() > 0) {
-				entity.setStatus(statusResult.get(0));
+			DeveloperStatusEntity statusResult = getStatusByName(DEFAULT_STATUS.toString());
+			if(statusResult != null) {
+				entity.setStatus(statusResult);
 			} else {
 				String msg = "Could not find the " + DEFAULT_STATUS + " status to create the new developer " + dto.getName();
 				logger.error(msg);
@@ -354,13 +354,13 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			throw new EntityRetrievalException("Version ID cannot be null!");
 		}
 		Query getDeveloperByVersionIdQuery = entityManager.createQuery(
-				"FROM ProductVersionEntity pve,"
+				"SELECT ve FROM ProductVersionEntity pve,"
 				+ "ProductEntity pe, DeveloperEntity ve "
 				+ "WHERE (NOT pve.deleted = true) "
 				+ "AND pve.id = :versionId "
 				+ "AND pve.productId = pe.id "
 				+ "AND ve.id = pe.developerId ", DeveloperEntity.class);
-		getDeveloperByVersionIdQuery.setParameter("versionid", productVersionId);
+		getDeveloperByVersionIdQuery.setParameter("versionId", productVersionId);
 		Object result = getDeveloperByVersionIdQuery.getSingleResult();
 		if(result == null) {
 			return null;
@@ -482,13 +482,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	private DeveloperStatusEntity getStatusByName(String statusName) {
-		Query query = entityManager.createQuery("from DeveloperStatusEntity a where name = '" + 
-				statusName + "'", DeveloperStatusEntity.class);
-		List<DeveloperStatusEntity> statuses = query.getResultList();
+		DeveloperStatusDAOImpl statusDaoImpl = (DeveloperStatusDAOImpl) statusDao;
+		List<DeveloperStatusEntity> statuses = statusDaoImpl.getEntitiesByName(statusName);
 		if(statuses == null || statuses.size() == 0) {
 			logger.error("Could not find the " + statusName + " status");
 			return null;
-		}
+		} 
 		return statuses.get(0);
 	}
 }
