@@ -18,11 +18,15 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
 		result.add("CHPL ID");
 		result.add("ONC-ACB Certification ID");
 		result.add("Certification Date");
+		result.add("Certification Status");
 		result.add("ACB Name");
+		result.add("Previous ACB Name");
 		result.add("Developer Name");
 		result.add("Product Name");
 		result.add("Version");
 		result.add("Practice Type");
+		result.add("Total CAPS");
+		result.add("Open CAPS");
 		if(getApplicableCriteria() != null) {
 			for(CertificationCriterionDTO criteria : getApplicableCriteria()) {
 				result.add(criteria.getNumber());
@@ -41,11 +45,15 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
 				Instant.ofEpochMilli(data.getCertificationDate()), 
 			    ZoneId.systemDefault());
 		result.add(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
+		result.add(data.getCertificationStatus().get("name").toString());
 		result.add(data.getCertifyingBody().get("name").toString());
+		result.add(data.getOtherAcb());
 		result.add(data.getDeveloper().getName());
 		result.add(data.getProduct().get("name").toString());
 		result.add(data.getProduct().get("version").toString());
 		result.add(data.getPracticeType().get("name").toString());
+		result.add(data.getCountCorrectiveActionPlans().toString());
+		result.add(data.getCountCurrentCorrectiveActionPlans().toString());
 		List<String> criteria = generateCriteriaValues(data);
 		result.addAll(criteria);
 		return result;
