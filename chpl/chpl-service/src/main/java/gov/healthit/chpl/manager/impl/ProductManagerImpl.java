@@ -81,8 +81,8 @@ public class ProductManagerImpl implements ProductManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
 		}
-		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "The product " + dto.getName()+ " cannot be created since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The product " + dto.getName()+ " cannot be created since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -110,8 +110,8 @@ public class ProductManagerImpl implements ProductManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
 		}
-		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "The product " + beforeDTO.getName()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The product " + beforeDTO.getName()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -144,8 +144,8 @@ public class ProductManagerImpl implements ProductManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
 		}
-		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "The product " + beforeDTO.getName()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The product " + beforeDTO.getName()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -171,8 +171,8 @@ public class ProductManagerImpl implements ProductManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + toDelete.getDeveloperId());
 		}
-		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "The product " + toDelete.getName()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The product " + toDelete.getName()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -196,8 +196,8 @@ public class ProductManagerImpl implements ProductManager {
 		for(ProductDTO beforeProduct : beforeProducts) {
 			Long devId = beforeProduct.getDeveloperId();
 			DeveloperDTO dev = devDao.getById(devId);
-			if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-				String msg = "The product " + beforeProduct.getName()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+				String msg = "The product " + beforeProduct.getName()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
 				logger.error(msg);
 				throw new EntityCreationException(msg);
 			}

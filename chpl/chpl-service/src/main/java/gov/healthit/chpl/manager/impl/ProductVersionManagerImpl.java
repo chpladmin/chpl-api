@@ -85,8 +85,8 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + prod.getDeveloperId());
 		}
-		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "The version " + dto.getVersion() + " cannot be created since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The version " + dto.getVersion() + " cannot be created since the developer " + dev.getName() + " has a status of " + dev.getStatus().toString();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -107,8 +107,8 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer of version id " + before.getId());
 		}
-		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "The version " + before.getVersion()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The version " + before.getVersion()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -131,8 +131,8 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer of version id " + before.getId());
 		}
-		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "The version " + before.getVersion()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The version " + before.getVersion()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -151,8 +151,8 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer of version id " + toDelete.getId());
 		}
-		if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "The version " + toDelete.getVersion()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The version " + toDelete.getVersion()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -179,8 +179,8 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 			if(dev == null) {
 				throw new EntityRetrievalException("Cannot find developer of version id " + version.getId());
 			}
-			if(!dev.getStatus().equals(DeveloperStatusType.Active)) {
-				String msg = "The version " + version.getVersion()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + dev.getStatus();
+			if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+				String msg = "The version " + version.getVersion()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
 				logger.error(msg);
 				throw new EntityCreationException(msg);
 			}

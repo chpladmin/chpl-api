@@ -138,6 +138,15 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
 
+		if(dto.getStatus() != null) {
+			DeveloperStatusEntity status = getStatusByName(dto.getStatus().getStatusName());
+			if(status != null) {
+				entity.setStatus(status);
+			} else {
+				throw new EntityRetrievalException("No status with name " + dto.getStatus().getStatusName() + " was found to update developer id " + dto.getId());
+			}
+		}
+		
 		if(dto.getAddress() != null)
 		{
 			try {
@@ -211,14 +220,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 		
 		//set the status
-		Query query = entityManager.createQuery("from DeveloperStatusEntity a where name = '" + toUpdate.getStatus() + "'", DeveloperStatusEntity.class);
-		List<DeveloperStatusEntity> statusResult = query.getResultList();
-		if(statusResult != null && statusResult.size() > 0) {
-			entityToUpdate.setStatus(statusResult.get(0));
+		DeveloperStatusEntity status = getStatusByName(toUpdate.getStatus().getStatusName());
+		if(status != null) {
+			entityToUpdate.setStatus(status);
 		} else {
-			String msg = "Could not find the " + toUpdate.getStatus() + " status to create the new developer " + toUpdate.getId();
-			logger.error(msg);
-			throw new EntityRetrievalException(msg);
+			throw new EntityRetrievalException("No status with name " + toUpdate.getStatus().getStatusName() + " was found to update developer id " + toUpdate.getId());
 		}
 		
 		update(entityToUpdate);
@@ -473,5 +479,16 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	private List<DeveloperACBTransparencyMapEntity> getTransparencyMappingEntities() {
 		List<DeveloperACBTransparencyMapEntity> result = entityManager.createQuery( "FROM DeveloperACBTransparencyMapEntity",DeveloperACBTransparencyMapEntity.class).getResultList();
 		return result;
+	}
+	
+	private DeveloperStatusEntity getStatusByName(String statusName) {
+		Query query = entityManager.createQuery("from DeveloperStatusEntity a where name = '" + 
+				statusName + "'", DeveloperStatusEntity.class);
+		List<DeveloperStatusEntity> statuses = query.getResultList();
+		if(statuses == null || statuses.size() == 0) {
+			logger.error("Could not find the " + statusName + " status");
+			return null;
+		}
+		return statuses.get(0);
 	}
 }

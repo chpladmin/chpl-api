@@ -106,18 +106,20 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		//if the before status is not Active and the user is not ROLE_ADMIN
 		//then nothing can be changed
-		if(!beforeDev.getStatus().equals(DeveloperStatusType.Active) && !Util.isUserRoleAdmin()) {
+		if(!beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
+				!Util.isUserRoleAdmin()) {
 			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " because its status is not Active.");
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to update an inactive developer.");
 		} 
 		
 		//determine if the status flag has been changed.
 		//only users with ROLE_ADMIN are allowed to change it
-		if(!beforeDev.getStatus().equals(developer.getStatus()) && !Util.isUserRoleAdmin()) {
-			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " status from " + beforeDev.getStatus() + " to " + developer.getStatus());
+		if(!beforeDev.getStatus().getStatusName().equals(developer.getStatus().getStatusName()) && 
+				!Util.isUserRoleAdmin()) {
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " status from " + beforeDev.getStatus().getStatusName() + " to " + developer.getStatus().getStatusName());
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status.");
-		} else if(!beforeDev.getStatus().equals(DeveloperStatusType.Active) && 
-				  !developer.getStatus().equals(DeveloperStatusType.Active) &&
+		} else if(!beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
+				  !developer.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) &&
 				  Util.isUserRoleAdmin()) {
 			//if the developer is not active and not going to be active
 			//only its status can be updated
@@ -126,11 +128,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		//if either the before or updated statuses are active and the user is ROLE_ADMIN
 		//OR if before status is active and user is not ROLE_ADMIN - proceed
-		if( ((beforeDev.getStatus().equals(DeveloperStatusType.Active) 
-				|| developer.getStatus().equals(DeveloperStatusType.Active)) 
+		if( ((beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) 
+				|| developer.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) 
 			  && Util.isUserRoleAdmin()) 
 			||
-			(beforeDev.getStatus().equals(DeveloperStatusType.Active) && !Util.isUserRoleAdmin())) {
+			(beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
+					!Util.isUserRoleAdmin())) {
 			
 			updatedDeveloper = developerDao.update(developer);
 			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
@@ -193,8 +196,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		DeveloperDTO toDelete = developerDao.getById(dto.getId());
 		
-		if(toDelete.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus();
+		if(toDelete.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -216,8 +219,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		DeveloperDTO toDelete = developerDao.getById(developerId);
 		
-		if(toDelete.getStatus().equals(DeveloperStatusType.Active)) {
-			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus();
+		if(toDelete.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -244,8 +247,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		//check for any non-active developers and throw an error if any are found
 		for(DeveloperDTO beforeDeveloper : beforeDevelopers) {
-			if(!beforeDeveloper.getStatus().equals(DeveloperStatusType.Active)) {
-				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of " + beforeDeveloper.getStatus();
+			if(!beforeDeveloper.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of " + beforeDeveloper.getStatus().getStatusName();
 				logger.error(msg);
 				throw new EntityCreationException(msg);
 			}

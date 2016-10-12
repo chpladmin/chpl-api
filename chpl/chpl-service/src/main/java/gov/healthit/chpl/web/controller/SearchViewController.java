@@ -369,6 +369,17 @@ public class SearchViewController {
 		return result;
 	}
 	
+	@ApiOperation(value="Get all possible developer status options in the CHPL")
+	@RequestMapping(value="/data/developer_statuses", method=RequestMethod.GET,
+				produces = "application/json; charset=utf-8")
+	public @ResponseBody SearchOption getDeveloperStatuses() {
+		Set<KeyValueModel> data = searchMenuManager.getDeveloperStatuses();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
+	}
+	
 	@ApiOperation(value="Get all search options in the CHPL", 
 			notes="This returns all of the other /data/{something} results in one single response.")
 	@RequestMapping(value="/data/search_options", method=RequestMethod.GET,

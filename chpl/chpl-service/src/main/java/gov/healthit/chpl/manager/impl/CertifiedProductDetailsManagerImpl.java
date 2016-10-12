@@ -42,6 +42,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
@@ -171,7 +172,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		developer.setDeveloperId(dto.getDeveloperId());
 		developer.setName(dto.getDeveloperName());
 		developer.setWebsite(dto.getDeveloperWebsite());
-		
+		if(dto.getDeveloperStatus() != null) {
+			developer.setStatus(new DeveloperStatus(dto.getDeveloperStatus()));
+		}
 		if(dto.getDeveloperContact() != null) {
 			developer.setContact(new Contact(dto.getDeveloperContact()));
 		}
