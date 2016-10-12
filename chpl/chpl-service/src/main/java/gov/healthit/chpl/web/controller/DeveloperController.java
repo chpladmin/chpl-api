@@ -26,6 +26,7 @@ import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -134,6 +135,12 @@ public class DeveloperController {
 				devMap.setTransparencyAttestation(attMap.getAttestation());
 				toUpdate.getTransparencyAttestationMappings().add(devMap);
 			}	
+			
+			if(developerInfo.getDeveloper().getStatus() != null) {
+				DeveloperStatusDTO status = new DeveloperStatusDTO();
+				status.setStatusName(developerInfo.getDeveloper().getStatus().getStatus());
+				toUpdate.setStatus(status);
+			}
 			
 			if(developerInfo.getDeveloper().getAddress() != null) {
 				AddressDTO address = new AddressDTO();
