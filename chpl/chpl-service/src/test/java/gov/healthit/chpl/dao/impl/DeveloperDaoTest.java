@@ -63,8 +63,8 @@ public class DeveloperDaoTest extends TestCase {
 		assertEquals(7, results.size());
 		DeveloperDTO first = results.get(0);
 		assertNotNull(first.getStatus());
-		assertEquals(1, first.getStatus().getId().longValue());
-		assertEquals(DeveloperStatusType.Active.toString(), first.getStatus().getStatusName());
+		assertNotNull(first.getStatus().getId());
+		assertNotNull(first.getStatus().getStatusName());
 	}
 
 	@Test
