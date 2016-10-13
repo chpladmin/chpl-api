@@ -9,6 +9,9 @@ _Date TBD_
 * Added "format" parameter to the download API endpoint which can be blank and will default to xml. Either xml or csv may be specified.
 * Added Developer status view / edit
 
+### Bugs Fixed
+* Trim spaces from splittable fields in CSV upload
+
 ---
 
 ## Version 5.1.2
