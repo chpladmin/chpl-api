@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -51,6 +51,7 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
 @EnableTransactionManagement
+//@EnableAspectJAutoProxy
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLTestConfig implements EnvironmentAware {
 	
@@ -162,7 +163,7 @@ public class CHPLTestConfig implements EnvironmentAware {
 	@Bean
 	public EhCacheManagerFactoryBean ehCacheCacheManager() {
 		EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
-		cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
+		cmfb.setConfigLocation(new ClassPathResource("ehCache-test.xml"));
 		cmfb.setShared(true);
 		return cmfb;
 	}
@@ -171,8 +172,6 @@ public class CHPLTestConfig implements EnvironmentAware {
 	public EhCacheFactoryBean ehCacheFactoryBean(){
 		EhCacheFactoryBean bean = new EhCacheFactoryBean();
 		bean.setCacheManager(ehCacheCacheManager().getObject());
-		//bean.setCacheName("aclCache");
-		//bean.setCacheName(env.getProperty("authAclCacheName"));
 		return bean;
 	}
 	
