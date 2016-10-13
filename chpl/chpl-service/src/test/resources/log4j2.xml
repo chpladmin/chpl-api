@@ -7,7 +7,6 @@
       </PatternLayout>
           </Console>
   </Appenders>
-  
   <Loggers>
       <Logger name="net.sf.ehcache" level="INFO" additivity="false">
       <AppenderRef ref="STDOUT"/>
@@ -18,7 +17,5 @@
       <Root level="INFO">
       <AppenderRef ref="STDOUT"/>
     </Root>
-    
   </Loggers>
-  
 </Configuration>
