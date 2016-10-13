@@ -18,7 +18,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -31,6 +30,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
+import net.sf.ehcache.CacheManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -42,6 +42,9 @@ import gov.healthit.chpl.domain.SearchResponse;
 public class SearchViewControllerTest {
 	@Autowired
 	SearchViewController searchViewController = new SearchViewController();
+	
+	@Autowired
+	CacheManager cacheManager = CacheManager.getInstance();
 
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -138,8 +141,9 @@ public class SearchViewControllerTest {
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_getPopulateSearchData_simpleAsTrue_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+	public void test_getPopulateSearchData_simpleAsTrue_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		cacheManager.clearAll();
 		long getPopulateSearchDataStartTime = System.currentTimeMillis();
 		Boolean required = true;
 		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required);

@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Autowired AddressDAO addressDao;
 	
 	@Transactional
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public CertificationBodyDTO create(CertificationBodyDTO dto) throws EntityRetrievalException, EntityCreationException {
 		CertificationBodyEntity entity = null;
 		try {
@@ -82,6 +84,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 
 	@Transactional
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException{
 		
 		CertificationBodyEntity entity = getEntityById(dto.getId(), true);	
@@ -135,6 +138,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 	
 	@Transactional
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public void delete(Long acbId){
 		
 		// TODO: How to delete this without leaving orphans
@@ -207,12 +211,14 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		return maxCode;
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void create(CertificationBodyEntity acb) {
 		
 		entityManager.persist(acb);
 		entityManager.flush();
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void update(CertificationBodyEntity acb) {
 		
 		entityManager.merge(acb);

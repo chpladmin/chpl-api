@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -40,6 +41,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	@Autowired DeveloperStatusDAO statusDao;
 
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
 
 		DeveloperEntity entity = null;
@@ -136,6 +138,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException {
 		DeveloperEntity entity = this.getEntityById(dto.getId());
 
@@ -378,7 +381,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
-
+	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void update(DeveloperEntity entity) {
 		entityManager.merge(entity);
 		entityManager.flush();

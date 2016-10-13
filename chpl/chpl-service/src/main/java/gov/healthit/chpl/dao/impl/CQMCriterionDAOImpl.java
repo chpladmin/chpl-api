@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -20,6 +21,7 @@ import gov.healthit.chpl.entity.CQMVersionEntity;
 public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO {
 
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public CQMCriterionDTO create(CQMCriterionDTO dto)
 			throws EntityCreationException, EntityRetrievalException {
 		CQMCriterionEntity entity = null;
@@ -62,6 +64,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	}
 
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public void update(CQMCriterionDTO dto)
 			throws EntityRetrievalException, EntityCreationException {
 		
@@ -88,6 +91,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	}
 
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public void delete(Long criterionId) {
 		
 		Query query = entityManager.createQuery("UPDATE CQMCriterionEntity SET deleted = true WHERE cqm_criterion_id = :entityid");
@@ -149,12 +153,14 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		return new CQMCriterionDTO(entity);
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void create(CQMCriterionEntity entity) {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void update(CQMCriterionEntity entity) {
 		
 		entityManager.merge(entity);	
