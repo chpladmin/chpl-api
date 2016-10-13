@@ -978,7 +978,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 					for(int i = 0; i < participantUniqueIds.length; i++) {
 						PendingTestParticipantEntity participantEntity = null;
 						for(PendingTestParticipantEntity participant : this.participants) {
-							if(participant.getUniqueId().equals(participantUniqueIds[i])) {
+							if(participant.getUniqueId().equals(participantUniqueIds[i].trim())) {
 								participantEntity = participant;
 							}
 						}
@@ -1031,7 +1031,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			}
 			
 			for(int i = 0; i < versionList.length; i++) {
-				String currVersion = versionList[i];
+				String currVersion = versionList[i].trim();
 				if(!criterionNum.startsWith("CMS")) {
 					criterionNum = "CMS" + criterionNum;
 				}
@@ -1054,7 +1054,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 					}
 					
 					for(int j = 0; j < criteriaList.length; j++) {
-						String currCriteria = criteriaList[j];
+						String currCriteria = criteriaList[j].trim();
 						CertificationCriterionDTO cert = null;
 						if(currCriteria.startsWith("170.315")) {
 							cert = certDao.getByName(currCriteria);
