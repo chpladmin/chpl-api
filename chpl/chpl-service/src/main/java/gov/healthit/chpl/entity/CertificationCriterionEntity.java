@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -48,6 +49,11 @@ public class CertificationCriterionEntity implements Serializable {
 	@Basic( optional = false )
 	@Column( name = "certification_edition_id", nullable = false  )
 	private Long certificationEditionId;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_edition_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private CertificationEditionEntity certificationEdition;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -372,6 +378,14 @@ public class CertificationCriterionEntity implements Serializable {
 		sb.append("requiresSed: " + this.isRequiresSed() + ", ");
 		sb.append("title: " + this.getTitle());
 		return sb.toString();		
+	}
+
+	public CertificationEditionEntity getCertificationEdition() {
+		return certificationEdition;
+	}
+
+	public void setCertificationEdition(CertificationEditionEntity certificationEdition) {
+		this.certificationEdition = certificationEdition;
 	}
 	
 }

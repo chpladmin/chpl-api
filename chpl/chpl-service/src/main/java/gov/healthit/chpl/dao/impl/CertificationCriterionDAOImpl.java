@@ -6,6 +6,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.CertificationResultTestStandardEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,6 +106,19 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	}
 	
 	@Override
+	public List<CertificationCriterionDTO> findByCertificationEditionYear(String year) {
+		
+		List<CertificationCriterionEntity> entities = getEntitiesByCertificationEditionYear(year);
+		List<CertificationCriterionDTO> dtos = new ArrayList<>();
+		
+		for (CertificationCriterionEntity entity : entities) {
+			CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	@Override
 	public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException {
 		
 		CertificationCriterionDTO dto = null;
@@ -146,6 +160,18 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		List<CertificationCriterionEntity> result = entityManager.createQuery( "from CertificationCriterionEntity where (NOT deleted = true) ", CertificationCriterionEntity.class).getResultList();
 		return result;
 		
+	}
+	
+	private List<CertificationCriterionEntity> getEntitiesByCertificationEditionYear(String year) {
+		Query query = entityManager.createQuery( "SELECT cce "
+				+ "FROM CertificationCriterionEntity cce "
+				+ "LEFT JOIN FETCH cce.certificationEdition "
+				+ "where (NOT cce.deleted = true) "
+				+ "AND (cce.certificationEditionId = cce.certificationEdition.id) "
+				+ "AND (cce.certificationEdition.year = :year)", 
+				CertificationCriterionEntity.class );
+		query.setParameter("year", year);
+		return query.getResultList();	
 	}
 	
 	public CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException {

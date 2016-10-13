@@ -73,6 +73,7 @@ public class SearchViewController {
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="application/xml")
 	public void download(@RequestParam(value="edition", required=false) String edition, 
+			@RequestParam(value="format", defaultValue="xml", required=false) String format,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {	
 		String downloadFileLocation = env.getProperty("downloadFolderPath");
 		File downloadFile = new File(downloadFileLocation);
@@ -98,22 +99,29 @@ public class SearchViewController {
 					edition = "all";
 				}
 				
-				File newestFile = null;
+				if(!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
+					format = "csv";
+				} else {
+					format = "xml";
+				}
+				
+				File newestFileWithFormat = null;
 				for(int i = 0; i < children.length; i++) {
-					if(children[i].getName().contains("-" + edition + "-")) {
-						if(newestFile == null) {
-							newestFile = children[i];
+					
+					if(children[i].getName().matches("^chpl-" + edition + "-.+\\." + format+"$")) {
+						if(newestFileWithFormat == null) {
+							newestFileWithFormat = children[i];
 						} else {
-							if(children[i].lastModified() > newestFile.lastModified()) {
-								newestFile = children[i];
+							if(children[i].lastModified() > newestFileWithFormat.lastModified()) {
+								newestFileWithFormat = children[i];
 							}
 						}
 					}
 				}
-				if(newestFile != null) {
-					downloadFile = newestFile;
+				if(newestFileWithFormat != null) {
+					downloadFile = newestFileWithFormat;
 				} else {
-					response.getWriter().write("Downloadable files exist, but none were found for certification edition " + edition);
+					response.getWriter().write("Downloadable files exist, but none were found for certification edition " + edition + " and format " + format);
 					return;
 				}
 			}
@@ -356,6 +364,17 @@ public class SearchViewController {
 		Set<KeyValueModel> data = searchMenuManager.getAccessibilityStandards();
 		SearchOption result = new SearchOption();
 		result.setExpandable(true);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible developer status options in the CHPL")
+	@RequestMapping(value="/data/developer_statuses", method=RequestMethod.GET,
+				produces = "application/json; charset=utf-8")
+	public @ResponseBody SearchOption getDeveloperStatuses() {
+		Set<KeyValueModel> data = searchMenuManager.getDeveloperStatuses();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
 		result.setData(data);
 		return result;
 	}

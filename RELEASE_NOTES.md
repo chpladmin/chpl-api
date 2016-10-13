@@ -1,12 +1,19 @@
 # Release Notes
 
-## Next Version
+## Version TBD
 _Date TBD_
 
 ### Features Added
 * Added caching to searchOptions API call to speed up search page
+* Updated the algorithm for calculating weekly aggregate counts in order to take into account deleted developers/products
+* Generating simple CSV files for quicker download and viewing than the large XML files
+* Added "format" parameter to the download API endpoint which can be blank and will default to xml. Either xml or csv may be specified.
+* Added Developer status view / edit
 
 ---
+
+## Version 5.1.2
+_7 October 2016_
 
 ### Bugs Fixed
 * Allowed searching by CQM or Criteria again
@@ -33,7 +40,6 @@ _4 October 2016_
 * Remove terms of use and api documentation from certified products.
 * Check product code, version code, and ICS code against specific sets of characters to make sure no special characters are used.
 * Add retired flag for test tools. Do not allow products to change associations with retired test tools.
-* Updated the algorithm for calculating weekly aggregate counts in order to take into account deleted developers/products
 * Add script to generate weekly summary email that is run as scheduled cron job
 
 ---

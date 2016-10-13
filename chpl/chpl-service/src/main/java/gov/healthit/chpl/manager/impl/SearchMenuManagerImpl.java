@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
@@ -28,6 +29,7 @@ import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
@@ -40,6 +42,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
@@ -79,6 +82,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Autowired private UcdProcessDAO ucdDao;
 	@Autowired private QmsStandardDAO qmsDao;
 	@Autowired private TargetedUserDAO tuDao;
+	@Autowired private DeveloperStatusDAO devStatusDao;
 	
 	@Autowired
 	private ProductClassificationTypeDAO productClassificationTypeDAO;
@@ -254,6 +258,18 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		}
 		
 		return testTools;
+	}
+	
+	@Override
+	public Set<KeyValueModel> getDeveloperStatuses() {
+		List<DeveloperStatusDTO> dtos = this.devStatusDao.findAll();
+		Set<KeyValueModel> statuses = new HashSet<KeyValueModel>();
+		
+		for (DeveloperStatusDTO dto : dtos) {
+			statuses.add(new KeyValueModel(dto.getId(), dto.getStatusName()));
+		}
+		
+		return statuses;
 	}
 	
 	@Override
