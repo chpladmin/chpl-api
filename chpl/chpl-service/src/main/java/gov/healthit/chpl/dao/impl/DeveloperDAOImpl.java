@@ -399,7 +399,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from "
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
-				+ "LEFT OUTER JOIN FETCH v.contact ", DeveloperEntity.class).getResultList();
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "LEFT OUTER JOIN FETCH v.status ", DeveloperEntity.class).getResultList();
 		return result;
 	}
 
