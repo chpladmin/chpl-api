@@ -17,7 +17,6 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -52,7 +51,7 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
 @EnableTransactionManagement
-@EnableAspectJAutoProxy
+//@EnableAspectJAutoProxy
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLTestConfig implements EnvironmentAware {
 	
@@ -164,7 +163,7 @@ public class CHPLTestConfig implements EnvironmentAware {
 	@Bean
 	public EhCacheManagerFactoryBean ehCacheCacheManager() {
 		EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
-		cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
+		cmfb.setConfigLocation(new ClassPathResource("ehCache-test.xml"));
 		cmfb.setShared(true);
 		return cmfb;
 	}
