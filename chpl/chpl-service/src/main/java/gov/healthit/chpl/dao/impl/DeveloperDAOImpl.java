@@ -77,7 +77,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			entity.setWebsite(dto.getWebsite());
 			
 			//set the status; will be Active by default
-			DeveloperStatusEntity statusResult = getStatusByName(DEFAULT_STATUS.toString());
+			DeveloperStatusEntity statusResult = null;
+			if(dto.getStatus() == null || StringUtils.isEmpty(dto.getStatus().getStatusName())) {
+				statusResult = getStatusByName(DEFAULT_STATUS.toString());
+			} else {
+				statusResult = getStatusByName(dto.getStatus().getStatusName());
+			}
 			if(statusResult != null) {
 				entity.setStatus(statusResult);
 			} else {
