@@ -79,7 +79,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			entity.setWebsite(dto.getWebsite());
 			
 			//set the status; will be Active by default
-			DeveloperStatusEntity statusResult = getStatusByName(DEFAULT_STATUS.toString());
+			DeveloperStatusEntity statusResult = null;
+			if(dto.getStatus() == null || StringUtils.isEmpty(dto.getStatus().getStatusName())) {
+				statusResult = getStatusByName(DEFAULT_STATUS.toString());
+			} else {
+				statusResult = getStatusByName(dto.getStatus().getStatusName());
+			}
 			if(statusResult != null) {
 				entity.setStatus(statusResult);
 			} else {
@@ -398,7 +403,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from "
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
-				+ "LEFT OUTER JOIN FETCH v.contact ", DeveloperEntity.class).getResultList();
+				+ "LEFT OUTER JOIN FETCH v.contact "
+				+ "LEFT OUTER JOIN FETCH v.status ", DeveloperEntity.class).getResultList();
 		return result;
 	}
 

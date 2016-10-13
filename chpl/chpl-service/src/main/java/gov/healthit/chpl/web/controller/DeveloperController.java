@@ -99,6 +99,12 @@ public class DeveloperController {
 			toCreate.setName(developerInfo.getDeveloper().getName());
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
 			
+			if(developerInfo.getDeveloper().getStatus() != null) {
+				DeveloperStatusDTO status = new DeveloperStatusDTO();
+				status.setStatusName(developerInfo.getDeveloper().getStatus().getStatus());
+				toCreate.setStatus(status);
+			}
+			
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
 			if(developerAddress != null) {
 				AddressDTO toCreateAddress = new AddressDTO();
