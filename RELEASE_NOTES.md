@@ -8,6 +8,7 @@ _Date TBD_
 * Generating simple CSV files for quicker download and viewing than the large XML files
 * Added "format" parameter to the download API endpoint which can be blank and will default to xml. Either xml or csv may be specified.
 * Added Developer status view / edit
+* Cleaned up persistence.xml resource files
 
 ### Bugs Fixed
 * Trim spaces from splittable fields in CSV upload
