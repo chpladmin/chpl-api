@@ -29,7 +29,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass=true)
 @EnableWebSecurity
-@EnableCaching
+//@EnableCaching
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLConfig implements EnvironmentAware {
