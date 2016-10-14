@@ -81,7 +81,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Override
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ONC_STAFF')) and "
 			+ "(hasPermission(filterObject, read) or hasPermission(filterObject, admin)))")
 	public List<PendingCertifiedProductDTO> getPending() {
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
@@ -94,7 +94,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	
 	@Override
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or ((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+	@PreAuthorize("hasRole('ROLE_ADMIN') or ((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ONC_STAFF')) and "
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin))")	
 	public PendingCertifiedProductDetails getById(Long id) throws EntityRetrievalException {
 		PendingCertifiedProductDTO dto = pcpDao.findById(id);
@@ -165,7 +165,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Override
 	@Transactional (readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ONC_STAFF')) and "
 			+ "(hasPermission(#acb, read) or hasPermission(#acb, admin)))")
 	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb) {
 		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acb.getId());
@@ -177,7 +177,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Override
 	@Transactional (readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ONC_STAFF')) and "
 			+ "(hasPermission(#acb, read) or hasPermission(#acb, admin)))")
 	public List<PendingCertifiedProductDetails> getDetailsByAcb(CertificationBodyDTO acb) {
 		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acb.getId());
