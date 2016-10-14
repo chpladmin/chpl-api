@@ -7,60 +7,13 @@
 
 	<persistence-unit name="openchpl" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>gov.healthit.chpl.entity.ActivityEntity</class>
-		<class>gov.healthit.chpl.entity.AddressEntity</class>
-		<class>gov.healthit.chpl.entity.ApiKeyEntity</class>
-		<class>gov.healthit.chpl.entity.ApiKeyActivityEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationBodyEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationCriterionEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationEditionEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationEventEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultUcdProcessEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity</class>
-		<class>gov.healthit.chpl.entity.ContactEntity</class>
-		<class>gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity</class>
-		<class>gov.healthit.chpl.entity.CorrectiveActionPlanDocumentationEntity</class>
-		<class>gov.healthit.chpl.entity.CorrectiveActionPlanEntity</class>
-		<class>gov.healthit.chpl.entity.CQMCriterionEntity</class>
-		<class>gov.healthit.chpl.entity.CQMResultDetailsEntity</class>
-		<class>gov.healthit.chpl.entity.CQMResultEntity</class>
-		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperACBMapEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperCertificationStatusesEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperEntity</class>
-		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
-		<class>gov.healthit.chpl.entity.EventTypeEntity</class>
-		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
-		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
-		<class>gov.healthit.chpl.entity.PendingCertificationResultEntity</class>
-		<class>gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity</class>
-		<class>gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity</class>
-		<class>gov.healthit.chpl.entity.PendingCertifiedProductEntity</class>
-		<class>gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity</class>
-		<class>gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity</class>
-		<class>gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity</class>
-		<class>gov.healthit.chpl.entity.PendingCqmCriterionEntity</class>
-		<class>gov.healthit.chpl.entity.PendingCqmCertificationCriteriaEntity</class>
-		<class>gov.healthit.chpl.entity.PracticeTypeEntity</class>
-		<class>gov.healthit.chpl.entity.ProductCertificationStatusesEntity</class>
-		<class>gov.healthit.chpl.entity.ProductClassificationTypeEntity</class>
-		<class>gov.healthit.chpl.entity.ProductEntity</class>
-		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>
-		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>
-		<class>gov.healthit.chpl.entity.TargetedUserEntity</class>
-		<class>gov.healthit.chpl.entity.UcdProcessEntity</class>
+		<!-- not sure why but the entities from auth need to be declared here -->
 		<class>gov.healthit.chpl.auth.entity.UserEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserContactEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserPermissionEntity</class>
 		<class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
+		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
+		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
 		<properties>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
