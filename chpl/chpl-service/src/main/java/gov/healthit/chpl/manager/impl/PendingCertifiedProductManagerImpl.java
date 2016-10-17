@@ -81,7 +81,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Override
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ONC_STAFF')) and "
+			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "(hasPermission(filterObject, read) or hasPermission(filterObject, admin)))")
 	public List<PendingCertifiedProductDTO> getPending() {
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
