@@ -305,7 +305,7 @@ public class UserManagementController {
 	
 	@ApiOperation(value="Give additional roles to a user.", 
 			notes="Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
-					+ "ROLE_ATL_ADMIN, or ROLE_ATL_STAFF roles within the system.")
+					+ "ROLE_ATL_ADMIN, ROLE_ATL_STAFF, or ROLE_ONC_STAFF roles within the system.")
 	@RequestMapping(value="/grant_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -339,7 +339,7 @@ public class UserManagementController {
 	
 	@ApiOperation(value="Remove roles previously granted to a user.", 
 			notes="Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
-					+ "ROLE_ATL_ADMIN, or ROLE_ATL_STAFF roles within the system.")
+					+ "ROLE_ATL_ADMIN, ROLE_ATL_STAFF, or ROLE_ONC_STAFF roles within the system.")
 	@RequestMapping(value="/revoke_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
