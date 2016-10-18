@@ -60,7 +60,7 @@ public class CertificationIdController {
 	@RequestMapping(value="/", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
 	public List<SimpleCertificationId> getAll() throws IOException {
 		List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
-		if(Util.isUserRoleAdmin()) {
+		if(Util.isUserRoleAdmin() || Util.isUserRoleOncStaff()) {
 			List<CertificationIdAndCertifiedProductDTO> allCertificationIds = certificationIdManager.getAllWithProducts();
 			for(CertificationIdAndCertifiedProductDTO ehr : allCertificationIds) {
 				SimpleCertificationId cert = new SimpleCertificationId();

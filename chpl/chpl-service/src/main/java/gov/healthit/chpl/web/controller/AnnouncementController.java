@@ -24,7 +24,6 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.dto.AnnouncementDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.web.controller.results.AnnouncementResults;
