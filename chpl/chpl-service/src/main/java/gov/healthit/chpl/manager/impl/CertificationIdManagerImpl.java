@@ -75,7 +75,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = true) 
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CMS_STAFF')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CMS_STAFF') or hasRole('ROLE_ONC_STAFF')")
 	public List<CertificationIdDTO> getAll() {
 		return CertificationIdDAO.findAll();
 	}

@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -82,6 +84,7 @@ public class UserManagementController {
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) 
 			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
 			EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
@@ -130,6 +133,7 @@ public class UserManagementController {
 	@RequestMapping(value="/confirm", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public User confirmUser(@RequestBody String hash) 
 			throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
 		InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
@@ -252,6 +256,7 @@ public class UserManagementController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public User updateUserDetails(@RequestBody User userInfo) throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
 		if(userInfo.getUserId() <= 0) {
@@ -272,6 +277,7 @@ public class UserManagementController {
 					+ "The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{userId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public String deleteUser(@PathVariable("userId") Long userId) 
 			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		if(userId <= 0) {
@@ -299,10 +305,11 @@ public class UserManagementController {
 	
 	@ApiOperation(value="Give additional roles to a user.", 
 			notes="Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
-					+ "ROLE_ATL_ADMIN, or ROLE_ATL_STAFF roles within the system.")
+					+ "ROLE_ATL_ADMIN, ROLE_ATL_STAFF, or ROLE_ONC_STAFF roles within the system.")
 	@RequestMapping(value="/grant_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
 		UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
@@ -332,10 +339,11 @@ public class UserManagementController {
 	
 	@ApiOperation(value="Remove roles previously granted to a user.", 
 			notes="Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
-					+ "ROLE_ATL_ADMIN, or ROLE_ATL_STAFF roles within the system.")
+					+ "ROLE_ATL_ADMIN, ROLE_ATL_STAFF, or ROLE_ONC_STAFF roles within the system.")
 	@RequestMapping(value="/revoke_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
 		String isSuccess = String.valueOf(false);
