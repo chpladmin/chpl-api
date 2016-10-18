@@ -92,12 +92,12 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 		this.announcementDAO = announcementDAO;
 	}
 
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<AnnouncementDTO> getAllFuture() {
 		return announcementDAO.findAllFuture();
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<AnnouncementDTO> getAllCurrentAndFuture() {
 		return announcementDAO.findAllCurrentAndFuture();
 	}

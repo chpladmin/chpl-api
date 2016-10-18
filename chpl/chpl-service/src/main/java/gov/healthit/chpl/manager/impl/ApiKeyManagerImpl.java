@@ -160,7 +160,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<ApiKeyDTO> findAll() {
 		return apiKeyDAO.findAll();
 	}
