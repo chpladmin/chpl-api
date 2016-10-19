@@ -82,7 +82,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 
 	@Override
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<CertificationIdAndCertifiedProductDTO> getAllWithProducts() {
 		return CertificationIdDAO.getAllCertificationIdsWithProducts();
 	}

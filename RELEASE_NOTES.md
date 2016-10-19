@@ -11,6 +11,7 @@ _Date TBD_
 * Added Developer status view / edit
 * Cleaned up persistence.xml resource files
 * Added role 'ROLE_ONC_STAFF'
+* Allowed ROLE_ONC_STAFF access to all report areas, including those previously restricted to ROLE_ADMIN only
 
 ### Bugs Fixed
 * Trim spaces from splittable fields in CSV upload
