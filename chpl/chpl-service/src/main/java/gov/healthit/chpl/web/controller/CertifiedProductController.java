@@ -142,7 +142,6 @@ public class CertifiedProductController {
 					+ " user must have ROLE_ADMIN.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-    //@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
 		throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, 
 		JsonProcessingException, ValidationException {

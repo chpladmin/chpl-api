@@ -197,7 +197,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Override
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	//@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
