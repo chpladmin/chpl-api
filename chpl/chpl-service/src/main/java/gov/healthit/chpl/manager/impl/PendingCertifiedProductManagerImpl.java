@@ -21,6 +21,7 @@ import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -196,6 +197,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Override
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
