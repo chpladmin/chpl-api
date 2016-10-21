@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 5.2.0
+_21 October 2016_
 
 ### Features Added
 * Added caching to searchOptions API call to speed up search page
