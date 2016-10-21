@@ -8,47 +8,58 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.User;
 
 public class Util {
-	
-	
+
 	public static String getUsername() {
-		
+
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		
+
 		if (auth.getPrincipal() instanceof UserDetails) {
 			return ((UserDetails) auth.getPrincipal()).getUsername();
-		}
-		else {
+		} else {
 			return auth.getPrincipal().toString();
 		}
 	}
-	
-	public static boolean isUserRoleAdmin(){
+
+	public static boolean isUserRoleAdmin() {
 		User user = getCurrentUser();
-		if(user == null){
+		if (user == null) {
 			return false;
 		}
-		for (GrantedPermission perm : user.getPermissions()){
-			if (perm.getAuthority().equals("ROLE_ADMIN")){
+		for (GrantedPermission perm : user.getPermissions()) {
+			if (perm.getAuthority().equals("ROLE_ADMIN")) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public static User getCurrentUser(){
-		
+	public static boolean isUserRoleOncStaff() {
+		User user = getCurrentUser();
+		if (user == null) {
+			return false;
+		}
+		for (GrantedPermission perm : user.getPermissions()) {
+			if (perm.getAuthority().equals("ROLE_ONC_STAFF")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static User getCurrentUser() {
+
 		User user = null;
-		
+
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (auth instanceof User){
+
+		if (auth instanceof User) {
 			user = (User) auth;
 		}
-		return user;	
+		return user;
 	}
-	
-	public static String fromInt(Integer toStr){
+
+	public static String fromInt(Integer toStr) {
 		return toStr.toString();
 	}
-	
+
 }

@@ -1,27 +1,11 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.DateFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -42,27 +26,19 @@ import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.SimpleCertificationId;
-import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
-import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertificationIdManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
 
 @Api(value="certification-ids")
 @RestController
@@ -79,12 +55,12 @@ public class CertificationIdController {
 	//
 	// Retrieves all CMS Certification IDs and their date of creation.
 	//**********************************************************************************************************
-	@Secured({"ROLE_ADMIN", "ROLE_CMS_STAFF"})
+	@Secured({"ROLE_ADMIN", "ROLE_CMS_STAFF", "ROLE_ONC_STAFF"})
 	@ApiOperation(value="Retrieves a list of all CMS EHR Certification IDs along with the date they were created.")
 	@RequestMapping(value="/", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
 	public List<SimpleCertificationId> getAll() throws IOException {
 		List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
-		if(Util.isUserRoleAdmin()) {
+		if(Util.isUserRoleAdmin() || Util.isUserRoleOncStaff()) {
 			List<CertificationIdAndCertifiedProductDTO> allCertificationIds = certificationIdManager.getAllWithProducts();
 			for(CertificationIdAndCertifiedProductDTO ehr : allCertificationIds) {
 				SimpleCertificationId cert = new SimpleCertificationId();

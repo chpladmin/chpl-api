@@ -99,7 +99,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
@@ -130,7 +130,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
@@ -166,7 +166,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ApiKeyActivity> getApiKeyActivity() throws EntityRetrievalException {
 		
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll();
@@ -206,7 +206,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	 * Returns: list of ApiKeyActivity
 	 */
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ApiKeyActivity> getApiKeyActivity
 	(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli) 
 			throws EntityRetrievalException {	

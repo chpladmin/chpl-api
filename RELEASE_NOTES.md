@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 5.2.0
+_21 October 2016_
+
+### Features Added
+* Added caching to searchOptions API call to speed up search page
+  * Temporailly turned off due to transaction/caching issues
+* Updated the algorithm for calculating weekly aggregate counts in order to take into account deleted developers/products
+* Generating simple CSV files for quicker download and viewing than the large XML files
+* Added "format" parameter to the download API endpoint which can be blank and will default to xml. Either xml or csv may be specified.
+* Added Developer status view / edit
+* Cleaned up persistence.xml resource files
+* Added role 'ROLE_ONC_STAFF'
+* Allowed ROLE_ONC_STAFF access to all report areas, including those previously restricted to ROLE_ADMIN only
+
+### Bugs Fixed
+* Trim spaces from splittable fields in CSV upload
+
+---
+
 ## Version 5.1.2
 _7 October 2016_
 

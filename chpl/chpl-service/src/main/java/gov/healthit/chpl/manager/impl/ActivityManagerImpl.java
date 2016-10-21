@@ -273,7 +273,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<UserActivity> getActivityByUser() throws JsonParseException, IOException, UserRetrievalException{
 		
 		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUser();
@@ -301,7 +301,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate) throws JsonParseException, IOException, UserRetrievalException{
 		
 		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUserInDateRange(startDate, endDate);
@@ -330,7 +330,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
@@ -345,7 +345,7 @@ public class ActivityManagerImpl implements ActivityManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate) throws JsonParseException, IOException{
 		
 		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();

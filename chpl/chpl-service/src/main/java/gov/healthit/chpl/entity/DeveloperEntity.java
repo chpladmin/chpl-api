@@ -47,6 +47,10 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@Column( length = 300, nullable = true )
 	private String website;
 	
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "vendor_status_id", nullable = false)
+	private DeveloperStatusEntity status;
+	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "address_id", unique=true, nullable = true)
@@ -294,5 +298,13 @@ public class DeveloperEntity implements Cloneable, Serializable {
 
 	public void setContact(ContactEntity contact) {
 		this.contact = contact;
+	}
+
+	public DeveloperStatusEntity getStatus() {
+		return status;
+	}
+
+	public void setStatus(DeveloperStatusEntity status) {
+		this.status = status;
 	}
 }

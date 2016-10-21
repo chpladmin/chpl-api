@@ -90,11 +90,37 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.9.0</version>
+		</dependency>
+
+        <!-- Optional for caching. Used to log stuff 
+        <dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.13</version>
+		</dependency> -->
+
+		<!-- Spring caching framework inside this -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.1.1.RELEASE</version>
+		</dependency>
+
+		<!-- Support for Ehcache and others -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>4.1.1.RELEASE</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.bitbucket.b_c</groupId>
 			<artifactId>jose4j</artifactId>
 			<version>0.4.1</version>
 		</dependency>
-		
 		
 		<dependency>
 		  <groupId>com.fasterxml.jackson.core</groupId>
@@ -113,6 +139,26 @@
 			<artifactId>ehcache</artifactId>
 			<version>2.10.0</version>
 		</dependency>
+		
+		<!-- Spring AOP + AspectJ 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.9</version>
+		</dependency>
+		-->
 		
 		<dependency>
 			<groupId>postgresql</groupId>
@@ -150,7 +196,6 @@
 			<artifactId>castor-xml</artifactId>
 			<version>1.4.0</version>
 		</dependency>
-		
 		
 		<!-- for unit/integration testing of the dao calls -->
 

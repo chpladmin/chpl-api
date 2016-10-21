@@ -2,6 +2,9 @@ package gov.healthit.chpl.web.controller;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +28,9 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SearchResponse;
+import net.sf.ehcache.CacheManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -36,6 +42,9 @@ import gov.healthit.chpl.domain.PopulateSearchOptions;
 public class SearchViewControllerTest {
 	@Autowired
 	SearchViewController searchViewController = new SearchViewController();
+	
+	@Autowired
+	CacheManager cacheManager = CacheManager.getInstance();
 
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -48,7 +57,80 @@ public class SearchViewControllerTest {
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
-
+	
+	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by cqms
+	 * 
+	 * Expected Result: Completes without error and returns some SearchResponse records
+	 */
+	@Transactional
+	@Rollback(true) 
+	@Test
+	public void test_advancedSearch_refineByCqms_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		SearchRequest searchFilters = new SearchRequest();
+		List<String> cqms = new ArrayList<String>();
+		cqms.add("0001");
+		searchFilters.setCqms(cqms);
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setSortDescending(true);
+		
+		SearchResponse searchResponse = new SearchResponse();
+		searchResponse = searchViewController.advancedSearch(searchFilters);
+		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
+	}
+	
+	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by certification criteria
+	 * 
+	 * Expected Result: Completes without error and returns some SearchResponse records
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_advancedSearch_refineByCertificationCriteria_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		SearchRequest searchFilters = new SearchRequest();
+		List<String> certificationCriteria = new ArrayList<String>();
+		certificationCriteria.add("170.315 (a)(1)");
+		
+		searchFilters.setCertificationCriteria(certificationCriteria);
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setSortDescending(true);
+		
+		SearchResponse searchResponse = new SearchResponse();
+		searchResponse = searchViewController.advancedSearch(searchFilters);
+		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
+	}
+	
+	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by certification criteria AND cqms
+	 * 
+	 * Expected Result: Completes without error and returns some SearchResponse records
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_advancedSearch_refineByCertificationCriteriaAndCqms_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		SearchRequest searchFilters = new SearchRequest();
+		List<String> certificationCriteria = new ArrayList<String>();
+		certificationCriteria.add("170.314 (a)(3)");
+		List<String> cqms = new ArrayList<String>();
+		cqms.add("0001");
+		searchFilters.setCqms(cqms);
+		searchFilters.setCertificationCriteria(certificationCriteria);
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setSortDescending(true);
+		
+		SearchResponse searchResponse = new SearchResponse();
+		searchResponse = searchViewController.advancedSearch(searchFilters);
+		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
+	}
+	
 	/** Description: Tests that the getPopulateSearchData(boolean required) method returns without error, 
 	 * gets valid developerNames/productNames, 
 	 * and returns within 3 seconds
@@ -59,10 +141,11 @@ public class SearchViewControllerTest {
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_getPopulateSearchData_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+	public void test_getPopulateSearchData_simpleAsTrue_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		cacheManager.clearAll();
 		long getPopulateSearchDataStartTime = System.currentTimeMillis();
-		Boolean required = false;
+		Boolean required = true;
 		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required);
 		long getPopulateSearchDataEndTime = System.currentTimeMillis();
 		long getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
@@ -73,7 +156,20 @@ public class SearchViewControllerTest {
 		
 		System.out.println("searchViewController.getPopulateSearchData() should complete within 3 seconds. It took " + getPopulateSearchDataTimeLength
 				+ " millis or " + getPopulateSearchElapsedSeconds + " seconds");
-		assertTrue("DeveloperController.getDevelopers() should complete within 3 seconds but took " + getPopulateSearchDataTimeLength
-				+ " millis or " + getPopulateSearchElapsedSeconds + " seconds", getPopulateSearchElapsedSeconds < 3);
+		
+		// now try again to test caching
+		getPopulateSearchDataStartTime = System.currentTimeMillis();
+		required = true;
+		results = searchViewController.getPopulateSearchData(required);
+		getPopulateSearchDataEndTime = System.currentTimeMillis();
+		getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
+		getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
+		
+		assertTrue("Returned " + results.getDeveloperNames().size() + " developers but should return more than 0", results.getDeveloperNames().size() > 0);
+		assertTrue("Returned " + results.getProductNames().size() + " products but should return more than 0", results.getProductNames().size() > 0);
+		
+		System.out.println("searchViewController.getPopulateSearchData() should complete immediately due to caching. It took "
+		+ getPopulateSearchDataTimeLength + " millis or " + getPopulateSearchElapsedSeconds + " seconds");
+		assertTrue("DeveloperController.getDevelopers() should complete in 0 seconds due to caching", getPopulateSearchDataTimeLength < 100);
 	}
 }

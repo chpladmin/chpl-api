@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.impl;
 
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -202,13 +203,21 @@ public class CertificationCriterionDaoTest extends TestCase {
 	}
 	
 	@Test
-	@Transactional
 	public void testFindAll() {
-		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		List<CertificationCriterionDTO> dtos = certificationCriterionDAO.findAll();
+		assertNotNull(dtos);
+		assertTrue(dtos.size() > 0);
+		SecurityContextHolder.getContext().setAuthentication(null);
 		
-		assertNotNull(certificationCriterionDAO.findAll());
-		
+	}
+	
+	@Test
+	public void testFindByEdition() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		List<CertificationCriterionDTO> dtos = certificationCriterionDAO.findByCertificationEditionYear("2014");
+		assertNotNull(dtos);
+		assertTrue(dtos.size() > 0);
 		SecurityContextHolder.getContext().setAuthentication(null);
 		
 	}

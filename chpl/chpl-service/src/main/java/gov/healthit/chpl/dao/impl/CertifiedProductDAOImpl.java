@@ -15,12 +15,13 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 
 @Repository(value="certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
 	
-	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityCreationException{
 		
 		CertifiedProductEntity entity = null;
@@ -105,7 +106,8 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			return new CertifiedProductDTO(entity);
 		}
 	}
-
+	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException{
 		
 		CertifiedProductEntity entity = getEntityById(dto.getId());		
@@ -142,6 +144,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return new CertifiedProductDTO(entity);
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public void delete(Long productId){
 		
 		// TODO: How to delete this without leaving orphans
@@ -315,12 +318,14 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void create(CertifiedProductEntity product) {
 		
 		entityManager.persist(product);
 		entityManager.flush();
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void update(CertifiedProductEntity product) {
 		
 		entityManager.merge(product);	

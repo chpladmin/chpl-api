@@ -45,6 +45,7 @@ public class CertifiedProductDetailsDTO {
     private String developerName;
     private String developerCode;
     private String developerWebsite;
+    private DeveloperStatusDTO developerStatus;
     private AddressDTO developerAddress;
     private ContactDTO developerContact;
     private Date creationDate;
@@ -113,6 +114,11 @@ public class CertifiedProductDetailsDTO {
     	this.developerName = entity.getDeveloperName();
     	this.developerCode = entity.getDeveloperCode();
     	this.developerWebsite = entity.getDeveloperWebsite();
+    	if(entity.getDeveloperStatusId() != null) {
+    		this.developerStatus = new DeveloperStatusDTO();
+    		this.developerStatus.setId(entity.getDeveloperStatusId());
+    		this.developerStatus.setStatusName(entity.getDeveloperStatusName());
+    	}
     	if(entity.getAddressId() != null) {
     		this.developerAddress = new AddressDTO();
     		this.developerAddress.setId(entity.getAddressId());
@@ -558,5 +564,13 @@ public class CertifiedProductDetailsDTO {
 
 	public void setDeveloperContact(ContactDTO developerContact) {
 		this.developerContact = developerContact;
+	}
+
+	public DeveloperStatusDTO getDeveloperStatus() {
+		return developerStatus;
+	}
+
+	public void setDeveloperStatus(DeveloperStatusDTO developerStatus) {
+		this.developerStatus = developerStatus;
 	}
 }

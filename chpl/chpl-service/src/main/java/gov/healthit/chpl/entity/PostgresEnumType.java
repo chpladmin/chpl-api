@@ -11,12 +11,14 @@ import org.hibernate.HibernateException;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
 
-public class PostgresEnumType implements UserType, ParameterizedType {
+public abstract class PostgresEnumType implements UserType, ParameterizedType {
 	private Class<Enum> enumClass;
 
 	public PostgresEnumType(){
 	    super();
 	}
+
+	public abstract Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException;
 
 	public void setParameterValues(Properties parameters) {
 	    String enumClassName = parameters.getProperty("enumClassName");
@@ -42,15 +44,6 @@ public class PostgresEnumType implements UserType, ParameterizedType {
 
 	public int hashCode(Object x) throws HibernateException {
 	    return x.hashCode();
-	}
-
-	public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
-	    String name = rs.getString(names[0]);
-	    if(rs.wasNull()) {
-	    	return null;
-	    }
-	    return AttestationType.getValue(name);
-	    //return rs.wasNull() ? null: Enum.valueOf(enumClass,name);
 	}
 
 	public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {

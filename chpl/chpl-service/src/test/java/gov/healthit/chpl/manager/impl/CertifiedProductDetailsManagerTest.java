@@ -106,7 +106,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCertificationResults() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(6 , detail.getCertificationResults().size());
+		assertEquals(5 , detail.getCertificationResults().size());
 		
 		//check additional software
 		CertificationResult cert = detail.getCertificationResults().get(0);
@@ -167,7 +167,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCountCerts() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(4 , detail.getCountCerts().intValue());
+		assertEquals(3 , detail.getCountCerts().intValue());
 	}
 	
 	@Test

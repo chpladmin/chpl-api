@@ -2,42 +2,38 @@ package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
-import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
+import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
-import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
 
 @Api(value = "developers")
 @RestController
@@ -88,6 +84,7 @@ public class DeveloperController {
 					+ " previously assigned to the developerId's specified are reassigned to the newly created developer. The "
 					+ " old developers are then deleted. "
 					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
@@ -101,6 +98,12 @@ public class DeveloperController {
 			toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
 			toCreate.setName(developerInfo.getDeveloper().getName());
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
+			
+			if(developerInfo.getDeveloper().getStatus() != null) {
+				DeveloperStatusDTO status = new DeveloperStatusDTO();
+				status.setStatusName(developerInfo.getDeveloper().getStatus().getStatus());
+				toCreate.setStatus(status);
+			}
 			
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
 			if(developerAddress != null) {
@@ -140,6 +143,12 @@ public class DeveloperController {
 				devMap.setTransparencyAttestation(attMap.getAttestation());
 				toUpdate.getTransparencyAttestationMappings().add(devMap);
 			}	
+			
+			if(developerInfo.getDeveloper().getStatus() != null) {
+				DeveloperStatusDTO status = new DeveloperStatusDTO();
+				status.setStatusName(developerInfo.getDeveloper().getStatus().getStatus());
+				toUpdate.setStatus(status);
+			}
 			
 			if(developerInfo.getDeveloper().getAddress() != null) {
 				AddressDTO address = new AddressDTO();

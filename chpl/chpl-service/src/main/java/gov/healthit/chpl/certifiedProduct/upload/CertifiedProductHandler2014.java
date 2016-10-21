@@ -745,7 +745,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			}
 			
 			for(int i = 0; i < versionList.length; i++) {
-				String currVersion = versionList[i];
+				String currVersion = versionList[i].trim();
 				if(!criterionNum.startsWith("CMS")) {
 					criterionNum = "CMS" + criterionNum;
 				}

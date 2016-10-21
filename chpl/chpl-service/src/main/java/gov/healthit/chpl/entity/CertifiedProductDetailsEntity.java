@@ -127,6 +127,12 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "vendor_website")
     private String developerWebsite;
     
+    @Column(name = "vendor_status_id")
+    private Long developerStatusId;
+    
+    @Column(name = "vendor_status_name")
+    private String developerStatusName;
+    
     @Column(name = "address_id")
     private Long addressId;
     
@@ -206,7 +212,7 @@ public class CertifiedProductDetailsEntity {
 	private String productAdditionalSoftware;
 	
 	@Column(name = "transparency_attestation")
-	@Type(type = "gov.healthit.chpl.entity.PostgresEnumType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
+	@Type(type = "gov.healthit.chpl.entity.PostgresAttestationType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
 	private AttestationType transparencyAttestation;
 	
 	@Column(name = "transparency_attestation_url")
@@ -737,5 +743,21 @@ public class CertifiedProductDetailsEntity {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public Long getDeveloperStatusId() {
+		return developerStatusId;
+	}
+
+	public void setDeveloperStatusId(Long developerStatusId) {
+		this.developerStatusId = developerStatusId;
+	}
+
+	public String getDeveloperStatusName() {
+		return developerStatusName;
+	}
+
+	public void setDeveloperStatusName(String developerStatusName) {
+		this.developerStatusName = developerStatusName;
 	}	
 }

@@ -8,6 +8,7 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
 	
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	@Transactional
 	public ProductDTO create(ProductDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
@@ -76,6 +78,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	@Transactional
 	public ProductEntity update(ProductDTO dto) throws EntityRetrievalException {
 		ProductEntity entity = this.getEntityById(dto.getId());
@@ -115,6 +118,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	@Transactional
 	public void delete(Long id) throws EntityRetrievalException {
 		ProductEntity toDelete = getEntityById(id);
@@ -131,6 +135,17 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	public List<ProductDTO> findAll() {
 		
 		List<ProductEntity> entities = getAllEntities();
+		List<ProductDTO> dtos = new ArrayList<>();
+		
+		for (ProductEntity entity : entities) {
+			ProductDTO dto = new ProductDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	public List<ProductDTO> findAllIncludingDeleted() {
+		List<ProductEntity> entities = getAllEntitiesIncludingDeleted();
 		List<ProductDTO> dtos = new ArrayList<>();
 		
 		for (ProductEntity entity : entities) {
@@ -199,12 +214,14 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return result;
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void create(ProductEntity entity) {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void update(ProductEntity entity) {
 		
 		entityManager.merge(entity);	
@@ -221,6 +238,14 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
 		
+	}
+	
+	private List<ProductEntity> getAllEntitiesIncludingDeleted() {
+		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
+				+ "LEFT OUTER JOIN FETCH pe.developer ", 
+				ProductEntity.class).getResultList();
+		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
+		return result;
 	}
 	
 	private ProductEntity getEntityById(Long id) throws EntityRetrievalException {

@@ -7,7 +7,7 @@
 
 # create timestamp and filename
 TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
-log=target/log.$TIMESTAMP.txt
+log=target/log.generateSummaryEmail.$TIMESTAMP.txt
 
 # deal with spaces in filenames by saving off the default file separator (including spaces)
 # and using a different one for this application

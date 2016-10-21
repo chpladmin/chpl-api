@@ -6,6 +6,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.CertificationResultTestStandardEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,12 +14,14 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 
 @Repository("certificationCriterionDAO")
 public class CertificationCriterionDAOImpl extends BaseDAOImpl implements CertificationCriterionDAO {
 	
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public CertificationCriterionDTO create(CertificationCriterionDTO dto) throws EntityCreationException, EntityRetrievalException {
 		
 		CertificationCriterionEntity entity = null;
@@ -55,6 +58,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	}
 
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public CertificationCriterionDTO update(CertificationCriterionDTO dto) throws EntityRetrievalException, EntityCreationException {
 		
 		CertificationCriterionEntity entity = this.getEntityById(dto.getId());;
@@ -79,6 +83,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	}
 	
 	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public void delete(Long criterionId) {
 		
 		Query query = entityManager.createQuery("UPDATE CertificationCriterionEntity SET deleted = true WHERE certification_criterion_id = :entityid");
@@ -91,6 +96,19 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	public List<CertificationCriterionDTO> findAll() {
 		
 		List<CertificationCriterionEntity> entities = getAllEntities();
+		List<CertificationCriterionDTO> dtos = new ArrayList<>();
+		
+		for (CertificationCriterionEntity entity : entities) {
+			CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	@Override
+	public List<CertificationCriterionDTO> findByCertificationEditionYear(String year) {
+		
+		List<CertificationCriterionEntity> entities = getEntitiesByCertificationEditionYear(year);
 		List<CertificationCriterionDTO> dtos = new ArrayList<>();
 		
 		for (CertificationCriterionEntity entity : entities) {
@@ -121,6 +139,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		return new CertificationCriterionDTO(entity);
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void create(CertificationCriterionEntity entity) {
 		
 		entityManager.persist(entity);
@@ -128,6 +147,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		
 	}
 	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void update(CertificationCriterionEntity entity) {
 		
 		entityManager.merge(entity);	
@@ -140,6 +160,18 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		List<CertificationCriterionEntity> result = entityManager.createQuery( "from CertificationCriterionEntity where (NOT deleted = true) ", CertificationCriterionEntity.class).getResultList();
 		return result;
 		
+	}
+	
+	private List<CertificationCriterionEntity> getEntitiesByCertificationEditionYear(String year) {
+		Query query = entityManager.createQuery( "SELECT cce "
+				+ "FROM CertificationCriterionEntity cce "
+				+ "LEFT JOIN FETCH cce.certificationEdition "
+				+ "where (NOT cce.deleted = true) "
+				+ "AND (cce.certificationEditionId = cce.certificationEdition.id) "
+				+ "AND (cce.certificationEdition.year = :year)", 
+				CertificationCriterionEntity.class );
+		query.setParameter("year", year);
+		return query.getResultList();	
 	}
 	
 	public CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException {
