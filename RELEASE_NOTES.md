@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features Added
+
+
+### Bugs Fixed
+	* Make it impossible to confirm duplicate pending certified products.
+
+--- 
+
 ## Version 5.2.0
 _21 October 2016_
 
