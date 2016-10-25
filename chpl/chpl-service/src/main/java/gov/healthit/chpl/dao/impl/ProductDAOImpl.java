@@ -168,8 +168,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	public List<ProductDTO> getByDeveloper(Long developerId) {		
-		Query query = entityManager.createQuery( "from ProductEntity pe "
+		Query query = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND (pe.developerId = :entityid) ", ProductEntity.class );
 		query.setParameter("entityid", developerId);
@@ -183,8 +185,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
-		Query query = entityManager.createQuery( "from ProductEntity pe "
+		Query query = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND pe.developerId IN (:idList) ", ProductEntity.class );
 		query.setParameter("idList", developerIds);
@@ -198,8 +202,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	public ProductDTO getByDeveloperAndName(Long developerId, String name) {
-		Query query = entityManager.createQuery( "from ProductEntity pe "
+		Query query = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND (pe.developerId = :developerId) and "
 				+ "(pe.name = :name)", ProductEntity.class );
@@ -230,9 +236,11 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	
 	private List<ProductEntity> getAllEntities() {
 		
-		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
+		List<ProductEntity> result = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
 				+ "LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.productCertificationStatuses "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
 				+ "where (NOT pe.deleted = true) ", 
 				ProductEntity.class).getResultList();
 		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
@@ -252,8 +260,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		
 		ProductEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from ProductEntity pe "
-				+ " LEFT OUTER JOIN FETCH pe.developer "
+		Query query = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
+				+ "LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND (pe.id = :entityid) ", ProductEntity.class );
 		query.setParameter("entityid", id);

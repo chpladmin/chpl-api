@@ -2,9 +2,12 @@ package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.ProductOwnerEntity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ProductDTO {
@@ -20,9 +23,13 @@ public class ProductDTO {
 	private Long developerId;
 	private String developerName;
 	private Statuses statuses;
+	private List<ProductOwnerDTO> ownerHistory;
 	
-	public ProductDTO(){}
+	public ProductDTO(){
+		this.ownerHistory = new ArrayList<ProductOwnerDTO>();
+	}
 	public ProductDTO(ProductEntity entity){
+		this();
 		
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();
@@ -42,6 +49,12 @@ public class ProductDTO {
 		
 		if(entity.getDeveloper() != null) {
 			this.developerName = entity.getDeveloper().getName();
+		}
+		if(entity.getOwnerHistory() != null) {
+			for(ProductOwnerEntity historyEntity : entity.getOwnerHistory()) {
+				ProductOwnerDTO historyDto = new ProductOwnerDTO(historyEntity);
+				this.ownerHistory.add(historyDto);
+			}
 		}
 	}
 	
@@ -110,6 +123,12 @@ public class ProductDTO {
 	}
 	public void setStatuses(Statuses statuses) {
 		this.statuses = statuses;
+	}
+	public List<ProductOwnerDTO> getOwnerHistory() {
+		return ownerHistory;
+	}
+	public void setOwnerHistory(List<ProductOwnerDTO> ownerHistory) {
+		this.ownerHistory = ownerHistory;
 	}
 	
 }
