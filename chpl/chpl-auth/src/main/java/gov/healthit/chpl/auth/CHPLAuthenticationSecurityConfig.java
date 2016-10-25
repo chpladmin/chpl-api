@@ -123,6 +123,11 @@ public class CHPLAuthenticationSecurityConfig extends
 	@Bean
 	public JndiObjectFactoryBean aclDataSource(){
 		JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
+		
+		// this bean gets called by the Authentication Manager before the environment.properties
+		//file has been loaded so the authJndiName property declared in there is not available
+		//when this code runs. Attempt to mitigate that by setting the following argument in tomcat startup:
+		//-Djndi.name=java:comp/env/jdbc/openchpl
 		bean.setJndiName(System.getProperty("jndi.name"));
 		return bean;
 	}
