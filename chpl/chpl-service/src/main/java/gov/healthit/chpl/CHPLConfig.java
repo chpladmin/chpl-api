@@ -17,6 +17,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -29,10 +30,12 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass=true)
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled=true)
 @EnableCaching
 @PropertySource("classpath:/environment.properties")
-@ComponentScan(basePackages = {"gov.healthit.chpl.**"}, 
+@ComponentScan(basePackages = {"gov.healthit.chpl.**"},  
 	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+
 public class CHPLConfig implements EnvironmentAware {
 	
 	@Autowired private ApiKeyManager apiKeyManager;
