@@ -22,7 +22,11 @@
    
    <context:annotation-config/>
    <context:component-scan base-package="gov.healthit.chpl.registration" />
-   <sec:global-method-security pre-post-annotations="enabled" >
+   
+   <!--  moved the security configuration into CHPLConfig with our other setup.
+   		leaving this here until it's certain that is working.
+    -->
+   <!-- sec:global-method-security pre-post-annotations="enabled" >
    		<sec:expression-handler ref="expressionHandler" />
-   </sec:global-method-security>
+   </sec:global-method-security-->
 </beans>

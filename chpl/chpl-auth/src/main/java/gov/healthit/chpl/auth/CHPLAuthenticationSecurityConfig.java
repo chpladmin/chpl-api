@@ -6,10 +6,8 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.EnvironmentAware;
@@ -23,9 +21,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.acls.AclPermissionCacheOptimizer;
-import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
 import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
@@ -33,6 +28,7 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -42,10 +38,14 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
+
 @Configuration
 @EnableWebSecurity
 @PropertySource("classpath:/environment.properties")
-@ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+@ComponentScan(basePackages = {"gov.healthit.chpl.auth.**"}, 
+	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLAuthenticationSecurityConfig extends
 		WebSecurityConfigurerAdapter implements EnvironmentAware {
 	
@@ -62,7 +62,6 @@ public class CHPLAuthenticationSecurityConfig extends
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
 		http
         		.sessionManagement()
         		.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
@@ -123,9 +122,13 @@ public class CHPLAuthenticationSecurityConfig extends
 	
 	@Bean
 	public JndiObjectFactoryBean aclDataSource(){
-		
 		JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-		bean.setJndiName(this.env.getRequiredProperty("authJndiName"));
+		
+		// this bean gets called by the Authentication Manager before the environment.properties
+		//file has been loaded so the authJndiName property declared in there is not available
+		//when this code runs. Attempt to mitigate that by setting the following argument in tomcat startup:
+		//-Djndi.name=java:comp/env/jdbc/openchpl
+		bean.setJndiName(System.getProperty("jndi.name"));
 		return bean;
 	}
 	
@@ -224,27 +227,39 @@ public class CHPLAuthenticationSecurityConfig extends
 		return bean;
 	}
 	
+	//the Authentication Manager is required by the global security config annotation
+	@Autowired
+	public void registerGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		DataSource dataSource = (DataSource) aclDataSource().getObject();
+		auth.jdbcAuthentication().dataSource(dataSource);
+    }
 	
-	@Bean
-	public AclPermissionEvaluator permissionEvaluator(){
-		AclPermissionEvaluator bean = new AclPermissionEvaluator(mutableAclService());
-		return bean;
-	}
-	
-	@Bean
-	public AclPermissionCacheOptimizer aclPermissionCacheOptimizer(){
-		AclPermissionCacheOptimizer bean = new AclPermissionCacheOptimizer(mutableAclService());
-		return bean;
-	}
-	
-	
-	@Bean
-	public DefaultMethodSecurityExpressionHandler expressionHandler(){
-		
-		DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
-		bean.setPermissionEvaluator(permissionEvaluator());
-		bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
-		return bean;
-	}
+	  
+	  //these were commented out because when moving the global security config enabled
+	  //settings to an annotation from the rest-servlet.xml file, we got 
+	  //circular dependency errors related to these beans being initialized.
+	  //i'm not sure if they are needed for some other reason. i THINK we were just
+	  //using the default objects that spring would use anyway.
+//	@Bean
+//	public AclPermissionEvaluator permissionEvaluator(){
+//		AclPermissionEvaluator bean = new AclPermissionEvaluator(mutableAclService());
+//		return bean;
+//	}
+//	
+//	@Bean
+//	public AclPermissionCacheOptimizer aclPermissionCacheOptimizer(){
+//		AclPermissionCacheOptimizer bean = new AclPermissionCacheOptimizer(mutableAclService());
+//		return bean;
+//	}
+//	
+//	
+//	@Bean
+//	public DefaultMethodSecurityExpressionHandler expressionHandler(){
+//		
+//		DefaultMethodSecurityExpressionHandler bean = new DefaultMethodSecurityExpressionHandler();
+//		bean.setPermissionEvaluator(permissionEvaluator());
+//		bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
+//		return bean;
+//	}
 	
 }
