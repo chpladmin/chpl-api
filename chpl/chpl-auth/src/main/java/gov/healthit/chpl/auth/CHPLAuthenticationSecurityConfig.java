@@ -9,8 +9,7 @@ import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.ehcache.EhCacheFactoryBean;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -43,9 +42,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
+import net.sf.ehcache.CacheManager;
 
 @Configuration
 @EnableWebSecurity
+@EnableCaching
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = { "gov.healthit.chpl.auth.**" }, excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
@@ -55,6 +56,10 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
 
 	@Autowired
 	private JWTUserConverter userConverter;
+
+	@Autowired
+	private CacheManager cacheManager;
+
 	private Environment env;
 
 	public CHPLAuthenticationSecurityConfig() {
@@ -129,26 +134,7 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
 	public JndiObjectFactoryBean aclDataSource() {
 		logger.info("Get JndiObjectFactoryBean");
 		JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-		bean.setJndiName(this.env.getRequiredProperty("authJndiName"));
-		return bean;
-	}
-
-	@Bean
-	public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
-		logger.info("Get EhCacheManagerFactoryBean");
-		EhCacheManagerFactoryBean bean = new EhCacheManagerFactoryBean();
-		bean.setShared(true);
-		return bean;
-	}
-
-	@Bean
-	public EhCacheFactoryBean ehCacheFactoryBean() {
-		logger.info("Get EhCacheFactoryBean");
-		EhCacheFactoryBean bean = new EhCacheFactoryBean();
-		bean.setCacheManager(ehCacheManagerFactoryBean().getObject());
-		// bean.setCacheName("aclCache");
-		bean.setCacheName(this.env.getRequiredProperty("authAclCacheName"));
-
+		bean.setJndiName(System.getProperty("jndi.name"));
 		return bean;
 	}
 
@@ -183,7 +169,7 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
 	@Bean
 	public EhCacheBasedAclCache aclCache() {
 		logger.info("Get EhCacheBasedAclCache");
-		EhCacheBasedAclCache bean = new EhCacheBasedAclCache(ehCacheFactoryBean().getObject(),
+		EhCacheBasedAclCache bean = new EhCacheBasedAclCache(cacheManager.getEhcache("authAclCacheName"),
 				defaultPermissionGrantingStrategy(), aclAuthorizationStrategyImpl());
 		return bean;
 	}
