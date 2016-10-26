@@ -2,6 +2,8 @@ package gov.healthit.chpl;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -34,6 +36,8 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, 
 	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLConfig implements EnvironmentAware {
+	
+	private static final Logger logger = LogManager.getLogger(CHPLConfig.class);
 	
 	@Autowired private ApiKeyManager apiKeyManager;
 	
