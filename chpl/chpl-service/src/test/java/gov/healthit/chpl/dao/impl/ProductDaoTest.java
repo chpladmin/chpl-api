@@ -25,6 +25,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.ProductEntity;
 import junit.framework.TestCase;
 
@@ -58,6 +59,7 @@ public class ProductDaoTest extends TestCase {
 	}
 
 	@Test
+	@Transactional(readOnly = true)
 	public void getProductById() {
 		Long productId = -1L;
 		ProductDTO product = null;
@@ -68,6 +70,13 @@ public class ProductDaoTest extends TestCase {
 		}
 		assertNotNull(product);
 		assertEquals(-1, product.getId().longValue());
+		assertNotNull(product.getOwnerHistory());
+		assertEquals(1, product.getOwnerHistory().size());
+		List<ProductOwnerDTO> previousOwners = product.getOwnerHistory();
+		for(ProductOwnerDTO previousOwner : previousOwners) {
+			assertEquals(-2, previousOwner.getDeveloperId().longValue());
+			assertEquals("Test Developer 2", previousOwner.getDeveloper().getName());
+		}
 	}
 	
 	@Test

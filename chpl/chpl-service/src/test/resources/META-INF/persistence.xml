@@ -76,6 +76,7 @@
 		<class>gov.healthit.chpl.entity.ProductCertificationStatusesEntity</class>
 		<class>gov.healthit.chpl.entity.ProductClassificationTypeEntity</class>
 		<class>gov.healthit.chpl.entity.ProductEntity</class>
+		<class>gov.healthit.chpl.entity.ProductOwnerEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>		
 		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>		
 		<class>gov.healthit.chpl.entity.TargetedUserEntity</class>

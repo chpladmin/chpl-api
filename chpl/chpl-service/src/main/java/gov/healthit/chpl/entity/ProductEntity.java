@@ -75,7 +75,8 @@ public class ProductEntity implements Serializable {
 	@JoinColumn(name = "product_id", unique=true, nullable = true, insertable = false, updatable = false)
 	private ProductCertificationStatusesEntity productCertificationStatuses;
 	
-	@OneToMany(fetch=FetchType.LAZY)
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="productId")
+	@Basic(optional=true)
 	@Column( name = "product_id", nullable = false  )
 	private List<ProductOwnerEntity> ownerHistory = new ArrayList<ProductOwnerEntity>();
 	
