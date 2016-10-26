@@ -2,9 +2,10 @@ package gov.healthit.chpl;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.EnvironmentAware;
@@ -29,11 +30,12 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass=true)
 @EnableWebSecurity
-@EnableCaching
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, 
 	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLConfig implements EnvironmentAware {
+	
+	private static final Logger logger = LogManager.getLogger(CHPLConfig.class);
 	
 	@Autowired private ApiKeyManager apiKeyManager;
 	
@@ -41,11 +43,13 @@ public class CHPLConfig implements EnvironmentAware {
 	
 	@Override
     public void setEnvironment(final Environment environment) {
+		logger.info("setEnvironment");
         this.env = environment;
     }
 	
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
+		logger.info("get LocalEntityManagerFactoryBean");
 		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
 		bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
 		return bean;
@@ -53,6 +57,7 @@ public class CHPLConfig implements EnvironmentAware {
 	 
 	@Bean
 	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
+		logger.info("get JpaTransactionManager");
 		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
 		bean.setEntityManagerFactory(entityManagerFactory().getObject());
 		return bean;
@@ -60,11 +65,13 @@ public class CHPLConfig implements EnvironmentAware {
 	
 	@Bean
 	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
+		logger.info("get PersistenceAnnotationBeanPostProcessor");
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 	
 	@Bean(name="multipartResolver")
 	public CommonsMultipartResolver getResolver() throws IOException{
+		logger.info("get CommonsMultipartResolver");
 	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 	         
 	        //Set the maximum allowed size (in bytes) for each individual file.
@@ -78,22 +85,26 @@ public class CHPLConfig implements EnvironmentAware {
 	@Bean
 	public APIKeyAuthenticationFilter apiKeyAuthenticationFilter()
 	{
+		logger.info("get APIKeyAuthenticationFilter");
 		return new APIKeyAuthenticationFilter(apiKeyManager);
 	}
 	
 	@Bean
 	public Marshaller marshaller()
 	{
+		logger.info("get Marshaller");
 		return new CastorMarshaller();
 	}
 	
 	@Bean
 	public CacheManager cacheManager() {
+		logger.info("get CacheManager");
 		return new EhCacheCacheManager(ehCacheCacheManager().getObject());
 	}
 
 	@Bean
 	public EhCacheManagerFactoryBean ehCacheCacheManager() {
+		logger.info("get EhCacheManagerFactoryBean");
 		EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
 		cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
 		cmfb.setShared(true);
