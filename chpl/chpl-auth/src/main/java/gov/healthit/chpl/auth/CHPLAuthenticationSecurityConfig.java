@@ -10,6 +10,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.ehcache.EhCacheFactoryBean;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,6 +33,9 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -42,10 +47,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
-import net.sf.ehcache.CacheManager;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableCaching
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = { "gov.healthit.chpl.auth.**" }, excludeFilters = {
@@ -57,9 +62,6 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
 	@Autowired
 	private JWTUserConverter userConverter;
 
-	@Autowired
-	private CacheManager cacheManager;
-
 	private Environment env;
 
 	public CHPLAuthenticationSecurityConfig() {
@@ -70,6 +72,20 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
 	public void setEnvironment(Environment env) {
 		logger.info("setEnvironment");
 		this.env = env;
+	}
+
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		logger.info("get AuthenticationManager");
+		return super.authenticationManagerBean();
+	}
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		logger.info("configure AuthenticationManagerBuilder");
+		auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
+				.password("password").roles("USER", "ADMIN");
 	}
 
 	@Override
@@ -167,9 +183,27 @@ public class CHPLAuthenticationSecurityConfig extends WebSecurityConfigurerAdapt
 	}
 
 	@Bean
+	public EhCacheManagerFactoryBean ehCacheManagerFactoryBean() {
+		logger.info("get EhCacheManagerFactoryBean");
+		EhCacheManagerFactoryBean bean = new EhCacheManagerFactoryBean();
+		bean.setShared(true);
+		return bean;
+	}
+
+	@Bean
+	public EhCacheFactoryBean ehCacheFactoryBean() {
+		logger.info("get EhCacheFactoryBean");
+		EhCacheFactoryBean bean = new EhCacheFactoryBean();
+		bean.setCacheManager(ehCacheManagerFactoryBean().getObject());
+		bean.setCacheName("aclCache");
+
+		return bean;
+	}
+
+	@Bean
 	public EhCacheBasedAclCache aclCache() {
 		logger.info("Get EhCacheBasedAclCache");
-		EhCacheBasedAclCache bean = new EhCacheBasedAclCache(cacheManager.getEhcache("authAclCacheName"),
+		EhCacheBasedAclCache bean = new EhCacheBasedAclCache(ehCacheFactoryBean().getObject(),
 				defaultPermissionGrantingStrategy(), aclAuthorizationStrategyImpl());
 		return bean;
 	}
