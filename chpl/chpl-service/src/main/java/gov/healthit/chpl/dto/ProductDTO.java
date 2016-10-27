@@ -39,22 +39,16 @@ public class ProductDTO {
 		this.name = entity.getName();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.developerId = entity.getDeveloperId();
+		if(entity.getDeveloper() != null) {
+			this.developerName = entity.getDeveloper().getName();
+		}
+		
 		if(entity.getProductCertificationStatusesEntity() != null){
 			this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(), 
 					entity.getProductCertificationStatusesEntity().getRetired(), 
 					entity.getProductCertificationStatusesEntity().getWithdrawnByDeveloper(), 
 					entity.getProductCertificationStatusesEntity().getWithdrawnByAcb(), 
 					entity.getProductCertificationStatusesEntity().getSuspendedByAcb());
-		}
-		
-		if(entity.getDeveloper() != null) {
-			this.developerName = entity.getDeveloper().getName();
-		}
-		if(entity.getOwnerHistory() != null) {
-			for(ProductOwnerEntity historyEntity : entity.getOwnerHistory()) {
-				ProductOwnerDTO historyDto = new ProductOwnerDTO(historyEntity);
-				this.ownerHistory.add(historyDto);
-			}
 		}
 	}
 	

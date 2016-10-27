@@ -1,5 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -25,8 +29,10 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
+import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.ProductManager;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,6 +45,7 @@ import junit.framework.TestCase;
 public class DeveloperManagerTest extends TestCase {
 	
 	@Autowired private DeveloperManager developerManager;
+	@Autowired private ProductManager productManager;
 	@Autowired private DeveloperStatusDAO devStatusDao;
 	
 	private static JWTAuthenticatedUser adminUser;
@@ -105,6 +112,51 @@ public class DeveloperManagerTest extends TestCase {
 		assertFalse(failed);
 		assertNotNull(developer.getStatus());
 		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), developer.getStatus().getStatusName());
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testMergeDeveloper_productOwnershipHistoryAdded() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		List<Long> idsToMerge = new ArrayList<Long>();
+		idsToMerge.add(-1L);
+		idsToMerge.add(-4L);
+		
+		DeveloperDTO toCreate = new DeveloperDTO();
+		toCreate.setName("dev name");
+		
+		DeveloperDTO merged = null;
+		try {
+			merged = developerManager.merge(idsToMerge, toCreate);
+		} catch(EntityCreationException | JsonProcessingException | EntityRetrievalException ex) {
+			fail(ex.getMessage());
+		}
+		
+		assertNotNull(merged);
+		assertNotNull(merged.getId());
+		
+		try {
+			ProductDTO affectedProduct = productManager.getById(-3L);
+			assertNotNull(affectedProduct);
+			assertNotNull(affectedProduct.getOwnerHistory());
+			assertEquals(1, affectedProduct.getOwnerHistory().size());
+			assertEquals(-1, affectedProduct.getOwnerHistory().get(0).getDeveloper().getId().longValue());
+		} catch(EntityRetrievalException ex) {
+			fail(ex.getMessage());
+		}
+		
+		try {
+			ProductDTO affectedProduct = productManager.getById(-1L);
+			assertNotNull(affectedProduct);
+			assertNotNull(affectedProduct.getOwnerHistory());
+			assertEquals(2, affectedProduct.getOwnerHistory().size());
+			assertEquals(-1, affectedProduct.getOwnerHistory().get(1).getDeveloper().getId().longValue());
+		} catch(EntityRetrievalException ex) {
+			fail(ex.getMessage());
+		}
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	

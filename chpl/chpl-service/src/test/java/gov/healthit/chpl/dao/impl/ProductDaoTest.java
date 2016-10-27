@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -41,17 +42,20 @@ public class ProductDaoTest extends TestCase {
 	@Autowired
 	private ProductDAO productDao;
 
-	private static JWTAuthenticatedUser authUser;
-
+	private static JWTAuthenticatedUser adminUser;
+	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		authUser = new JWTAuthenticatedUser();
-		authUser.setFirstName("Admin");
-		authUser.setId(-2L);
-		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+		adminUser = new JWTAuthenticatedUser();
+		adminUser.setFirstName("Administrator");
+		adminUser.setId(-2L);
+		adminUser.setLastName("Administrator");
+		adminUser.setSubjectName("admin");
+		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 
 	@Test
+	@Transactional(readOnly = true)
 	public void getAllProducts() {
 		List<ProductDTO> results = productDao.findAll();
 		assertNotNull(results);
@@ -70,16 +74,10 @@ public class ProductDaoTest extends TestCase {
 		}
 		assertNotNull(product);
 		assertEquals(-1, product.getId().longValue());
-		assertNotNull(product.getOwnerHistory());
-		assertEquals(1, product.getOwnerHistory().size());
-		List<ProductOwnerDTO> previousOwners = product.getOwnerHistory();
-		for(ProductOwnerDTO previousOwner : previousOwners) {
-			assertEquals(-2, previousOwner.getDeveloperId().longValue());
-			assertEquals("Test Developer 2", previousOwner.getDeveloper().getName());
-		}
 	}
 	
 	@Test
+	@Transactional(readOnly = true)
 	public void getProductByDeveloper() {
 		Long developerId = -1L;
 		List<ProductDTO> products = null;
@@ -89,6 +87,7 @@ public class ProductDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional(readOnly = true)
 	public void getProductByDevelopers() {
 		List<Long> developerIds = new ArrayList<Long>();
 		developerIds.add(-1L);
@@ -100,11 +99,15 @@ public class ProductDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void updateProduct() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
 		ProductDTO product = productDao.getById(-1L);
 		product.setDeveloperId(-2L);
 		
-		ProductEntity result = null;
+		ProductDTO result = null;
 		try {
 			result = productDao.update(product);
 		} catch(Exception ex) {
@@ -120,6 +123,7 @@ public class ProductDaoTest extends TestCase {
 			fail("could not find product!");
 			System.out.println(ex.getStackTrace());
 		}
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	/** Description: Tests that the productDAO can create a new product based on the productDTO
@@ -133,6 +137,8 @@ public class ProductDaoTest extends TestCase {
 	@Rollback(true)
 	@Test
 	public void createProduct() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
 		ProductDTO product = new ProductDTO();
 		product.setCreationDate(new Date());
 		product.setDeleted(false);
@@ -153,5 +159,7 @@ public class ProductDaoTest extends TestCase {
 		assertNotNull(result.getId());
 		assertTrue(result.getId() > 0L);
 		assertNotNull(productDao.getById(result.getId()));
+	
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 }

@@ -8,9 +8,7 @@ public class ProductOwnerDTO {
 	
 	private Long id;
 	private Long productId;
-	private Long developerId;
 	private DeveloperDTO developer;
-	private String developerName;
 	private LocalDate transferDate;
 	
 	public ProductOwnerDTO(){}
@@ -18,10 +16,10 @@ public class ProductOwnerDTO {
 		
 		this.id = entity.getId();
 		this.productId = entity.getProductId();
-		this.developerId = entity.getDeveloperId();
+		this.developer = new DeveloperDTO();
+		this.developer.setId(entity.getDeveloperId());
 		if(entity.getDeveloper() != null) {
-			//this.developerName = entity.getDeveloper().getName();
-			this.developer = new DeveloperDTO(entity.getDeveloper());
+			this.developer.setName(entity.getDeveloper().getName());
 		}
 		if(entity.getTransferDate() != null) {
 			this.transferDate = entity.getTransferDate().toLocalDate();
@@ -39,24 +37,11 @@ public class ProductOwnerDTO {
 	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
-	public Long getDeveloperId() {
-		return developerId;
-	}
-	public void setDeveloperId(Long developerId) {
-		this.developerId = developerId;
-	}
-
 	public LocalDate getTransferDate() {
 		return transferDate;
 	}
 	public void setTransferDate(LocalDate transferDate) {
 		this.transferDate = transferDate;
-	}
-	public String getDeveloperName() {
-		return developerName;
-	}
-	public void setDeveloperName(String developerName) {
-		this.developerName = developerName;
 	}
 	public DeveloperDTO getDeveloper() {
 		return developer;

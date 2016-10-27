@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,11 +30,13 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.ProductManager;
 
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
@@ -43,7 +46,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Autowired private Environment env;
 	
 	@Autowired DeveloperDAO developerDao;	
-	@Autowired ProductDAO productDao;
+	@Autowired ProductManager productManager;
 	@Autowired CertificationBodyManager acbManager;
 
 	@Autowired
@@ -280,12 +283,21 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		}
 		
 		DeveloperDTO createdDeveloper = create(developerToCreate);
-		// - search for any products assigned to the list of developers passed in
-		List<ProductDTO> developerProducts = productDao.getByDevelopers(developerIdsToMerge);
-		// - reassign those products to the new developer
+		//search for any products assigned to the list of developers passed in
+		List<ProductDTO> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
 		for(ProductDTO product : developerProducts) {
+			//add an item to the ownership history of each product
+			ProductOwnerDTO historyToAdd= new ProductOwnerDTO();
+			historyToAdd.setProductId(product.getId());
+			DeveloperDTO prevOwner = new DeveloperDTO();
+			prevOwner.setId(product.getDeveloperId());
+			historyToAdd.setDeveloper(prevOwner);
+			historyToAdd.setTransferDate(LocalDate.now());
+			product.getOwnerHistory().add(historyToAdd);
+			//reassign those products to the new developer
 			product.setDeveloperId(createdDeveloper.getId());
-			productDao.update(product);
+			productManager.update(product);
+			
 		}
 		// - mark the passed in developers as deleted
 		for(Long developerId : developerIdsToMerge) {

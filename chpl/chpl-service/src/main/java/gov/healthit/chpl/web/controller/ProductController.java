@@ -1,6 +1,8 @@
 package gov.healthit.chpl.web.controller;
 
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +21,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
+import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.results.ProductResults;
@@ -105,13 +110,25 @@ public class ProductController {
 			}
 		} else {
 			if(productInfo.getProductIds().size() > 1) {
-				//if a product was send in, we need to do a "merge" of the new product and old products 
+				//if a product was sent in, we need to do a "merge" of the new product and old products 
 				//create a new product with the rest of the passed in information
 				ProductDTO newProduct = new ProductDTO();
 				newProduct.setName(productInfo.getProduct().getName());
 				newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
 				if(productInfo.newDeveloperId() != null) {
 					newProduct.setDeveloperId(productInfo.newDeveloperId());
+				}
+				//new product could be created with ownership history
+				if(productInfo.getProduct().getOwnerHistory() != null) {
+					for(ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
+						ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
+						prevOwnerDTO.setId(prevOwner.getId());
+						DeveloperDTO dev = new DeveloperDTO();
+						dev.setId(prevOwner.getDeveloper().getDeveloperId());
+						prevOwnerDTO.setDeveloper(dev);
+						prevOwnerDTO.setTransferDate(LocalDate.parse(prevOwner.getTransferDate(), DateTimeFormatter.ISO_DATE));
+						newProduct.getOwnerHistory().add(prevOwnerDTO);
+					}
 				}
 				result = productManager.merge(productInfo.getProductIds(), newProduct);
 				
@@ -124,6 +141,19 @@ public class ProductController {
 				//update the developer if an id is supplied
 				if(productInfo.newDeveloperId() != null) {
 					toUpdate.setDeveloperId(productInfo.newDeveloperId());
+				}
+				//product could have updated ownership history
+				if(productInfo.getProduct().getOwnerHistory() != null) {
+					for(ProductOwner prevOwner : productInfo.getProduct().getOwnerHistory()) {
+						ProductOwnerDTO prevOwnerDTO = new ProductOwnerDTO();
+						prevOwnerDTO.setId(prevOwner.getId());
+						prevOwnerDTO.setProductId(toUpdate.getId());
+						DeveloperDTO dev = new DeveloperDTO();
+						dev.setId(prevOwner.getDeveloper().getDeveloperId());
+						prevOwnerDTO.setDeveloper(dev);
+						prevOwnerDTO.setTransferDate(LocalDate.parse(prevOwner.getTransferDate(), DateTimeFormatter.ISO_DATE));
+						toUpdate.getOwnerHistory().add(prevOwnerDTO);
+					}
 				}
 				result = productManager.update(toUpdate);
 			}	
