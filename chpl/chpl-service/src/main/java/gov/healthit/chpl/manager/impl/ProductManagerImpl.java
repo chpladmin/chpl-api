@@ -47,25 +47,44 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = true)
 	public ProductDTO getById(Long id) throws EntityRetrievalException {
-		return productDao.getById(id);
+		ProductDTO result = productDao.getById(id);
+		if(result != null) {
+			result.setOwnerHistory(productDao.getOwnerHistoryForProduct(result.getId()));
+		}
+		return result;
 	}
 
 	@Override
 	@Transactional(readOnly = true) 
 	public List<ProductDTO> getAll() {
-		return productDao.findAll();
+		List<ProductDTO> allProducts = productDao.findAll();
+		//this could be slow
+		for(ProductDTO product : allProducts) {
+			product.setOwnerHistory(productDao.getOwnerHistoryForProduct(product.getId()));
+		}
+		return allProducts;
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProductDTO> getByDeveloper(Long developerId) {
-		return productDao.getByDeveloper(developerId);
+		List<ProductDTO> allProducts = productDao.getByDeveloper(developerId);
+		//this could be slow
+		for(ProductDTO product : allProducts) {
+			product.setOwnerHistory(productDao.getOwnerHistoryForProduct(product.getId()));
+		}
+		return allProducts;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
-		return productDao.getByDevelopers(developerIds);
+		List<ProductDTO> allProducts = productDao.getByDevelopers(developerIds);
+		//this could be slow
+		for(ProductDTO product : allProducts) {
+			product.setOwnerHistory(productDao.getOwnerHistoryForProduct(product.getId()));
+		}
+		return allProducts;
 	}
 	
 	@Override
@@ -116,16 +135,15 @@ public class ProductManagerImpl implements ProductManager {
 			throw new EntityCreationException(msg);
 		}
 		
-		ProductEntity result = productDao.update(dto);
-		ProductDTO afterDto = new ProductDTO(result);
+		ProductDTO result = productDao.update(dto);
 		//the developer name is not updated at this point until after transaction commit so we have to set it
-		DeveloperDTO devDto = devDao.getById(afterDto.getDeveloperId());
-		afterDto.setDeveloperName(devDto.getName());
+		DeveloperDTO devDto = devDao.getById(result.getDeveloperId());
+		result.setDeveloperName(devDto.getName());
 		
 		String activityMsg = "Product "+dto.getName()+" was updated.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, afterDto);
-		checkSuspiciousActivity(beforeDTO, afterDto);
-		return new ProductDTO(result);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, result);
+		checkSuspiciousActivity(beforeDTO, result);
+		return result;
 		
 	}
 

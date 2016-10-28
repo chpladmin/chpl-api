@@ -1,5 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -13,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -26,6 +30,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -56,12 +61,96 @@ public class ProductManagerTest extends TestCase {
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 	
+	@Test
+	@Transactional(readOnly = true)
+	public void getAllProducts() {
+		List<ProductDTO> results = productManager.getAll();
+		assertNotNull(results);
+		assertEquals(4, results.size());
+	}
+	
+	@Test
+	@Transactional(readOnly = true)
+	public void getProductById() {
+		Long productId = -1L;
+		ProductDTO product = null;
+		try {
+			product = productManager.getById(productId);
+		} catch(EntityRetrievalException ex) {
+			fail("Could not find product with id " + productId);
+		}
+		assertNotNull(product);
+		assertEquals(-1, product.getId().longValue());
+		assertNotNull(product.getOwnerHistory());
+		assertEquals(1, product.getOwnerHistory().size());
+		List<ProductOwnerDTO> previousOwners = product.getOwnerHistory();
+		for(ProductOwnerDTO previousOwner : previousOwners) {
+			assertNotNull(previousOwner.getDeveloper());
+			assertEquals(-2, previousOwner.getDeveloper().getId().longValue());
+			assertEquals("Test Developer 2", previousOwner.getDeveloper().getName());
+		}
+	}
+	
+	@Test
+	@Transactional(readOnly = true)
+	public void getProductByDeveloper() {
+		Long developerId = -1L;
+		List<ProductDTO> products = null;
+		products = productManager.getByDeveloper(developerId);
+		assertNotNull(products);
+		assertEquals(3, products.size());
+	}
+	
+	@Test
+	@Transactional(readOnly = true)
+	public void getProductByDevelopers() {
+		List<Long> developerIds = new ArrayList<Long>();
+		developerIds.add(-1L);
+		developerIds.add(-2L);
+		List<ProductDTO> products = null;
+		products = productManager.getByDevelopers(developerIds);
+		assertNotNull(products);
+		assertEquals(4, products.size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void updateProductOwnerHistory() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		ProductDTO product = productManager.getById(-1L);
+		assertNotNull(product.getOwnerHistory());
+		assertTrue(product.getOwnerHistory().size() == 1);
+		
+		product.setOwnerHistory(null);
+		ProductDTO result = null;
+		try {
+			result = productManager.update(product);
+		} catch(Exception ex) {
+			fail("could not update product!");
+			System.out.println(ex.getStackTrace());
+		}
+		assertNotNull(result);
+		assertTrue(result.getOwnerHistory() == null || result.getOwnerHistory().size() == 0);
+		
+		try {
+			ProductDTO updatedProduct = productManager.getById(product.getId());
+			assertTrue(updatedProduct.getOwnerHistory() == null || updatedProduct.getOwnerHistory().size() == 0);
+		} catch(Exception ex) {
+			fail("could not find product!");
+			System.out.println(ex.getStackTrace());
+		}
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
 	//i had this method in here to test for updates being allowed
 	//when then developer is Active, but it fails because it triggers
 	//a suspicious activity event and tries to send email. 
 	//we're missing the email properties but i don't think we want to 
 	//have one sent anyway.. so excluding that test.
 	@Test
+	@Transactional
 	@Rollback
 	@Ignore
 	public void testAllowedToUpdateProductWithActiveDeveloper() 
@@ -83,6 +172,7 @@ public class ProductManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback
 	public void testNotAllowedToUpdateProductWithInactiveDeveloper() 
 			throws EntityRetrievalException, JsonProcessingException {

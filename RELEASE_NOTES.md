@@ -4,7 +4,7 @@
 _Date TBD_
 
 ### Features Added
-
+	* Add ability to retrieve and edit product ownership history (which developers a product has previously been owned by)
 
 ### Bugs Fixed
 	* Make it impossible to confirm duplicate pending certified products.

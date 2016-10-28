@@ -1,15 +1,19 @@
 package gov.healthit.chpl.dao;
 
 import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 
 import java.util.List;
 
 public interface ProductDAO {
 	
 	public ProductDTO create(ProductDTO dto) throws EntityCreationException, EntityRetrievalException;
-
-	public ProductEntity update(ProductDTO dto) throws EntityRetrievalException;
+	public ProductOwnerDTO addOwnershipHistory(ProductOwnerDTO toAdd);
+	public void deletePreviousOwner(Long previousOwnershipId) throws EntityRetrievalException;
+	public void deleteOwnerHistory(Long productId);
+	public void updateOwnershipHistory(ProductDTO toUpdate);
+	public List<ProductOwnerDTO> getOwnerHistoryForProduct(Long productId);
+	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException;
 	
 	public void delete(Long id) throws EntityRetrievalException;
 	
