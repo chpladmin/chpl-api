@@ -12,7 +12,6 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -31,8 +30,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableTransactionManagement(proxyTargetClass=true)
 @EnableWebSecurity
 @PropertySource("classpath:/environment.properties")
-@ComponentScan(basePackages = {"gov.healthit.chpl.**"}, 
-	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+@ComponentScan(basePackages = {"gov.healthit.chpl.**"})
 public class CHPLConfig implements EnvironmentAware {
 	
 	private static final Logger logger = LogManager.getLogger(CHPLConfig.class);
