@@ -155,6 +155,8 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				prevOwner.setDeleted(true);
 				prevOwner.setLastModifiedDate(new Date());
 				prevOwner.setLastModifiedUser(Util.getCurrentUser().getId());
+				entityManager.merge(prevOwner);
+				entityManager.flush();
 			}
 		}
 		toDelete.setDeleted(true);
@@ -175,9 +177,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		if(toAdd.getDeveloper() != null) {
 			entityToAdd.setDeveloperId(toAdd.getDeveloper().getId());
 		}
-		entityToAdd.setTransferDate(toAdd.getTransferDate() != null ? 
-				java.sql.Date.valueOf(toAdd.getTransferDate()) : 
-					new java.sql.Date(new Date().getTime()));
+		entityToAdd.setTransferDate(new Date(toAdd.getTransferDate()));
 		entityManager.persist(entityToAdd);
 		entityManager.flush();
 		
@@ -239,7 +239,8 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
-				+ "WHERE (pe.developerId = :entityid) ", ProductEntity.class );
+				+ "WHERE (pe.developerId = :entityid) "
+				+ "AND (NOT pe.deleted = true)", ProductEntity.class );
 		query.setParameter("entityid", developerId);
 		List<ProductEntity> results = query.getResultList();
 		

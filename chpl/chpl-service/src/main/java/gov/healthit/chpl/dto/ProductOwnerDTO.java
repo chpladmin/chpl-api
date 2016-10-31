@@ -9,7 +9,7 @@ public class ProductOwnerDTO {
 	private Long id;
 	private Long productId;
 	private DeveloperDTO developer;
-	private LocalDate transferDate;
+	private Long transferDate;
 	
 	public ProductOwnerDTO(){}
 	public ProductOwnerDTO(ProductOwnerEntity entity){
@@ -22,7 +22,7 @@ public class ProductOwnerDTO {
 			this.developer.setName(entity.getDeveloper().getName());
 		}
 		if(entity.getTransferDate() != null) {
-			this.transferDate = entity.getTransferDate().toLocalDate();
+			this.transferDate = entity.getTransferDate().getTime();
 		}
 	}
 	public Long getId() {
@@ -37,10 +37,10 @@ public class ProductOwnerDTO {
 	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
-	public LocalDate getTransferDate() {
+	public Long getTransferDate() {
 		return transferDate;
 	}
-	public void setTransferDate(LocalDate transferDate) {
+	public void setTransferDate(Long transferDate) {
 		this.transferDate = transferDate;
 	}
 	public DeveloperDTO getDeveloper() {
