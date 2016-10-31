@@ -38,7 +38,7 @@ public class ProductInsertableOwnerEntity implements ProductOwnerEntity, Seriali
 	private Long productId;
 	
 	@Column(name = "transfer_date")
-	private java.sql.Date transferDate;
+	private Date transferDate;
 	
 	@Column( name = "creation_date", nullable = false, insertable = false, updatable = false  )
 	private Date creationDate;
@@ -76,11 +76,11 @@ public class ProductInsertableOwnerEntity implements ProductOwnerEntity, Seriali
 		this.productId = productId;
 	}
 
-	public java.sql.Date getTransferDate() {
+	public Date getTransferDate() {
 		return transferDate;
 	}
 
-	public void setTransferDate(java.sql.Date transferDate) {
+	public void setTransferDate(Date transferDate) {
 		this.transferDate = transferDate;
 	}
 

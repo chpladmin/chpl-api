@@ -10,8 +10,8 @@ public interface ProductOwnerEntity {
 	public void setDeveloperId(Long developerId);
 	public Long getProductId(); 
 	public void setProductId(Long productId);
-	public java.sql.Date getTransferDate();
-	public void setTransferDate(java.sql.Date transferDate);
+	public Date getTransferDate();
+	public void setTransferDate(Date transferDate);
 	public Date getCreationDate();
 	public void setCreationDate(Date creationDate);
 	public Boolean getDeleted();

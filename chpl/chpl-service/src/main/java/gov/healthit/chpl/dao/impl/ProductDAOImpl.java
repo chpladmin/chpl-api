@@ -175,9 +175,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		if(toAdd.getDeveloper() != null) {
 			entityToAdd.setDeveloperId(toAdd.getDeveloper().getId());
 		}
-		entityToAdd.setTransferDate(toAdd.getTransferDate() != null ? 
-				java.sql.Date.valueOf(toAdd.getTransferDate()) : 
-					new java.sql.Date(new Date().getTime()));
+		entityToAdd.setTransferDate(new Date(toAdd.getTransferDate()));
 		entityManager.persist(entityToAdd);
 		entityManager.flush();
 		

@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager.impl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -292,7 +293,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			DeveloperDTO prevOwner = new DeveloperDTO();
 			prevOwner.setId(product.getDeveloperId());
 			historyToAdd.setDeveloper(prevOwner);
-			historyToAdd.setTransferDate(LocalDate.now());
+			historyToAdd.setTransferDate(System.currentTimeMillis());
 			product.getOwnerHistory().add(historyToAdd);
 			//reassign those products to the new developer
 			product.setDeveloperId(createdDeveloper.getId());
