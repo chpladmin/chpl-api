@@ -137,7 +137,8 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			}
 		}
 		
-		return this.getById(dto.getId());
+		entityManager.clear();
+		return getById(dto.getId());
 	}
 
 	@Override
