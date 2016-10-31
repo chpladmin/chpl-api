@@ -192,7 +192,7 @@ public class CertifiedProductController {
 		if(updateRequest.getClassificationType() != null && updateRequest.getClassificationType().get("id") != null) {
 			toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
 		}
-		toUpdate.setProductVersionId(new Long(updateRequest.getProduct().get("versionId").toString()));
+		toUpdate.setProductVersionId(new Long(updateRequest.getVersion().getVersionId()));
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setCertificationEditionId(new Long(updateRequest.getCertificationEdition().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());

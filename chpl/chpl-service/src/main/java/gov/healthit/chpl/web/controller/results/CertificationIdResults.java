@@ -19,9 +19,9 @@ public class CertificationIdResults {
 		private String version;
 
 		public Product(CertifiedProductDetailsDTO dto) {
-			this.name = dto.getProductName();
+			this.name = dto.getProduct().getName();
 			this.productId = dto.getId();
-			this.version = dto.getProductVersion();
+			this.version = dto.getVersion().getVersion();
 		}
 
 		public String getVersion() {

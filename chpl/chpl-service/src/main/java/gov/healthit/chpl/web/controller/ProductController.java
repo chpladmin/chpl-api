@@ -162,6 +162,9 @@ public class ProductController {
 		if(result == null) {
 			throw new EntityCreationException("There was an error inserting or updating the product information.");
 		}
-		return new Product(result);
+		
+		//get the updated product since all transactions should be complete by this point
+		ProductDTO updatedProduct = productManager.getById(result.getId());
+		return new Product(updatedProduct);
 	}
 }

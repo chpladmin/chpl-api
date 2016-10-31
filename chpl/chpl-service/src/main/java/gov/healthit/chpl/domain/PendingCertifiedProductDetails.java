@@ -90,21 +90,16 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		
 		this.setDeveloper(developer);
 		
-		Map<String, Object> productMap = new HashMap<String, Object>();
-		if(dto.getProductId() == null) {
-			productMap.put("id", null);
-		} else {
-			productMap.put("id", dto.getProductId());
-		}
-		productMap.put("name", dto.getProductName());
-		if(dto.getProductVersionId() == null) {
-			productMap.put("versionId", null);
-		} else {
-			productMap.put("versionId", dto.getProductVersionId()+"");
-		}
-		productMap.put("version", dto.getProductVersion());
-		this.setProduct(productMap);
+		Product product = new Product();
+		product.setProductId(dto.getProductId());
+		product.setName(dto.getProductName());
+		this.setProduct(product);
 		
+		ProductVersion version = new ProductVersion();
+		version.setVersionId(dto.getProductVersionId());
+		version.setVersion(dto.getProductVersion());
+		this.setVersion(version);
+
 		Map<String, Object> certificationEditionMap = new HashMap<String, Object>();
 		if(dto.getCertificationEditionId() == null) {
 			certificationEditionMap.put("id", null);

@@ -17,7 +17,7 @@ public class CertifiedProduct {
 			this.setChplProductNumber(dto.getChplProductNumber());
 		} else {
 			this.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
-					dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+					dto.getDeveloper().getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 					"." + dto.getCertifiedDateCode());
 		}

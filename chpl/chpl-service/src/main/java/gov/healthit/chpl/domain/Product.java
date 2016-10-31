@@ -23,7 +23,9 @@ public class Product {
 		this.productId = dto.getId();
 		this.name = dto.getName();
 		this.reportFileLocation = dto.getReportFileLocation();
-		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		if(dto.getLastModifiedDate() != null) {
+			this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		}
 		if(dto.getDeveloperId() != null) {
 			this.owner = new Developer();
 			this.owner.setDeveloperId(dto.getDeveloperId());
