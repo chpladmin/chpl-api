@@ -21,7 +21,6 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
-import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -40,9 +39,9 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
-import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
@@ -51,10 +50,10 @@ import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
@@ -133,7 +132,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			searchDetails.setChplProductNumber(dto.getChplProductNumber());
 		} else {
 			searchDetails.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
-				dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+				dto.getDeveloper().getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 				"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 				"." + dto.getCertifiedDateCode());
 		}
@@ -152,11 +151,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		searchDetails.getPracticeType().put("id", dto.getPracticeTypeId());
 		searchDetails.getPracticeType().put("name", dto.getPracticeTypeName());
-		
-		searchDetails.getProduct().put("id",dto.getProductId());
-		searchDetails.getProduct().put("name",dto.getProductName());
-		searchDetails.getProduct().put("versionId",dto.getProductVersionId());
-		searchDetails.getProduct().put("version", dto.getProductVersion());
 				
 		searchDetails.setReportFileLocation(dto.getReportFileLocation());
 		searchDetails.setSedReportFileLocation(dto.getSedReportFileLocation());
@@ -167,22 +161,15 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.getTestingLab().put("name", dto.getTestingLabName());
 		searchDetails.getTestingLab().put("code", dto.getTestingLabCode());
 		
-		Developer developer = new Developer();
-		developer.setDeveloperCode(dto.getDeveloperCode());
-		developer.setDeveloperId(dto.getDeveloperId());
-		developer.setName(dto.getDeveloperName());
-		developer.setWebsite(dto.getDeveloperWebsite());
-		if(dto.getDeveloperStatus() != null) {
-			developer.setStatus(new DeveloperStatus(dto.getDeveloperStatus()));
-		}
-		if(dto.getDeveloperContact() != null) {
-			developer.setContact(new Contact(dto.getDeveloperContact()));
-		}
-		 if(dto.getDeveloperAddress() != null) {
-			 developer.setAddress(new Address(dto.getDeveloperAddress()));
-		 }
+		Developer developer = new Developer(dto.getDeveloper());
 		searchDetails.setDeveloper(developer);
 		
+		Product product = new Product(dto.getProduct());
+		searchDetails.setProduct(product);
+		
+		ProductVersion version = new ProductVersion(dto.getVersion());
+		searchDetails.setVersion(version);
+
 		searchDetails.setIcs(dto.getIcs());
 		searchDetails.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 		searchDetails.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());

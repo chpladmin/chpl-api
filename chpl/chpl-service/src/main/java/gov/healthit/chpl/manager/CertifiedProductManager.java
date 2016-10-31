@@ -28,7 +28,6 @@ public interface CertifiedProductManager {
 	public List<CertifiedProductDetailsDTO> getAll();
 	public List<CertifiedProductDetailsDTO> getAllWithEditPermission();
 	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId);
-	public List<CertifiedProductDetailsDTO> getByVersions(List<Long> versionIds);
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
 	
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;

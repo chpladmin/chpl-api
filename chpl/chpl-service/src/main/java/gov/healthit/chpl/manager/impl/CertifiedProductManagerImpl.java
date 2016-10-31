@@ -265,13 +265,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
 	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> getByVersions(List<Long> versionIds) {
-		return cpDao.getDetailsByVersionIds(versionIds);
-	}
-	
+
 	@Override
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")

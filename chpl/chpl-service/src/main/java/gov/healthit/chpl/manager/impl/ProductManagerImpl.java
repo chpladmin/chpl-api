@@ -47,44 +47,25 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = true)
 	public ProductDTO getById(Long id) throws EntityRetrievalException {
-		ProductDTO result = productDao.getById(id);
-		if(result != null) {
-			result.setOwnerHistory(productDao.getOwnerHistoryForProduct(result.getId()));
-		}
-		return result;
+		return productDao.getById(id);
 	}
 
 	@Override
 	@Transactional(readOnly = true) 
 	public List<ProductDTO> getAll() {
-		List<ProductDTO> allProducts = productDao.findAll();
-		//this could be slow
-		for(ProductDTO product : allProducts) {
-			product.setOwnerHistory(productDao.getOwnerHistoryForProduct(product.getId()));
-		}
-		return allProducts;
+		return productDao.findAll();
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProductDTO> getByDeveloper(Long developerId) {
-		List<ProductDTO> allProducts = productDao.getByDeveloper(developerId);
-		//this could be slow
-		for(ProductDTO product : allProducts) {
-			product.setOwnerHistory(productDao.getOwnerHistoryForProduct(product.getId()));
-		}
-		return allProducts;
+		return productDao.getByDeveloper(developerId);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
-		List<ProductDTO> allProducts = productDao.getByDevelopers(developerIds);
-		//this could be slow
-		for(ProductDTO product : allProducts) {
-			product.setOwnerHistory(productDao.getOwnerHistoryForProduct(product.getId()));
-		}
-		return allProducts;
+		return productDao.getByDevelopers(developerIds);
 	}
 	
 	@Override

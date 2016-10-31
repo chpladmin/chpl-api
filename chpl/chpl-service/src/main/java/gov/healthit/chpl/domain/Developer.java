@@ -35,7 +35,10 @@ public class Developer {
 		}
 		this.status = new DeveloperStatus(dto.getStatus());
 		
-		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		if(dto.getLastModifiedDate() != null) {
+			this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		}
+		
 		if(dto.getTransparencyAttestationMappings() != null && dto.getTransparencyAttestationMappings().size() > 0) {
 			for(DeveloperACBMapDTO map : dto.getTransparencyAttestationMappings()) {
 				TransparencyAttestationMap toAdd = new TransparencyAttestationMap();

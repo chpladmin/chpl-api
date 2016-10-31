@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.ProductOwnerEntity;
 
 public class CertifiedProductDetailsDTO {
 	
@@ -37,17 +38,9 @@ public class CertifiedProductDetailsDTO {
     private String certificationBodyName;
     private String certificationBodyCode;
     private String productClassificationName;
-    private Long productVersionId;
-    private String productVersion;
-    private Long productId;
-    private String productName;
-    private Long developerId;
-    private String developerName;
-    private String developerCode;
-    private String developerWebsite;
-    private DeveloperStatusDTO developerStatus;
-    private AddressDTO developerAddress;
-    private ContactDTO developerContact;
+    private DeveloperDTO developer;
+    private ProductDTO product;
+    private ProductVersionDTO version;
     private Date creationDate;
     private Date certificationDate;
     private Integer countCertifications;
@@ -100,44 +93,57 @@ public class CertifiedProductDetailsDTO {
        	this.practiceTypeName = entity.getPracticeTypeName();
     	this.productClassificationName = entity.getProductClassificationName();
     	this.productClassificationTypeId = entity.getProductClassificationTypeId();
-    	this.productId = entity.getProductId();
-    	this.productName = entity.getProductName();
-    	this.productVersion = entity.getProductVersion();
-    	this.productVersionId = entity.getProductVersionId();
     	this.reportFileLocation = entity.getReportFileLocation();
     	this.sedReportFileLocation = entity.getSedReportFileLocation();
     	this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
     	this.sedTestingEnd = entity.getSedTestingEnd();
     	this.testingLabId = entity.getTestingLabId();
     	this.testingLabName = entity.getTestingLabName();
-    	this.developerId = entity.getDeveloperId();
-    	this.developerName = entity.getDeveloperName();
-    	this.developerCode = entity.getDeveloperCode();
-    	this.developerWebsite = entity.getDeveloperWebsite();
+    	
+		this.developer = new DeveloperDTO();
+    	this.developer.setId(entity.getDeveloperId());
+    	this.developer.setName(entity.getDeveloperName());
+    	this.developer.setDeveloperCode(entity.getDeveloperCode());
+    	this.developer.setWebsite(entity.getDeveloperWebsite());
+    	
     	if(entity.getDeveloperStatusId() != null) {
-    		this.developerStatus = new DeveloperStatusDTO();
-    		this.developerStatus.setId(entity.getDeveloperStatusId());
-    		this.developerStatus.setStatusName(entity.getDeveloperStatusName());
+    		DeveloperStatusDTO developerStatus = new DeveloperStatusDTO();
+    		developerStatus.setId(entity.getDeveloperStatusId());
+    		developerStatus.setStatusName(entity.getDeveloperStatusName());
+    		this.developer.setStatus(developerStatus);
     	}
     	if(entity.getAddressId() != null) {
-    		this.developerAddress = new AddressDTO();
-    		this.developerAddress.setId(entity.getAddressId());
-    		this.developerAddress.setStreetLineOne(entity.getStreetLine1());
-    		this.developerAddress.setStreetLineTwo(entity.getStreetLine2());
-    		this.developerAddress.setCity(entity.getCity());
-    		this.developerAddress.setState(entity.getState());
-    		this.developerAddress.setZipcode(entity.getZipcode());
-    		this.developerAddress.setCountry(entity.getCountry());
+    		AddressDTO developerAddress = new AddressDTO();
+    		developerAddress.setId(entity.getAddressId());
+    		developerAddress.setStreetLineOne(entity.getStreetLine1());
+    		developerAddress.setStreetLineTwo(entity.getStreetLine2());
+    		developerAddress.setCity(entity.getCity());
+    		developerAddress.setState(entity.getState());
+    		developerAddress.setZipcode(entity.getZipcode());
+    		developerAddress.setCountry(entity.getCountry());
+    		this.developer.setAddress(developerAddress);
     	}
     	if(entity.getContactId() != null) {
-    		this.developerContact = new ContactDTO();
-    		this.developerContact.setId(entity.getContactId());
-    		this.developerContact.setFirstName(entity.getFirstName());
-    		this.developerContact.setLastName(entity.getLastName());
-    		this.developerContact.setEmail(entity.getEmail());
-    		this.developerContact.setPhoneNumber(entity.getPhoneNumber());
-    		this.developerContact.setTitle(entity.getTitle());
+    		ContactDTO developerContact = new ContactDTO();
+    		developerContact.setId(entity.getContactId());
+    		developerContact.setFirstName(entity.getFirstName());
+    		developerContact.setLastName(entity.getLastName());
+    		developerContact.setEmail(entity.getEmail());
+    		developerContact.setPhoneNumber(entity.getPhoneNumber());
+    		developerContact.setTitle(entity.getTitle());
+    		this.developer.setContact(developerContact);
     	}
+    	
+    	if(entity.getProduct() != null) {
+    		this.product = new ProductDTO(entity.getProduct());
+    	}
+    	
+    	if(entity.getProductVersionId() != null) {
+    		this.version = new ProductVersionDTO();
+    		this.version.setId(entity.getProductVersionId());
+    		this.version.setVersion(entity.getProductVersion());
+    	}
+    	
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
@@ -235,42 +241,6 @@ public class CertifiedProductDetailsDTO {
 	}
 	public void setCertificationBodyName(String certificationBodyName) {
 		this.certificationBodyName = certificationBodyName;
-	}
-	public Long getProductVersionId() {
-		return productVersionId;
-	}
-	public void setProductVersionId(Long productVersionId) {
-		this.productVersionId = productVersionId;
-	}
-	public String getProductVersion() {
-		return productVersion;
-	}
-	public void setProductVersion(String productVersion) {
-		this.productVersion = productVersion;
-	}
-	public Long getProductId() {
-		return productId;
-	}
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-	public String getProductName() {
-		return productName;
-	}
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
-	public Long getDeveloperId() {
-		return developerId;
-	}
-	public void setDeveloperId(Long developerId) {
-		this.developerId = developerId;
-	}
-	public String getDeveloperName() {
-		return developerName;
-	}
-	public void setDeveloperName(String developerName) {
-		this.developerName = developerName;
 	}
 	public String getPracticeTypeName() {
 		return practiceTypeName;
@@ -399,14 +369,6 @@ public class CertifiedProductDetailsDTO {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getDeveloperCode() {
-		return developerCode;
-	}
-
-	public void setDeveloperCode(String developerCode) {
-		this.developerCode = developerCode;
-	}
-
 	public String getIcsCode() {
 		return icsCode;
 	}
@@ -461,14 +423,6 @@ public class CertifiedProductDetailsDTO {
 
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
-	}
-
-	public String getDeveloperWebsite() {
-		return developerWebsite;
-	}
-
-	public void setDeveloperWebsite(String developerWebsite) {
-		this.developerWebsite = developerWebsite;
 	}
 
 	public String getSedReportFileLocation() {
@@ -550,27 +504,27 @@ public class CertifiedProductDetailsDTO {
 		this.sedTestingEnd = sedTestingEnd;
 	}
 
-	public AddressDTO getDeveloperAddress() {
-		return developerAddress;
+	public DeveloperDTO getDeveloper() {
+		return developer;
 	}
 
-	public void setDeveloperAddress(AddressDTO developerAddress) {
-		this.developerAddress = developerAddress;
+	public void setDeveloper(DeveloperDTO developer) {
+		this.developer = developer;
 	}
 
-	public ContactDTO getDeveloperContact() {
-		return developerContact;
+	public ProductDTO getProduct() {
+		return product;
 	}
 
-	public void setDeveloperContact(ContactDTO developerContact) {
-		this.developerContact = developerContact;
+	public void setProduct(ProductDTO product) {
+		this.product = product;
 	}
 
-	public DeveloperStatusDTO getDeveloperStatus() {
-		return developerStatus;
+	public ProductVersionDTO getVersion() {
+		return version;
 	}
 
-	public void setDeveloperStatus(DeveloperStatusDTO developerStatus) {
-		this.developerStatus = developerStatus;
+	public void setVersion(ProductVersionDTO version) {
+		this.version = version;
 	}
 }
