@@ -55,8 +55,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<DeveloperDTO> getAll() {
-		List<DeveloperDTO> allDevelopers = developerDao.findAll();
+	public List<DeveloperDTO> getAll(boolean showDeleted) {
+		List<DeveloperDTO> allDevelopers = null;
+		if(showDeleted) {
+			allDevelopers = developerDao.findAllIncludingDeleted();
+		} else {
+			allDevelopers = developerDao.findAll();
+		}
+		
 		List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
         Map<Long,DeveloperDTO> mappedDevelopers = new HashMap<Long,DeveloperDTO>();
         for(DeveloperDTO dev : allDevelopers) {

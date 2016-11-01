@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,8 +47,9 @@ public class DeveloperController {
 
 	@ApiOperation(value="List all developers in the system.", notes="")
 	@RequestMapping(value="/", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public @ResponseBody DeveloperResults getDevelopers(){
-		List<DeveloperDTO> developerList = developerManager.getAll();
+	public @ResponseBody DeveloperResults getDevelopers(
+			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted){
+		List<DeveloperDTO> developerList = developerManager.getAll(showDeleted);
 
 		List<Developer> developers = new ArrayList<Developer>();
 		if(developerList != null && developerList.size() > 0) {

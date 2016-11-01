@@ -311,22 +311,6 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return result;
 		
 	}
-	
-	private List<ProductActiveOwnerEntity> getOwnerHistoryEntities(Long productId) {
-		
-		Query query = entityManager.createQuery( "SELECT pe "
-				+ "FROM ProductActiveOwnerEntity pe "
-				+ "LEFT OUTER JOIN FETCH pe.developer "
-				+ "where (NOT pe.deleted = true) "
-				+ "AND pe.productId = :productId "
-				+ "ORDER BY pe.transferDate ASC", 
-				ProductActiveOwnerEntity.class);
-		query.setParameter("productId", productId);
-		List<ProductActiveOwnerEntity> result = query.getResultList();
-		logger.debug("SQL call: List<ProductOwnerEntity> getOwnerHistoryEntities()");
-		return result;
-		
-	}
 
 	private ProductActiveOwnerEntity getProductPreviousOwner(Long ppoId) {
 		ProductActiveOwnerEntity result = null;
