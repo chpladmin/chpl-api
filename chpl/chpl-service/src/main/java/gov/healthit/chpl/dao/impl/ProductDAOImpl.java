@@ -50,8 +50,6 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			entity.setDeveloperId(dto.getDeveloperId());
 			entity.setDeleted(false);
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			entity.setLastModifiedDate(new Date());
-			entity.setCreationDate(new Date());
 			create(entity);	
 
 			ProductDTO result = new ProductDTO(entity);
@@ -76,9 +74,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		entity.setName(dto.getName());
 		entity.setDeveloperId(dto.getDeveloperId());
 		entity.setDeleted(dto.getDeleted() == null ? false : dto.getDeleted());
-		entity.setCreationDate(dto.getCreationDate());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		entity.setLastModifiedDate(new Date());
 		update(entity);
 
 		//update ownership history
