@@ -49,7 +49,12 @@ public class DeveloperController {
 	@RequestMapping(value="/", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public @ResponseBody DeveloperResults getDevelopers(
 			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted){
-		List<DeveloperDTO> developerList = developerManager.getAll(showDeleted);
+		List<DeveloperDTO> developerList = null;
+		if(showDeleted) {
+			developerList = developerManager.getAllIncludingDeleted();
+		} else {
+			developerList = developerManager.getAll();
+		}
 
 		List<Developer> developers = new ArrayList<Developer>();
 		if(developerList != null && developerList.size() > 0) {

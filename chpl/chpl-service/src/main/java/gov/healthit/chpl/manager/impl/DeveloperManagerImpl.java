@@ -55,31 +55,21 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<DeveloperDTO> getAll(boolean showDeleted) {
-		List<DeveloperDTO> allDevelopers = null;
-		if(showDeleted) {
-			allDevelopers = developerDao.findAllIncludingDeleted();
-		} else {
-			allDevelopers = developerDao.findAll();
-		}
-		
-		List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
-        Map<Long,DeveloperDTO> mappedDevelopers = new HashMap<Long,DeveloperDTO>();
-        for(DeveloperDTO dev : allDevelopers) {
-            mappedDevelopers.put(dev.getId(), dev);
-        }
-        for(DeveloperACBMapDTO map : transparencyMaps) {
-            if (map.getAcbId() != null) {
-                mappedDevelopers.get(map.getDeveloperId()).getTransparencyAttestationMappings().add(map);
-            }
-        }
-        List<DeveloperDTO> ret = new ArrayList<DeveloperDTO>();
-        for (DeveloperDTO dev : mappedDevelopers.values()) {
-            ret.add(dev);
-        }
-		return ret;
+	public List<DeveloperDTO> getAll() {
+		List<DeveloperDTO> allDevelopers = developerDao.findAll();
+		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
+		return allDevelopersWithTransparencies;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	public List<DeveloperDTO> getAllIncludingDeleted() {
+		List<DeveloperDTO> allDevelopers = developerDao.findAllIncludingDeleted();
+		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
+		return allDevelopersWithTransparencies;
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException {
@@ -346,5 +336,23 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				logger.error("Could not send questionable activity email", me);
 			}
 		}	
+	}
+	
+	private List<DeveloperDTO> addTransparencyMappings(List<DeveloperDTO> developers) {
+		List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
+        Map<Long,DeveloperDTO> mappedDevelopers = new HashMap<Long,DeveloperDTO>();
+        for(DeveloperDTO dev : developers) {
+            mappedDevelopers.put(dev.getId(), dev);
+        }
+        for(DeveloperACBMapDTO map : transparencyMaps) {
+            if (map.getAcbId() != null) {
+                mappedDevelopers.get(map.getDeveloperId()).getTransparencyAttestationMappings().add(map);
+            }
+        }
+        List<DeveloperDTO> ret = new ArrayList<DeveloperDTO>();
+        for (DeveloperDTO dev : mappedDevelopers.values()) {
+            ret.add(dev);
+        }
+        return ret;
 	}
 }
