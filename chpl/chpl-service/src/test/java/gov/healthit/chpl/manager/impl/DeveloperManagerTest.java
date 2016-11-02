@@ -93,6 +93,32 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	public void testGetAllDevelopersIncludingDeletedAsAdmin() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		List<DeveloperDTO> developers = developerManager.getAllIncludingDeleted();
+		assertNotNull(developers);
+		assertEquals(9, developers.size());
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	public void testGetAllDevelopersIncludingDeletedUncredentialed() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(null);
+		List<DeveloperDTO> developers = null;
+		boolean failed = false;
+		try {
+			developers = developerManager.getAllIncludingDeleted();
+		} catch(Exception ex) {
+			//should fail
+			failed = true;
+		}
+		assertNull(developers);
+		assertTrue(failed);
+	}
+	
+	@Test
 	@Rollback
 	public void testDeveloperStatusChangeAllowedByAdmin() 
 			throws EntityRetrievalException, JsonProcessingException {
