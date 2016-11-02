@@ -5,6 +5,7 @@ _Date TBD_
 
 ### Features Added
 	* Add ability to retrieve and edit product ownership history (which developers a product has previously been owned by). BREAKS BACKWARDS COMPATIBILITY when retrieving certified product details
+	* Add "showDeleted" parameter to /developers call. Defaults to false.
 
 ### Bugs Fixed
 	* Make it impossible to confirm duplicate pending certified products

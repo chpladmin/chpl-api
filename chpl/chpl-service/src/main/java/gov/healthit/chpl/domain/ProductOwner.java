@@ -12,9 +12,7 @@ public class ProductOwner {
 	public ProductOwner(ProductOwnerDTO dto) {
 		this.id = dto.getId();
 		if(dto.getDeveloper() != null) {
-			this.developer = new Developer();
-			this.developer.setDeveloperId(dto.getDeveloper().getId());
-			this.developer.setName(dto.getDeveloper().getName());
+			this.developer = new Developer(dto.getDeveloper());
 		}
 		this.transferDate = dto.getTransferDate();
 	}

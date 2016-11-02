@@ -30,6 +30,7 @@ public class Product {
 			this.owner = new Developer();
 			this.owner.setDeveloperId(dto.getDeveloperId());
 			this.owner.setName(dto.getDeveloperName());
+			this.owner.setDeveloperCode(dto.getDeveloperCode());
 		}
 		if(dto.getOwnerHistory() != null && dto.getOwnerHistory().size() > 0) {
 			for(ProductOwnerDTO prevOwnerDto : dto.getOwnerHistory()) {

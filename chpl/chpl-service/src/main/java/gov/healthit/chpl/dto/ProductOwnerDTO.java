@@ -16,10 +16,11 @@ public class ProductOwnerDTO {
 		
 		this.id = entity.getId();
 		this.productId = entity.getProductId();
-		this.developer = new DeveloperDTO();
-		this.developer.setId(entity.getDeveloperId());
 		if(entity.getDeveloper() != null) {
-			this.developer.setName(entity.getDeveloper().getName());
+			this.developer = new DeveloperDTO(entity.getDeveloper());
+		} else {
+			this.developer = new DeveloperDTO();
+			this.developer.setId(entity.getDeveloperId());
 		}
 		if(entity.getTransferDate() != null) {
 			this.transferDate = entity.getTransferDate().getTime();
