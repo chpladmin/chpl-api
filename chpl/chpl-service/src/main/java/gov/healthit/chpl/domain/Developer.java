@@ -15,6 +15,7 @@ public class Developer {
 	private Contact contact;
 	private DeveloperStatus status;
 	private String lastModifiedDate;
+	private Boolean deleted;
 	private List<TransparencyAttestationMap> transparencyAttestations;
 	
 	public Developer() {
@@ -27,6 +28,7 @@ public class Developer {
 		this.developerCode = dto.getDeveloperCode();
 		this.name = dto.getName();
 		this.website = dto.getWebsite();
+		this.deleted = dto.getDeleted();
 		if(dto.getAddress() != null) {
 			this.address = new Address(dto.getAddress());
 		}
@@ -35,7 +37,10 @@ public class Developer {
 		}
 		this.status = new DeveloperStatus(dto.getStatus());
 		
-		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		if(dto.getLastModifiedDate() != null) {
+			this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		}
+		
 		if(dto.getTransparencyAttestationMappings() != null && dto.getTransparencyAttestationMappings().size() > 0) {
 			for(DeveloperACBMapDTO map : dto.getTransparencyAttestationMappings()) {
 				TransparencyAttestationMap toAdd = new TransparencyAttestationMap();
@@ -109,5 +114,13 @@ public class Developer {
 
 	public void setStatus(DeveloperStatus status) {
 		this.status = status;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 }

@@ -70,7 +70,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		assertEquals(4, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
-			assertTrue(dto.getDeveloperName().startsWith("Test Developer 1"));
+			assertTrue(dto.getDeveloper().getName().startsWith("Test Developer 1"));
 		}
 	}
 	
@@ -85,7 +85,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		assertEquals(4, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
-			assertTrue(dto.getProductName().startsWith("Test Product 1"));
+			assertTrue(dto.getProduct().getName().startsWith("Test Product 1"));
 		}
 		
 	}
@@ -100,7 +100,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		assertEquals(1, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
-			assertTrue(dto.getProductVersion().startsWith("1.0.1"));
+			assertTrue(dto.getVersion().getVersion().startsWith("1.0.1"));
 		}
 		
 	}
@@ -236,7 +236,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 			assertEquals("InfoGard", product.getCertificationBodyName());
 			assertEquals("CHP-024050",product.getChplProductNumber());
 			assertEquals(2, product.getCertificationEditionId().intValue());
-			assertEquals("Test Developer 1", product.getDeveloperName());
+			assertEquals("Test Developer 1", product.getDeveloper().getName());
 			assertEquals(3, product.getCountCertifications().intValue());
 			assertEquals(0, product.getCountCqms().intValue());
 			

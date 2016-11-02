@@ -23,7 +23,6 @@ public interface CertifiedProductDAO {
 	public CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException;
 	
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId);
-	public List<CertifiedProductDetailsDTO> getDetailsByVersionIds(List<Long> versionIds);
 	public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds);
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
 	

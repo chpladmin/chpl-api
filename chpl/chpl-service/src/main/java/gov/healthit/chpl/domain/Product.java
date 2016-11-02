@@ -23,11 +23,14 @@ public class Product {
 		this.productId = dto.getId();
 		this.name = dto.getName();
 		this.reportFileLocation = dto.getReportFileLocation();
-		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		if(dto.getLastModifiedDate() != null) {
+			this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		}
 		if(dto.getDeveloperId() != null) {
 			this.owner = new Developer();
 			this.owner.setDeveloperId(dto.getDeveloperId());
 			this.owner.setName(dto.getDeveloperName());
+			this.owner.setDeveloperCode(dto.getDeveloperCode());
 		}
 		if(dto.getOwnerHistory() != null && dto.getOwnerHistory().size() > 0) {
 			for(ProductOwnerDTO prevOwnerDto : dto.getOwnerHistory()) {

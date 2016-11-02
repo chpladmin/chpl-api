@@ -116,7 +116,6 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
-	@Transactional
 	@Rollback(true)
 	public void testMergeDeveloper_productOwnershipHistoryAdded() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);

@@ -432,11 +432,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("A developer is required.");
 		}
 		
-		if(product.getProduct() == null || StringUtils.isEmpty(product.getProduct().get("name"))) {
+		if(product.getProduct() == null || StringUtils.isEmpty(product.getProduct().getName())) {
 			product.getErrorMessages().add("A product name is required.");
 		}
 		
-		if(product.getProduct() == null || StringUtils.isEmpty(product.getProduct().get("version"))) {
+		if(product.getVersion() == null || StringUtils.isEmpty(product.getVersion().getVersion())) {
 			product.getErrorMessages().add("A product version is required.");
 		}
 		

@@ -237,10 +237,11 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
-	public CertifiedProductDetailsDTO getDetailsById(Long productId) throws EntityRetrievalException {
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) "
-				+ "and certified_product_id = :productId)", CertifiedProductDetailsEntity.class );
-		query.setParameter("productId", productId);
+	public CertifiedProductDetailsDTO getDetailsById(Long cpId) throws EntityRetrievalException {
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity deets "
+				+ "LEFT OUTER JOIN FETCH deets.product "
+				+ "where deets.id = :cpId)", CertifiedProductDetailsEntity.class );
+		query.setParameter("cpId", cpId);
 		List<CertifiedProductDetailsEntity> results = query.getResultList();
 		
 		if(results == null || results.size() == 0) {
@@ -253,8 +254,9 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		if ((null == productIds) || (productIds.size() == 0))
 			return new ArrayList<CertifiedProductDetailsDTO>();
 
-		Query prodQuery = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) "
-				+ "and certified_product_id in (:productIds)", CertifiedProductDetailsEntity.class );
+		Query prodQuery = entityManager.createQuery( "from CertifiedProductDetailsEntity deets "
+				+ "LEFT OUTER JOIN FETCH deets.product "
+				+ "WHERE deets.id in (:productIds)", CertifiedProductDetailsEntity.class );
 		prodQuery.setParameter("productIds", productIds);
 		List<CertifiedProductDetailsEntity> results = prodQuery.getResultList();
 
@@ -270,23 +272,13 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId) {
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and product_version_id = :versionId)", CertifiedProductDetailsEntity.class );
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity deets "
+				+ "LEFT OUTER JOIN FETCH deets.product "
+				+ "WHERE deets.productVersionId = :versionId)", CertifiedProductDetailsEntity.class );
 		query.setParameter("versionId", versionId);
 		List<CertifiedProductDetailsEntity> results = query.getResultList();
 		
 		List<CertifiedProductDetailsDTO> dtoResults = new ArrayList<CertifiedProductDetailsDTO>();
-		for(CertifiedProductDetailsEntity result : results) {
-			dtoResults.add(new CertifiedProductDetailsDTO(result));
-		}
-		return dtoResults;
-	}
-	
-	public List<CertifiedProductDetailsDTO> getDetailsByVersionIds(List<Long> versionIds) {
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and product_version_id IN :idList", CertifiedProductDetailsEntity.class );
-		query.setParameter("idList", versionIds);
-		List<CertifiedProductDetailsEntity> results = query.getResultList();
-		
-		List<CertifiedProductDetailsDTO> dtoResults = new ArrayList<CertifiedProductDetailsDTO>(results.size());
 		for(CertifiedProductDetailsEntity result : results) {
 			dtoResults.add(new CertifiedProductDetailsDTO(result));
 		}
@@ -379,17 +371,18 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		
 		CertifiedProductDetailsEntity entity = null;
 		
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where "
-				+ "year = '20' || :yearCode AND "
-				+ "testingLabCode = :atlCode AND "
-				+ "certificationBodyCode = :acbCode AND "
-				+ "developerCode = :developerCode AND "
-				+ "productCode = :productCode AND "
-				+ "versionCode = :versionCode AND "
-				+ "icsCode = :icsCode AND "
-				+ "additionalSoftwareCode = :additionalSoftwareCode AND "
-				+ "certifiedDateCode = :certifiedDateCode "
-				+ "AND NOT deleted = true ", 
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity deets "
+				+ "LEFT OUTER JOIN FETCH deets.product "
+				+ "where "
+				+ "deets.year = '20' || :yearCode AND "
+				+ "deets.testingLabCode = :atlCode AND "
+				+ "deets.certificationBodyCode = :acbCode AND "
+				+ "deets.developerCode = :developerCode AND "
+				+ "deets.productCode = :productCode AND "
+				+ "deets.versionCode = :versionCode AND "
+				+ "deets.icsCode = :icsCode AND "
+				+ "deets.additionalSoftwareCode = :additionalSoftwareCode AND "
+				+ "deets.certifiedDateCode = :certifiedDateCode ", 
 				CertifiedProductDetailsEntity.class );
 		
 		query.setParameter("yearCode", yearCode);

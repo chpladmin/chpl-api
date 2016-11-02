@@ -4,6 +4,7 @@ package gov.healthit.chpl.web.controller;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +127,7 @@ public class ProductController {
 						DeveloperDTO dev = new DeveloperDTO();
 						dev.setId(prevOwner.getDeveloper().getDeveloperId());
 						prevOwnerDTO.setDeveloper(dev);
-						prevOwnerDTO.setTransferDate(LocalDate.parse(prevOwner.getTransferDate(), DateTimeFormatter.ISO_DATE));
+						prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
 						newProduct.getOwnerHistory().add(prevOwnerDTO);
 					}
 				}
@@ -151,7 +152,7 @@ public class ProductController {
 						DeveloperDTO dev = new DeveloperDTO();
 						dev.setId(prevOwner.getDeveloper().getDeveloperId());
 						prevOwnerDTO.setDeveloper(dev);
-						prevOwnerDTO.setTransferDate(LocalDate.parse(prevOwner.getTransferDate(), DateTimeFormatter.ISO_DATE));
+						prevOwnerDTO.setTransferDate(prevOwner.getTransferDate());
 						toUpdate.getOwnerHistory().add(prevOwnerDTO);
 					}
 				}
@@ -162,6 +163,9 @@ public class ProductController {
 		if(result == null) {
 			throw new EntityCreationException("There was an error inserting or updating the product information.");
 		}
-		return new Product(result);
+		
+		//get the updated product since all transactions should be complete by this point
+		ProductDTO updatedProduct = productManager.getById(result.getId());
+		return new Product(updatedProduct);
 	}
 }

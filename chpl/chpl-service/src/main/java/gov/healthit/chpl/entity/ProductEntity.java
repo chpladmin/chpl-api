@@ -32,7 +32,7 @@ public class ProductEntity implements Serializable {
 	private Long id;
     
 	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
+	@Column( name = "creation_date", nullable = false , insertable = false, updatable = false)
 	private Date creationDate;
 	
 	@Basic( optional = false )
@@ -40,7 +40,7 @@ public class ProductEntity implements Serializable {
 	private Boolean deleted;
     
 	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
+	@Column( name = "last_modified_date", nullable = false, insertable = false, updatable = false  )
 	private Date lastModifiedDate;
 	
 	@Basic( optional = false )
@@ -75,10 +75,10 @@ public class ProductEntity implements Serializable {
 	@JoinColumn(name = "product_id", unique=true, nullable = true, insertable = false, updatable = false)
 	private ProductCertificationStatusesEntity productCertificationStatuses;
 	
-//	@OneToMany(fetch=FetchType.LAZY, mappedBy="productId")
-//	@Basic(optional=true)
-//	@Column( name = "product_id", nullable = false  )
-//	private List<ProductOwnerEntity> ownerHistory = new ArrayList<ProductOwnerEntity>();
+	@OneToMany(fetch=FetchType.LAZY, mappedBy="productId")
+	@Basic(optional=true)
+	@Column( name = "product_id", nullable = false  )
+	private List<ProductActiveOwnerEntity> ownerHistory = new ArrayList<ProductActiveOwnerEntity>();
 	
 	 /**
 	 * Return the value associated with the column: creationDate.
@@ -251,6 +251,14 @@ public class ProductEntity implements Serializable {
 
 	public void setDeveloper(DeveloperEntity developer) {
 		this.developer = developer;
+	}
+
+	public List<ProductActiveOwnerEntity> getOwnerHistory() {
+		return ownerHistory;
+	}
+
+	public void setOwnerHistory(List<ProductActiveOwnerEntity> ownerHistory) {
+		this.ownerHistory = ownerHistory;
 	}
 
 //	public List<ProductOwnerEntity> getOwnerHistory() {

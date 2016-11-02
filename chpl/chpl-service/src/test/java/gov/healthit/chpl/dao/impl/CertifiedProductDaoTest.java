@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -63,6 +64,7 @@ public class CertifiedProductDaoTest {
 	}
 	
 	@Test
+	@Transactional(readOnly = true)
 	public void getAllCertifiedProducts() {
 		List<CertifiedProductDetailsDTO> results = productDao.findAll();
 		assertNotNull(results);
@@ -70,6 +72,7 @@ public class CertifiedProductDaoTest {
 	}
 	
 	@Test
+	@Transactional(readOnly = true)
 	public void getById() {
 		Long productId = 1L;
 		CertifiedProductDTO product = null;
@@ -83,6 +86,7 @@ public class CertifiedProductDaoTest {
 	}
 	
 	@Test
+	@Transactional(readOnly = true)
 	public void getProductsByVersion() {
 		Long versionId = 1L;
 		List<CertifiedProductDetailsDTO> products = null;

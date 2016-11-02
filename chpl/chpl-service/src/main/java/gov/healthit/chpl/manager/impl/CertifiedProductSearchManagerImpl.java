@@ -54,7 +54,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 				searchResult.setChplProductNumber(dto.getChplProductNumber());
 			} else {
 				searchResult.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
-					dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+					dto.getDeveloper().getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 					"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 					"." + dto.getCertifiedDateCode());
 			}
@@ -67,10 +67,10 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.getPracticeType().put("id", dto.getPracticeTypeId());
 			searchResult.getPracticeType().put("name", dto.getPracticeTypeName());
 			
-			searchResult.getProduct().put("id",dto.getProductId());
-			searchResult.getProduct().put("name",dto.getProductName());
-			searchResult.getProduct().put("versionId",dto.getProductVersionId());
-			searchResult.getProduct().put("version", dto.getProductVersion());
+			searchResult.getProduct().put("id",dto.getProduct().getId());
+			searchResult.getProduct().put("name",dto.getProduct().getName());
+			searchResult.getProduct().put("versionId",dto.getVersion().getId());
+			searchResult.getProduct().put("version", dto.getVersion().getVersion());
 			
 			searchResult.setReportFileLocation(dto.getReportFileLocation());
 			searchResult.setSedReportFileLocation(dto.getSedReportFileLocation());
@@ -79,8 +79,8 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setTestingLabId(dto.getTestingLabId());
 			searchResult.setTestingLabName(dto.getTestingLabName());
 			
-			searchResult.getDeveloper().put("id", dto.getDeveloperId());
-			searchResult.getDeveloper().put("name", dto.getDeveloperName());
+			searchResult.getDeveloper().put("id", dto.getDeveloper().getId());
+			searchResult.getDeveloper().put("name", dto.getDeveloper().getName());
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());

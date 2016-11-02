@@ -114,7 +114,6 @@ public class ProductManagerTest extends TestCase {
 	}
 	
 	@Test
-	@Transactional
 	@Rollback(true)
 	public void updateProductOwnerHistory() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -124,18 +123,16 @@ public class ProductManagerTest extends TestCase {
 		assertTrue(product.getOwnerHistory().size() == 1);
 		
 		product.setOwnerHistory(null);
-		ProductDTO result = null;
 		try {
-			result = productManager.update(product);
+			productManager.update(product);
 		} catch(Exception ex) {
 			fail("could not update product!");
 			System.out.println(ex.getStackTrace());
 		}
-		assertNotNull(result);
-		assertTrue(result.getOwnerHistory() == null || result.getOwnerHistory().size() == 0);
 		
 		try {
 			ProductDTO updatedProduct = productManager.getById(product.getId());
+			assertNotNull(updatedProduct);
 			assertTrue(updatedProduct.getOwnerHistory() == null || updatedProduct.getOwnerHistory().size() == 0);
 		} catch(Exception ex) {
 			fail("could not find product!");

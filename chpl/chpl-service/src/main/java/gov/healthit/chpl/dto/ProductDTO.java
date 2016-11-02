@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductEntity;
-import gov.healthit.chpl.entity.ProductOwnerEntity;
+import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +22,7 @@ public class ProductDTO {
 	private String reportFileLocation;
 	private Long developerId;
 	private String developerName;
+	private String developerCode;
 	private Statuses statuses;
 	private List<ProductOwnerDTO> ownerHistory;
 	
@@ -41,8 +42,14 @@ public class ProductDTO {
 		this.developerId = entity.getDeveloperId();
 		if(entity.getDeveloper() != null) {
 			this.developerName = entity.getDeveloper().getName();
+			this.developerCode = entity.getDeveloper().getDeveloperCode();
 		}
-		
+		if(entity.getOwnerHistory() != null) {
+			for(ProductActiveOwnerEntity ownerEntity : entity.getOwnerHistory()) {
+				ProductOwnerDTO ownerDto = new ProductOwnerDTO(ownerEntity);
+				this.ownerHistory.add(ownerDto);
+			}
+		}
 		if(entity.getProductCertificationStatusesEntity() != null){
 			this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(), 
 					entity.getProductCertificationStatusesEntity().getRetired(), 
@@ -123,6 +130,12 @@ public class ProductDTO {
 	}
 	public void setOwnerHistory(List<ProductOwnerDTO> ownerHistory) {
 		this.ownerHistory = ownerHistory;
+	}
+	public String getDeveloperCode() {
+		return developerCode;
+	}
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 	
 }

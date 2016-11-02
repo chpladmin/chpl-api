@@ -21,7 +21,8 @@ public class CertifiedProductSearchDetails {
     private String otherAcb;
     private Map<String, Object> certificationStatus = new HashMap<String, Object>();
     private Developer developer;
-	private Map<String, Object> product = new HashMap<String, Object>();
+    private Product product;
+    private ProductVersion version;
 	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
@@ -90,12 +91,6 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setDeveloper(Developer developer) {
 		this.developer = developer;
-	}
-	public Map<String, Object> getProduct() {
-		return product;
-	}
-	public void setProduct(Map<String, Object> product) {
-		this.product = product;
 	}
 	public Map<String, Object> getCertificationEdition() {
 		return certificationEdition;
@@ -268,5 +263,17 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setSedTestingEnd(Date sedTestingEnd) {
 		this.sedTestingEnd = sedTestingEnd;
+	}
+	public Product getProduct() {
+		return product;
+	}
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+	public ProductVersion getVersion() {
+		return version;
+	}
+	public void setVersion(ProductVersion version) {
+		this.version = version;
 	}
 }

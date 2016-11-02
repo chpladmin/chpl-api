@@ -4,19 +4,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestProcedure;
-import gov.healthit.chpl.domain.CertificationResultTestStandard;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +17,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CQMResultCertification;
+import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import junit.framework.TestCase;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -56,9 +54,20 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	@Test
 	@Transactional
 	public void testCertifiedProductDetails() throws EntityRetrievalException{
-		
-		assertNotNull(certifiedProductDetailsManager.getCertifiedProductDetails(1L));
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);	
+		assertNotNull(detail);
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetails_hasProductOwnerHistory() throws EntityRetrievalException {
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);	
+		assertNotNull(detail);
+		assertNotNull(detail.getProduct());
+		assertEquals("Test Product 1", detail.getProduct().getName());
+		assertEquals(-1, detail.getProduct().getProductId().longValue());
+		assertNotNull(detail.getProduct().getOwnerHistory());
+		assertEquals(1, detail.getProduct().getOwnerHistory().size());
 	}
 	
 	@Test
@@ -237,10 +246,10 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsProduct() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals("Test Product 1", detail.getProduct().get("name"));
-		assertEquals(-1, new Long(detail.getProduct().get("id").toString()).longValue());
-		assertEquals("1.0.0", detail.getProduct().get("version"));
-		assertEquals(1, new Long(detail.getProduct().get("versionId").toString()).longValue());
+		assertEquals("Test Product 1", detail.getProduct().getName());
+		assertEquals(-1, detail.getProduct().getProductId().longValue());
+		assertEquals("1.0.0", detail.getVersion().getVersion());
+		assertEquals(1, detail.getVersion().getVersionId().longValue());
 		
 	}
 
@@ -250,7 +259,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
 		assertEquals("Test Developer 1", detail.getDeveloper().getName());
-		assertEquals(-1, new Long(detail.getProduct().get("id").toString()).longValue());
+		assertEquals(-1, detail.getProduct().getProductId().longValue());
 	}
 
 	@Test
