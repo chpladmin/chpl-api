@@ -11,7 +11,8 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 
 public interface DeveloperManager {
-	public List<DeveloperDTO> getAll(boolean showDeleted);
+	public List<DeveloperDTO> getAll();
+	public List<DeveloperDTO> getAllIncludingDeleted();
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException;
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
