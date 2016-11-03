@@ -30,6 +30,7 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -178,7 +179,15 @@ public class DeveloperManagerTest extends TestCase {
 			assertNotNull(affectedProduct);
 			assertNotNull(affectedProduct.getOwnerHistory());
 			assertEquals(2, affectedProduct.getOwnerHistory().size());
-			assertEquals(-1, affectedProduct.getOwnerHistory().get(1).getDeveloper().getId().longValue());
+			int expectedDevsCount = 0;
+			for(ProductOwnerDTO owner : affectedProduct.getOwnerHistory()) {
+				if(owner.getDeveloper() != null && owner.getDeveloper().getId().longValue() == -1) {
+					expectedDevsCount++;
+				} else if(owner.getDeveloper() != null && owner.getDeveloper().getId().longValue() == -2) {
+					expectedDevsCount++;
+				}
+			}
+			assertEquals(2, expectedDevsCount);
 		} catch(EntityRetrievalException ex) {
 			fail(ex.getMessage());
 		}
