@@ -188,7 +188,6 @@ public class DeveloperManagerTest extends TestCase {
 				}
 			}
 			assertEquals(2, expectedDevsCount);
-		//	assertEquals(-1, affectedProduct.getOwnerHistory().get(1).getDeveloper().getId().longValue());
 		} catch(EntityRetrievalException ex) {
 			fail(ex.getMessage());
 		}
