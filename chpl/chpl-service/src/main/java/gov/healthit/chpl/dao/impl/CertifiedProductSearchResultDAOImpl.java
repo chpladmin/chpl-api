@@ -743,7 +743,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			}
 			result += ") ";
 		} else {
-			result += " AND year in ('2014', '2015')";
+			result += " AND year NOT LIKE '2011'";
 		}
 		return result;
 	}
