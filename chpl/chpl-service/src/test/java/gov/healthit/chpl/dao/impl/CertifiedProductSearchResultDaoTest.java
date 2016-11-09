@@ -110,7 +110,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	public void testSearchCertificationEdition(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setCertificationEdition("2014");
+		searchRequest.getCertificationEditions().add("2014");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(2, products.size());
 		
@@ -124,27 +124,12 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	public void testSearchCertificationBody(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setCertificationBody("InfoGard");
+		searchRequest.getCertificationBodies().add("InfoGard");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(5, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getCertificationBodyName().startsWith("InfoGard"));
-		}
-		
-	}
-	
-	@Test
-	@Transactional
-	public void testSearchProductClassificationType(){
-		
-		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setProductClassification("Complete EHR");
-		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
-		
-		for (CertifiedProductDetailsDTO dto : products ){
-			assertTrue(dto.getProductClassificationName().startsWith("Complete EHR"));
 		}
 		
 	}
@@ -178,24 +163,23 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	public void testSearchHasCAP(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setHasCAP("any");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
 		assertEquals(5, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.setHasCAP("current");
+		searchRequest.getCorrectiveActionPlans().add("open");
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(5, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.setHasCAP("closed");
+		searchRequest.getCorrectiveActionPlans().add("closed");
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.setHasCAP("never");
+		searchRequest.getCorrectiveActionPlans().add("never");
 		products = searchResultDAO.search(searchRequest);
-		assertEquals(5, products.size());
+		assertEquals(0, products.size());
 	}
 	
 	
@@ -210,11 +194,9 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setDeveloper("Test Developer 1");
 		searchRequest.setProduct("Test");
 		searchRequest.setVersion("1.0.1");
-		searchRequest.setCertificationEdition("2014");
-		searchRequest.setCertificationBody("InfoGard");
-		searchRequest.setProductClassification("Complete EHR");
+		searchRequest.getCertificationEditions().add("2014");
+		searchRequest.getCertificationBodies().add("InfoGard");
 		searchRequest.setPracticeType("Ambulatory");
-		searchRequest.setHasCAP("BOTH");
 		searchRequest.setOrderBy("product");
 		searchRequest.setSortDescending(true);
 		searchRequest.setPageNumber(0);

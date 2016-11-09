@@ -4,33 +4,75 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchRequest {
-	public static final String CURRENT_CAP = "open";
-	public static final String CLOSED_CAP = "closed";
-	public static final String NO_CAP = "none";
+	public static final String HAS_OPEN_CAP = "open";
+	public static final String HAS_CLOSED_CAP = "closed";
+	public static final String NEVER_HAD_CAP = "never";
 	
 	String searchTerm = null;
+	
+	//search for any of these
+	List<String> certificationStatuses = new ArrayList<String>();
+	//search for any of these
+	List<String> certificationEditions = new ArrayList<String>();
+	//search for all of these
+	List<String> certificationCriteria = new ArrayList<String>();
+	//search for all of these
+	List<String> cqms = new ArrayList<String>();
+	//search for any of these
+	List<String> certificationBodies = new ArrayList<String>();
+	//search for any of these, can be any of the static string values above
+	List<String> correctiveActionPlans = new ArrayList<String>();
+	
 	String developer = null;
 	String product = null;
 	String version = null;
-	List<String> certificationCriteria = new ArrayList<String>();
-	List<String> cqms = new ArrayList<String>();
-	String certificationEdition = null;
-	String certificationBody = null;
-	String productClassification = null;
 	String practiceType = null;
-	String certificationStatus = null;
-	String hasCAP = "BOTH";
+	
 	String orderBy = "product";
 	Boolean sortDescending = false;
 	Integer pageNumber = 0;
 	Integer pageSize = 20;
-	
-	
 	public String getSearchTerm() {
 		return searchTerm;
 	}
 	public void setSearchTerm(String searchTerm) {
 		this.searchTerm = searchTerm;
+	}
+	public List<String> getCertificationStatuses() {
+		return certificationStatuses;
+	}
+	public void setCertificationStatuses(List<String> certificationStatuses) {
+		this.certificationStatuses = certificationStatuses;
+	}
+	public List<String> getCertificationEditions() {
+		return certificationEditions;
+	}
+	public void setCertificationEditions(List<String> certificationEditions) {
+		this.certificationEditions = certificationEditions;
+	}
+	public List<String> getCertificationCriteria() {
+		return certificationCriteria;
+	}
+	public void setCertificationCriteria(List<String> certificationCriteria) {
+		this.certificationCriteria = certificationCriteria;
+	}
+	public List<String> getCqms() {
+		return cqms;
+	}
+	public void setCqms(List<String> cqms) {
+		this.cqms = cqms;
+	}
+	public List<String> getCertificationBodies() {
+		return certificationBodies;
+	}
+	public void setCertificationBodies(List<String> certificationBodies) {
+		this.certificationBodies = certificationBodies;
+	}
+	public List<String> getCorrectiveActionPlans() {
+		return correctiveActionPlans;
+	}
+	public void setCorrectiveActionPlans(List<String> correctiveActionPlans) {
+		this.correctiveActionPlans = correctiveActionPlans;
 	}
 	public String getDeveloper() {
 		return developer;
@@ -50,33 +92,6 @@ public class SearchRequest {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	public List<String> getCertificationCriteria() {
-		return certificationCriteria;
-	}
-	public void setCertificationCriteria(List<String> certificationCriteria) {
-		this.certificationCriteria = certificationCriteria;
-	}
-	public void addCertificationCriteria(String certificationCriteria) {
-		this.certificationCriteria.add(certificationCriteria);
-	}
-	public List<String> getCqms() {
-		return cqms;
-	}
-	public void setCqms(List<String> cqms) {
-		this.cqms = cqms;
-	}
-	public String getCertificationEdition() {
-		return certificationEdition;
-	}
-	public void setCertificationEdition(String certificationEdition) {
-		this.certificationEdition = certificationEdition;
-	}
-	public String getProductClassification() {
-		return productClassification;
-	}
-	public void setProductClassification(String productClassification) {
-		this.productClassification = productClassification;
-	}
 	public String getPracticeType() {
 		return practiceType;
 	}
@@ -89,23 +104,11 @@ public class SearchRequest {
 	public void setOrderBy(String orderBy) {
 		this.orderBy = orderBy;
 	}
-	public String getCertificationBody() {
-		return certificationBody;
-	}
-	public void setCertificationBody(String certifyingBody) {
-		this.certificationBody = certifyingBody;
-	}
 	public Boolean getSortDescending() {
 		return sortDescending;
 	}
 	public void setSortDescending(Boolean sortDescending) {
 		this.sortDescending = sortDescending;
-	}
-	public String getHasCAP() {
-		return hasCAP;
-	}
-	public void setHasCAP(String hasCAP) {
-		this.hasCAP = hasCAP;
 	}
 	public Integer getPageNumber() {
 		return pageNumber;
@@ -119,11 +122,4 @@ public class SearchRequest {
 	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
 	}
-	public String getCertificationStatus() {
-		return certificationStatus;
-	}
-	public void setCertificationStatus(String certificationStatus) {
-		this.certificationStatus = certificationStatus;
-	}
-	
 }

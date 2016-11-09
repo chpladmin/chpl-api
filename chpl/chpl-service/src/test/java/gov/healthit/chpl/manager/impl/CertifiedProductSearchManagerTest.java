@@ -43,7 +43,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test Developer 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(4, response.getResults().size());
+		assertEquals(3, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getDeveloper().get("name").toString().startsWith("Test Developer 1"));
@@ -57,7 +57,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setProduct("Test Product 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(4, response.getResults().size());
+		assertEquals(3, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getProduct().get("name").toString().startsWith("Test Product 1"));
@@ -83,7 +83,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	public void testSearchCertificationEdition(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setCertificationEdition("2014");
+		searchRequest.getCertificationEditions().add("2014");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
 		assertEquals(2, response.getResults().size());
 		
@@ -97,30 +97,15 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	public void testSearchCertificationBody(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setCertificationBody("InfoGard");
+		searchRequest.getCertificationBodies().add("InfoGard");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(5, response.getResults().size());
+		assertEquals(3, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getCertifyingBody().get("name").toString().startsWith("InfoGard"));
 		}
 	}
-	
-	@Test
-	@Transactional
-	public void testSearchProductClassificationType(){
-		
-		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setProductClassification("Complete EHR");
-		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(3, response.getResults().size());
-		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getClassificationType().get("name").toString().startsWith("Complete EHR"));
-		}
-		
-	}
-	
+
 	@Test
 	@Transactional
 	public void testSearchPracticeType(){
@@ -128,7 +113,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(5, response.getResults().size());
+		assertEquals(3, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getPracticeType().get("name").toString().startsWith("Ambulatory"));
@@ -142,7 +127,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(5, response.getResults().size());
+		assertEquals(3, response.getResults().size());
 	}
 	
 	@Test
@@ -155,9 +140,8 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		searchRequest.setDeveloper("Test Developer");
 		searchRequest.setProduct("Test");
 		searchRequest.setVersion("1.0.1");
-		searchRequest.setCertificationEdition("2014");
-		searchRequest.setCertificationBody("InfoGard");
-		searchRequest.setProductClassification("Complete EHR");
+		searchRequest.getCertificationEditions().add("2014");
+		searchRequest.getCertificationBodies().add("InfoGard");
 		searchRequest.setPracticeType("Ambulatory");
 		searchRequest.setOrderBy("product");
 		searchRequest.setSortDescending(true);
