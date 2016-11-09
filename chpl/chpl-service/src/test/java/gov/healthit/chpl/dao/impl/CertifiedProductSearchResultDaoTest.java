@@ -167,11 +167,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		assertEquals(3, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getCorrectiveActionPlans().add("open");
-		products = searchResultDAO.search(searchRequest);
-		assertEquals(5, products.size());
-		
-		searchRequest = new SearchRequest();
 		searchRequest.getCorrectiveActionPlans().add("closed");
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
@@ -179,7 +174,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest = new SearchRequest();
 		searchRequest.getCorrectiveActionPlans().add("never");
 		products = searchResultDAO.search(searchRequest);
-		assertEquals(0, products.size());
+		assertEquals(2, products.size());
 	}
 	
 	
