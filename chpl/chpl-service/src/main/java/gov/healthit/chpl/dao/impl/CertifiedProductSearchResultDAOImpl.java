@@ -698,6 +698,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			result += " AND certification_status_name in (";
 			for(int i = 0; i < searchRequest.getCertificationStatuses().size(); i++) {
 				result += ":certificationStatus" + i;
+				if(i != searchRequest.getCertificationStatuses().size()-1) {
+					result += ", ";
+				}
 			}
 			result += ") ";			
 		} else {
@@ -720,6 +723,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			result += " AND certification_body_name in (";
 			for(int i = 0; i < searchRequest.getCertificationBodies().size(); i++) {
 				result += ":certificationbody" + i;
+				if(i != searchRequest.getCertificationBodies().size()-1) {
+					result += ", ";
+				}
 			}
 			result += ") ";
 		}
@@ -740,6 +746,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			result += " AND year in (";
 			for(int i = 0; i < searchRequest.getCertificationEditions().size(); i++) {
 				result += ":certificationedition" + i;
+				if(i != searchRequest.getCertificationEditions().size()-1) {
+					result += ", ";
+				}
 			}
 			result += ") ";
 		} else {
