@@ -53,7 +53,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test");
 		Long countProducts = searchResultDAO.countMultiFilterSearchResults(searchRequest);
-		assertEquals(5, countProducts.intValue());
+		assertEquals(3, countProducts.intValue());
 		
 		searchRequest.setVersion("1.0.0");
 		Long countProductsVersionSpecific = searchResultDAO.countMultiFilterSearchResults(searchRequest);
@@ -67,7 +67,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test Developer 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(4, products.size());
+		assertEquals(3, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getDeveloper().getName().startsWith("Test Developer 1"));
@@ -82,7 +82,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		searchRequest.setProduct("Test Product 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(4, products.size());
+		assertEquals(3, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getProduct().getName().startsWith("Test Product 1"));
@@ -126,7 +126,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.getCertificationBodies().add("InfoGard");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(5, products.size());
+		assertEquals(3, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getCertificationBodyName().startsWith("InfoGard"));
@@ -141,7 +141,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(5, products.size());
+		assertEquals(3, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getPracticeTypeName().startsWith("Ambulatory"));
@@ -155,7 +155,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(5, products.size());
+		assertEquals(3, products.size());
 	}
 	
 	@Test
@@ -164,7 +164,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(5, products.size());
+		assertEquals(3, products.size());
 		
 		searchRequest = new SearchRequest();
 		searchRequest.getCorrectiveActionPlans().add("open");
