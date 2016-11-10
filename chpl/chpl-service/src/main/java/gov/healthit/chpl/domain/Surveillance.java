@@ -13,8 +13,19 @@ public class Surveillance {
 	private Integer randomizedSitesUsed;
 	private List<SurveillanceRequirement> requirements;
 	
+	private List<String> errors;
+	
 	public Surveillance() {
 		this.requirements = new ArrayList<SurveillanceRequirement>();
+		this.errors = new ArrayList<String>();
+	}
+
+	public List<String> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(List<String> errors) {
+		this.errors = errors;
 	}
 
 	public Long getId() {
