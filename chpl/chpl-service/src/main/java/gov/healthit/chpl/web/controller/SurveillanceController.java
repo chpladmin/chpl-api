@@ -39,7 +39,6 @@ public class SurveillanceController {
 	private static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
 	private static final String NEW_SURVEILLANCE_BEGIN_INDICATOR = "New";
 	private static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
-	private static final String SUBELEMENT_SURVEILLANE_INDICATOR = "Subelement";
 	
 	@Autowired private SurveillanceUploadHandlerFactory uploadHandlerFactory;
 	
