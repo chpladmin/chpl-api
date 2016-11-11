@@ -1,4 +1,4 @@
-package gov.healthit.chpl.certifiedProduct.validation;
+package gov.healthit.chpl.validation.certifiedProduct;
 
 import org.springframework.stereotype.Component;
 

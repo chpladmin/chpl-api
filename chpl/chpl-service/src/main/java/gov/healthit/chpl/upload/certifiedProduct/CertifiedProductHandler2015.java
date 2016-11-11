@@ -1,4 +1,4 @@
-package gov.healthit.chpl.certifiedProduct.upload;
+package gov.healthit.chpl.upload.certifiedProduct;
 
 import java.text.ParseException;
 import java.util.ArrayList;

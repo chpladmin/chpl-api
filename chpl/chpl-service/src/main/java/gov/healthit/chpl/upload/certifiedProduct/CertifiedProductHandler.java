@@ -1,4 +1,4 @@
-package gov.healthit.chpl.certifiedProduct.upload;
+package gov.healthit.chpl.upload.certifiedProduct;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

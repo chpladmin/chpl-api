@@ -1,4 +1,4 @@
-package gov.healthit.chpl.certifiedProduct.validation;
+package gov.healthit.chpl.validation.certifiedProduct;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;

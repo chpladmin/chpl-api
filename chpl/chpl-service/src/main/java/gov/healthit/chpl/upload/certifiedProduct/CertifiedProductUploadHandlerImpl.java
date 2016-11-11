@@ -1,4 +1,4 @@
-package gov.healthit.chpl.certifiedProduct.upload;
+package gov.healthit.chpl.upload.certifiedProduct;
 
 import java.text.SimpleDateFormat;
 import java.util.List;

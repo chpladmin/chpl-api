@@ -1,11 +1,13 @@
-package gov.healthit.chpl.certifiedProduct.validation;
+package gov.healthit.chpl.validation.surveillance;
 
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 
+@Component("surveillanceValidator")
 public class SurveillanceValidator {
 	public void validate(Surveillance surv) {
 		//make sure chpl id is valid

@@ -30,10 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
-import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
-import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -61,6 +57,10 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
+import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

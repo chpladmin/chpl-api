@@ -1,4 +1,4 @@
-package gov.healthit.chpl.certifiedProduct.validation;
+package gov.healthit.chpl.validation.certifiedProduct;
 
 import java.util.ArrayList;
 import java.util.Arrays;
