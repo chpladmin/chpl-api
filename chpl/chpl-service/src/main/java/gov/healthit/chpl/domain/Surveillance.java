@@ -6,6 +6,7 @@ import java.util.List;
 
 public class Surveillance {
 	private Long id;
+	private Long surveillanceIdToReplace;
 	private CertifiedProduct certifiedProduct;
 	private Date startDate;
 	private Date endDate;
@@ -82,5 +83,13 @@ public class Surveillance {
 
 	public void setRequirements(List<SurveillanceRequirement> requirements) {
 		this.requirements = requirements;
+	}
+
+	public Long getSurveillanceIdToReplace() {
+		return surveillanceIdToReplace;
+	}
+
+	public void setSurveillanceIdToReplace(Long surveillanceIdToReplace) {
+		this.surveillanceIdToReplace = surveillanceIdToReplace;
 	}
 }

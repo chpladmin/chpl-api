@@ -11,7 +11,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -24,8 +26,18 @@ public class PendingSurveillanceEntity {
 	@Column(name = "id")
 	private Long id;
 	
+	@Column(name = "surveillance_id_to_replace")
+	private Long survIdToReplace;
+	
 	@Column(name = "certified_product_unique_id")
 	private String certifiedProductUniqueId;
+	
+	@Column(name = "certified_product_id")
+	private Long certifiedProductId;
+	
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certified_product_id", insertable = false, updatable = false)
+	private CertifiedProductEntity certifiedProduct;
 	
 	@Column(name = "start_date")
 	private Date startDate;
@@ -135,5 +147,29 @@ public class PendingSurveillanceEntity {
 
 	public void setSurveilledRequirements(Set<PendingSurveillanceRequirementEntity> surveilledRequirements) {
 		this.surveilledRequirements = surveilledRequirements;
+	}
+
+	public CertifiedProductEntity getCertifiedProduct() {
+		return certifiedProduct;
+	}
+
+	public void setCertifiedProduct(CertifiedProductEntity certifiedProduct) {
+		this.certifiedProduct = certifiedProduct;
+	}
+
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
+	}
+
+	public Long getSurvIdToReplace() {
+		return survIdToReplace;
+	}
+
+	public void setSurvIdToReplace(Long survIdToReplace) {
+		this.survIdToReplace = survIdToReplace;
 	}
 }

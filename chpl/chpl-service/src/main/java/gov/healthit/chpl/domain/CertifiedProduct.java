@@ -10,6 +10,7 @@ public class CertifiedProduct {
     private String chplProductNumber;
 	private String lastModifiedDate;
 	
+	public CertifiedProduct() {}
 	
 	public CertifiedProduct(CertifiedProductDetailsDTO dto) {
 		this.id = dto.getId();

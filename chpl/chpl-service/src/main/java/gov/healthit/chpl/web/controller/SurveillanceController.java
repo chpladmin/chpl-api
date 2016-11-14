@@ -24,6 +24,11 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
@@ -41,6 +46,27 @@ public class SurveillanceController {
 	private static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
 	
 	@Autowired private SurveillanceUploadHandlerFactory uploadHandlerFactory;
+	@Autowired private SurveillanceManager survManager;
+	@Autowired private CertifiedProductManager cpManager;
+	@Autowired private CertificationBodyManager acbManager;
+	
+	@RequestMapping(value="/pending", method=RequestMethod.GET,
+			produces = "application/json; charset=utf-8")
+	public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() {
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		List<Surveillance> pendingSurvs = new ArrayList<Surveillance>(); 
+		
+		if(acbs != null) {
+			for(CertificationBodyDTO acb : acbs) {
+				List<Surveillance> survsOnAcb = survManager.getPendingByAcb(acb.getId());
+				pendingSurvs.addAll(survsOnAcb);
+			}
+		}
+		
+		SurveillanceResults results = new SurveillanceResults();
+		results.setResults(pendingSurvs);
+		return results;
+	}
 	
 	@ApiOperation(value="Upload a file with surveillance and nonconformities for certified products.", 
 			notes="Accepts a CSV file with very specific fields to create pending surveillance items. "
@@ -73,8 +99,7 @@ public class SurveillanceController {
 			}
 			
 			Set<String> handlerErrors = new HashSet<String>();
-			List<Surveillance> survToAdd = new ArrayList<Surveillance>();
-			List<Surveillance> survToUpdate = new ArrayList<Surveillance>();
+			List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
 			
 			//parse the entire file into groups of records, one group per surveillance item
 			CSVRecord heading = null; 
@@ -98,11 +123,7 @@ public class SurveillanceController {
 								try {
 									SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
 									Surveillance pendingSurv = handler.handle();
-									if(rows.get(0).get(0).equalsIgnoreCase(NEW_SURVEILLANCE_BEGIN_INDICATOR)) {
-										survToAdd.add(pendingSurv);
-									} else if(rows.get(0).get(0).equalsIgnoreCase(UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
-										survToUpdate.add(pendingSurv);
-									}
+									pendingSurvs.add(pendingSurv);
 								}
 								catch(InvalidArgumentsException ex) {
 									handlerErrors.add(ex.getMessage());
@@ -119,11 +140,7 @@ public class SurveillanceController {
 					try {
 						SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
 						Surveillance pendingSurv = handler.handle();
-						if(rows.get(0).get(0).equalsIgnoreCase(NEW_SURVEILLANCE_BEGIN_INDICATOR)) {
-							survToAdd.add(pendingSurv);
-						} else if(rows.get(0).get(0).equalsIgnoreCase(UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
-							survToUpdate.add(pendingSurv);
-						}
+						pendingSurvs.add(pendingSurv);
 					}
 					catch(InvalidArgumentsException ex) {
 						handlerErrors.add(ex.getMessage());
@@ -141,12 +158,7 @@ public class SurveillanceController {
 			
 			//we parsed the files but maybe some of the data in them has errors
 			Set<String> allErrors = new HashSet<String>();
-			for(Surveillance surv : survToAdd) {
-				if(surv.getErrors() != null && surv.getErrors().size() > 0) {
-					allErrors.addAll(surv.getErrors());
-				}
-			}
-			for(Surveillance surv : survToUpdate) {
+			for(Surveillance surv : pendingSurvs) {
 				if(surv.getErrors() != null && surv.getErrors().size() > 0) {
 					allErrors.addAll(surv.getErrors());
 				}
@@ -155,24 +167,18 @@ public class SurveillanceController {
 			if(allErrors.size() > 0) {
 				throw new ValidationException(allErrors, null);
 			} else {
-				
-				//add the new ones and update the existing ones 
-				
-				for(Surveillance surv : survToAdd) {
-//					try {
-//						PendingCertifiedProductDTO pendingCpDto = pcpManager.createOrReplace(cpToAdd.getCertificationBodyId(), cpToAdd);
-//						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
-//						uploadedProducts.add(details);
-//					} catch(EntityCreationException ex) {
-//						logger.error("Error creating pending certified product: " + cpToAdd.getUniqueId());
-//					} catch(EntityRetrievalException ex) {
-//						logger.error("Error retreiving pending certified product.", ex);
-//					}
+				//Certified product is guaranteed to be filled in at this point.
+				//If it hadn't been found during upload an error would have been thrown above.
+				for(Surveillance surv : pendingSurvs) {
+					try {
+						CertifiedProductDTO owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
+						Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
+						Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId);
+						uploadedSurveillance.add(uploaded);
+					} catch(Exception ex) {
+						logger.error("Error adding a new pending surveillance.", ex);
+					}
 				}	
-				
-				for(Surveillance surv : survToUpdate) {
-					//TODO
-				}
 			}
 		} catch(IOException ioEx) {
 			logger.error("Could not get input stream for uploaded file " + file.getName());			

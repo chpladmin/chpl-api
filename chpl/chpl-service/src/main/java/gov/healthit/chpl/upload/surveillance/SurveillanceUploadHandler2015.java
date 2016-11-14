@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -47,6 +48,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		dateFormatter = new SimpleDateFormat(DATE_FORMAT);
 	}
 	
+	@Transactional(readOnly = true)
 	public Surveillance handle() throws InvalidArgumentsException {
 		Surveillance surv = new Surveillance();
 		
@@ -113,16 +115,20 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			}
 		}
 		
+		if(surv.getCertifiedProduct() == null || surv.getCertifiedProduct().getId() == null) {
+			surv.getErrors().add("Could not find Certified Product with unique id " + chplId);	
+		}
+		
 		//find the surveillance id in case this is an update
 		String survFriendlyId = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(survFriendlyId)) {
 			try {
 				if(survFriendlyId.toUpperCase().startsWith("SURV")) {
 					Long survId = Long.parseLong(survFriendlyId.substring(4));
-					surv.setId(survId);
+					surv.setSurveillanceIdToReplace(survId);
 				} else {
 					Long survId = Long.parseLong(survFriendlyId);
-					surv.setId(survId);
+					surv.setSurveillanceIdToReplace(survId);
 				}
 			} catch(Exception ex) {
 				logger.error("Could not parse surveillance id '" + survFriendlyId + "'.");
