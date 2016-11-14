@@ -14,19 +14,19 @@ public class Surveillance {
 	private Integer randomizedSitesUsed;
 	private List<SurveillanceRequirement> requirements;
 	
-	private List<String> errors;
+	private List<String> errorMessages;
 	
 	public Surveillance() {
 		this.requirements = new ArrayList<SurveillanceRequirement>();
-		this.errors = new ArrayList<String>();
+		this.errorMessages = new ArrayList<String>();
 	}
 
-	public List<String> getErrors() {
-		return errors;
+	public List<String> getErrorMessages() {
+		return errorMessages;
 	}
 
-	public void setErrors(List<String> errors) {
-		this.errors = errors;
+	public void setErrorMessages(List<String> errors) {
+		this.errorMessages = errors;
 	}
 
 	public Long getId() {

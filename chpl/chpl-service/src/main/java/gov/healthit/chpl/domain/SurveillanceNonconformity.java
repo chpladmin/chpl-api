@@ -16,7 +16,6 @@ public class SurveillanceNonconformity {
 	private String findings;
 	private Integer sitesPassed;
 	private Integer totalSites;
-	private Float sitePassRate;
 	private String developerExplanation;
 	private String resolution;
 	public Long getId() {
@@ -90,12 +89,6 @@ public class SurveillanceNonconformity {
 	}
 	public void setTotalSites(Integer totalSites) {
 		this.totalSites = totalSites;
-	}
-	public Float getSitePassRate() {
-		return sitePassRate;
-	}
-	public void setSitePassRate(Float sitePassRate) {
-		this.sitePassRate = sitePassRate;
 	}
 	public String getDeveloperExplanation() {
 		return developerExplanation;

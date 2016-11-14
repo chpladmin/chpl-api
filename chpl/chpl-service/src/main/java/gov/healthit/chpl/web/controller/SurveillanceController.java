@@ -44,12 +44,14 @@ public class SurveillanceController {
 	private static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
 	private static final String NEW_SURVEILLANCE_BEGIN_INDICATOR = "New";
 	private static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
+	private static final String SUBELEMENT_INDICATOR = "Subelement";
 	
 	@Autowired private SurveillanceUploadHandlerFactory uploadHandlerFactory;
 	@Autowired private SurveillanceManager survManager;
 	@Autowired private CertifiedProductManager cpManager;
 	@Autowired private CertificationBodyManager acbManager;
 	
+	@ApiOperation(value="Get the listing of all pending surveillance items that this user has access to.")
 	@RequestMapping(value="/pending", method=RequestMethod.GET,
 			produces = "application/json; charset=utf-8")
 	public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() {
@@ -130,8 +132,10 @@ public class SurveillanceController {
 								}
 							}
 							rows.clear();
-						}
-						rows.add(currRecord);
+							rows.add(currRecord);
+						} else if(currRecordStatus.equalsIgnoreCase(SUBELEMENT_INDICATOR)) {
+							rows.add(currRecord);
+						} // ignore blank rows
 					}
 				}
 				
@@ -159,8 +163,8 @@ public class SurveillanceController {
 			//we parsed the files but maybe some of the data in them has errors
 			Set<String> allErrors = new HashSet<String>();
 			for(Surveillance surv : pendingSurvs) {
-				if(surv.getErrors() != null && surv.getErrors().size() > 0) {
-					allErrors.addAll(surv.getErrors());
+				if(surv.getErrorMessages() != null && surv.getErrorMessages().size() > 0) {
+					allErrors.addAll(surv.getErrorMessages());
 				}
 			}
 			

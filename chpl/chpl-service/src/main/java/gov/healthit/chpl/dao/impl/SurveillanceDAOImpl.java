@@ -144,7 +144,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	public SurveillanceType findSurveillanceType(String type) {
 		logger.debug("Searchig for surveillance type '" + type + "'.");
 		Query query = entityManager.createQuery(
-				"from SurveillanceTypeEntity where name = :name and deleted <> true", 
+				"from SurveillanceTypeEntity where name LIKE :name and deleted <> true", 
 				SurveillanceTypeEntity.class);
 		query.setParameter("name", type);
 		List<SurveillanceTypeEntity> matches = query.getResultList();
@@ -164,10 +164,32 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return result;
 	}
 	
+	public SurveillanceType findSurveillanceType(Long id) {
+		logger.debug("Searchig for surveillance type with id '" + id + "'.");
+		Query query = entityManager.createQuery(
+				"from SurveillanceTypeEntity where id = :id and deleted <> true", 
+				SurveillanceTypeEntity.class);
+		query.setParameter("id", id);
+		List<SurveillanceTypeEntity> matches = query.getResultList();
+		
+		SurveillanceTypeEntity resultEntity = null;
+		if(matches != null && matches.size() > 0) {
+			resultEntity = matches.get(0);
+		}
+		
+		SurveillanceType result = null;
+		if(resultEntity != null) {
+			result = new SurveillanceType();
+			result.setId(resultEntity.getId());
+			result.setName(resultEntity.getName());
+		}
+		return result;
+	}
+	
 	public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
 		logger.debug("Searchig for surveillance requirement type '" + type + "'.");
 		Query query = entityManager.createQuery(
-				"from SurveillanceRequirementTypeEntity where name = :name and deleted <> true", 
+				"from SurveillanceRequirementTypeEntity where name LIKE :name and deleted <> true", 
 				SurveillanceRequirementTypeEntity.class);
 		query.setParameter("name", type);
 		List<SurveillanceRequirementTypeEntity> matches = query.getResultList();
@@ -187,10 +209,32 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return result;
 	}
 	
+	public SurveillanceRequirementType findSurveillanceRequirementType(Long id) {
+		logger.debug("Searchig for surveillance requirement type by id '" + id + "'.");
+		Query query = entityManager.createQuery(
+				"from SurveillanceRequirementTypeEntity where id = :id and deleted <> true", 
+				SurveillanceRequirementTypeEntity.class);
+		query.setParameter("id", id);
+		List<SurveillanceRequirementTypeEntity> matches = query.getResultList();
+		
+		SurveillanceRequirementTypeEntity resultEntity = null;
+		if(matches != null && matches.size() > 0) {
+			resultEntity = matches.get(0);
+		}
+		
+		SurveillanceRequirementType result = null;
+		if(resultEntity != null) {
+			result = new SurveillanceRequirementType();
+			result.setId(resultEntity.getId());
+			result.setName(resultEntity.getName());
+		}
+		return result;
+	}
+	
 	public SurveillanceResultType findSurveillanceResultType(String type) {
 		logger.debug("Searchig for surveillance result type '" + type + "'.");
 		Query query = entityManager.createQuery(
-				"from SurveillanceResultTypeEntity where name = :name and deleted <> true", 
+				"from SurveillanceResultTypeEntity where name LIKE :name and deleted <> true", 
 				SurveillanceResultTypeEntity.class);
 		query.setParameter("name", type);
 		List<SurveillanceResultTypeEntity> matches = query.getResultList();
@@ -210,10 +254,32 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return result;
 	}
 	
+	public SurveillanceResultType findSurveillanceResultType(Long id) {
+		logger.debug("Searchig for surveillance result type by id '" + id + "'.");
+		Query query = entityManager.createQuery(
+				"from SurveillanceResultTypeEntity where id = :id and deleted <> true", 
+				SurveillanceResultTypeEntity.class);
+		query.setParameter("id", id);
+		List<SurveillanceResultTypeEntity> matches = query.getResultList();
+		
+		SurveillanceResultTypeEntity resultEntity = null;
+		if(matches != null && matches.size() > 0) {
+			resultEntity = matches.get(0);
+		}
+		
+		SurveillanceResultType result = null;
+		if(resultEntity != null) {
+			result = new SurveillanceResultType();
+			result.setId(resultEntity.getId());
+			result.setName(resultEntity.getName());
+		}
+		return result;
+	}
+	
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
 		logger.debug("Searchig for nonconformity status type '" + type + "'.");
 		Query query = entityManager.createQuery(
-				"from NonconformityStatusEntity where name = :name and deleted <> true", 
+				"from NonconformityStatusEntity where name LIKE :name and deleted <> true", 
 				NonconformityStatusEntity.class);
 		query.setParameter("name", type);
 		List<NonconformityStatusEntity> matches = query.getResultList();
@@ -222,6 +288,28 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		if(matches != null && matches.size() > 0) {
 			resultEntity = matches.get(0);
 			logger.debug("Found nonconformity status type '" + type + "' having id '" + resultEntity.getId() + "'.");
+		}
+		
+		SurveillanceNonconformityStatus result = null;
+		if(resultEntity != null) {
+			result = new SurveillanceNonconformityStatus();
+			result.setId(resultEntity.getId());
+			result.setName(resultEntity.getName());
+		}
+		return result;
+	}
+	
+	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id) {
+		logger.debug("Searchig for nonconformity status type by id '" + id + "'.");
+		Query query = entityManager.createQuery(
+				"from NonconformityStatusEntity where id = :id and deleted <> true", 
+				NonconformityStatusEntity.class);
+		query.setParameter("id", id);
+		List<NonconformityStatusEntity> matches = query.getResultList();
+		
+		NonconformityStatusEntity resultEntity = null;
+		if(matches != null && matches.size() > 0) {
+			resultEntity = matches.get(0);
 		}
 		
 		SurveillanceNonconformityStatus result = null;

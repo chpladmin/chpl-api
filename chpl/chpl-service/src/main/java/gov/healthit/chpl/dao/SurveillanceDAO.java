@@ -20,7 +20,11 @@ public interface SurveillanceDAO {
 	public void deletePendingSurveillance(Surveillance surv) throws EntityNotFoundException;
 	
 	public SurveillanceType findSurveillanceType(String type);
+	public SurveillanceType findSurveillanceType(Long id);
 	public SurveillanceRequirementType findSurveillanceRequirementType(String type);
+	public SurveillanceRequirementType findSurveillanceRequirementType(Long id);
 	public SurveillanceResultType findSurveillanceResultType(String type);
+	public SurveillanceResultType findSurveillanceResultType(Long id);
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type);
+	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id);
 }

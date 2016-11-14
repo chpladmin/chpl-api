@@ -15,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
@@ -33,11 +32,10 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 	private static final Logger logger = LogManager.getLogger(SurveillanceUploadHandler2015.class);
 
 	private static final String DATE_FORMAT = "yyyyMMdd";
-	private static final String FIRST_ROW_REGEX = "^New|Update$/i";
-	private static final String SUBSEQUENT_ROW = "Subelement";
+	private static final String FIRST_ROW_REGEX = "^NEW|UPDATE$";
+	private static final String SUBSEQUENT_ROW = "SUBELEMENT";
 	
 	@Autowired CertifiedProductDAO cpDao;
-	@Autowired SurveillanceDAO survDao;
 	
 	protected SimpleDateFormat dateFormatter;
 	private List<CSVRecord> record;
@@ -55,7 +53,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		//get things that are only in the first row of the surveillance
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(0).trim();
-			if(!StringUtils.isEmpty(statusStr) && statusStr.matches(FIRST_ROW_REGEX)) {
+			if(!StringUtils.isEmpty(statusStr) && statusStr.toUpperCase().matches(FIRST_ROW_REGEX)) {
 				parseSurveillanceDetails(record, surv);
 			}
 		}
@@ -64,7 +62,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(0).trim();
 			if(!StringUtils.isEmpty(statusStr) && 
-					(statusStr.matches(FIRST_ROW_REGEX) || statusStr.equalsIgnoreCase(SUBSEQUENT_ROW))) {
+					(statusStr.toUpperCase().matches(FIRST_ROW_REGEX) || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
 				parseSurveilledRequirements(record, surv);
 			}
 		}
@@ -73,7 +71,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(0).trim();
 			if(!StringUtils.isEmpty(statusStr) && 
-					(statusStr.matches(FIRST_ROW_REGEX) || statusStr.equalsIgnoreCase(SUBSEQUENT_ROW))) {
+					(statusStr.toUpperCase().matches(FIRST_ROW_REGEX) || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
 				parseNonconformities(record, surv);
 			}
 		}
@@ -116,7 +114,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		}
 		
 		if(surv.getCertifiedProduct() == null || surv.getCertifiedProduct().getId() == null) {
-			surv.getErrors().add("Could not find Certified Product with unique id " + chplId);	
+			surv.getErrorMessages().add("Could not find Certified Product with unique id " + chplId);	
 		}
 		
 		//find the surveillance id in case this is an update
@@ -160,7 +158,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		//surveillance type
 		String survTypeStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(survTypeStr)) {
-			SurveillanceType type = survDao.findSurveillanceType(survTypeStr);
+			SurveillanceType type = new SurveillanceType();
+			type.setName(survTypeStr);
 			surv.setType(type);
 		}
 		
@@ -183,7 +182,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		//requirement type
 		String requirementTypeStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(requirementTypeStr)) {
-			SurveillanceRequirementType requirementType = survDao.findSurveillanceRequirementType(requirementTypeStr);
+			SurveillanceRequirementType requirementType = new SurveillanceRequirementType();
+			requirementType.setName(requirementTypeStr);
 			req.setType(requirementType);
 		}
 		
@@ -194,16 +194,22 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		//surveillance result
 		String resultTypeStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(resultTypeStr)) {
-			SurveillanceResultType resultType = survDao.findSurveillanceResultType(resultTypeStr);
+			SurveillanceResultType resultType = new SurveillanceResultType();
+			resultType.setName(resultTypeStr);
 			req.setResult(resultType);
 		}
 		surv.getRequirements().add(req);
 	}
 	
 	public void parseNonconformities(CSVRecord record, Surveillance surv) {
-		int colIndex = 8;
+		int ncBeginIndex = 10;
+		//if the first nonconformity cell is blank, forget it
+		if(StringUtils.isEmpty(record.get(ncBeginIndex).trim())) {
+			return;
+		}
 		
-		//the requirement - to be used later for matching
+		//find the requirement this nonconformity belongs to
+		int colIndex = 8;
 		SurveillanceRequirement req = null;
 		String requirementStr = record.get(colIndex).trim();
 		if(!StringUtils.isEmpty(requirementStr)) {
@@ -216,6 +222,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			}
 		}
 		
+		//parse out all nonconformity data
 		colIndex = 10;
 		SurveillanceNonconformity nc = new SurveillanceNonconformity();
 		
@@ -226,8 +233,9 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		//nonconformity status
 		String ncStatusStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(ncStatusStr)) {
-			SurveillanceNonconformityStatus ncstatus = survDao.findSurveillanceNonconformityStatusType(ncStatusStr);
-			nc.setStatus(ncstatus);
+			SurveillanceNonconformityStatus ncStatus = new SurveillanceNonconformityStatus();
+			ncStatus.setName(ncStatusStr);
+			nc.setStatus(ncStatus);
 		}
 		
 		//date of determination

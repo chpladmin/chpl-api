@@ -13,7 +13,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 public class SurveillanceUploadHandlerFactoryImpl implements SurveillanceUploadHandlerFactory {
 	public static int NUM_FIELDS_2015 = 23;
 	
-	@Autowired private SurveillanceUploadHandler2015 handler2015;
+	@Autowired private SurveillanceUploadHandler handler2015;
 	
 	private SurveillanceUploadHandlerFactoryImpl() {}
 	
