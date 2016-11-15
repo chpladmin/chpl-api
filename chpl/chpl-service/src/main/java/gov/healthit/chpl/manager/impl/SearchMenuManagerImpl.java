@@ -23,6 +23,7 @@ import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
+import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
@@ -33,6 +34,10 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.SurveillanceResultType;
+import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -83,6 +88,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Autowired private QmsStandardDAO qmsDao;
 	@Autowired private TargetedUserDAO tuDao;
 	@Autowired private DeveloperStatusDAO devStatusDao;
+	@Autowired private SurveillanceDAO survDao;
 	
 	@Autowired
 	private ProductClassificationTypeDAO productClassificationTypeDAO;
@@ -325,6 +331,50 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			std.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
 		}
 		return std;
+	}
+	
+	@Override
+	public Set<KeyValueModel> getSurveillanceTypes() {
+		List<SurveillanceType> daoResults = survDao.getAllSurveillanceTypes();
+		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+		
+		for(SurveillanceType result : daoResults) {
+			results.add(new KeyValueModel(result.getId(), result.getName()));
+		}
+		return results;
+	}
+	
+	@Override
+	public Set<KeyValueModel> getSurveillanceRequirementTypes() {
+		List<SurveillanceRequirementType> daoResults = survDao.getAllSurveillanceRequirementTypes();
+		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+		
+		for(SurveillanceRequirementType result : daoResults) {
+			results.add(new KeyValueModel(result.getId(), result.getName()));
+		}
+		return results;
+	}
+	
+	@Override
+	public Set<KeyValueModel> getSurveillanceResultTypes() {
+		List<SurveillanceResultType> daoResults = survDao.getAllSurveillanceResultTypes();
+		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+		
+		for(SurveillanceResultType result : daoResults) {
+			results.add(new KeyValueModel(result.getId(), result.getName()));
+		}
+		return results;
+	}
+	
+	@Override
+	public Set<KeyValueModel> getNonconformityStatusTypes() {
+		List<SurveillanceNonconformityStatus> daoResults = survDao.getAllSurveillanceNonconformityStatusTypes();
+		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+		
+		for(SurveillanceNonconformityStatus result : daoResults) {
+			results.add(new KeyValueModel(result.getId(), result.getName()));
+		}
+		return results;
 	}
 	
 	@Transactional

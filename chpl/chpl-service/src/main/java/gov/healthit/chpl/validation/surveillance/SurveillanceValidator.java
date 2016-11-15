@@ -35,22 +35,32 @@ public class SurveillanceValidator {
 			SurveillanceType survType = survDao.findSurveillanceType(surv.getType().getName());
 			if(survType == null) {
 				surv.getErrorMessages().add("A surveillance type was not found matching '" + surv.getType().getName() + "'.");
+			} else {
+				surv.setType(survType);
 			}
 		} else {
 			SurveillanceType survType = survDao.findSurveillanceType(surv.getType().getId());
 			if(survType == null) {
 				surv.getErrorMessages().add("A surveillance type was not found with id '" + surv.getType().getId() + "'.");
-			} 
+			} else {
+				surv.setType(survType);
+			}
 		}
 		
-		//randomized surveillance requires some things
+		//randomized surveillance requires number of sites used but 
+		//any other type of surveillance should not have that value
 		if(surv.getType() != null && surv.getType().getName() != null && 
 			surv.getType().getName().equalsIgnoreCase("Randomized")) {
 			if(surv.getRandomizedSitesUsed() == null || surv.getRandomizedSitesUsed().intValue() <= 0) {
 				surv.getErrorMessages().add("Randomized surveillance must provide a nonzero value for number of randomized sites used.");
 			}
+		} else if(surv.getType() != null && surv.getType().getName() != null && 
+				!surv.getType().getName().equalsIgnoreCase("Randomized")) {
+			if(surv.getRandomizedSitesUsed() != null && surv.getRandomizedSitesUsed().intValue() > 0) {
+				surv.getErrorMessages().add("Number of randomized sites used is not applicable for " + surv.getType().getName() + " surveillance.");
+			}
 		}
-			
+		
 		validateSurveillanceRequirements(surv);
 		validateSurveillanceNonconformities(surv);
 	}
@@ -70,11 +80,15 @@ public class SurveillanceValidator {
 					SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType(req.getType().getName());
 					if(reqType == null) {
 						surv.getErrorMessages().add("No type with name '" + req.getType().getName() + "' was found for surveillance requirement " + req.getRequirement() + ".");
+					} else {
+						req.setType(reqType);
 					}
 				} else {
 					SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType(req.getType().getId());
 					if(reqType == null) {
 						surv.getErrorMessages().add("No type with id '" + req.getType().getId() + "' was found for surveillance requirement " + req.getRequirement() + ".");
+					} else {
+						req.setType(reqType);
 					}
 				}
 				
@@ -85,11 +99,15 @@ public class SurveillanceValidator {
 						SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
 						if(resType == null) {
 							surv.getErrorMessages().add("No result with name '" + req.getResult().getName() + "' was found for surveillance requirement " + req.getRequirement() + ".");
+						} else {
+							req.setResult(resType);
 						}
 					} else {
 						SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
 						if(resType == null) {
 							surv.getErrorMessages().add("No result with id '" + req.getResult().getId() + "' was found for surveillance requirement " + req.getRequirement() + ".");
+						} else {
+							req.setResult(resType);
 						}
 					}
 				}
@@ -118,11 +136,15 @@ public class SurveillanceValidator {
 							SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType(nc.getStatus().getName());
 							if(ncStatus == null) {
 								surv.getErrorMessages().add("No non-conformity status with name '" + nc.getStatus().getName() + "' was found for requirement " + req.getRequirement() + ", nonconformity '" + nc.getNonconformityType() + "'.");
+							} else {
+								nc.setStatus(ncStatus);
 							}
 						} else {
 							SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType(nc.getStatus().getId());
 							if(ncStatus == null) {
 								surv.getErrorMessages().add("No non-conformity status with id '" + nc.getStatus().getId() + "' was found for requirement " + req.getRequirement() + ", nonconformity '" + nc.getNonconformityType() + "'.");
+							} else {
+								nc.setStatus(ncStatus);
 							}
 						}
 						
@@ -138,6 +160,8 @@ public class SurveillanceValidator {
 							surv.getErrorMessages().add("Findings are required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
 						}
 						
+						//site counts are required for completed randomized surveillance
+						//but not allowed for other types of surveillance
 						if(surv.getType() != null && surv.getType().getName() != null && 
 								surv.getType().getName().equalsIgnoreCase("Randomized")) {
 							if(nc.getSitesPassed() == null || nc.getSitesPassed().intValue() < 0) {
@@ -146,6 +170,15 @@ public class SurveillanceValidator {
 							
 							if(nc.getTotalSites() == null || nc.getTotalSites().intValue() < 0) {
 								surv.getErrorMessages().add("Total number of sites is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
+							}
+						} else if(surv.getType() != null && surv.getType().getName() != null && 
+								!surv.getType().getName().equalsIgnoreCase("Randomized")) {
+							if(nc.getSitesPassed() != null && nc.getSitesPassed().intValue() >= 0) {
+								surv.getErrorMessages().add("Number of sites passed is not applicable for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
+							}
+							
+							if(nc.getTotalSites() != null && nc.getTotalSites().intValue() >= 0) {
+								surv.getErrorMessages().add("Total number of sites is not applicable for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
 							}
 						}
 						

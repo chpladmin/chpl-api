@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -141,6 +142,18 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return results;
 	}
 	
+	public List<SurveillanceType> getAllSurveillanceTypes() {
+		Query query = entityManager.createQuery("from SurveillanceTypeEntity where deleted <> true",
+				SurveillanceTypeEntity.class);
+		List<SurveillanceTypeEntity> resultEntities = query.getResultList();
+		List<SurveillanceType> results = new ArrayList<SurveillanceType>();
+		for(SurveillanceTypeEntity resultEntity : resultEntities) {
+			SurveillanceType result = convert(resultEntity);
+			results.add(result);
+		}
+		return results;
+	}
+	
 	public SurveillanceType findSurveillanceType(String type) {
 		logger.debug("Searchig for surveillance type '" + type + "'.");
 		Query query = entityManager.createQuery(
@@ -155,12 +168,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			logger.debug("Found surveillance type '" + type + "' having id '" + resultEntity.getId() + "'.");
 		}
 		
-		SurveillanceType result = null;
-		if(resultEntity != null) {
-			result = new SurveillanceType();
-			result.setId(resultEntity.getId());
-			result.setName(resultEntity.getName());
-		}
+		SurveillanceType result = convert(resultEntity);
 		return result;
 	}
 	
@@ -177,13 +185,21 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			resultEntity = matches.get(0);
 		}
 		
-		SurveillanceType result = null;
-		if(resultEntity != null) {
-			result = new SurveillanceType();
-			result.setId(resultEntity.getId());
-			result.setName(resultEntity.getName());
-		}
+		SurveillanceType result = convert(resultEntity);
 		return result;
+	}
+	
+	public List<SurveillanceRequirementType> getAllSurveillanceRequirementTypes() {
+		Query query = entityManager.createQuery(
+				"from SurveillanceRequirementTypeEntity where deleted <> true", 
+				SurveillanceRequirementTypeEntity.class);
+		List<SurveillanceRequirementTypeEntity> resultEntities = query.getResultList();
+		List<SurveillanceRequirementType> results = new ArrayList<SurveillanceRequirementType>();
+		for(SurveillanceRequirementTypeEntity resultEntity : resultEntities) {
+			SurveillanceRequirementType result = convert(resultEntity);
+			results.add(result);
+		}
+		return results;
 	}
 	
 	public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
@@ -200,12 +216,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			logger.debug("Found surveillance requirement type '" + type + "' having id '" + resultEntity.getId() + "'.");
 		}
 		
-		SurveillanceRequirementType result = null;
-		if(resultEntity != null) {
-			result = new SurveillanceRequirementType();
-			result.setId(resultEntity.getId());
-			result.setName(resultEntity.getName());
-		}
+		SurveillanceRequirementType result = convert(resultEntity);
 		return result;
 	}
 	
@@ -222,13 +233,21 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			resultEntity = matches.get(0);
 		}
 		
-		SurveillanceRequirementType result = null;
-		if(resultEntity != null) {
-			result = new SurveillanceRequirementType();
-			result.setId(resultEntity.getId());
-			result.setName(resultEntity.getName());
-		}
+		SurveillanceRequirementType result = convert(resultEntity);
 		return result;
+	}
+	
+	public List<SurveillanceResultType> getAllSurveillanceResultTypes() {
+		Query query = entityManager.createQuery(
+				"from SurveillanceResultTypeEntity where deleted <> true", 
+				SurveillanceResultTypeEntity.class);
+		List<SurveillanceResultTypeEntity> resultEntities = query.getResultList();
+		List<SurveillanceResultType> results = new ArrayList<SurveillanceResultType>();
+		for(SurveillanceResultTypeEntity resultEntity : resultEntities) {
+			SurveillanceResultType result = convert(resultEntity);
+			results.add(result);
+		}
+		return results;
 	}
 	
 	public SurveillanceResultType findSurveillanceResultType(String type) {
@@ -245,12 +264,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			logger.debug("Found surveillance result type '" + type + "' having id '" + resultEntity.getId() + "'.");
 		}
 		
-		SurveillanceResultType result = null;
-		if(resultEntity != null) {
-			result = new SurveillanceResultType();
-			result.setId(resultEntity.getId());
-			result.setName(resultEntity.getName());
-		}
+		SurveillanceResultType result = convert(resultEntity);
 		return result;
 	}
 	
@@ -267,13 +281,21 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			resultEntity = matches.get(0);
 		}
 		
-		SurveillanceResultType result = null;
-		if(resultEntity != null) {
-			result = new SurveillanceResultType();
-			result.setId(resultEntity.getId());
-			result.setName(resultEntity.getName());
-		}
+		SurveillanceResultType result = convert(resultEntity);
 		return result;
+	}
+	
+	public List<SurveillanceNonconformityStatus> getAllSurveillanceNonconformityStatusTypes() {
+		Query query = entityManager.createQuery(
+				"from NonconformityStatusEntity where deleted <> true", 
+				NonconformityStatusEntity.class);
+		List<NonconformityStatusEntity> resultEntities = query.getResultList();
+		List<SurveillanceNonconformityStatus> results = new ArrayList<SurveillanceNonconformityStatus>();
+		for(NonconformityStatusEntity resultEntity : resultEntities) {
+			SurveillanceNonconformityStatus result = convert(resultEntity);
+			results.add(result);
+		}
+		return results;
 	}
 	
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
@@ -290,12 +312,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			logger.debug("Found nonconformity status type '" + type + "' having id '" + resultEntity.getId() + "'.");
 		}
 		
-		SurveillanceNonconformityStatus result = null;
-		if(resultEntity != null) {
-			result = new SurveillanceNonconformityStatus();
-			result.setId(resultEntity.getId());
-			result.setName(resultEntity.getName());
-		}
+		SurveillanceNonconformityStatus result = convert(resultEntity);
 		return result;
 	}
 	
@@ -312,12 +329,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			resultEntity = matches.get(0);
 		}
 		
-		SurveillanceNonconformityStatus result = null;
-		if(resultEntity != null) {
-			result = new SurveillanceNonconformityStatus();
-			result.setId(resultEntity.getId());
-			result.setName(resultEntity.getName());
-		}
+		SurveillanceNonconformityStatus result = convert(resultEntity);
 		return result;
 	}
 	
@@ -353,5 +365,45 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		
 		List<PendingSurveillanceEntity> results = query.getResultList();
 		return results;
+	}
+	
+	private SurveillanceType convert(SurveillanceTypeEntity entity) {
+		SurveillanceType result = null;
+		if(entity != null) {
+			result = new SurveillanceType();
+			result.setId(entity.getId());
+			result.setName(entity.getName());
+		}
+		return result;
+	}
+	
+	private SurveillanceRequirementType convert(SurveillanceRequirementTypeEntity entity) {
+		SurveillanceRequirementType result = null;
+		if(entity != null) {
+			result = new SurveillanceRequirementType();
+			result.setId(entity.getId());
+			result.setName(entity.getName());
+		}
+		return result;
+	}
+	
+	private SurveillanceResultType convert(SurveillanceResultTypeEntity entity) {
+		SurveillanceResultType result = null;
+		if(entity != null) {
+			result = new SurveillanceResultType();
+			result.setId(entity.getId());
+			result.setName(entity.getName());
+		}
+		return result;
+	}
+	
+	private SurveillanceNonconformityStatus convert(NonconformityStatusEntity entity) {
+		SurveillanceNonconformityStatus result = null;
+		if(entity != null) {
+			result = new SurveillanceNonconformityStatus();
+			result.setId(entity.getId());
+			result.setName(entity.getName());
+		}
+		return result;
 	}
 }

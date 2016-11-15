@@ -379,6 +379,50 @@ public class SearchViewController {
 		return result;
 	}
 	
+	@ApiOperation(value="Get all possible surveillance type options in the CHPL")
+	@RequestMapping(value="/data/surveillance_types", method=RequestMethod.GET,
+				produces = "application/json; charset=utf-8")
+	public @ResponseBody SearchOption getSurveillanceTypes() {
+		Set<KeyValueModel> data = searchMenuManager.getSurveillanceTypes();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible surveillance result type options in the CHPL")
+	@RequestMapping(value="/data/surveillance_result_types", method=RequestMethod.GET,
+				produces = "application/json; charset=utf-8")
+	public @ResponseBody SearchOption getSurveillanceResultTypes() {
+		Set<KeyValueModel> data = searchMenuManager.getSurveillanceResultTypes();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible surveillance requirement type options in the CHPL")
+	@RequestMapping(value="/data/surveillance_requirement_types", method=RequestMethod.GET,
+				produces = "application/json; charset=utf-8")
+	public @ResponseBody SearchOption getSurveillanceRequirementTypes() {
+		Set<KeyValueModel> data = searchMenuManager.getSurveillanceRequirementTypes();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible nonconformity status type options in the CHPL")
+	@RequestMapping(value="/data/nonconformity_status_types", method=RequestMethod.GET,
+				produces = "application/json; charset=utf-8")
+	public @ResponseBody SearchOption getNonconformityStatusTypes() {
+		Set<KeyValueModel> data = searchMenuManager.getNonconformityStatusTypes();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
+	}
+	
 	@ApiOperation(value="Get all search options in the CHPL", 
 			notes="This returns all of the other /data/{something} results in one single response.")
 	@RequestMapping(value="/data/search_options", method=RequestMethod.GET,

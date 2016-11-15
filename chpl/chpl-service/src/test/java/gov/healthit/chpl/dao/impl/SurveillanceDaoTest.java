@@ -10,6 +10,9 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.ActivityDTO;
@@ -67,5 +70,66 @@ public class SurveillanceDaoTest extends TestCase {
 		assertNotNull(result);
 		assertNotNull(result.getId());
 		assertEquals("Randomized", result.getName());
+	}
+	
+	@Test
+	@Transactional
+	public void testGetSurveillanceTypeRandomizedCaseInsensitive() {
+		SurveillanceType result = survDao.findSurveillanceType("rANdOmIzED");
+		assertNotNull(result);
+		assertNotNull(result.getId());
+		assertEquals("Randomized", result.getName());
+	}
+	
+	@Test
+	@Transactional
+	public void testGetAllSurveillanceTypes() {
+		List<SurveillanceType> results = survDao.getAllSurveillanceTypes();
+		assertNotNull(results);
+		assertEquals(2, results.size());
+		for(SurveillanceType result : results) {
+			assertNotNull(result.getId());
+			assertNotNull(result.getName());
+			assertTrue(result.getName().length() > 0);
+		}
+	}
+	
+	@Test
+	@Transactional
+	public void testGetAllSurveillanceResultTypes() {
+		List<SurveillanceResultType> results = survDao.getAllSurveillanceResultTypes();
+		assertNotNull(results);
+		assertEquals(2, results.size());
+		for(SurveillanceResultType result : results) {
+			assertNotNull(result.getId());
+			assertNotNull(result.getName());
+			assertTrue(result.getName().length() > 0);
+		}
+	}
+	
+	@Test
+	@Transactional
+	public void testGetAllSurveillanceRequirementTypes() {
+		List<SurveillanceRequirementType> results = survDao.getAllSurveillanceRequirementTypes();
+		assertNotNull(results);
+		assertEquals(3, results.size());
+		for(SurveillanceRequirementType result : results) {
+			assertNotNull(result.getId());
+			assertNotNull(result.getName());
+			assertTrue(result.getName().length() > 0);
+		}
+	}
+	
+	@Test
+	@Transactional
+	public void testGetAllNonconformityStatusTypes() {
+		List<SurveillanceNonconformityStatus> results = survDao.getAllSurveillanceNonconformityStatusTypes();
+		assertNotNull(results);
+		assertEquals(2, results.size());
+		for(SurveillanceNonconformityStatus result : results) {
+			assertNotNull(result.getId());
+			assertNotNull(result.getName());
+			assertTrue(result.getName().length() > 0);
+		}
 	}
 }
