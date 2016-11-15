@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.surveillance;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
@@ -213,8 +214,9 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		SurveillanceRequirement req = null;
 		String requirementStr = record.get(colIndex).trim();
 		if(!StringUtils.isEmpty(requirementStr)) {
-			for(int i = 0; i < surv.getRequirements().size() && req == null; i++) {
-				SurveillanceRequirement currReq = surv.getRequirements().get(i);
+			Iterator<SurveillanceRequirement> reqIter = surv.getRequirements().iterator();
+			while(reqIter.hasNext() && req == null) {
+				SurveillanceRequirement currReq = reqIter.next();
 				if(currReq.getRequirement() != null && 
 						currReq.getRequirement().equalsIgnoreCase(requirementStr)) {
 					req = currReq;

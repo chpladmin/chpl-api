@@ -144,9 +144,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	public SurveillanceType findSurveillanceType(String type) {
 		logger.debug("Searchig for surveillance type '" + type + "'.");
 		Query query = entityManager.createQuery(
-				"from SurveillanceTypeEntity where name LIKE :name and deleted <> true", 
+				"from SurveillanceTypeEntity where UPPER(name) LIKE :name and deleted <> true", 
 				SurveillanceTypeEntity.class);
-		query.setParameter("name", type);
+		query.setParameter("name", type.toUpperCase());
 		List<SurveillanceTypeEntity> matches = query.getResultList();
 		
 		SurveillanceTypeEntity resultEntity = null;
@@ -189,9 +189,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
 		logger.debug("Searchig for surveillance requirement type '" + type + "'.");
 		Query query = entityManager.createQuery(
-				"from SurveillanceRequirementTypeEntity where name LIKE :name and deleted <> true", 
+				"from SurveillanceRequirementTypeEntity where UPPER(name) LIKE :name and deleted <> true", 
 				SurveillanceRequirementTypeEntity.class);
-		query.setParameter("name", type);
+		query.setParameter("name", type.toUpperCase());
 		List<SurveillanceRequirementTypeEntity> matches = query.getResultList();
 		
 		SurveillanceRequirementTypeEntity resultEntity = null;
@@ -234,9 +234,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	public SurveillanceResultType findSurveillanceResultType(String type) {
 		logger.debug("Searchig for surveillance result type '" + type + "'.");
 		Query query = entityManager.createQuery(
-				"from SurveillanceResultTypeEntity where name LIKE :name and deleted <> true", 
+				"from SurveillanceResultTypeEntity where UPPER(name) LIKE :name and deleted <> true", 
 				SurveillanceResultTypeEntity.class);
-		query.setParameter("name", type);
+		query.setParameter("name", type.toUpperCase());
 		List<SurveillanceResultTypeEntity> matches = query.getResultList();
 		
 		SurveillanceResultTypeEntity resultEntity = null;
@@ -279,9 +279,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
 		logger.debug("Searchig for nonconformity status type '" + type + "'.");
 		Query query = entityManager.createQuery(
-				"from NonconformityStatusEntity where name LIKE :name and deleted <> true", 
+				"from NonconformityStatusEntity where UPPER(name) LIKE :name and deleted <> true", 
 				NonconformityStatusEntity.class);
-		query.setParameter("name", type);
+		query.setParameter("name", type.toUpperCase());
 		List<NonconformityStatusEntity> matches = query.getResultList();
 		
 		NonconformityStatusEntity resultEntity = null;

@@ -10,6 +10,7 @@ import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 
 @Component("surveillanceValidator")
@@ -55,7 +56,7 @@ public class SurveillanceValidator {
 	}
 	
 	public void validateSurveillanceRequirements(Surveillance surv) {
-		if(surv.getRequirements() == null || surv.getRequirements().size() > 0) {
+		if(surv.getRequirements() == null || surv.getRequirements().size() == 0) {
 			surv.getErrorMessages().add("At least one surveillance requirement is required for CHPL product " + surv.getCertifiedProduct().getChplProductNumber() + ".");
 		} else {
 			for(SurveillanceRequirement req : surv.getRequirements()) {
@@ -81,7 +82,15 @@ public class SurveillanceValidator {
 					if(req.getResult() == null) {
 						surv.getErrorMessages().add("Result was not found for surveillance requirement " + req.getRequirement() + ".");
 					} else if(req.getResult().getId() == null || req.getResult().getId().longValue() <= 0) {
-						surv.getErrorMessages().add("No result type was found for surveillance requirement " + req.getRequirement() + " matching '" + req.getResult().getName() + "'.");
+						SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
+						if(resType == null) {
+							surv.getErrorMessages().add("No result with name '" + req.getResult().getName() + "' was found for surveillance requirement " + req.getRequirement() + ".");
+						}
+					} else {
+						SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
+						if(resType == null) {
+							surv.getErrorMessages().add("No result with id '" + req.getResult().getId() + "' was found for surveillance requirement " + req.getRequirement() + ".");
+						}
 					}
 				}
 			}

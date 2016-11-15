@@ -2,7 +2,9 @@ package gov.healthit.chpl.domain;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Surveillance {
 	private Long id;
@@ -12,12 +14,12 @@ public class Surveillance {
 	private Date endDate;
 	private SurveillanceType type;
 	private Integer randomizedSitesUsed;
-	private List<SurveillanceRequirement> requirements;
+	private Set<SurveillanceRequirement> requirements;
 	
 	private List<String> errorMessages;
 	
 	public Surveillance() {
-		this.requirements = new ArrayList<SurveillanceRequirement>();
+		this.requirements = new LinkedHashSet<SurveillanceRequirement>();
 		this.errorMessages = new ArrayList<String>();
 	}
 
@@ -77,11 +79,11 @@ public class Surveillance {
 		this.randomizedSitesUsed = randomizedSitesUsed;
 	}
 
-	public List<SurveillanceRequirement> getRequirements() {
+	public Set<SurveillanceRequirement> getRequirements() {
 		return requirements;
 	}
 
-	public void setRequirements(List<SurveillanceRequirement> requirements) {
+	public void setRequirements(Set<SurveillanceRequirement> requirements) {
 		this.requirements = requirements;
 	}
 

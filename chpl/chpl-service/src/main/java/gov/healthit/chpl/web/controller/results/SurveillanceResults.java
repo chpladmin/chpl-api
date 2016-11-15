@@ -6,17 +6,18 @@ import java.util.List;
 import gov.healthit.chpl.domain.Surveillance;
 
 public class SurveillanceResults {
-	private List<Surveillance> results;
+	private List<Surveillance> pendingSurveillance;
 
 	public SurveillanceResults() {
-		results = new ArrayList<Surveillance>();
+		pendingSurveillance = new ArrayList<Surveillance>();
 	}
 
-	public List<Surveillance> getResults() {
-		return results;
+	public List<Surveillance> getPendingSurveillance() {
+		return pendingSurveillance;
 	}
 
-	public void setResults(List<Surveillance> results) {
-		this.results = results;
+	public void setPendingSurveillance(List<Surveillance> pendingSurveillance) {
+		this.pendingSurveillance = pendingSurveillance;
 	}
+
 }

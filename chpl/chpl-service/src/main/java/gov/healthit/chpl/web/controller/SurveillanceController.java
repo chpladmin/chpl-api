@@ -14,6 +14,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -66,7 +68,7 @@ public class SurveillanceController {
 		}
 		
 		SurveillanceResults results = new SurveillanceResults();
-		results.setResults(pendingSurvs);
+		results.setPendingSurveillance(pendingSurvs);
 		return results;
 	}
 	
@@ -174,13 +176,18 @@ public class SurveillanceController {
 				//Certified product is guaranteed to be filled in at this point.
 				//If it hadn't been found during upload an error would have been thrown above.
 				for(Surveillance surv : pendingSurvs) {
+					CertifiedProductDTO owningCp = null; 
 					try {
-						CertifiedProductDTO owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
+						owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
 						Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
 						Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId);
 						uploadedSurveillance.add(uploaded);
+					} catch(AccessDeniedException denied) {
+						logger.error("User " + Util.getCurrentUser().getSubjectName() + 
+								" does not have access to add surveillance" + 
+								(owningCp != null ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'." : "."));
 					} catch(Exception ex) {
-						logger.error("Error adding a new pending surveillance.", ex);
+						logger.error("Error adding a new pending surveillance. Please make sure all required fields are present.", ex);
 					}
 				}	
 			}
@@ -193,7 +200,7 @@ public class SurveillanceController {
 		}
 		
 		SurveillanceResults results = new SurveillanceResults();
-		results.getResults().addAll(uploadedSurveillance);
+		results.getPendingSurveillance().addAll(uploadedSurveillance);
 		return results;
 	}
 }
