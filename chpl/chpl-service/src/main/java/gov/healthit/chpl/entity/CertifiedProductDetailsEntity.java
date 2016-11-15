@@ -1,11 +1,17 @@
 package gov.healthit.chpl.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -115,6 +121,11 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "product_name")
     private String productName;
     
+    @Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "product_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private ProductEntity product;
+ 
     @Column(name = "vendor_id")
     private Long developerId;
     
@@ -759,5 +770,13 @@ public class CertifiedProductDetailsEntity {
 
 	public void setDeveloperStatusName(String developerStatusName) {
 		this.developerStatusName = developerStatusName;
+	}
+
+	public ProductEntity getProduct() {
+		return product;
+	}
+
+	public void setProduct(ProductEntity product) {
+		this.product = product;
 	}	
 }

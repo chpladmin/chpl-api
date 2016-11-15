@@ -19,10 +19,5 @@
         http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
         http://www.springframework.org/schema/security
         http://www.springframework.org/schema/security/spring-security-4.0.xsd">
-   
-   <context:annotation-config/>
-   <context:component-scan base-package="gov.healthit.chpl.registration" />
-   <sec:global-method-security pre-post-annotations="enabled" >
-   		<sec:expression-handler ref="expressionHandler" />
-   </sec:global-method-security>
+    
 </beans>

@@ -2,9 +2,12 @@ package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ProductDTO {
@@ -19,10 +22,15 @@ public class ProductDTO {
 	private String reportFileLocation;
 	private Long developerId;
 	private String developerName;
+	private String developerCode;
 	private Statuses statuses;
+	private List<ProductOwnerDTO> ownerHistory;
 	
-	public ProductDTO(){}
+	public ProductDTO(){
+		this.ownerHistory = new ArrayList<ProductOwnerDTO>();
+	}
 	public ProductDTO(ProductEntity entity){
+		this();
 		
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();
@@ -32,16 +40,22 @@ public class ProductDTO {
 		this.name = entity.getName();
 		this.reportFileLocation = entity.getReportFileLocation();
 		this.developerId = entity.getDeveloperId();
+		if(entity.getDeveloper() != null) {
+			this.developerName = entity.getDeveloper().getName();
+			this.developerCode = entity.getDeveloper().getDeveloperCode();
+		}
+		if(entity.getOwnerHistory() != null) {
+			for(ProductActiveOwnerEntity ownerEntity : entity.getOwnerHistory()) {
+				ProductOwnerDTO ownerDto = new ProductOwnerDTO(ownerEntity);
+				this.ownerHistory.add(ownerDto);
+			}
+		}
 		if(entity.getProductCertificationStatusesEntity() != null){
 			this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(), 
 					entity.getProductCertificationStatusesEntity().getRetired(), 
 					entity.getProductCertificationStatusesEntity().getWithdrawnByDeveloper(), 
 					entity.getProductCertificationStatusesEntity().getWithdrawnByAcb(), 
 					entity.getProductCertificationStatusesEntity().getSuspendedByAcb());
-		}
-		
-		if(entity.getDeveloper() != null) {
-			this.developerName = entity.getDeveloper().getName();
 		}
 	}
 	
@@ -110,6 +124,18 @@ public class ProductDTO {
 	}
 	public void setStatuses(Statuses statuses) {
 		this.statuses = statuses;
+	}
+	public List<ProductOwnerDTO> getOwnerHistory() {
+		return ownerHistory;
+	}
+	public void setOwnerHistory(List<ProductOwnerDTO> ownerHistory) {
+		this.ownerHistory = ownerHistory;
+	}
+	public String getDeveloperCode() {
+		return developerCode;
+	}
+	public void setDeveloperCode(String developerCode) {
+		this.developerCode = developerCode;
 	}
 	
 }

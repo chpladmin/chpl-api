@@ -17,7 +17,10 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.ProductInsertableOwnerEntity;
+import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
@@ -25,7 +28,6 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	
 	@Override
 	@CacheEvict(value="searchOptionsCache", allEntries=true)
-	@Transactional
 	public ProductDTO create(ProductDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
 		
@@ -46,75 +48,93 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			entity.setName(dto.getName());
 			entity.setReportFileLocation(dto.getReportFileLocation());
 			entity.setDeveloperId(dto.getDeveloperId());
-			
-			if(dto.getDeleted() != null) {
-				entity.setDeleted(dto.getDeleted());
-			} else {
-				entity.setDeleted(false);
-			}
-			
-			if(dto.getLastModifiedUser() != null) {
-				entity.setLastModifiedUser(dto.getLastModifiedUser());
-			} else {
-				entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			}		
-			
-			if(dto.getLastModifiedDate() != null) {
-				entity.setLastModifiedDate(dto.getLastModifiedDate());
-			} else {
-				entity.setLastModifiedDate(new Date());
-			}
-			
-			if(dto.getCreationDate() != null) {
-				entity.setCreationDate(dto.getCreationDate());
-			} else {
-				entity.setCreationDate(new Date());
-			}
-			
+			entity.setDeleted(false);
+			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			create(entity);	
-			return new ProductDTO(entity);
+
+			ProductDTO result = new ProductDTO(entity);
+			if(dto.getOwnerHistory() != null && dto.getOwnerHistory().size() > 0) {
+				for(ProductOwnerDTO prevOwner : dto.getOwnerHistory()) {
+					prevOwner.setProductId(entity.getId());
+					ProductOwnerDTO prevOwnerDto = addOwnershipHistory(prevOwner);
+					result.getOwnerHistory().add(prevOwnerDto);
+				}
+			}
+			return result;
 		}
 		
 	}
-
+	
 	@Override
 	@CacheEvict(value="searchOptionsCache", allEntries=true)
-	@Transactional
-	public ProductEntity update(ProductDTO dto) throws EntityRetrievalException {
+	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException {
 		ProductEntity entity = this.getEntityById(dto.getId());
-		
+		//update product data
 		entity.setReportFileLocation(dto.getReportFileLocation());
-		
-		if(dto.getName() != null) {
-			entity.setName(dto.getName());
-		}
-		
-		if(dto.getDeveloperId() != null) {
-			entity.setDeveloperId(dto.getDeveloperId());
-		}
-				
-		if(dto.getDeleted() != null) {
-			entity.setDeleted(dto.getDeleted());
-		} 
-		
-		if(dto.getCreationDate() != null) {
-			entity.setCreationDate(dto.getCreationDate());
-		} 
-		
-		if(dto.getLastModifiedUser() != null) {
-			entity.setLastModifiedUser(dto.getLastModifiedUser());
-		} else {
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		}		
-		
-		if(dto.getLastModifiedDate() != null) {
-			entity.setLastModifiedDate(dto.getLastModifiedDate());
-		} else {
-			entity.setLastModifiedDate(new Date());
-		}
-		
+		entity.setName(dto.getName());
+		entity.setDeveloperId(dto.getDeveloperId());
+		entity.setDeleted(dto.getDeleted() == null ? false : dto.getDeleted());
+		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		update(entity);
-		return entity;
+
+		//update ownership history
+		
+		//there used to be owners but aren't anymore so delete the existing ones
+		if(dto.getOwnerHistory() == null || dto.getOwnerHistory().size() == 0) {
+			if(entity.getOwnerHistory() != null && entity.getOwnerHistory().size() > 0) {
+				for(ProductActiveOwnerEntity existingPrevOwner : entity.getOwnerHistory()) {
+					existingPrevOwner.setDeleted(true);
+					existingPrevOwner.setLastModifiedDate(new Date());
+					existingPrevOwner.setLastModifiedUser(Util.getCurrentUser().getId());
+					entityManager.merge(existingPrevOwner);
+					entityManager.flush();
+				}
+			}
+		} else {
+			//Look for new entries in ownership history that aren't already
+			//in the list of previous owners.
+			for(ProductOwnerDTO updatedProductPrevOwner : dto.getOwnerHistory()) {
+				boolean alreadyExists = false;
+				for(int i = 0; i < entity.getOwnerHistory().size() && !alreadyExists; i++) {
+					ProductActiveOwnerEntity existingProductPreviousOwner = entity.getOwnerHistory().get(i);
+					if(existingProductPreviousOwner.getDeveloper() != null && 
+						updatedProductPrevOwner.getDeveloper() != null && 
+							existingProductPreviousOwner.getDeveloper().getId().longValue() == 
+							updatedProductPrevOwner.getDeveloper().getId().longValue()) {
+						alreadyExists = true;
+					}
+				}
+				
+				if(!alreadyExists) {
+					addOwnershipHistory(updatedProductPrevOwner);
+				}
+			}
+			
+			//Look for entries in the existing ownership history that are 
+			//not in the passed-in history for the updated product
+			for(ProductActiveOwnerEntity existingPrevOwner : entity.getOwnerHistory()) {
+				boolean isInUpdate = false;
+				for(int i = 0; i < dto.getOwnerHistory().size() && !isInUpdate; i++) {
+					ProductOwnerDTO updatedProductPreviousOwner = dto.getOwnerHistory().get(i);
+					if(existingPrevOwner.getDeveloper() != null && 
+						updatedProductPreviousOwner.getDeveloper() != null && 
+						existingPrevOwner.getDeveloper().getId().longValue() == 
+						updatedProductPreviousOwner.getDeveloper().getId().longValue()) {
+						isInUpdate = true;
+					}
+				}
+				if(!isInUpdate) {
+					existingPrevOwner.setDeleted(true);
+					existingPrevOwner.setLastModifiedDate(new Date());
+					existingPrevOwner.setLastModifiedUser(Util.getCurrentUser().getId());
+					entityManager.merge(existingPrevOwner);
+					entityManager.flush();
+				}
+			}
+		}
+		
+		entityManager.clear();
+		return getById(dto.getId());
 	}
 
 	@Override
@@ -122,15 +142,58 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	@Transactional
 	public void delete(Long id) throws EntityRetrievalException {
 		ProductEntity toDelete = getEntityById(id);
-		
-		if(toDelete != null) {
-			toDelete.setDeleted(true);
-			toDelete.setLastModifiedDate(new Date());
-			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-			update(toDelete);
+		if(toDelete == null) {
+			throw new EntityRetrievalException("Could not find product with id " + id + " for deletion.");
 		}
+		//delete owner history
+		if(toDelete.getOwnerHistory() != null) {
+			for(ProductActiveOwnerEntity prevOwner : toDelete.getOwnerHistory()) {
+				prevOwner.setDeleted(true);
+				prevOwner.setLastModifiedDate(new Date());
+				prevOwner.setLastModifiedUser(Util.getCurrentUser().getId());
+				entityManager.merge(prevOwner);
+				entityManager.flush();
+			}
+		}
+		toDelete.setDeleted(true);
+		toDelete.setLastModifiedDate(new Date());
+		toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+		update(toDelete);
 	}
-
+	
+	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
+	public ProductOwnerDTO addOwnershipHistory(ProductOwnerDTO toAdd) {
+		ProductInsertableOwnerEntity entityToAdd = new ProductInsertableOwnerEntity();
+		entityToAdd.setProductId(toAdd.getProductId());
+		entityToAdd.setCreationDate(new Date());
+		entityToAdd.setLastModifiedDate(new Date());
+		entityToAdd.setDeleted(false);
+		entityToAdd.setLastModifiedUser(Util.getCurrentUser().getId());
+		if(toAdd.getDeveloper() != null) {
+			entityToAdd.setDeveloperId(toAdd.getDeveloper().getId());
+		}
+		entityToAdd.setTransferDate(new Date(toAdd.getTransferDate()));
+		entityManager.persist(entityToAdd);
+		entityManager.flush();
+		
+		return new ProductOwnerDTO(entityToAdd);
+	}
+	
+	@Override
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
+	public void deletePreviousOwner(Long previousOwnershipId) throws EntityRetrievalException {
+		ProductActiveOwnerEntity toDelete = getProductPreviousOwner(previousOwnershipId);
+		if(toDelete == null) {
+			throw new EntityRetrievalException("Could not find previous ownership with id " + previousOwnershipId);
+		}
+		toDelete.setDeleted(true);
+		toDelete.setLastModifiedDate(new Date());
+		toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.merge(toDelete);
+		entityManager.flush();
+	}
+	
 	@Override
 	public List<ProductDTO> findAll() {
 		
@@ -168,10 +231,12 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	public List<ProductDTO> getByDeveloper(Long developerId) {		
-		Query query = entityManager.createQuery( "from ProductEntity pe "
+		Query query = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
-				+ "where (NOT pe.deleted = true) "
-				+ "AND (pe.developerId = :entityid) ", ProductEntity.class );
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "WHERE (pe.developerId = :entityid) "
+				+ "AND (NOT pe.deleted = true)", ProductEntity.class );
 		query.setParameter("entityid", developerId);
 		List<ProductEntity> results = query.getResultList();
 		
@@ -183,8 +248,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
-		Query query = entityManager.createQuery( "from ProductEntity pe "
+		Query query = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND pe.developerId IN (:idList) ", ProductEntity.class );
 		query.setParameter("idList", developerIds);
@@ -198,8 +265,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	public ProductDTO getByDeveloperAndName(Long developerId, String name) {
-		Query query = entityManager.createQuery( "from ProductEntity pe "
+		Query query = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND (pe.developerId = :developerId) and "
 				+ "(pe.name = :name)", ProductEntity.class );
@@ -230,31 +299,51 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	
 	private List<ProductEntity> getAllEntities() {
 		
-		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
+		List<ProductEntity> result = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
 				+ "LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
 				+ "LEFT OUTER JOIN FETCH pe.productCertificationStatuses "
 				+ "where (NOT pe.deleted = true) ", 
 				ProductEntity.class).getResultList();
+		
 		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
+		return result;
+		
+	}
+
+	private ProductActiveOwnerEntity getProductPreviousOwner(Long ppoId) {
+		ProductActiveOwnerEntity result = null;
+		Query query = entityManager.createQuery("SELECT po "
+				+ "FROM ProductActiveOwnerEntity po " 
+				+ "LEFT OUTER JOIN FETCH po.developer "
+				+ "WHERE (po.id = :ppoId)", ProductActiveOwnerEntity.class);
+		query.setParameter("ppoId", ppoId);
+		List<ProductActiveOwnerEntity> results = query.getResultList();
+		if(results != null && results.size() > 0) {
+			result = results.get(0);
+		}
 		return result;
 		
 	}
 	
 	private List<ProductEntity> getAllEntitiesIncludingDeleted() {
 		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
-				+ "LEFT OUTER JOIN FETCH pe.developer ", 
+				+ "LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory ",
 				ProductEntity.class).getResultList();
 		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
 	}
 	
 	private ProductEntity getEntityById(Long id) throws EntityRetrievalException {
-		
 		ProductEntity entity = null;
-			
-		Query query = entityManager.createQuery( "from ProductEntity pe "
-				+ " LEFT OUTER JOIN FETCH pe.developer "
-				+ "where (NOT pe.deleted = true) "
+
+		Query query = entityManager.createQuery( "SELECT distinct pe "
+				+ "FROM ProductEntity pe "
+				+ "LEFT OUTER JOIN FETCH pe.developer "
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "WHERE (NOT pe.deleted = true) "
 				+ "AND (pe.id = :entityid) ", ProductEntity.class );
 		query.setParameter("entityid", id);
 		List<ProductEntity> result = query.getResultList();

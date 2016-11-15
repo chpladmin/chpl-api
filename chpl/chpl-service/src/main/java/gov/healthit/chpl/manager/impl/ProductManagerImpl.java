@@ -116,16 +116,15 @@ public class ProductManagerImpl implements ProductManager {
 			throw new EntityCreationException(msg);
 		}
 		
-		ProductEntity result = productDao.update(dto);
-		ProductDTO afterDto = new ProductDTO(result);
+		ProductDTO result = productDao.update(dto);
 		//the developer name is not updated at this point until after transaction commit so we have to set it
-		DeveloperDTO devDto = devDao.getById(afterDto.getDeveloperId());
-		afterDto.setDeveloperName(devDto.getName());
+		DeveloperDTO devDto = devDao.getById(result.getDeveloperId());
+		result.setDeveloperName(devDto.getName());
 		
 		String activityMsg = "Product "+dto.getName()+" was updated.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, afterDto);
-		checkSuspiciousActivity(beforeDTO, afterDto);
-		return new ProductDTO(result);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, result);
+		checkSuspiciousActivity(beforeDTO, result);
+		return result;
 		
 	}
 

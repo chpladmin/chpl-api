@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -35,6 +34,72 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 	}
 
+	private static final String COLUMNS_MINUS_CERTIFIED_PRODUCT_ID = "creation_date, " 
+			+ "certification_edition_id, " 
+			+ "product_version_id, " 
+			+ "testing_lab_id, "
+			+ "testing_lab_name, "
+			+ "testing_lab_code, "
+			+ "certification_body_id, " 
+			+ "chpl_product_number, "
+			+ "report_file_location, "
+			+ "sed_report_file_location, "
+			+ "sed_intended_user_description, "
+			+ "sed_testing_end, "
+			+ "acb_certification_id, "
+			+ "practice_type_id, "
+			+ "product_classification_type_id, "
+			+ "other_acb, "
+			+ "certification_status_id, "
+			+ "deleted, "
+			+ "product_additional_software, "
+			+ "ics, "
+			+ "sed, "
+			+ "qms, "
+			+ "accessibility_certified, "
+			+ "transparency_attestation, "
+			+ "transparency_attestation_url, "
+			+ "year, "
+			+ "certification_body_name, "
+			+ "certification_body_code, "
+			+ "product_classification_name, "
+			+ "practice_type_name, "
+			+ "product_version, "
+			+ "product_id, "
+			+ "product_name, "
+			+ "vendor_id, "
+			+ "vendor_name, "
+			+ "vendor_code, "
+			+ "vendor_website, " 
+			+ "vendor_status_id, "
+			+ "vendor_status_name, "
+			+ "address_id, "
+			+ "street_line_1, "
+			+ "street_line_2, " 
+			+ "city, " 
+			+ "state, " 
+			+ "zipcode, " 
+			+ "country, "
+			+ "contact_id, "
+			+ "first_name, "
+			+ "last_name, "
+			+ "email, "
+			+ "phone_number, "
+			+ "title, "
+			+ "certification_date, "
+			+ "count_certifications, "
+			+ "count_cqms, "
+			+ "last_modified_date, "
+			+ "certification_status_name, "
+			+ "product_code, "
+			+ "version_code, "
+			+ "ics_code, "
+			+ "additional_software_code, "
+			+ "certified_date_code, "
+			+ "count_corrective_action_plans, "
+			+ "count_current_corrective_action_plans, "
+			+ "count_closed_corrective_action_plans ";
+	
 	@Override
 	public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException {
 		
@@ -66,21 +131,17 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		return products;
 	}
 	
-	
-	private CertifiedProductDetailsEntity getEntityById(Long entityId) throws EntityRetrievalException {
-		
+	private CertifiedProductDetailsEntity getEntityById(Long entityId) throws EntityRetrievalException {	
 		CertifiedProductDetailsEntity entity = null;
-		
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (certified_product_id = :entityid) ", CertifiedProductDetailsEntity.class );
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity deets "
+				+ "LEFT OUTER JOIN FETCH deets.product "
+				+ "where (deets.id = :entityid) ", CertifiedProductDetailsEntity.class );
 		query.setParameter("entityid", entityId);
 		
-		
 		List<CertifiedProductDetailsEntity> result = query.getResultList();
-		
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
 		}
-		
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
@@ -89,23 +150,14 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	}
 
 	private Query getQueryForSearchFilters(SearchRequest searchRequest){
-	
 		Query query = null;
-		
 		if (searchRequest.getCertificationCriteria().isEmpty() && searchRequest.getCqms().isEmpty()){
-			
 			query = this.getBasicQuery(searchRequest);
-			
 		} else if (searchRequest.getCertificationCriteria().isEmpty()){
-			
 			query = this.getCQMOnlyQuery(searchRequest);
-			
 		} else if (searchRequest.getCqms().isEmpty()) {
-			
 			query = this.getCertOnlyQuery(searchRequest);
-			
 		} else {
-			System.out.println(searchRequest.getCqms().isEmpty());
 			query = this.getCertCQMQuery(searchRequest);
 		}
 		return query;
@@ -113,75 +165,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	}
 	
 	private Query getCQMOnlyQuery(SearchRequest searchRequest){
-		
 		String queryStr = "SELECT "
 				+ "b.certified_product_id_cqms as \"certified_product_id\", " 
-				+ "creation_date, " 
-				+ "certification_edition_id, " 
-				+ "product_version_id, "
-				+ "certification_body_id, " 
-				+ "testing_lab_id, "
-				+ "testing_lab_name, "
-				+ "testing_lab_code, "
-				+ "chpl_product_number,"
-				+ "report_file_location, "
-				+ "sed_report_file_location, "
-				+ "sed_intended_user_description, "
-				+ "sed_testing_end, "
-				+ "acb_certification_id, "
-				+ "practice_type_id, "
-				+ "product_classification_type_id, "
-				+ "other_acb, "
-				+ "certification_status_id, "
-				+ "deleted, "
-				+ "product_additional_software, "
-				+ "ics, "
-				+ "sed, "
-				+ "qms, "
-				+ "accessibility_certified, "
-				+ "transparency_attestation, "
-				+ "transparency_attestation_url, "
-				+ "year, "
-				+ "certification_body_name, "
-				+ "certification_body_code, "
-				+ "product_classification_name, "
-				+ "practice_type_name, "
-				+ "product_version, "
-				+ "product_id, "
-				+ "product_name, "
-				+ "vendor_id, "
-				+ "vendor_name, "
-				+ "vendor_code, "
-				+ "vendor_website, " 
-				+ "vendor_status_id, "
-				+ "vendor_status_name, "
-				+ "address_id, "
-				+ "street_line_1, "
-				+ "street_line_2, " 
-				+ "city, " 
-				+ "state, " 
-				+ "zipcode, " 
-				+ "country, "
-				+ "contact_id, "
-				+ "first_name, "
-				+ "last_name, "
-				+ "email, "
-				+ "phone_number, "
-				+ "title, "
-				+ "certification_date, "
-				+ "count_certifications, "
-				+ "count_cqms, "
-				+ "last_modified_date, "
-				+ "certification_status_name, "
-				+ "product_code, "
-				+ "version_code, "
-				+ "ics_code, "
-				+ "additional_software_code, "
-				+ "certified_date_code, "
-				+ "count_corrective_action_plans, "
-				+ "count_current_corrective_action_plans, "
-				+ "count_closed_corrective_action_plans "
- 
+				+ COLUMNS_MINUS_CERTIFIED_PRODUCT_ID
 				+ "FROM "
 				
 				+ "(SELECT certified_product_id_cqms FROM ( "
@@ -195,213 +181,47 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "WHERE deleted <> true ";
 		
 		
-		if ((searchRequest.getDeveloper() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
-		} else if (searchRequest.getDeveloper() != null){
-			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchRequest.getProduct() != null){
-			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
-		}
-		
-		if (searchRequest.getSearchTerm() != null){
-			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
-				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
-			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
-				queryStr += " AND year = '20' || :yearCode "
-						+ " AND testing_lab_code = :atlCode "
-						+ " AND certification_body_code = :acbCode "
-						+ " AND vendor_code = :developerCode "
-						+ " AND UPPER(product_code) = UPPER(:productCode) "
-						+ " AND UPPER(version_code) = UPPER(:versionCode) "
-						+ " AND ics_code = :icsCode "
-						+ " AND additional_software_code = :additionalSoftwareCode "
-						+ " AND certified_date_code = :certifiedDateCode ";
-			} else {
-				queryStr += " AND ("
-						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
-						+ "OR "
-						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
-						+ "OR "
-						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
-						+ ")";
-			}
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			queryStr += " AND (year = :certificationedition) ";
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type_name= :practicetype) "; 
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification_name = :productclassification) ";
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			queryStr += " AND (certification_body_name = :certificationbody) ";
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		} else {
-			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
-		}
+		queryStr += buildSearchTermFilter(searchRequest);
+		queryStr += buildPracticeTypeFilter(searchRequest);
+		queryStr += buildDeveloperFilter(searchRequest);
+		queryStr += buildProductFilter(searchRequest);
+		queryStr += buildProductVersionFilter(searchRequest);
 
-		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
-			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
-				queryStr += " AND (count_current_corrective_action_plans > 0) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
-				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
-				queryStr += " AND (count_corrective_action_plans = 0 ) ";
-			}// In the case 'ANY_CAP' we just want all the products
-		}
-		
+		queryStr += buildCertificationBodiesFilter(searchRequest);
+		queryStr += buildCertificationStatusFilter(searchRequest);
+		queryStr += buildCertificationEditionsFilter(searchRequest);
+		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		String sortOrder = "ASC ";
 		if (searchRequest.getSortDescending()){
 			sortOrder = "DESC ";
 		}
-		
 		queryStr += sortOrder;
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
 		query.setParameter("cqms", searchRequest.getCqms());
-		
 		// Use hashset in case list contains duplicates
 		query.setParameter("ncqms", new HashSet<String>(searchRequest.getCqms()).size());
 		
-		if (searchRequest.getSearchTerm() != null){			
-			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
-				String[] idParts = searchRequest.getSearchTerm().split("\\.");
-				query.setParameter("yearCode", idParts[0]);
-				query.setParameter("atlCode", idParts[1]);
-				query.setParameter("acbCode", idParts[2]);
-				query.setParameter("developerCode", idParts[3]);
-				query.setParameter("productCode", idParts[4]);
-				query.setParameter("versionCode", idParts[5]);
-				query.setParameter("icsCode", idParts[6]);
-				query.setParameter("additionalSoftwareCode", idParts[7]);
-				query.setParameter("certifiedDateCode", idParts[8]);
-			} else {
-				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
-			}
-		}
+		populateSearchTermParameter(searchRequest, query);
+		populatePracticeTypeParameter(searchRequest, query);
+		populateDeveloperParameter(searchRequest, query);
+		populateProductParameter(searchRequest, query);
+		populateProductVersionParameter(searchRequest, query);
 		
-		if (searchRequest.getDeveloper() != null){
-			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
-		}
-		
-		if (searchRequest.getProduct() != null){
-			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			query.setParameter("practicetype", searchRequest.getPracticeType());
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			query.setParameter("productclassification", searchRequest.getProductClassification());
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			query.setParameter("certificationbody", searchRequest.getCertificationBody());
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		} 
-		
+		populateCertificationStatusParameter(searchRequest, query);
+		populateCertificationBodiesParameter(searchRequest, query);
+		populateCertificationEditionsParameter(searchRequest, query);
 		return query;
 	}
 	
 	
 	private Query getCertOnlyQuery(SearchRequest searchRequest){
-		
 		String queryStr = "SELECT "
 				+ "c.certified_product_id as \"certified_product_id\", " 
-				+ "creation_date, " 
-				+ "certification_edition_id, " 
-				+ "product_version_id, "
-				+ "certification_body_id," 
-				+ "testing_lab_id, "
-				+ "testing_lab_name, "
-				+ "testing_lab_code, "
-				+ "chpl_product_number,"
-				+ "report_file_location, "
-				+ "sed_report_file_location, "
-				+ "sed_intended_user_description, "
-				+ "sed_testing_end, "
-				+ "acb_certification_id, "
-				+ "practice_type_id, "
-				+ "product_classification_type_id, "
-				+ "other_acb, "
-				+ "certification_status_id, "
-				+ "deleted, "
-				+ "product_additional_software, "
-				+ "ics, "
-				+ "sed, "
-				+ "qms, "
-				+ "accessibility_certified, "
-				+ "transparency_attestation, "
-				+ "transparency_attestation_url, "
-				+ "year, "
-				+ "certification_body_name, "
-				+ "certification_body_code, "
-				+ "product_classification_name, "
-				+ "practice_type_name, "
-				+ "product_version, "
-				+ "product_id, "
-				+ "product_name, "
-				+ "vendor_id, "
-				+ "vendor_name, "
-				+ "vendor_code, "
-				+ "vendor_website, " 
-				+ "vendor_status_id, "
-				+ "vendor_status_name, "
-				+ "address_id, "
-				+ "street_line_1, "
-				+ "street_line_2, " 
-				+ "city, " 
-				+ "state, " 
-				+ "zipcode, " 
-				+ "country, "
-				+ "contact_id, "
-				+ "first_name, "
-				+ "last_name, "
-				+ "email, "
-				+ "phone_number, "
-				+ "title, "
-				+ "certification_date, "
-				+ "count_certifications, "
-				+ "count_cqms, "
-				+ "last_modified_date, "
-				+ "certification_status_name, "
-				+ "product_code, "
-				+ "version_code, "
-				+ "ics_code, "
-				+ "additional_software_code, "
-				+ "certified_date_code, "
-				+ "count_corrective_action_plans, "
-				+ "count_current_corrective_action_plans, "
-				+ "count_closed_corrective_action_plans "
-				
+				+ COLUMNS_MINUS_CERTIFIED_PRODUCT_ID
 				+ "FROM ( "
 
 				+"SELECT * FROM ( "
@@ -416,214 +236,46 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+"ON c.certified_product_id = d.certified_product_id "
 				+"WHERE deleted <> true ";
 		
-		
-		if ((searchRequest.getDeveloper() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
-		} else if (searchRequest.getDeveloper() != null){
-			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchRequest.getProduct() != null){
-			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
-		}
-		
-		if (searchRequest.getSearchTerm() != null){
-			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
-				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
-			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
-				queryStr += " AND year = '20' || :yearCode "
-						+ " AND testing_lab_code = :atlCode "
-						+ " AND certification_body_code = :acbCode "
-						+ " AND vendor_code = :developerCode "
-						+ " AND UPPER(product_code) = UPPER(:productCode) "
-						+ " AND UPPER(version_code) = UPPER(:versionCode) "
-						+ " AND ics_code = :icsCode "
-						+ " AND additional_software_code = :additionalSoftwareCode "
-						+ " AND certified_date_code = :certifiedDateCode ";
-			} else {
-				queryStr += " AND ("
-						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
-						+ "OR "
-						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
-						+ "OR "
-						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
-						+ ")";
-			}
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			queryStr += " AND (year = :certificationedition) ";
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type_name= :practicetype) "; 
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification_name = :productclassification) ";
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			queryStr += " AND (certification_body_name = :certificationbody) ";
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		} else {
-			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
-		}
-		
-		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
-			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
-				queryStr += " AND (count_current_corrective_action_plans > 0) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
-				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
-				queryStr += " AND (count_corrective_action_plans = 0 ) ";
-			}// In the case 'ANY_CAP' we just want all the products
-		}
+		queryStr += buildSearchTermFilter(searchRequest);
+		queryStr += buildPracticeTypeFilter(searchRequest);
+		queryStr += buildDeveloperFilter(searchRequest);
+		queryStr += buildProductFilter(searchRequest);
+		queryStr += buildProductVersionFilter(searchRequest);
 
+		queryStr += buildCertificationBodiesFilter(searchRequest);
+		queryStr += buildCertificationStatusFilter(searchRequest);
+		queryStr += buildCertificationEditionsFilter(searchRequest);
+		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		String sortOrder = "ASC ";
 		if (searchRequest.getSortDescending()){
 			sortOrder = "DESC ";
 		}
-		
 		queryStr += sortOrder;
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
-		
-		if (searchRequest.getSearchTerm() != null){			
-			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
-				String[] idParts = searchRequest.getSearchTerm().split("\\.");
-				query.setParameter("yearCode", idParts[0]);
-				query.setParameter("atlCode", idParts[1]);
-				query.setParameter("acbCode", idParts[2]);
-				query.setParameter("developerCode", idParts[3]);
-				query.setParameter("productCode", idParts[4]);
-				query.setParameter("versionCode", idParts[5]);
-				query.setParameter("icsCode", idParts[6]);
-				query.setParameter("additionalSoftwareCode", idParts[7]);
-				query.setParameter("certifiedDateCode", idParts[8]);
-			} else {
-				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
-			}
-		}
-		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
-		
 		// Use hashset in case list contains duplicates
 		query.setParameter("ncerts", new HashSet<String>(searchRequest.getCertificationCriteria()).size());
 		
-		if (searchRequest.getDeveloper() != null){
-			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
-		}
+		populateSearchTermParameter(searchRequest, query);
+		populatePracticeTypeParameter(searchRequest, query);
+		populateDeveloperParameter(searchRequest, query);
+		populateProductParameter(searchRequest, query);
+		populateProductVersionParameter(searchRequest, query);
 		
-		if (searchRequest.getProduct() != null){
-			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			query.setParameter("practicetype", searchRequest.getPracticeType());
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			query.setParameter("productclassification", searchRequest.getProductClassification());
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			query.setParameter("certificationbody", searchRequest.getCertificationBody());
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		} 
-		
+		populateCertificationStatusParameter(searchRequest, query);
+		populateCertificationBodiesParameter(searchRequest, query);
+		populateCertificationEditionsParameter(searchRequest, query);
 		return query;
 		
 	}
 	
 	private Query getCertCQMQuery(SearchRequest searchRequest){
-		
 		String queryStr = "SELECT "
 				+ "c.cpid as \"certified_product_id\", "
-				+ "creation_date, " 
-				+ "certification_edition_id, " 
-				+ "product_version_id, " 
-				+ "testing_lab_id, "
-				+ "testing_lab_name, "
-				+ "testing_lab_code, "
-				+ "certification_body_id, " 
-				+ "chpl_product_number, "
-				+ "report_file_location, "
-				+ "sed_report_file_location, "
-				+ "sed_intended_user_description, "
-				+ "sed_testing_end, "
-				+ "acb_certification_id, "
-				+ "practice_type_id, "
-				+ "product_classification_type_id, "
-				+ "other_acb, "
-				+ "certification_status_id, "
-				+ "deleted, "
-				+ "product_additional_software, "
-				+ "ics, "
-				+ "sed, "
-				+ "qms, "
-				+ "accessibility_certified, "
-				+ "transparency_attestation, "
-				+ "transparency_attestation_url, "
-				+ "year, "
-				+ "certification_body_name, "
-				+ "certification_body_code, "
-				+ "product_classification_name, "
-				+ "practice_type_name, "
-				+ "product_version, "
-				+ "product_id, "
-				+ "product_name, "
-				+ "vendor_id, "
-				+ "vendor_name, "
-				+ "vendor_code, "
-				+ "vendor_website, " 
-				+ "vendor_status_id, "
-				+ "vendor_status_name, "
-				+ "address_id, "
-				+ "street_line_1, "
-				+ "street_line_2, " 
-				+ "city, " 
-				+ "state, " 
-				+ "zipcode, " 
-				+ "country, "
-				+ "contact_id, "
-				+ "first_name, "
-				+ "last_name, "
-				+ "email, "
-				+ "phone_number, "
-				+ "title, "
-				+ "certification_date, "
-				+ "count_certifications, "
-				+ "count_cqms, "
-				+ "last_modified_date, "
-				+ "certification_status_name, "
-				+ "product_code, "
-				+ "version_code, "
-				+ "ics_code, "
-				+ "additional_software_code, "
-				+ "certified_date_code, "
-				+ "count_corrective_action_plans, "
-				+ "count_current_corrective_action_plans, "
-				+ "count_closed_corrective_action_plans "
-
+				+ COLUMNS_MINUS_CERTIFIED_PRODUCT_ID
 				+ "FROM "
 
 				+ "(SELECT certified_product_id_certs as \"cpid\" FROM "
@@ -646,103 +298,25 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "WHERE deleted <> true "
 				+ " ";
 		
-		
-		if ((searchRequest.getDeveloper() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
-		} else if (searchRequest.getDeveloper() != null){
-			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchRequest.getProduct() != null){
-			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
-		}
-		
-		if (searchRequest.getSearchTerm() != null){
-			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
-				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
-			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
-				queryStr += " AND year = '20' || :yearCode "
-						+ " AND testing_lab_code = :atlCode "
-						+ " AND certification_body_code = :acbCode "
-						+ " AND vendor_code = :developerCode "
-						+ " AND UPPER(product_code) = UPPER(:productCode) "
-						+ " AND UPPER(version_code) = UPPER(:versionCode) "
-						+ " AND ics_code = :icsCode "
-						+ " AND additional_software_code = :additionalSoftwareCode "
-						+ " AND certified_date_code = :certifiedDateCode ";
-			} else {
-				queryStr += " AND ("
-						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
-						+ "OR "
-						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
-						+ "OR "
-						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
-						+ ")";
-			}
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			queryStr += " AND (year = :certificationedition) ";
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type_name= :practicetype) "; 
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification_name= :productclassification) ";
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			queryStr += " AND (certification_body_name = :certificationbody) ";
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		} else {
-			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
-		}
-		
-		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
-			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
-				queryStr += " AND (count_current_corrective_action_plans > 0) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
-				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
-				queryStr += " AND (count_corrective_action_plans = 0 ) ";
-			}// In the case 'ANY_CAP' we just want all the products
-		}
-		
+		queryStr += buildSearchTermFilter(searchRequest);
+		queryStr += buildPracticeTypeFilter(searchRequest);
+		queryStr += buildDeveloperFilter(searchRequest);
+		queryStr += buildProductFilter(searchRequest);
+		queryStr += buildProductVersionFilter(searchRequest);
+
+		queryStr += buildCertificationBodiesFilter(searchRequest);
+		queryStr += buildCertificationStatusFilter(searchRequest);
+		queryStr += buildCertificationEditionsFilter(searchRequest);
+		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		String sortOrder = "ASC ";
 		if (searchRequest.getSortDescending()){
 			sortOrder = "DESC ";
 		}
-		
 		queryStr += sortOrder;
 		
 		Query query = entityManager.createNativeQuery(queryStr, CertifiedProductDetailsEntity.class);
-		
-		if (searchRequest.getSearchTerm() != null){			
-			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
-				String[] idParts = searchRequest.getSearchTerm().split("\\.");
-				query.setParameter("yearCode", idParts[0]);
-				query.setParameter("atlCode", idParts[1]);
-				query.setParameter("acbCode", idParts[2]);
-				query.setParameter("developerCode", idParts[3]);
-				query.setParameter("productCode", idParts[4]);
-				query.setParameter("versionCode", idParts[5]);
-				query.setParameter("icsCode", idParts[6]);
-				query.setParameter("additionalSoftwareCode", idParts[7]);
-				query.setParameter("certifiedDateCode", idParts[8]);
-			} else {
-				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
-			}
-		}
-		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
 		// Use hashset in case list contains duplicates
 		query.setParameter("ncerts", new HashSet<String>(searchRequest.getCertificationCriteria()).size());
@@ -751,171 +325,50 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		// Use hashset in case list contains duplicates
 		query.setParameter("ncqms", new HashSet<String>(searchRequest.getCqms()).size());
 		
-		if (searchRequest.getDeveloper() != null){
-			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
-		}
+		populateSearchTermParameter(searchRequest, query);
+		populatePracticeTypeParameter(searchRequest, query);
+		populateDeveloperParameter(searchRequest, query);
+		populateProductParameter(searchRequest, query);
+		populateProductVersionParameter(searchRequest, query);
 		
-		if (searchRequest.getProduct() != null){
-			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			query.setParameter("practicetype", searchRequest.getPracticeType());
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			query.setParameter("productclassification", searchRequest.getProductClassification());
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			query.setParameter("certificationbody", searchRequest.getCertificationBody());
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		} 
+		populateCertificationStatusParameter(searchRequest, query);
+		populateCertificationBodiesParameter(searchRequest, query);
+		populateCertificationEditionsParameter(searchRequest, query);
 		return query;
 	}
 	
 	private Query getBasicQuery(SearchRequest searchRequest){
-		
 		String queryStr = "from CertifiedProductDetailsEntity where (NOT deleted = true)";
-		
-		if ((searchRequest.getDeveloper() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
-		} else if (searchRequest.getDeveloper() != null){
-			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchRequest.getProduct() != null){
-			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
-		}
-		
-		if (searchRequest.getSearchTerm() != null){	
-			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
-				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
-			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
-				queryStr += " AND year = '20' || :yearCode "
-						+ " AND testing_lab_code = :atlCode "
-						+ " AND certification_body_code = :acbCode "
-						+ " AND vendor_code = :developerCode "
-						+ " AND UPPER(product_code) = UPPER(:productCode) "
-						+ " AND UPPER(version_code) = UPPER(:versionCode) "
-						+ " AND ics_code = :icsCode "
-						+ " AND additional_software_code = :additionalSoftwareCode "
-						+ " AND certified_date_code = :certifiedDateCode ";
-			} else {
-				queryStr += " AND ("
-						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
-						+ "OR "
-						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
-						+ "OR "
-						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
-						+ ")";
-			}
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			queryStr += " AND (year = :certificationedition) ";
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type_name= :practicetype) "; 
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification_name= :productclassification) ";
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			queryStr += " AND (certification_body_name = :certificationbody) ";
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version))";
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		} else {
-			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
-		}
-		
-		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
-			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
-				queryStr += " AND (count_current_corrective_action_plans > 0) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
-				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
-				queryStr += " AND (count_corrective_action_plans = 0 ) ";
-			}// In the case 'ANY_CAP' we just want all the products
-		}
-		
+
+		queryStr += buildSearchTermFilter(searchRequest);
+		queryStr += buildPracticeTypeFilter(searchRequest);
+		queryStr += buildDeveloperFilter(searchRequest);
+		queryStr += buildProductFilter(searchRequest);
+		queryStr += buildProductVersionFilter(searchRequest);
+
+		queryStr += buildCertificationBodiesFilter(searchRequest);
+		queryStr += buildCertificationStatusFilter(searchRequest);
+		queryStr += buildCertificationEditionsFilter(searchRequest);
+		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		String sortOrder = "ASC ";
 		if (searchRequest.getSortDescending()){
 			sortOrder = "DESC ";
 		}
-		
 		queryStr += sortOrder;
 		
 		Query query = entityManager.createQuery(queryStr, CertifiedProductDetailsEntity.class);
 		
-		if (searchRequest.getSearchTerm() != null){			
-			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
-				String[] idParts = searchRequest.getSearchTerm().split("\\.");
-				query.setParameter("yearCode", idParts[0]);
-				query.setParameter("atlCode", idParts[1]);
-				query.setParameter("acbCode", idParts[2]);
-				query.setParameter("developerCode", idParts[3]);
-				query.setParameter("productCode", idParts[4]);
-				query.setParameter("versionCode", idParts[5]);
-				query.setParameter("icsCode", idParts[6]);
-				query.setParameter("additionalSoftwareCode", idParts[7]);
-				query.setParameter("certifiedDateCode", idParts[8]);
-			} else {
-				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
-			}
-		}
+		populateSearchTermParameter(searchRequest, query);
+		populatePracticeTypeParameter(searchRequest, query);
+		populateDeveloperParameter(searchRequest, query);
+		populateProductParameter(searchRequest, query);
+		populateProductVersionParameter(searchRequest, query);
 		
-		if (searchRequest.getDeveloper() != null){
-			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
-		}
-		
-		if (searchRequest.getProduct() != null){
-			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			query.setParameter("practicetype", searchRequest.getPracticeType());
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			query.setParameter("productclassification", searchRequest.getProductClassification());
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			query.setParameter("certificationbody", searchRequest.getCertificationBody());
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		} 
+		populateCertificationStatusParameter(searchRequest, query);
+		populateCertificationBodiesParameter(searchRequest, query);
+		populateCertificationEditionsParameter(searchRequest, query);
 		
 		return query;
 	}
@@ -960,7 +413,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	}
 	
 	private Query getCQMOnlyCountQuery(SearchRequest searchRequest){
-		
 		String queryStr = "SELECT "
 				+ "COUNT(*) as \"count\" "
 				+ "FROM "
@@ -974,130 +426,31 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+ "ON b.certified_product_id_cqms = d.certified_product_id "
 				
 				+ "WHERE deleted <> true ";
-		
-		if ((searchRequest.getDeveloper() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
-		} else if (searchRequest.getDeveloper() != null){
-			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchRequest.getProduct() != null){
-			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
-		}
-		
-		if (searchRequest.getSearchTerm() != null){
-			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
-				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
-			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
-				queryStr += " AND year = '20' || :yearCode "
-						+ " AND testing_lab_code = :atlCode "
-						+ " AND certification_body_code = :acbCode "
-						+ " AND vendor_code = :developerCode "
-						+ " AND UPPER(product_code) = UPPER(:productCode) "
-						+ " AND UPPER(version_code) = UPPER(:versionCode) "
-						+ " AND ics_code = :icsCode "
-						+ " AND additional_software_code = :additionalSoftwareCode "
-						+ " AND certified_date_code = :certifiedDateCode ";
-			} else {
-				queryStr += " AND ("
-						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
-						+ "OR "
-						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
-						+ "OR "
-						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
-						+ ")";
-			}
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			queryStr += " AND (year = :certificationedition) ";
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type_name= :practicetype) "; 
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification_name = :productclassification) ";
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			queryStr += " AND (certification_body_name = :certificationbody) ";
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		} else {
-			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
-		}
-		
-		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
-			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
-				queryStr += " AND (count_current_corrective_action_plans > 0) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
-				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
-				queryStr += " AND (count_corrective_action_plans = 0 ) ";
-			}// In the case 'ANY_CAP' we just want all the products
-		}
-		
+
+		queryStr += buildSearchTermFilter(searchRequest);
+		queryStr += buildPracticeTypeFilter(searchRequest);
+		queryStr += buildDeveloperFilter(searchRequest);
+		queryStr += buildProductFilter(searchRequest);
+		queryStr += buildProductVersionFilter(searchRequest);
+
+		queryStr += buildCertificationBodiesFilter(searchRequest);
+		queryStr += buildCertificationStatusFilter(searchRequest);
+		queryStr += buildCertificationEditionsFilter(searchRequest);
+		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
 		Query query = entityManager.createNativeQuery(queryStr);
-		
-		if (searchRequest.getSearchTerm() != null){			
-			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
-				String[] idParts = searchRequest.getSearchTerm().split("\\.");
-				query.setParameter("yearCode", idParts[0]);
-				query.setParameter("atlCode", idParts[1]);
-				query.setParameter("acbCode", idParts[2]);
-				query.setParameter("developerCode", idParts[3]);
-				query.setParameter("productCode", idParts[4]);
-				query.setParameter("versionCode", idParts[5]);
-				query.setParameter("icsCode", idParts[6]);
-				query.setParameter("additionalSoftwareCode", idParts[7]);
-				query.setParameter("certifiedDateCode", idParts[8]);
-			} else {
-				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
-			}
-		}
-		
-		query.setParameter("cqms", searchRequest.getCqms());
-		
+		query.setParameter("cqms", searchRequest.getCqms());	
 		// Use hashset in case list contains duplicates
 		query.setParameter("ncqms", new HashSet<String>(searchRequest.getCqms()).size());
 		
-		if (searchRequest.getDeveloper() != null){
-			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
-		}
+		populateSearchTermParameter(searchRequest, query);
+		populatePracticeTypeParameter(searchRequest, query);
+		populateDeveloperParameter(searchRequest, query);
+		populateProductParameter(searchRequest, query);
+		populateProductVersionParameter(searchRequest, query);
 		
-		if (searchRequest.getProduct() != null){
-			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			query.setParameter("practicetype", searchRequest.getPracticeType());
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			query.setParameter("productclassification", searchRequest.getProductClassification());
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			query.setParameter("certificationbody", searchRequest.getCertificationBody());
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		} 
+		populateCertificationStatusParameter(searchRequest, query);
+		populateCertificationBodiesParameter(searchRequest, query);
+		populateCertificationEditionsParameter(searchRequest, query);
 		
 		return query;
 	}
@@ -1105,7 +458,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	
 	
 	private Query getCertOnlyCountQuery(SearchRequest searchRequest){
-		
 		String queryStr = "SELECT "
 				+ "COUNT(*) as \"count\" "
 				+ "FROM ( "
@@ -1122,137 +474,37 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				+"ON c.certified_product_a = d.certified_product_id "
 				+"WHERE deleted <> true ";
 		
-		
-		if ((searchRequest.getDeveloper() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
-		} else if (searchRequest.getDeveloper() != null){
-			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchRequest.getProduct() != null){
-			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
-		}
-		
-		if (searchRequest.getSearchTerm() != null){
-			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
-				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
-			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
-				queryStr += " AND year = '20' || :yearCode "
-						+ " AND testing_lab_code = :atlCode "
-						+ " AND certification_body_code = :acbCode "
-						+ " AND vendor_code = :developerCode "
-						+ " AND UPPER(product_code) = UPPER(:productCode) "
-						+ " AND UPPER(version_code) = UPPER(:versionCode) "
-						+ " AND ics_code = :icsCode "
-						+ " AND additional_software_code = :additionalSoftwareCode "
-						+ " AND certified_date_code = :certifiedDateCode ";
-			} else {
-				queryStr += " AND ("
-						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
-						+ "OR "
-						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
-						+ "OR "
-						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
-						+ ")";
-			}
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			queryStr += " AND (year = :certificationedition) ";
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type_name= :practicetype) "; 
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification_name = :productclassification) ";
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			queryStr += " AND (certification_body_name = :certificationbody) ";
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		} else {
-			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
-		}
-				
-		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
-			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
-				queryStr += " AND (count_current_corrective_action_plans > 0) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
-				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
-				queryStr += " AND (count_corrective_action_plans = 0 ) ";
-			}// In the case 'ANY_CAP' we just want all the products
-		}
+		queryStr += buildSearchTermFilter(searchRequest);
+		queryStr += buildPracticeTypeFilter(searchRequest);
+		queryStr += buildDeveloperFilter(searchRequest);
+		queryStr += buildProductFilter(searchRequest);
+		queryStr += buildProductVersionFilter(searchRequest);
+
+		queryStr += buildCertificationBodiesFilter(searchRequest);
+		queryStr += buildCertificationStatusFilter(searchRequest);
+		queryStr += buildCertificationEditionsFilter(searchRequest);
+		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
 		
 		Query query = entityManager.createNativeQuery(queryStr);
-		
-		if (searchRequest.getSearchTerm() != null){			
-			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
-				String[] idParts = searchRequest.getSearchTerm().split("\\.");
-				query.setParameter("yearCode", idParts[0]);
-				query.setParameter("atlCode", idParts[1]);
-				query.setParameter("acbCode", idParts[2]);
-				query.setParameter("developerCode", idParts[3]);
-				query.setParameter("productCode", idParts[4]);
-				query.setParameter("versionCode", idParts[5]);
-				query.setParameter("icsCode", idParts[6]);
-				query.setParameter("additionalSoftwareCode", idParts[7]);
-				query.setParameter("certifiedDateCode", idParts[8]);
-			} else {
-				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
-			}
-		}
-		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
-		
 		// Use hashset in case list contains duplicates
 		query.setParameter("ncerts", new HashSet<String>(searchRequest.getCertificationCriteria()).size());
 		
-		if (searchRequest.getDeveloper() != null){
-			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
-		}
+		populateSearchTermParameter(searchRequest, query);
+		populatePracticeTypeParameter(searchRequest, query);
+		populateDeveloperParameter(searchRequest, query);
+		populateProductParameter(searchRequest, query);
+		populateProductVersionParameter(searchRequest, query);
 		
-		if (searchRequest.getProduct() != null){
-			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			query.setParameter("practicetype", searchRequest.getPracticeType());
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			query.setParameter("productclassification", searchRequest.getProductClassification());
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			query.setParameter("certificationbody", searchRequest.getCertificationBody());
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		} 
+		populateCertificationStatusParameter(searchRequest, query);
+		populateCertificationBodiesParameter(searchRequest, query);
+		populateCertificationEditionsParameter(searchRequest, query);
 		
 		return query;
 		
 	}
 	
 	private Query getCertCQMCountQuery(SearchRequest searchRequest){
-		
 		String queryStr = "SELECT COUNT(*) as \"count\" "
 
 				+ "FROM "
@@ -1274,97 +526,20 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 				+ "INNER JOIN openchpl.certified_product_details d "
 				+ "ON c.cpid = d.certified_product_id "
-				+ "WHERE deleted <> true "
-				+ " ";
+				+ "WHERE deleted <> true ";
 		
+		queryStr += buildSearchTermFilter(searchRequest);
+		queryStr += buildPracticeTypeFilter(searchRequest);
+		queryStr += buildDeveloperFilter(searchRequest);
+		queryStr += buildProductFilter(searchRequest);
+		queryStr += buildProductVersionFilter(searchRequest);
+
+		queryStr += buildCertificationBodiesFilter(searchRequest);
+		queryStr += buildCertificationStatusFilter(searchRequest);
+		queryStr += buildCertificationEditionsFilter(searchRequest);
+		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
 		
-		if ((searchRequest.getDeveloper() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
-		} else if (searchRequest.getDeveloper() != null){
-			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchRequest.getProduct() != null){
-			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
-		}
-		
-		if (searchRequest.getSearchTerm() != null){
-			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
-				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
-			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
-				queryStr += " AND year = '20' || :yearCode "
-						+ " AND testing_lab_code = :atlCode "
-						+ " AND certification_body_code = :acbCode "
-						+ " AND vendor_code = :developerCode "
-						+ " AND UPPER(product_code) = UPPER(:productCode) "
-						+ " AND UPPER(version_code) = UPPER(:versionCode) "
-						+ " AND ics_code = :icsCode "
-						+ " AND additional_software_code = :additionalSoftwareCode "
-						+ " AND certified_date_code = :certifiedDateCode ";
-			} else {
-				queryStr += " AND ("
-						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
-						+ "OR "
-						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
-						+ "OR "
-						+ "(UPPER(acb_certification_id) LIKE UPPER(:searchterm)) "
-						+ ")";
-			}
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			queryStr += " AND (year = :certificationedition) ";
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type_name= :practicetype) "; 
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification_name= :productclassification) ";
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			queryStr += " AND (certification_body_name = :certificationbody) ";
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		} else {
-			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
-		}
-		
-		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
-			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
-				queryStr += " AND (count_current_corrective_action_plans > 0) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
-				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
-				queryStr += " AND (count_corrective_action_plans = 0 ) ";
-			}// In the case 'ANY_CAP' we just want all the products
-		}
-			
 		Query query = entityManager.createNativeQuery(queryStr);
-		
-		if (searchRequest.getSearchTerm() != null){			
-			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
-				String[] idParts = searchRequest.getSearchTerm().split("\\.");
-				query.setParameter("yearCode", idParts[0]);
-				query.setParameter("atlCode", idParts[1]);
-				query.setParameter("acbCode", idParts[2]);
-				query.setParameter("developerCode", idParts[3]);
-				query.setParameter("productCode", idParts[4]);
-				query.setParameter("versionCode", idParts[5]);
-				query.setParameter("icsCode", idParts[6]);
-				query.setParameter("additionalSoftwareCode", idParts[7]);
-				query.setParameter("certifiedDateCode", idParts[8]);
-			} else {
-				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
-			}
-		}
-		
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
 		// Use hashset in case list contains duplicates
 		query.setParameter("ncerts", new HashSet<String>(searchRequest.getCertificationCriteria()).size());
@@ -1373,58 +548,54 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		// Use hashset in case list contains duplicates
 		query.setParameter("ncqms", new HashSet<String>(searchRequest.getCqms()).size());
 		
-		if (searchRequest.getDeveloper() != null){
-			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
-		}
+		populateSearchTermParameter(searchRequest, query);
+		populatePracticeTypeParameter(searchRequest, query);
+		populateDeveloperParameter(searchRequest, query);
+		populateProductParameter(searchRequest, query);
+		populateProductVersionParameter(searchRequest, query);
 		
-		if (searchRequest.getProduct() != null){
-			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			query.setParameter("practicetype", searchRequest.getPracticeType());
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			query.setParameter("productclassification", searchRequest.getProductClassification());
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			query.setParameter("certificationbody", searchRequest.getCertificationBody());
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		} 
+		populateCertificationStatusParameter(searchRequest, query);
+		populateCertificationBodiesParameter(searchRequest, query);
+		populateCertificationEditionsParameter(searchRequest, query);
 		
 		return query;
 	}
 	
 	private Query getBasicCountQuery(SearchRequest searchRequest){
-		
 		String queryStr = "Select count(e.id) from CertifiedProductDetailsEntity e where (NOT deleted = true)";
+
+		queryStr += buildSearchTermFilter(searchRequest);
+		queryStr += buildPracticeTypeFilter(searchRequest);
+		queryStr += buildDeveloperFilter(searchRequest);
+		queryStr += buildProductFilter(searchRequest);
+		queryStr += buildProductVersionFilter(searchRequest);
+
+		queryStr += buildCertificationBodiesFilter(searchRequest);
+		queryStr += buildCertificationStatusFilter(searchRequest);
+		queryStr += buildCertificationEditionsFilter(searchRequest);
+		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
 		
-		if ((searchRequest.getDeveloper() != null) && (searchRequest.getProduct() != null)){
-			queryStr +=  " AND ((UPPER(vendor_name) LIKE UPPER(:vendorname)) AND (UPPER(product_name) LIKE UPPER(:productname))) ";
-		} else if (searchRequest.getDeveloper() != null){
-			queryStr +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
-		} else if (searchRequest.getProduct() != null){
-			queryStr +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
-		}
+		Query query = entityManager.createQuery(queryStr);
 		
+		populateSearchTermParameter(searchRequest, query);
+		populatePracticeTypeParameter(searchRequest, query);
+		populateDeveloperParameter(searchRequest, query);
+		populateProductParameter(searchRequest, query);
+		populateProductVersionParameter(searchRequest, query);
+		
+		populateCertificationStatusParameter(searchRequest, query);
+		populateCertificationBodiesParameter(searchRequest, query);
+		populateCertificationEditionsParameter(searchRequest, query);
+		return query;
+	}
+	
+	private String buildSearchTermFilter(SearchRequest searchRequest) {
+		String result = "";
 		if (searchRequest.getSearchTerm() != null){
 			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
-				queryStr += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
+				result += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
 			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {				
-				queryStr += " AND year = '20' || :yearCode "
+				result += " AND year = '20' || :yearCode "
 						+ " AND testing_lab_code = :atlCode "
 						+ " AND certification_body_code = :acbCode "
 						+ " AND vendor_code = :developerCode "
@@ -1434,7 +605,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 						+ " AND additional_software_code = :additionalSoftwareCode "
 						+ " AND certified_date_code = :certifiedDateCode ";
 			} else {
-				queryStr += " AND ("
+				result += " AND ("
 						+ "(UPPER(vendor_name) LIKE UPPER(:searchterm)) "
 						+ "OR "
 						+ "(UPPER(product_name) LIKE UPPER(:searchterm) )"
@@ -1443,46 +614,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 						+ ")";
 			}
 		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			queryStr += " AND (year = :certificationedition) ";
-		}
-		
-		if (searchRequest.getPracticeType() != null) {
-			queryStr += " AND (practice_type_name= :practicetype) "; 
-		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			queryStr += " AND (product_classification_name= :productclassification) ";
-		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			queryStr += " AND (certification_body_name = :certificationbody) ";
-		}
-		
-		if (searchRequest.getVersion() != null) {
-			queryStr += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
-		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			queryStr += " AND (UPPER(certification_status_name) LIKE UPPER(:certificationStatus))";
-		} else {
-			queryStr += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
-		}
-		
-		if(!StringUtils.isEmpty(searchRequest.getHasCAP())) {
-			if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CURRENT_CAP)){
-				queryStr += " AND (count_current_corrective_action_plans > 0) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.CLOSED_CAP)){
-				queryStr += " AND (count_closed_corrective_action_plans > 0 ) ";
-			} else if (searchRequest.getHasCAP().toLowerCase().equals(SearchRequest.NO_CAP)){
-				queryStr += " AND (count_corrective_action_plans = 0 ) ";
-			}// In the case 'ANY_CAP' we just want all the products
-		}
-		
-		Query query = entityManager.createQuery(queryStr);
-		
-		
+		return result;
+	}
+	
+	private void populateSearchTermParameter(SearchRequest searchRequest, Query query) {
 		if (searchRequest.getSearchTerm() != null){			
 			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
 				String[] idParts = searchRequest.getSearchTerm().split("\\.");
@@ -1499,40 +634,159 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
 			}
 		}
-		
-		if (searchRequest.getDeveloper() != null){
-			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
+	}
+	
+	private String buildPracticeTypeFilter(SearchRequest searchRequest) {
+		String result = "";
+		if (searchRequest.getPracticeType() != null) {
+			result += " AND (practice_type_name= :practicetype) "; 
 		}
-		
-		if (searchRequest.getProduct() != null){
-			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
-		}
-		
-		if (searchRequest.getCertificationEdition() != null) {
-			query.setParameter("certificationedition", searchRequest.getCertificationEdition());
-		}
-		
+		return result;
+	}
+	
+	private void populatePracticeTypeParameter(SearchRequest searchRequest, Query query ) {
 		if (searchRequest.getPracticeType() != null) {
 			query.setParameter("practicetype", searchRequest.getPracticeType());
 		}
-		
-		if (searchRequest.getProductClassification() != null) {
-			query.setParameter("productclassification", searchRequest.getProductClassification());
+	}
+	
+	private String buildDeveloperFilter(SearchRequest searchRequest) {
+		String result = "";
+		if (searchRequest.getDeveloper() != null){
+			result +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		}
-		
-		if (searchRequest.getCertificationBody() != null) {
-			query.setParameter("certificationbody", searchRequest.getCertificationBody());
+		return result;
+	}
+	
+	private void populateDeveloperParameter(SearchRequest searchRequest, Query query) {
+		if (searchRequest.getDeveloper() != null){
+			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
 		}
-		
+	}
+	
+	private String buildProductFilter(SearchRequest searchRequest) {
+		String result = "";
+		if (searchRequest.getProduct() != null){
+			result +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
+		}
+		return result;
+	}
+	
+	private void populateProductParameter(SearchRequest searchRequest, Query query) {
+		if (searchRequest.getProduct() != null){
+			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
+		}
+	}
+	
+	private String buildProductVersionFilter(SearchRequest searchRequest) {
+		String result = "";
+		if (searchRequest.getVersion() != null) {
+			result += " AND (UPPER(product_version) LIKE UPPER(:version)) ";
+		}
+		return result;
+	}
+	
+	private void populateProductVersionParameter(SearchRequest searchRequest, Query query) {
 		if (searchRequest.getVersion() != null) {
 			query.setParameter("version", "%"+searchRequest.getVersion()+"%");
 		}
-		
-		if(searchRequest.getCertificationStatus() != null) {
-			query.setParameter("certificationStatus", searchRequest.getCertificationStatus());
-		} 
-		
-		return query;
 	}
 	
+	private String buildCertificationStatusFilter(SearchRequest searchRequest) {
+		String result = "";
+		if(searchRequest.getCertificationStatuses() != null && searchRequest.getCertificationStatuses().size() > 0) {
+			result += " AND certification_status_name in (";
+			for(int i = 0; i < searchRequest.getCertificationStatuses().size(); i++) {
+				result += ":certificationStatus" + i;
+				if(i != searchRequest.getCertificationStatuses().size()-1) {
+					result += ", ";
+				}
+			}
+			result += ") ";			
+		} else {
+			result += " AND (UPPER(certification_status_name) NOT LIKE 'RETIRED')";
+		}
+		return result;
+	}
+	
+	private void populateCertificationStatusParameter(SearchRequest searchRequest, Query query) {
+		if(searchRequest.getCertificationStatuses() != null && searchRequest.getCertificationStatuses().size() > 0) {
+			for(int i = 0; i < searchRequest.getCertificationStatuses().size(); i++) {
+				query.setParameter("certificationStatus"+i, searchRequest.getCertificationStatuses().get(i));
+			}
+		} 
+	}
+	
+	private String buildCertificationBodiesFilter(SearchRequest searchRequest) {
+		String result = "";
+		if (searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
+			result += " AND certification_body_name in (";
+			for(int i = 0; i < searchRequest.getCertificationBodies().size(); i++) {
+				result += ":certificationbody" + i;
+				if(i != searchRequest.getCertificationBodies().size()-1) {
+					result += ", ";
+				}
+			}
+			result += ") ";
+		}
+		return result;
+	}
+	
+	private void populateCertificationBodiesParameter(SearchRequest searchRequest, Query query) {
+		if (searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
+			for(int i = 0; i < searchRequest.getCertificationBodies().size(); i++) {
+				query.setParameter("certificationbody"+i, searchRequest.getCertificationBodies().get(i));
+			}			
+		}
+	}
+	
+	private String buildCertificationEditionsFilter(SearchRequest searchRequest) {
+		String result = "";
+		if (searchRequest.getCertificationEditions() != null && searchRequest.getCertificationEditions().size() > 0) {
+			result += " AND year in (";
+			for(int i = 0; i < searchRequest.getCertificationEditions().size(); i++) {
+				result += ":certificationedition" + i;
+				if(i != searchRequest.getCertificationEditions().size()-1) {
+					result += ", ";
+				}
+			}
+			result += ") ";
+		} else {
+			result += " AND year NOT LIKE '2011'";
+		}
+		return result;
+	}
+	
+	private void populateCertificationEditionsParameter(SearchRequest searchRequest, Query query) {
+		if (searchRequest.getCertificationEditions() != null && searchRequest.getCertificationEditions().size() > 0) {
+			for(int i = 0; i < searchRequest.getCertificationEditions().size(); i++) {
+				query.setParameter("certificationedition"+i, searchRequest.getCertificationEditions().get(i));
+			}
+		}
+	}
+	
+	private String buildCorrectiveActionPlanFilter(SearchRequest searchRequest) {
+		String result = "";
+		if(searchRequest.getCorrectiveActionPlans() != null && searchRequest.getCorrectiveActionPlans().size() > 0) {
+			result += " AND (";
+			for(int i = 0; i < searchRequest.getCorrectiveActionPlans().size(); i++) {
+				if(i > 0) {
+					result += " OR ";
+				}
+				switch(searchRequest.getCorrectiveActionPlans().get(i)) {
+				case SearchRequest.HAS_OPEN_CAP:
+					result += "count_current_corrective_action_plans > 0";
+					break;
+				case SearchRequest.HAS_CLOSED_CAP:
+					result += "count_closed_corrective_action_plans > 0";
+					break;
+				case SearchRequest.NEVER_HAD_CAP:
+					result += "count_corrective_action_plans = 0";
+					break;
+				}
+			}
+			result += ") ";
+		}
+		return result;
+	}
 }

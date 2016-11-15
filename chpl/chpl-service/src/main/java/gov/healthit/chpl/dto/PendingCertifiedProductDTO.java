@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -133,19 +135,19 @@ public class PendingCertifiedProductDTO {
 			this.developerAddress = address;
 		}
 		
-		if(details.getProduct().get("id") != null) {
-			String productId = details.getProduct().get("id").toString();
+		if(details.getProduct() != null && details.getProduct().getProductId() != null) {
+			String productId = details.getProduct().getProductId().toString();
 			this.productId = new Long(productId);
 		}
-		if(details.getProduct().get("name") != null) {
-			this.productName = details.getProduct().get("name").toString();
+		if(details.getProduct() != null && !StringUtils.isEmpty(details.getProduct().getName())) {
+			this.productName = details.getProduct().getName();
 		}
-		if(details.getProduct().get("versionId") != null) {
-			String productVersionId = details.getProduct().get("versionId").toString();
+		if(details.getVersion() != null && details.getVersion().getVersionId() != null) {
+			String productVersionId = details.getVersion().getVersionId().toString();
 			this.productVersionId = new Long(productVersionId);
 		}
-		if(details.getProduct().get("version") != null) {
-			this.productVersion = details.getProduct().get("version").toString();
+		if(details.getVersion() != null && !StringUtils.isEmpty(details.getVersion().getVersion())) {
+			this.productVersion = details.getVersion().getVersion();
 		}
 		
 		if(details.getCertificationEdition().get("id") != null) {

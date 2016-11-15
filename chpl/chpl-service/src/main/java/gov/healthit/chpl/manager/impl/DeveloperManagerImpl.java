@@ -1,6 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +31,13 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.ProductManager;
 
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
@@ -43,7 +47,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Autowired private Environment env;
 	
 	@Autowired DeveloperDAO developerDao;	
-	@Autowired ProductDAO productDao;
+	@Autowired ProductManager productManager;
 	@Autowired CertificationBodyManager acbManager;
 
 	@Autowired
@@ -53,23 +57,19 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Transactional(readOnly = true)
 	public List<DeveloperDTO> getAll() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAll();
-		List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
-        Map<Long,DeveloperDTO> mappedDevelopers = new HashMap<Long,DeveloperDTO>();
-        for(DeveloperDTO dev : allDevelopers) {
-            mappedDevelopers.put(dev.getId(), dev);
-        }
-        for(DeveloperACBMapDTO map : transparencyMaps) {
-            if (map.getAcbId() != null) {
-                mappedDevelopers.get(map.getDeveloperId()).getTransparencyAttestationMappings().add(map);
-            }
-        }
-        List<DeveloperDTO> ret = new ArrayList<DeveloperDTO>();
-        for (DeveloperDTO dev : mappedDevelopers.values()) {
-            ret.add(dev);
-        }
-		return ret;
+		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
+		return allDevelopersWithTransparencies;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	public List<DeveloperDTO> getAllIncludingDeleted() {
+		List<DeveloperDTO> allDevelopers = developerDao.findAllIncludingDeleted();
+		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
+		return allDevelopersWithTransparencies;
+	}
+	
 	@Override
 	@Transactional(readOnly = true)
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException {
@@ -280,12 +280,21 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		}
 		
 		DeveloperDTO createdDeveloper = create(developerToCreate);
-		// - search for any products assigned to the list of developers passed in
-		List<ProductDTO> developerProducts = productDao.getByDevelopers(developerIdsToMerge);
-		// - reassign those products to the new developer
+		//search for any products assigned to the list of developers passed in
+		List<ProductDTO> developerProducts = productManager.getByDevelopers(developerIdsToMerge);
 		for(ProductDTO product : developerProducts) {
+			//add an item to the ownership history of each product
+			ProductOwnerDTO historyToAdd= new ProductOwnerDTO();
+			historyToAdd.setProductId(product.getId());
+			DeveloperDTO prevOwner = new DeveloperDTO();
+			prevOwner.setId(product.getDeveloperId());
+			historyToAdd.setDeveloper(prevOwner);
+			historyToAdd.setTransferDate(System.currentTimeMillis());
+			product.getOwnerHistory().add(historyToAdd);
+			//reassign those products to the new developer
 			product.setDeveloperId(createdDeveloper.getId());
-			productDao.update(product);
+			productManager.update(product);
+			
 		}
 		// - mark the passed in developers as deleted
 		for(Long developerId : developerIdsToMerge) {
@@ -327,5 +336,23 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				logger.error("Could not send questionable activity email", me);
 			}
 		}	
+	}
+	
+	private List<DeveloperDTO> addTransparencyMappings(List<DeveloperDTO> developers) {
+		List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
+        Map<Long,DeveloperDTO> mappedDevelopers = new HashMap<Long,DeveloperDTO>();
+        for(DeveloperDTO dev : developers) {
+            mappedDevelopers.put(dev.getId(), dev);
+        }
+        for(DeveloperACBMapDTO map : transparencyMaps) {
+            if (map.getAcbId() != null) {
+                mappedDevelopers.get(map.getDeveloperId()).getTransparencyAttestationMappings().add(map);
+            }
+        }
+        List<DeveloperDTO> ret = new ArrayList<DeveloperDTO>();
+        for (DeveloperDTO dev : mappedDevelopers.values()) {
+            ret.add(dev);
+        }
+        return ret;
 	}
 }

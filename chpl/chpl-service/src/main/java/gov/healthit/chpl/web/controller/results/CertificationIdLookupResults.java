@@ -29,20 +29,20 @@ public class CertificationIdLookupResults {
 
 		public Product(CertifiedProductDetailsDTO dto) {
 			this.id = dto.getId();
-			this.name = dto.getProductName();
-			this.version = dto.getProductVersion();
+			this.name = dto.getProduct().getName();
+			this.version = dto.getVersion().getVersion();
 			if(!StringUtils.isEmpty(dto.getChplProductNumber())) {
 				this.setChplProductNumber(dto.getChplProductNumber());
 			} else {
 				this.setChplProductNumber(dto.getYearCode() + "." + dto.getTestingLabCode() + "." + dto.getCertificationBodyCode() + "." + 
-						dto.getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
+						dto.getDeveloper().getDeveloperCode() + "." + dto.getProductCode() + "." + dto.getVersionCode() + 
 						"." + dto.getIcsCode() + "." + dto.getAdditionalSoftwareCode() + 
 						"." + dto.getCertifiedDateCode());
 			}			
 			this.year = dto.getYear();
 			this.practiceType = dto.getPracticeTypeName();
 			this.acb = dto.getCertificationBodyName();
-			this.vendor = dto.getDeveloperName();
+			this.vendor = dto.getDeveloper().getName();
 			this.classification = dto.getProductClassificationName();
             this.additionalSoftware = "";
             try {

@@ -17,8 +17,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -192,7 +190,7 @@ public class CertifiedProductController {
 		if(updateRequest.getClassificationType() != null && updateRequest.getClassificationType().get("id") != null) {
 			toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
 		}
-		toUpdate.setProductVersionId(new Long(updateRequest.getProduct().get("versionId").toString()));
+		toUpdate.setProductVersionId(new Long(updateRequest.getVersion().getVersionId()));
 		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
 		toUpdate.setCertificationEditionId(new Long(updateRequest.getCertificationEdition().get("id").toString()));
 		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
@@ -389,7 +387,7 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
+	public synchronized @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();

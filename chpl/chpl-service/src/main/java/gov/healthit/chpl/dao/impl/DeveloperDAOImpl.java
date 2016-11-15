@@ -404,7 +404,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.status ", DeveloperEntity.class).getResultList();
+				+ "LEFT OUTER JOIN FETCH v.status "
+				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses ", DeveloperEntity.class).getResultList();
 		return result;
 	}
 

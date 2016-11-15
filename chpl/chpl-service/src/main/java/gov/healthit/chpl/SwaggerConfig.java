@@ -5,6 +5,8 @@ import static springfox.documentation.builders.PathSelectors.regex;
 
 import javax.servlet.ServletContext;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +18,6 @@ import com.google.common.base.Predicate;
 
 import springfox.documentation.PathProvider;
 import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiListingReference;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.paths.RelativePathProvider;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -26,17 +27,21 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @PropertySource("classpath:environment.properties")
 @EnableSwagger2
 public class SwaggerConfig implements EnvironmentAware {
+	
+	private static final Logger logger = LogManager.getLogger(SwaggerConfig.class);
 
 	@Autowired ServletContext context;
 	@Autowired private Environment env;
 
 	@Override
     public void setEnvironment(final Environment environment) {
+		logger.info("setEnvironment");
         this.env = environment;
     }
 
     @Bean
     public Docket customDocket(){
+    	logger.info("get Docket");
        return new Docket(DocumentationType.SWAGGER_2)
     		   .apiInfo(apiInfo())
     		   .pathProvider(pathProvider())
@@ -46,17 +51,20 @@ public class SwaggerConfig implements EnvironmentAware {
     }
 
     private ApiInfo apiInfo() {
-    	return new ApiInfo("CHPL", "Certified Health IT Product Listing", "5.2.0",
+    	logger.info("get ApiInfo");
+    	return new ApiInfo("CHPL", "Certified Health IT Product Listing", "6.0.0",
     			"http://terms/of/service.url", "CHPL@ainq.com",
     			"License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 
     private PathProvider pathProvider() {
+    	logger.info("get PathProvider");
     	return new AbsolutePathProvider(context);
     }
 
     @SuppressWarnings("unchecked")
     private Predicate<String> paths() {
+    	logger.info("get Predicate paths");
       return or(
     		  regex("/acbs.*"),
     		  regex("/activity.*"),
@@ -87,6 +95,7 @@ public class SwaggerConfig implements EnvironmentAware {
 
     	@Override
     	public String getApplicationBasePath() {
+    		logger.info("get application base path");
     		return env.getProperty("basePath");
     	}
     }

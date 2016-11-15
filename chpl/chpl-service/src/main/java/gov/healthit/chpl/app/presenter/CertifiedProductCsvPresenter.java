@@ -88,8 +88,8 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 		result.add(data.getCertifyingBody().get("name").toString());
 		result.add(data.getOtherAcb());
 		result.add(data.getDeveloper().getName());
-		result.add(data.getProduct().get("name").toString());
-		result.add(data.getProduct().get("version").toString());
+		result.add(data.getProduct().getName());
+		result.add(data.getVersion().getVersion());
 		result.add(data.getCountCorrectiveActionPlans().toString());
 		result.add(data.getCountCurrentCorrectiveActionPlans().toString());
 		List<String> criteria = generateCriteriaValues(data);

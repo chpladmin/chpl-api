@@ -13,7 +13,9 @@ public class ProductVersion {
 	public ProductVersion(ProductVersionDTO dto) {
 		this.versionId = dto.getId();
 		this.version = dto.getVersion();
-		this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
+		if(dto.getLastModifiedDate() != null) {
+			this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
+		}
 	}
 
 	public Long getVersionId() {
