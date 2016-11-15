@@ -8,11 +8,13 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
@@ -22,9 +24,12 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
+import gov.healthit.chpl.entity.SurveillanceResultTypeEntity;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -92,6 +97,42 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		
 		try {
 			survDao.deletePendingSurveillance(surv);
+		} catch(Exception ex) {
+			logger.error("Error marking pending surveillance with id " + survId + " as deleted.", ex);
+		}
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
+	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId)
+		throws EntityNotFoundException, AccessDeniedException {
+		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId);
+		if(surv == null) {
+			throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
+		}
+		CertifiedProductEntity ownerCp = surv.getCertifiedProduct();
+		if(ownerCp == null) {
+			throw new EntityNotFoundException("Could not find certified product associated with pending surveillance.");
+		}
+		boolean userHasAcbPermissions = false;
+		for(CertificationBodyDTO acb : userAcbs) {
+			if(acb.getId() != null && 
+					ownerCp.getCertificationBodyId() != null && 
+					acb.getId().longValue() == ownerCp.getCertificationBodyId().longValue()) {
+				userHasAcbPermissions = true;
+			}
+		}
+		
+		if(!userHasAcbPermissions) {
+			throw new AccessDeniedException("Permission denied on ACB " + ownerCp.getCertificationBodyId() + " for user " + Util.getCurrentUser().getSubjectName());
+		}
+		
+		Surveillance toDelete = new Surveillance();
+		toDelete.setId(survId);
+		
+		try {
+			survDao.deletePendingSurveillance(toDelete);
 		} catch(Exception ex) {
 			logger.error("Error marking pending surveillance with id " + survId + " as deleted.", ex);
 		}

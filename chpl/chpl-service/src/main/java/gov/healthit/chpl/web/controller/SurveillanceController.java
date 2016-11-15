@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,6 +71,15 @@ public class SurveillanceController {
 		SurveillanceResults results = new SurveillanceResults();
 		results.setPendingSurveillance(pendingSurvs);
 		return results;
+	}
+	
+	@ApiOperation(value="Reject (effectively delete) a pending surveillance item.")
+	@RequestMapping(value="/pending/{pendingSurvId}/reject", method=RequestMethod.POST,
+			produces = "application/json; charset=utf-8")
+	public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") Long id) {
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		survManager.deletePendingSurveillance(acbs, id);
+		return "{\"success\" : true }";
 	}
 	
 	@ApiOperation(value="Upload a file with surveillance and nonconformities for certified products.", 
