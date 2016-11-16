@@ -109,6 +109,8 @@ public class SurveillanceController {
 		}
 		Long pendingSurvToDelete = survToInsert.getId();
 		
+		survToInsert.getErrorMessages().clear();
+		
 		//validate first. this ensures we have all the info filled in 
 		//that we need to continue
 		survManager.validate(survToInsert);
