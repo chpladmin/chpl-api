@@ -84,6 +84,9 @@
 		<class>gov.healthit.chpl.entity.ProductInsertableOwnerEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>		
 		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>	
+		<class>gov.healthit.chpl.entity.SurveillanceEntity</class>
+		<class>gov.healthit.chpl.entity.SurveillanceRequirementEntity</class>
+		<class>gov.healthit.chpl.entity.SurveillanceNonconformityEntity</class>
 		<class>gov.healthit.chpl.entity.SurveillanceTypeEntity</class>
 		<class>gov.healthit.chpl.entity.SurveillanceResultTypeEntity</class>
 		<class>gov.healthit.chpl.entity.SurveillanceRequirementTypeEntity</class>

@@ -153,7 +153,7 @@ public class SurveillanceValidator {
 						req.setRequirement(gov.healthit.chpl.Util.coerceToCrtierionNumberFormat(req.getRequirement()));
 						CertificationCriterionDTO criterion = criterionDao.getByNameAndYear(req.getRequirement(), surv.getCertifiedProduct().getEdition());
 						if(criterion == null) {
-							surv.getErrorMessages().add("The requirement '" + req.getRequirement() + "' is not valid for requirement type '" + req.getType().getName() + "'. Valid values are one of the existing certification criteiron.");
+							surv.getErrorMessages().add("The requirement '" + req.getRequirement() + "' is not valid for requirement type '" + req.getType().getName() + "'. Valid values are one of the existing certification criterion.");
 						} 
 					} else if(req.getType().getName().equals(TRANSPARENCY_REQUIREMENT_TYPE)) {
 						//requirement has to be one of 170.523 (k)(1) or (k)(2)
