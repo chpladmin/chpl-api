@@ -144,8 +144,10 @@ public class SurveillanceController {
 		
 		try {
 			//if a surveillance was getting replaced, delete it
-			if(survToInsert.getSurveillanceIdToReplace() != null) {
-				Surveillance survToReplace = survManager.getById(survToInsert.getSurveillanceIdToReplace());
+			if(!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
+				Surveillance survToReplace = survManager.getByFriendlyIdAndProduct(
+						survToInsert.getCertifiedProduct().getId(),
+						survToInsert.getSurveillanceIdToReplace());
 				CertifiedProductDTO survToReplaceOwningCp = cpManager.getById(survToReplace.getCertifiedProduct().getId());
 				survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace.getId());;
 			}

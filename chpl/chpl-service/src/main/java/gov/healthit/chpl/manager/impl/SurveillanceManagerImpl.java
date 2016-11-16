@@ -61,6 +61,18 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	
 	@Override
 	@Transactional(readOnly = true)
+	public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId) {
+		SurveillanceEntity surv = survDao.getSurveillanceByCertifiedProductAndFriendlyId(certifiedProductId, survFriendlyId);
+		if(surv == null) {
+			throw new EntityNotFoundException("Could not find surveillance for certified product " + certifiedProductId + " with friendly id " + survFriendlyId);
+		}
+		Surveillance result = convertToDomain(surv);
+		validator.validate(result);
+		return result;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
 	public List<Surveillance> getByCertifiedProduct(Long cpId) {
 		List<SurveillanceEntity> survResults = survDao.getSurveillanceByCertifiedProductId(cpId);
 		List<Surveillance> results = new ArrayList<Surveillance>();
@@ -213,7 +225,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	private Surveillance convertToDomain(PendingSurveillanceEntity pr) {
 		Surveillance surv = new Surveillance();
 		surv.setId(pr.getId());
-		surv.setSurveillanceIdToReplace(pr.getSurvIdToReplace());
+		surv.setSurveillanceIdToReplace(pr.getSurvFriendlyIdToReplace());
 		surv.setStartDate(pr.getStartDate());
 		surv.setEndDate(pr.getEndDate());
 		surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
@@ -279,6 +291,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	private Surveillance convertToDomain(SurveillanceEntity entity) {
 		Surveillance surv = new Surveillance();
 		surv.setId(entity.getId());
+		surv.setFriendlyId(entity.getFriendlyId());
 		surv.setStartDate(entity.getStartDate());
 		surv.setEndDate(entity.getEndDate());
 		surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());

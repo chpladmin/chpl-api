@@ -120,19 +120,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		
 		//find the surveillance id in case this is an update
 		String survFriendlyId = record.get(colIndex++).trim();
-		if(!StringUtils.isEmpty(survFriendlyId)) {
-			try {
-				if(survFriendlyId.toUpperCase().startsWith("SURV")) {
-					Long survId = Long.parseLong(survFriendlyId.substring(4));
-					surv.setSurveillanceIdToReplace(survId);
-				} else {
-					Long survId = Long.parseLong(survFriendlyId);
-					surv.setSurveillanceIdToReplace(survId);
-				}
-			} catch(Exception ex) {
-				logger.error("Could not parse surveillance id '" + survFriendlyId + "'.");
-			}
-		}
+		surv.setSurveillanceIdToReplace(survFriendlyId);
 		
 		//surveillance begin date
 		String beginDateStr = record.get(colIndex++).trim();

@@ -113,14 +113,20 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return toInsert.getId();
 	}
 	
-	public boolean surveillanceExists(Long survId) {
-		SurveillanceEntity found = entityManager.find(SurveillanceEntity.class, survId);
-		if(found == null) {
-			return false;
+	public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId, String survFriendlyId) {
+		Query query = entityManager.createQuery("from SurveillanceEntity surv "
+				+ "where surv.friendlyId = :friendlyId "
+				+ "and surv.certifiedProductId = :cpId "
+				+ "and surv.deleted <> true",
+				SurveillanceEntity.class);
+		query.setParameter("friendlyId", survFriendlyId);
+		query.setParameter("cpId", certifiedProductId);
+		List<SurveillanceEntity> matches = query.getResultList();
+		
+		if(matches != null && matches.size() > 0) {
+			return matches.get(0);
 		}
-		//clear the persistence cache
-		entityManager.clear();
-		return true;
+		return null;
 	}
 	
 	public SurveillanceEntity getSurveillanceById(Long id) {
@@ -135,7 +141,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	
 	public Long insertPendingSurveillance(Surveillance surv) {
 		PendingSurveillanceEntity toInsert = new PendingSurveillanceEntity();
-		toInsert.setSurvIdToReplace(surv.getSurveillanceIdToReplace());
+		toInsert.setSurvFriendlyIdToReplace(surv.getSurveillanceIdToReplace());
 		if(surv.getCertifiedProduct() != null) {
 			toInsert.setCertifiedProductId(surv.getCertifiedProduct().getId());
 			toInsert.setCertifiedProductUniqueId(surv.getCertifiedProduct().getChplProductNumber());

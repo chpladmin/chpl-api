@@ -9,7 +9,8 @@ import java.util.Set;
 
 public class Surveillance {
 	private Long id;
-	private Long surveillanceIdToReplace;
+	private String surveillanceIdToReplace;
+	private String friendlyId;
 	private CertifiedProduct certifiedProduct;
 	private Date startDate;
 	private Date endDate;
@@ -88,11 +89,19 @@ public class Surveillance {
 		this.requirements = requirements;
 	}
 
-	public Long getSurveillanceIdToReplace() {
+	public String getSurveillanceIdToReplace() {
 		return surveillanceIdToReplace;
 	}
 
-	public void setSurveillanceIdToReplace(Long surveillanceIdToReplace) {
+	public void setSurveillanceIdToReplace(String surveillanceIdToReplace) {
 		this.surveillanceIdToReplace = surveillanceIdToReplace;
+	}
+
+	public String getFriendlyId() {
+		return friendlyId;
+	}
+
+	public void setFriendlyId(String friendlyId) {
+		this.friendlyId = friendlyId;
 	}
 }

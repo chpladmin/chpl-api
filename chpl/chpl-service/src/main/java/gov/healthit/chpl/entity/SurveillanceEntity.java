@@ -26,6 +26,9 @@ public class SurveillanceEntity {
 	@Column(name = "id")
 	private Long id;
 	
+	@Column(name = "friendly_id", insertable = false, updatable = false)
+	private String friendlyId;
+	
 	@Column(name = "certified_product_id")
 	private Long certifiedProductId;
 	
@@ -161,5 +164,13 @@ public class SurveillanceEntity {
 
 	public void setSurveilledRequirements(Set<SurveillanceRequirementEntity> surveilledRequirements) {
 		this.surveilledRequirements = surveilledRequirements;
+	}
+
+	public String getFriendlyId() {
+		return friendlyId;
+	}
+
+	public void setFriendlyId(String friendlyId) {
+		this.friendlyId = friendlyId;
 	}
 }

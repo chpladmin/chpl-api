@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.SurveillanceEntity;
 
 @Component("surveillanceValidator")
 public class SurveillanceValidator {
@@ -71,9 +72,11 @@ public class SurveillanceValidator {
 			}
 		}
 		
-		if(surv.getSurveillanceIdToReplace() != null) {
-			boolean exists = survDao.surveillanceExists(surv.getSurveillanceIdToReplace());
-			if(!exists) {
+		if(!StringUtils.isEmpty(surv.getSurveillanceIdToReplace()) && surv.getCertifiedProduct() != null) {
+			SurveillanceEntity existing = survDao.getSurveillanceByCertifiedProductAndFriendlyId(
+					surv.getCertifiedProduct().getId(),
+					surv.getSurveillanceIdToReplace());
+			if(existing == null) {
 				surv.getErrorMessages().add("Pending surveillance is supposed to replace existing surveillance with id " + surv.getSurveillanceIdToReplace() + " but no surveillance with that ID could be found.");
 			}
 		}

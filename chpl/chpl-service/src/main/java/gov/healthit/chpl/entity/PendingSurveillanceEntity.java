@@ -27,7 +27,7 @@ public class PendingSurveillanceEntity {
 	private Long id;
 	
 	@Column(name = "surveillance_id_to_replace")
-	private Long survIdToReplace;
+	private String survFriendlyIdToReplace;
 	
 	@Column(name = "certified_product_unique_id")
 	private String certifiedProductUniqueId;
@@ -165,11 +165,11 @@ public class PendingSurveillanceEntity {
 		this.certifiedProductId = certifiedProductId;
 	}
 
-	public Long getSurvIdToReplace() {
-		return survIdToReplace;
+	public String getSurvFriendlyIdToReplace() {
+		return survFriendlyIdToReplace;
 	}
 
-	public void setSurvIdToReplace(Long survIdToReplace) {
-		this.survIdToReplace = survIdToReplace;
+	public void setSurvFriendlyIdToReplace(String survFriendlyIdToReplace) {
+		this.survFriendlyIdToReplace = survFriendlyIdToReplace;
 	}
 }

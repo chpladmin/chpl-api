@@ -14,7 +14,7 @@ import gov.healthit.chpl.entity.SurveillanceEntity;
 
 public interface SurveillanceDAO {
 	public Long insertSurveillance(Surveillance surv);
-	public boolean surveillanceExists(Long survId);
+	public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId, String survFriendlyId);
 	public SurveillanceEntity getSurveillanceById(Long id);
 	public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id);
 	public void deleteSurveillance(Surveillance surv) throws EntityNotFoundException ;
