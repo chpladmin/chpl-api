@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -80,6 +87,57 @@ public class SurveillanceController {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
 		survManager.deletePendingSurveillance(acbs, id);
 		return "{\"success\" : true }";
+	}
+	
+	@ApiOperation(value="Confirm a pending surveillance activity.", 
+			notes="Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
+					+ "in the system and associates them with the certified product indicated in the "
+					+ "request body. If the surveillance is an update of an existing surveillance activity "
+					+ "as indicated by the 'surveillanceIdToReplace' field, that existing surveillance "
+					+ "activity will be marked as deleted and the surveillance in this request body will "
+					+ "be inserted. The surveillance passed into this request will first be validated "
+					+ " to check for errors and the related pending surveillance will be removed. "
+					+ "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB associated with the certified product is required.")
+	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public synchronized @ResponseBody Surveillance confirmPendingSurveillance(
+			@RequestBody(required = true) Surveillance survToInsert) 
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		if(survToInsert == null || survToInsert.getId() == null) {
+			throw new ValidationException("An id must be provided in the request body.");
+		}
+		Long pendingSurvToDelete = survToInsert.getId();
+		
+		//validate first. this ensures we have all the info filled in 
+		//that we need to continue
+		survManager.validate(survToInsert);
+
+		if(survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
+			throw new ValidationException(survToInsert.getErrorMessages(), null);
+		}
+		
+		//look up the ACB
+		CertificationBodyDTO owningAcb = null;
+		try {
+			CertifiedProductDTO owningCp = cpManager.getById(survToInsert.getCertifiedProduct().getId());
+			owningAcb = acbManager.getById(owningCp.getCertificationBodyId());
+		} catch(Exception ex) {
+			logger.error("Error looking up ACB associated with surveillance.", ex);
+			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+		}
+		
+		//insert or update the surveillance
+		Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+		if(insertedSurv == null) {
+			throw new EntityCreationException("Error creating new surveillance.");
+		}
+		
+		//delete the pending surveillance item if this one was successfully inserted
+		survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete);
+		
+		//query the inserted surveillance
+		return survManager.getById(insertedSurv);
 	}
 	
 	@ApiOperation(value="Upload a file with surveillance and nonconformities for certified products.", 

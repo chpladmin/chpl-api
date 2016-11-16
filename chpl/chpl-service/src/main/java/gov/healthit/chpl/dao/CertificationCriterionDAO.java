@@ -17,6 +17,7 @@ public interface CertificationCriterionDAO {
 	public List<CertificationCriterionDTO> findByCertificationEditionYear(String year);
 	public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
 	public CertificationCriterionDTO getByName(String criterionName);
+	public CertificationCriterionDTO getByNameAndYear(String criterionName, String year);
 	public CertificationCriterionEntity getEntityByName(String name);
 	public CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException;
 	

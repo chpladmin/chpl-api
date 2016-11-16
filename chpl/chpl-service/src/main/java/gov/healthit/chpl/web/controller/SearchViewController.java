@@ -31,6 +31,7 @@ import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
+import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -412,11 +413,30 @@ public class SearchViewController {
 		return result;
 	}
 	
+	@ApiOperation(value="Get all possible surveillance requirement options in the CHPL")
+	@RequestMapping(value="/data/surveillance_requirements", method=RequestMethod.GET,
+				produces = "application/json; charset=utf-8")
+	public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
+		SurveillanceRequirementOptions data = searchMenuManager.getSurveillanceRequirementOptions();
+		return data;
+	}
+	
 	@ApiOperation(value="Get all possible nonconformity status type options in the CHPL")
 	@RequestMapping(value="/data/nonconformity_status_types", method=RequestMethod.GET,
 				produces = "application/json; charset=utf-8")
 	public @ResponseBody SearchOption getNonconformityStatusTypes() {
 		Set<KeyValueModel> data = searchMenuManager.getNonconformityStatusTypes();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible nonconformity type options in the CHPL")
+	@RequestMapping(value="/data/nonconformity_types", method=RequestMethod.GET,
+				produces = "application/json; charset=utf-8")
+	public @ResponseBody SearchOption getNonconformityTypeOptions() {
+		Set<KeyValueModel> data = searchMenuManager.getNonconformityTypeOptions();
 		SearchOption result = new SearchOption();
 		result.setExpandable(false);
 		result.setData(data);

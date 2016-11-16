@@ -9,6 +9,7 @@ public class CertifiedProduct {
 	private Long id;
     private String chplProductNumber;
 	private String lastModifiedDate;
+	private String edition;
 	
 	public CertifiedProduct() {}
 	
@@ -23,6 +24,7 @@ public class CertifiedProduct {
 					"." + dto.getCertifiedDateCode());
 		}
 		this.setLastModifiedDate(dto.getLastModifiedDate().getTime() + "");
+		this.edition = dto.getYear();
 	}
 	public Long getId() {
 		return id;
@@ -41,5 +43,13 @@ public class CertifiedProduct {
 	}
 	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getEdition() {
+		return edition;
+	}
+
+	public void setEdition(String edition) {
+		this.edition = edition;
 	}
 }

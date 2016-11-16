@@ -2,6 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,18 +17,18 @@ public class Surveillance {
 	private Integer randomizedSitesUsed;
 	private Set<SurveillanceRequirement> requirements;
 	
-	private List<String> errorMessages;
+	private Set<String> errorMessages;
 	
 	public Surveillance() {
 		this.requirements = new LinkedHashSet<SurveillanceRequirement>();
-		this.errorMessages = new ArrayList<String>();
+		this.errorMessages = new HashSet<String>();
 	}
 
-	public List<String> getErrorMessages() {
+	public Set<String> getErrorMessages() {
 		return errorMessages;
 	}
 
-	public void setErrorMessages(List<String> errors) {
+	public void setErrorMessages(Set<String> errors) {
 		this.errorMessages = errors;
 	}
 

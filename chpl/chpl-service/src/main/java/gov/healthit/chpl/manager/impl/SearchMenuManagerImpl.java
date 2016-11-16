@@ -34,8 +34,10 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
+import gov.healthit.chpl.domain.RequirementType;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.TestTool;
@@ -342,6 +344,42 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			results.add(new KeyValueModel(result.getId(), result.getName()));
 		}
 		return results;
+	}
+	
+	@Override
+	public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
+		SurveillanceRequirementOptions result = new SurveillanceRequirementOptions();
+		
+		List<CertificationCriterionDTO> criteria2014 = certificationCriterionDAO.findByCertificationEditionYear("2014");
+		for(CertificationCriterionDTO crit : criteria2014) {
+			result.getCriteriaOptions2014().add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
+		}
+		List<CertificationCriterionDTO> criteria2015 = certificationCriterionDAO.findByCertificationEditionYear("2015");
+		for(CertificationCriterionDTO crit : criteria2015) {
+			result.getCriteriaOptions2015().add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
+		}
+		
+		result.getTransparencyOptions().add(RequirementType.K1.getName());
+		result.getTransparencyOptions().add(RequirementType.K2.getName());
+		return result;
+	}
+	
+	@Override
+	public Set<KeyValueModel> getNonconformityTypeOptions() {
+		Set<KeyValueModel> result = new HashSet<KeyValueModel>();
+		
+		List<CertificationCriterionDTO> criteria2014 = certificationCriterionDAO.findByCertificationEditionYear("2014");
+		for(CertificationCriterionDTO crit : criteria2014) {
+			result.add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
+		}
+		List<CertificationCriterionDTO> criteria2015 = certificationCriterionDAO.findByCertificationEditionYear("2015");
+		for(CertificationCriterionDTO crit : criteria2015) {
+			result.add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
+		}
+		
+		result.add(new KeyValueModel(null, RequirementType.K1.getName()));
+		result.add(new KeyValueModel(null, RequirementType.K2.getName()));
+		return result;
 	}
 	
 	@Override

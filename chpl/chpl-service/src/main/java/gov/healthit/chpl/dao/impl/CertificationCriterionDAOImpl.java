@@ -14,12 +14,15 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 
 @Repository("certificationCriterionDAO")
 public class CertificationCriterionDAOImpl extends BaseDAOImpl implements CertificationCriterionDAO {
-	
+	private static final Logger logger = LogManager.getLogger(CertificationCriterionDAOImpl.class);
+
 	@Override
 	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public CertificationCriterionDTO create(CertificationCriterionDTO dto) throws EntityCreationException, EntityRetrievalException {
@@ -139,6 +142,30 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		return new CertificationCriterionDTO(entity);
 	}
 	
+	@Override
+	public CertificationCriterionDTO getByNameAndYear(String criterionName, String year) {			
+		Query query = entityManager.createQuery( "SELECT cce "
+				+ "FROM CertificationCriterionEntity cce "
+				+ "LEFT JOIN FETCH cce.certificationEdition "
+				+ "where (NOT cce.deleted = true) "
+				+ "AND (cce.number = :number) "
+				+ "AND (cce.certificationEdition.year = :year) ", 
+				CertificationCriterionEntity.class );
+		query.setParameter("year", year);
+		query.setParameter("number", criterionName);
+		List<CertificationCriterionEntity> results = query.getResultList();
+		
+		CertificationCriterionEntity entity = null;
+		if (results.size() > 0){
+			entity = results.get(0);
+		}
+		CertificationCriterionDTO result = null;
+		if(entity != null) {
+			result = new CertificationCriterionDTO(entity); 
+		}
+		return result;
+	}
+	
 	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void create(CertificationCriterionEntity entity) {
 		
@@ -201,7 +228,8 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		
 		CertificationCriterionEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from CertificationCriterionEntity where (NOT deleted = true) AND (number = :name) ", CertificationCriterionEntity.class );
+		Query query = entityManager.createQuery( "from CertificationCriterionEntity "
+				+ "where (NOT deleted = true) AND (number = :name) ", CertificationCriterionEntity.class );
 		query.setParameter("name", name);
 		List<CertificationCriterionEntity> result = query.getResultList();
 		

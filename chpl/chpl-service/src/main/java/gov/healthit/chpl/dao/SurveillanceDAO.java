@@ -10,13 +10,18 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
+import gov.healthit.chpl.entity.SurveillanceEntity;
 
 public interface SurveillanceDAO {
-	public Surveillance insertSurveillance(Surveillance surv);
+	public Long insertSurveillance(Surveillance surv);
+	public boolean surveillanceExists(Long survId);
+	public SurveillanceEntity getSurveillanceById(Long id);
+	public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id);
+	public void deleteSurveillance(Surveillance surv) throws EntityNotFoundException ;
+	
 	public Long insertPendingSurveillance(Surveillance surv);
 	public PendingSurveillanceEntity getPendingSurveillanceById(Long id);
 	public List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(Long acbId);
-	public void deleteSurveillance(Surveillance surv) throws EntityNotFoundException ;
 	public void deletePendingSurveillance(Surveillance surv) throws EntityNotFoundException;
 	
 	public List<SurveillanceType> getAllSurveillanceTypes();
