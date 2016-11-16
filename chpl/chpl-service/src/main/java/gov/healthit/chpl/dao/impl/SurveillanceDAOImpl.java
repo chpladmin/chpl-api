@@ -74,7 +74,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			}
 			toInsertReq.setLastModifiedUser(Util.getCurrentUser().getId());
 			toInsertReq.setDeleted(false);
-			entityManager.persist(toInsert);
+			entityManager.persist(toInsertReq);
 			entityManager.flush();
 			
 			for(SurveillanceNonconformity nc : req.getNonconformities()) {
@@ -87,6 +87,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 						toInsertNc.setType(nc.getNonconformityType());
 					}
 				}
+				toInsertNc.setSurveillanceRequirementId(toInsertReq.getId());
 				toInsertNc.setCapApproval(nc.getCapApprovalDate());
 				toInsertNc.setCapEndDate(nc.getCapEndDate());
 				toInsertNc.setCapMustCompleteDate(nc.getCapMustCompleteDate());
@@ -504,6 +505,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		entityManager.clear();
 		Query query = entityManager.createQuery("SELECT DISTINCT surv " 
 				+ "FROM PendingSurveillanceEntity surv "
+				+ "JOIN FETCH surv.certifiedProduct "
 				+ "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
 				+ "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
 				+ "WHERE surv.deleted <> true "

@@ -119,5 +119,10 @@ public class XmlParsingTest {
 		System.out.println("Testing " + input);
 		input = Util.coerceToCrtierionNumberFormat(input);
 		System.out.println("\tResult: " + input);
+		
+		input = " 170.523(a)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCrtierionNumberFormat(input);
+		System.out.println("\tResult: " + input);
 	}
 }

@@ -170,20 +170,23 @@ public class SurveillanceValidator {
 				if(surv.getEndDate() != null) {
 					if(req.getResult() == null) {
 						surv.getErrorMessages().add("Result was not found for surveillance requirement " + req.getRequirement() + ".");
-					} else if(req.getResult().getId() == null || req.getResult().getId().longValue() <= 0) {
-						SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
-						if(resType == null) {
-							surv.getErrorMessages().add("No result with name '" + req.getResult().getName() + "' was found for surveillance requirement " + req.getRequirement() + ".");
-						} else {
-							req.setResult(resType);
-						}
+					} 
+				}
+				
+				if(req.getResult() != null && 
+						(req.getResult().getId() == null || req.getResult().getId().longValue() <= 0)) {
+					SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
+					if(resType == null) {
+						surv.getErrorMessages().add("No result with name '" + req.getResult().getName() + "' was found for surveillance requirement " + req.getRequirement() + ".");
 					} else {
-						SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
-						if(resType == null) {
-							surv.getErrorMessages().add("No result with id '" + req.getResult().getId() + "' was found for surveillance requirement " + req.getRequirement() + ".");
-						} else {
-							req.setResult(resType);
-						}
+						req.setResult(resType);
+					}
+				} else if(req.getResult() != null){
+					SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
+					if(resType == null) {
+						surv.getErrorMessages().add("No result with id '" + req.getResult().getId() + "' was found for surveillance requirement " + req.getRequirement() + ".");
+					} else {
+						req.setResult(resType);
 					}
 				}
 			}
@@ -219,7 +222,7 @@ public class SurveillanceValidator {
 										&& !NonconformityType.K2.getName().equals(nc.getNonconformityType()) 
 										&& !NonconformityType.L.getName().equals(nc.getNonconformityType()) 
 										&& !NonconformityType.OTHER.getName().equals(nc.getNonconformityType()) ) {
-									surv.getErrorMessages().add("Nonconformity type must match either a criterion from the same edition as the surveilled product or one of the following: " + 
+									surv.getErrorMessages().add("Nonconformity type '" + nc.getNonconformityType() + "' must match either a criterion from the same edition as the surveilled product or one of the following: " + 
 										NonconformityType.K1.getName() + ", " + 
 										NonconformityType.K2.getName() + ", " + 
 										NonconformityType.L.getName() + ", or " + 

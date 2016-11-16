@@ -134,7 +134,22 @@ public class SurveillanceController {
 		}
 		
 		//delete the pending surveillance item if this one was successfully inserted
-		survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete);
+		try {
+			survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete);
+		} catch(Exception ex) {
+			logger.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
+		}
+		
+		try {
+			//if a surveillance was getting replaced, delete it
+			if(survToInsert.getSurveillanceIdToReplace() != null) {
+				Surveillance survToReplace = survManager.getById(survToInsert.getSurveillanceIdToReplace());
+				CertifiedProductDTO survToReplaceOwningCp = cpManager.getById(survToReplace.getCertifiedProduct().getId());
+				survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace.getId());;
+			}
+		} catch(Exception ex) {
+			logger.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
+		}
 		
 		//query the inserted surveillance
 		return survManager.getById(insertedSurv);

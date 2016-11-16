@@ -9,13 +9,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -27,6 +27,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
@@ -35,7 +36,6 @@ import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.SurveillanceEntity;
 import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.SurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.SurveillanceResultTypeEntity;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -217,10 +217,21 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		surv.setStartDate(pr.getStartDate());
 		surv.setEndDate(pr.getEndDate());
 		surv.setRandomizedSitesUsed(pr.getNumRandomizedSites());
-		CertifiedProduct cp = new CertifiedProduct();
-		cp.setId(pr.getCertifiedProductId());
-		cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
-		surv.setCertifiedProduct(cp);
+		if(pr.getCertifiedProduct() != null) {
+			CertifiedProductEntity cpEntity = pr.getCertifiedProduct();
+			try {
+				CertifiedProductDetailsDTO cpDto = cpDao.getDetailsById(cpEntity.getId());
+				surv.setCertifiedProduct(new CertifiedProduct(cpDto));
+			} catch(EntityRetrievalException ex) {
+				logger.error("Could not find details for certified product " + cpEntity.getId());
+			}
+		} else {
+			CertifiedProduct cp = new CertifiedProduct();
+			cp.setId(pr.getCertifiedProductId());
+			cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
+			surv.setCertifiedProduct(cp);
+		}
+		
 		SurveillanceType survType = new SurveillanceType();
 		survType.setName(pr.getSurveillanceType());
 		surv.setType(survType);
