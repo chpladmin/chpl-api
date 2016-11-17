@@ -17,6 +17,7 @@ import javax.persistence.Query;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository(value="certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
@@ -154,6 +155,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		
 	}
 	
+	@Transactional(readOnly=true)
 	public List<CertifiedProductDetailsDTO> findAll(){
 		
 		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery( 
@@ -190,6 +192,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dto;
 	}
 	
+	@Transactional(readOnly=true)
 	public CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException {
 		CertifiedProductDetailsDTO dto = null;
 		String[] idParts = chplUniqueId.split("\\.");
@@ -237,6 +240,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
+	@Transactional(readOnly=true)
 	public CertifiedProductDetailsDTO getDetailsById(Long cpId) throws EntityRetrievalException {
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity deets "
 				+ "LEFT OUTER JOIN FETCH deets.product "
@@ -250,6 +254,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return new CertifiedProductDetailsDTO(results.get(0));
 	}
 
+	@Transactional(readOnly=true)
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> productIds) throws EntityRetrievalException {
 		if ((null == productIds) || (productIds.size() == 0))
 			return new ArrayList<CertifiedProductDetailsDTO>();
@@ -271,6 +276,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtos;
 	}
 	
+	@Transactional(readOnly=true)
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId) {
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity deets "
 				+ "LEFT OUTER JOIN FETCH deets.product "
@@ -285,6 +291,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
+	@Transactional(readOnly=true)
 	public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds) {
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and certification_body_id IN :idList", CertifiedProductDetailsEntity.class );
 		query.setParameter("idList", acbIds);
@@ -297,6 +304,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
+	@Transactional(readOnly=true)
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds) {
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and certification_body_id IN :idList and product_version_id = :versionId", CertifiedProductDetailsEntity.class );
 		query.setParameter("idList", acbIds);
