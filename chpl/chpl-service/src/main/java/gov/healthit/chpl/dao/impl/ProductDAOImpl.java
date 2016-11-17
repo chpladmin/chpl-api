@@ -195,6 +195,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	@Override
+	@Transactional(readOnly=true)
 	public List<ProductDTO> findAll() {
 		
 		List<ProductEntity> entities = getAllEntities();
@@ -207,6 +208,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return dtos;
 	}
 	
+	@Transactional(readOnly=true)
 	public List<ProductDTO> findAllIncludingDeleted() {
 		List<ProductEntity> entities = getAllEntitiesIncludingDeleted();
 		List<ProductDTO> dtos = new ArrayList<>();
@@ -219,6 +221,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public ProductDTO getById(Long id) throws EntityRetrievalException {
 		
 		ProductEntity entity = getEntityById(id);
@@ -230,6 +233,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		
 	}
 	
+	@Transactional(readOnly=true)
 	public List<ProductDTO> getByDeveloper(Long developerId) {		
 		Query query = entityManager.createQuery( "SELECT distinct pe "
 				+ "FROM ProductEntity pe "
@@ -247,6 +251,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return dtoResults;
 	}
 	
+	@Transactional(readOnly=true)
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
 		Query query = entityManager.createQuery( "SELECT distinct pe "
 				+ "FROM ProductEntity pe "
@@ -264,6 +269,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return dtoResults;
 	}
 	
+	@Transactional(readOnly=true)
 	public ProductDTO getByDeveloperAndName(Long developerId, String name) {
 		Query query = entityManager.createQuery( "SELECT distinct pe "
 				+ "FROM ProductEntity pe "
