@@ -80,6 +80,48 @@ public class SurveillanceController {
 		return results;
 	}
 	
+	@ApiOperation(value="Create a new surveillance activity for a certified product.", 
+			notes="Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
+					+ "in the system and associates them with the certified product indicated in the "
+					+ "request body. The surveillance passed into this request will first be validated "
+					+ " to check for errors. "
+					+ "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB associated with the certified product is required.")
+	@RequestMapping(value="/create", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public synchronized @ResponseBody Surveillance createSurveillance(
+			@RequestBody(required = true) Surveillance survToInsert) 
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		survToInsert.getErrorMessages().clear();
+		
+		//validate first. this ensures we have all the info filled in 
+		//that we need to continue
+		survManager.validate(survToInsert);
+
+		if(survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
+			throw new ValidationException(survToInsert.getErrorMessages(), null);
+		}
+		
+		//look up the ACB
+		CertificationBodyDTO owningAcb = null;
+		try {
+			CertifiedProductDTO owningCp = cpManager.getById(survToInsert.getCertifiedProduct().getId());
+			owningAcb = acbManager.getById(owningCp.getCertificationBodyId());
+		} catch(Exception ex) {
+			logger.error("Error looking up ACB associated with surveillance.", ex);
+			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+		}
+		
+		//insert the surveillance
+		Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+		if(insertedSurv == null) {
+			throw new EntityCreationException("Error creating new surveillance.");
+		}
+		
+		//query the inserted surveillance
+		return survManager.getById(insertedSurv);
+	}
+	
 	@ApiOperation(value="Reject (effectively delete) a pending surveillance item.")
 	@RequestMapping(value="/pending/{pendingSurvId}/reject", method=RequestMethod.POST,
 			produces = "application/json; charset=utf-8")
