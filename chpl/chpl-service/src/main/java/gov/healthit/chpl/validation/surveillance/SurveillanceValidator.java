@@ -10,7 +10,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.RequirementType;
+import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
@@ -161,11 +161,11 @@ public class SurveillanceValidator {
 					} else if(req.getType().getName().equals(TRANSPARENCY_REQUIREMENT_TYPE)) {
 						//requirement has to be one of 170.523 (k)(1) or (k)(2)
 						req.setRequirement(gov.healthit.chpl.Util.coerceToCrtierionNumberFormat(req.getRequirement()));
-						if(!RequirementType.K1.getName().equals(req.getRequirement()) && 
-							!RequirementType.K2.getName().equals(req.getRequirement())) {
+						if(!RequirementTypeEnum.K1.getName().equals(req.getRequirement()) && 
+							!RequirementTypeEnum.K2.getName().equals(req.getRequirement())) {
 							surv.getErrorMessages().add("The requirement '" + req.getRequirement() + "' is not valid for requirement type '" + req.getType().getName() + "'. "
-									+ "Valid values are " + RequirementType.K1.getName() + 
-									" or " + RequirementType.K2.getName());
+									+ "Valid values are " + RequirementTypeEnum.K1.getName() + 
+									" or " + RequirementTypeEnum.K2.getName());
 						}
 					}
 				}

@@ -30,11 +30,11 @@ import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.DescriptiveModel;
-import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
-import gov.healthit.chpl.domain.RequirementType;
+import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
@@ -359,8 +359,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			result.getCriteriaOptions2015().add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
 		}
 		
-		result.getTransparencyOptions().add(RequirementType.K1.getName());
-		result.getTransparencyOptions().add(RequirementType.K2.getName());
+		result.getTransparencyOptions().add(RequirementTypeEnum.K1.getName());
+		result.getTransparencyOptions().add(RequirementTypeEnum.K2.getName());
 		return result;
 	}
 	
@@ -377,8 +377,10 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			result.add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
 		}
 		
-		result.add(new KeyValueModel(null, RequirementType.K1.getName()));
-		result.add(new KeyValueModel(null, RequirementType.K2.getName()));
+		result.add(new KeyValueModel(null, NonconformityType.K1.getName()));
+		result.add(new KeyValueModel(null, NonconformityType.K2.getName()));
+		result.add(new KeyValueModel(null, NonconformityType.L.getName()));
+		result.add(new KeyValueModel(null, NonconformityType.OTHER.getName()));
 		return result;
 	}
 	
