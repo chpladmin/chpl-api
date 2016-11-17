@@ -31,10 +31,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
@@ -57,6 +61,8 @@ public class SurveillanceController {
 	@Autowired private SurveillanceUploadHandlerFactory uploadHandlerFactory;
 	@Autowired private SurveillanceManager survManager;
 	@Autowired private CertifiedProductManager cpManager;
+	@Autowired private ActivityManager activityManager;
+	@Autowired private CertifiedProductDetailsManager cpdetailsManager;
 	@Autowired private CertificationBodyManager acbManager;
 	
 	@ApiOperation(value="Get the listing of all pending surveillance items that this user has access to.")
@@ -101,10 +107,10 @@ public class SurveillanceController {
 		}
 		
 		//look up the ACB
+		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
 		try {
-			CertifiedProductDTO owningCp = cpManager.getById(survToInsert.getCertifiedProduct().getId());
-			owningAcb = acbManager.getById(owningCp.getCertificationBodyId());
+			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(Exception ex) {
 			logger.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -116,6 +122,10 @@ public class SurveillanceController {
 			throw new EntityCreationException("Error creating new surveillance.");
 		}
 		
+		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
+				"Surveillance was added to certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+
 		//query the inserted surveillance
 		return survManager.getById(insertedSurv);
 	}
@@ -142,10 +152,10 @@ public class SurveillanceController {
 		}
 		
 		//look up the ACB
+		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
 		try {
-			CertifiedProductDTO owningCp = cpManager.getById(survToUpdate.getCertifiedProduct().getId());
-			owningAcb = acbManager.getById(owningCp.getCertificationBodyId());
+			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(Exception ex) {
 			logger.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -158,6 +168,10 @@ public class SurveillanceController {
 			logger.error("Error updating surveillance with id " + survToUpdate.getId());
 		}
 		
+		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
+				"Surveillance was updated on certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+
 		//query the inserted surveillance
 		return survManager.getById(survToUpdate.getId());
 	}
@@ -178,11 +192,10 @@ public class SurveillanceController {
 			throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
 		}
 
-		//look up the ACB
+		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
 		try {
-			CertifiedProductDTO owningCp = cpManager.getById(survToDelete.getCertifiedProduct().getId());
-			owningAcb = acbManager.getById(owningCp.getCertificationBodyId());
+			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(Exception ex) {
 			logger.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -196,6 +209,10 @@ public class SurveillanceController {
 			logger.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
 		}
 		
+		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
+				"Surveillance was delete from certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+
 		return "{\"success\" : true }";
 	}
 	
@@ -238,11 +255,10 @@ public class SurveillanceController {
 			throw new ValidationException(survToInsert.getErrorMessages(), null);
 		}
 		
-		//look up the ACB
+		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
 		try {
-			CertifiedProductDTO owningCp = cpManager.getById(survToInsert.getCertifiedProduct().getId());
-			owningAcb = acbManager.getById(owningCp.getCertificationBodyId());
+			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(Exception ex) {
 			logger.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
@@ -273,6 +289,12 @@ public class SurveillanceController {
 		} catch(Exception ex) {
 			logger.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
 		}
+		
+		
+		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
+				"Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+
 		
 		//query the inserted surveillance
 		return survManager.getById(insertedSurv);
