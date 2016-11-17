@@ -1,15 +1,15 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 6.0.0
+_15 November 2016_
 
 ### Features Added
-	* Add ability to retrieve and edit product ownership history (which developers a product has previously been owned by). BREAKS BACKWARDS COMPATIBILITY when retrieving certified product details
-	* Add "showDeleted" parameter to /developers call. Defaults to false.
+* Add ability to retrieve and edit product ownership history (which developers a product has previously been owned by). BREAKS BACKWARDS COMPATIBILITY when retrieving certified product details
+* Add "showDeleted" parameter to /developers call. Defaults to false.
 
 ### Bugs Fixed
-	* Make it impossible to confirm duplicate pending certified products
-	* Ability to edit a certified product without security authorization
+* Make it impossible to confirm duplicate pending certified products
+* Ability to edit a certified product without security authorization
 
 --- 
 
