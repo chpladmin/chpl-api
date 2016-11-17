@@ -7,7 +7,7 @@
 
 # create timestamp and filename
 TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
-log=target/log.generateSummaryEmail.$TIMESTAMP.txt
+log=logs/log.generateSummaryEmail.$TIMESTAMP.txt
 
 # deal with spaces in filenames by saving off the default file separator (including spaces)
 # and using a different one for this application
@@ -21,7 +21,7 @@ ENDDATE=$(date "+%F")
 echo "Generate summary email at: " $TIMESTAMP >> $log
 echo "####################################" >> $log
 # ParseActivities application takes three parameters: startDate, endDate, numDaysInPeriod. The dates have this format: yyyy-mm-dd
-java -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.ParseActivities 2016-04-01 $ENDDATE 7 >> $log
+java -Xmx800m -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.ParseActivities 2016-04-01 $ENDDATE 7 2>&1 >> $log
 echo "####################################" >> $log
 
 # restore filename delimiters
