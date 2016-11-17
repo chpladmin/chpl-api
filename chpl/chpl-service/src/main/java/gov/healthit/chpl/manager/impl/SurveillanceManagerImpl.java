@@ -1,21 +1,24 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -27,7 +30,6 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
@@ -42,6 +44,8 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 @Service
 public class SurveillanceManagerImpl implements SurveillanceManager {
 	private static final Logger logger = LogManager.getLogger(SurveillanceManagerImpl.class);
+	@Autowired private SendMailUtil sendMailService;
+	@Autowired private Environment env;
 	
 	@Autowired SurveillanceDAO survDao;
 	@Autowired CertifiedProductDAO cpDao;
@@ -107,6 +111,19 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	public void updateSurveillance(Long abcId, Surveillance surv) {
+		try {
+			survDao.updateSurveillance(surv);
+		} catch(Exception ex) {
+			logger.error("Error updating surveillance.", ex);
+			throw ex;
+		}
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	public void deleteSurveillance(Long acbId, Long survId) {		
 		Surveillance surv = new Surveillance();
 		surv.setId(survId);
@@ -115,6 +132,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			survDao.deleteSurveillance(surv);
 		} catch(Exception ex) {
 			logger.error("Error marking surveillance with id " + survId + " as deleted.", ex);
+			throw ex;
 		}
 	}
 	
@@ -220,6 +238,25 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional(readOnly = true)
 	public void validate(Surveillance surveillance) {
 		validator.validate(surveillance);
+	}
+	
+	@Override
+	public void sendSuspiciousActivityEmail(Surveillance questionableSurv) {
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MMM-dd");
+		
+		String subject = "CHPL Questionable Activity";
+		String htmlMessage = "<p>Questionable activity was detected on " + questionableSurv.getCertifiedProduct().getChplProductNumber() + ". "
+				+ "An action was taken related to surveillance " + fmt.format(questionableSurv.getStartDate()) + ".<p>"
+				+ "<p>To view the details of this activity go to: " + 
+				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
+		
+		String emailAddr = env.getProperty("questionableActivityEmail");
+		String[] emailAddrs = emailAddr.split(";");
+		try {
+			sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
+		} catch(MessagingException me) {
+			logger.error("Could not send questionable activity email", me);
+		}
 	}
 	
 	private Surveillance convertToDomain(PendingSurveillanceEntity pr) {

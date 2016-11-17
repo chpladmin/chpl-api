@@ -11,7 +11,10 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public interface SurveillanceManager {
 	public void validate(Surveillance surveillance);
+	public void sendSuspiciousActivityEmail(Surveillance questionableSurv);
+	
 	public Long createSurveillance(Long abcId, Surveillance surv);
+	public void updateSurveillance(Long abcId, Surveillance surv);
 	public Surveillance getById(Long survId) throws EntityNotFoundException;
 	public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
 	public List<Surveillance> getByCertifiedProduct(Long cpId);

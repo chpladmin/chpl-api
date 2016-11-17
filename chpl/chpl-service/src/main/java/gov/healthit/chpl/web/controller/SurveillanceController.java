@@ -31,8 +31,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -122,6 +120,85 @@ public class SurveillanceController {
 		return survManager.getById(insertedSurv);
 	}
 	
+	@ApiOperation(value="Update a surveillance activity for a certified product.", 
+			notes="Updates an existing surveillance activity, surveilled requirements, and any applicable non-conformities "
+					+ "in the system. The surveillance passed into this request will first be validated "
+					+ " to check for errors. "
+					+ "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB associated with the certified product is required.")
+	@RequestMapping(value="/update", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public synchronized @ResponseBody Surveillance updateSurveillance(
+			@RequestBody(required = true) Surveillance survToUpdate) 
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		survToUpdate.getErrorMessages().clear();
+		
+		//validate first. this ensures we have all the info filled in 
+		//that we need to continue
+		survManager.validate(survToUpdate);
+
+		if(survToUpdate.getErrorMessages() != null && survToUpdate.getErrorMessages().size() > 0) {
+			throw new ValidationException(survToUpdate.getErrorMessages(), null);
+		}
+		
+		//look up the ACB
+		CertificationBodyDTO owningAcb = null;
+		try {
+			CertifiedProductDTO owningCp = cpManager.getById(survToUpdate.getCertifiedProduct().getId());
+			owningAcb = acbManager.getById(owningCp.getCertificationBodyId());
+		} catch(Exception ex) {
+			logger.error("Error looking up ACB associated with surveillance.", ex);
+			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+		}
+		
+		//update the surveillance
+		try {
+			survManager.updateSurveillance(owningAcb.getId(), survToUpdate);
+		} catch(Exception ex) {
+			logger.error("Error updating surveillance with id " + survToUpdate.getId());
+		}
+		
+		//query the inserted surveillance
+		return survManager.getById(survToUpdate.getId());
+	}
+	
+	@ApiOperation(value="Delete a surveillance activity for a certified product.", 
+			notes="Deletes an existing surveillance activity, surveilled requirements, and any applicable non-conformities "
+					+ "in the system. "
+					+ "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB associated with the certified product is required.")
+	@RequestMapping(value="/{surveillanceId}/delete", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public synchronized @ResponseBody String deleteSurveillance(
+			@PathVariable(value = "surveillanceId") Long surveillanceId) 
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		Surveillance survToDelete = survManager.getById(surveillanceId);
+		
+		if(survToDelete == null) {
+			throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
+		}
+
+		//look up the ACB
+		CertificationBodyDTO owningAcb = null;
+		try {
+			CertifiedProductDTO owningCp = cpManager.getById(survToDelete.getCertifiedProduct().getId());
+			owningAcb = acbManager.getById(owningCp.getCertificationBodyId());
+		} catch(Exception ex) {
+			logger.error("Error looking up ACB associated with surveillance.", ex);
+			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+		}
+		
+		//delete it
+		try {
+			survManager.deleteSurveillance(owningAcb.getId(), survToDelete.getId());
+			survManager.sendSuspiciousActivityEmail(survToDelete);
+		} catch(Exception ex) {
+			logger.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
+		}
+		
+		return "{\"success\" : true }";
+	}
+	
 	@ApiOperation(value="Reject (effectively delete) a pending surveillance item.")
 	@RequestMapping(value="/pending/{pendingSurvId}/reject", method=RequestMethod.POST,
 			produces = "application/json; charset=utf-8")
@@ -191,7 +268,7 @@ public class SurveillanceController {
 						survToInsert.getCertifiedProduct().getId(),
 						survToInsert.getSurveillanceIdToReplace());
 				CertifiedProductDTO survToReplaceOwningCp = cpManager.getById(survToReplace.getCertifiedProduct().getId());
-				survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace.getId());;
+				survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace.getId());
 			}
 		} catch(Exception ex) {
 			logger.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
