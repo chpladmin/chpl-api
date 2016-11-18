@@ -450,7 +450,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 	
 	public SurveillanceResultType findSurveillanceResultType(String type) {
-		logger.debug("Searchig for surveillance result type '" + type + "'.");
+		logger.debug("Searching for surveillance result type '" + type + "'.");
 		Query query = entityManager.createQuery(
 				"from SurveillanceResultTypeEntity where UPPER(name) LIKE :name and deleted <> true", 
 				SurveillanceResultTypeEntity.class);
@@ -468,7 +468,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 	
 	public SurveillanceResultType findSurveillanceResultType(Long id) {
-		logger.debug("Searchig for surveillance result type by id '" + id + "'.");
+		logger.debug("Searching for surveillance result type by id '" + id + "'.");
 		Query query = entityManager.createQuery(
 				"from SurveillanceResultTypeEntity where id = :id and deleted <> true", 
 				SurveillanceResultTypeEntity.class);
@@ -498,7 +498,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 	
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
-		logger.debug("Searchig for nonconformity status type '" + type + "'.");
+		logger.debug("Searching for nonconformity status type '" + type + "'.");
 		Query query = entityManager.createQuery(
 				"from NonconformityStatusEntity where UPPER(name) LIKE :name and deleted <> true", 
 				NonconformityStatusEntity.class);
@@ -516,7 +516,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 	
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id) {
-		logger.debug("Searchig for nonconformity status type by id '" + id + "'.");
+		logger.debug("Searching for nonconformity status type by id '" + id + "'.");
 		Query query = entityManager.createQuery(
 				"from NonconformityStatusEntity where id = :id and deleted <> true", 
 				NonconformityStatusEntity.class);

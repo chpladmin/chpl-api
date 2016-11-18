@@ -153,14 +153,14 @@ public class SurveillanceValidator {
 					if(req.getType().getName().equalsIgnoreCase(CRITERION_REQUIREMENT_TYPE) && 
 							surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getEdition() != null) {
 						//requirement has to be a certification criterion from the same year as the product
-						req.setRequirement(gov.healthit.chpl.Util.coerceToCrtierionNumberFormat(req.getRequirement()));
+						req.setRequirement(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(req.getRequirement()));
 						CertificationCriterionDTO criterion = criterionDao.getByNameAndYear(req.getRequirement(), surv.getCertifiedProduct().getEdition());
 						if(criterion == null) {
 							surv.getErrorMessages().add("The requirement '" + req.getRequirement() + "' is not valid for requirement type '" + req.getType().getName() + "'. Valid values are one of the existing certification criterion.");
 						} 
 					} else if(req.getType().getName().equals(TRANSPARENCY_REQUIREMENT_TYPE)) {
 						//requirement has to be one of 170.523 (k)(1) or (k)(2)
-						req.setRequirement(gov.healthit.chpl.Util.coerceToCrtierionNumberFormat(req.getRequirement()));
+						req.setRequirement(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(req.getRequirement()));
 						if(!RequirementTypeEnum.K1.getName().equals(req.getRequirement()) && 
 							!RequirementTypeEnum.K2.getName().equals(req.getRequirement())) {
 							surv.getErrorMessages().add("The requirement '" + req.getRequirement() + "' is not valid for requirement type '" + req.getType().getName() + "'. "
@@ -214,13 +214,13 @@ public class SurveillanceValidator {
 							//non-conformity type is not empty. is a certification criteria or just a string?
 							CertificationCriterionDTO criterion = null;
 							if(surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getEdition() != null) {
-								nc.setNonconformityType(gov.healthit.chpl.Util.coerceToCrtierionNumberFormat(nc.getNonconformityType()));
+								nc.setNonconformityType(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(nc.getNonconformityType()));
 								criterion = criterionDao.getByNameAndYear(nc.getNonconformityType(), surv.getCertifiedProduct().getEdition());	
 							}
 							//if it could have matched a criterion but didn't, it has to be one of a few other values
 							if(surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getEdition() != null
 									&& criterion == null) {
-								nc.setNonconformityType(gov.healthit.chpl.Util.coerceToCrtierionNumberFormat(nc.getNonconformityType()));
+								nc.setNonconformityType(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(nc.getNonconformityType()));
 								if(!NonconformityType.K1.getName().equals(nc.getNonconformityType())  
 										&& !NonconformityType.K2.getName().equals(nc.getNonconformityType()) 
 										&& !NonconformityType.L.getName().equals(nc.getNonconformityType()) 
