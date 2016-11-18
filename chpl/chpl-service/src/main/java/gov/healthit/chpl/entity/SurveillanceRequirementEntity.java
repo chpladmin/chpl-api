@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Where;
+
 
 @Entity
 @Table(name = "surveillance_requirement")
@@ -68,6 +70,7 @@ public class SurveillanceRequirementEntity {
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "surveillanceRequirementId"  )
 	@Basic( optional = false )
 	@Column( name = "surveillance_requirement_id", nullable = false  )
+	@Where(clause="deleted <> 'true'")
 	private Set<SurveillanceNonconformityEntity> nonconformities = new HashSet<SurveillanceNonconformityEntity>();
 	
 	public Long getId() {

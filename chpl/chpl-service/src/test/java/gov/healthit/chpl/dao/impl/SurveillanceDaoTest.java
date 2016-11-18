@@ -6,16 +6,23 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.entity.SurveillanceEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -51,6 +59,9 @@ public class SurveillanceDaoTest extends TestCase {
 	
 	@Autowired
 	private SurveillanceDAO survDao;
+	@Autowired
+	private CertifiedProductDAO cpDao;
+	
 	private static JWTAuthenticatedUser adminUser;
 	
 	@BeforeClass
@@ -61,6 +72,129 @@ public class SurveillanceDaoTest extends TestCase {
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void insertSurveillanceWithoutNonconformities() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Long insertedId = survDao.insertSurveillance(surv);
+		assertNotNull(insertedId);
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void insertSurveillanceWithNonconformities() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		surv.getRequirements().add(req);
+
+		SurveillanceRequirement req2 = new SurveillanceRequirement();
+		req2.setRequirement("170.314 (a)(2)");
+		reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req2.setType(reqType);
+		resType = survDao.findSurveillanceResultType("Non-Conformity");
+		req2.setResult(resType);
+		surv.getRequirements().add(req2);
+		
+		SurveillanceNonconformity nc = new SurveillanceNonconformity();
+		nc.setCapApprovalDate(new Date());
+		nc.setCapMustCompleteDate(new Date());
+		nc.setCapStartDate(new Date());
+		nc.setDateOfDetermination(new Date());
+		nc.setDeveloperExplanation("Something");
+		nc.setFindings("Findings!");
+		nc.setSitesPassed(2);
+		nc.setNonconformityType("170.314 (a)(2)");
+		nc.setSummary("summary");
+		nc.setTotalSites(5);
+		SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
+		nc.setStatus(ncStatus);
+		req2.getNonconformities().add(nc);
+		
+		Long insertedId = survDao.insertSurveillance(surv);
+		assertNotNull(insertedId);
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void updateSurveillanceWithoutNonconformities() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Long insertedId = survDao.insertSurveillance(surv);
+		assertNotNull(insertedId);
+		
+		surv.setId(insertedId);
+		surv.setEndDate(new Date());
+		survDao.updateSurveillance(surv);
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test

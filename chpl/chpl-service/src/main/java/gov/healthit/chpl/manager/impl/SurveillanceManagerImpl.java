@@ -111,7 +111,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public void updateSurveillance(Long abcId, Surveillance surv) {
+	public void updateSurveillance(Long acbId, Surveillance surv) {
 		try {
 			survDao.updateSurveillance(surv);
 		} catch(Exception ex) {
