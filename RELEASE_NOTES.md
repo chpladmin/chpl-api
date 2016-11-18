@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 6.0.1
+_17 November 2016_
 
 ### Bugs Fixed
 * Mark all DAO methods that return certified product details as transactional so they can retrieve the product owner history. Fixes issue with summary email being sent and with xml download not being generated.

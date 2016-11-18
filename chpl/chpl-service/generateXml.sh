@@ -7,7 +7,7 @@
 
 # create timestamp and filename
 TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
-log=target/log.generateXml.$TIMESTAMP.txt
+log=logs/log.generateXml.$TIMESTAMP.txt
 
 # deal with spaces in filenames by saving off the default file separator (including spaces)
 # and using a different one for this application
@@ -17,7 +17,7 @@ IFS=$(echo -en "\n\b")
 # put header info into log, then output application info into log file
 echo "XML generation at: " $TIMESTAMP >> $log
 echo "####################################" >> $log
-java -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.App >> $log
+java -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.App 2>&1 >> $log
 echo "####################################" >> $log
 
 # restore filename delimiters
