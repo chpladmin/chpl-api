@@ -1,6 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,9 +16,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONException;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +82,7 @@ public class CertifiedProductControllerTest {
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_uploadMeaningfulUseUsers_returnsMeaningfulUseUserResults() throws EntityRetrievalException, EntityCreationException, IOException, JSONException{
+	public void test_uploadMeaningfulUseUsers_returnsMeaningfulUseUserResults() throws EntityRetrievalException, EntityCreationException, IOException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		logger.info("Running test_uploadMeaningfulUseUsers_returnsMeaningfulUseUserResults");
 		
