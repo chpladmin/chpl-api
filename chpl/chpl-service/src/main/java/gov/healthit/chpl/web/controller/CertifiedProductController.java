@@ -45,6 +45,7 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
@@ -61,6 +62,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -417,7 +419,7 @@ public class CertifiedProductController {
 					+ " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
 	@RequestMapping(value="/uploadMeaningfulUse", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	public @ResponseBody List<MeaningfulUseCsvResult> uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
+	public @ResponseBody MeaningfulUseUserResults uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
 		if (file.isEmpty()) {
 			throw new ValidationException("You cannot upload an empty file!");
 		}
@@ -426,8 +428,8 @@ public class CertifiedProductController {
 				!file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
 			throw new ValidationException("File must be a CSV document.");
 		}
-		
-		//List<MeaningfulUseUsers> meaningfulUseUsers = new ArrayList<MeaningfulUseUsers>();
+		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
+		List<MeaningfulUseUser> muuList = new ArrayList<MeaningfulUseUser>();
 		
 		BufferedReader reader = null;
 		CSVParser parser = null;
@@ -439,16 +441,44 @@ public class CertifiedProductController {
 			if(records.size() <= 1) {
 				throw new ValidationException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
 			}
-			Set<String> handlerErrors = new HashSet<String>();
-			//List<PendingCertifiedProductEntity> cpsToAdd = new ArrayList<PendingCertifiedProductEntity>(); // will be updating an entity
 			
+			CSVRecord heading = null;
+			//List<CSVRecord> rows = new ArrayList<CSVRecord>();
+			
+			for(int i = 0; i < records.size(); i++){
+				CSVRecord currRecord = records.get(i);
+				MeaningfulUseUser muu = new MeaningfulUseUser();
+				if((i == 0 && !currRecord.get(0).equalsIgnoreCase("chpl_product_number")) || (i == 0 && !currRecord.get(1).equalsIgnoreCase("num_meaningful_use"))){
+					throw new IOException("Heading must be present with first column as chpl_product_number and second column as num_meaningful_use");
+				}
+				
+				if(heading == null && i == 0 && !StringUtils.isEmpty(currRecord.get(0)) && currRecord.get(0).equalsIgnoreCase("chpl_product_number")
+						&& !StringUtils.isEmpty(currRecord.get(1)) && currRecord.get(1).equalsIgnoreCase("num_meaningful_use")) {
+					heading = currRecord;
+				}
+				else if (heading != null){
+					if(!StringUtils.isEmpty(currRecord.get(0)) && !StringUtils.isEmpty(currRecord.get(1))){
+						muu.setProductNumber(currRecord.get(0));
+						muu.setNumberOfUsers(Long.parseLong(currRecord.get(1)));
+						muu.setCertifiedProductId(cpManager.getByChplProductNumber(muu.getProductNumber()).getId());
+						muu.setCsvLineNumber(i);
+						muuList.add(muu);
+					}
+				}
+			}
 		} catch(IOException ioEx) {
 			logger.error("Could not get input stream for uploaded file " + file.getName());			
 			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
+		} catch (EntityRetrievalException e) {
+			e.printStackTrace();
 		} finally {
 			 try { parser.close(); } catch(Exception ignore) {}
 			try { reader.close(); } catch(Exception ignore) {}
 		}
+		
+		meaningfulUseUserResults.setMeaningfulUseUsers(muuList);
+		
+		return meaningfulUseUserResults;
 	}
 	
 	@ApiOperation(value="Upload a file with certified products", 

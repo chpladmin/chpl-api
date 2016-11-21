@@ -98,6 +98,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "certified_date_code, "
 			+ "count_corrective_action_plans, "
 			+ "count_current_corrective_action_plans, "
+			+ "meaningful_use_users, "
 			+ "count_closed_corrective_action_plans ";
 	
 	@Override

@@ -9,6 +9,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -137,7 +138,23 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setCertificationEditionId(dto.getCertificationEditionId());
 		entity.setCertificationStatusId(dto.getCertificationStatusId());
 		entity.setProductVersionId(dto.getProductVersionId());
+		entity.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
 		
+		entity.setLastModifiedDate(new Date());
+		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		
+		update(entity);
+		return new CertifiedProductDTO(entity);
+	}
+	
+	@CacheEvict(value="searchOptionsCache", allEntries=true)
+	public CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO dto) throws EntityRetrievalException, IOException{
+		if(dto.getChplProductNumber() == null || dto.getMeaningfulUseUsers() == null){
+			throw new IOException("Must provide a CertifiedProductDTO with a valid CHPL Product Number and meaningfulUseUsers");
+		}
+		
+		CertifiedProductEntity entity = getEntityByChplNumber(dto.getChplProductNumber());
+		entity.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		
@@ -263,6 +280,28 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 				+ "LEFT OUTER JOIN FETCH deets.product "
 				+ "WHERE deets.id in (:productIds)", CertifiedProductDetailsEntity.class );
 		prodQuery.setParameter("productIds", productIds);
+		List<CertifiedProductDetailsEntity> results = prodQuery.getResultList();
+
+		List<CertifiedProductDetailsDTO> dtos = new ArrayList<CertifiedProductDetailsDTO>(results.size());
+		if (null != results) {
+			for (CertifiedProductDetailsEntity entity : results) {
+				CertifiedProductDetailsDTO dto = new CertifiedProductDetailsDTO(entity);
+				dtos.add(dto);
+			}
+		}
+
+		return dtos;
+	}
+	
+	@Transactional(readOnly=true)
+	public List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers) {
+		if ((null == chplProductNumbers) || (chplProductNumbers.size() == 0))
+			return new ArrayList<CertifiedProductDetailsDTO>();
+
+		Query prodQuery = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
+				+ "LEFT OUTER JOIN FETCH deets.product "
+				+ "WHERE deets.chplProductNumber in (:chplProductNumbers) ", CertifiedProductDetailsEntity.class);
+		prodQuery.setParameter("chplProductNumbers", chplProductNumbers);
 		List<CertifiedProductDetailsEntity> results = prodQuery.getResultList();
 
 		List<CertifiedProductDetailsDTO> dtos = new ArrayList<CertifiedProductDetailsDTO>(results.size());

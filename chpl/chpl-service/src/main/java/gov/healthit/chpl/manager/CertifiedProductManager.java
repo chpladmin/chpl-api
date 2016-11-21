@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -19,6 +21,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 public interface CertifiedProductManager {
 
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
+	public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException;
 	public boolean chplIdExists(String id) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getAll();
@@ -29,6 +32,8 @@ public interface CertifiedProductManager {
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) throws EntityRetrievalException;
+	public List<CertifiedProductDTO> updateMeaningfulUseUsers(List<MeaningfulUseUser> meaningfulUseUserList)
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
@@ -45,8 +50,6 @@ public interface CertifiedProductManager {
 			throws EntityCreationException, EntityRetrievalException,
 			JsonProcessingException;
 	public void updateCertificationDate(Long acbId, CertifiedProductDTO productDto, Date newCertDate)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	public void updateMeaningfulUseUsers(Long certifiedProductId, Long meaningfulUseUsers)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed);
 }

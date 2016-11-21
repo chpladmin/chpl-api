@@ -1,4 +1,5 @@
 package gov.healthit.chpl.manager.impl;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -59,6 +60,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -191,6 +193,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = true)
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		CertifiedProductDTO result = cpDao.getById(id);
+		return result;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
+		CertifiedProductDTO result = cpDao.getByChplNumber(chplProductNumber);
 		return result;
 	}
 	
@@ -988,6 +997,26 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 	}
 	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	@Transactional(readOnly = false)
+	public List<CertifiedProductDTO> updateMeaningfulUseUsers(List<MeaningfulUseUser> meaningfulUseUserList)
+			throws EntityCreationException, EntityRetrievalException, IOException {
+		List<CertifiedProductDTO> dtos = new ArrayList<CertifiedProductDTO>();
+		for(MeaningfulUseUser mlu : meaningfulUseUserList){
+			if(mlu.getProductNumber() == null || mlu.getNumberOfUsers() == null){
+				throw new IOException("MeaningfulUseUser must have non-null CHPL Product Number and meaningfulUseUser count");
+			}
+			
+			CertifiedProductDTO dto = new CertifiedProductDTO();
+			dto.setChplProductNumber(mlu.getProductNumber());
+			dto.setMeaningfulUseUsers(mlu.getNumberOfUsers());
+			dtos.add(cpDao.updateMeaningfulUseUsers(dto));
+		}
+		
+		return dtos;
+	}
+	
 	/**
 	 * both successes and failures are passed in
 	 * @throws JsonProcessingException 
@@ -1374,11 +1403,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				deleteCqmResult(productDto.getId(), criterion.getId());
 			}
 		}
-	}
-	
-	public void updateMeaningfulUseUsers(Long certifiedProductId, Long meaningfulUseUsers)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
 	}
 	
 	private void deleteCqmResult(Long certifiedProductId, Long cqmId){

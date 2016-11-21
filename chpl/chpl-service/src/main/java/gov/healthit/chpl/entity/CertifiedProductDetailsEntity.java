@@ -64,7 +64,7 @@ public class CertifiedProductDetailsEntity {
     private String sedIntendedUserDescription;
 	
 	@Basic(optional = true)
-	@Column(name ="meaningfulUseUsers")
+	@Column(name ="meaningful_use_users")
 	private Long meaningfulUseUsers;
 
 	@Basic(optional = true) 
