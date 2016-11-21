@@ -412,6 +412,45 @@ public class CertifiedProductController {
 		return result;
 	}
 	
+	@ApiOperation(value="Upload a file with certified product meaningful use users", 
+			notes="Accepts a CSV file with very specific fields to create pending certified products. "
+					+ " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
+	@RequestMapping(value="/uploadMeaningfulUse", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8") 
+	public @ResponseBody List<MeaningfulUseCsvResult> uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
+		if (file.isEmpty()) {
+			throw new ValidationException("You cannot upload an empty file!");
+		}
+		
+		if(!file.getContentType().equalsIgnoreCase("text/csv") &&
+				!file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
+			throw new ValidationException("File must be a CSV document.");
+		}
+		
+		//List<MeaningfulUseUsers> meaningfulUseUsers = new ArrayList<MeaningfulUseUsers>();
+		
+		BufferedReader reader = null;
+		CSVParser parser = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+			parser = new CSVParser(reader, CSVFormat.EXCEL);
+			
+			List<CSVRecord> records = parser.getRecords();
+			if(records.size() <= 1) {
+				throw new ValidationException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
+			}
+			Set<String> handlerErrors = new HashSet<String>();
+			//List<PendingCertifiedProductEntity> cpsToAdd = new ArrayList<PendingCertifiedProductEntity>(); // will be updating an entity
+			
+		} catch(IOException ioEx) {
+			logger.error("Could not get input stream for uploaded file " + file.getName());			
+			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
+		} finally {
+			 try { parser.close(); } catch(Exception ignore) {}
+			try { reader.close(); } catch(Exception ignore) {}
+		}
+	}
+	
 	@ApiOperation(value="Upload a file with certified products", 
 			notes="Accepts a CSV file with very specific fields to create pending certified products. "
 					+ " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "

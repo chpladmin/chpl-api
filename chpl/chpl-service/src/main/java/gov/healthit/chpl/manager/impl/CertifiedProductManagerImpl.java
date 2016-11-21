@@ -1376,6 +1376,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 	}
 	
+	public void updateMeaningfulUseUsers(Long certifiedProductId, Long meaningfulUseUsers)
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		
+	}
+	
 	private void deleteCqmResult(Long certifiedProductId, Long cqmId){
 		
 		List<CQMResultDTO> cqmResults = cqmResultDAO.findByCertifiedProductId(certifiedProductId);

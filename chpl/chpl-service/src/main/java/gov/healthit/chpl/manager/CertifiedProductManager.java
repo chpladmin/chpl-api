@@ -2,17 +2,13 @@ package gov.healthit.chpl.manager;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -49,6 +45,8 @@ public interface CertifiedProductManager {
 			throws EntityCreationException, EntityRetrievalException,
 			JsonProcessingException;
 	public void updateCertificationDate(Long acbId, CertifiedProductDTO productDto, Date newCertDate)
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+	public void updateMeaningfulUseUsers(Long certifiedProductId, Long meaningfulUseUsers)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed);
 }
