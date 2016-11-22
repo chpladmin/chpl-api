@@ -1,6 +1,8 @@
 package gov.healthit.chpl.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class SurveillanceNonconformity {
 	private Long id;
@@ -18,6 +20,8 @@ public class SurveillanceNonconformity {
 	private Integer totalSites;
 	private String developerExplanation;
 	private String resolution;
+	private List<SurveillanceNonconformityDocument> documents = new ArrayList<SurveillanceNonconformityDocument>();
+	
 	public Long getId() {
 		return id;
 	}
@@ -101,5 +105,11 @@ public class SurveillanceNonconformity {
 	}
 	public void setResolution(String resolution) {
 		this.resolution = resolution;
+	}
+	public List<SurveillanceNonconformityDocument> getDocuments() {
+		return documents;
+	}
+	public void setDocuments(List<SurveillanceNonconformityDocument> documents) {
+		this.documents = documents;
 	}
 }

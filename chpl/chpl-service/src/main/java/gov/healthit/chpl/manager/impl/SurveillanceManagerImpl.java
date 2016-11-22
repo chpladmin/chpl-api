@@ -24,6 +24,7 @@ import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.SurveillanceEntity;
+import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.SurveillanceRequirementEntity;
 import gov.healthit.chpl.manager.SurveillanceManager;
@@ -91,9 +93,28 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	}
 	
 	@Override
+	@Transactional(readOnly = true)
+	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents) {
+		SurveillanceNonconformityDocumentationEntity docEntity = null;
+		
+		try {
+			docEntity = survDao.getDocumentById(docId);
+		} catch(EntityNotFoundException ex) {
+			logger.error("No document with id " + docId + " was found.");
+		}
+		
+		SurveillanceNonconformityDocument doc = null;
+		if(docEntity != null) {
+			doc = convertToDomain(docEntity, getFileContents);
+		}
+		return doc;
+	}
+	
+	@Override
 	@Transactional
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public Long createSurveillance(Long acbId, Surveillance surv) {
 		Long insertedId = null;
 		
@@ -109,8 +130,27 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	
 	@Override
 	@Transactional
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc) {
+		Long insertedId = null;
+		
+		try {
+			insertedId = survDao.insertNonconformityDocument(nonconformityId, doc);
+		} catch(Exception ex) {
+			logger.error("Error inserting nonconformity document.", ex);
+			throw ex;
+		}
+		
+		return insertedId;
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public void updateSurveillance(Long acbId, Surveillance surv) {
 		try {
 			survDao.updateSurveillance(surv);
@@ -122,8 +162,9 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	
 	@Override
 	@Transactional
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public void deleteSurveillance(Long acbId, Long survId) {		
 		Surveillance surv = new Surveillance();
 		surv.setId(survId);
@@ -132,6 +173,20 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			survDao.deleteSurveillance(surv);
 		} catch(Exception ex) {
 			logger.error("Error marking surveillance with id " + survId + " as deleted.", ex);
+			throw ex;
+		}
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+	public void deleteNonconformityDocument(Long acbId, Long documentId) {
+		try {
+			survDao.deleteNonconformityDocument(documentId);
+		} catch(Exception ex) {
+			logger.error("Error marking document with id " + documentId + " as deleted.", ex);
 			throw ex;
 		}
 	}
@@ -325,6 +380,17 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		return surv;
 	}
 	
+	private SurveillanceNonconformityDocument convertToDomain(SurveillanceNonconformityDocumentationEntity entity, boolean getContents) {
+		SurveillanceNonconformityDocument doc = new SurveillanceNonconformityDocument();
+		doc.setId(entity.getId());
+		doc.setFileType(entity.getFileType());
+		doc.setFileName(entity.getFileName());
+		if(getContents) {
+			doc.setFileContents(entity.getFileData());
+		}
+		return doc;
+	}
+	
 	private Surveillance convertToDomain(SurveillanceEntity entity) {
 		Surveillance surv = new Surveillance();
 		surv.setId(entity.getId());
@@ -417,6 +483,13 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 							nc.setStatus(status);
 						}
 						req.getNonconformities().add(nc);
+						
+						if(ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {
+							for(SurveillanceNonconformityDocumentationEntity docEntity : ncEntity.getDocuments()) {
+								SurveillanceNonconformityDocument doc = convertToDomain(docEntity, false);
+								nc.getDocuments().add(doc);
+							}
+						}
 					}
 				}
 				surv.getRequirements().add(req);

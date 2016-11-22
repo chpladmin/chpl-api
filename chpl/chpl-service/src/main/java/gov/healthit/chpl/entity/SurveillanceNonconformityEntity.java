@@ -1,7 +1,10 @@
 package gov.healthit.chpl.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,8 +12,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Where;
 
 
 @Entity
@@ -87,7 +93,12 @@ public class SurveillanceNonconformityEntity {
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
 	
-
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "nonconformityId"  )
+	@Basic( optional = false )
+	@Column( name = "surveillance_nonconformity_id", nullable = false  )
+	@Where(clause="deleted <> 'true'")
+	private Set<SurveillanceNonconformityDocumentationEntity> documents = new HashSet<SurveillanceNonconformityDocumentationEntity>();	
+	
 	public Long getId() {
 		return id;
 	}
@@ -255,5 +266,13 @@ public class SurveillanceNonconformityEntity {
 
 	public void setNonconformityStatus(NonconformityStatusEntity nonconformityStatus) {
 		this.nonconformityStatus = nonconformityStatus;
+	}
+
+	public Set<SurveillanceNonconformityDocumentationEntity> getDocuments() {
+		return documents;
+	}
+
+	public void setDocuments(Set<SurveillanceNonconformityDocumentationEntity> documents) {
+		this.documents = documents;
 	}
 }

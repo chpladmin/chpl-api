@@ -58,10 +58,11 @@ public class CorrectiveActionPlanController {
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired ActivityManager activityManager;
 	
-	@ApiOperation(value="List corrective action plans for a certified product.", 
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>List corrective action plans for a certified product.", 
 			notes="List all corrective action plans, both open and resolved, for a certified product.")
 	@RequestMapping(value="/", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
+	@Deprecated
 	public @ResponseBody CorrectiveActionPlanResults getCorrectiveActionPlansForCertifiedProduct(
 			@RequestParam(value = "certifiedProductId", required=true) Long cpId) throws EntityRetrievalException {
 		List<CorrectiveActionPlanDetails> plans = capManager.getPlansForCertifiedProductDetails(cpId);
@@ -71,20 +72,22 @@ public class CorrectiveActionPlanController {
 		return results;
 	}
 	
-	@ApiOperation(value="Get corrective action plan details.", 
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/> Get corrective action plan details.", 
 			notes="Get all of the information about a specific corrective action plan. These details "
 					+ " include the presence and associated id's of any uploaded supporting "
 					+ " documentation but not the contents of those documents. Use /documentation/{capDocId} to "
 					+ " view the files.")
 	@RequestMapping(value="/{capId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
+	@Deprecated
 	public @ResponseBody CorrectiveActionPlanDetails getCorrectiveActionPlanById(@PathVariable("capId") Long capId) throws EntityRetrievalException {
 		return capManager.getPlanDetails(capId);
 	}
 	
-	@ApiOperation(value="Download CAP supporting documentation.", 
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/> Download CAP supporting documentation.", 
 			notes="Download a specific file that was previously uploaded to a corrective action plan.")
 	@RequestMapping(value="/documentation/{capDocId}", method=RequestMethod.GET)
+	@Deprecated
 	public void getCorrectiveActionPlanDocumentationById(
 			@PathVariable("capDocId") Long capDocId, HttpServletResponse response) throws EntityRetrievalException, IOException {
 		CorrectiveActionPlanDocumentationDTO doc = capManager.getDocumentationById(capDocId);
@@ -123,11 +126,12 @@ public class CorrectiveActionPlanController {
 		}   
 	}
 
-	@ApiOperation(value="Update a corrective action plan.", 
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Update a corrective action plan.", 
 			notes="The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ "authority on the ACB associated with the corrective action plan.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@Deprecated
 	public @ResponseBody CorrectiveActionPlanDetails update(@RequestBody(required=true) CorrectiveActionPlanDetails updateRequest) 
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException,
 		InvalidArgumentsException {
@@ -268,13 +272,14 @@ public class CorrectiveActionPlanController {
 		return capManager.getPlanDetails(toUpdate.getId());
 	}
 	
-	@ApiOperation(value="Add documentation to an existing CAP.", 
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Add documentation to an existing CAP.", 
 			notes="Upload a file of any kind (current size limit 5MB) as supporting "
 					+ " documentation to an existing CAP. The logged in user uploading the file "
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/{capId}/documentation", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
+	@Deprecated
 	public @ResponseBody String upload(@PathVariable("capId") Long correctiveActionPlanId,
 			@RequestParam("file") MultipartFile file) throws 
 			InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
@@ -316,12 +321,13 @@ public class CorrectiveActionPlanController {
 		return "{\"success\": \"true\"}";
 	}
 	
-	@ApiOperation(value="Create a new corrective action plan.", 
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods. <br/>Create a new corrective action plan.", 
 			notes="The logged in user"
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@Deprecated
 	public @ResponseBody CorrectiveActionPlanDetails create(@RequestBody(required=true) CorrectiveActionPlanDetails createRequest) 
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException,
 			InvalidArgumentsException {
@@ -389,12 +395,13 @@ public class CorrectiveActionPlanController {
 		return result;
 	}
 	
-	@ApiOperation(value="Delete a corrective action plan.", 
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Delete a corrective action plan.", 
 			notes="The logged in user"
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/{planId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@Deprecated
 	public String deleteAcb(@PathVariable("planId") Long planId) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 				InvalidArgumentsException {
@@ -425,12 +432,13 @@ public class CorrectiveActionPlanController {
 		return "{\"deleted\" : true }";
 	}
 	
-	@ApiOperation(value="Remove documentation from a corrective action plan.", 
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Remove documentation from a corrective action plan.", 
 			notes="The logged in user"
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/documentation/{docId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@Deprecated
 	public String deleteDocumentationById(@PathVariable("docId") Long docId) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 				InvalidArgumentsException {
