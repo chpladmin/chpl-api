@@ -5,20 +5,25 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 
 import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.SurveillanceEntity;
+import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
 
 public interface SurveillanceDAO {
 	public Long insertSurveillance(Surveillance surv);
+	public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc);
 	public Long updateSurveillance(Surveillance newSurv);
 	public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId, String survFriendlyId);
 	public SurveillanceEntity getSurveillanceById(Long id);
 	public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id);
+	public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId) throws EntityNotFoundException;
 	public void deleteSurveillance(Surveillance surv) throws EntityNotFoundException ;
+	public void deleteNonconformityDocument(Long documentId) throws EntityNotFoundException;
 	
 	public Long insertPendingSurveillance(Surveillance surv);
 	public PendingSurveillanceEntity getPendingSurveillanceById(Long id);

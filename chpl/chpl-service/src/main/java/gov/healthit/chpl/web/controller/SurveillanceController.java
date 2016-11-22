@@ -1,12 +1,16 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -32,10 +36,15 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CorrectiveActionPlanDetails;
 import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
+import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -84,6 +93,47 @@ public class SurveillanceController {
 		return results;
 	}
 	
+	@ApiOperation(value="Download nonconformity supporting documentation.", 
+			notes="Download a specific file that was previously uploaded to a surveillance nonconformity.")
+	@RequestMapping(value="/document/{documentId}", method=RequestMethod.GET)
+	public void streamDocumentContents(@PathVariable("documentId") Long documentId,
+			HttpServletResponse response) throws EntityRetrievalException, IOException {
+		SurveillanceNonconformityDocument doc = survManager.getDocumentById(documentId, true);
+		
+		if(doc != null && doc.getFileContents() != null && doc.getFileContents().length > 0) {
+	        ByteArrayInputStream inputStream = new ByteArrayInputStream(doc.getFileContents());
+	        // get MIME type of the file
+	        String mimeType = doc.getFileType();
+	        if (mimeType == null) {
+	            // set to binary type if MIME mapping not found
+	            mimeType = "application/octet-stream";
+	        }
+	        // set content attributes for the response
+	        response.setContentType(mimeType);
+	        response.setContentLength((int) doc.getFileContents().length);
+	 
+	        // set headers for the response
+	        String headerKey = "Content-Disposition";
+	        String headerValue = String.format("attachment; filename=\"%s\"",
+	                doc.getFileName());
+	        response.setHeader(headerKey, headerValue);
+	 
+	        // get output stream of the response
+	        OutputStream outStream = response.getOutputStream();
+	 
+	        byte[] buffer = new byte[1024];
+	        int bytesRead = -1;
+	 
+	        // write bytes read from the input stream into the output stream
+	        while ((bytesRead = inputStream.read(buffer)) != -1) {
+	            outStream.write(buffer, 0, bytesRead);
+	        }
+	 
+	        inputStream.close();
+	        outStream.close();	
+		}   
+	}
+	
 	@ApiOperation(value="Create a new surveillance activity for a certified product.", 
 			notes="Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
 					+ "in the system and associates them with the certified product indicated in the "
@@ -128,6 +178,53 @@ public class SurveillanceController {
 
 		//query the inserted surveillance
 		return survManager.getById(insertedSurv);
+	}
+	
+	@ApiOperation(value="Add documentation to an existing nonconformity.", 
+			notes="Upload a file of any kind (current size limit 5MB) as supporting "
+					+ " documentation to an existing nonconformity. The logged in user uploading the file "
+					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ " authority on the associated ACB.")
+	@RequestMapping(value="/{surveillanceId}/nonconformity/{nonconformityId}/document/create", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8") 
+	public @ResponseBody String uploadNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
+			@PathVariable("nonconformityId") Long nonconformityId,
+			@RequestParam("file") MultipartFile file) throws 
+			InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
+		if (file.isEmpty()) {
+			throw new InvalidArgumentsException("You cannot upload an empty file!");
+		}
+		
+		Surveillance surv = survManager.getById(surveillanceId);
+		if(surv == null) {
+			throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
+		}
+
+		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(surv.getCertifiedProduct().getId());
+		
+		SurveillanceNonconformityDocument toInsert = new SurveillanceNonconformityDocument();
+		toInsert.setFileContents(file.getBytes());
+		toInsert.setFileName(file.getOriginalFilename());
+		toInsert.setFileType(file.getContentType());
+		
+		CertificationBodyDTO owningAcb = null;
+		try {
+			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+		} catch(Exception ex) {
+			logger.error("Error looking up ACB associated with surveillance.", ex);
+			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+		}
+		
+		Long insertedDocId = survManager.addDocumentToNonconformity(owningAcb.getId(), nonconformityId, toInsert);
+		if(insertedDocId == null) {
+			throw new EntityCreationException("Error adding a document to nonconformity with id " + nonconformityId);
+		}
+		
+		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(surv.getCertifiedProduct().getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeCp.getId(), 
+				"Documentation " + toInsert.getFileName() + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(), 
+				beforeCp, afterCp);
+		return "{\"success\": \"true\"}";
 	}
 	
 	@ApiOperation(value="Update a surveillance activity for a certified product.", 
@@ -214,6 +311,45 @@ public class SurveillanceController {
 				"Surveillance was delete from certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
 		return "{\"success\" : true }";
+	}
+	
+	@ApiOperation(value="Remove documentation from a nonconformity.", 
+			notes="The logged in user"
+					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+					+ " authority on the associated ACB.")
+	@RequestMapping(value="/{surveillanceId}/nonconformity/{nonconformityId}/document/{docId}/delete", method= RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public String deleteNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
+			@PathVariable("nonconformityId") Long nonconformityId,
+			@PathVariable("docId") Long docId) 
+			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
+				InvalidArgumentsException {
+		
+		Surveillance surv = survManager.getById(surveillanceId);
+		if(surv == null) {
+			throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
+		}
+
+		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(surv.getCertifiedProduct().getId());
+		CertificationBodyDTO owningAcb = null;
+		try {
+			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+		} catch(Exception ex) {
+			logger.error("Error looking up ACB associated with surveillance.", ex);
+			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+		}
+		
+		try {
+			survManager.deleteNonconformityDocument(owningAcb.getId(), docId);
+		} catch(Exception ex) {
+			throw ex;
+		}
+		
+		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(surv.getCertifiedProduct().getId());
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeCp.getId(), 
+				"A document was removed from a nonconformity for certified product " + afterCp.getChplProductNumber(), 
+				beforeCp, afterCp);
+		return "{\"success\": \"true\"}";
 	}
 	
 	@ApiOperation(value="Reject (effectively delete) a pending surveillance item.")

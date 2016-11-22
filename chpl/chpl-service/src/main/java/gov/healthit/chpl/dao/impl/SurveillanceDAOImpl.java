@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
@@ -27,6 +28,7 @@ import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.SurveillanceEntity;
+import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.SurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.SurveillanceRequirementTypeEntity;
@@ -70,6 +72,21 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return toInsert.getId();
 	}
 	
+	public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc) {
+		SurveillanceNonconformityDocumentationEntity docEntity = new SurveillanceNonconformityDocumentationEntity();
+		docEntity.setNonconformityId(nonconformityId);
+		docEntity.setFileData(doc.getFileContents());
+		docEntity.setFileType(doc.getFileType());
+		docEntity.setFileName(doc.getFileName());
+		docEntity.setDeleted(false);
+		docEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+		
+		entityManager.persist(docEntity);
+		entityManager.flush();
+		
+		return docEntity.getId();
+	}
+	
 	public Long updateSurveillance(Surveillance newSurv) {
 		SurveillanceEntity oldSurv = fetchSurveillanceById(newSurv.getId());
 		populateSurveillanceEntity(oldSurv, newSurv);
@@ -89,8 +106,16 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			}
 			
 			if(!isFoundInUpdate) {
-				//delete nonconformities for this requirement first
+				//delete nonconformities and documents for this requirement first
 				for(SurveillanceNonconformityEntity nc : oldReq.getNonconformities()) {
+					if(nc.getDocuments() != null) {
+						for(SurveillanceNonconformityDocumentationEntity ncDoc : nc.getDocuments()) {
+							ncDoc.setLastModifiedUser(Util.getCurrentUser().getId());
+							ncDoc.setDeleted(true);
+							entityManager.merge(ncDoc);
+							entityManager.flush();
+						}
+					}
 					nc.setLastModifiedUser(Util.getCurrentUser().getId());
 					nc.setDeleted(true);
 					entityManager.merge(nc);
@@ -126,6 +151,14 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 								}
 							}
 							if(!isFoundInUpdate) {
+								if(oldNc.getDocuments() != null) {
+									for(SurveillanceNonconformityDocumentationEntity ncDoc : oldNc.getDocuments()) {
+										ncDoc.setLastModifiedUser(Util.getCurrentUser().getId());
+										ncDoc.setDeleted(true);
+										entityManager.merge(ncDoc);
+										entityManager.flush();
+									}
+								}
 								oldNc.setLastModifiedUser(Util.getCurrentUser().getId());
 								oldNc.setDeleted(true);
 								entityManager.merge(oldNc);
@@ -206,6 +239,15 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return result;
 	}
 	
+	public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId) throws EntityNotFoundException {
+		SurveillanceNonconformityDocumentationEntity doc = entityManager.find(SurveillanceNonconformityDocumentationEntity.class, documentId);
+		if(doc == null) {
+			logger.error("Could not find documentation with id " + documentId);
+			throw new EntityNotFoundException("Could not find documentation with id " + documentId);
+		}
+		return doc;
+	}
+	
 	public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id) {
 		List<SurveillanceEntity> results = fetchSurveillanceByCertifiedProductId(id);
 		return results;
@@ -274,6 +316,18 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return toInsert.getId();
 	}
 	
+	public void deleteNonconformityDocument(Long documentId) throws EntityNotFoundException {
+		SurveillanceNonconformityDocumentationEntity doc = entityManager.find(SurveillanceNonconformityDocumentationEntity.class, documentId);
+		if(doc == null) {
+			logger.error("Could not find documentation with id " + documentId);
+			throw new EntityNotFoundException("Could not find documentation with id " + documentId);
+		}
+		doc.setDeleted(true);
+		doc.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.merge(doc);
+		entityManager.flush();
+	}
+	
 	public void deleteSurveillance(Surveillance surv) throws EntityNotFoundException {
 		logger.debug("Looking for surveillance with id " + surv.getId() + " to delete.");
 		SurveillanceEntity toDelete = fetchSurveillanceById(surv.getId());
@@ -285,6 +339,14 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 			for(SurveillanceRequirementEntity reqToDelete : toDelete.getSurveilledRequirements()) {
 				if(reqToDelete.getNonconformities() != null) {
 					for(SurveillanceNonconformityEntity ncToDelete : reqToDelete.getNonconformities()) {
+						if(ncToDelete.getDocuments() != null) {
+							for(SurveillanceNonconformityDocumentationEntity docsToDelete : ncToDelete.getDocuments()) {
+								docsToDelete.setDeleted(true);
+								docsToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+								entityManager.merge(ncToDelete);
+								entityManager.flush();
+							}
+						}
 						ncToDelete.setDeleted(true);
 						ncToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
 						entityManager.merge(ncToDelete);
@@ -545,6 +607,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 				+ "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
 				+ "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity "
 				+ "LEFT OUTER JOIN FETCH ncs.nonconformityStatus "
+				+ "LEFT OUTER JOIN FETCH ncs.documents "
 				+ "WHERE surv.deleted <> true "
 				+ "AND surv.id = :entityid", 
 				SurveillanceEntity.class);
@@ -570,6 +633,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 				+ "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
 				+ "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity "
 				+ "LEFT OUTER JOIN FETCH ncs.nonconformityStatus "
+				+ "LEFT OUTER JOIN FETCH ncs.documents "
 				+ "WHERE surv.deleted <> true "
 				+ "AND surv.certifiedProductId = :cpId", 
 				SurveillanceEntity.class);
