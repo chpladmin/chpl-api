@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -206,7 +207,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	public void testUpdateMeaningfulUseUsers() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductDTO dto = new CertifiedProductDTO();
-		Set<MeaningfulUseUser> muu = new HashSet<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muu = new LinkedHashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("CHP-024051", 20L);
 		muu.add(u1);
@@ -233,7 +234,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	public void testUpdateMeaningfulUseUsersWithBadData() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductDTO dto = new CertifiedProductDTO();
-		Set<MeaningfulUseUser> muu = new HashSet<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muu = new LinkedHashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("badChplProductNumber", 20L);
 		muu.add(u1);
@@ -261,7 +262,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	public void testUpdateMeaningfulUseUsersWithIncorrect2014EditionChplProductNumber() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductDTO dto = new CertifiedProductDTO();
-		Set<MeaningfulUseUser> muu = new HashSet<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muu = new LinkedHashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("CHPL-024051", 20L);
 		MeaningfulUseUser u3 = new MeaningfulUseUser("CHP-024051", 30L);
@@ -293,7 +294,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	public void testUpdateMeaningfulUseUsersWithIncorrect2015EditionChplProductNumber() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductDTO dto = new CertifiedProductDTO();
-		Set<MeaningfulUseUser> muu = new HashSet<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muu = new LinkedHashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 20L);
 		MeaningfulUseUser u3 = new MeaningfulUseUser("15.01.01.1234.AB01.01.0.1.123456", 30L);
