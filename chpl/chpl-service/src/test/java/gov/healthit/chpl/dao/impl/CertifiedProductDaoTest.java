@@ -71,7 +71,7 @@ public class CertifiedProductDaoTest {
 	public void getAllCertifiedProducts() {
 		List<CertifiedProductDetailsDTO> results = productDao.findAll();
 		assertNotNull(results);
-		assertEquals(5, results.size());
+		assertEquals(results.size(), 6);
 	}
 	
 	@Test
@@ -124,13 +124,29 @@ public class CertifiedProductDaoTest {
 		SecurityContextHolder.getContext().setAuthentication(authUser);
 		CertifiedProductDTO dto = new CertifiedProductDTO();
 		dto.setChplProductNumber("CHP-024050");
-		dto.setMeaningfulUseUsers(10L);
+		dto.setMeaningfulUseUsers(11L);
 		CertifiedProductDTO dtoResponse = new CertifiedProductDTO();
 		dtoResponse = productDao.updateMeaningfulUseUsers(dto);
 		assertNotNull(dtoResponse);
 		assertTrue(dtoResponse.getChplProductNumber().equalsIgnoreCase("CHP-024050"));
-		assertTrue(dtoResponse.getMeaningfulUseUsers() == 10L);
+		assertTrue(dtoResponse.getMeaningfulUseUsers() == 11L);
 		assertTrue(dtoResponse.getCertificationEditionId() != null);
+	}
+	
+	/**
+	 * Given that I am authenticated as an admin
+	 * When I delete a certified product
+	 * Then that certified product no longer exists in the database
+	 * @throws EntityRetrievalException 
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void delete() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(authUser);
+		Long productId = 1L;
+		productDao.delete(productId);
+		CertifiedProductDTO deletedProduct = productDao.getById(productId);
+		assertTrue(deletedProduct.getDeleted());
 	}
 	
 //	@Test

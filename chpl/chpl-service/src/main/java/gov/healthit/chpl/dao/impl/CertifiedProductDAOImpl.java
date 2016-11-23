@@ -148,6 +148,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	@CacheEvict(value="searchOptionsCache", allEntries=true)
+	@Transactional(readOnly=true)
 	public CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO dto) throws EntityRetrievalException, IOException{
 		if(dto.getChplProductNumber() == null || dto.getMeaningfulUseUsers() == null){
 			throw new IOException("Must provide a CertifiedProductDTO with a valid CHPL Product Number and meaningfulUseUsers");
@@ -163,6 +164,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	@CacheEvict(value="searchOptionsCache", allEntries=true)
+	@Transactional(readOnly=true)
 	public void delete(Long productId){
 		
 		// TODO: How to delete this without leaving orphans

@@ -130,6 +130,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
@@ -999,21 +1000,59 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	@Transactional(readOnly = false)
-	public List<CertifiedProductDTO> updateMeaningfulUseUsers(List<MeaningfulUseUser> meaningfulUseUserList)
+	public MeaningfulUseUserResults updateMeaningfulUseUsers(List<MeaningfulUseUser> meaningfulUseUserList)
 			throws EntityCreationException, EntityRetrievalException, IOException {
-		List<CertifiedProductDTO> dtos = new ArrayList<CertifiedProductDTO>();
-		for(MeaningfulUseUser mlu : meaningfulUseUserList){
-			if(mlu.getProductNumber() == null || mlu.getNumberOfUsers() == null){
-				throw new IOException("MeaningfulUseUser must have non-null CHPL Product Number and meaningfulUseUser count");
+		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
+		List<MeaningfulUseUser> errors = new ArrayList<MeaningfulUseUser>();
+		List<MeaningfulUseUser> results = new ArrayList<MeaningfulUseUser>();
+		
+		for(MeaningfulUseUser muu : meaningfulUseUserList){
+			try{
+				// If bad input, add error for this MeaningfulUseUser and continue
+				if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())){
+					muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + muu.getNumberOfUsers() + 
+							" with value " + muu.getProductNumber() + " is invalid. Please correct and upload a new csv.");
+				}
+				else if(muu.getNumberOfUsers() == null){
+					muu.setError("num_meaningful_use at line " + muu.getCsvLineNumber() + " for chpl_product_number " + muu.getProductNumber() + 
+							" with value " + muu.getNumberOfUsers() + " is invalid. Please correct and upload a new csv.");
+				}
+				else{
+					CertifiedProductDTO dto = new CertifiedProductDTO();
+					// check if 2014 edition CHPL Product Number exists
+					if(cpDao.getByChplNumber(muu.getProductNumber()) != null){
+						dto.setChplProductNumber(muu.getProductNumber());
+						dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+					}
+					// check if 2015 edition CHPL Product Number exists
+					else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null){
+						dto.setChplProductNumber(muu.getProductNumber());
+						dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+					}
+					// If neither exist, add error
+					else{
+						throw new EntityRetrievalException();
+					}
+					
+					try{
+						cpDao.updateMeaningfulUseUsers(dto);
+						results.add(muu);
+					} catch (EntityRetrievalException e){
+						muu.setError("Could not update database for chpl_product_number " + muu.getProductNumber() + " and num_meaningful_users " + muu.getNumberOfUsers()
+						+ " on line number " + muu.getCsvLineNumber() + ". Please correct the invalid input.");
+						errors.add(muu);
+					}
+				}
+			} catch (Exception e){	
+				muu.setError("Invalid input for chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + muu.getNumberOfUsers() 
+				+ " with chpl_product_number value " + muu.getProductNumber() + ". Error message: " + e.getMessage());
+				errors.add(muu);
 			}
-			
-			CertifiedProductDTO dto = new CertifiedProductDTO();
-			dto.setChplProductNumber(mlu.getProductNumber());
-			dto.setMeaningfulUseUsers(mlu.getNumberOfUsers());
-			dtos.add(cpDao.updateMeaningfulUseUsers(dto));
 		}
 		
-		return dtos;
+		meaningfulUseUserResults.setMeaningfulUseUsers(results);
+		meaningfulUseUserResults.setErrors(errors);
+		return meaningfulUseUserResults;
 	}
 	
 	/**

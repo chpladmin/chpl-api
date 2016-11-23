@@ -443,40 +443,58 @@ public class CertifiedProductController {
 			}
 			
 			CSVRecord heading = null;
-			//List<CSVRecord> rows = new ArrayList<CSVRecord>();
 			
-			for(int i = 0; i < records.size(); i++){
-				CSVRecord currRecord = records.get(i);
+			for(int i = 1; i <= records.size(); i++){
+				CSVRecord currRecord = records.get(i-1);
 				MeaningfulUseUser muu = new MeaningfulUseUser();
-				if((i == 0 && !currRecord.get(0).equalsIgnoreCase("chpl_product_number")) || (i == 0 && !currRecord.get(1).equalsIgnoreCase("num_meaningful_use"))){
-					throw new IOException("Heading must be present with first column as chpl_product_number and second column as num_meaningful_use");
-				}
 				
-				if(heading == null && i == 0 && !StringUtils.isEmpty(currRecord.get(0)) && currRecord.get(0).equalsIgnoreCase("chpl_product_number")
-						&& !StringUtils.isEmpty(currRecord.get(1)) && currRecord.get(1).equalsIgnoreCase("num_meaningful_use")) {
+				// add header if something similar to "chpl_product_number" and "num_meaningful_use" exists
+				if(heading == null && i == 1 && !StringUtils.isEmpty(currRecord.get(0).trim()) && currRecord.get(0).trim().contains("product")
+						&& !StringUtils.isEmpty(currRecord.get(1).trim()) && currRecord.get(1).trim().contains("meaning")) {
 					heading = currRecord;
 				}
-				else if (heading != null){
-					if(!StringUtils.isEmpty(currRecord.get(0)) && !StringUtils.isEmpty(currRecord.get(1))){
-						muu.setProductNumber(currRecord.get(0));
-						muu.setNumberOfUsers(Long.parseLong(currRecord.get(1)));
-						muu.setCertifiedProductId(cpManager.getByChplProductNumber(muu.getProductNumber()).getId());
+				// populate MeaningfulUseUserResults
+				else {
+					String chplProductNumber = currRecord.get(0).trim();
+					Long numMeaningfulUseUsers = null;
+					try{
+						numMeaningfulUseUsers = Long.parseLong(currRecord.get(1).trim());
+						muu.setProductNumber(chplProductNumber);
+						muu.setNumberOfUsers(numMeaningfulUseUsers);
 						muu.setCsvLineNumber(i);
-						muuList.add(muu);
+						if(!muuList.contains(muu)){
+							muuList.add(muu);
+						}
+					} catch (NumberFormatException e){
+						muu.setProductNumber(chplProductNumber);
+						muu.setCsvLineNumber(i);
+						muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + currRecord.get(1).trim() + 
+								" with value " + muu.getProductNumber() + " is invalid. Please correct and upload a new csv.");
+						if(!muuList.contains(muu)){
+							muuList.add(muu);
+						}
 					}
 				}
 			}
 		} catch(IOException ioEx) {
 			logger.error("Could not get input stream for uploaded file " + file.getName());			
 			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
-		} catch (EntityRetrievalException e) {
-			e.printStackTrace();
 		} finally {
 			 try { parser.close(); } catch(Exception ignore) {}
 			try { reader.close(); } catch(Exception ignore) {}
 		}
 		
-		meaningfulUseUserResults.setMeaningfulUseUsers(muuList);
+		try {
+			meaningfulUseUserResults = cpManager.updateMeaningfulUseUsers(muuList);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		} catch (EntityCreationException e) {
+			e.printStackTrace();
+		} catch (EntityRetrievalException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		return meaningfulUseUserResults;
 	}

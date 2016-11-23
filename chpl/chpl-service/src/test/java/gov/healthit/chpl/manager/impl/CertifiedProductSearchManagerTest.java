@@ -99,7 +99,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.getCertificationBodies().add("InfoGard");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(3, response.getResults().size());
+		assertEquals(response.getResults().size(), 4);
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getCertifyingBody().get("name").toString().startsWith("InfoGard"));
@@ -113,7 +113,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(3, response.getResults().size());
+		assertEquals(response.getResults().size(), 4);
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getPracticeType().get("name").toString().startsWith("Ambulatory"));
@@ -127,7 +127,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(3, response.getResults().size());
+		assertEquals(response.getResults().size(), 4);
 	}
 	
 	@Test

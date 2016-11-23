@@ -18,6 +18,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 public interface CertifiedProductManager {
 
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
@@ -32,7 +33,7 @@ public interface CertifiedProductManager {
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) throws EntityRetrievalException;
-	public List<CertifiedProductDTO> updateMeaningfulUseUsers(List<MeaningfulUseUser> meaningfulUseUserList)
+	public MeaningfulUseUserResults updateMeaningfulUseUsers(List<MeaningfulUseUser> meaningfulUseUserList)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 

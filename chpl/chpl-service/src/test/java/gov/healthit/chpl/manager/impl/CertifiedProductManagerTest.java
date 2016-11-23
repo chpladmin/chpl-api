@@ -36,6 +36,7 @@ import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import junit.framework.TestCase;
 
 
@@ -206,14 +207,107 @@ public class CertifiedProductManagerTest extends TestCase {
 		muu.add(u1);
 		muu.add(u2);
 		List<CertifiedProductDTO> dtoResponse = new ArrayList<CertifiedProductDTO>();
-		dtoResponse = cpManager.updateMeaningfulUseUsers(muu);
-		assertNotNull(dtoResponse);
-		assertTrue(dtoResponse.get(0).getChplProductNumber().equalsIgnoreCase("CHP-024050"));
-		assertTrue(dtoResponse.get(0).getMeaningfulUseUsers() == 10L);
-		assertTrue(dtoResponse.get(0).getCertificationEditionId() != null);
-		assertTrue(dtoResponse.get(1).getChplProductNumber().equalsIgnoreCase("CHP-024051"));
-		assertTrue(dtoResponse.get(1).getMeaningfulUseUsers() == 20L);
+		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
+		assertNotNull(results);
+		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
+		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("CHP-024051"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
 	}
+	
+	/**
+	 * Given that I am ROLE_ONC_STAFF or ROLE_ADMIN
+	 * When I update a CHPL Product Number's count of meaningfulUseUsers with incorrect/bad data
+	 * Then the errors array is updated for that value and the other values get updated in the database
+	 * @throws EntityCreationException 
+	 * @throws EntityRetrievalException
+	 * @throws IOException 
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void testUpdateMeaningfulUseUsersWithBadData() throws EntityCreationException, EntityRetrievalException, IOException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		List<MeaningfulUseUser> muu = new ArrayList<MeaningfulUseUser>();
+		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
+		MeaningfulUseUser u2 = new MeaningfulUseUser("badChplProductNumber", 20L);
+		muu.add(u1);
+		muu.add(u2);
+		List<CertifiedProductDTO> dtoResponse = new ArrayList<CertifiedProductDTO>();
+		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
+		assertNotNull(results);
+		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
+		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
+		assertTrue(results.getErrors().get(0).getError() != null);
+		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("badChplProductNumber"));
+		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 20L);
+	}
+	
+	/**
+	 * Given that I am ROLE_ONC_STAFF or ROLE_ADMIN
+	 * When I update a CHPL Product Number's count of meaningfulUseUsers with incorrect/bad data for a 2014 edition CHPL product number
+	 * Then the errors array is updated for that value and the other values get updated in the database
+	 * @throws EntityCreationException 
+	 * @throws EntityRetrievalException
+	 * @throws IOException 
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void testUpdateMeaningfulUseUsersWithIncorrect2014EditionChplProductNumber() throws EntityCreationException, EntityRetrievalException, IOException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		List<MeaningfulUseUser> muu = new ArrayList<MeaningfulUseUser>();
+		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
+		MeaningfulUseUser u2 = new MeaningfulUseUser("CHPL-024051", 20L);
+		MeaningfulUseUser u3 = new MeaningfulUseUser("CHP-024051", 30L);
+		muu.add(u1);
+		muu.add(u2);
+		muu.add(u3);
+		List<CertifiedProductDTO> dtoResponse = new ArrayList<CertifiedProductDTO>();
+		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
+		assertNotNull(results);
+		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
+		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
+		assertTrue(results.getErrors().get(0).getError() != null);
+		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("CHPL-024051"));
+		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 20L);
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("CHP-024051"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 30L);
+	}
+	
+	/**
+	 * Given that I am ROLE_ONC_STAFF or ROLE_ADMIN
+	 * When I update a CHPL Product Number's count of meaningfulUseUsers with incorrect/bad data for a 2015 edition CHPL product number
+	 * Then the errors array is updated for that value and the other values get updated in the database
+	 * @throws EntityCreationException 
+	 * @throws EntityRetrievalException
+	 * @throws IOException 
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void testUpdateMeaningfulUseUsersWithIncorrect2015EditionChplProductNumber() throws EntityCreationException, EntityRetrievalException, IOException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		List<MeaningfulUseUser> muu = new ArrayList<MeaningfulUseUser>();
+		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
+		MeaningfulUseUser u2 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 20L);
+		MeaningfulUseUser u3 = new MeaningfulUseUser("15.01.01.1234.AB01.01.0.1.123456", 30L);
+		muu.add(u1);
+		muu.add(u2);
+		muu.add(u3);
+		List<CertifiedProductDTO> dtoResponse = new ArrayList<CertifiedProductDTO>();
+		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
+		assertNotNull(results);
+		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
+		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("12.01.01.1234.AB01.01.0.1.123456"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
+		assertTrue(results.getErrors().get(0).getError() != null);
+		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("15.01.01.1234.AB01.01.0.1.123456"));
+		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 30L);
+	}
+	
+	//MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 40L);
 	
 	@Test
 	public void testUpdateAgeRangeForAllParticipants() 

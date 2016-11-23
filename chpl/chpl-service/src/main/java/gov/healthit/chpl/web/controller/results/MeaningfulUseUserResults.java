@@ -6,21 +6,30 @@ import java.util.List;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 
 public class MeaningfulUseUserResults {
-	private List<MeaningfulUseUser> meaningfulUseUsers;
+	private List<MeaningfulUseUser> results;
+	private List<MeaningfulUseUser> errors;
 
 	public MeaningfulUseUserResults() {
-		meaningfulUseUsers = new ArrayList<MeaningfulUseUser>();
+		results = new ArrayList<MeaningfulUseUser>();
 	}
 	
-	public MeaningfulUseUserResults(List<MeaningfulUseUser> meaningfulUseUsers) {
-		this.meaningfulUseUsers = meaningfulUseUsers;
+	public MeaningfulUseUserResults(List<MeaningfulUseUser> results) {
+		this.results = results;
 	}
 
 	public List<MeaningfulUseUser> getMeaningfulUseUsers() {
-		return meaningfulUseUsers;
+		return results;
 	}
 
-	public void setMeaningfulUseUsers(List<MeaningfulUseUser> meaningfulUseUsers) {
-		this.meaningfulUseUsers = meaningfulUseUsers;
+	public void setMeaningfulUseUsers(List<MeaningfulUseUser> results) {
+		this.results = results;
+	}
+
+	public List<MeaningfulUseUser> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(List<MeaningfulUseUser> errors) {
+		this.errors = errors;
 	}
 }

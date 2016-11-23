@@ -24,6 +24,8 @@ public class MeaningfulUseUser {
 	
 	private Integer csvLineNumber;
 	
+	private String error;
+	
 	public void setCertifiedProductId(Long certifiedProductId){
 		this.certifiedProductId = certifiedProductId;
 	}
@@ -54,5 +56,13 @@ public class MeaningfulUseUser {
 
 	public void setCsvLineNumber(Integer csvLineNumber) {
 		this.csvLineNumber = csvLineNumber;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
 	}
 }
