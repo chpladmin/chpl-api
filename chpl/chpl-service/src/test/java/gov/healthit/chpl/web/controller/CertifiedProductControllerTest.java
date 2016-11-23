@@ -77,12 +77,15 @@ public class CertifiedProductControllerTest {
 	 * When the CSV contains some incorrect CHPLProductNumbers
 	 * When the CSV contains 2014 & 2015 edition CHPL Product Numbers
 	 * When the CSV contains a row with leading and trailing spaces for CHPL Product Number
+	 * When the CSV contains a duplicate CHPL Product Number
 	 * Then the API parses the contents of the csv
 	 * Then the API updates the meaningfulUseUser count for each CHPL Product Number/Certified Product
 	 * Then the API returns MeaningfulUseUserResults to the UI as a JSON response
 	 * Then the MeaningfulUseUserResults contains an array with unsuccessful updates
 	 * Then the API trims leading and trailing spaces and successfully updates meaningfulUseUsers for the CHPLProductNumber
 	 * Then an Activity is added to the activity table in the database
+	 * Then the duplicate CHPL Product Number results in an error added to the results errors array
+	 * Then the certifiedProductId is updated
 	 * @throws IOException 
 	 * @throws JSONException 
 	 */
@@ -94,14 +97,15 @@ public class CertifiedProductControllerTest {
 		logger.info("Running test_uploadMeaningfulUseUsers_returnsMeaningfulUseUserResults");
 		
 		// Create CSV input for API
-		MeaningfulUseUser meaningfulUseUser1 = new MeaningfulUseUser("CHP-024050", 10L);
-		MeaningfulUseUser meaningfulUseUser2 = new MeaningfulUseUser("CHP-024051", 20L);
-		MeaningfulUseUser meaningfulUseUser3 = new MeaningfulUseUser(" CHP-024052 ", 30L);
-		MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 40L);
-		MeaningfulUseUser meaningfulUseUser5 = new MeaningfulUseUser("wrongChplProductNumber", 50L);
-		MeaningfulUseUser meaningfulUseUser6 = new MeaningfulUseUser(" CHPL-024053 ", 60L);
-		MeaningfulUseUser meaningfulUseUser7 = new MeaningfulUseUser("15.01.01.1234.AB01.01.0.1.123456", 70L);
-		logger.info("Created 7 of MeaningfulUseUser to be updated in the database");
+		MeaningfulUseUser meaningfulUseUser1 = new MeaningfulUseUser("CHP-024050", 10L); // MeaningfulUseUser 0
+		MeaningfulUseUser meaningfulUseUser2 = new MeaningfulUseUser("CHP-024051", 20L); // MeaningfulUseUser 1
+		MeaningfulUseUser meaningfulUseUser3 = new MeaningfulUseUser(" CHP-024052 ", 30L); // MeaningfulUseUser 2
+		MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 40L); // MeaningfulUseUser 3
+		MeaningfulUseUser meaningfulUseUser5 = new MeaningfulUseUser("wrongChplProductNumber", 50L); // Errors 0
+		MeaningfulUseUser meaningfulUseUser6 = new MeaningfulUseUser(" CHPL-024053 ", 60L); // Errors 1
+		MeaningfulUseUser meaningfulUseUser7 = new MeaningfulUseUser("15.01.01.1234.AB01.01.0.1.123456", 70L); // Errors 2
+		MeaningfulUseUser meaningfulUseUser8 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 70L); // Errors 3 (because duplicate of MeaningfulUseUser 3
+		logger.info("Created 8 of MeaningfulUseUser to be updated in the database");
 		
 		List<MeaningfulUseUser> meaningfulUseUserList = new ArrayList<MeaningfulUseUser>();
 		meaningfulUseUserList.add(meaningfulUseUser1);
@@ -111,7 +115,8 @@ public class CertifiedProductControllerTest {
 		meaningfulUseUserList.add(meaningfulUseUser5);
 		meaningfulUseUserList.add(meaningfulUseUser6);
 		meaningfulUseUserList.add(meaningfulUseUser7);
-		logger.info("Populated List of MeaningfulUseUser from 7 MeaningfulUseUser");
+		meaningfulUseUserList.add(meaningfulUseUser8);
+		logger.info("Populated List of MeaningfulUseUser from 8 MeaningfulUseUser");
 		
 		File file = new File("testMeaningfulUseUsers.csv");
 		
@@ -155,17 +160,24 @@ public class CertifiedProductControllerTest {
 			e.printStackTrace();
 		}
 		
-		assertTrue("MeaningfulUseUserResults returns multiple results", apiResult.getMeaningfulUseUsers().size() == 4);
+		assertTrue("MeaningfulUseUserResults should return 4 but returned " + apiResult.getMeaningfulUseUsers().size(), apiResult.getMeaningfulUseUsers().size() == 4);
+		assertTrue("Errors should return 4 but returned " + apiResult.getErrors().size(), apiResult.getErrors().size() == 4);
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getProductNumber() + " but should return CHP-024050", 
 				apiResult.getMeaningfulUseUsers().get(0).getProductNumber().equals("CHP-024050"));
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getNumberOfUsers() + " but should return " + 10L, 
 				apiResult.getMeaningfulUseUsers().get(0).getNumberOfUsers().equals(10L));
+		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getCertifiedProductId() + " but should return certifiedProductId 1", 
+				apiResult.getMeaningfulUseUsers().get(0).getCertifiedProductId() == 1);
 		assertTrue("MeaningfulUseUserResults should return correct product number", apiResult.getMeaningfulUseUsers().get(1).getProductNumber().equals("CHP-024051"));
 		assertTrue("MeaningfulUseUserResults should return correct numMeaningfulUseUsers", apiResult.getMeaningfulUseUsers().get(1).getNumberOfUsers().equals(20L));
 		assertTrue("MeaningfulUseUserResults should return correct product number", apiResult.getMeaningfulUseUsers().get(2).getProductNumber().equals("CHP-024052"));
 		assertTrue("MeaningfulUseUserResults should return correct numMeaningfulUseUsers", apiResult.getMeaningfulUseUsers().get(2).getNumberOfUsers().equals(30L));
 		assertTrue("MeaningfulUseUserResults should return correct product number", apiResult.getMeaningfulUseUsers().get(3).getProductNumber().equals("12.01.01.1234.AB01.01.0.1.123456"));
 		assertTrue("MeaningfulUseUserResults should return correct numMeaningfulUseUsers", apiResult.getMeaningfulUseUsers().get(3).getNumberOfUsers().equals(40L));
+		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getProductNumber() + " but should return 12.01.01.1234.AB01.01.0.1.123456", 
+				apiResult.getMeaningfulUseUsers().get(3).getProductNumber().equals("12.01.01.1234.AB01.01.0.1.123456"));
+		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getNumberOfUsers() + " but should return " + 40L, 
+				apiResult.getMeaningfulUseUsers().get(3).getNumberOfUsers().equals(40L));
 		assertTrue("MeaningfulUseUserResults errors array should return incorrect CHPL Product Number for row with {wrongChplProductNumber, 50L} but returned " 
 		+ apiResult.getErrors().get(0).getError(), apiResult.getErrors().get(0).getError() != null);
 		assertTrue("MeaningfulUseUserResults errors array should return incorrect CHPL Product Number for row with {CHPL-024053, 60L} but returned " 
@@ -180,10 +192,14 @@ public class CertifiedProductControllerTest {
 				+ apiResult.getErrors().get(2).getProductNumber(), apiResult.getErrors().get(2).getProductNumber().equals("15.01.01.1234.AB01.01.0.1.123456"));
 		assertTrue("MeaningfulUseUserResults errors array for row {15.01.01.1234.AB01.01.0.1.123456, 70L} should have num_meaningful_use 70L but has " 
 				+ apiResult.getErrors().get(2).getNumberOfUsers(), apiResult.getErrors().get(2).getNumberOfUsers() == 70L);
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getProductNumber() + " but should return 12.01.01.1234.AB01.01.0.1.123456", 
-				apiResult.getMeaningfulUseUsers().get(3).getProductNumber().equals("12.01.01.1234.AB01.01.0.1.123456"));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getNumberOfUsers() + " but should return " + 40L, 
-				apiResult.getMeaningfulUseUsers().get(3).getNumberOfUsers().equals(40L));
+		assertTrue("MeaningfulUseUserResults errors array should return incorrect CHPL Product Number for row with {15.01.01.1234.AB01.01.0.1.123456, 70L} but returned " 
+				+ apiResult.getErrors().get(3).getError(), apiResult.getErrors().get(3).getError() != null);
+		assertTrue("MeaningfulUseUserResults errors array for row {12.01.01.1234.AB01.01.0.1.123456, 70L} should have Product Number 12.01.01.1234.AB01.01.0.1.123456 but has " 
+				+ apiResult.getErrors().get(3).getProductNumber(), apiResult.getErrors().get(3).getProductNumber().equals("12.01.01.1234.AB01.01.0.1.123456"));
+		assertTrue("MeaningfulUseUserResults errors array for row {12.01.01.1234.AB01.01.0.1.123456, 70L} should have num_meaningful_use 70L but has " 
+				+ apiResult.getErrors().get(3).getNumberOfUsers(), apiResult.getErrors().get(3).getNumberOfUsers() == 70L);
+		
+
 	}
 	
 	/** 

@@ -71,7 +71,7 @@ public class CertifiedProductDaoTest {
 	public void getAllCertifiedProducts() {
 		List<CertifiedProductDetailsDTO> results = productDao.findAll();
 		assertNotNull(results);
-		assertEquals(results.size(), 6);
+		assertEquals(6, results.size());
 	}
 	
 	@Test
@@ -140,7 +140,7 @@ public class CertifiedProductDaoTest {
 	 * @throws EntityRetrievalException 
 	 */
 	@Test
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void delete() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(authUser);
 		Long productId = 1L;

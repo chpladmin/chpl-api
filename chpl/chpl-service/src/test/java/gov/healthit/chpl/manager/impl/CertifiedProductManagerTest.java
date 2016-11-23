@@ -5,7 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -82,6 +84,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional(readOnly = false)
 	public void testUpdateEducationForOneParticipant() 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -122,6 +125,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional(readOnly = false)
 	public void testUpdateOccupationForAllParticipants() 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -156,6 +160,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional(readOnly = false)
 	public void testUpdateEducationForAllParticipants() 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -197,11 +202,11 @@ public class CertifiedProductManagerTest extends TestCase {
 	 * @throws IOException 
 	 */
 	@Test
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void testUpdateMeaningfulUseUsers() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductDTO dto = new CertifiedProductDTO();
-		List<MeaningfulUseUser> muu = new ArrayList<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muu = new HashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("CHP-024051", 20L);
 		muu.add(u1);
@@ -224,11 +229,11 @@ public class CertifiedProductManagerTest extends TestCase {
 	 * @throws IOException 
 	 */
 	@Test
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void testUpdateMeaningfulUseUsersWithBadData() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductDTO dto = new CertifiedProductDTO();
-		List<MeaningfulUseUser> muu = new ArrayList<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muu = new HashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("badChplProductNumber", 20L);
 		muu.add(u1);
@@ -252,11 +257,11 @@ public class CertifiedProductManagerTest extends TestCase {
 	 * @throws IOException 
 	 */
 	@Test
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void testUpdateMeaningfulUseUsersWithIncorrect2014EditionChplProductNumber() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductDTO dto = new CertifiedProductDTO();
-		List<MeaningfulUseUser> muu = new ArrayList<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muu = new HashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("CHPL-024051", 20L);
 		MeaningfulUseUser u3 = new MeaningfulUseUser("CHP-024051", 30L);
@@ -284,11 +289,11 @@ public class CertifiedProductManagerTest extends TestCase {
 	 * @throws IOException 
 	 */
 	@Test
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = false)
 	public void testUpdateMeaningfulUseUsersWithIncorrect2015EditionChplProductNumber() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductDTO dto = new CertifiedProductDTO();
-		List<MeaningfulUseUser> muu = new ArrayList<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muu = new HashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 20L);
 		MeaningfulUseUser u3 = new MeaningfulUseUser("15.01.01.1234.AB01.01.0.1.123456", 30L);
@@ -307,9 +312,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 30L);
 	}
 	
-	//MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 40L);
-	
 	@Test
+	@Transactional(readOnly = false)
 	public void testUpdateAgeRangeForAllParticipants() 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);

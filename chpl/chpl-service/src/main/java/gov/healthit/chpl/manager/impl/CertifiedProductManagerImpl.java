@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -1000,55 +1001,62 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	@Transactional(readOnly = false)
-	public MeaningfulUseUserResults updateMeaningfulUseUsers(List<MeaningfulUseUser> meaningfulUseUserList)
+	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, IOException {
 		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
 		List<MeaningfulUseUser> errors = new ArrayList<MeaningfulUseUser>();
 		List<MeaningfulUseUser> results = new ArrayList<MeaningfulUseUser>();
 		
-		for(MeaningfulUseUser muu : meaningfulUseUserList){
-			try{
-				// If bad input, add error for this MeaningfulUseUser and continue
-				if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())){
-					muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + muu.getNumberOfUsers() + 
-							" with value " + muu.getProductNumber() + " is invalid. Please correct and upload a new csv.");
-				}
-				else if(muu.getNumberOfUsers() == null){
-					muu.setError("num_meaningful_use at line " + muu.getCsvLineNumber() + " for chpl_product_number " + muu.getProductNumber() + 
-							" with value " + muu.getNumberOfUsers() + " is invalid. Please correct and upload a new csv.");
-				}
-				else{
-					CertifiedProductDTO dto = new CertifiedProductDTO();
-					// check if 2014 edition CHPL Product Number exists
-					if(cpDao.getByChplNumber(muu.getProductNumber()) != null){
-						dto.setChplProductNumber(muu.getProductNumber());
-						dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+		for(MeaningfulUseUser muu : meaningfulUseUserSet){
+			if(muu.getError() == null){
+				try{
+					// If bad input, add error for this MeaningfulUseUser and continue
+					if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())){
+						muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + muu.getNumberOfUsers() + 
+								" with value " + muu.getProductNumber() + " is invalid. Please correct and upload a new csv.");
 					}
-					// check if 2015 edition CHPL Product Number exists
-					else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null){
-						dto.setChplProductNumber(muu.getProductNumber());
-						dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+					else if(muu.getNumberOfUsers() == null){
+						muu.setError("num_meaningful_use at line " + muu.getCsvLineNumber() + " for chpl_product_number " + muu.getProductNumber() + 
+								" with value " + muu.getNumberOfUsers() + " is invalid. Please correct and upload a new csv.");
 					}
-					// If neither exist, add error
 					else{
-						throw new EntityRetrievalException();
+						CertifiedProductDTO dto = new CertifiedProductDTO();
+						// check if 2014 edition CHPL Product Number exists
+						if(cpDao.getByChplNumber(muu.getProductNumber()) != null){
+							dto.setChplProductNumber(muu.getProductNumber());
+							dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+						}
+						// check if 2015 edition CHPL Product Number exists
+						else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null){
+							dto.setChplProductNumber(muu.getProductNumber());
+							dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+						}
+						// If neither exist, add error
+						else{
+							throw new EntityRetrievalException();
+						}
+						
+						try{
+							CertifiedProductDTO returnDto = cpDao.updateMeaningfulUseUsers(dto);
+							muu.setCertifiedProductId(returnDto.getId());
+							results.add(muu);
+						} catch (EntityRetrievalException e){
+							muu.setError("Could not update database for chpl_product_number " + muu.getProductNumber() + " and num_meaningful_users " + muu.getNumberOfUsers()
+							+ " on line number " + muu.getCsvLineNumber() + ". Please correct the invalid input.");
+							errors.add(muu);
+						}
 					}
-					
-					try{
-						cpDao.updateMeaningfulUseUsers(dto);
-						results.add(muu);
-					} catch (EntityRetrievalException e){
-						muu.setError("Could not update database for chpl_product_number " + muu.getProductNumber() + " and num_meaningful_users " + muu.getNumberOfUsers()
-						+ " on line number " + muu.getCsvLineNumber() + ". Please correct the invalid input.");
-						errors.add(muu);
-					}
+				} catch (Exception e){	
+					muu.setError("Invalid input for chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + muu.getNumberOfUsers() 
+					+ " with chpl_product_number value " + muu.getProductNumber() + ". Error message: " + e.getMessage());
+					errors.add(muu);
 				}
-			} catch (Exception e){	
-				muu.setError("Invalid input for chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + muu.getNumberOfUsers() 
-				+ " with chpl_product_number value " + muu.getProductNumber() + ". Error message: " + e.getMessage());
+			}
+			else{
 				errors.add(muu);
 			}
 		}
+		
 		
 		meaningfulUseUserResults.setMeaningfulUseUsers(results);
 		meaningfulUseUserResults.setErrors(errors);
