@@ -83,9 +83,8 @@ public class CertifiedProductControllerTest {
 	 * Then the API returns MeaningfulUseUserResults to the UI as a JSON response
 	 * Then the MeaningfulUseUserResults contains an array with unsuccessful updates
 	 * Then the API trims leading and trailing spaces and successfully updates meaningfulUseUsers for the CHPLProductNumber
-	 * Then an Activity is added to the activity table in the database
 	 * Then the duplicate CHPL Product Number results in an error added to the results errors array
-	 * Then the certifiedProductId is updated
+	 * Then the certifiedProductId is updated for non-error results
 	 * @throws IOException 
 	 * @throws JSONException 
 	 */
@@ -207,14 +206,14 @@ public class CertifiedProductControllerTest {
 	 * Given that a user with ROLE_ONC_STAFF or ROLE_ADMIN has uploaded a CSV with meaningfulUseUser counts (passed in as MultipartFile file)
 	 * When the UI calls the API at /uploadMeaningfulUse
 	 * When the CSV contains no header
-	 * Then the API returns an error that the file should contain a header
+	 * Then the API continues with updating the CHPL Product Numbers with their respective num_meaningful_users
 	 * @throws IOException 
 	 * @throws JSONException 
 	 */
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_uploadMeaningfulUseUsers_noHeader_returnsError() throws EntityRetrievalException, EntityCreationException, IOException {
+	public void test_uploadMeaningfulUseUsers_noHeader_runsWithoutError() throws EntityRetrievalException, EntityCreationException, IOException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		logger.info("Running test_uploadMeaningfulUseUsers_returnsMeaningfulUseUserResults");
 		
@@ -276,18 +275,26 @@ public class CertifiedProductControllerTest {
 				apiResult.getMeaningfulUseUsers().get(0).getProductNumber().equals("CHP-024050"));
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getNumberOfUsers() + " but should return " + 10L, 
 				apiResult.getMeaningfulUseUsers().get(0).getNumberOfUsers().equals(10L));
+		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getCertifiedProductId() + " but should return " + 1L, 
+				apiResult.getMeaningfulUseUsers().get(0).getCertifiedProductId() == 1L);
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(1).getProductNumber() + " but should return CHP-024051", 
 				apiResult.getMeaningfulUseUsers().get(1).getProductNumber().equals("CHP-024051"));
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(1).getNumberOfUsers() + " but should return " + 20L, 
 				apiResult.getMeaningfulUseUsers().get(1).getNumberOfUsers().equals(20L));
+		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(1).getCertifiedProductId() + " but should return " + 2L, 
+				apiResult.getMeaningfulUseUsers().get(1).getCertifiedProductId() == 2L);
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(2).getProductNumber() + " but should return CHP-024052", 
 				apiResult.getMeaningfulUseUsers().get(2).getProductNumber().equals("CHP-024052"));
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(2).getNumberOfUsers() + " but should return " + 30L, 
 				apiResult.getMeaningfulUseUsers().get(2).getNumberOfUsers().equals(30L));
+		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(2).getCertifiedProductId() + " but should return " + 3L, 
+				apiResult.getMeaningfulUseUsers().get(2).getCertifiedProductId() == 3L);
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getProductNumber() + " but should return 12.01.01.1234.AB01.01.0.1.123456", 
 				apiResult.getMeaningfulUseUsers().get(3).getProductNumber().equals("12.01.01.1234.AB01.01.0.1.123456"));
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getNumberOfUsers() + " but should return " + 40L, 
 				apiResult.getMeaningfulUseUsers().get(3).getNumberOfUsers().equals(40L));
+		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getCertifiedProductId() + " but should return " + 6L, 
+				apiResult.getMeaningfulUseUsers().get(3).getCertifiedProductId() == 6L);
 	}
 	
 }

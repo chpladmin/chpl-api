@@ -1057,7 +1057,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 		}
 		
-		
 		meaningfulUseUserResults.setMeaningfulUseUsers(results);
 		meaningfulUseUserResults.setErrors(errors);
 		return meaningfulUseUserResults;

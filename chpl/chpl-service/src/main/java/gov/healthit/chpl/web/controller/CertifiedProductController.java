@@ -417,8 +417,8 @@ public class CertifiedProductController {
 		return result;
 	}
 	
-	@ApiOperation(value="Upload a file with certified product meaningful use users", 
-			notes="Accepts a CSV file with very specific fields to create pending certified products. "
+	@ApiOperation(value="Upload a file to update the number of meaningful use users for each CHPL Product Number", 
+			notes="Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
 					+ " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
 	@RequestMapping(value="/uploadMeaningfulUse", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
@@ -466,7 +466,7 @@ public class CertifiedProductController {
 						muu.setProductNumber(chplProductNumber);
 						muu.setNumberOfUsers(numMeaningfulUseUsers);
 						muu.setCsvLineNumber(i);
-						// check if product number already exists in muuSet
+						// check if product number has already been updated
 						if(muuMap.contains(muu.getProductNumber())){
 							throw new IOException();
 						}
