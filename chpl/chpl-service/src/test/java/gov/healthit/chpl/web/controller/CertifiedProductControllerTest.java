@@ -160,6 +160,9 @@ public class CertifiedProductControllerTest {
 			e.printStackTrace();
 		}
 		
+		input.close();
+		file.delete();
+		
 		assertTrue("MeaningfulUseUserResults should return 4 but returned " + apiResult.getMeaningfulUseUsers().size(), apiResult.getMeaningfulUseUsers().size() == 4);
 		assertTrue("Errors should return 4 but returned " + apiResult.getErrors().size(), apiResult.getErrors().size() == 4);
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getProductNumber() + " but should return CHP-024050", 
@@ -198,8 +201,6 @@ public class CertifiedProductControllerTest {
 				+ apiResult.getErrors().get(3).getProductNumber(), apiResult.getErrors().get(3).getProductNumber().equals("12.01.01.1234.AB01.01.0.1.123456"));
 		assertTrue("MeaningfulUseUserResults errors array for row {12.01.01.1234.AB01.01.0.1.123456, 70L} should have num_meaningful_use 70L but has " 
 				+ apiResult.getErrors().get(3).getNumberOfUsers(), apiResult.getErrors().get(3).getNumberOfUsers() == 70L);
-		
-
 	}
 	
 	/** 
@@ -266,6 +267,9 @@ public class CertifiedProductControllerTest {
 		} catch (ValidationException e) {
 			e.printStackTrace();
 		}
+		
+		input.close();
+		file.delete();
 		
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().size() + " but should return 4 results", apiResult.getMeaningfulUseUsers().size() == 4);
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getProductNumber() + " but should return CHP-024050", 
