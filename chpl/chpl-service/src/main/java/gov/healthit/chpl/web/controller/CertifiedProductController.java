@@ -433,7 +433,7 @@ public class CertifiedProductController {
 		}
 		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
 		Set<MeaningfulUseUser> muuSet = new LinkedHashSet<MeaningfulUseUser>();
-		Set<String> muuMap = new LinkedHashSet<String>();
+		Set<String> uniqueMuusFromFile = new LinkedHashSet<String>();
 		
 		BufferedReader reader = null;
 		CSVParser parser = null;
@@ -467,18 +467,18 @@ public class CertifiedProductController {
 						muu.setNumberOfUsers(numMeaningfulUseUsers);
 						muu.setCsvLineNumber(i);
 						// check if product number has already been updated
-						if(muuMap.contains(muu.getProductNumber())){
+						if(uniqueMuusFromFile.contains(muu.getProductNumber())){
 							throw new IOException();
 						}
 						muuSet.add(muu);
-						muuMap.add(muu.getProductNumber());
+						uniqueMuusFromFile.add(muu.getProductNumber());
 					} catch (NumberFormatException e){
 						muu.setProductNumber(chplProductNumber);
 						muu.setCsvLineNumber(i);
 						muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + currRecord.get(1).trim() + 
 								" with value " + muu.getProductNumber() + " is invalid. Please correct and upload a new csv.");
 						muuSet.add(muu);
-						muuMap.add(muu.getProductNumber());
+						uniqueMuusFromFile.add(muu.getProductNumber());
 					}
 					catch (IOException e){
 						muu.setProductNumber(chplProductNumber);
