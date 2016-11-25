@@ -432,7 +432,7 @@ public class CertifiedProductController {
 			throw new ValidationException("File must be a CSV document.");
 		}
 		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
-		Set<MeaningfulUseUser> muuSet = new LinkedHashSet<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muusToUpdate = new LinkedHashSet<MeaningfulUseUser>();
 		Set<String> uniqueMuusFromFile = new LinkedHashSet<String>();
 		
 		BufferedReader reader = null;
@@ -470,14 +470,14 @@ public class CertifiedProductController {
 						if(uniqueMuusFromFile.contains(muu.getProductNumber())){
 							throw new IOException();
 						}
-						muuSet.add(muu);
+						muusToUpdate.add(muu);
 						uniqueMuusFromFile.add(muu.getProductNumber());
 					} catch (NumberFormatException e){
 						muu.setProductNumber(chplProductNumber);
 						muu.setCsvLineNumber(i);
 						muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + currRecord.get(1).trim() + 
 								" with value " + muu.getProductNumber() + " is invalid. Please correct and upload a new csv.");
-						muuSet.add(muu);
+						muusToUpdate.add(muu);
 						uniqueMuusFromFile.add(muu.getProductNumber());
 					}
 					catch (IOException e){
@@ -485,7 +485,7 @@ public class CertifiedProductController {
 						muu.setCsvLineNumber(i);
 						muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + currRecord.get(1).trim() + 
 								" with value " + muu.getProductNumber() + " is invalid because it is a duplicate. Please correct and upload a new csv.");
-						muuSet.add(muu);
+						muusToUpdate.add(muu);
 					}
 				}
 			}
@@ -498,7 +498,7 @@ public class CertifiedProductController {
 		}
 		
 		try {
-			meaningfulUseUserResults = cpManager.updateMeaningfulUseUsers(muuSet);
+			meaningfulUseUserResults = cpManager.updateMeaningfulUseUsers(muusToUpdate);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		} catch (EntityCreationException e) {
