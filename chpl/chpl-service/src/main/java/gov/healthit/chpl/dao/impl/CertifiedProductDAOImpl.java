@@ -140,7 +140,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setCertificationEditionId(dto.getCertificationEditionId());
 		entity.setCertificationStatusId(dto.getCertificationStatusId());
 		entity.setProductVersionId(dto.getProductVersionId());
-		entity.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
 		
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
