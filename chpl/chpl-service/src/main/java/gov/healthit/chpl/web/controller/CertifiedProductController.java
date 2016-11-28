@@ -420,7 +420,7 @@ public class CertifiedProductController {
 	@ApiOperation(value="Upload a file to update the number of meaningful use users for each CHPL Product Number", 
 			notes="Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
 					+ " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
-	@RequestMapping(value="/uploadMeaningfulUse", method=RequestMethod.POST,
+	@RequestMapping(value="/meaningful_use_users/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
 	public @ResponseBody MeaningfulUseUserResults uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
 		if (file.isEmpty()) {
