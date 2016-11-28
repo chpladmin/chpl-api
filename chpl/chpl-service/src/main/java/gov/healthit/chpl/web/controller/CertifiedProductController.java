@@ -7,11 +7,9 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
@@ -475,16 +473,23 @@ public class CertifiedProductController {
 					} catch (NumberFormatException e){
 						muu.setProductNumber(chplProductNumber);
 						muu.setCsvLineNumber(i);
-						muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + currRecord.get(1).trim() + 
-								" with value " + muu.getProductNumber() + " is invalid. Please correct and upload a new csv.");
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_use\" with value \"" + currRecord.get(1).trim() + "\" is invalid. "
+								+ "Value in field \"num_meaningful_use\" must be an integer.");
 						muusToUpdate.add(muu);
 						uniqueMuusFromFile.add(muu.getProductNumber());
 					}
 					catch (IOException e){
 						muu.setProductNumber(chplProductNumber);
 						muu.setCsvLineNumber(i);
-						muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + currRecord.get(1).trim() + 
-								" with value " + muu.getProductNumber() + " is invalid because it is a duplicate. Please correct and upload a new csv.");
+						Integer dupLineNumber = null;
+						// get line number with duplicate chpl_product_number
+						for (MeaningfulUseUser entry: muusToUpdate) {
+						     if (entry.getProductNumber().equals(muu.getProductNumber())){
+						    	 dupLineNumber = entry.getCsvLineNumber();
+						     }
+						   }
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
+								+ "Duplicate \"chpl_product_number\" at line " + dupLineNumber);
 						muusToUpdate.add(muu);
 					}
 				}
@@ -507,7 +512,7 @@ public class CertifiedProductController {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} 
 		
 		return meaningfulUseUserResults;
 	}

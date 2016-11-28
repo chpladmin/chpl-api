@@ -24,12 +24,10 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
-import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -172,12 +170,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	
 	@Autowired
 	public ActivityManager activityManager;
-	
-	@Autowired
-	private CertificationResultDetailsDAO certificationResultDetailsDAO;
-
-	@Autowired
-	private CQMResultDetailsDAO cqmResultDetailsDAO;
 	
 	@Autowired
 	public CertifiedProductDetailsManager detailsManager;
@@ -1012,12 +1004,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				try{
 					// If bad input, add error for this MeaningfulUseUser and continue
 					if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())){
-						muu.setError("chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + muu.getNumberOfUsers() + 
-								" with value " + muu.getProductNumber() + " is invalid. Please correct and upload a new csv.");
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" has invalid value: \"" + muu.getProductNumber() + "\".");
 					}
 					else if(muu.getNumberOfUsers() == null){
-						muu.setError("num_meaningful_use at line " + muu.getCsvLineNumber() + " for chpl_product_number " + muu.getProductNumber() + 
-								" with value " + muu.getNumberOfUsers() + " is invalid. Please correct and upload a new csv.");
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_users\" has invalid value: \"" + muu.getNumberOfUsers() + "\".");
 					}
 					else{
 						CertifiedProductDTO dto = new CertifiedProductDTO();
@@ -1041,14 +1031,14 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							muu.setCertifiedProductId(returnDto.getId());
 							results.add(muu);
 						} catch (EntityRetrievalException e){
-							muu.setError("Could not update database for chpl_product_number " + muu.getProductNumber() + " and num_meaningful_users " + muu.getNumberOfUsers()
-							+ " on line number " + muu.getCsvLineNumber() + ". Please correct the invalid input.");
+							muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
+									+ "The provided \"chpl_product_number\" does not exist.");
 							errors.add(muu);
 						}
 					}
 				} catch (Exception e){	
-					muu.setError("Invalid input for chpl_product_number at line " + muu.getCsvLineNumber() + " with num_meaningful_use of " + muu.getNumberOfUsers() 
-					+ " with chpl_product_number value " + muu.getProductNumber() + ". Error message: " + e.getMessage());
+					muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""+ muu.getProductNumber() + "\" is invalid. "
+							+ "The provided \"chpl_product_number\" does not exist.");
 					errors.add(muu);
 				}
 			}
