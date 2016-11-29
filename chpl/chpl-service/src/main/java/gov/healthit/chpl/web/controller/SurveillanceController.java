@@ -510,6 +510,34 @@ public class SurveillanceController {
 					try {
 						SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
 						Surveillance pendingSurv = handler.handle();
+						
+						//perform additional checks if there are no errors in the uploaded surveillance already
+						if(pendingSurv.getErrorMessages() == null || pendingSurv.getErrorMessages().size() == 0) {
+							//check this pendingSurv to confirm the user has ACB permissions on the 
+							//appropriate ACB for the CHPL ID specified
+							CertifiedProductDTO surveilledProduct =  null;
+							try {
+								surveilledProduct = cpManager.getById(pendingSurv.getCertifiedProduct().getId());
+							} catch(EntityRetrievalException ex) {
+								pendingSurv.getErrorMessages().add("Unexpected error looking up certified product with id " + pendingSurv.getCertifiedProduct().getId());
+								logger.error("Could not look up certified product by id " + pendingSurv.getCertifiedProduct().getId());
+							} 
+							
+							if(surveilledProduct != null) {
+								CertificationBodyDTO owningAcb = null;
+								try {
+									owningAcb = acbManager.getById(surveilledProduct.getCertificationBodyId());
+								} catch(EntityRetrievalException ex) {
+									pendingSurv.getErrorMessages().add("Unexpected error looking up certification body with id " + surveilledProduct.getCertificationBodyId());
+									logger.error("Could not look up ACB by id " + surveilledProduct.getCertificationBodyId());
+								} catch(AccessDeniedException denied) {
+									pendingSurv.getErrorMessages().add("User does not have permission to add surveillance to " + pendingSurv.getCertifiedProduct().getChplProductNumber());
+									logger.error("User " + Util.getCurrentUser().getSubjectName() + 
+											" does not have access to the ACB with id " + 
+											surveilledProduct.getCertificationBodyId());
+								}
+							} 
+						}
 						pendingSurvs.add(pendingSurv);
 					}
 					catch(InvalidArgumentsException ex) {
