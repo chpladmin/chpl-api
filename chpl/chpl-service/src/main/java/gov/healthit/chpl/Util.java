@@ -6,8 +6,6 @@ import java.security.NoSuchAlgorithmException;
 
 public class Util {
 	
-	
-	
     public static String md5(String input) {
         String md5 = null;
         if(null == input) {

@@ -25,6 +25,7 @@ public class CertifiedProductDTO {
 	private Long practiceTypeId;
 	private Long productClassificationTypeId;
 	private Long productVersionId;
+	private Long meaningfulUseUsers;
 	private String reportFileLocation;
 	private String sedReportFileLocation;
 	private String sedIntendedUserDescription;
@@ -57,6 +58,7 @@ public class CertifiedProductDTO {
 		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
+		this.meaningfulUseUsers = entity.getMeaningfulUseUsers();
 		this.practiceTypeId = entity.getPracticeTypeId();
 		this.productClassificationTypeId = entity.getProductClassificationTypeId();
 		this.productVersionId = entity.getProductVersionId();
@@ -135,6 +137,12 @@ public class CertifiedProductDTO {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+	public Long getMeaningfulUseUsers() {
+		return meaningfulUseUsers;
+	}
+	public void setMeaningfulUseUsers(Long meaningfulUseUsers) {
+		this.meaningfulUseUsers = meaningfulUseUsers;
 	}
 	public Long getPracticeTypeId() {
 		return practiceTypeId;

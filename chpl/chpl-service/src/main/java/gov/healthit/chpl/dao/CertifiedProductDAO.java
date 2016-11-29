@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CertifiedProductDAO {
@@ -10,6 +11,8 @@ public interface CertifiedProductDAO {
 	public CertifiedProductDTO create(CertifiedProductDTO product) throws EntityCreationException;
 
 	public CertifiedProductDTO update(CertifiedProductDTO product) throws EntityRetrievalException;
+	
+	public CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO product) throws EntityRetrievalException, IOException;
 	
 	public void delete(Long productId);
 	
@@ -22,6 +25,7 @@ public interface CertifiedProductDAO {
 	public CertifiedProductDTO getByChplNumber(String chplProductNumber);
 	public CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException;
 	
+	public List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers);
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId);
 	public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds);
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
