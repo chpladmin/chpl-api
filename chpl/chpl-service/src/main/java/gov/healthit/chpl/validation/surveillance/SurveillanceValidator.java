@@ -272,8 +272,8 @@ public class SurveillanceValidator {
 								surv.getErrorMessages().add("Number of sites passed is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
 							}
 							
-							if(nc.getTotalSites() == null || nc.getTotalSites().intValue() < 0) {
-								surv.getErrorMessages().add("Total number of sites is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
+							if(nc.getTotalSites() == null || nc.getTotalSites().intValue() <= 0) {
+								surv.getErrorMessages().add("Total number of sites is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + ". It must be greater than 0.");
 							}
 						} else if(surv.getType() != null && surv.getType().getName() != null && 
 								!surv.getType().getName().equalsIgnoreCase("Randomized")) {
