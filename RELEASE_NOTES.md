@@ -5,8 +5,11 @@ _Date TBD_
 
 ### Features Added
 * Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details. 
+* Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
 
----
+### Bugs Fixed
+
+--- 
 
 ## Version 6.0.1
 _17 November 2016_

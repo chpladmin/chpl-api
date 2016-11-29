@@ -1,18 +1,17 @@
 package gov.healthit.chpl.manager;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -20,9 +19,11 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 public interface CertifiedProductManager {
 
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
+	public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException;
 	public boolean chplIdExists(String id) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getAll();
@@ -33,6 +34,8 @@ public interface CertifiedProductManager {
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) throws EntityRetrievalException;
+	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;

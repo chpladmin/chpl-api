@@ -1,8 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -10,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -65,6 +62,10 @@ public class CertifiedProductDetailsEntity {
 	@Basic(optional = true) 
     @Column(name = "sed_intended_user_description")
     private String sedIntendedUserDescription;
+	
+	@Basic(optional = true)
+	@Column(name ="meaningful_use_users")
+	private Long meaningfulUseUsers;
 
 	@Basic(optional = true) 
     @Column(name = "sed_testing_end")
@@ -603,6 +604,14 @@ public class CertifiedProductDetailsEntity {
 
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+	
+	public Long getMeaningfulUseUsers(){
+		return meaningfulUseUsers;
+	}
+	
+	public void setMeaningfulUseUsers(Long meaningfulUseUsers){
+		this.meaningfulUseUsers = meaningfulUseUsers;
 	}
 
 	public String getTransparencyAttestationUrl() {

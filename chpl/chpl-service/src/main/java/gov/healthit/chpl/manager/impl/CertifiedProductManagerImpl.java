@@ -1,8 +1,10 @@
 package gov.healthit.chpl.manager.impl;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -26,8 +28,6 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -59,6 +59,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -71,7 +72,6 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationEventDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -129,6 +129,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
@@ -171,12 +172,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	public ActivityManager activityManager;
 	
 	@Autowired
-	private CertificationResultDetailsDAO certificationResultDetailsDAO;
-
-	@Autowired
-	private CQMResultDetailsDAO cqmResultDetailsDAO;
-	
-	@Autowired
 	public CertifiedProductDetailsManager detailsManager;
 		
 	@Autowired 
@@ -191,6 +186,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Transactional(readOnly = true)
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		CertifiedProductDTO result = cpDao.getById(id);
+		return result;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
+		CertifiedProductDTO result = cpDao.getByChplNumber(chplProductNumber);
 		return result;
 	}
 	
@@ -986,6 +988,68 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			foundEvent.setEventDate(newCertDate);
 			eventDao.update(foundEvent);
 		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	@Transactional(readOnly = false)
+	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
+			throws EntityCreationException, EntityRetrievalException, IOException {
+		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
+		List<MeaningfulUseUser> errors = new ArrayList<MeaningfulUseUser>();
+		List<MeaningfulUseUser> results = new ArrayList<MeaningfulUseUser>();
+		
+		for(MeaningfulUseUser muu : meaningfulUseUserSet){
+			if(muu.getError() == null){
+				try{
+					// If bad input, add error for this MeaningfulUseUser and continue
+					if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())){
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" has invalid value: \"" + muu.getProductNumber() + "\".");
+					}
+					else if(muu.getNumberOfUsers() == null){
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_users\" has invalid value: \"" + muu.getNumberOfUsers() + "\".");
+					}
+					else{
+						CertifiedProductDTO dto = new CertifiedProductDTO();
+						// check if 2014 edition CHPL Product Number exists
+						if(cpDao.getByChplNumber(muu.getProductNumber()) != null){
+							dto.setChplProductNumber(muu.getProductNumber());
+							dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+						}
+						// check if 2015 edition CHPL Product Number exists
+						else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null){
+							dto.setChplProductNumber(muu.getProductNumber());
+							dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+						}
+						// If neither exist, add error
+						else{
+							throw new EntityRetrievalException();
+						}
+						
+						try{
+							CertifiedProductDTO returnDto = cpDao.updateMeaningfulUseUsers(dto);
+							muu.setCertifiedProductId(returnDto.getId());
+							results.add(muu);
+						} catch (EntityRetrievalException e){
+							muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
+									+ "The provided \"chpl_product_number\" does not exist.");
+							errors.add(muu);
+						}
+					}
+				} catch (Exception e){	
+					muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""+ muu.getProductNumber() + "\" is invalid. "
+							+ "The provided \"chpl_product_number\" does not exist.");
+					errors.add(muu);
+				}
+			}
+			else{
+				errors.add(muu);
+			}
+		}
+		
+		meaningfulUseUserResults.setMeaningfulUseUsers(results);
+		meaningfulUseUserResults.setErrors(errors);
+		return meaningfulUseUserResults;
 	}
 	
 	/**
