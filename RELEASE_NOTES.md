@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features Added
+* Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
+
+### Bugs Fixed
+
+--- 
+
 ## Version 6.0.1
 _17 November 2016_
 
