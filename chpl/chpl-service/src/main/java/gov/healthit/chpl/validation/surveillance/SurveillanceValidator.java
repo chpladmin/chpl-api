@@ -149,7 +149,7 @@ public class SurveillanceValidator {
 				}
 				
 				//the surveillance requirement validation is different depending on the requirement type
-				if(req.getType() != null) {
+				if(req.getType() != null && !StringUtils.isEmpty(req.getType().getName())) {
 					if(req.getType().getName().equalsIgnoreCase(CRITERION_REQUIREMENT_TYPE) && 
 							surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getEdition() != null) {
 						//requirement has to be a certification criterion from the same year as the product
@@ -168,6 +168,8 @@ public class SurveillanceValidator {
 									" or " + RequirementTypeEnum.K2.getName());
 						}
 					}
+				} else {
+					surv.getErrorMessages().add("The requirement " + req.getRequirement() + " cannot be blank in the SURVEILLED_REQUIREMENT_TYPE column.");
 				}
 				
 				if(surv.getEndDate() != null) {
