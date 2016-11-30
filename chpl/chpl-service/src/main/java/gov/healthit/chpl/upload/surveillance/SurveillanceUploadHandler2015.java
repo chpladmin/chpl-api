@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
@@ -26,6 +29,10 @@ import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.SurveillanceEntity;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("surveillanceUploadHandler2015")
@@ -37,6 +44,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 	private static final String SUBSEQUENT_ROW = "SUBELEMENT";
 	
 	@Autowired CertifiedProductDAO cpDao;
+	@Autowired SurveillanceDAO survDao;
 	
 	protected SimpleDateFormat dateFormatter;
 	private List<CSVRecord> record;
@@ -47,7 +55,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		dateFormatter = new SimpleDateFormat(DATE_FORMAT);
 	}
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Surveillance handle() throws InvalidArgumentsException {
 		Surveillance surv = new Surveillance();
 		
@@ -55,32 +63,35 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(0).trim();
 			if(!StringUtils.isEmpty(statusStr) && statusStr.toUpperCase().matches(FIRST_ROW_REGEX)) {
-				parseSurveillanceDetails(record, surv);
+				parseSurveillanceDetails(record, surv, statusStr.equalsIgnoreCase("UPDATE"));
 			}
 		}
 		
-		//get surveilled requirements
-		for(CSVRecord record : getRecord()) {
-			String statusStr = record.get(0).trim();
-			if(!StringUtils.isEmpty(statusStr) && 
-					(statusStr.toUpperCase().matches(FIRST_ROW_REGEX) || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
-				parseSurveilledRequirements(record, surv);
+		//if we got errors here, don't parse the rest of it
+		if(surv.getErrorMessages() == null || surv.getErrorMessages().size() == 0) {
+			//get surveilled requirements
+			for(CSVRecord record : getRecord()) {
+				String statusStr = record.get(0).trim();
+				if(!StringUtils.isEmpty(statusStr) && 
+						(statusStr.toUpperCase().matches(FIRST_ROW_REGEX) || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
+					parseSurveilledRequirements(record, surv);
+				}
 			}
-		}
-			
-		//get nonconformities
-		for(CSVRecord record : getRecord()) {
-			String statusStr = record.get(0).trim();
-			if(!StringUtils.isEmpty(statusStr) && 
-					(statusStr.toUpperCase().matches(FIRST_ROW_REGEX) || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
-				parseNonconformities(record, surv);
+				
+			//get nonconformities
+			for(CSVRecord record : getRecord()) {
+				String statusStr = record.get(0).trim();
+				if(!StringUtils.isEmpty(statusStr) && 
+						(statusStr.toUpperCase().matches(FIRST_ROW_REGEX) || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
+					parseNonconformities(record, surv);
+				}
 			}
 		}
 				
 		return surv;
 	}
 
-	public void parseSurveillanceDetails(CSVRecord record, Surveillance surv) {
+	public void parseSurveillanceDetails(CSVRecord record, Surveillance surv, boolean isUpdate) {
 		int colIndex = 1;
 		
 		//find the chpl product this surveillance will be attached to
@@ -116,10 +127,24 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		
 		if(surv.getCertifiedProduct() == null || surv.getCertifiedProduct().getId() == null) {
 			surv.getErrorMessages().add("Could not find Certified Product with unique id " + chplId);	
+			return;
 		}
 		
 		//find the surveillance id in case this is an update
 		String survFriendlyId = record.get(colIndex++).trim();
+		if(isUpdate && StringUtils.isEmpty(survFriendlyId)) {
+			logger.error("Surveillance UPDATE specified but no surveillance ID was found");
+			surv.getErrorMessages().add("No surveillance ID was specified for surveillance update on certified product " + chplId);
+			return;
+		} else if (isUpdate && 
+				survDao.getSurveillanceByCertifiedProductAndFriendlyId(
+						surv.getCertifiedProduct().getId(), survFriendlyId) == null) {
+			logger.error("Could not find existing surveillance for update with certified product id " + 
+					surv.getCertifiedProduct().getId() + " and friendly id " + survFriendlyId);
+			surv.getErrorMessages().add("No surveillance exists for certified product " + 
+					surv.getCertifiedProduct().getChplProductNumber() + " and surveillance id " + survFriendlyId);
+			return;
+		}
 		surv.setSurveillanceIdToReplace(survFriendlyId);
 		
 		//surveillance begin date
