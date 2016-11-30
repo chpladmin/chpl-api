@@ -8,6 +8,7 @@ _Date TBD_
 * Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
 
 ### Bugs Fixed
+* Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
 
 --- 
 

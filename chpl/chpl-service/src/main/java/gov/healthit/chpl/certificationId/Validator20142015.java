@@ -110,175 +110,70 @@ public class Validator20142015 extends Validator {
 	// required criteria to the sets with the least required criteria.
 	//**********************************************************************
 	protected boolean isCriteriaTOCValid() {
-
-		// (xvi) 45 CFR 170.314(b)(1), (b)(2), (b)(8), (h)(1), 170.315(b)(1), and 170.315(h)(1).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)") 
-			&& this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 6);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 6);
-			return true;
+		int tocCriteriaMet = 0;
+		int tocCriteriaRequired = 2; //minimum 2 criteria required
+		
+		if(this.criteriaMet.containsKey("170.314 (b)(1)")) {
+			tocCriteriaMet++;
+			if(this.criteriaMet.containsKey("170.314 (b)(2)")) {
+				tocCriteriaMet++;
+				
+				if(this.criteriaMet.containsKey("170.314 (h)(1)")) {
+					tocCriteriaRequired++;
+					tocCriteriaMet++;
+				}
+				if(this.criteriaMet.containsKey("170.314 (b)(8)")) {
+					tocCriteriaRequired++;
+					tocCriteriaMet++;
+				}
+				if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
+					tocCriteriaRequired++;
+					tocCriteriaMet++;
+				} 
+				if(this.criteriaMet.containsKey("170.315 (b)(1)")) {
+					tocCriteriaRequired++;
+					tocCriteriaMet++;
+					if(this.criteriaMet.containsKey("170.315 (h)(1)")) {
+						//(xvi) 45 CFR 170.314(b)(1), (b)(2), (b)(8), (h)(1), 170.315(b)(1), and 170.315(h)(1).
+						tocCriteriaRequired++;
+						tocCriteriaMet++;
+					}
+				}
+			}
+		} else if(this.criteriaMet.containsKey("170.314 (b)(8)")) {
+			tocCriteriaMet++;
+			if(this.criteriaMet.containsKey("170.314 (h)(1)")) {
+				tocCriteriaMet++;
+				
+				if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
+					tocCriteriaRequired++;
+					tocCriteriaMet++;
+				} else if(this.criteriaMet.containsKey("170.315 (b)(1)")) {
+					tocCriteriaRequired++;
+					tocCriteriaMet++;
+				}
+			} else if(this.criteriaMet.containsKey("170.315 (b)(1)")) {
+				tocCriteriaMet++;
+			}
+		} else if(this.criteriaMet.containsKey("170.315 (b)(1)")) {
+			tocCriteriaMet++;
+			if(this.criteriaMet.containsKey("170.314 (h)(1)")) {
+				tocCriteriaMet++;
+			} else if(this.criteriaMet.containsKey("170.315 (h)(1)")) {
+				tocCriteriaMet++;
+				if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
+					tocCriteriaRequired++;
+					tocCriteriaMet++;
+				}
+			} else if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
+				tocCriteriaMet++;
+			}
 		}
 		
-		// (xvii) 45 CFR 170.314(b)(1), (b)(2), (b)(8), (h)(1), 170.315(b)(1), and 170.315(h)(2).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)") 
-			&& this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(2)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 6);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 6);
-			return true;
-		}
-	
-		// (ix) 45 CFR 170.314(b)(1), (b)(2), (b)(8), (h)(1), and 170.315(h)(2).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)") 
-			&& this.criteriaMet.containsKey("170.315 (h)(2)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 5);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 5);
-			return true;
-		}
+		this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + tocCriteriaRequired);
+		this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + tocCriteriaMet);
 		
-		// (xiv) 45 CFR 170.314(b)(1), (b)(2),(b)(8), (h)(1), and 170.315(b)(1).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)") 
-			&& this.criteriaMet.containsKey("170.315 (b)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 5);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 5);
-			return true;
-		}
-
-		// (iv) 45 CFR 170.314(b)(1), (b)(2), (b)(8), and (h)(1).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 4);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 4);
-			return true;
-		}
-		
-		// (vii) 45 CFR 170.314(b)(1), (b)(2), (h)(1), and 170.315(h)(2).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (h)(1)") && this.criteriaMet.containsKey("170.315 (h)(2)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 4);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 4);
-			return true;
-		}
-		
-		// (viii) 45 CFR 170.314(b)(1), (b)(2), (b)(8), and 170.315(h)(2).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.315 (h)(2)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 4);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 4);
-			return true;
-		}
-		
-		// (xii) 45 CFR 170.314(b)(1), (b)(2), (h)(1), and 170.315(b)(1). 
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (h)(1)") && this.criteriaMet.containsKey("170.315 (b)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 4);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 4);
-			return true;
-		}
-		
-		// (xiii) 45 CFR 170.314(b)(1), (b)(2), (b)(8), and 170.315(b)(1).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.315 (b)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 4);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 4);
-			return true;
-		}
-
-		// (ii) 45 CFR 170.314(b)(1), (b)(2), and (h)(1).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (h)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 3);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 3);
-			return true;
-		}
-
-		// (iii) 45 CFR 170.314(b)(1), (b)(2), and (b)(8).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.314 (b)(8)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 3);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 3);
-			return true;
-		}
-		
-		// (vi) 45 CFR 170.314(b)(1), (b)(2), and 170.315(h)(2).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.315 (h)(2)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 3);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 3);
-			return true;
-		}
-		
-		// (x) 45 CFR 170.314(b)(8), (h)(1), and 170.315(h)(2).
-		if (this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")
-			&& this.criteriaMet.containsKey("170.315 (h)(2)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 3);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 3);
-			return true;
-		}
-		
-		// (xi) 45 CFR 170.314(b)(1), (b)(2), and 170.315(b)(1).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")
-			&& this.criteriaMet.containsKey("170.315 (b)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 3);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 3);
-			return true;
-		}
-		
-		// (xv) 45 CFR 170.314(b)(8), (h)(1), and 170.315(b)(1).
-		if (this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")
-			&& this.criteriaMet.containsKey("170.315 (b)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 3);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 3);
-			return true;
-		}
-		
-		// (xxi) 45 CFR 170.315(b)(1), (h)(1), and (h)(2)
-		if (this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(1)")
-			&& this.criteriaMet.containsKey("170.315 (h)(2)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 3);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 3);
-			return true;
-		}
-
-		// (v) 45 CFR 170.314(b)(8) and (h)(1).
-		if (this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 2);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 2);
-			return true;
-		}
-
-		// (i) 45 CFR 170.314(b)(1) and (2).
-		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 2);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 2);
-			return true;
-		}
-
-		// (xviii) 45 CFR 170.314(h)(1) and 170.315(b)(1).
-		if (this.criteriaMet.containsKey("170.314 (h)(1)") && this.criteriaMet.containsKey("170.315 (b)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 2);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 2);
-			return true;
-		}
-		
-		// (xix) 45 CFR 170.315(b)(1) and (h)(1).
-		if (this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(1)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 2);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 2);
-			return true;
-		}
-		
-		// (xx) 45 CFR 170.315(b)(1) and (h)(2).
-		if (this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(2)")) {
-			this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + 2);
-			this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 2);
-			return true;
-		}
-		
-		return false;
+		return tocCriteriaMet >= tocCriteriaRequired;
 	}
 	
 	//**********************************************************************
