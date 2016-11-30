@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -417,6 +418,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	
 	public SurveillanceType findSurveillanceType(String type) {
 		logger.debug("Searchig for surveillance type '" + type + "'.");
+		if(StringUtils.isEmpty(type)) {
+			return null;
+		}
 		Query query = entityManager.createQuery(
 				"from SurveillanceTypeEntity where UPPER(name) LIKE :name and deleted <> true", 
 				SurveillanceTypeEntity.class);
@@ -435,6 +439,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	
 	public SurveillanceType findSurveillanceType(Long id) {
 		logger.debug("Searchig for surveillance type with id '" + id + "'.");
+		if(id == null) {
+			return null;
+		}
 		Query query = entityManager.createQuery(
 				"from SurveillanceTypeEntity where id = :id and deleted <> true", 
 				SurveillanceTypeEntity.class);
@@ -465,6 +472,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	
 	public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
 		logger.debug("Searchig for surveillance requirement type '" + type + "'.");
+		if(StringUtils.isEmpty(type)) {
+			return null;
+		}
 		Query query = entityManager.createQuery(
 				"from SurveillanceRequirementTypeEntity where UPPER(name) LIKE :name and deleted <> true", 
 				SurveillanceRequirementTypeEntity.class);
@@ -483,6 +493,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	
 	public SurveillanceRequirementType findSurveillanceRequirementType(Long id) {
 		logger.debug("Searchig for surveillance requirement type by id '" + id + "'.");
+		if(id == null) {
+			return null;
+		}
 		Query query = entityManager.createQuery(
 				"from SurveillanceRequirementTypeEntity where id = :id and deleted <> true", 
 				SurveillanceRequirementTypeEntity.class);
@@ -513,6 +526,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	
 	public SurveillanceResultType findSurveillanceResultType(String type) {
 		logger.debug("Searching for surveillance result type '" + type + "'.");
+		if(StringUtils.isEmpty(type)) {
+			return null;
+		}
 		Query query = entityManager.createQuery(
 				"from SurveillanceResultTypeEntity where UPPER(name) LIKE :name and deleted <> true", 
 				SurveillanceResultTypeEntity.class);
@@ -531,6 +547,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	
 	public SurveillanceResultType findSurveillanceResultType(Long id) {
 		logger.debug("Searching for surveillance result type by id '" + id + "'.");
+		if(id == null) {
+			return null;
+		}
 		Query query = entityManager.createQuery(
 				"from SurveillanceResultTypeEntity where id = :id and deleted <> true", 
 				SurveillanceResultTypeEntity.class);
@@ -561,6 +580,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
 		logger.debug("Searching for nonconformity status type '" + type + "'.");
+		if(StringUtils.isEmpty(type)) {
+			return null;
+		}
 		Query query = entityManager.createQuery(
 				"from NonconformityStatusEntity where UPPER(name) LIKE :name and deleted <> true", 
 				NonconformityStatusEntity.class);
@@ -579,6 +601,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id) {
 		logger.debug("Searching for nonconformity status type by id '" + id + "'.");
+		if(id == null) {
+			return null;
+		}
 		Query query = entityManager.createQuery(
 				"from NonconformityStatusEntity where id = :id and deleted <> true", 
 				NonconformityStatusEntity.class);
