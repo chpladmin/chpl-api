@@ -113,38 +113,33 @@ public class Validator20142015 extends Validator {
 		int tocCriteriaMet = 0;
 		int tocCriteriaRequired = 2; //minimum 2 criteria required
 		
-		if(this.criteriaMet.containsKey("170.314 (b)(1)")) {
-			tocCriteriaMet++;
-			if(this.criteriaMet.containsKey("170.314 (b)(2)")) {
-				tocCriteriaMet++;
-				
-				if(this.criteriaMet.containsKey("170.314 (h)(1)")) {
-					tocCriteriaRequired++;
-					tocCriteriaMet++;
-				}
-				if(this.criteriaMet.containsKey("170.314 (b)(8)")) {
-					tocCriteriaRequired++;
-					tocCriteriaMet++;
-				}
-				if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
-					tocCriteriaRequired++;
-					tocCriteriaMet++;
-				} 
-				if(this.criteriaMet.containsKey("170.315 (b)(1)")) {
-					tocCriteriaRequired++;
-					tocCriteriaMet++;
-					if(this.criteriaMet.containsKey("170.315 (h)(1)")) {
-						//(xvi) 45 CFR 170.314(b)(1), (b)(2), (b)(8), (h)(1), 170.315(b)(1), and 170.315(h)(1).
-						tocCriteriaRequired++;
-						tocCriteriaMet++;
-					}
-				}
-			}
-		} else if(this.criteriaMet.containsKey("170.314 (b)(8)")) {
-			tocCriteriaMet++;
+		if(this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)")) {
+			tocCriteriaMet += 2;
+			
 			if(this.criteriaMet.containsKey("170.314 (h)(1)")) {
+				tocCriteriaRequired++;
 				tocCriteriaMet++;
-				
+			}
+			if(this.criteriaMet.containsKey("170.314 (b)(8)")) {
+				tocCriteriaRequired++;
+				tocCriteriaMet++;
+			}
+			if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
+				tocCriteriaRequired++;
+				tocCriteriaMet++;
+			} 
+			if(this.criteriaMet.containsKey("170.315 (b)(1)")) {
+				tocCriteriaRequired++;
+				tocCriteriaMet++;
+			}
+			if(this.criteriaMet.containsKey("170.315 (h)(1)")) {
+				//(xvi) 45 CFR 170.314(b)(1), (b)(2), (b)(8), (h)(1), 170.315(b)(1), and 170.315(h)(1).
+				tocCriteriaRequired++;
+				tocCriteriaMet++;
+			}
+		} else if((this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) || 
+				(this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.315 (b)(1)"))) {
+				tocCriteriaMet+=2;
 				if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
 					tocCriteriaRequired++;
 					tocCriteriaMet++;
@@ -152,20 +147,12 @@ public class Validator20142015 extends Validator {
 					tocCriteriaRequired++;
 					tocCriteriaMet++;
 				}
-			} else if(this.criteriaMet.containsKey("170.315 (b)(1)")) {
-				tocCriteriaMet++;
-			}
-		} else if(this.criteriaMet.containsKey("170.315 (b)(1)")) {
-			tocCriteriaMet++;
-			if(this.criteriaMet.containsKey("170.314 (h)(1)")) {
-				tocCriteriaMet++;
-			} else if(this.criteriaMet.containsKey("170.315 (h)(1)")) {
-				tocCriteriaMet++;
-				if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
-					tocCriteriaRequired++;
-					tocCriteriaMet++;
-				}
-			} else if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
+		} else if((this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.314 (h)(1)")) || 
+				(this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(1)")) || 
+				(this.criteriaMet.containsKey("170.315 (b)(1)") && this.criteriaMet.containsKey("170.315 (h)(2)"))) {
+			tocCriteriaMet+=2;
+			if(this.criteriaMet.containsKey("170.315 (h)(2)")) {
+				tocCriteriaRequired++;
 				tocCriteriaMet++;
 			}
 		}
