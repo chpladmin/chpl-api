@@ -33,6 +33,7 @@ public class CertifiedProductSearchDetails {
 	private Integer countCorrectiveActionPlans;
 	private Integer countCurrentCorrectiveActionPlans;
 	private Integer countClosedCorrectiveActionPlans;
+	private List<Surveillance> surveillance = new ArrayList<Surveillance>();
 	private Boolean ics;
 	private Boolean accessibilityCertified;
 	private String productAdditionalSoftware;
@@ -275,5 +276,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setVersion(ProductVersion version) {
 		this.version = version;
+	}
+	public List<Surveillance> getSurveillance() {
+		return surveillance;
+	}
+	public void setSurveillance(List<Surveillance> surveillance) {
+		this.surveillance = surveillance;
 	}
 }

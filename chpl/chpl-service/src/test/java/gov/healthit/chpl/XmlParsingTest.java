@@ -92,4 +92,37 @@ public class XmlParsingTest {
 			fail("Cannot parse " + floatStr + " as float.");
 		}
 	}
+	
+	@Test
+	public void coerceCrtierionNumber() {
+		String input = "170.315 (a)(1)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " 170.315 (A)(1)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " 170.315(A)(1)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " 170.315  (A)(1)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " KATY EKEY";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " 170.523(a)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+	}
 }

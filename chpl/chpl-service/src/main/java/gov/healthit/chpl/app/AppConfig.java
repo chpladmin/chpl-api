@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		"gov.healthit.chpl.entity.**",
 		"gov.healthit.chpl.auth.manager.**",
 		"gov.healthit.chpl.manager.**",
+		"gov.healthit.chpl.upload.**",
+		"gov.healthit.chpl.validation.**",
 		"gov.healthit.chpl.app.**"}, 
 	lazyInit=true,
 	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
