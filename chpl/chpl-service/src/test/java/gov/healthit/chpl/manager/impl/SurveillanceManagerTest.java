@@ -1,10 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
-import static org.junit.Assert.assertNotSame;
-
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -23,18 +20,14 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
-import gov.healthit.chpl.dao.impl.ApiKeyActivityDAOImpl;
-import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
@@ -43,10 +36,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
-import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.entity.ApiKeyActivityEntity;
-import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import junit.framework.TestCase;
 

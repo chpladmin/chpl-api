@@ -1,9 +1,9 @@
 package gov.healthit.chpl.dao;
 
 
-import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
-
 import java.util.List;
+
+import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 
 public interface CertifiedProductQmsStandardDAO {
 	

@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.hibernate.validator.internal.util.privilegedactions.GetMethodFromPropertyName;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;

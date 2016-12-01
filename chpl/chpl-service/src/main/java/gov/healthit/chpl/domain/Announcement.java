@@ -1,7 +1,7 @@
 package gov.healthit.chpl.domain;
-import gov.healthit.chpl.dto.AnnouncementDTO;
-
 import java.util.Date;
+
+import gov.healthit.chpl.dto.AnnouncementDTO;
 
 
 public class Announcement{

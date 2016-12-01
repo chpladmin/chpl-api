@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.lang.StringBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -16,12 +15,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.CertificationIdDAO;
-import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
+import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity;
 import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.entity.CertificationIdProductMapEntity;

@@ -3,9 +3,6 @@ package gov.healthit.chpl.web.controller.results;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public class CertificationIdVerifyResults {
 

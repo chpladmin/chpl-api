@@ -1,19 +1,19 @@
 package gov.healthit.chpl.manager;
 
 
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
-
 import java.util.List;
 
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 
 
 public interface TestingLabManager {

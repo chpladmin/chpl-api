@@ -6,8 +6,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
 
 public interface DeveloperManager {
 	public List<DeveloperDTO> getAll();

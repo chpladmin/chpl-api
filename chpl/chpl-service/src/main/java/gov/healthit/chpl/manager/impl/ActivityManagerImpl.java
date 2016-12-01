@@ -1,24 +1,5 @@
 package gov.healthit.chpl.manager.impl;
 
-import gov.healthit.chpl.JSONUtils;
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.json.User;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.dao.ActivityDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
-import gov.healthit.chpl.domain.ActivityEvent;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.ProductActivityEvent;
-import gov.healthit.chpl.domain.UserActivity;
-import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.manager.ActivityManager;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +19,25 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.healthit.chpl.JSONUtils;
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.json.User;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.ActivityDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.ProductActivityEvent;
+import gov.healthit.chpl.domain.UserActivity;
+import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.manager.ActivityManager;
 
 @Service
 public class ActivityManagerImpl implements ActivityManager {

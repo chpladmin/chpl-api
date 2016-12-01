@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 

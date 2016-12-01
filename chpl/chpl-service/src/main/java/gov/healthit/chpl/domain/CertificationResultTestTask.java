@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.web.controller.CertifiedProductController;
 
 public class CertificationResultTestTask {
 	private static final Logger logger = LogManager.getLogger(CertificationResultTestTask.class);

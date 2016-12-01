@@ -1,7 +1,7 @@
 package gov.healthit.chpl.dto;
-import gov.healthit.chpl.entity.AnnouncementEntity;
-
 import java.util.Date;
+
+import gov.healthit.chpl.entity.AnnouncementEntity;
 
 
 public class AnnouncementDTO{

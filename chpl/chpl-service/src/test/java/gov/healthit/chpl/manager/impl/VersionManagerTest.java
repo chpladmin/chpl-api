@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -62,6 +63,7 @@ public class VersionManagerTest extends TestCase {
 	//we're missing the email properties but i don't think we want to 
 	//have one sent anyway.. so excluding that test.
 	@Test
+	@Transactional
 	@Rollback
 	@Ignore
 	public void testAllowedToUpdateVersionWithActiveDeveloper() 
@@ -83,6 +85,7 @@ public class VersionManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback
 	public void testNotAllowedToUpdateVersionWithInactiveDeveloper() 
 			throws EntityRetrievalException, JsonProcessingException {

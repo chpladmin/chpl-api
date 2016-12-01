@@ -1,9 +1,9 @@
 package gov.healthit.chpl.dto;
 
 
-import gov.healthit.chpl.entity.CertificationEventEntity;
-
 import java.util.Date;
+
+import gov.healthit.chpl.entity.CertificationEventEntity;
 
 public class CertificationEventDTO {
 	

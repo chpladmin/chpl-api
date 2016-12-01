@@ -1,7 +1,5 @@
 package gov.healthit.chpl.manager.impl;
 
-import static org.junit.Assert.assertNotSame;
-
 import java.util.Date;
 import java.util.List;
 
@@ -339,7 +337,6 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
-	// [region] Tests for getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli)
 	/** Description: Tests that the 
 	 * getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli) 
 	 * returns a list of activities for the page equivalent to the pageSize
@@ -347,8 +344,7 @@ public class ApiKeyManagerTest extends TestCase {
 	 * Assumptions:
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 * */
-	//@Transactional
-	//@Rollback(true)
+	@Transactional
 	@Test
 	public void test_getApiKeyActivity_pageSize_numActivitiesMatchesPageSize() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -760,7 +756,6 @@ public class ApiKeyManagerTest extends TestCase {
 			}
 		}
 	}
-	// [endRegion]
 	
 	@Transactional
 	@Rollback(true)
@@ -801,6 +796,5 @@ public class ApiKeyManagerTest extends TestCase {
 		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
-	// [endRegion]
 	
 }

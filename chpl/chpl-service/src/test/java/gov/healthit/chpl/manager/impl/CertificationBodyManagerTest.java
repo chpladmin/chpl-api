@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -56,6 +58,7 @@ public class CertificationBodyManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetUsersOnAcb() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationBodyDTO acb = acbDao.getById(-3L);
@@ -66,6 +69,8 @@ public class CertificationBodyManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testAddReadUserToAcb() throws UserRetrievalException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -87,6 +92,8 @@ public class CertificationBodyManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testDeleteUserFromAcb() throws UserRetrievalException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 

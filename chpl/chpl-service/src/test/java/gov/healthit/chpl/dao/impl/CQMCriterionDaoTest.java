@@ -1,22 +1,17 @@
 package gov.healthit.chpl.dao.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
-
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.dao.CQMCriterionDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,6 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.CQMCriterionDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CQMCriterionDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -54,6 +57,7 @@ public class CQMCriterionDaoTest {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testCreate() throws EntityCreationException, EntityRetrievalException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -104,6 +108,7 @@ public class CQMCriterionDaoTest {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testUpdate() throws EntityCreationException, EntityRetrievalException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -169,6 +174,7 @@ public class CQMCriterionDaoTest {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testDelete() throws EntityCreationException, EntityRetrievalException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);

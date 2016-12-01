@@ -2,18 +2,9 @@ package gov.healthit.chpl.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import gov.healthit.chpl.auth.authentication.Authenticator;
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
-import gov.healthit.chpl.auth.manager.UserManager;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.web.controller.UserManagementController;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,10 +30,19 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+
+import gov.healthit.chpl.auth.authentication.Authenticator;
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
+import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.web.controller.UserManagementController;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -58,9 +58,6 @@ public class UserManagementSecurityTest {
 	private MockMvc mockMvc;
 	
 	private static JWTAuthenticatedUser adminUser;
-	
-	@Autowired
-	private WebApplicationContext webApplicationContext;
 	
 	@Autowired
 	private Authenticator userAuthenticator;
@@ -196,6 +193,11 @@ public class UserManagementSecurityTest {
 		
 		Authentication authenticator = new Authentication() {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1222529477975713400L;
+
 			@Override
 			public Collection<? extends GrantedAuthority> getAuthorities() {
 				List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();

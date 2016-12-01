@@ -7,17 +7,6 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ApiKey;
-import gov.healthit.chpl.domain.ApiKeyActivity;
-import gov.healthit.chpl.domain.ApiKeyRegistration;
-import gov.healthit.chpl.dto.ApiKeyDTO;
-import gov.healthit.chpl.manager.ApiKeyManager;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -30,6 +19,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ApiKey;
+import gov.healthit.chpl.domain.ApiKeyActivity;
+import gov.healthit.chpl.domain.ApiKeyRegistration;
+import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.manager.ApiKeyManager;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Api(value="api-key")
 @RestController

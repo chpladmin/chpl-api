@@ -10,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -41,6 +42,7 @@ public class CertificationEditionTest extends TestCase {
 	}
 
 	@Test
+	@Transactional
 	public void getCertificationEditionByYear() {
 		CertificationEditionDTO dto = ceDao.getByYear("2014");
 		assertNotNull(dto);
