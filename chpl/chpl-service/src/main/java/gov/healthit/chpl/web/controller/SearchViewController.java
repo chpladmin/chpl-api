@@ -34,7 +34,7 @@ import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.dto.DeveloperDecertifiedDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -407,7 +407,7 @@ public class SearchViewController {
 	public @ResponseBody DeveloperDecertificationResponse getDeveloperDecertifications() throws EntityRetrievalException {
 		DeveloperDecertificationResponse ddr = new DeveloperDecertificationResponse();
 		
-		List<DeveloperDecertifiedDTO> dtoList = new ArrayList<DeveloperDecertifiedDTO>();
+		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		
 		dtoList = developerManager.getDecertifiedDevelopers();
 		

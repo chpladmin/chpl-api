@@ -2,15 +2,15 @@ package gov.healthit.chpl.dto;
 
 import java.util.List;
 
-public class DeveloperDecertifiedDTO {
+public class DecertifiedDeveloperDTO {
 	private String developerName;
 	private List<String> oncacb;
 	private String developerStatus;
 	private Long numMeaningfulUse;
 
-	public DeveloperDecertifiedDTO(){}
+	public DecertifiedDeveloperDTO(){}
 	
-	public DeveloperDecertifiedDTO(String developerName, List<String> oncacb, String developerStatus, Long numMeaningfulUse){
+	public DecertifiedDeveloperDTO(String developerName, List<String> oncacb, String developerStatus, Long numMeaningfulUse){
 		this.developerName=developerName;
 		this.oncacb=oncacb;
 		this.developerStatus=developerStatus;

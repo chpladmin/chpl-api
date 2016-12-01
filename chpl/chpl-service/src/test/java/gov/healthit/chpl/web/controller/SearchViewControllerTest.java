@@ -175,7 +175,7 @@ public class SearchViewControllerTest {
 	}
 	
 	/** 
-	 * Given that I am authenticated to CHPL as any user
+	 * Given the CHPL is accepting search requests
 	 * When I call the REST API's /decertified/developers
 	 * Then the controller method's getDeveloperDecertifications returns expected results
 	 */
@@ -183,7 +183,6 @@ public class SearchViewControllerTest {
 	@Rollback(true)
 	@Test
 	public void test_getDeveloperDecertifications_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		DeveloperDecertificationResponse resp = searchViewController.getDeveloperDecertifications();
 		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + resp.getDeveloperDecertificationResult().size(), 
 				resp.getDeveloperDecertificationResult().size() == 2);

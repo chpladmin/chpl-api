@@ -27,7 +27,7 @@ import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperDecertifiedDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.AttestationType;
@@ -311,8 +311,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	}
 	
 	@Transactional(readOnly = true)
-	public List<DeveloperDecertifiedDTO> getDecertifiedDevelopers(){
-		List<DeveloperDecertifiedDTO> developerDecertifiedDTOList = new ArrayList<DeveloperDecertifiedDTO>();
+	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){
+		List<DecertifiedDeveloperDTO> developerDecertifiedDTOList = new ArrayList<DecertifiedDeveloperDTO>();
 		developerDecertifiedDTOList = developerDao.getDecertifiedDevelopers();
 		return developerDecertifiedDTOList;
 	}

@@ -23,7 +23,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperDecertifiedDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.ContactEntity;
@@ -379,17 +379,22 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		return new DeveloperDTO(ve);
 	}
 	
-	public List<DeveloperDecertifiedDTO> getDecertifiedDevelopers(){
-		List<CertifiedProductDetailsEntity> result = entityManager.createQuery(
+	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){
+		
+		Query getDecertifiedDevelopers =
+				entityManager.createQuery(
 				"FROM CertifiedProductDetailsEntity "
-				+"WHERE developerStatusName IN ('Suspended by ONC', 'Under certification ban by ONC') ", CertifiedProductDetailsEntity.class).getResultList();
-		List<DeveloperDecertifiedDTO> dtoList = new ArrayList<DeveloperDecertifiedDTO>();
+				+"WHERE developerStatusName IN (:suspended, :banned) ", CertifiedProductDetailsEntity.class);
+		getDecertifiedDevelopers.setParameter("suspended", String.valueOf(DeveloperStatusType.SuspendedByOnc));
+		getDecertifiedDevelopers.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
+		List<CertifiedProductDetailsEntity> result = getDecertifiedDevelopers.getResultList();
+		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		//populate dtoList from result
 		for(CertifiedProductDetailsEntity e : result){
 			logger.debug("CertifiedProductDetailsEntity: " + e.getDeveloperName() + " " + e.getCertificationBodyName() + " " + e.getMeaningfulUseUsers());
 			Boolean dtoIsInList = false;
 			if(dtoList.size() > 0){
-				for(DeveloperDecertifiedDTO dto : dtoList){
+				for(DecertifiedDeveloperDTO dto : dtoList){
 					logger.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperName() + " " + dto.getOncacb() + " " + dto.getNumMeaningfulUse());
 					// if developer already exists, update it to include ACB and aggregate numMeaningfulUse
 					if(dto.getDeveloperName().equals(e.getDeveloperName())){
@@ -427,7 +432,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			if(!dtoIsInList){
 				List<String> oncacb = new ArrayList<String>();
 				oncacb.add(e.getCertificationBodyName());
-				DeveloperDecertifiedDTO newDto = new DeveloperDecertifiedDTO(e.getDeveloperName(), oncacb, e.getCertificationStatusName(), e.getMeaningfulUseUsers());
+				DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperName(), oncacb, e.getCertificationStatusName(), e.getMeaningfulUseUsers());
 				dtoList.add(newDto);
 				logger.debug("adding newDto to list with values: " + e.getMeaningfulUseUsers());
 			}
