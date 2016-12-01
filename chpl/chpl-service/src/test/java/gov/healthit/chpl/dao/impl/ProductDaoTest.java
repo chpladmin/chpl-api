@@ -59,7 +59,7 @@ public class ProductDaoTest extends TestCase {
 	public void getAllProducts() {
 		List<ProductDTO> results = productDao.findAll();
 		assertNotNull(results);
-		assertEquals(4, results.size());
+		assertEquals(7, results.size());
 	}
 
 	@Test

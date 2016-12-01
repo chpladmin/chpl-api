@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperDecertifiedDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import junit.framework.TestCase;
 
@@ -60,7 +62,7 @@ public class DeveloperDaoTest extends TestCase {
 	public void getAllDevelopers() {
 		List<DeveloperDTO> results = developerDao.findAll();
 		assertNotNull(results);
-		assertEquals(7, results.size());
+		assertEquals(9, results.size());
 		DeveloperDTO first = results.get(0);
 		assertNotNull(first.getStatus());
 		assertNotNull(first.getStatus().getId());
@@ -249,6 +251,34 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(dto);
 		assertEquals("N/A", dto.getTransparencyAttestation());
 		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	/**
+	 * Given that I am authenticated to CHPL as any user
+	 * When I call the REST API's /decertified/developers
+	 * Then DeveloperDAOImpl.getCertifiedDevelopers() returns List<DeveloperDecertifiedDTO>
+	 * Then the returned list contains no duplicates (unique developerName for each row)
+	 * Then the returned list contains the proper array of ONC_ACBs
+	 * Then the returned list contains the sum of all of the developer's CP.numMeaningfulUse
+	 */
+	@Test
+	@Transactional
+	@Rollback
+	public void getDecertifiedDevelopers() {
+		List<DeveloperDecertifiedDTO> dtoList = new ArrayList<DeveloperDecertifiedDTO>();
+		dtoList = developerDao.getDecertifiedDevelopers();
+		assertTrue(dtoList.size() == 2);
+		assertTrue(dtoList.get(0).getNumMeaningfulUse() == 66);
+		assertTrue(dtoList.get(0).getDeveloperName().equals("VendorBanned"));
+		assertTrue(dtoList.get(0).getDeveloperStatus().equals("Under certification ban by ONC"));
+		assertTrue(dtoList.get(0).getOncacb().get(0).equals("ICSA Labs"));
+		assertTrue(dtoList.get(0).getOncacb().get(1).equals("Surescripts LLC"));
+		assertTrue(dtoList.get(0).getOncacb().get(2).equals("SLI Global"));
+		assertTrue(dtoList.get(1).getNumMeaningfulUse() == 73);
+		assertTrue(dtoList.get(1).getDeveloperName().equals("VendorSuspended"));
+		assertTrue(dtoList.get(1).getDeveloperStatus().equals("Suspended by ONC"));
+		assertTrue(dtoList.get(1).getOncacb().get(0).equals("Drummond Group Inc."));
+		assertTrue(dtoList.get(1).getOncacb().get(1).equals("CCHIT"));
 	}
 	
 }

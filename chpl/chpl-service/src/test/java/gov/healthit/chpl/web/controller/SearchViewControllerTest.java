@@ -27,6 +27,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.DeveloperDecertificationResponse;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
@@ -172,4 +173,20 @@ public class SearchViewControllerTest {
 		+ getPopulateSearchDataTimeLength + " millis or " + getPopulateSearchElapsedSeconds + " seconds");
 		assertTrue("DeveloperController.getDevelopers() should complete in 0 seconds due to caching", getPopulateSearchDataTimeLength < 100);
 	}
+	
+	/** 
+	 * Given that I am authenticated to CHPL as any user
+	 * When I call the REST API's /decertified/developers
+	 * Then the controller method's getDeveloperDecertifications returns expected results
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_getDeveloperDecertifications_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		DeveloperDecertificationResponse resp = searchViewController.getDeveloperDecertifications();
+		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + resp.getDeveloperDecertificationResult().size(), 
+				resp.getDeveloperDecertificationResult().size() == 2);
+	}
+	
 }

@@ -23,7 +23,9 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperDecertifiedDTO;
 import gov.healthit.chpl.entity.AttestationType;
+import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity;
@@ -375,6 +377,63 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 		DeveloperEntity ve = (DeveloperEntity)result;
 		return new DeveloperDTO(ve);
+	}
+	
+	public List<DeveloperDecertifiedDTO> getDecertifiedDevelopers(){
+		List<CertifiedProductDetailsEntity> result = entityManager.createQuery(
+				"FROM CertifiedProductDetailsEntity "
+				+"WHERE developerStatusName IN ('Suspended by ONC', 'Under certification ban by ONC') ", CertifiedProductDetailsEntity.class).getResultList();
+		List<DeveloperDecertifiedDTO> dtoList = new ArrayList<DeveloperDecertifiedDTO>();
+		//populate dtoList from result
+		for(CertifiedProductDetailsEntity e : result){
+			logger.debug("CertifiedProductDetailsEntity: " + e.getDeveloperName() + " " + e.getCertificationBodyName() + " " + e.getMeaningfulUseUsers());
+			Boolean dtoIsInList = false;
+			if(dtoList.size() > 0){
+				for(DeveloperDecertifiedDTO dto : dtoList){
+					logger.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperName() + " " + dto.getOncacb() + " " + dto.getNumMeaningfulUse());
+					// if developer already exists, update it to include ACB and aggregate numMeaningfulUse
+					if(dto.getDeveloperName().equals(e.getDeveloperName())){
+						logger.debug(dto.getDeveloperName() + " == " + e.getDeveloperName());
+						// If this developer is not associated with the ACB, add the ACB
+						if(!dto.getOncacb().contains(e.getCertificationBodyName())){
+							logger.debug("dto does not contain " + e.getCertificationBodyName());
+							dto.addAcb(e.getCertificationBodyName());
+							logger.debug("added acb " + e.getCertificationBodyName() + " to dto with dev name == " + dto.getDeveloperName());
+							dto.setDeveloperStatus(e.getDeveloperStatusName());
+							logger.debug("set dto dev status to " + e.getDeveloperStatusName());
+							if(dto.getNumMeaningfulUse() != null){
+								dto.addNumMeaningfulUse(e.getMeaningfulUseUsers());
+								logger.debug("adding numMeaningfulUse to dto with value " + e.getMeaningfulUseUsers());
+							}
+							else{
+								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
+								logger.debug("set dto numMeaningfulUse to value " + e.getMeaningfulUseUsers());
+							}
+							dtoIsInList = true;
+							break;
+						}
+						// if developer exists and is associated with ACB, add numMeaningfulUse for this CP
+						else{
+							if(e.getMeaningfulUseUsers() != null){
+								dto.addNumMeaningfulUse(e.getMeaningfulUseUsers());
+								logger.debug("adding to dto's numMeaningfulUse with value " + e.getMeaningfulUseUsers());
+							}
+							dtoIsInList = true;
+							break;
+						}
+					}
+				}
+			}
+			if(!dtoIsInList){
+				List<String> oncacb = new ArrayList<String>();
+				oncacb.add(e.getCertificationBodyName());
+				DeveloperDecertifiedDTO newDto = new DeveloperDecertifiedDTO(e.getDeveloperName(), oncacb, e.getCertificationStatusName(), e.getMeaningfulUseUsers());
+				dtoList.add(newDto);
+				logger.debug("adding newDto to list with values: " + e.getMeaningfulUseUsers());
+			}
+		}
+		
+		return dtoList;
 	}
 
 	private void create(DeveloperEntity entity) {

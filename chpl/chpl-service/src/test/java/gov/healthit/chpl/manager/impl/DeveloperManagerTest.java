@@ -28,6 +28,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperDecertifiedDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
@@ -99,7 +100,7 @@ public class DeveloperManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<DeveloperDTO> developers = developerManager.getAllIncludingDeleted();
 		assertNotNull(developers);
-		assertEquals(9, developers.size());
+		assertEquals(12, developers.size());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -236,5 +237,20 @@ public class DeveloperManagerTest extends TestCase {
 		assertTrue(failed);
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	/**
+	 * Given that I am authenticated to CHPL as any user
+	 * When I call the REST API's /decertified/developers, the controller calls the developerManager.getDecertifiedDevelopers()
+	 * Then the manager returns a list of DeveloperDecertifiedDTO with expected results
+	 */
+	@Transactional
+	@Rollback(true) 
+	@Test
+	public void testGetDecertifiedDevelopers() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		List<DeveloperDecertifiedDTO> dtoList = developerManager.getDecertifiedDevelopers();
+		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + dtoList.size(), 
+				dtoList.size() == 2);
 	}
 }

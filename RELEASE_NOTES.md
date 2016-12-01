@@ -5,6 +5,7 @@ _Date TBD_
 
 ### Features Added
 * Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
+* Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer. 
 
 ### Bugs Fixed
 

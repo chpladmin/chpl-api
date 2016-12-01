@@ -66,7 +66,7 @@ public class ProductManagerTest extends TestCase {
 	public void getAllProducts() {
 		List<ProductDTO> results = productManager.getAll();
 		assertNotNull(results);
-		assertEquals(4, results.size());
+		assertEquals(7, results.size());
 	}
 	
 	@Test
