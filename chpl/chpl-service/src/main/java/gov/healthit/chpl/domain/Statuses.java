@@ -9,15 +9,21 @@ public class Statuses implements Serializable {
 	private Integer withdrawnByDeveloper;
 	private Integer withdrawnByAcb;
 	private Integer suspendedByAcb;
+	private Integer suspendedByOnc;
+	private Integer terminatedByOnc;
 	
 	public Statuses(){}
 	
-	public Statuses(Integer active, Integer retired, Integer withdrawnByDeveloper, Integer withdrawnByAcb, Integer suspendedByAcb){
+	public Statuses(Integer active, Integer retired, Integer withdrawnByDeveloper, 
+			Integer withdrawnByAcb, Integer suspendedByAcb, Integer suspendedByOnc,
+			Integer terminatdByOnc){
 		this.active = active;
 		this.retired = retired;
 		this.withdrawnByDeveloper = withdrawnByDeveloper;
 		this.withdrawnByAcb = withdrawnByAcb;
 		this.suspendedByAcb = suspendedByAcb;
+		this.suspendedByOnc = suspendedByOnc;
+		this.terminatedByOnc = terminatdByOnc;
 	}
 	
 	public Integer getActive(){
@@ -58,5 +64,21 @@ public class Statuses implements Serializable {
 	
 	public void setSuspendedByAcb(Integer suspendedByAcb){
 		this.suspendedByAcb = suspendedByAcb;
+	}
+
+	public Integer getSuspendedByOnc() {
+		return suspendedByOnc;
+	}
+
+	public void setSuspendedByOnc(Integer suspendedByOnc) {
+		this.suspendedByOnc = suspendedByOnc;
+	}
+
+	public Integer getTerminatedByOnc() {
+		return terminatedByOnc;
+	}
+
+	public void setTerminatedByOnc(Integer terminatedByOnc) {
+		this.terminatedByOnc = terminatedByOnc;
 	}
 }

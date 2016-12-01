@@ -55,7 +55,9 @@ public class ProductDTO {
 					entity.getProductCertificationStatusesEntity().getRetired(), 
 					entity.getProductCertificationStatusesEntity().getWithdrawnByDeveloper(), 
 					entity.getProductCertificationStatusesEntity().getWithdrawnByAcb(), 
-					entity.getProductCertificationStatusesEntity().getSuspendedByAcb());
+					entity.getProductCertificationStatusesEntity().getSuspendedByAcb(),
+					entity.getProductCertificationStatusesEntity().getSuspendedByOnc(),
+					entity.getProductCertificationStatusesEntity().getTerminatedByOnc());
 		}
 	}
 	
