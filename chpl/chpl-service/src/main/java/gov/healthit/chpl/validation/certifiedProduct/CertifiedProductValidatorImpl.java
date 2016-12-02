@@ -217,7 +217,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					DeveloperDTO developer = developerDao.getById(product.getDeveloper().getDeveloperId());
 					if(developer != null) {
 						if(!developer.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-							product.getErrorMessages().add("The developer " + developer.getName() + " has a status of " + developer.getStatus().getStatusName() + ". Certified products belonging to this developer cannot be created until its status returns to Active.");
+							product.getErrorMessages().add("The developer " + developer.getName() + " has a status of " + developer.getStatus().getStatusName() + ". Certified products belonging to this developer cannot be created or updated until its status returns to Active.");
 						}
 					} else {
 						product.getErrorMessages().add("Could not find developer with id " + product.getDeveloper().getDeveloperId());

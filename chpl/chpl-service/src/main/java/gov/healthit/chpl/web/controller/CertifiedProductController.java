@@ -18,6 +18,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -42,6 +44,7 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
@@ -53,6 +56,8 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -157,6 +162,24 @@ public class CertifiedProductController {
 		}
 		
 		CertifiedProductSearchDetails existingProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		
+		//make sure the old and new certification statuses aren't ONC bans
+		if(!existingProduct.getCertificationStatus().get("id").toString().equals(
+				updateRequest.getCertificationStatus().get("id"))) {
+			//if the status is to or from suspended by onc make sure the user has admin
+			if((existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.getName()) 
+				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.getName())
+				|| existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.getName())
+				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.getName()))
+				&& !Util.isUserRoleAdmin()) {
+				updateRequest.getErrorMessages().add("User " + Util.getUsername() 
+					+ " does not have permission to change certification status of " 
+					+ existingProduct.getChplProductNumber() + " from " 
+					+ existingProduct.getCertificationStatus().get("name").toString() + " to " 
+					+ updateRequest.getCertificationStatus().get("name").toString());
+			}
+		}
+		
 		//has the unique id changed? if so, make sure it is still unique
 		if(!existingProduct.getChplProductNumber().equals(updateRequest.getChplProductNumber())) {
 			try {
@@ -174,6 +197,7 @@ public class CertifiedProductController {
 		Long acbId = new Long(existingProduct.getCertifyingBody().get("id").toString());
 		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id").toString());
 		
+		//if the ACF owner is changed this is a separate action with different security
 		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
 			cpManager.changeOwnership(updateRequest.getId(), newAcbId);
 			CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
