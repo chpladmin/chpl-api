@@ -50,9 +50,10 @@ public class DecertifiedDeveloperDTO {
 			this.numMeaningfulUse = numMeaningfulUse;
 		}
 		else{
-			this.numMeaningfulUse += numMeaningfulUse;
+			if(numMeaningfulUse != null){
+				this.numMeaningfulUse += numMeaningfulUse;
+			}
 		}
-		
 	}
 	
 	public void addAcb(String acb){
