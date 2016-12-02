@@ -40,6 +40,7 @@ public class CertifiedProductSearchDetails {
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long lastModifiedDate;
+	private Long numMeaningfulUse;
 	
 	private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
@@ -282,5 +283,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setSurveillance(List<Surveillance> surveillance) {
 		this.surveillance = surveillance;
+	}
+	public Long getNumMeaningfulUse() {
+		return numMeaningfulUse;
+	}
+	public void setNumMeaningfulUse(Long numMeaningfulUse) {
+		this.numMeaningfulUse = numMeaningfulUse;
 	}
 }
