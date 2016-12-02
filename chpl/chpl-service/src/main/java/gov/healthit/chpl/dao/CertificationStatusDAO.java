@@ -1,8 +1,8 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.CertificationStatusDTO;
-
 import java.util.List;
+
+import gov.healthit.chpl.dto.CertificationStatusDTO;
 
 public interface CertificationStatusDAO {
 	public List<CertificationStatusDTO> findAll();

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
 
 public class PendingCertifiedProductTargetedUserDTO {

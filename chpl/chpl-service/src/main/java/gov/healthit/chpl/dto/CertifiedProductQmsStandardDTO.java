@@ -1,12 +1,7 @@
 package gov.healthit.chpl.dto;
 
 
-import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity;
-
-import java.util.Date;
-
-import org.springframework.util.StringUtils;
 
 public class CertifiedProductQmsStandardDTO {
 	private Long id;

@@ -1,10 +1,5 @@
 package gov.healthit.chpl.registration;
 
-import gov.healthit.chpl.auth.json.ErrorJSONObject;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dto.ApiKeyDTO;
-import gov.healthit.chpl.manager.ApiKeyManager;
-
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -18,6 +13,11 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
+import gov.healthit.chpl.auth.json.ErrorJSONObject;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.manager.ApiKeyManager;
 
 public class APIKeyAuthenticationFilter extends GenericFilterBean {
 	

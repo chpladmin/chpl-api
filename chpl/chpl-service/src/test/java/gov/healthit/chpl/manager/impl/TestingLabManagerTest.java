@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -24,12 +26,9 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import junit.framework.TestCase;
 
@@ -59,6 +58,7 @@ public class TestingLabManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetUsersOnAtl() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		TestingLabDTO atl = atlDao.getById(-1L);
@@ -69,6 +69,8 @@ public class TestingLabManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testAddReadUserToAtl() throws UserRetrievalException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -90,6 +92,8 @@ public class TestingLabManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testDeleteUserFromAtl() throws UserRetrievalException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 

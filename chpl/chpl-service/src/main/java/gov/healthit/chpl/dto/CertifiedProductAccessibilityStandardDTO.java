@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
-import gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity;
 
 public class CertifiedProductAccessibilityStandardDTO {
 	private Long id;

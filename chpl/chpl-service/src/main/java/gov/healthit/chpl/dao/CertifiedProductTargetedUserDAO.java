@@ -1,9 +1,8 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
-import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
-
 import java.util.List;
+
+import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 
 public interface CertifiedProductTargetedUserDAO {
 	

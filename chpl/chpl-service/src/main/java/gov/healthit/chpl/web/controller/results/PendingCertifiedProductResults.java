@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 public class PendingCertifiedProductResults {
 	private List<PendingCertifiedProductDetails> pendingCertifiedProducts;

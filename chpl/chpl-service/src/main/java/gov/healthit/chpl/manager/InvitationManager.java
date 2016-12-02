@@ -1,6 +1,8 @@
 package gov.healthit.chpl.manager;
 
 
+import java.util.List;
+
 import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
@@ -9,8 +11,6 @@ import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-
-import java.util.List;
 
 public interface InvitationManager {
 			

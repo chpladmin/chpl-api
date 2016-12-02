@@ -1,8 +1,8 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.PracticeTypeEntity;
-
 import java.util.Date;
+
+import gov.healthit.chpl.entity.PracticeTypeEntity;
 
 public class PracticeTypeDTO {
 	

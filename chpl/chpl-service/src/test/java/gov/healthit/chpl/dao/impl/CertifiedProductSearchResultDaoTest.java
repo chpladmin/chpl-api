@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -21,7 +20,6 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -114,6 +114,7 @@ public class ProductManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback(true)
 	public void updateProductOwnerHistory() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);

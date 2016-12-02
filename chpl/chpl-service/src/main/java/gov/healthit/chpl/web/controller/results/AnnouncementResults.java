@@ -1,9 +1,9 @@
 package gov.healthit.chpl.web.controller.results;
 
-import gov.healthit.chpl.domain.Announcement;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import gov.healthit.chpl.domain.Announcement;
 
 public class AnnouncementResults {
 	

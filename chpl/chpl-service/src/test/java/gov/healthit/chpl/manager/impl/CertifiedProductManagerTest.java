@@ -1,11 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -68,6 +64,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGet2015CertifiedProduct() throws EntityRetrievalException{
 		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(5L);
 		assertNotNull(details);
@@ -86,6 +83,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	
 	@Test
 	@Transactional(readOnly = false)
+	@Rollback
 	public void testUpdateEducationForOneParticipant() 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -127,6 +125,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	
 	@Test
 	@Transactional(readOnly = false)
+	@Rollback
 	public void testUpdateOccupationForAllParticipants() 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -162,6 +161,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	
 	@Test
 	@Transactional(readOnly = false)
+	@Rollback
 	public void testUpdateEducationForAllParticipants() 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -204,15 +204,14 @@ public class CertifiedProductManagerTest extends TestCase {
 	 */
 	@Test
 	@Transactional(readOnly = false)
+	@Rollback
 	public void testUpdateMeaningfulUseUsers() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		CertifiedProductDTO dto = new CertifiedProductDTO();
 		Set<MeaningfulUseUser> muu = new LinkedHashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("CHP-024051", 20L);
 		muu.add(u1);
 		muu.add(u2);
-		List<CertifiedProductDTO> dtoResponse = new ArrayList<CertifiedProductDTO>();
 		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
@@ -231,15 +230,14 @@ public class CertifiedProductManagerTest extends TestCase {
 	 */
 	@Test
 	@Transactional(readOnly = false)
+	@Rollback
 	public void testUpdateMeaningfulUseUsersWithBadData() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		CertifiedProductDTO dto = new CertifiedProductDTO();
 		Set<MeaningfulUseUser> muu = new LinkedHashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("badChplProductNumber", 20L);
 		muu.add(u1);
 		muu.add(u2);
-		List<CertifiedProductDTO> dtoResponse = new ArrayList<CertifiedProductDTO>();
 		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
@@ -259,9 +257,9 @@ public class CertifiedProductManagerTest extends TestCase {
 	 */
 	@Test
 	@Transactional(readOnly = false)
+	@Rollback
 	public void testUpdateMeaningfulUseUsersWithIncorrect2014EditionChplProductNumber() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		CertifiedProductDTO dto = new CertifiedProductDTO();
 		Set<MeaningfulUseUser> muu = new LinkedHashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("CHPL-024051", 20L);
@@ -269,7 +267,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		muu.add(u1);
 		muu.add(u2);
 		muu.add(u3);
-		List<CertifiedProductDTO> dtoResponse = new ArrayList<CertifiedProductDTO>();
 		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
@@ -291,9 +288,9 @@ public class CertifiedProductManagerTest extends TestCase {
 	 */
 	@Test
 	@Transactional(readOnly = false)
+	@Rollback
 	public void testUpdateMeaningfulUseUsersWithIncorrect2015EditionChplProductNumber() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		CertifiedProductDTO dto = new CertifiedProductDTO();
 		Set<MeaningfulUseUser> muu = new LinkedHashSet<MeaningfulUseUser>();
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser u2 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 20L);
@@ -301,7 +298,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		muu.add(u1);
 		muu.add(u2);
 		muu.add(u3);
-		List<CertifiedProductDTO> dtoResponse = new ArrayList<CertifiedProductDTO>();
 		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
@@ -315,6 +311,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	
 	@Test
 	@Transactional(readOnly = false)
+	@Rollback
 	public void testUpdateAgeRangeForAllParticipants() 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);

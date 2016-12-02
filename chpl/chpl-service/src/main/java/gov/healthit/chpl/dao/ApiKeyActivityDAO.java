@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao;
 
 import java.util.List;
+
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 

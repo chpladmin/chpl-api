@@ -1,12 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
 
-import gov.healthit.chpl.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+
+import gov.healthit.chpl.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SearchResponse;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import junit.framework.TestCase;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

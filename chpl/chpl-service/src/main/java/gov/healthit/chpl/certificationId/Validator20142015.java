@@ -1,13 +1,5 @@
 package gov.healthit.chpl.certificationId;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
-import gov.healthit.chpl.certificationId.Validator;
-
 public class Validator20142015 extends Validator {
 
 	public Validator20142015() {

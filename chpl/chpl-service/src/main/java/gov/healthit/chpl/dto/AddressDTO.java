@@ -1,8 +1,8 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.AddressEntity;
-
 import java.util.Date;
+
+import gov.healthit.chpl.entity.AddressEntity;
 
 public class AddressDTO {
 

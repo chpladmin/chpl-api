@@ -46,15 +46,18 @@ public class DecertifiedDeveloperDTO {
 	}
 
 	public void setNumMeaningfulUse(Long numMeaningfulUse) {
-		this.numMeaningfulUse = numMeaningfulUse;
+		if(this.numMeaningfulUse == null){
+			this.numMeaningfulUse = numMeaningfulUse;
+		}
+		else{
+			if(numMeaningfulUse != null){
+				this.numMeaningfulUse += numMeaningfulUse;
+			}
+		}
 	}
 	
 	public void addAcb(String acb){
 		this.oncacb.add(acb);
-	}
-	
-	public void addNumMeaningfulUse(Long numMeaningfulUse){
-		this.numMeaningfulUse+= numMeaningfulUse;
 	}
 	
 }

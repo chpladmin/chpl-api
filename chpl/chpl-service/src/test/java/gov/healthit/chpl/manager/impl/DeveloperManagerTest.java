@@ -26,9 +26,9 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
@@ -71,6 +71,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetDeveloperAsAdmin() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		DeveloperDTO developer = developerManager.getById(-1L);
@@ -81,6 +82,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetDeveloperAsAcbAdmin() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		DeveloperDTO developer = developerManager.getById(-1L);
@@ -121,6 +123,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback
 	public void testDeveloperStatusChangeAllowedByAdmin() 
 			throws EntityRetrievalException, JsonProcessingException {
@@ -144,6 +147,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback(true)
 	public void testMergeDeveloper_productOwnershipHistoryAdded() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -196,6 +200,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback
 	public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive() 
 			throws EntityRetrievalException, JsonProcessingException {
@@ -218,6 +223,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback
 	public void testDeveloperStatusChangeNotAllowedByNonAdmin() 
 			throws EntityRetrievalException, JsonProcessingException {

@@ -21,9 +21,9 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.ContactEntity;
@@ -407,7 +407,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 							dto.setDeveloperStatus(e.getDeveloperStatusName());
 							logger.debug("set dto dev status to " + e.getDeveloperStatusName());
 							if(dto.getNumMeaningfulUse() != null){
-								dto.addNumMeaningfulUse(e.getMeaningfulUseUsers());
+								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
 								logger.debug("adding numMeaningfulUse to dto with value " + e.getMeaningfulUseUsers());
 							}
 							else{
@@ -420,7 +420,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 						// if developer exists and is associated with ACB, add numMeaningfulUse for this CP
 						else{
 							if(e.getMeaningfulUseUsers() != null){
-								dto.addNumMeaningfulUse(e.getMeaningfulUseUsers());
+								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
 								logger.debug("adding to dto's numMeaningfulUse with value " + e.getMeaningfulUseUsers());
 							}
 							dtoIsInList = true;

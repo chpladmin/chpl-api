@@ -4,7 +4,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.JSONUtils;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
@@ -19,22 +36,6 @@ import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import junit.framework.TestCase;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -64,6 +65,8 @@ public class ActivityManagerTest extends TestCase {
 	
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testAddActivity() throws EntityCreationException, EntityRetrievalException, IOException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -96,6 +99,8 @@ public class ActivityManagerTest extends TestCase {
 	
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testAddActivityWithTimeStamp() throws EntityCreationException, EntityRetrievalException, IOException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -132,6 +137,7 @@ public class ActivityManagerTest extends TestCase {
 	
 	
 	@Test
+	@Transactional
 	public void testGetAllActivity() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = activityManager.getAllActivity(false);
@@ -141,6 +147,7 @@ public class ActivityManagerTest extends TestCase {
 	
 	
 	@Test
+	@Transactional
 	public void testGetAllActivityInLastNDays() throws EntityCreationException, EntityRetrievalException, IOException{
 		
 		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
@@ -173,6 +180,7 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetActivityForObject() throws JsonParseException, IOException{
 		
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -189,6 +197,7 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetActivityForObjectDateRange() throws EntityCreationException, EntityRetrievalException, IOException{
 		
 		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
@@ -220,6 +229,7 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetActivityForConcept() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
@@ -234,6 +244,7 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetActivityForConcept_developerNameIsFetched() throws JsonParseException, IOException{
 		List<ActivityEvent> events = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
 		assertEquals(1, events.size());
@@ -245,6 +256,7 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetActivityForConceptLastNDays() throws EntityCreationException, EntityRetrievalException, JsonParseException, IOException{
 		
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -294,6 +306,7 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetActivityForUser() throws JsonParseException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<ActivityEvent> eventsForUser = activityManager.getActivityForUser(1L);
@@ -302,6 +315,7 @@ public class ActivityManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetActivityByUser() throws JsonParseException, IOException, UserRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<UserActivity> eventsForUser = activityManager.getActivityByUser();

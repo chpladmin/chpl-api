@@ -27,9 +27,9 @@ import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -58,6 +58,7 @@ public class DeveloperDaoTest extends TestCase {
 	}
 
 	@Test
+	@Transactional
 	public void getAllDevelopers() {
 		List<DeveloperDTO> results = developerDao.findAll();
 		assertNotNull(results);
@@ -69,6 +70,7 @@ public class DeveloperDaoTest extends TestCase {
 	}
 
 	@Test
+	@Transactional
 	public void getDeveloperWithAddress() {
 		Long developerId = -1L;
 		DeveloperDTO developer = null;
@@ -85,6 +87,7 @@ public class DeveloperDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void getDeveloperWithoutAddress() {
 		Long developerId = -3L;
 		DeveloperDTO developer = null;
@@ -239,14 +242,14 @@ public class DeveloperDaoTest extends TestCase {
 		DeveloperDTO developer = developerDao.findAll().get(0);
 		
 		DeveloperACBMapDTO dto = new DeveloperACBMapDTO();
-		dto.setAcbId(-3L);
+		dto.setAcbId(-8L);
 		dto.setDeveloperId(developer.getId());
 		dto.setTransparencyAttestation("N/A");
 		DeveloperACBMapDTO createdMapping = developerDao.createTransparencyMapping(dto);
 		
 		assertNotNull(createdMapping);
 		
-		dto = developerDao.getTransparencyMapping(developer.getId(), -3L);
+		dto = developerDao.getTransparencyMapping(developer.getId(), -8L);
 		assertNotNull(dto);
 		assertEquals("N/A", dto.getTransparencyAttestation());
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -262,7 +265,6 @@ public class DeveloperDaoTest extends TestCase {
 	 */
 	@Test
 	@Transactional
-	@Rollback
 	public void getDecertifiedDevelopers() {
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		dtoList = developerDao.getDecertifiedDevelopers();
