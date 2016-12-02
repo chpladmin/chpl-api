@@ -44,6 +44,12 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	@Column(name = "suspended_by_acb", nullable = false)
 	private Integer suspendedByAcb;
 	
+	@Column(name = "suspended_by_onc", nullable = false)
+	private Integer suspendedByOnc;
+	
+	@Column(name = "terminated_by_onc", nullable = false)
+	private Integer terminatedByOnc;
+	
 	public DeveloperCertificationStatusesEntity(){
 		
 	}
@@ -190,5 +196,21 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 		sb.append("withdrawnByAcb: " + this.getWithdrawnByAcb());
 		sb.append("suspendedByAcb: " + this.getSuspendedByAcb());
 		return sb.toString();		
+	}
+
+	public Integer getSuspendedByOnc() {
+		return suspendedByOnc;
+	}
+
+	public void setSuspendedByOnc(Integer suspendedByOnc) {
+		this.suspendedByOnc = suspendedByOnc;
+	}
+
+	public Integer getTerminatedByOnc() {
+		return terminatedByOnc;
+	}
+
+	public void setTerminatedByOnc(Integer terminatedByOnc) {
+		this.terminatedByOnc = terminatedByOnc;
 	}
 }

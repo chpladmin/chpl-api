@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,6 +26,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -32,9 +35,14 @@ import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import junit.framework.TestCase;
 
@@ -48,10 +56,14 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertifiedProductManagerTest extends TestCase {
 	
+	@Autowired private DeveloperManager devManager;
+	@Autowired private DeveloperDAO devDao;
+	@Autowired private CertificationStatusDAO certStatusDao;
 	@Autowired private CertifiedProductManager cpManager;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
 	
 	private static JWTAuthenticatedUser adminUser;
+	private static JWTAuthenticatedUser testUser3;
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -61,6 +73,13 @@ public class CertifiedProductManagerTest extends TestCase {
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+		
+		testUser3 = new JWTAuthenticatedUser();
+		testUser3.setFirstName("Test");
+		testUser3.setId(3L);
+		testUser3.setLastName("User3");
+		testUser3.setSubjectName("testUser3");
+		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
 	}
 	
 	@Test
@@ -79,6 +98,98 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationResultTestTask certTask = certTasks.get(0);
 		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
 		assertNotNull(taskParts);
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
+	public void testAdminUserChangeStatusToSuspendedByOnc() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
+		assertNotNull(stat);
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		cp.setCertificationStatusId(stat.getId());
+		cpManager.update(1L, cp);
+		
+		DeveloperDTO dev = devManager.getById(-1L);
+		assertNotNull(dev);
+		assertNotNull(dev.getStatus());
+		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), dev.getStatus().getStatusName());
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
+	public void testNonAdminUserNotAllowedToChangeStatusToSuspendedByOnc() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(testUser3);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
+		assertNotNull(stat);
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		cp.setCertificationStatusId(stat.getId());
+		boolean success = true;
+		try {
+			cpManager.update(1L, cp);
+		} catch(AccessDeniedException adEx) {
+			success = false;
+		}
+		assertFalse(success);
+		
+		DeveloperDTO dev = devManager.getById(-1L);
+		assertNotNull(dev);
+		assertNotNull(dev.getStatus());
+		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
+	public void testAdminUserChangeStatusToTerminatedByOnc() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
+		assertNotNull(stat);
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		cp.setCertificationStatusId(stat.getId());
+		cpManager.update(1L, cp);
+		
+		DeveloperDTO dev = devManager.getById(-1L);
+		assertNotNull(dev);
+		assertNotNull(dev.getStatus());
+		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), dev.getStatus().getStatusName());
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
+	public void testNonAdminUserNotAllowedToChangeStatusToTerminatedByOnc() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(testUser3);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
+		assertNotNull(stat);
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		cp.setCertificationStatusId(stat.getId());
+		boolean success = true;
+		try {
+			cpManager.update(1L, cp);
+		} catch(AccessDeniedException adEx) {
+			success = false;
+		}
+		assertFalse(success);
+		
+		DeveloperDTO dev = devManager.getById(-1L);
+		assertNotNull(dev);
+		assertNotNull(dev.getStatus());
+		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test

@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Set;
 
 import javax.mail.MessagingException;
+import javax.persistence.EntityNotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.EventTypeDAO;
@@ -89,6 +92,7 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
@@ -120,6 +124,8 @@ import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
@@ -154,6 +160,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired CQMCriterionDAO cqmCriterionDao;
 	@Autowired CertificationBodyDAO acbDao;
 	@Autowired DeveloperDAO developerDao;
+	@Autowired DeveloperStatusDAO devStatusDao;
 	@Autowired DeveloperManager developerManager;
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
@@ -167,6 +174,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired UcdProcessDAO ucdDao;
 	@Autowired TestParticipantDAO testParticipantDao;
 	@Autowired TestTaskDAO testTaskDao;
+	@Autowired CertificationStatusDAO statusDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -180,7 +188,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	public CertifiedProductManagerImpl() {
 	}
 	
-	@Autowired CertificationStatusDAO statusDao;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -777,8 +784,40 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		CertifiedProductDTO result = cpDao.update(dto);		
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) 
+			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {		
+		//if the updated certification status was suspended by onc or terminated by onc, 
+		//change the status of the related developer
+		CertificationStatusDTO updatedCertificationStatus = statusDao.getById(dto.getCertificationStatusId());
+		if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.getName()) || 
+			updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.getName())) {
+			
+			//get developer
+			DeveloperDTO cpDeveloper = developerDao.getByVersion(dto.getProductVersionId());
+			if(Util.isUserRoleAdmin() && cpDeveloper != null) {
+				//find the new developer status
+				DeveloperStatusDTO devStatusDto = null;
+				if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.getName())) {
+					devStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
+				} else if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.getName())) {
+					devStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
+				}
+				//update the developer status
+				if(devStatusDto == null) {
+					throw new EntityRetrievalException("Could not locate developer status for certification status " + updatedCertificationStatus.getStatus());
+				}
+				cpDeveloper.setStatus(devStatusDto);
+				developerManager.update(cpDeveloper);
+			} else if (!Util.isUserRoleAdmin()) {
+				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id " + dto.getId());
+				throw new AccessDeniedException("User does not have admin permission to change related developer status.");	
+			} else if(cpDeveloper == null) {
+				logger.error("Could not find developer for product version with id " + dto.getProductVersionId());
+				throw new EntityNotFoundException("No developer could be located for the certified product in the update. Update cannot continue.");
+			}
+		}
+		
+		CertifiedProductDTO result = cpDao.update(dto);	
 		return result;
 	}	
 	
