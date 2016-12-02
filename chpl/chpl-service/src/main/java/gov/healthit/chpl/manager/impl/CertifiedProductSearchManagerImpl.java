@@ -94,7 +94,6 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 			searchResult.setTransparencyAttestation(dto.getTransparencyAttestation());
 			searchResult.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
-			searchResult.setNumMeaningfulUse(dto.getNumMeaningfulUse());
 			
 			searchResults.add(searchResult);
 		}

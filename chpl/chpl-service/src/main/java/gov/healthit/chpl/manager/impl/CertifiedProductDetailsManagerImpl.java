@@ -186,8 +186,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
 		searchDetails.setCountCurrentCorrectiveActionPlans(dto.getCountCurrentCorrectiveActionPlans());
 		searchDetails.setCountClosedCorrectiveActionPlans(dto.getCountClosedCorrectiveActionPlans());
-		searchDetails.setNumMeaningfulUse(dto.getNumMeaningfulUse());
-		
 		
 		List<Surveillance> cpSurveillance = survManager.getByCertifiedProduct(dto.getId());
 		searchDetails.setSurveillance(cpSurveillance);

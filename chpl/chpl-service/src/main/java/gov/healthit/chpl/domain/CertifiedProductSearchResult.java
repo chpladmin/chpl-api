@@ -37,7 +37,6 @@ public class CertifiedProductSearchResult {
 	private Integer countCorrectiveActionPlans;
 	private Integer countCurrentCorrectiveActionPlans;
 	private Integer countClosedCorrectiveActionPlans;
-	private Long numMeaningfulUse;
 	
 	public Long getId() {
 		return id;
@@ -218,12 +217,6 @@ public class CertifiedProductSearchResult {
 	}
 	public void setSedTestingEnd(Date sedTestingEnd) {
 		this.sedTestingEnd = sedTestingEnd;
-	}
-	public Long getNumMeaningfulUse() {
-		return numMeaningfulUse;
-	}
-	public void setNumMeaningfulUse(Long numMeaningfulUse) {
-		this.numMeaningfulUse = numMeaningfulUse;
 	}
 	
 }

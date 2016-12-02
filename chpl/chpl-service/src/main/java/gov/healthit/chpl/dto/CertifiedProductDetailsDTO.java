@@ -55,7 +55,6 @@ public class CertifiedProductDetailsDTO {
 	private String productAdditionalSoftware;
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
-	private Long numMeaningfulUse;
 	
 	private List<CertifiedProductQmsStandardDTO> qmsStandards;
 	private List<TargetedUserDTO> targetedUsers;
@@ -99,7 +98,6 @@ public class CertifiedProductDetailsDTO {
     	this.sedTestingEnd = entity.getSedTestingEnd();
     	this.testingLabId = entity.getTestingLabId();
     	this.testingLabName = entity.getTestingLabName();
-    	this.numMeaningfulUse = entity.getMeaningfulUseUsers();
     	
 		this.developer = new DeveloperDTO();
     	this.developer.setId(entity.getDeveloperId());
@@ -527,13 +525,5 @@ public class CertifiedProductDetailsDTO {
 
 	public void setVersion(ProductVersionDTO version) {
 		this.version = version;
-	}
-
-	public Long getNumMeaningfulUse() {
-		return numMeaningfulUse;
-	}
-
-	public void setNumMeaningfulUse(Long numMeaningfulUse) {
-		this.numMeaningfulUse = numMeaningfulUse;
 	}
 }
