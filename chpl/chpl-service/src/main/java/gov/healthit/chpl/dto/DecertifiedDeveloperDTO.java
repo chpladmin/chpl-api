@@ -59,14 +59,4 @@ public class DecertifiedDeveloperDTO {
 		this.oncacb.add(acb);
 	}
 	
-	public void addNumMeaningfulUse(Long numMeaningfulUse){
-		if(this.numMeaningfulUse != null){
-			this.numMeaningfulUse+= numMeaningfulUse;
-		}
-		else{
-			this.numMeaningfulUse = numMeaningfulUse;
-		}
-		
-	}
-	
 }
