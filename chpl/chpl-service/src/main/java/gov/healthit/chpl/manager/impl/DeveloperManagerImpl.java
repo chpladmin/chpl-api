@@ -1,8 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +23,9 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -310,6 +308,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, createdDeveloper.getId(), "Merged "+ developerIdsToMerge.size() + " developers into new developer '" + createdDeveloper.getName() + "'.", beforeDevelopers, createdDeveloper);
 		
 		return createdDeveloper;
+	}
+	
+	@Transactional(readOnly = true)
+	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){
+		List<DecertifiedDeveloperDTO> developerDecertifiedDTOList = new ArrayList<DecertifiedDeveloperDTO>();
+		developerDecertifiedDTOList = developerDao.getDecertifiedDevelopers();
+		return developerDecertifiedDTOList;
 	}
 	
 	@Override

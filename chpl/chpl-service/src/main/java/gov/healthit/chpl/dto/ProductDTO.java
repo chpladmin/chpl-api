@@ -1,14 +1,14 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.domain.Statuses;
-import gov.healthit.chpl.entity.ProductEntity;
-import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import gov.healthit.chpl.domain.Statuses;
+import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
+import gov.healthit.chpl.entity.ProductEntity;
 
 public class ProductDTO {
 	

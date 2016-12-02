@@ -1,6 +1,5 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 
 public class CorrectiveActionPlanDocumentation {

@@ -1,8 +1,8 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-
 import java.util.List;
+
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public interface CertificationBodyDAO {
 	

@@ -1,9 +1,5 @@
 package gov.healthit.chpl.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.PendingTestTaskEntity;
 
 public class PendingTestTaskDTO {

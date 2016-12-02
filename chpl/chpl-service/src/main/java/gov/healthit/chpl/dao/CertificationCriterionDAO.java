@@ -1,9 +1,9 @@
 package gov.healthit.chpl.dao;
 
+import java.util.List;
+
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-
-import java.util.List;
 
 public interface CertificationCriterionDAO {
 	

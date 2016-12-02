@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.ProductOwnerEntity;
 
 public class CertifiedProductDetailsDTO {
 	

@@ -1,11 +1,11 @@
 package gov.healthit.chpl.dto;
 
 
-import gov.healthit.chpl.entity.CertifiedProductEntity;
-
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
+
+import gov.healthit.chpl.entity.CertifiedProductEntity;
 
 public class CertifiedProductDTO {
 	private Long id;

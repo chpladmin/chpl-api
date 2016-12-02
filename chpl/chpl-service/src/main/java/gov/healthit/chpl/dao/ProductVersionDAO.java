@@ -1,9 +1,9 @@
 package gov.healthit.chpl.dao;
 
+import java.util.List;
+
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
-
-import java.util.List;
 
 public interface ProductVersionDAO {
 	

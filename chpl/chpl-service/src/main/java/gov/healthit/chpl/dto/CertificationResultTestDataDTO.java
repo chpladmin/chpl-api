@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.entity.CertificationResultTestDataEntity;
-import gov.healthit.chpl.entity.CertificationResultTestToolEntity;
 
 public class CertificationResultTestDataDTO {
 	private Long id;

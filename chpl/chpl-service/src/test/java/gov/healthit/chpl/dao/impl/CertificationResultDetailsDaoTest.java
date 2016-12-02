@@ -1,12 +1,8 @@
 package gov.healthit.chpl.dao.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,9 +13,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+
+import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,6 +36,7 @@ public class CertificationResultDetailsDaoTest {
 	CertificationResultDetailsDAO certificationResultDetailsDAO;
 	
 	@Test
+	@Transactional
 	public void testGetCQMResultDetailsByCertifiedProductId() throws EntityRetrievalException{
 		
 		List<CertificationResultDetailsDTO> dtos = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(1L);

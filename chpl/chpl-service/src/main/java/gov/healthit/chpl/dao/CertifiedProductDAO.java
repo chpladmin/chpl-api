@@ -1,10 +1,10 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-
 import java.io.IOException;
 import java.util.List;
+
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public interface CertifiedProductDAO {
 	

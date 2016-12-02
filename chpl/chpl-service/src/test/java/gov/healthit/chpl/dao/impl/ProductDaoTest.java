@@ -26,8 +26,6 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductOwnerDTO;
-import gov.healthit.chpl.entity.ProductEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -59,7 +57,7 @@ public class ProductDaoTest extends TestCase {
 	public void getAllProducts() {
 		List<ProductDTO> results = productDao.findAll();
 		assertNotNull(results);
-		assertEquals(4, results.size());
+		assertEquals(7, results.size());
 	}
 
 	@Test

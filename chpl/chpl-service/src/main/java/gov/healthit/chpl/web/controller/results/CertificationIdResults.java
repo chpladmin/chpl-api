@@ -1,13 +1,7 @@
 package gov.healthit.chpl.web.controller.results;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.HashMap;
-
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 

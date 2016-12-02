@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -21,7 +20,6 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -53,11 +51,11 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test");
 		Long countProducts = searchResultDAO.countMultiFilterSearchResults(searchRequest);
-		assertEquals(4, countProducts.intValue());
+		assertEquals(5, countProducts.intValue());
 		
 		searchRequest.setVersion("1.0.0");
 		Long countProductsVersionSpecific = searchResultDAO.countMultiFilterSearchResults(searchRequest);
-		assertEquals(2, countProductsVersionSpecific.intValue());
+		assertEquals(1, countProductsVersionSpecific.intValue());
 	}
 	
 	@Test
@@ -67,7 +65,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test Developer 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(5, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getDeveloper().getName().startsWith("Test Developer 1"));
@@ -97,7 +95,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVersion("1.0.1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(1, products.size());
+		assertEquals(3, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getVersion().getVersion().startsWith("1.0.1"));
@@ -155,7 +153,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(4, products.size());
+		assertEquals(12, products.size());
 	}
 	
 	@Test
@@ -164,7 +162,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(4, products.size());
+		assertEquals(12, products.size());
 		
 		searchRequest = new SearchRequest();
 		searchRequest.getCorrectiveActionPlans().add("closed");
@@ -174,7 +172,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest = new SearchRequest();
 		searchRequest.getCorrectiveActionPlans().add("never");
 		products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(11, products.size());
 	}
 	
 	

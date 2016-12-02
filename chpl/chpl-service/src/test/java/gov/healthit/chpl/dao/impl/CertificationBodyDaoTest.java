@@ -16,12 +16,14 @@ import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -61,26 +63,30 @@ public class CertificationBodyDaoTest extends TestCase {
 	}
 
 	@Test
+	@Transactional
 	public void testGetMaxAcbCode() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		String maxCode = acbDao.getMaxCode();
 		assertNotNull(maxCode);
-		assertEquals("07", maxCode);
+		assertEquals("08", maxCode);
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
+	@Transactional
 	public void testGetAllAcbs() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		List<CertificationBodyDTO> acbs = acbDao.findAll(false);
 		assertNotNull(acbs);
-		assertEquals(7, acbs.size());
+		assertEquals(8, acbs.size());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testCreateAcbWithoutAddress() throws EntityCreationException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationBodyDTO acb = new CertificationBodyDTO();
@@ -101,6 +107,8 @@ public class CertificationBodyDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testCreateAcbWithAddress() throws EntityCreationException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -133,6 +141,8 @@ public class CertificationBodyDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testUpdateAcb() {
 		CertificationBodyDTO toUpdate = acbDao.findAll(false).get(0);
 		toUpdate.setName("UPDATED NAME");
@@ -156,6 +166,8 @@ public class CertificationBodyDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testDeleteAcb() throws EntityRetrievalException {
 		Long deleteId = -1L;
 		acbDao.delete(deleteId);
@@ -165,6 +177,7 @@ public class CertificationBodyDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void listUsersForAcb() {
 		Long acbIdWithUsers=-3L;
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acbIdWithUsers);

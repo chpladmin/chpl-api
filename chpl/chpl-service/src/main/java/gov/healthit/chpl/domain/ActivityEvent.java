@@ -1,12 +1,11 @@
 package gov.healthit.chpl.domain;
 
 
-import gov.healthit.chpl.auth.json.User;
-import gov.healthit.chpl.domain.ActivityConcept;
-
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import gov.healthit.chpl.auth.json.User;
 
 public class ActivityEvent {
 	

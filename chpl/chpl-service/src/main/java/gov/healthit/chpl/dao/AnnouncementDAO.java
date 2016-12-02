@@ -1,9 +1,9 @@
 package gov.healthit.chpl.dao;
 
+import java.util.List;
+
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.entity.AnnouncementEntity;
-
-import java.util.List;
 
 public interface AnnouncementDAO {
 	

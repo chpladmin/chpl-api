@@ -1,7 +1,5 @@
 package gov.healthit.chpl.dto;
 
-import java.time.LocalDate;
-
 import gov.healthit.chpl.entity.ProductOwnerEntity;
 
 public class ProductOwnerDTO {
