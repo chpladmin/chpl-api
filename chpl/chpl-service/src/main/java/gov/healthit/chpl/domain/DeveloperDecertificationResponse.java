@@ -16,6 +16,6 @@ public class DeveloperDecertificationResponse {
 
 	public void setDeveloperDecertificationResult(List<DecertifiedDeveloperDTO> developerDecertificationResult) {
 		this.developerDecertificationResult = developerDecertificationResult;
-	};
+	}
 
 }

@@ -475,6 +475,27 @@ public class SearchViewController {
 		
 		dtoList = developerManager.getDecertifiedDevelopers();
 		
+		// get total decertified CPs here
+		
+		ddr.setDeveloperDecertificationResult(dtoList);
+		
+		return ddr;
+	}
+	
+	//decertifications/certified_products
+	@ApiOperation(value="Get all decertified certified products in the CHPL", 
+			notes="Returns all decertified certified products, their decertified statuses, and the total count of decertified certified products.")
+	@RequestMapping(value="/decertifications/certified_products", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody DeveloperDecertificationResponse getCertifiedProductDecertifications() throws EntityRetrievalException {
+		DeveloperDecertificationResponse ddr = new DeveloperDecertificationResponse();
+		
+		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+		
+		dtoList = developerManager.getDecertifiedDevelopers();
+		
+		// get total decertified CPs here
+		
 		ddr.setDeveloperDecertificationResult(dtoList);
 		
 		return ddr;
