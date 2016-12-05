@@ -395,12 +395,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			Boolean dtoIsInList = false;
 			if(dtoList.size() > 0){
 				for(DecertifiedDeveloperDTO dto : dtoList){
-					logger.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperId() + " " + dto.getAcbList() + " " + dto.getNumMeaningfulUse());
+					logger.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperId() + " " + dto.getAcbIdList() + " " + dto.getNumMeaningfulUse());
 					// if developer already exists, update it to include ACB and aggregate numMeaningfulUse
 					if(dto.getDeveloperId().equals(e.getDeveloperId())){
 						logger.debug(dto.getDeveloperId() + " == " + e.getDeveloperId());
 						// If this developer is not associated with the ACB, add the ACB
-						if(!dto.getAcbList().contains(e.getCertificationBodyId())){
+						if(!dto.getAcbIdList().contains(e.getCertificationBodyId())){
 							logger.debug("dto does not contain " + e.getCertificationBodyName());
 							dto.addAcb(e.getCertificationBodyId());
 							logger.debug("added acb " + e.getCertificationBodyId() + " to dto with dev id == " + dto.getDeveloperId());

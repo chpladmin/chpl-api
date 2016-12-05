@@ -1,18 +1,19 @@
 package gov.healthit.chpl.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DecertifiedDeveloperDTO {
 	private Long developerId;
-	private List<Long> acbList;
+	private List<Long> acbIdList;
 	private String developerStatus;
 	private Long numMeaningfulUse;
 
 	public DecertifiedDeveloperDTO(){}
 	
-	public DecertifiedDeveloperDTO(Long developerId, List<Long> acbList, String developerStatus, Long numMeaningfulUse){
+	public DecertifiedDeveloperDTO(Long developerId, List<Long> acbIdList, String developerStatus, Long numMeaningfulUse){
 		this.setDeveloperId(developerId);
-		this.acbList=acbList;
+		this.acbIdList=acbIdList;
 		this.developerStatus=developerStatus;
 		this.numMeaningfulUse=numMeaningfulUse;
 	}
@@ -40,8 +41,14 @@ public class DecertifiedDeveloperDTO {
 		}
 	}
 	
-	public void addAcb(Long acb){
-		this.acbList.add(acb);
+	public void addAcb(Long acbId){
+		if(this.acbIdList != null){
+			this.acbIdList.add(acbId);
+		}
+		else{
+			this.acbIdList = new ArrayList<Long>();
+			this.acbIdList.add(acbId);
+		}
 	}
 
 	public Long getDeveloperId() {
@@ -52,12 +59,12 @@ public class DecertifiedDeveloperDTO {
 		this.developerId = developerId;
 	}
 	
-	public List<Long> getAcbList(){
-		return this.acbList;
+	public List<Long> getAcbIdList(){
+		return this.acbIdList;
 	}
 	
-	public void setAcbList(List<Long> acbList){
-		this.acbList = acbList;
+	public void setAcbList(List<Long> acbIdList){
+		this.acbIdList = acbIdList;
 	}
 	
 }
