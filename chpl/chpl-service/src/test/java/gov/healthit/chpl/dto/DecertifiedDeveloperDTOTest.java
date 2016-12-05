@@ -1,5 +1,7 @@
 package gov.healthit.chpl.dto;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +59,7 @@ public class DecertifiedDeveloperDTOTest {
 		String developerStatus1 = String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc);
 		Long numMeaningfulUse1 = 66L;
 		DecertifiedDeveloperDTO dto1 = new DecertifiedDeveloperDTO(developerId1, acbList1, developerStatus1, numMeaningfulUse1);
+		assertTrue(dto1 != null);
 		
 		Long developerId2 = -1L; 
 		List<Long> acbList2 = new ArrayList<Long>();
@@ -65,6 +68,7 @@ public class DecertifiedDeveloperDTOTest {
 		String developerStatus2 = String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc);
 		Long numMeaningfulUse2 = null;
 		DecertifiedDeveloperDTO dto2 = new DecertifiedDeveloperDTO(developerId2, acbList2, developerStatus2, numMeaningfulUse2);
+		assertTrue(dto2 != null);
 		
 		DecertifiedDeveloperDTO dto3 = new DecertifiedDeveloperDTO();
 		Long developerId3 = -1L; 
@@ -78,6 +82,17 @@ public class DecertifiedDeveloperDTOTest {
 		dto3.setDeveloperId(developerId3);
 		dto3.setDeveloperStatus(developerStatus3);
 		dto3.setNumMeaningfulUse(numMeaningfulUse3);
+		assertTrue(dto3 != null);
+		
+		Long developerId4 = -1L; 
+		List<Long> acbList4 = new ArrayList<Long>();
+		acbList4.add(null);
+		String developerStatus4 = String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc);
+		Long numMeaningfulUse4 = null;
+		DecertifiedDeveloperDTO dto4 = new DecertifiedDeveloperDTO(developerId4, null, developerStatus4, numMeaningfulUse4);
+		assertTrue(dto4 != null);
+		DecertifiedDeveloperDTO dto5 = new DecertifiedDeveloperDTO(developerId4, acbList4, developerStatus4, numMeaningfulUse4);
+		assertTrue(dto5 != null);
 	}
 	
 }
