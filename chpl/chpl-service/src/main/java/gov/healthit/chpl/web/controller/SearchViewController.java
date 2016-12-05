@@ -483,7 +483,7 @@ public class SearchViewController {
 		
 		for(DecertifiedDeveloperDTO dto : dtoList){
 			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
-			for(Long oncacbId : dto.getOncacbList()){
+			for(Long oncacbId : dto.getAcbList()){
 				CertificationBody cb = new CertificationBody(certificationBodyManager.getById(oncacbId));
 				certifyingBody.add(cb);
 			}

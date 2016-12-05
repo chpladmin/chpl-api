@@ -275,26 +275,26 @@ public class DeveloperDaoTest extends TestCase {
 		assertTrue(dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
 				dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
 		if(dtoList.get(0).getDeveloperId() == -11L){
-			assertTrue(dtoList.get(0).getOncacbList().contains(-6L));
-			assertTrue(dtoList.get(0).getOncacbList().contains(-5L));
-			assertTrue(dtoList.get(0).getOncacbList().contains(-4L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-6L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-5L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-4L));
 		}
 		else{
-			assertTrue(dtoList.get(0).getOncacbList().contains(-3L));
-			assertTrue(dtoList.get(0).getOncacbList().contains(-2L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-3L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-2L));
 		}
 		
 		assertTrue(dtoList.get(1).getNumMeaningfulUse() == 66 || dtoList.get(1).getNumMeaningfulUse() == 73);
 		assertTrue(dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
 				dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
 		if(dtoList.get(1).getDeveloperId() == -10L){
-			assertTrue(dtoList.get(0).getOncacbList().contains(-6L));
-			assertTrue(dtoList.get(0).getOncacbList().contains(-5L));
-			assertTrue(dtoList.get(0).getOncacbList().contains(-4L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-6L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-5L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-4L));
 		}
 		else{
-			assertTrue(dtoList.get(0).getOncacbList().contains(-3L));
-			assertTrue(dtoList.get(0).getOncacbList().contains(-2L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-3L));
+			assertTrue(dtoList.get(0).getAcbList().contains(-2L));
 		}
 	}
 	

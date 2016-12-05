@@ -4,15 +4,15 @@ import java.util.List;
 
 public class DecertifiedDeveloperDTO {
 	private Long developerId;
-	private List<Long> oncacbList;
+	private List<Long> acbList;
 	private String developerStatus;
 	private Long numMeaningfulUse;
 
 	public DecertifiedDeveloperDTO(){}
 	
-	public DecertifiedDeveloperDTO(Long developerId, List<Long> oncacbList, String developerStatus, Long numMeaningfulUse){
+	public DecertifiedDeveloperDTO(Long developerId, List<Long> acbList, String developerStatus, Long numMeaningfulUse){
 		this.setDeveloperId(developerId);
-		this.oncacbList=oncacbList;
+		this.acbList=acbList;
 		this.developerStatus=developerStatus;
 		this.numMeaningfulUse=numMeaningfulUse;
 	}
@@ -41,7 +41,7 @@ public class DecertifiedDeveloperDTO {
 	}
 	
 	public void addAcb(Long acb){
-		this.oncacbList.add(acb);
+		this.acbList.add(acb);
 	}
 
 	public Long getDeveloperId() {
@@ -52,12 +52,12 @@ public class DecertifiedDeveloperDTO {
 		this.developerId = developerId;
 	}
 	
-	public List<Long> getOncacbList(){
-		return this.oncacbList;
+	public List<Long> getAcbList(){
+		return this.acbList;
 	}
 	
-	public void setOncacbList(List<Long> oncacbList){
-		this.oncacbList = oncacbList;
+	public void setAcbList(List<Long> acbList){
+		this.acbList = acbList;
 	}
 	
 }
