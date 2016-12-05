@@ -30,6 +30,7 @@ import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -269,29 +270,31 @@ public class DeveloperDaoTest extends TestCase {
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		dtoList = developerDao.getDecertifiedDevelopers();
 		assertTrue(dtoList.size() == 2);
-		assertTrue(dtoList.get(0).getDeveloperName().equals("VendorBanned") || dtoList.get(0).getDeveloperName().equals("VendorSuspended"));
+		assertTrue(dtoList.get(0).getDeveloperId() == -10L || dtoList.get(0).getDeveloperId() == -11L);
 		assertTrue(dtoList.get(0).getNumMeaningfulUse() == 66 || dtoList.get(0).getNumMeaningfulUse() == 73);
-		assertTrue(dtoList.get(0).getDeveloperStatus().equals("Under certification ban by ONC") || dtoList.get(0).getDeveloperStatus().equals("Suspended by ONC"));
-		if(dtoList.get(0).getDeveloperName().equals("VendorBanned")){
-			assertTrue(dtoList.get(0).getOncacb().contains("ICSA Labs"));
-			assertTrue(dtoList.get(0).getOncacb().contains("Surescripts LLC"));
-			assertTrue(dtoList.get(0).getOncacb().contains("SLI Global"));
+		assertTrue(dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
+				dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
+		if(dtoList.get(0).getDeveloperId() == -11L){
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
 		}
 		else{
-			assertTrue(dtoList.get(0).getOncacb().contains("Drummond Group Inc."));
-			assertTrue(dtoList.get(0).getOncacb().contains("CCHIT"));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-3L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-2L));
 		}
 		
 		assertTrue(dtoList.get(1).getNumMeaningfulUse() == 66 || dtoList.get(1).getNumMeaningfulUse() == 73);
-		assertTrue(dtoList.get(1).getDeveloperStatus().equals("Under certification ban by ONC") || dtoList.get(1).getDeveloperStatus().equals("Suspended by ONC"));
-		if(dtoList.get(1).getDeveloperName().equals("VendorBanned")){
-			assertTrue(dtoList.get(1).getOncacb().contains("ICSA Labs"));
-			assertTrue(dtoList.get(1).getOncacb().contains("Surescripts LLC"));
-			assertTrue(dtoList.get(1).getOncacb().contains("SLI Global"));
+		assertTrue(dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
+				dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
+		if(dtoList.get(1).getDeveloperId() == -10L){
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
 		}
 		else{
-			assertTrue(dtoList.get(1).getOncacb().contains("Drummond Group Inc."));
-			assertTrue(dtoList.get(1).getOncacb().contains("CCHIT"));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-3L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-2L));
 		}
 	}
 	
