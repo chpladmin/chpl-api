@@ -42,6 +42,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
@@ -63,6 +64,7 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service("certifiedProductDetailsManager")
@@ -98,6 +100,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	@Autowired
 	private CertificationResultRules certRules;
 
+	@Autowired private SurveillanceManager survManager;
+	
 	private CQMCriterionDAO cqmCriterionDAO;
 	
 	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
@@ -182,6 +186,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
 		searchDetails.setCountCurrentCorrectiveActionPlans(dto.getCountCurrentCorrectiveActionPlans());
 		searchDetails.setCountClosedCorrectiveActionPlans(dto.getCountClosedCorrectiveActionPlans());
+		searchDetails.setNumMeaningfulUse(dto.getNumMeaningfulUse());
+		
+		
+		List<Surveillance> cpSurveillance = survManager.getByCertifiedProduct(dto.getId());
+		searchDetails.setSurveillance(cpSurveillance);
 		
 		//get qms standards
 		List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(dto.getId());

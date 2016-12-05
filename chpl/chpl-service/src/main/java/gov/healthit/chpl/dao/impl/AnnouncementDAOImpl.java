@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,27 +1,14 @@
 package gov.healthit.chpl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import gov.healthit.chpl.util.CertificationResultOption;
 
 public class XmlParsingTest {
 
@@ -91,5 +78,38 @@ public class XmlParsingTest {
 		} catch(Exception ex) {
 			fail("Cannot parse " + floatStr + " as float.");
 		}
+	}
+	
+	@Test
+	public void coerceCrtierionNumber() {
+		String input = "170.315 (a)(1)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " 170.315 (A)(1)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " 170.315(A)(1)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " 170.315  (A)(1)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " KATY EKEY";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
+		
+		input = " 170.523(a)";
+		System.out.println("Testing " + input);
+		input = Util.coerceToCriterionNumberFormat(input);
+		System.out.println("\tResult: " + input);
 	}
 }

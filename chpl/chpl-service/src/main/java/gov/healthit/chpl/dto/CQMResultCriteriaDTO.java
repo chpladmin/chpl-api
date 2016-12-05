@@ -1,9 +1,6 @@
 package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.entity.CQMResultCriteriaEntity;
-import gov.healthit.chpl.entity.CQMResultEntity;
-
-import java.util.Date;
 
 public class CQMResultCriteriaDTO {
 	

@@ -54,6 +54,7 @@
 		<class>gov.healthit.chpl.entity.EventTypeEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
+		<class>gov.healthit.chpl.entity.NonconformityStatusEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity</class>
@@ -70,6 +71,9 @@
 		<class>gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCqmCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCqmCertificationCriteriaEntity</class>
+		<class>gov.healthit.chpl.entity.PendingSurveillanceEntity</class>
+		<class>gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity</class>
+		<class>gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity</class>
 		<class>gov.healthit.chpl.entity.PendingTestParticipantEntity</class>
 		<class>gov.healthit.chpl.entity.PendingTestTaskEntity</class>		
 		<class>gov.healthit.chpl.entity.PracticeTypeEntity</class>
@@ -79,7 +83,14 @@
 		<class>gov.healthit.chpl.entity.ProductActiveOwnerEntity</class>
 		<class>gov.healthit.chpl.entity.ProductInsertableOwnerEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>		
-		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>		
+		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>	
+		<class>gov.healthit.chpl.entity.SurveillanceEntity</class>
+		<class>gov.healthit.chpl.entity.SurveillanceRequirementEntity</class>
+		<class>gov.healthit.chpl.entity.SurveillanceNonconformityEntity</class>
+		<class>gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity</class>
+		<class>gov.healthit.chpl.entity.SurveillanceTypeEntity</class>
+		<class>gov.healthit.chpl.entity.SurveillanceResultTypeEntity</class>
+		<class>gov.healthit.chpl.entity.SurveillanceRequirementTypeEntity</class>
 		<class>gov.healthit.chpl.entity.TargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.TestProcedureEntity</class>
 		<class>gov.healthit.chpl.entity.TestStandardEntity</class>

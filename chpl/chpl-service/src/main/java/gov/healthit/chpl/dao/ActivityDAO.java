@@ -1,12 +1,12 @@
 package gov.healthit.chpl.dao;
 
 
-import gov.healthit.chpl.domain.ActivityConcept;
-import gov.healthit.chpl.dto.ActivityDTO;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.dto.ActivityDTO;
 
 public interface ActivityDAO {
 	

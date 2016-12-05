@@ -1,8 +1,9 @@
 package gov.healthit.chpl.dao;
 
+import java.util.List;
+
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import java.util.List;
 
 public interface CertifiedProductSearchResultDAO {
 	

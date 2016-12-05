@@ -26,7 +26,6 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
-import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ProductManager;
 

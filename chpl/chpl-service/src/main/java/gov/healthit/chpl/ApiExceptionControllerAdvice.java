@@ -1,15 +1,6 @@
 package gov.healthit.chpl;
 
 
-import gov.healthit.chpl.auth.json.ErrorJSONObject;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ValidationErrorJSONObject;
-import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
-import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-import gov.healthit.chpl.web.controller.ValidationException;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
@@ -20,6 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import gov.healthit.chpl.auth.json.ErrorJSONObject;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.ValidationErrorJSONObject;
+import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
+import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.web.controller.ValidationException;
 
 
 @ControllerAdvice

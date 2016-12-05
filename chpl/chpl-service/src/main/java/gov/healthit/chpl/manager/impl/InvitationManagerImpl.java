@@ -42,7 +42,6 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-import io.swagger.annotations.ApiOperation;
 
 @Service
 public class InvitationManagerImpl implements InvitationManager {

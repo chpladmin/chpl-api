@@ -33,12 +33,14 @@ public class CertifiedProductSearchDetails {
 	private Integer countCorrectiveActionPlans;
 	private Integer countCurrentCorrectiveActionPlans;
 	private Integer countClosedCorrectiveActionPlans;
+	private List<Surveillance> surveillance = new ArrayList<Surveillance>();
 	private Boolean ics;
 	private Boolean accessibilityCertified;
 	private String productAdditionalSoftware;
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long lastModifiedDate;
+	private Long numMeaningfulUse;
 	
 	private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
@@ -275,5 +277,17 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setVersion(ProductVersion version) {
 		this.version = version;
+	}
+	public List<Surveillance> getSurveillance() {
+		return surveillance;
+	}
+	public void setSurveillance(List<Surveillance> surveillance) {
+		this.surveillance = surveillance;
+	}
+	public Long getNumMeaningfulUse() {
+		return numMeaningfulUse;
+	}
+	public void setNumMeaningfulUse(Long numMeaningfulUse) {
+		this.numMeaningfulUse = numMeaningfulUse;
 	}
 }

@@ -1,13 +1,11 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.CertificationIdDTO;
-import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
-import gov.healthit.chpl.entity.CertificationIdEntity;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import gov.healthit.chpl.dto.CQMMetDTO;
+import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
+import gov.healthit.chpl.dto.CertificationIdDTO;
 
 public interface CertificationIdDAO {
 	

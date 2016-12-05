@@ -1,10 +1,7 @@
 package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -13,9 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.proxy.HibernateProxy;
 
 
 /** 

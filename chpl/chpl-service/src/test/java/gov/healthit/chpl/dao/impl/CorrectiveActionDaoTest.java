@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -63,6 +64,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetCorrectiveActionPlanById() throws EntityRetrievalException {
 		CorrectiveActionPlanDTO plan = capDao.getById(0L);
 		assertNotNull(plan);
@@ -71,6 +73,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testPlanCertificationsExist() throws EntityRetrievalException {
 		List<CorrectiveActionPlanCertificationResultDTO> capResults = capCertDao.getAllForCorrectiveActionPlan(0L);
 		assertNotNull(capResults);
@@ -79,6 +82,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetPlanCertificationById() throws EntityRetrievalException {
 		CorrectiveActionPlanCertificationResultDTO capResult = capCertDao.getById(0L);
 		assertNotNull(capResult);
@@ -87,6 +91,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetPlanByCertifiedProduct() throws EntityRetrievalException {
 		List<CorrectiveActionPlanDTO> plans = capDao.getAllForCertifiedProduct(1L);
 		assertNotNull(plans);
@@ -97,6 +102,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testUpdatePlan() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -113,6 +119,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testCreatePlan() throws EntityRetrievalException, EntityCreationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -128,6 +135,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testCreatePlanWithCerts() throws EntityRetrievalException, EntityCreationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 

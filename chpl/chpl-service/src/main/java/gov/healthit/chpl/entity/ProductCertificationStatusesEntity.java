@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,6 +43,12 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 	
 	@Column(name = "suspended_by_acb", nullable = false)
 	private Integer suspendedByAcb;
+	
+	@Column(name = "suspended_by_onc", nullable = false)
+	private Integer suspendedByOnc;
+	
+	@Column(name = "terminated_by_onc", nullable = false)
+	private Integer terminatedByOnc;
 	
 	public ProductCertificationStatusesEntity(){
 		
@@ -189,5 +196,21 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
 		sb.append("withdrawnByAcb: " + this.getWithdrawnByAcb());
 		sb.append("suspendedByAcb: " + this.getSuspendedByAcb());
 		return sb.toString();		
+	}
+
+	public Integer getSuspendedByOnc() {
+		return suspendedByOnc;
+	}
+
+	public void setSuspendedByOnc(Integer suspendedByOnc) {
+		this.suspendedByOnc = suspendedByOnc;
+	}
+
+	public Integer getTerminatedByOnc() {
+		return terminatedByOnc;
+	}
+
+	public void setTerminatedByOnc(Integer terminatedByOnc) {
+		this.terminatedByOnc = terminatedByOnc;
 	}
 }

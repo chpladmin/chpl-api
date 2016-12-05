@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -56,6 +57,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testCreate() throws EntityCreationException, EntityRetrievalException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -99,6 +101,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 
 	@Test
 	@Transactional
+	@Rollback
 	public void testUpdate() throws EntityRetrievalException, EntityCreationException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -160,6 +163,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testDelete() throws EntityCreationException, EntityRetrievalException {
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -203,6 +207,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testFindAll() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<CertificationCriterionDTO> dtos = certificationCriterionDAO.findAll();
@@ -213,6 +218,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testFindByEdition() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<CertificationCriterionDTO> dtos = certificationCriterionDAO.findByCertificationEditionYear("2014");
@@ -222,6 +228,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		
 	}
 	
+	@Test
 	@Transactional
 	public void testGetById() throws EntityRetrievalException, EntityCreationException {
 		

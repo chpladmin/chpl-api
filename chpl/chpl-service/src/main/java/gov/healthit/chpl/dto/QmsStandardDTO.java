@@ -1,9 +1,6 @@
 package gov.healthit.chpl.dto;
 
 import gov.healthit.chpl.entity.QmsStandardEntity;
-import gov.healthit.chpl.entity.TestingLabEntity;
-
-import java.util.Date;
 
 public class QmsStandardDTO {
 	private Long id;
