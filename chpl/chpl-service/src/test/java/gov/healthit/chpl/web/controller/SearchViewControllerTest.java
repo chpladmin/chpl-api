@@ -18,6 +18,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -28,6 +29,8 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
@@ -64,8 +67,7 @@ public class SearchViewControllerTest {
 	 * 
 	 * Expected Result: Completes without error and returns some SearchResponse records
 	 */
-	@Transactional
-	@Rollback(true) 
+	@Transactional 
 	@Test
 	public void test_advancedSearch_refineByCqms_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -88,7 +90,6 @@ public class SearchViewControllerTest {
 	 * Expected Result: Completes without error and returns some SearchResponse records
 	 */
 	@Transactional
-	@Rollback(true)
 	@Test
 	public void test_advancedSearch_refineByCertificationCriteria_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -112,7 +113,6 @@ public class SearchViewControllerTest {
 	 * Expected Result: Completes without error and returns some SearchResponse records
 	 */
 	@Transactional
-	@Rollback(true)
 	@Test
 	public void test_advancedSearch_refineByCertificationCriteriaAndCqms_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -141,7 +141,6 @@ public class SearchViewControllerTest {
 	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
 	 */
 	@Transactional
-	@Rollback(true)
 	@Test
 	public void test_getPopulateSearchData_simpleAsTrue_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -181,7 +180,6 @@ public class SearchViewControllerTest {
 	 * Then the controller method's getDecertifiedDevelopers returns expected results
 	 */
 	@Transactional
-	@Rollback(true)
 	@Test
 	public void test_getDecertifiedDevelopers_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -198,4 +196,74 @@ public class SearchViewControllerTest {
 		assertTrue("DecertifiedDeveloperResults should contain an index with a non-null numMeaningfulUse.", hasNumMeaningfulUseNonNull);
 	}
 	
+	/** 
+	 * Given the CHPL is accepting search requests
+	 * When I call the REST API's /
+	 * Then the controller method's advancedSearch returns SearchResponse containing numMeaningfulUse
+	 */
+	@Transactional
+	@Test
+	public void test_advancedSearch_resultReturnsNumMeaningfulUse() {
+		SearchRequest sr = new SearchRequest();
+		sr.setPageNumber(0);
+		sr.setPageSize(50);
+		sr.setOrderBy("developer");
+		sr.setSortDescending(true);
+		sr.setDeveloper("VendorSuspended");
+		
+		SearchResponse resp = searchViewController.advancedSearch(sr);
+		assertTrue("SearchResponse should have size > 0 but is " + resp.getResults().size(), resp.getResults().size() > 0);
+		Boolean hasNumMeaningfulUse = false;
+		for(CertifiedProductSearchResult result : resp.getResults()){
+			if(result.getNumMeaningfulUse() != null){
+				hasNumMeaningfulUse = true;
+				break;
+			}
+		}
+		assertTrue("SearchResponse should contain results with numMeaningfulUse.", hasNumMeaningfulUse);
+	}
+	
+	/** 
+	 * Given the CHPL is accepting search requests
+	 * When I call the REST API's /
+	 * Then the controller method's advancedSearch returns SearchResponse containing numMeaningfulUse
+	 * @throws EntityRetrievalException 
+	 */
+	@Transactional
+	@Test
+	public void test_simpleSearch_resultReturnsNumMeaningfulUse() throws EntityRetrievalException {
+		String searchTerm = "VendorSuspended";
+		Integer pageNumber = 0;
+		Integer pageSize = 50;
+		String orderBy = "developer";
+		Boolean sortDescending = true;
+		
+		SearchResponse resp = searchViewController.simpleSearch(searchTerm, pageNumber, pageSize, orderBy, sortDescending);
+		assertTrue("SearchResponse should have size > 0 but is " + resp.getResults().size(), resp.getResults().size() > 0);
+		Boolean hasNumMeaningfulUse = false;
+		for(CertifiedProductSearchResult result : resp.getResults()){
+			if(result.getNumMeaningfulUse() != null){
+				hasNumMeaningfulUse = true;
+				break;
+			}
+		}
+	assertTrue("SearchResponse should contain results with numMeaningfulUse.", hasNumMeaningfulUse);
+	}
+	
+	/** 
+	 * Given the CHPL is accepting search requests
+	 * When I call the REST API's /
+	 * Then the controller method's getCertifiedProductDetails returns CertifiedProductSearchDetails containing numMeaningfulUse
+	 * @throws EntityRetrievalException 
+	 */
+	@Transactional
+	@Test
+	public void test_getCertifiedProductDetails_resultReturnsNumMeaningfulUse() throws EntityRetrievalException {
+		Long cpId = 6L;
+		
+		CertifiedProductSearchDetails resp = searchViewController.getCertifiedProductDetails(cpId);
+		assertTrue("Response should contain results but is null", resp != null);
+		assertTrue("Response should contain certified product with numMeaningfulUse == 12 but contains numMeaningfulUse of " + resp.getNumMeaningfulUse(),
+				resp.getNumMeaningfulUse() == 12);
+	}
 }
