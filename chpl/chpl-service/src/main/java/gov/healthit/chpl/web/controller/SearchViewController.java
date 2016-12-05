@@ -26,7 +26,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperDecertificationResponse;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
@@ -36,10 +38,12 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
+import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -57,6 +61,9 @@ public class SearchViewController {
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
+	
+	@Autowired
+	private CertificationBodyManager certificationBodyManager;
 	
 	@Autowired
 	private DeveloperManager developerManager;
@@ -468,16 +475,26 @@ public class SearchViewController {
 			notes="This returns all decertified developers.")
 	@RequestMapping(value="/decertifications/developers", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody DeveloperDecertificationResponse getDeveloperDecertifications() throws EntityRetrievalException {
+	public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
 		DeveloperDecertificationResponse ddr = new DeveloperDecertificationResponse();
 		
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		
 		dtoList = developerManager.getDecertifiedDevelopers();
 		
-		// get total decertified CPs here
-		
 		ddr.setDeveloperDecertificationResult(dtoList);
+		for(DecertifiedDeveloperDTO dto : dtoList){
+			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
+			for(Long oncacbId : dto.getAcbIdList()){
+				CertificationBody cb = new CertificationBody(certificationBodyManager.getById(oncacbId));
+				certifyingBody.add(cb);
+			}
+			
+			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerManager.getById(dto.getDeveloperId()), certifyingBody, dto.getNumMeaningfulUse());
+			decertifiedDeveloperResults.add(decertifiedDeveloper);
+		}
+		
+		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
 		
 		return ddr;
 	}
@@ -490,13 +507,25 @@ public class SearchViewController {
 	public @ResponseBody DeveloperDecertificationResponse getCertifiedProductDecertifications() throws EntityRetrievalException {
 		DeveloperDecertificationResponse ddr = new DeveloperDecertificationResponse();
 		
-		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
-		
-		dtoList = developerManager.getDecertifiedDevelopers();
-		
-		// get total decertified CPs here
-		
-		ddr.setDeveloperDecertificationResult(dtoList);
+//		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+//		
+//		dtoList = developerManager.getDecertifiedDevelopers();
+//		
+//		// get total decertified CPs here
+//		
+//		ddr.setDeveloperDecertificationResult(dtoList);
+//		for(DecertifiedDeveloperDTO dto : dtoList){
+//			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
+//			for(Long oncacbId : dto.getAcbIdList()){
+//				CertificationBody cb = new CertificationBody(certificationBodyManager.getById(oncacbId));
+//				certifyingBody.add(cb);
+//			}
+//			
+//			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerManager.getById(dto.getDeveloperId()), certifyingBody, dto.getNumMeaningfulUse());
+//			decertifiedDeveloperResults.add(decertifiedDeveloper);
+//		}
+//		
+//		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
 		
 		return ddr;
 	}
