@@ -27,10 +27,11 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.DeveloperDecertificationResponse;
+import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
+import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import net.sf.ehcache.CacheManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -176,16 +177,25 @@ public class SearchViewControllerTest {
 	
 	/** 
 	 * Given the CHPL is accepting search requests
-	 * When I call the REST API's /decertified/developers
-	 * Then the controller method's getDeveloperDecertifications returns expected results
+	 * When I call the REST API's /decertifications/developers
+	 * Then the controller method's getDecertifiedDevelopers returns expected results
 	 */
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_getDeveloperDecertifications_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		DeveloperDecertificationResponse resp = searchViewController.getDeveloperDecertifications();
-		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + resp.getDeveloperDecertificationResult().size(), 
-				resp.getDeveloperDecertificationResult().size() == 2);
+	public void test_getDecertifiedDevelopers_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		DecertifiedDeveloperResults resp = searchViewController.getDecertifiedDevelopers();
+		assertTrue(resp.getDecertifiedDeveloperResults().size() > 0);
+		assertTrue(resp.getDecertifiedDeveloperResults().get(0).getDeveloper() != null);
+		assertTrue(resp.getDecertifiedDeveloperResults().get(0).getCertifyingBody() != null);
+		Boolean hasNumMeaningfulUseNonNull = false;
+		for(DecertifiedDeveloperResult ddr : resp.getDecertifiedDeveloperResults()){
+			if(ddr.getEstimatedUsers() > 0){
+				hasNumMeaningfulUseNonNull = true;
+			}
+		}
+		assertTrue("DecertifiedDeveloperResults should contain an index with a non-null numMeaningfulUse.", hasNumMeaningfulUseNonNull);
 	}
 	
 }

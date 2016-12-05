@@ -3,34 +3,18 @@ package gov.healthit.chpl.dto;
 import java.util.List;
 
 public class DecertifiedDeveloperDTO {
-	private String developerName;
-	private List<String> oncacb;
+	private Long developerId;
+	private List<Long> oncacbList;
 	private String developerStatus;
 	private Long numMeaningfulUse;
 
 	public DecertifiedDeveloperDTO(){}
 	
-	public DecertifiedDeveloperDTO(String developerName, List<String> oncacb, String developerStatus, Long numMeaningfulUse){
-		this.developerName=developerName;
-		this.oncacb=oncacb;
+	public DecertifiedDeveloperDTO(Long developerId, List<Long> oncacbList, String developerStatus, Long numMeaningfulUse){
+		this.setDeveloperId(developerId);
+		this.oncacbList=oncacbList;
 		this.developerStatus=developerStatus;
 		this.numMeaningfulUse=numMeaningfulUse;
-	}
-
-	public String getDeveloperName() {
-		return developerName;
-	}
-
-	public void setDeveloperName(String developerName) {
-		this.developerName = developerName;
-	}
-	
-	public List<String> getOncacb() {
-		return oncacb;
-	}
-
-	public void setOncacb(List<String> oncacb) {
-		this.oncacb = oncacb;
 	}
 
 	public String getDeveloperStatus() {
@@ -56,8 +40,24 @@ public class DecertifiedDeveloperDTO {
 		}
 	}
 	
-	public void addAcb(String acb){
-		this.oncacb.add(acb);
+	public void addAcb(Long acb){
+		this.oncacbList.add(acb);
+	}
+
+	public Long getDeveloperId() {
+		return developerId;
+	}
+
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
+	}
+	
+	public List<Long> getOncacbList(){
+		return this.oncacbList;
+	}
+	
+	public void setOncacbList(List<Long> oncacbList){
+		this.oncacbList = oncacbList;
 	}
 	
 }

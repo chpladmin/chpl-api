@@ -384,26 +384,26 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		Query getDecertifiedDevelopers =
 				entityManager.createQuery(
 				"FROM CertifiedProductDetailsEntity "
-				+"WHERE developerStatusName IN (:suspended, :banned) ", CertifiedProductDetailsEntity.class);
+				+"WHERE developerStatusName IN (:suspended, :banned) AND deleted = false", CertifiedProductDetailsEntity.class);
 		getDecertifiedDevelopers.setParameter("suspended", String.valueOf(DeveloperStatusType.SuspendedByOnc));
 		getDecertifiedDevelopers.setParameter("banned", String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc));
 		List<CertifiedProductDetailsEntity> result = getDecertifiedDevelopers.getResultList();
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		//populate dtoList from result
 		for(CertifiedProductDetailsEntity e : result){
-			logger.debug("CertifiedProductDetailsEntity: " + e.getDeveloperName() + " " + e.getCertificationBodyName() + " " + e.getMeaningfulUseUsers());
+			logger.debug("CertifiedProductDetailsEntity: " + e.getDeveloperId() + " " + e.getCertificationBodyId() + " " + e.getMeaningfulUseUsers());
 			Boolean dtoIsInList = false;
 			if(dtoList.size() > 0){
 				for(DecertifiedDeveloperDTO dto : dtoList){
-					logger.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperName() + " " + dto.getOncacb() + " " + dto.getNumMeaningfulUse());
+					logger.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperId() + " " + dto.getOncacbList() + " " + dto.getNumMeaningfulUse());
 					// if developer already exists, update it to include ACB and aggregate numMeaningfulUse
-					if(dto.getDeveloperName().equals(e.getDeveloperName())){
-						logger.debug(dto.getDeveloperName() + " == " + e.getDeveloperName());
+					if(dto.getDeveloperId().equals(e.getDeveloperId())){
+						logger.debug(dto.getDeveloperId() + " == " + e.getDeveloperId());
 						// If this developer is not associated with the ACB, add the ACB
-						if(!dto.getOncacb().contains(e.getCertificationBodyName())){
+						if(!dto.getOncacbList().contains(e.getCertificationBodyId())){
 							logger.debug("dto does not contain " + e.getCertificationBodyName());
-							dto.addAcb(e.getCertificationBodyName());
-							logger.debug("added acb " + e.getCertificationBodyName() + " to dto with dev name == " + dto.getDeveloperName());
+							dto.addAcb(e.getCertificationBodyId());
+							logger.debug("added acb " + e.getCertificationBodyId() + " to dto with dev id == " + dto.getDeveloperId());
 							dto.setDeveloperStatus(e.getDeveloperStatusName());
 							logger.debug("set dto dev status to " + e.getDeveloperStatusName());
 							if(dto.getNumMeaningfulUse() != null){
@@ -430,9 +430,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				}
 			}
 			if(!dtoIsInList){
-				List<String> oncacb = new ArrayList<String>();
-				oncacb.add(e.getCertificationBodyName());
-				DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperName(), oncacb, e.getCertificationStatusName(), e.getMeaningfulUseUsers());
+				List<Long> oncacb = new ArrayList<Long>();
+				oncacb.add(e.getCertificationBodyId());
+				DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperId(), oncacb, e.getDeveloperStatusName(), e.getMeaningfulUseUsers());
 				dtoList.add(newDto);
 				logger.debug("adding newDto to list with values: " + e.getMeaningfulUseUsers());
 			}
