@@ -107,6 +107,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_body_code")
     private String certificationBodyCode;
     
+    @Column(name = "acb_is_deleted")
+    private Boolean acbIsDeleted;
+    
     @Column(name = "product_classification_name")
     private String productClassificationName;
     
@@ -332,6 +335,14 @@ public class CertifiedProductDetailsEntity {
 
 	public void setCertificationBodyName(String certificationBodyName) {
 		this.certificationBodyName = certificationBodyName;
+	}
+	
+	public Boolean getAcbIsDeleted() {
+		return this.acbIsDeleted;
+	}
+	
+	public void setAcbIsDeleted(Boolean acbIsDeleted) {
+		this.acbIsDeleted = acbIsDeleted;
 	}
 
 	public String getProductClassificationName() {

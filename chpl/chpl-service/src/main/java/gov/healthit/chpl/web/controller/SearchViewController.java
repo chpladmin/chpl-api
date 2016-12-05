@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.impl.DeveloperDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
@@ -65,6 +65,9 @@ public class SearchViewController {
 	
 	@Autowired
 	private CertificationBodyManager certificationBodyManager;
+	
+	@Autowired 
+	private CertificationBodyDAO certificationBodyDao;
 	
 	@Autowired 
 	private DeveloperDAO developerDao;
@@ -489,7 +492,7 @@ public class SearchViewController {
 		for(DecertifiedDeveloperDTO dto : dtoList){
 			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
 			for(Long oncacbId : dto.getAcbIdList()){
-				CertificationBody cb = new CertificationBody(certificationBodyManager.getById(oncacbId));
+				CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
 				certifyingBody.add(cb);
 			}
 			
