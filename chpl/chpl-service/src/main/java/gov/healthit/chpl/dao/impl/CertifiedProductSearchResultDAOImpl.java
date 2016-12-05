@@ -99,6 +99,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "count_corrective_action_plans, "
 			+ "count_current_corrective_action_plans, "
 			+ "meaningful_use_users, "
+			+ "acb_is_deleted, "
 			+ "count_closed_corrective_action_plans ";
 	
 	@Override
