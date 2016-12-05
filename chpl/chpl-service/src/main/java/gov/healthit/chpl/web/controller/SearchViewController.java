@@ -476,13 +476,12 @@ public class SearchViewController {
 	@RequestMapping(value="/decertifications/developers", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
-		DeveloperDecertificationResponse ddr = new DeveloperDecertificationResponse();
-		
+		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+		List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
 		
 		dtoList = developerManager.getDecertifiedDevelopers();
 		
-		ddr.setDeveloperDecertificationResult(dtoList);
 		for(DecertifiedDeveloperDTO dto : dtoList){
 			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
 			for(Long oncacbId : dto.getAcbIdList()){
