@@ -762,6 +762,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 				to.setCertificationCriterionId(crit.getId());
 			} else {
 				to.setSurveilledRequirement(from.getRequirement());
+				to.setCertificationCriterionId(null);
 			}
 		}
 		if(from.getType() != null) {
