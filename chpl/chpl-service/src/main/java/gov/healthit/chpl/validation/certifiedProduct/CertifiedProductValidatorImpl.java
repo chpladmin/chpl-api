@@ -95,7 +95,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("No certification body was found matching the name '" + product.getCertificationBodyName() + "'.");
 			} else {
 				certificationBody = acbDao.getById(product.getCertificationBodyId());
-				if(!certificationBody.getAcbCode().equals(acbCode)) {
+				if(certificationBody != null && !certificationBody.getAcbCode().equals(acbCode)) {
 					product.getErrorMessages().add("The ACB code provided does not match the assigned ACB code '" + certificationBody.getAcbCode() + "'.");
 				}
 			}
