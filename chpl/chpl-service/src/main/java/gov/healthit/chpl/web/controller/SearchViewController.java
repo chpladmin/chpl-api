@@ -499,7 +499,7 @@ public class SearchViewController {
 		return ddr;
 	}
 	
-	@ApiOperation(value="Get all decertified certified products in the CHPL", 
+	@ApiOperation(value="Get decertified certified products in the CHPL matching search criteria", 
 			notes="Returns up to all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
 	@RequestMapping(value="/decertifications/certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
