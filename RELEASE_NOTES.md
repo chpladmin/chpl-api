@@ -8,6 +8,7 @@ _Date TBD_
 * Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
 * Change behavior if certified product is marked as suspended or terminated by ONC. These statuses also result in a developer status change and require ROLE_ADMIN
 * Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer. 
+* Add API call to get decertified certified products with pageCount set to the total number of decertified products
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
