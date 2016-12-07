@@ -278,7 +278,7 @@ public class SearchViewControllerTest {
 	public void test_searchDecertifiedCPs() throws EntityRetrievalException {	
 		SearchResponse resp = searchViewController.getDecertifiedCertifiedProducts(null, null, null, null, null);		
 		
-		assertTrue(resp.getResults().size() > 0);
+		assertTrue(resp.getResults().size() == 7);
 		assertTrue("SearchResponse.pageSize should be equal to the number of results", resp.getPageSize() == resp.getResults().size());
 		for(CertifiedProductSearchResult cp : resp.getResults()){
 			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.SuspendedByOnc)) ||
