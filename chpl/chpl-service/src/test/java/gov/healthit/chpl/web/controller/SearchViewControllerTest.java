@@ -32,6 +32,7 @@ import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import net.sf.ehcache.CacheManager;
 
@@ -263,5 +264,27 @@ public class SearchViewControllerTest {
 		assertTrue("Response should contain results but is null", resp != null);
 		assertTrue("Response should contain certified product with numMeaningfulUse == 12 but contains numMeaningfulUse of " + resp.getNumMeaningfulUse(),
 				resp.getNumMeaningfulUse() == 12);
+	}
+	
+	/** 
+	 * Given that a user with no security calls the API
+	 * When the API is called at /decertifications/certified_products
+	 * Then the API returns a SearchResponse object with only decertified CPs
+	 * Then the pageSize is equivalent to the sum of all the decertified CPs
+	 * @throws EntityRetrievalException 
+	 */
+	@Transactional
+	@Test
+	public void test_searchDecertifiedCPs() throws EntityRetrievalException {	
+		SearchResponse resp = searchViewController.getDecertifiedCertifiedProducts(null, null, null, null, null);		
+		
+		assertTrue(resp.getResults().size() > 0);
+		assertTrue("SearchResponse.pageSize should be equal to the number of results", resp.getPageSize() == resp.getResults().size());
+		for(CertifiedProductSearchResult cp : resp.getResults()){
+			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.SuspendedByOnc)) ||
+					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) || 
+					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)) ||
+					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc)));
+		}
 	}
 }

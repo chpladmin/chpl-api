@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
-import gov.healthit.chpl.domain.DeveloperDecertificationResponse;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
@@ -38,6 +38,7 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -498,35 +499,54 @@ public class SearchViewController {
 		return ddr;
 	}
 	
-	//decertifications/certified_products
 	@ApiOperation(value="Get all decertified certified products in the CHPL", 
-			notes="Returns all decertified certified products, their decertified statuses, and the total count of decertified certified products.")
+			notes="Returns up to all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
 	@RequestMapping(value="/decertifications/certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody DeveloperDecertificationResponse getCertifiedProductDecertifications() throws EntityRetrievalException {
-		DeveloperDecertificationResponse ddr = new DeveloperDecertificationResponse();
+	public @ResponseBody SearchResponse getDecertifiedCertifiedProducts (
+			@RequestParam("searchTerm") String searchTerm, 
+			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
+			@RequestParam(value = "pageSize", required = false) Integer pageSize,
+			@RequestParam(value = "orderBy", required = false) String orderBy,
+			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending) throws EntityRetrievalException {
+		SearchResponse fullResp = new SearchResponse();
+		SearchResponse decertifiedCPs = new SearchResponse();
+		List<CertifiedProductSearchResult> cpResultList = new ArrayList<CertifiedProductSearchResult>();
 		
-//		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
-//		
-//		dtoList = developerManager.getDecertifiedDevelopers();
-//		
-//		// get total decertified CPs here
-//		
-//		ddr.setDeveloperDecertificationResult(dtoList);
-//		for(DecertifiedDeveloperDTO dto : dtoList){
-//			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
-//			for(Long oncacbId : dto.getAcbIdList()){
-//				CertificationBody cb = new CertificationBody(certificationBodyManager.getById(oncacbId));
-//				certifyingBody.add(cb);
-//			}
-//			
-//			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerManager.getById(dto.getDeveloperId()), certifyingBody, dto.getNumMeaningfulUse());
-//			decertifiedDeveloperResults.add(decertifiedDeveloper);
-//		}
-//		
-//		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
+		if (pageNumber == null){
+			pageNumber = 0;
+		}
 		
-		return ddr;
+		SearchRequest searchRequest = new SearchRequest();
+		
+		searchRequest.setSearchTerm(searchTerm);
+		searchRequest.setPageNumber(pageNumber);
+		
+		if (orderBy != null){
+			searchRequest.setOrderBy(orderBy);
+		}
+		
+		if (sortDescending != null){
+			searchRequest.setSortDescending(sortDescending);
+		}
+		
+		fullResp = certifiedProductSearchManager.search(searchRequest);
+		for(CertifiedProductSearchResult cp : fullResp.getResults()){
+			logger.debug("CP " + cp.getChplProductNumber() + " has certificationStatus keys = " + cp.getCertificationStatus().keySet() + 
+					" and cp values = " + cp.getCertificationStatus().values());
+			if(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.SuspendedByOnc)) || 
+				cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) ||
+				cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)) ||
+				cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc))) {
+				logger.debug("Adding Decertified CP " + cp.getChplProductNumber() + " with status " + cp.getCertificationStatus());
+					cpResultList.add(cp);
+			}
+		}
+		
+		decertifiedCPs.setResults(cpResultList);
+		decertifiedCPs.setPageSize(decertifiedCPs.getResults().size());
+		
+		return decertifiedCPs;
 	}
 	
 }
