@@ -7,6 +7,7 @@ public class SearchRequest {
 	public static final String HAS_OPEN_CAP = "open";
 	public static final String HAS_CLOSED_CAP = "closed";
 	public static final String NEVER_HAD_CAP = "never";
+	public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";
 	
 	String searchTerm = null;
 	
@@ -27,6 +28,8 @@ public class SearchRequest {
 	String product = null;
 	String version = null;
 	String practiceType = null;
+	String certificationDateStart = null;
+	String certificationDateEnd = null;
 	
 	String orderBy = "product";
 	Boolean sortDescending = false;
@@ -121,5 +124,17 @@ public class SearchRequest {
 	}
 	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
+	}
+	public String getCertificationDateStart() {
+		return certificationDateStart;
+	}
+	public void setCertificationDateStart(String certificationDateStart) {
+		this.certificationDateStart = certificationDateStart;
+	}
+	public String getCertificationDateEnd() {
+		return certificationDateEnd;
+	}
+	public void setCertificationDateEnd(String certificationDateEnd) {
+		this.certificationDateEnd = certificationDateEnd;
 	}
 }
