@@ -181,7 +181,6 @@ public class SearchViewControllerTest {
 	@Transactional
 	@Test
 	public void test_getDecertifiedDevelopers_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		DecertifiedDeveloperResults resp = searchViewController.getDecertifiedDevelopers();
 		assertTrue(resp.getDecertifiedDeveloperResults().size() > 0);
 		assertTrue(resp.getDecertifiedDeveloperResults().get(0).getDeveloper() != null);
