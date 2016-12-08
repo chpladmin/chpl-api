@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
@@ -68,6 +68,9 @@ public class SearchViewController {
 	
 	@Autowired
 	private DeveloperManager developerManager;
+	
+	@Autowired
+	private CertifiedProductSearchResultDAO certifiedProductSearchResultDao;
 	
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
@@ -509,18 +512,26 @@ public class SearchViewController {
 			@RequestParam(value = "pageSize", required = false) Integer pageSize,
 			@RequestParam(value = "orderBy", required = false) String orderBy,
 			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending) throws EntityRetrievalException {
-		SearchResponse fullResp = new SearchResponse();
-		SearchResponse decertifiedCPs = new SearchResponse();
-		List<CertifiedProductSearchResult> cpResultList = new ArrayList<CertifiedProductSearchResult>();
+		SearchResponse resp = new SearchResponse();
 		
 		if (pageNumber == null){
 			pageNumber = 0;
 		}
 		
 		SearchRequest searchRequest = new SearchRequest();
+		List<String> allowedCertificationStatuses = new ArrayList<String>();
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.SuspendedByOnc));
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByAcb));
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloper));
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.TerminatedByOnc));
+		
+		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
 		
 		searchRequest.setSearchTerm(searchTerm);
 		searchRequest.setPageNumber(pageNumber);
+		if(pageSize == null){
+			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
+		}
 		
 		if (orderBy != null){
 			searchRequest.setOrderBy(orderBy);
@@ -530,23 +541,9 @@ public class SearchViewController {
 			searchRequest.setSortDescending(sortDescending);
 		}
 		
-		fullResp = certifiedProductSearchManager.search(searchRequest);
-		for(CertifiedProductSearchResult cp : fullResp.getResults()){
-			logger.debug("CP " + cp.getChplProductNumber() + " has certificationStatus keys = " + cp.getCertificationStatus().keySet() + 
-					" and cp values = " + cp.getCertificationStatus().values());
-			if(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.SuspendedByOnc)) || 
-				cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) ||
-				cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)) ||
-				cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc))) {
-				logger.debug("Adding Decertified CP " + cp.getChplProductNumber() + " with status " + cp.getCertificationStatus());
-					cpResultList.add(cp);
-			}
-		}
+		resp = certifiedProductSearchManager.search(searchRequest);
 		
-		decertifiedCPs.setResults(cpResultList);
-		decertifiedCPs.setPageSize(decertifiedCPs.getResults().size());
-		
-		return decertifiedCPs;
+		return resp;
 	}
 	
 }
