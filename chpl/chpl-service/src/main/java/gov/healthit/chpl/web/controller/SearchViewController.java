@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -39,7 +42,7 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
-import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -63,9 +66,6 @@ public class SearchViewController {
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
 	
-	@Autowired
-	private CertificationBodyManager certificationBodyManager;
-	
 	@Autowired 
 	private CertificationBodyDAO certificationBodyDao;
 	
@@ -74,6 +74,9 @@ public class SearchViewController {
 	
 	@Autowired
 	private DeveloperManager developerManager;
+	
+	@Autowired
+	private CertifiedProductSearchResultDAO certifiedProductSearchResultDao;
 	
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
@@ -222,7 +225,27 @@ public class SearchViewController {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SearchResponse advancedSearch(
-			@RequestBody SearchRequest searchFilters) {
+			@RequestBody SearchRequest searchFilters) throws InvalidArgumentsException {
+		//check date params for format
+		SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+		
+		if(!StringUtils.isEmpty(searchFilters.getCertificationDateStart())) {
+			try {
+				format.parse(searchFilters.getCertificationDateStart());
+			} catch(ParseException ex) {
+				logger.error("Could not parse " + searchFilters.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+				throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + searchFilters.getCertificationDateStart());
+			}
+		}
+		if(!StringUtils.isEmpty(searchFilters.getCertificationDateEnd())) {
+			try {
+				format.parse(searchFilters.getCertificationDateEnd());
+			} catch(ParseException ex) {
+				logger.error("Could not parse " + searchFilters.getCertificationDateEnd() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+				throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + searchFilters.getCertificationDateEnd());
+			}
+		}
+		
 		return certifiedProductSearchManager.search(searchFilters);
 	}
 	
@@ -503,6 +526,48 @@ public class SearchViewController {
 		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
 		
 		return ddr;
+	}
+	
+	@ApiOperation(value="Get all decertified certified products in the CHPL", 
+			notes="Returns all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
+	@RequestMapping(value="/decertifications/certified_products", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchResponse getDecertifiedCertifiedProducts (
+			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
+			@RequestParam(value = "pageSize", required = false) Integer pageSize,
+			@RequestParam(value = "orderBy", required = false) String orderBy,
+			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending) throws EntityRetrievalException {
+		SearchResponse resp = new SearchResponse();
+		
+		if (pageNumber == null){
+			pageNumber = 0;
+		}
+		
+		SearchRequest searchRequest = new SearchRequest();
+		List<String> allowedCertificationStatuses = new ArrayList<String>();
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.SuspendedByOnc));
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByAcb));
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloper));
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.TerminatedByOnc));
+		
+		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
+		
+		searchRequest.setPageNumber(pageNumber);
+		if(pageSize == null){
+			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
+		}
+		
+		if (orderBy != null){
+			searchRequest.setOrderBy(orderBy);
+		}
+		
+		if (sortDescending != null){
+			searchRequest.setSortDescending(sortDescending);
+		}
+		
+		resp = certifiedProductSearchManager.search(searchRequest);
+		
+		return resp;
 	}
 	
 }
