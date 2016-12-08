@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -27,8 +26,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -43,7 +43,6 @@ import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -66,9 +65,6 @@ public class SearchViewController {
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
-	
-	@Autowired
-	private CertificationBodyManager certificationBodyManager;
 	
 	@Autowired 
 	private CertificationBodyDAO certificationBodyDao;
@@ -532,12 +528,11 @@ public class SearchViewController {
 		return ddr;
 	}
 	
-	@ApiOperation(value="Get decertified certified products in the CHPL matching search criteria", 
-			notes="Returns up to all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
+	@ApiOperation(value="Get all decertified certified products in the CHPL", 
+			notes="Returns all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
 	@RequestMapping(value="/decertifications/certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SearchResponse getDecertifiedCertifiedProducts (
-			@RequestParam("searchTerm") String searchTerm, 
 			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
 			@RequestParam(value = "pageSize", required = false) Integer pageSize,
 			@RequestParam(value = "orderBy", required = false) String orderBy,
@@ -557,7 +552,6 @@ public class SearchViewController {
 		
 		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
 		
-		searchRequest.setSearchTerm(searchTerm);
 		searchRequest.setPageNumber(pageNumber);
 		if(pageSize == null){
 			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
