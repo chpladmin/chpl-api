@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -222,7 +225,27 @@ public class SearchViewController {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SearchResponse advancedSearch(
-			@RequestBody SearchRequest searchFilters) {
+			@RequestBody SearchRequest searchFilters) throws InvalidArgumentsException {
+		//check date params for format
+		SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+		
+		if(!StringUtils.isEmpty(searchFilters.getCertificationDateStart())) {
+			try {
+				format.parse(searchFilters.getCertificationDateStart());
+			} catch(ParseException ex) {
+				logger.error("Could not parse " + searchFilters.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+				throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + searchFilters.getCertificationDateStart());
+			}
+		}
+		if(!StringUtils.isEmpty(searchFilters.getCertificationDateEnd())) {
+			try {
+				format.parse(searchFilters.getCertificationDateEnd());
+			} catch(ParseException ex) {
+				logger.error("Could not parse " + searchFilters.getCertificationDateEnd() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+				throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + searchFilters.getCertificationDateEnd());
+			}
+		}
+		
 		return certifiedProductSearchManager.search(searchFilters);
 	}
 	

@@ -120,6 +120,68 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		}
 	}
 	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeStartDateOnly(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateStart("2015-08-20");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(2, response.getResults().size());
+		
+		boolean foundFirstProduct = false;
+		boolean foundSecondProduct = false;
+		for (CertifiedProductSearchResult result : response.getResults() ){
+			if(result.getId().longValue() == 1L) {
+				foundFirstProduct = true;
+			}
+			if(result.getId().longValue() == 2L) {
+				foundSecondProduct = true;
+			}
+		}
+		assertTrue(foundFirstProduct && foundSecondProduct);
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeEndDateOnly(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateEnd("2015-08-20");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(3, response.getResults().size());
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeStartAndEndDate(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateStart("2015-08-01");
+		searchRequest.setCertificationDateEnd("2015-10-31");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(3, response.getResults().size());
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeStartDateOnlyNoResults(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateStart("2015-12-20");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(0, response.getResults().size());
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeEndDateOnlyNoResults(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateEnd("2015-01-20");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(0, response.getResults().size());
+	}
 	
 	@Test
 	@Transactional
