@@ -281,7 +281,7 @@ public class SearchViewControllerTest {
 	@Transactional
 	@Test
 	public void test_searchDecertifiedCPs() throws EntityRetrievalException {	
-		SearchResponse resp = searchViewController.getDecertifiedCertifiedProducts(null, null, null, null, null);		
+		SearchResponse resp = searchViewController.getDecertifiedCertifiedProducts(null, null, null, null);		
 		
 		assertTrue(resp.getResults().size() == 7);
 		assertTrue("SearchResponse.pageSize should be equal to the number of results", resp.getPageSize() == resp.getResults().size());
