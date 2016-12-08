@@ -532,12 +532,11 @@ public class SearchViewController {
 		return ddr;
 	}
 	
-	@ApiOperation(value="Get decertified certified products in the CHPL matching search criteria", 
-			notes="Returns up to all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
+	@ApiOperation(value="Get all decertified certified products in the CHPL", 
+			notes="Returns all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
 	@RequestMapping(value="/decertifications/certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SearchResponse getDecertifiedCertifiedProducts (
-			@RequestParam("searchTerm") String searchTerm, 
 			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
 			@RequestParam(value = "pageSize", required = false) Integer pageSize,
 			@RequestParam(value = "orderBy", required = false) String orderBy,
@@ -557,7 +556,6 @@ public class SearchViewController {
 		
 		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
 		
-		searchRequest.setSearchTerm(searchTerm);
 		searchRequest.setPageNumber(pageNumber);
 		if(pageSize == null){
 			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
