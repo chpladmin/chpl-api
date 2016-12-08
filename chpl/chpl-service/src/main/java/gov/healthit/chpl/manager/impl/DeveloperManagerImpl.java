@@ -332,6 +332,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			sendMsg = true;
 		}
 		
+		if( (original.getStatus().getId() != null && changed.getStatus().getId() == null) || 
+			(original.getStatus().getId() == null && changed.getStatus().getId() != null) ||
+			(original.getStatus().getId().longValue() != changed.getStatus().getId().longValue())) {
+			sendMsg = true;
+		}
+		
 		if(sendMsg) {
 			String emailAddr = env.getProperty("questionableActivityEmail");
 			String[] emailAddrs = emailAddr.split(";");
