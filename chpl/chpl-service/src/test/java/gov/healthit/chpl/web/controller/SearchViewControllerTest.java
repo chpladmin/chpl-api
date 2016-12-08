@@ -67,7 +67,9 @@ public class SearchViewControllerTest {
 	 */
 	@Transactional 
 	@Test
-	public void test_advancedSearch_refineByCqms_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+	public void test_advancedSearch_refineByCqms_CompletesWithoutError() 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		SearchRequest searchFilters = new SearchRequest();
 		List<String> cqms = new ArrayList<String>();
@@ -89,7 +91,9 @@ public class SearchViewControllerTest {
 	 */
 	@Transactional
 	@Test
-	public void test_advancedSearch_refineByCertificationCriteria_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+	public void test_advancedSearch_refineByCertificationCriteria_CompletesWithoutError() 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		SearchRequest searchFilters = new SearchRequest();
 		List<String> certificationCriteria = new ArrayList<String>();
@@ -112,7 +116,9 @@ public class SearchViewControllerTest {
 	 */
 	@Transactional
 	@Test
-	public void test_advancedSearch_refineByCertificationCriteriaAndCqms_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+	public void test_advancedSearch_refineByCertificationCriteriaAndCqms_CompletesWithoutError() 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		SearchRequest searchFilters = new SearchRequest();
 		List<String> certificationCriteria = new ArrayList<String>();
@@ -200,7 +206,7 @@ public class SearchViewControllerTest {
 	 */
 	@Transactional
 	@Test
-	public void test_advancedSearch_resultReturnsNumMeaningfulUse() {
+	public void test_advancedSearch_resultReturnsNumMeaningfulUse() throws InvalidArgumentsException {
 		SearchRequest sr = new SearchRequest();
 		sr.setPageNumber(0);
 		sr.setPageSize(50);
