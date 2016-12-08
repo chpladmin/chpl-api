@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -384,6 +385,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	}
 
 	@Override
+	@Transactional
 	public Long countMultiFilterSearchResults(SearchRequest searchRequest) {
 		
 		Query query = getCountQueryForSearchFilters(searchRequest);
