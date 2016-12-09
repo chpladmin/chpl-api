@@ -170,12 +170,26 @@ public class SurveillanceValidator {
 				//the surveillance requirement validation is different depending on the requirement type
 				if(req.getType() != null && !StringUtils.isEmpty(req.getType().getName())) {
 					if(req.getType().getName().equalsIgnoreCase(CRITERION_REQUIREMENT_TYPE) && 
-							surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getEdition() != null) {
-						//requirement has to be a certification criterion from the same year as the product
+							surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
+						
 						req.setRequirement(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(req.getRequirement()));
-						CertificationCriterionDTO criterion = criterionDao.getByNameAndYear(req.getRequirement(), surv.getCertifiedProduct().getEdition());
+						CertificationCriterionDTO criterion = null;	
+						try {
+							//see if the nonconformity type is a criterion that the product has attested to
+							List<CertificationResultDetailsDTO> certResults = certResultDetailsDao.getCertificationResultDetailsByCertifiedProductId(surv.getCertifiedProduct().getId());
+							if(certResults != null && certResults.size() > 0) {
+								for(CertificationResultDetailsDTO certResult : certResults) {
+									if(!StringUtils.isEmpty(certResult.getNumber()) && 
+											certResult.getNumber().equals(req.getRequirement())) {
+										criterion = criterionDao.getByName(req.getRequirement());
+									}
+								}
+							}
+						} catch(EntityRetrievalException ex) {
+							logger.error("Could not find cert results for certified product " + surv.getCertifiedProduct().getId(), ex);
+						}						
 						if(criterion == null) {
-							surv.getErrorMessages().add("The requirement '" + req.getRequirement() + "' is not valid for requirement type '" + req.getType().getName() + "'. Valid values are one of the existing certification criterion.");
+							surv.getErrorMessages().add("The requirement '" + req.getRequirement() + "' is not valid for requirement type '" + req.getType().getName() + "'. Valid values are any of the criterion this product has attested to.");
 						} 
 					} else if(req.getType().getName().equals(TRANSPARENCY_REQUIREMENT_TYPE)) {
 						//requirement has to be one of 170.523 (k)(1) or (k)(2)
