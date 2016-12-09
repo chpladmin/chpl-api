@@ -30,9 +30,11 @@ public class CertifiedProductSearchDetails {
 	private Long certificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
-	private Integer countCorrectiveActionPlans;
-	private Integer countCurrentCorrectiveActionPlans;
-	private Integer countClosedCorrectiveActionPlans;
+	private Integer countSurveillance;
+	private Integer countOpenSurveillance;
+	private Integer countClosedSurveillance;
+	private Integer countOpenNonconformities;
+	private Integer countClosedNonconformities;
 	private List<Surveillance> surveillance = new ArrayList<Surveillance>();
 	private Boolean ics;
 	private Boolean accessibilityCertified;
@@ -174,13 +176,7 @@ public class CertifiedProductSearchDetails {
 	public void setErrorMessages(Set<String> errorMessages) {
 		this.errorMessages = errorMessages;
 	}
-	public Integer getCountCorrectiveActionPlans() {
-		return countCorrectiveActionPlans;
-	}
-	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
-		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
-
+	
 	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
@@ -224,18 +220,7 @@ public class CertifiedProductSearchDetails {
 	public void setQmsStandards(List<CertifiedProductQmsStandard> qmsStandards) {
 		this.qmsStandards = qmsStandards;
 	}
-	public Integer getCountCurrentCorrectiveActionPlans() {
-		return countCurrentCorrectiveActionPlans;
-	}
-	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
-		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
-	}
-	public Integer getCountClosedCorrectiveActionPlans() {
-		return countClosedCorrectiveActionPlans;
-	}
-	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
-		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
-	}
+
 	public List<CertifiedProductTargetedUser> getTargetedUsers() {
 		return targetedUsers;
 	}
@@ -289,5 +274,35 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setNumMeaningfulUse(Long numMeaningfulUse) {
 		this.numMeaningfulUse = numMeaningfulUse;
+	}
+	public Integer getCountSurveillance() {
+		return countSurveillance;
+	}
+	public void setCountSurveillance(Integer countSurveillance) {
+		this.countSurveillance = countSurveillance;
+	}
+	public Integer getCountOpenSurveillance() {
+		return countOpenSurveillance;
+	}
+	public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+		this.countOpenSurveillance = countOpenSurveillance;
+	}
+	public Integer getCountClosedSurveillance() {
+		return countClosedSurveillance;
+	}
+	public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+		this.countClosedSurveillance = countClosedSurveillance;
+	}
+	public Integer getCountOpenNonconformities() {
+		return countOpenNonconformities;
+	}
+	public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+		this.countOpenNonconformities = countOpenNonconformities;
+	}
+	public Integer getCountClosedNonconformities() {
+		return countClosedNonconformities;
+	}
+	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+		this.countClosedNonconformities = countClosedNonconformities;
 	}
 }

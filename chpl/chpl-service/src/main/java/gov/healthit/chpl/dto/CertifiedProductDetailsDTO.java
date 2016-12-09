@@ -44,9 +44,11 @@ public class CertifiedProductDetailsDTO {
     private Date certificationDate;
     private Integer countCertifications;
     private Integer countCqms;
-    private Integer countCorrectiveActionPlans;
-    private Integer countCurrentCorrectiveActionPlans;
-    private Integer countClosedCorrectiveActionPlans;
+    private Integer countSurveillance;
+    private Integer countOpenSurveillance;
+    private Integer countClosedSurveillance;
+    private Integer countOpenNonconformities;
+    private Integer countClosedNonconformities;
     private Date lastModifiedDate;
 	private Boolean ics;
 	private Boolean sedTesting;
@@ -158,9 +160,11 @@ public class CertifiedProductDetailsDTO {
     	this.certificationDate = entity.getCertificationDate();
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
-    	this.countCorrectiveActionPlans = entity.getCountCorrectiveActionPlans();
-    	this.countCurrentCorrectiveActionPlans = entity.getCountCurrentCorrectiveActionPlans();
-    	this.countClosedCorrectiveActionPlans = entity.getCountClosedCorrectiveActionPlans();
+    	this.countSurveillance = entity.getCountSurveillance();
+    	this.countOpenSurveillance = entity.getCountOpenSurveillance();
+    	this.countClosedSurveillance = entity.getCountClosedSurveillance();
+    	this.countOpenNonconformities = entity.getCountOpenNonconformities();
+    	this.countClosedNonconformities = entity.getCountClosedNonconformities();
     	this.lastModifiedDate = entity.getLastModifiedDate();
     }
     
@@ -296,13 +300,6 @@ public class CertifiedProductDetailsDTO {
 		this.certificationStatusName = certificationStatusName;
 	}
 	
-	public Integer getCountCorrectiveActionPlans() {
-		return countCorrectiveActionPlans;
-	}
-
-	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
-		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
 	public List<CertificationResultDetailsDTO> getCertResults() {
 		return certResults;
 	}
@@ -457,22 +454,7 @@ public class CertifiedProductDetailsDTO {
 	public void setQmsStandards(List<CertifiedProductQmsStandardDTO> qmsStandards) {
 		this.qmsStandards = qmsStandards;
 	}
-	public Integer getCountCurrentCorrectiveActionPlans() {
-		return countCurrentCorrectiveActionPlans;
-	}
-
-	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
-		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
-	}
-
-	public Integer getCountClosedCorrectiveActionPlans() {
-		return countClosedCorrectiveActionPlans;
-	}
-
-	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
-		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
-	}
-
+	
 	public List<TargetedUserDTO> getTargetedUsers() {
 		return targetedUsers;
 	}
@@ -535,5 +517,45 @@ public class CertifiedProductDetailsDTO {
 
 	public void setNumMeaningfulUse(Long numMeaningfulUse) {
 		this.numMeaningfulUse = numMeaningfulUse;
+	}
+
+	public Integer getCountSurveillance() {
+		return countSurveillance;
+	}
+
+	public void setCountSurveillance(Integer countSurveillance) {
+		this.countSurveillance = countSurveillance;
+	}
+
+	public Integer getCountOpenSurveillance() {
+		return countOpenSurveillance;
+	}
+
+	public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+		this.countOpenSurveillance = countOpenSurveillance;
+	}
+
+	public Integer getCountClosedSurveillance() {
+		return countClosedSurveillance;
+	}
+
+	public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+		this.countClosedSurveillance = countClosedSurveillance;
+	}
+
+	public Integer getCountOpenNonconformities() {
+		return countOpenNonconformities;
+	}
+
+	public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+		this.countOpenNonconformities = countOpenNonconformities;
+	}
+
+	public Integer getCountClosedNonconformities() {
+		return countClosedNonconformities;
+	}
+
+	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+		this.countClosedNonconformities = countClosedNonconformities;
 	}
 }

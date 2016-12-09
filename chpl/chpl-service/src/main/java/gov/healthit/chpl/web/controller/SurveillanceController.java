@@ -63,27 +63,37 @@ public class SurveillanceController {
 	private static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
 	private static final String SUBELEMENT_INDICATOR = "Subelement";
 	
-	@Autowired private SurveillanceUploadHandlerFactory uploadHandlerFactory;
-	@Autowired private SurveillanceManager survManager;
-	@Autowired private CertifiedProductManager cpManager;
-	@Autowired private ActivityManager activityManager;
-	@Autowired private CertifiedProductDetailsManager cpdetailsManager;
-	@Autowired private CertificationBodyManager acbManager;
-	
-	@ApiOperation(value="Get the listing of all pending surveillance items that this user has access to.")
-	@RequestMapping(value="/pending", method=RequestMethod.GET,
-			produces = "application/json; charset=utf-8")
+	@Autowired
+	private SurveillanceUploadHandlerFactory uploadHandlerFactory;
+	@Autowired
+	private SurveillanceManager survManager;
+	@Autowired
+	private CertifiedProductManager cpManager;
+	@Autowired
+	private ActivityManager activityManager;
+	@Autowired
+	private CertifiedProductDetailsManager cpdetailsManager;
+	@Autowired
+	private CertificationBodyManager acbManager;
+
+	@ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
+	@RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
-		List<Surveillance> pendingSurvs = new ArrayList<Surveillance>(); 
-		
-		if(acbs != null) {
-			for(CertificationBodyDTO acb : acbs) {
-				List<Surveillance> survsOnAcb = survManager.getPendingByAcb(acb.getId());
-				pendingSurvs.addAll(survsOnAcb);
+		List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
+
+		if (acbs != null) {
+			for (CertificationBodyDTO acb : acbs) {
+				try {
+					List<Surveillance> survsOnAcb = survManager.getPendingByAcb(acb.getId());
+					pendingSurvs.addAll(survsOnAcb);
+				} catch (AccessDeniedException denied) {
+					logger.warn("Access denied to pending surveillance for acb " + acb.getName() + " and user "
+							+ Util.getUsername());
+				}
 			}
 		}
-		
+
 		SurveillanceResults results = new SurveillanceResults();
 		results.setPendingSurveillance(pendingSurvs);
 		return results;
