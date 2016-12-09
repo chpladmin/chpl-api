@@ -64,8 +64,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 		result.add("Developer Name");
 		result.add("Product Name");
 		result.add("Version");
-		result.add("Total CAPS");
-		result.add("Open CAPS");
+		result.add("Total Surveillance Activities");
+		result.add("Total Nonconformities");
+		result.add("Open Nonconformities");
 		
 		if(applicableCriteria != null) {
 			for(CertificationCriterionDTO criteria : applicableCriteria) {
@@ -90,8 +91,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 		result.add(data.getDeveloper().getName());
 		result.add(data.getProduct().getName());
 		result.add(data.getVersion().getVersion());
-		result.add(data.getCountCorrectiveActionPlans().toString());
-		result.add(data.getCountCurrentCorrectiveActionPlans().toString());
+		result.add(data.getCountSurveillance().toString());
+		result.add((data.getCountOpenNonconformities() + data.getCountClosedNonconformities())+"");
+		result.add(data.getCountOpenNonconformities().toString());
 		List<String> criteria = generateCriteriaValues(data);
 		result.addAll(criteria);
 		return result;
