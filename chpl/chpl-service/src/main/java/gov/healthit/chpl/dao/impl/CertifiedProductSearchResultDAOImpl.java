@@ -113,7 +113,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "count_open_surveillance_activities, "
 			+ "count_closed_surveillance_activities, "
 			+ "count_open_nonconformities, "
-			+ "count_closed_nonconformities";
+			+ "count_closed_nonconformities ";
 	
 	@Override
 	public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException {
