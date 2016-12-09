@@ -10,6 +10,7 @@ _Date TBD_
 * Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer. 
 * Add API call to get decertified certified products with pageCount set to the total number of decertified products
 * Add certificationDateStart and certificationDateEnd as advanced search parameters
+* Change corrective action plan search parameters to new surveillance search parameters - NOT BACKWARDS COMPATIBLE
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.

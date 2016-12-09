@@ -199,15 +199,21 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "count_cqms")
     private Integer countCqms;
     
-    @Column(name = "count_corrective_action_plans")
-    private Integer countCorrectiveActionPlans;
-
-    @Column(name = "count_current_corrective_action_plans")
-    private Integer countCurrentCorrectiveActionPlans;
+    @Column(name = "count_surveillance_activities")
+    private Integer countSurveillance;
     
-    @Column(name = "count_closed_corrective_action_plans")
-    private Integer countClosedCorrectiveActionPlans;
+    @Column(name = "count_open_surveillance_activities")
+    private Integer countOpenSurveillance;
     
+    @Column(name = "count_closed_surveillance_activities")
+    private Integer countClosedSurveillance;
+    
+    @Column(name = "count_open_nonconformities")
+    private Integer countOpenNonconformities;
+    
+    @Column(name = "count_closed_nonconformities")
+    private Integer countClosedNonconformities;
+    		
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
 
@@ -432,15 +438,7 @@ public class CertifiedProductDetailsEntity {
 	public void setCountCqms(Integer countCqms) {
 		this.countCqms = countCqms;
 	}
-	
-    public Integer getCountCorrectiveActionPlans() {
-		return countCorrectiveActionPlans;
-	}
 
-	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
-		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
-	
 	public Date getCreationDate(){
 		return creationDate;
 	}
@@ -632,21 +630,6 @@ public class CertifiedProductDetailsEntity {
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
-	public Integer getCountCurrentCorrectiveActionPlans() {
-		return countCurrentCorrectiveActionPlans;
-	}
-
-	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
-		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
-	}
-
-	public Integer getCountClosedCorrectiveActionPlans() {
-		return countClosedCorrectiveActionPlans;
-	}
-
-	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
-		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
-	}
 
 	public Boolean getAccessibilityCertified() {
 		return accessibilityCertified;
@@ -798,5 +781,45 @@ public class CertifiedProductDetailsEntity {
 
 	public void setProduct(ProductEntity product) {
 		this.product = product;
+	}
+
+	public Integer getCountSurveillance() {
+		return countSurveillance;
+	}
+
+	public void setCountSurveillance(Integer countSurveillance) {
+		this.countSurveillance = countSurveillance;
+	}
+
+	public Integer getCountOpenSurveillance() {
+		return countOpenSurveillance;
+	}
+
+	public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+		this.countOpenSurveillance = countOpenSurveillance;
+	}
+
+	public Integer getCountClosedSurveillance() {
+		return countClosedSurveillance;
+	}
+
+	public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+		this.countClosedSurveillance = countClosedSurveillance;
+	}
+
+	public Integer getCountOpenNonconformities() {
+		return countOpenNonconformities;
+	}
+
+	public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+		this.countOpenNonconformities = countOpenNonconformities;
+	}
+
+	public Integer getCountClosedNonconformities() {
+		return countClosedNonconformities;
+	}
+
+	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+		this.countClosedNonconformities = countClosedNonconformities;
 	}	
 }
