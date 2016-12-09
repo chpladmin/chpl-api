@@ -1,7 +1,9 @@
 package gov.healthit.chpl.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SearchRequest {
 	public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";
@@ -19,7 +21,7 @@ public class SearchRequest {
 	//search for any of these
 	List<String> certificationBodies = new ArrayList<String>();
 	//AND these
-	List<SurveillanceSearchOptions> surveillance = new ArrayList<SurveillanceSearchOptions>();
+	Set<SurveillanceSearchOptions> surveillance = new HashSet<SurveillanceSearchOptions>();
 	
 	Boolean hasHadSurveillance;
 	String developer = null;
@@ -130,10 +132,10 @@ public class SearchRequest {
 	public void setCertificationDateEnd(String certificationDateEnd) {
 		this.certificationDateEnd = certificationDateEnd;
 	}
-	public List<SurveillanceSearchOptions> getSurveillance() {
+	public Set<SurveillanceSearchOptions> getSurveillance() {
 		return surveillance;
 	}
-	public void setSurveillance(List<SurveillanceSearchOptions> surveillance) {
+	public void setSurveillance(Set<SurveillanceSearchOptions> surveillance) {
 		this.surveillance = surveillance;
 	}
 	public Boolean getHasHadSurveillance() {

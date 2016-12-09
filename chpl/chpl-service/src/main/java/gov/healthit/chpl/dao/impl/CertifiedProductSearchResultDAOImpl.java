@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SurveillanceSearchOptions;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
@@ -839,11 +841,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if(searchRequest.getSurveillance() != null && searchRequest.getSurveillance().size() > 0) {
 			result += " AND (";
-			for(int i = 0; i < searchRequest.getSurveillance().size(); i++) {
-				if(i > 0) {
-					result += " AND ";
-				}
-				switch(searchRequest.getSurveillance().get(i)) {
+			Iterator<SurveillanceSearchOptions> opts = searchRequest.getSurveillance().iterator();
+			while(opts.hasNext()) {
+				SurveillanceSearchOptions opt = opts.next();
+				switch(opt) {
 				case OPEN_SURVEILLANCE:
 					result += " count_open_surveillance_activities > 0 ";
 					break;
@@ -856,6 +857,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				case CLOSED_NONCONFORMITY:
 					result += " count_closed_nonconformities > 0 ";
 					break;
+				}
+				
+				if(opts.hasNext()) {
+					result += " AND ";
 				}
 			}
 			result += ") ";
