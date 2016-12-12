@@ -180,6 +180,7 @@ public class SurveillanceValidator {
 							if(certResults != null && certResults.size() > 0) {
 								for(CertificationResultDetailsDTO certResult : certResults) {
 									if(!StringUtils.isEmpty(certResult.getNumber()) && 
+											certResult.getSuccess() != null && certResult.getSuccess() == Boolean.TRUE &&
 											certResult.getNumber().equals(req.getRequirement())) {
 										criterion = criterionDao.getByName(req.getRequirement());
 									}
@@ -256,6 +257,7 @@ public class SurveillanceValidator {
 									if(certResults != null && certResults.size() > 0) {
 										for(CertificationResultDetailsDTO certResult : certResults) {
 											if(!StringUtils.isEmpty(certResult.getNumber()) && 
+													certResult.getSuccess() != null && certResult.getSuccess() == Boolean.TRUE &&
 													certResult.getNumber().equals(nc.getNonconformityType())) {
 												criterion = criterionDao.getByName(nc.getNonconformityType());
 											}
