@@ -27,6 +27,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -35,8 +36,10 @@ import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.DeveloperStatusType;
@@ -61,6 +64,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Autowired private CertificationStatusDAO certStatusDao;
 	@Autowired private CertifiedProductManager cpManager;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
+	@Autowired private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser testUser3;
@@ -402,21 +406,22 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Rollback
 	public void testUpdateMeaningfulUseUsersWithIncorrect2015EditionChplProductNumber() throws EntityCreationException, EntityRetrievalException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Set<MeaningfulUseUser> muu = new LinkedHashSet<MeaningfulUseUser>();
+		Set<MeaningfulUseUser> muuSet = new LinkedHashSet<MeaningfulUseUser>();
+		
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
-		MeaningfulUseUser u2 = new MeaningfulUseUser("12.01.01.1234.AB01.01.0.1.123456", 20L);
-		MeaningfulUseUser u3 = new MeaningfulUseUser("15.02.03.9876.AB01.01.0.1.123456", 30L);
-		muu.add(u1);
-		muu.add(u2);
-		muu.add(u3);
-		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
+		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.EIC08.36.1.1.160402", 20L);
+		MeaningfulUseUser u3 = new MeaningfulUseUser("14.99.01.1000.EIC10.99.1.1.160403", 30L);
+		muuSet.add(u1);
+		muuSet.add(u2);
+		muuSet.add(u3);
+		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muuSet);
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
 		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
-		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("12.01.01.1234.AB01.01.0.1.123456"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC08.36.1.1.160402"));
 		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
 		assertTrue(results.getErrors().get(0).getError() != null);
-		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("15.02.03.9876.AB01.01.0.1.123456"));
+		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.EIC10.99.1.1.160403"));
 		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 30L);
 	}
 	

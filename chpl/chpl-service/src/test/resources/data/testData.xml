@@ -2,9 +2,9 @@
     <address address_id="-1" street_line_1="1 Test Road" city="Baltimore" state="MD" zipcode="21220" country="USA" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
     <address address_id="-2" street_line_1="2 Test Road" street_line_2="Apt C" city="Baltimore" state="MD" zipcode="21228" country="USA" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
 
-    <vendor vendor_id="-1" address_id="-1" vendor_status_id="1" name="Test Developer 1" website="http://www.google.com" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
-    <vendor vendor_id="-2" address_id="-2" vendor_status_id="1" name="Test Developer 2" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
-    <vendor vendor_id="-3" vendor_status_id="2" name="Test Developer 3" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
+    <vendor vendor_id="-1" address_id="-1" vendor_status_id="1" vendor_code="1009" name="Test Developer 1" website="http://www.google.com" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
+    <vendor vendor_id="-2" address_id="-2" vendor_status_id="1" vendor_code="1010" name="Test Developer 2" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
+    <vendor vendor_id="-3" vendor_status_id="2" vendor_code="1011" name="Test Developer 3" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" creation_date="2015-08-20 13:14:00" deleted="false"/>
 	<vendor vendor_id="-4" vendor_status_id="1" vendor_code="1000" address_id="-1" name="oldVendor" website="http://www.3mhealth.com" creation_date="2015-01-01 01:02:03.123" last_modified_date="2015-01-02 01:02:03.123" last_modified_user="-2" deleted="false"></vendor>
 	<vendor vendor_id="-5" vendor_status_id="1" vendor_code="1001" address_id="-1" name="oldVendorDeleted" website="http://www.vendorTwo.com" creation_date="2015-01-01 01:02:03.123" last_modified_date="2015-01-02 01:02:03.123" last_modified_user="-2" deleted="true"></vendor>
 	<vendor vendor_id="-6" vendor_status_id="1" vendor_code="1002" address_id="-1" name="4Medica" website="http://www.4medica.com" creation_date="2016-01-01 01:02:03.123" last_modified_date="2016-01-02 01:02:03.123" last_modified_user="-2" deleted="false"></vendor>
@@ -102,6 +102,9 @@
 	<targeted_user targeted_user_id="1" name="Pediatrics"	
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" />
 		
+	<testing_lab testing_lab_id="-1" testing_lab_code="01" name="My Testing Lab"
+		creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false"  />
+		
  	<certified_product certified_product_id="1" certification_edition_id="2" product_version_id="1" 
  		certification_body_id="-1" chpl_product_number="CHP-024050" 
  		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
@@ -109,13 +112,21 @@
  		creation_date="2015-08-20 13:14:00" last_modified_user="-2" 
  		last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" 
  		product_classification_type_id="1" certification_status_id="1" 
- 		qms="true" />
- 	<certified_product certified_product_id="2" certification_edition_id="2" product_version_id="2" certification_body_id="-1" chpl_product_number="CHP-024051" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" />
-	<certified_product certified_product_id="3" certification_edition_id="1" product_version_id="3" certification_body_id="-1" chpl_product_number="CHP-024052" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1"/>
-	<certified_product certified_product_id="4" certification_edition_id="1" product_version_id="9" certification_body_id="-1" chpl_product_number="CHP-024053" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1"/>
+ 		qms="true" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>
+ 	<certified_product certified_product_id="2" certification_edition_id="2" product_version_id="2" certification_body_id="-1" chpl_product_number="CHP-024051" 
+	 	report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+	 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" 
+	 	product_classification_type_id="2" certification_status_id="1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" 
+	 	version_code="36"/>
+	<certified_product certified_product_id="3" certification_edition_id="1" product_version_id="3" certification_body_id="-1" chpl_product_number="CHP-024052" 
+		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
+	 	creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" 
+	 	product_classification_type_id="2" certification_status_id="1" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" 
+	 	certified_date_code="160402" version_code="36"/>
+	<certified_product certified_product_id="4" certification_edition_id="1" product_version_id="9" certification_body_id="-1" chpl_product_number="CHP-024053" 
+		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2015-08-20 13:14:00" 
+		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" 
+		testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>
 	<certified_product certified_product_id="5" certification_edition_id="3" product_version_id="5" 
  		certification_body_id="-1" chpl_product_number="CHP-024054" 
  		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
@@ -123,32 +134,57 @@
  		creation_date="2015-08-20 13:14:00" last_modified_user="-2" 
  		last_modified_date="2015-08-20 13:15:00" deleted="false" practice_type_id="1" 
  		product_classification_type_id="1" certification_status_id="1" 
- 		qms="true" /> 
- 	<certified_product certified_product_id="6" certification_edition_id="3" product_version_id="6" certification_body_id="-1" chpl_product_number="12.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-08-20 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" meaningful_use_users="12"/>	
- 	<certified_product certified_product_id="7" certification_edition_id="1" product_version_id="7" certification_body_id="-1" chpl_product_number="13.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-08-20 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" meaningful_use_users="13"/>	
- 	<certified_product certified_product_id="8" certification_edition_id="2" product_version_id="8" certification_body_id="-2" chpl_product_number="14.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-09-20 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="2" meaningful_use_users="14"/>	
-	<certified_product certified_product_id="9" certification_edition_id="3" product_version_id="4" certification_body_id="-2" chpl_product_number="15.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-06-20 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" meaningful_use_users="15"/>	
- 	<certified_product certified_product_id="10" certification_edition_id="3" product_version_id="10" certification_body_id="-2" chpl_product_number="16.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-07-20 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="4" meaningful_use_users="16"/>	
- 	<certified_product certified_product_id="11" certification_edition_id="3" product_version_id="11" certification_body_id="-2" chpl_product_number="17.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-10-20 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="true" practice_type_id="2" product_classification_type_id="1" certification_status_id="5"/>
- 	<certified_product certified_product_id="12" certification_edition_id="3" product_version_id="12" certification_body_id="-2" chpl_product_number="18.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-11-20 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="6" meaningful_use_users="18"/>		
-	<certified_product certified_product_id="13" certification_edition_id="3" product_version_id="13" certification_body_id="-2" chpl_product_number="19.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-11-21 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" meaningful_use_users="19"/>	
- 	<certified_product certified_product_id="14" certification_edition_id="3" product_version_id="14" certification_body_id="-3" chpl_product_number="20.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-11-21 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" meaningful_use_users="20"/>	
- 	<certified_product certified_product_id="15" certification_edition_id="3" product_version_id="15" certification_body_id="-4" chpl_product_number="21.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-11-21 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" meaningful_use_users="21"/>	
-	<certified_product certified_product_id="16" certification_edition_id="3" product_version_id="16" certification_body_id="-5" chpl_product_number="22.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-11-21 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" meaningful_use_users="22"/>	
-	<certified_product certified_product_id="17" certification_edition_id="3" product_version_id="16" certification_body_id="-6" chpl_product_number="23.01.01.1234.AB01.01.0.1.123456" report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
- 		creation_date="2016-11-21 13:14:00" last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" meaningful_use_users="23"/>	
-
+ 		qms="true" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/> 
+ 	<certified_product certified_product_id="6" certification_edition_id="3" product_version_id="6" certification_body_id="-1" 
+ 		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-08-20 13:14:00" 
+ 		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" 
+ 		meaningful_use_users="12" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>	
+ 	<certified_product certified_product_id="7" certification_edition_id="1" product_version_id="7" certification_body_id="-1" 
+ 		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-08-20 13:14:00" 
+ 		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="1" 
+ 		meaningful_use_users="13" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>	
+ 	<certified_product certified_product_id="8" certification_edition_id="2" product_version_id="8" certification_body_id="-2" 
+	 	report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-09-20 13:14:00" 
+	 	last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="1" product_classification_type_id="2" certification_status_id="2" 
+	 	meaningful_use_users="14" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>	
+	<certified_product certified_product_id="9" certification_edition_id="3" product_version_id="4" certification_body_id="-2" 
+		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-06-20 13:14:00" 
+		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" 
+		meaningful_use_users="15" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>	
+ 	<certified_product certified_product_id="10" certification_edition_id="3" product_version_id="10" certification_body_id="-2" 
+	 	report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-07-20 13:14:00" last_modified_user="-2" 
+	 	last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="4" meaningful_use_users="16" 
+	 	testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>	
+ 	<certified_product certified_product_id="11" certification_edition_id="3" product_version_id="11" certification_body_id="-2" 
+ 		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-10-20 13:14:00" 
+ 		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="true" practice_type_id="2" product_classification_type_id="1" certification_status_id="5" 
+ 		ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>
+ 	<certified_product certified_product_id="12" certification_edition_id="3" product_version_id="12" certification_body_id="-2" 
+ 		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-11-20 13:14:00" 
+ 		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="6" 
+ 		meaningful_use_users="18" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>		
+	<certified_product certified_product_id="13" certification_edition_id="3" product_version_id="13" certification_body_id="-2" 
+		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-11-21 13:14:00" 
+		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" 
+		certification_status_id="3" meaningful_use_users="19" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402"
+		version_code="36"/>	
+ 	<certified_product certified_product_id="14" certification_edition_id="3" product_version_id="14" certification_body_id="-3" 
+ 		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-11-21 13:14:00" 
+ 		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" 
+ 		meaningful_use_users="20" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>	
+ 	<certified_product certified_product_id="15" certification_edition_id="3" product_version_id="15" certification_body_id="-4" 
+ 		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-11-21 13:14:00" 
+ 		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" 
+ 		meaningful_use_users="21" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>	
+	<certified_product certified_product_id="16" certification_edition_id="3" product_version_id="16" certification_body_id="-5" 
+		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-11-21 13:14:00" 
+		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" 
+		meaningful_use_users="22" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>	
+	<certified_product certified_product_id="17" certification_edition_id="3" product_version_id="16" certification_body_id="-6" 
+		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf" creation_date="2016-11-21 13:14:00" 
+		last_modified_user="-2" last_modified_date="2016-08-20 13:15:00" deleted="false" practice_type_id="2" product_classification_type_id="1" certification_status_id="3" 
+		meaningful_use_users="23" testing_lab_id="-1" ics_code="1" additional_software_code="1" product_code="EIC08" certified_date_code="160402" version_code="36"/>	
+	
 	<certified_product_qms_standard certified_product_qms_standard_id="1"
 		certified_product_id="1" qms_standard_id="1"
 		modification="I changed something."
@@ -470,9 +506,6 @@
 		resolution="something"
 		num_sites_passed="2"
 		num_sites_total="4"
-		creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false"  />
-	
-	<testing_lab testing_lab_id="-1" testing_lab_code="01" name="My Testing Lab"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2" last_modified_date="2015-08-20 13:15:00" deleted="false"  />
 		
 	<acl_class id="1" class="gov.healthit.chpl.auth.dto.UserDTO" />
