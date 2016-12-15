@@ -17,6 +17,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -29,6 +30,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass=true)
 @EnableWebSecurity
+@EnableAsync
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"})
 public class CHPLConfig implements EnvironmentAware {
