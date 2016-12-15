@@ -183,9 +183,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		searchDetails.setCountCerts(dto.getCountCertifications());
 		searchDetails.setCountCqms(dto.getCountCqms());
-		searchDetails.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
-		searchDetails.setCountCurrentCorrectiveActionPlans(dto.getCountCurrentCorrectiveActionPlans());
-		searchDetails.setCountClosedCorrectiveActionPlans(dto.getCountClosedCorrectiveActionPlans());
+		searchDetails.setCountSurveillance(dto.getCountSurveillance());
+		searchDetails.setCountOpenSurveillance(dto.getCountOpenSurveillance());
+		searchDetails.setCountClosedSurveillance(dto.getCountClosedSurveillance());
+		searchDetails.setCountOpenNonconformities(dto.getCountOpenNonconformities());
+		searchDetails.setCountClosedNonconformities(dto.getCountClosedNonconformities());
 		searchDetails.setNumMeaningfulUse(dto.getNumMeaningfulUse());
 		
 		

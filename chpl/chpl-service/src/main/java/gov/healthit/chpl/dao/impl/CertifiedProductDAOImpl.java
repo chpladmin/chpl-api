@@ -155,13 +155,23 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			throw new IOException("Must provide a CertifiedProductDTO with a valid CHPL Product Number and meaningfulUseUsers");
 		}
 		
-		CertifiedProductEntity entity = getEntityByChplNumber(dto.getChplProductNumber());
-		entity.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
-		entity.setLastModifiedDate(new Date());
-		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		
-		update(entity);
-		return new CertifiedProductDTO(entity);
+		CertifiedProductEntity cpEntity_legacy = getEntityByChplNumber(dto.getChplProductNumber());
+		if(cpEntity_legacy != null){
+			cpEntity_legacy.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
+			cpEntity_legacy.setLastModifiedDate(new Date());
+			cpEntity_legacy.setLastModifiedUser(Util.getCurrentUser().getId());
+			update(cpEntity_legacy);
+			return new CertifiedProductDTO(cpEntity_legacy);
+		}
+		else {
+			CertifiedProductDetailsDTO cpDetails = getByChplUniqueId(dto.getChplProductNumber());
+			CertifiedProductEntity cpEntity_9part = getEntityById(cpDetails.getId());
+			cpEntity_9part.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
+			cpEntity_9part.setLastModifiedDate(new Date());
+			cpEntity_9part.setLastModifiedUser(Util.getCurrentUser().getId());
+			update(cpEntity_9part);
+			return new CertifiedProductDTO(cpEntity_9part);
+		}
 	}
 	
 	@CacheEvict(value="searchOptionsCache", allEntries=true)
