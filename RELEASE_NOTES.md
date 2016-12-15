@@ -11,6 +11,7 @@ _Date TBD_
 * Add API call to get decertified certified products with pageCount set to the total number of decertified products
 * Add certificationDateStart and certificationDateEnd as advanced search parameters
 * Change corrective action plan search parameters to new surveillance search parameters - NOT BACKWARDS COMPATIBLE
+* add caching for /certifications_ids/ and /search_options(false), increase cache timeout for /search_options/, initialize cache at server startup
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.

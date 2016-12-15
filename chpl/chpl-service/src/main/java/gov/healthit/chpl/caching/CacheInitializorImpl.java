@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.caching;
 
 import java.io.IOException;
 
@@ -30,14 +30,17 @@ public class CacheInitializorImpl {
 		logger.info("Starting cache initialization for SearchViewController.getPopulateSearchData(false)");
 		searchViewController.getPopulateSearchData(false);
 		logger.info("Finished cache initialization for SearchViewController.getPopulateSearchData(false)");
+		logger.info("Starting cache initialization for SearchViewController.getPopulateSearchData(true)");
+		searchViewController.getPopulateSearchData(true);
+		logger.info("Finished cache initialization for SearchViewController.getPopulateSearchData(true)");
 	}
 	
 	@Async
 	public void initializeCertificationIds() throws IOException{
 		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
+		adminUser.setFirstName("CacheAdmin");
+		adminUser.setId(-3L);
+		adminUser.setLastName("CacheAdmin");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 		SecurityContextHolder.getContext().setAuthentication(adminUser);

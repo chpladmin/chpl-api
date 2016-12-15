@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +85,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = false)
+	@CacheEvict("certificationIds")
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CertificationIdDTO result = CertificationIdDAO.create(productIds, year);
@@ -95,6 +97,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = false)
+	@CacheEvict("certificationIds")
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
