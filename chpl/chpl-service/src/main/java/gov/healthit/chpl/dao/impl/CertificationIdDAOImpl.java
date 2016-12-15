@@ -44,6 +44,10 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
 	@Override
 	@Transactional
+<<<<<<< Updated upstream
+=======
+	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries = true)
+>>>>>>> Stashed changes
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException {
 		CertificationIdEntity entity = null;
 		CertificationIdDTO newDto = null;
@@ -91,6 +95,10 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	
 	@Override
 	@Transactional
+<<<<<<< Updated upstream
+=======
+	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries = true)
+>>>>>>> Stashed changes
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
 		
 		CertificationIdEntity entity = null;
@@ -255,6 +263,10 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		return results;
 	}
 	
+<<<<<<< Updated upstream
+=======
+	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries=true)
+>>>>>>> Stashed changes
 	private void create(CertificationIdEntity entity) {
 		
 		entityManager.persist(entity);
