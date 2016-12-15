@@ -2,6 +2,8 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -10,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.csv.CSVFormat;
@@ -18,6 +21,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,6 +67,7 @@ public class SurveillanceController {
 	private static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
 	private static final String SUBELEMENT_INDICATOR = "Subelement";
 	
+	@Autowired Environment env;
 	@Autowired
 	private SurveillanceUploadHandlerFactory uploadHandlerFactory;
 	@Autowired
@@ -440,6 +445,47 @@ public class SurveillanceController {
 		
 		//query the inserted surveillance
 		return survManager.getById(insertedSurv);
+	}
+	
+	@ApiOperation(value="Download surveillance as CSV.", 
+			notes="Once per day, all surveillance and nonconformities are written out to CSV "
+					+ "files on the CHPL servers. This method allows any user to download those files.")
+	@RequestMapping(value="/download", method=RequestMethod.GET,
+			produces="text/csv")
+	public void download(@RequestParam(value="all", required=false, defaultValue="false") Boolean getAll,
+			HttpServletRequest request, HttpServletResponse response) throws IOException {	
+		String downloadFileLocation = env.getProperty("downloadFolderPath");
+		String filenameToDownload = (getAll ? "surveillance-all.csv" : "surveillance-with-nonconformities.csv");
+		File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
+		if(!downloadFile.exists() || !downloadFile.canRead()) {
+			response.getWriter().write("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
+			return;
+		}
+		
+		logger.info("Downloading " + downloadFile.getName());
+		
+		FileInputStream inputStream = new FileInputStream(downloadFile);
+
+		// set content attributes for the response
+		response.setContentType("text/csv");
+		response.setContentLength((int) downloadFile.length());
+	 
+		// set headers for the response
+		String headerKey = "Content-Disposition";
+		String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+		response.setHeader(headerKey, headerValue);
+	 
+		// get output stream of the response
+		OutputStream outStream = response.getOutputStream();
+		byte[] buffer = new byte[1024];
+		int bytesRead = -1;
+	 
+		// write bytes read from the input stream into the output stream
+		while ((bytesRead = inputStream.read(buffer)) != -1) {
+			outStream.write(buffer, 0, bytesRead);
+		}
+		inputStream.close();
+		outStream.close();
 	}
 	
 	@ApiOperation(value="Upload a file with surveillance and nonconformities for certified products.", 
