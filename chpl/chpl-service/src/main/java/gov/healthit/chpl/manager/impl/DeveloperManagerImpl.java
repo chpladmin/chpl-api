@@ -291,7 +291,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			product.getOwnerHistory().add(historyToAdd);
 			//reassign those products to the new developer
 			product.setDeveloperId(createdDeveloper.getId());
-			productManager.update(product);
+			productManager.update(product, false);
 			
 		}
 		// - mark the passed in developers as deleted

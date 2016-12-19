@@ -125,7 +125,7 @@ public class ProductManagerTest extends TestCase {
 		
 		product.setOwnerHistory(null);
 		try {
-			productManager.update(product);
+			productManager.update(product, false);
 		} catch(Exception ex) {
 			fail("could not update product!");
 			System.out.println(ex.getStackTrace());
@@ -159,7 +159,7 @@ public class ProductManagerTest extends TestCase {
 		product.setName("new product name");
 		boolean failed = false;
 		try {
-			product = productManager.update(product);
+			product = productManager.update(product, false);
 		} catch(EntityCreationException ex) {
 			System.out.println(ex.getMessage());
 			failed = true;
@@ -199,7 +199,7 @@ public class ProductManagerTest extends TestCase {
 		product.setName("new product name");
 		failed = false;
 		try {
-			product = productManager.update(product);
+			product = productManager.update(product, false);
 		} catch(EntityCreationException ex) {
 			System.out.println(ex.getMessage());
 			failed = true;
