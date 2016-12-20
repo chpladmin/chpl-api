@@ -140,7 +140,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 		
 		List<CertificationStatusEventEntity> result = entityManager.createQuery( 
 				"FROM CertificationStatusEventEntity cse "
-				+ "LEFT JOIN FETCH cse.status s "
+				+ "LEFT JOIN FETCH cse.certificationStatus s "
 				+ "WHERE (NOT cse.deleted = true) "
 				+ "AND (NOT s.deleted = true)", 
 				CertificationStatusEventEntity.class).getResultList();
@@ -153,7 +153,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 		CertificationStatusEventEntity entity = null;
 			
 		Query query = entityManager.createQuery( "FROM CertificationStatusEventEntity cse "
-				+ "LEFT JOIN FETCH cse.status s "
+				+ "LEFT JOIN FETCH cse.certificationStatus s "
 				+ "WHERE cse.id = :entityid " 
 				+ "AND (NOT cse.deleted = true) "
 				+ "AND (NOT s.deleted = true)", CertificationStatusEventEntity.class );
@@ -174,7 +174,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 	private List<CertificationStatusEventEntity> getEntitiesByCertifiedProductId(Long id) {
 		
 		Query query = entityManager.createQuery( "FROM CertificationStatusEventEntity cse "
-				+ "LEFT JOIN FETCH cse.status s "
+				+ "LEFT JOIN FETCH cse.certificationStatus s "
 				+ "WHERE cse.certifiedProductId = :cpId "
 				+ "AND (NOT cse.deleted = true) "
 				+ "AND (NOT s.deleted = true)", CertificationStatusEventEntity.class );
@@ -186,7 +186,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 	
 	private CertificationStatusEventEntity getOldestActiveEventForCertifiedProduct(Long cpId) {
 		Query query = entityManager.createQuery( "FROM CertificationStatusEventEntity cse "
-				+ "LEFT JOIN FETCH cse.status s "
+				+ "LEFT JOIN FETCH cse.certificationStatus s "
 				+ "WHERE cse.certifiedProductId = :cpId "
 				+ "AND cse.certificationStatusId = 1 "
 				+ "AND (NOT cse.deleted = true) "
