@@ -396,11 +396,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		Object queryResult = query.getSingleResult();
 		if (queryResult instanceof java.math.BigInteger){
-			java.math.BigInteger bigIntResult = (java.math.BigInteger) query.getSingleResult();
+			java.math.BigInteger bigIntResult = (java.math.BigInteger) queryResult;
 			return bigIntResult.longValue();
 		} else {
-			Long result = (Long) query.getSingleResult();
-			return result;
+			return (Long) queryResult;
 		}
 	}
 
