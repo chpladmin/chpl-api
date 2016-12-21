@@ -92,6 +92,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_status_name")
     private String certificationStatusName;
     
+    @Column(name = "last_certification_status_change")
+    private Date certificationStatusDate;
+    
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
     
@@ -821,5 +824,13 @@ public class CertifiedProductDetailsEntity {
 
 	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
 		this.countClosedNonconformities = countClosedNonconformities;
+	}
+
+	public Date getCertificationStatusDate() {
+		return certificationStatusDate;
+	}
+
+	public void setCertificationStatusDate(Date certificationStatusDate) {
+		this.certificationStatusDate = certificationStatusDate;
 	}	
 }

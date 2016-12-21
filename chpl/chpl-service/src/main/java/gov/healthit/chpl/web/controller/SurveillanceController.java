@@ -452,10 +452,16 @@ public class SurveillanceController {
 					+ "files on the CHPL servers. This method allows any user to download those files.")
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="text/csv")
-	public void download(@RequestParam(value="all", required=false, defaultValue="false") Boolean getAll,
+	public void download(@RequestParam(value="all", required=false, defaultValue="false") String type,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {	
 		String downloadFileLocation = env.getProperty("downloadFolderPath");
-		String filenameToDownload = (getAll ? "surveillance-all.csv" : "surveillance-with-nonconformities.csv");
+		String filenameToDownload = "surveillance-all.csv";
+		if(type.equalsIgnoreCase("nonconformities")) {
+			filenameToDownload = "surveillance-with-nonconformities.csv";
+		} else if(type.equalsIgnoreCase("basic")) {
+			filenameToDownload = "surveillance-basic-report.csv";
+		}
+		
 		File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
 		if(!downloadFile.exists() || !downloadFile.canRead()) {
 			response.getWriter().write("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");

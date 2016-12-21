@@ -143,6 +143,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
 		searchDetails.getCertificationStatus().put("id", dto.getCertificationStatusId());
 		searchDetails.getCertificationStatus().put("name", dto.getCertificationStatusName());
+		searchDetails.getCertificationStatus().put("date", dto.getCertificationStatusDate());
 			
 		searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId());
 		searchDetails.getCertifyingBody().put("name", dto.getCertificationBodyName());

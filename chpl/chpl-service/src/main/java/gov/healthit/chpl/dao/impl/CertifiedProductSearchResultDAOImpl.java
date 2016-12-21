@@ -62,6 +62,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "product_classification_type_id, "
 			+ "other_acb, "
 			+ "certification_status_id, "
+			+ "last_certification_status_change, "
 			+ "deleted, "
 			+ "product_additional_software, "
 			+ "ics, "
