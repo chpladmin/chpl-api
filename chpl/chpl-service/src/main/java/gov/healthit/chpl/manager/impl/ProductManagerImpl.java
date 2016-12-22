@@ -24,6 +24,7 @@ import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -96,7 +97,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+	public ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductDTO beforeDTO = productDao.getById(dto.getId());
 		
@@ -122,7 +123,9 @@ public class ProductManagerImpl implements ProductManager {
 		
 		String activityMsg = "Product "+dto.getName()+" was updated.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, result);
-		checkSuspiciousActivity(beforeDTO, result);
+		if(lookForSuspiciousActivity) {
+			checkSuspiciousActivity(beforeDTO, result);
+		}
 		return result;
 		
 	}
@@ -231,10 +234,31 @@ public class ProductManagerImpl implements ProductManager {
 		
 		boolean sendMsg = false;
 		
+		//check name change
 		if( (original.getName() != null && changed.getName() == null) ||
 			(original.getName() == null && changed.getName() != null) ||
 			!original.getName().equals(changed.getName()) ) {
 			sendMsg = true;
+		}
+		
+		//if there was a different amount of owner history
+		if( (original.getOwnerHistory() != null && changed.getOwnerHistory() == null) ||
+			(original.getOwnerHistory() == null && changed.getOwnerHistory() != null) ||
+			(original.getOwnerHistory().size() != changed.getOwnerHistory().size()) ) {
+			sendMsg = true;
+		} else {
+			//the same counts of owner history are there but we should check the contents
+			for(ProductOwnerDTO originalOwner : original.getOwnerHistory()) {
+				boolean foundOriginalOwner = false;
+				for(ProductOwnerDTO changedOwner : changed.getOwnerHistory()) {
+					if(originalOwner.getDeveloper().getId().longValue() == changedOwner.getDeveloper().getId().longValue()) {
+						foundOriginalOwner = true;
+					}
+				}
+				if(!foundOriginalOwner) {
+					sendMsg = true;
+				}
+			}
 		}
 		
 		if(sendMsg) {

@@ -62,6 +62,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "product_classification_type_id, "
 			+ "other_acb, "
 			+ "certification_status_id, "
+			+ "last_certification_status_change, "
 			+ "deleted, "
 			+ "product_additional_software, "
 			+ "ics, "
@@ -396,11 +397,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		Object queryResult = query.getSingleResult();
 		if (queryResult instanceof java.math.BigInteger){
-			java.math.BigInteger bigIntResult = (java.math.BigInteger) query.getSingleResult();
+			java.math.BigInteger bigIntResult = (java.math.BigInteger) queryResult;
 			return bigIntResult.longValue();
 		} else {
-			Long result = (Long) query.getSingleResult();
-			return result;
+			return (Long) queryResult;
 		}
 	}
 

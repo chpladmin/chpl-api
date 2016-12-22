@@ -21,6 +21,7 @@ import gov.healthit.chpl.app.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.app.presenter.CertifiedProductXmlPresenter;
 import gov.healthit.chpl.app.presenter.NonconformityCsvPresenter;
 import gov.healthit.chpl.app.presenter.SurveillanceCsvPresenter;
+import gov.healthit.chpl.app.presenter.SurveillanceReportCsvPresenter;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -80,6 +81,7 @@ public class App {
         //write out the file to a different location so as not to 
         //overwrite the existing download file
         List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findAll();
+        //List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findWithSurveillance();
 		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
 		//for(int i = 1; i < 10; i++) {
 			//CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
@@ -193,6 +195,19 @@ public class App {
         
         NonconformityCsvPresenter ncCsvPresenter = new NonconformityCsvPresenter();
         ncCsvPresenter.presentAsFile(nonconformityCsvFile, allResults);
+        
+      //write out a csv file containing surveillance basic report     
+        String basicReportCsvName = downloadFolder.getAbsolutePath() + File.separator + 
+        		"surveillance-basic-report.csv";
+        File basicReportCsvFile = new File(basicReportCsvName);
+        if(!basicReportCsvFile.exists()) {
+        	basicReportCsvFile.createNewFile();
+        } else {
+        	basicReportCsvFile.delete();
+        }
+        
+        SurveillanceReportCsvPresenter basicReportCsvPresenter = new SurveillanceReportCsvPresenter();
+        basicReportCsvPresenter.presentAsFile(basicReportCsvFile, allResults);
         
         context.close();
 	}

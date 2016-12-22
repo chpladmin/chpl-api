@@ -14,7 +14,7 @@ public interface ProductManager {
 	public List<ProductDTO> getByDeveloper(Long developerId);
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds);
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+	public ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;

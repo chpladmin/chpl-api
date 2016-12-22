@@ -121,6 +121,8 @@ public class SurveillanceCsvPresenter {
 		firstRow.add(surv.getType().getName());
 		if(surv.getRandomizedSitesUsed() != null) {
 			firstRow.add(surv.getRandomizedSitesUsed().toString());
+		} else {
+			firstRow.add("");
 		}
 		result.add(firstRow);
 

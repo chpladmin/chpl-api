@@ -49,7 +49,7 @@ public class CertifiedProductSearchDetails {
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
-	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
+	private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 	
 	private Set<String> warningMessages = new HashSet<String>();
 	private Set<String> errorMessages = new HashSet<String>();
@@ -145,11 +145,11 @@ public class CertifiedProductSearchDetails {
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
 	}
-	public List<CertificationEvent> getCertificationEvents(){
+	public List<CertificationStatusEvent> getCertificationEvents(){
 		return certificationEvents;
 	}
 	public void setCertificationEvents(
-			List<CertificationEvent> certificationEvents) {
+			List<CertificationStatusEvent> certificationEvents) {
 		this.certificationEvents = certificationEvents;
 	}
 	public Long getLastModifiedDate() {

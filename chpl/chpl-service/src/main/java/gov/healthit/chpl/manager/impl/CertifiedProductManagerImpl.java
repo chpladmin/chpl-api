@@ -28,7 +28,7 @@ import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationEventDAO;
+import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -39,7 +39,6 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -72,7 +71,7 @@ import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationEventDTO;
+import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -94,7 +93,6 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
@@ -164,8 +162,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired DeveloperManager developerManager;
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
-	@Autowired CertificationEventDAO eventDao;
-	@Autowired EventTypeDAO eventTypeDao;
+	@Autowired CertificationStatusEventDAO statusEventDao;
 	@Autowired CertificationResultManager certResultManager;
 	@Autowired TestToolDAO testToolDao;
 	@Autowired TestStandardDAO testStandardDao;
@@ -174,7 +171,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired UcdProcessDAO ucdDao;
 	@Autowired TestParticipantDAO testParticipantDao;
 	@Autowired TestTaskDAO testTaskDao;
-	@Autowired CertificationStatusDAO statusDao;
+	@Autowired CertificationStatusDAO certStatusDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -317,7 +314,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			throw new EntityCreationException("Cannot determine certification status. Is this a new record? An update? A removal?");
 		}
 		if(status.trim().equalsIgnoreCase("new")) {
-			CertificationStatusDTO statusDto = statusDao.getByStatusName("Active");
+			CertificationStatusDTO statusDto = certStatusDao.getByStatusName("Active");
 			toCreate.setCertificationStatusId(statusDto.getId());
 		}
 		toCreate.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
@@ -728,30 +725,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		
-		//if all this was successful, insert a certification_event for the certification date, and the date it went active in CHPL (right now)
-		EventTypeDTO certificationEventType = eventTypeDao.getByName("Certification");
-		CertificationEventDTO certEvent = new CertificationEventDTO();
+		//if all this was successful, insert a certification status event for the certification date
+		CertificationStatusDTO activeCertStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.getName());
+		CertificationStatusEventDTO certEvent = new CertificationStatusEventDTO();
 		certEvent.setCreationDate(new Date());
 		certEvent.setDeleted(false);
 		Date certificationDate = pendingCp.getCertificationDate();
 		certEvent.setEventDate(certificationDate);
-		certEvent.setEventTypeId(certificationEventType.getId());
-		certEvent.setLastModifiedDate(new Date());
-		certEvent.setLastModifiedUser(Util.getCurrentUser().getId());
+		certEvent.setStatus(activeCertStatus);
 		certEvent.setCertifiedProductId(newCertifiedProduct.getId());
-		eventDao.create(certEvent);
-
-		//active event
-		EventTypeDTO activeEventType = eventTypeDao.getByName("Active");
-		CertificationEventDTO activeEvent = new CertificationEventDTO();
-		activeEvent.setCreationDate(new Date());
-		activeEvent.setDeleted(false);
-		activeEvent.setEventDate(new Date());
-		activeEvent.setEventTypeId(activeEventType.getId());
-		activeEvent.setLastModifiedDate(new Date());
-		activeEvent.setLastModifiedUser(Util.getCurrentUser().getId());
-		activeEvent.setCertifiedProductId(newCertifiedProduct.getId());
-		eventDao.create(activeEvent);
+		statusEventDao.create(certEvent);
 		
 		CertifiedProductSearchDetails details = detailsManager.getCertifiedProductDetails(newCertifiedProduct.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(), "Created "+newCertifiedProduct.getChplProductNumberForActivity(), null, details);
@@ -788,7 +771,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {		
 		//if the updated certification status was suspended by onc or terminated by onc, 
 		//change the status of the related developer
-		CertificationStatusDTO updatedCertificationStatus = statusDao.getById(dto.getCertificationStatusId());
+		CertificationStatusDTO updatedCertificationStatus = certStatusDao.getById(dto.getCertificationStatusId());
 		if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.getName()) || 
 			updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.getName())) {
 			
@@ -1017,15 +1000,34 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		CertifiedProductDetailsDTO existingCp = cpDao.getDetailsById(productDto.getId());
 		if(existingCp != null && existingCp.getCertificationDate().getTime() != newCertDate.getTime()) {
-			List<CertificationEventDTO> certEvents = eventDao.findByCertifiedProductId(productDto.getId());
-			CertificationEventDTO foundEvent = null;
-			for(CertificationEventDTO certEvent : certEvents) {
-				if(certEvent.getEventTypeId().equals(1L)) { // certified event type
-					foundEvent = certEvent;
-				}
+			CertificationStatusEventDTO certificationEvent = statusEventDao.findInitialCertificationEventForCertifiedProduct(productDto.getId());
+			if(certificationEvent != null) {
+				certificationEvent.setEventDate(newCertDate);
+				statusEventDao.update(certificationEvent);
 			}
-			foundEvent.setEventDate(newCertDate);
-			eventDao.update(foundEvent);
+		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateCertificationStatusEvents(Long acbId, CertifiedProductDTO productDto)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		CertifiedProductDetailsDTO existingCp = cpDao.getDetailsById(productDto.getId());
+		if(existingCp != null && 
+			existingCp.getCertificationStatusId().longValue() != productDto.getCertificationStatusId().longValue()) {
+			CertificationStatusEventDTO certificationEvent = new CertificationStatusEventDTO();
+			certificationEvent.setCertifiedProductId(existingCp.getId());
+			certificationEvent.setEventDate(new Date());
+			CertificationStatusDTO status = certStatusDao.getById(productDto.getCertificationStatusId());
+			if(status == null) {
+				throw new EntityRetrievalException("No certification status found with id " + productDto.getCertificationStatusId());
+			}
+			certificationEvent.setStatus(status);
+			statusEventDao.create(certificationEvent);
 		}
 	}
 	

@@ -3,36 +3,36 @@ package gov.healthit.chpl.dto;
 
 import java.util.Date;
 
-import gov.healthit.chpl.entity.CertificationEventEntity;
+import gov.healthit.chpl.entity.CertificationStatusEventEntity;
 
-public class CertificationEventDTO {
+public class CertificationStatusEventDTO {
 	
 	private Long id;
 	private Long certifiedProductId;
-	private String city;
+	private Date eventDate;
+	private CertificationStatusDTO status;
 	private Date creationDate;
 	private Boolean deleted;
-	private Date eventDate;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	private String state;
-	private Long eventTypeId;
 	
+	public CertificationStatusEventDTO(){}
 	
-	public CertificationEventDTO(){}
-	
-	public CertificationEventDTO(CertificationEventEntity entity){
+	public CertificationStatusEventDTO(CertificationStatusEventEntity entity){
 		
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();
-		this.city = entity.getCity();
+		this.eventDate = entity.getEventDate();
+		if(entity.getCertificationStatus() != null) {
+			this.status = new CertificationStatusDTO(entity.getCertificationStatus());
+		} else if(entity.getCertificationStatusId() != null){
+			this.status = new CertificationStatusDTO();
+			this.status.setId(entity.getCertificationStatusId());
+		}
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.getDeleted();
-		this.eventDate = entity.getEventDate();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
-		this.state = entity.getState();
-		this.eventTypeId = entity.getEventTypeId();
 		
 	}
 	
@@ -42,12 +42,7 @@ public class CertificationEventDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
+	
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -78,25 +73,20 @@ public class CertificationEventDTO {
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
-	public String getState() {
-		return state;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
-	public Long getEventTypeId() {
-		return eventTypeId;
-	}
-	public void setEventTypeId(Long eventTypeId) {
-		this.eventTypeId = eventTypeId;
-	}
-
 	public Long getCertifiedProductId() {
 		return certifiedProductId;
 	}
 
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
+	}
+
+	public CertificationStatusDTO getStatus() {
+		return status;
+	}
+
+	public void setStatus(CertificationStatusDTO status) {
+		this.status = status;
 	}
 	
 }
