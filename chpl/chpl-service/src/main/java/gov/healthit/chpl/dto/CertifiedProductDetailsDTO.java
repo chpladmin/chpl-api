@@ -31,6 +31,7 @@ public class CertifiedProductDetailsDTO {
     private String otherAcb;
     private Long certificationStatusId;
     private String certificationStatusName;
+    private Date certificationStatusDate;
     private Long certificationEditionId;
     private String year;
     private Long certificationBodyId;
@@ -89,6 +90,7 @@ public class CertifiedProductDetailsDTO {
     	this.certificationEditionId = entity.getCertificationEditionId();
     	this.certificationStatusId = entity.getCertificationStatusId();
     	this.certificationStatusName = entity.getCertificationStatusName();
+    	this.certificationStatusDate = entity.getCertificationDate();
     	this.chplProductNumber = entity.getChplProductNumber();
     	this.otherAcb = entity.getOtherAcb();
     	this.practiceTypeId = entity.getPracticeTypeId();
@@ -557,5 +559,13 @@ public class CertifiedProductDetailsDTO {
 
 	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
 		this.countClosedNonconformities = countClosedNonconformities;
+	}
+
+	public Date getCertificationStatusDate() {
+		return certificationStatusDate;
+	}
+
+	public void setCertificationStatusDate(Date certificationStatusDate) {
+		this.certificationStatusDate = certificationStatusDate;
 	}
 }

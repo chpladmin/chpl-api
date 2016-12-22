@@ -17,6 +17,7 @@ public interface CertifiedProductDAO {
 	public void delete(Long productId);
 	
 	public List<CertifiedProductDetailsDTO> findAll();
+	public List<CertifiedProductDetailsDTO> findWithSurveillance();
 	
 	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException;
 	public CertifiedProductDetailsDTO getDetailsById(Long productId) throws EntityRetrievalException;

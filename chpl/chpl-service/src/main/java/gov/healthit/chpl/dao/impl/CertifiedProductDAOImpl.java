@@ -202,6 +202,25 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	@Transactional(readOnly=true)
+	public List<CertifiedProductDetailsDTO> findWithSurveillance(){
+		
+		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery( 
+				"SELECT cp "
+				+ "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
+				+ "WHERE surv.certifiedProductId = cp.id "
+				+ "AND (NOT surv.deleted = true)", CertifiedProductDetailsEntity.class).getResultList();
+
+		List<CertifiedProductDetailsDTO> products = new ArrayList<>();
+		
+		for (CertifiedProductDetailsEntity entity : entities) {
+			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+			products.add(product);
+		}
+		return products;
+		
+	}
+	
+	@Transactional(readOnly=true)
 	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException{
 		
 		CertifiedProductDTO dto = null;

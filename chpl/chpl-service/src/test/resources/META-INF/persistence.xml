@@ -16,7 +16,6 @@
 		<class>gov.healthit.chpl.entity.CertificationBodyEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationEditionEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationEventEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationIdEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationIdProductMapEntity</class>
@@ -32,6 +31,7 @@
 		<class>gov.healthit.chpl.entity.CertificationResultTestTaskParticipantEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultTestTaskEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationStatusEventEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
@@ -51,7 +51,6 @@
 		<class>gov.healthit.chpl.entity.DeveloperEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperStatusEntity</class>
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
-		<class>gov.healthit.chpl.entity.EventTypeEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
 		<class>gov.healthit.chpl.entity.NonconformityStatusEntity</class>

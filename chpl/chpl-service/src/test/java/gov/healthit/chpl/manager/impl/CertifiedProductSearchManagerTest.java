@@ -127,7 +127,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setCertificationDateStart("2015-08-20");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(2, response.getResults().size());
+		assertEquals(11, response.getResults().size());
 		
 		boolean foundFirstProduct = false;
 		boolean foundSecondProduct = false;
@@ -149,7 +149,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setCertificationDateEnd("2015-08-20");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(3, response.getResults().size());
+		assertEquals(12, response.getResults().size());
 	}
 	
 	@Test
@@ -160,7 +160,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		searchRequest.setCertificationDateStart("2015-08-01");
 		searchRequest.setCertificationDateEnd("2015-10-31");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(3, response.getResults().size());
+		assertEquals(12, response.getResults().size());
 	}
 	
 	@Test
