@@ -90,7 +90,7 @@ public class CertifiedProductDetailsDTO {
     	this.certificationEditionId = entity.getCertificationEditionId();
     	this.certificationStatusId = entity.getCertificationStatusId();
     	this.certificationStatusName = entity.getCertificationStatusName();
-    	this.certificationStatusDate = entity.getCertificationDate();
+    	this.certificationStatusDate = entity.getCertificationStatusDate();
     	this.chplProductNumber = entity.getChplProductNumber();
     	this.otherAcb = entity.getOtherAcb();
     	this.practiceTypeId = entity.getPracticeTypeId();
