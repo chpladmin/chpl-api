@@ -455,9 +455,9 @@ public class SurveillanceController {
 	public void download(@RequestParam(value="type", required=false, defaultValue="") String type,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {	
 		String downloadFileLocation = env.getProperty("downloadFolderPath");
-		String filenameToDownload = "surveillance-all.csv";
-		if(type.equalsIgnoreCase("nonconformities")) {
-			filenameToDownload = "surveillance-with-nonconformities.csv";
+		String filenameToDownload = "surveillance-with-nonconformities.csv";
+		if(type.equalsIgnoreCase("all")) {
+			filenameToDownload = "surveillance-all.csv";
 		} else if(type.equalsIgnoreCase("basic")) {
 			filenameToDownload = "surveillance-basic-report.csv";
 		}
