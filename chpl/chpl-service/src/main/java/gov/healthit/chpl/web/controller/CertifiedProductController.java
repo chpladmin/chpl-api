@@ -315,6 +315,9 @@ public class CertifiedProductController {
 		//update certification date
 		cpManager.updateCertificationDate(acbId, toUpdate, new Date(updateRequest.getCertificationDate()));
 		
+		//possibly add something to certification status event
+		cpManager.updateCertificationStatusEvents(acbId, toUpdate);
+		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
 		

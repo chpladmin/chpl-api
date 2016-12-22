@@ -53,5 +53,7 @@ public interface CertifiedProductManager {
 			JsonProcessingException;
 	public void updateCertificationDate(Long acbId, CertifiedProductDTO productDto, Date newCertDate)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+	public void updateCertificationStatusEvents(Long acbId, CertifiedProductDTO productDto)
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed);
 }

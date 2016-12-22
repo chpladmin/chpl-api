@@ -452,7 +452,7 @@ public class SurveillanceController {
 					+ "files on the CHPL servers. This method allows any user to download those files.")
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="text/csv")
-	public void download(@RequestParam(value="all", required=false, defaultValue="false") String type,
+	public void download(@RequestParam(value="type", required=false, defaultValue="") String type,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {	
 		String downloadFileLocation = env.getProperty("downloadFolderPath");
 		String filenameToDownload = "surveillance-all.csv";

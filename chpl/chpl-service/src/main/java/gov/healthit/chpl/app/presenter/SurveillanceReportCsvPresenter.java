@@ -63,7 +63,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		survFields.add(data.getChplProductNumber());
 		survFields.add(data.getCertificationStatus().get("name").toString());
 		Long lastCertificationChangeMillis = ((Date)data.getCertificationStatus().get("date")).getTime();
-		if(lastCertificationChangeMillis == data.getCertificationDate().longValue()) {
+		if(lastCertificationChangeMillis.longValue() == data.getCertificationDate().longValue()) {
 			survFields.add("No status change");
 		} else {
 			LocalDateTime lastStatusChangeDate = LocalDateTime.ofInstant(

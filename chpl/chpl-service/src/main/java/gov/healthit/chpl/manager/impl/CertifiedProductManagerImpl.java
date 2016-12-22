@@ -1009,6 +1009,29 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	}
 	
 	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateCertificationStatusEvents(Long acbId, CertifiedProductDTO productDto)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		CertifiedProductDetailsDTO existingCp = cpDao.getDetailsById(productDto.getId());
+		if(existingCp != null && 
+			existingCp.getCertificationStatusId().longValue() != productDto.getCertificationStatusId().longValue()) {
+			CertificationStatusEventDTO certificationEvent = new CertificationStatusEventDTO();
+			certificationEvent.setCertifiedProductId(existingCp.getId());
+			certificationEvent.setEventDate(new Date());
+			CertificationStatusDTO status = certStatusDao.getById(productDto.getCertificationStatusId());
+			if(status == null) {
+				throw new EntityRetrievalException("No certification status found with id " + productDto.getCertificationStatusId());
+			}
+			certificationEvent.setStatus(status);
+			statusEventDao.create(certificationEvent);
+		}
+	}
+	
+	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	@Transactional(readOnly = false)
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
