@@ -8,10 +8,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
-<<<<<<< Updated upstream
-=======
-import org.springframework.cache.annotation.CacheEvict;
->>>>>>> Stashed changes
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
