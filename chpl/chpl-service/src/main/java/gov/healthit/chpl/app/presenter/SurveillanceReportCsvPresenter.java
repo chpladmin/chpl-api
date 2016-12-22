@@ -23,19 +23,6 @@ import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 
-/**
-*
-Note for Surveillance (Basic):
-For ‘Date of Last Status Change’, "No Status Change" should be the value if there is no status change (i.e. listing is still Active?) 
-·         “Difference from CAP Completed and CAP Must Be Completed”
-o   For example:    
-§  CAP Completed = 12/17/2016
-§  CAP Must be Completed = 12/15/2016
-§  This value would be 2.
-Value should be N/A if either values are not present.
- * @author kekey
- *
- */
 public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 	private static final Logger logger = LogManager.getLogger(SurveillanceReportCsvPresenter.class);
 
