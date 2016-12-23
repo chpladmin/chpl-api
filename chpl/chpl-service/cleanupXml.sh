@@ -6,10 +6,10 @@
 # This will run it at 0515 UTC, which (depending on DST) is 0015 EST
 
 #find the folder that has the XML files
-xmlFolder=cat target/chpl-service/WEB-INF/classes/environment.properties | grep downloadFolderPath | cut -d '=' -f2
+xmlFolder=$(cat target/chpl-service/WEB-INF/classes/environment.properties | grep downloadFolderPath | cut -d '=' -f2)
 
-echo $xmlFolder
+echo "Deleting files from $xmlFolder";
 
 #delete chpl product listing files that are older than 30 days except for the first of each month
-find $xmlFolder -type f -mtime +30 \
-    -exec sh -c 'test $(LC_TIME=C date +%d -r "$1") = 01 || echo rm "$1"' -- {} \;
+find $xmlFolder  -type f -mtime +30 \
+    -exec sh -c 'test $(LC_TIME=C date +%d -r "$1") = 01 || rm "$1"' -- {} \;
