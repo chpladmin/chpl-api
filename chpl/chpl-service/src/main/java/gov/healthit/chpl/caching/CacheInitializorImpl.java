@@ -13,10 +13,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.CertifiedProductSearchResultDAOImpl;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SurveillanceSearchOptions;
+import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.manager.impl.CertificationIdManagerImpl;
 import gov.healthit.chpl.manager.impl.SearchMenuManagerImpl;
 
@@ -27,6 +31,8 @@ public class CacheInitializorImpl {
 	@Autowired private CertificationIdManagerImpl certificationIdManager;
 	@Autowired private SearchMenuManagerImpl searchMenuManager;
 	@Autowired private CertifiedProductSearchResultDAOImpl certifiedProductSearchManager;
+	@Autowired PendingCertifiedProductDAO pcpDao;
+	@Autowired CertificationStatusDAO statusDao;
 	
 	@Async
 	@Transactional
@@ -52,6 +58,11 @@ public class CacheInitializorImpl {
 		logger.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
 		certificationIdManager.getAllWithProducts();
 		logger.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");
+		
+		logger.info("Starting cache initialization for pendingCPManager.getPending()");
+		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
+		pcpDao.findByStatus(statusDto.getId());
+		logger.info("Finished cache initialization for pendingCPManager.getPending()");
 		
 		logger.info("Starting cache initialization for /search DAO method");
 		SearchRequest searchFilters = new SearchRequest();

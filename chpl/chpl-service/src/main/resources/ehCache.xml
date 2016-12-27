@@ -159,5 +159,16 @@
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
 	</cache>
+	
+	<cache name="pendingProducts"
+		maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="100000"
+		eternal="false"
+		diskSpoolBufferSizeMB="20"
+		timeToIdleSeconds="3600" timeToLiveSeconds="3600"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
 
 </ehcache>
