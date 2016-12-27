@@ -44,14 +44,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
-
 @Configuration
-//@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
 @EnableTransactionManagement
-//@EnableAspectJAutoProxy
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class CHPLTestConfig implements EnvironmentAware {
 	

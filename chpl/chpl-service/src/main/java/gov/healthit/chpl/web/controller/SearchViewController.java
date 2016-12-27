@@ -496,7 +496,19 @@ public class SearchViewController {
 		if (simple == null){
 			simple = false;
 		}
-		return searchMenuManager.getPopulateSearchOptions(simple);
+		
+		PopulateSearchOptions searchOptions = new PopulateSearchOptions();
+		searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames());
+		searchOptions.setEditions(searchMenuManager.getEditionNames(simple));
+		searchOptions.setCertificationStatuses(searchMenuManager.getCertificationStatuses());
+		searchOptions.setPracticeTypeNames(searchMenuManager.getPracticeTypeNames());
+		searchOptions.setProductClassifications(searchMenuManager.getClassificationNames());
+		searchOptions.setProductNames(searchMenuManager.getProductNames());
+		searchOptions.setDeveloperNames(searchMenuManager.getDeveloperNames());
+		searchOptions.setCqmCriterionNumbers(searchMenuManager.getCQMCriterionNumbers(simple));
+		searchOptions.setCertificationCriterionNumbers(searchMenuManager.getCertificationCriterionNumbers(simple));
+		
+		return searchOptions;
 	}
 	
 	@ApiOperation(value="Get all developer decertifications in the CHPL", 

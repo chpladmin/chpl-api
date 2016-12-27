@@ -91,7 +91,7 @@ public class DeveloperController {
 					+ " previously assigned to the developerId's specified are reassigned to the newly created developer. The "
 					+ " old developers are then deleted. "
 					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
+	@CacheEvict(value = { "searchOptionsCache", "allDevelopers", "allDevelopersIncludingDeleted" }, allEntries=true)
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")

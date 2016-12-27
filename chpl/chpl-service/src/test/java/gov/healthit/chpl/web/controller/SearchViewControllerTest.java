@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -138,17 +139,54 @@ public class SearchViewControllerTest {
 		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
 	}
 	
-	/** Description: Tests that the getPopulateSearchData(boolean required) method returns without error, 
-	 * gets valid developerNames/productNames, 
-	 * and returns within 3 seconds
-	 * Expected Result: Completes without error, gets valid developerNames + productNames, and finishes within 3 seconds
-	 * Assumptions:
-	 * Pre-existing data in openchpl_test DB is there per the \CHPL\chpl-api\chpl\chpl-service\src\test\resources\data\testData.xml
+	/** 
+	 * Tests that the getPopulateSearchOptions() caches its data
 	 */
 	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_getPopulateSearchOptions_CachesData() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		long startTime = System.currentTimeMillis();
+		PopulateSearchOptions results = searchViewController.getPopulateSearchData(false);
+		// getCertificationCriterionNumbers should now be cached
+		long endTime = System.currentTimeMillis();
+		long timeLength = endTime - startTime;
+		double elapsedSecs = timeLength / 1000.0;
+		
+		assertTrue("Returned " + results.getCertBodyNames() + " getPopulateSearchOptions but should return more than 0", results.getCertBodyNames().size() > 0);
+		
+		System.out.println("getPopulateSearchOptions returned " + results.getCertBodyNames().size() + " total certBodyNames.");
+		System.out.println("getPopulateSearchOptions returned " + results.getCertificationCriterionNumbers().size() + " total certificationCriterionNumbers.");
+		System.out.println("getPopulateSearchOptions returned " + results.getCertificationStatuses().size() + " total certificationStatuses.");
+		System.out.println("getPopulateSearchOptions returned " + results.getCqmCriterionNumbers().size() + " total cqmCriterionNumbers.");
+		System.out.println("getPopulateSearchOptions returned " + results.getDeveloperNames().size() + " total developerNames.");
+		System.out.println("getPopulateSearchOptions returned " + results.getEditions().size() + " total editions.");
+		System.out.println("getPopulateSearchOptions returned " + results.getPracticeTypeNames().size() + " total practiceTypeNames.");
+		System.out.println("getPopulateSearchOptions returned " + results.getProductClassifications().size() + " total productClassifications.");
+		System.out.println("getPopulateSearchOptions returned " + results.getProductNames().size() + " total productNames.");
+		System.out.println("getPopulateSearchOptions completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		// now compare cached time vs non-cached time
+		startTime = System.currentTimeMillis();
+		results = searchViewController.getPopulateSearchData(false);
+		endTime = System.currentTimeMillis();
+		timeLength = endTime - startTime;
+		elapsedSecs = timeLength / 1000.0;
+		System.out.println("getCertificationCriterionNumbers completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		assertTrue("getCertificationCriterionNumbers should complete within 100 ms but took " + timeLength
+				+ " millis or " + elapsedSecs + " seconds", timeLength < 100);
+	}
+	
+	/** 
+	 * Tests that the getPopulateSearchData(true) caches its data
+	 */
+	@Transactional
+	@Rollback(true)
 	@Test
 	public void test_getPopulateSearchData_simpleAsTrue_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		cacheManager.clearAll();
 		long getPopulateSearchDataStartTime = System.currentTimeMillis();
 		Boolean required = true;
@@ -165,7 +203,6 @@ public class SearchViewControllerTest {
 		
 		// now try again to test caching
 		getPopulateSearchDataStartTime = System.currentTimeMillis();
-		required = true;
 		results = searchViewController.getPopulateSearchData(required);
 		getPopulateSearchDataEndTime = System.currentTimeMillis();
 		getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
@@ -176,7 +213,43 @@ public class SearchViewControllerTest {
 		
 		System.out.println("searchViewController.getPopulateSearchData() should complete immediately due to caching. It took "
 		+ getPopulateSearchDataTimeLength + " millis or " + getPopulateSearchElapsedSeconds + " seconds");
-		assertTrue("DeveloperController.getDevelopers() should complete in 0 seconds due to caching", getPopulateSearchDataTimeLength < 100);
+		assertTrue("searchViewController.getPopulateSearchData() should complete in 0 seconds due to caching but took " + getPopulateSearchDataTimeLength + "ms", getPopulateSearchDataTimeLength < 100);
+	}
+	
+	/** 
+	 * Tests that the getPopulateSearchData(false) caches its data
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_getPopulateSearchData_simpleAsFalse_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		cacheManager.clearAll();
+		long getPopulateSearchDataStartTime = System.currentTimeMillis();
+		Boolean required = false;
+		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required);
+		long getPopulateSearchDataEndTime = System.currentTimeMillis();
+		long getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
+		double getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
+		
+		assertTrue("Returned " + results.getDeveloperNames().size() + " developers but should return more than 0", results.getDeveloperNames().size() > 0);
+		assertTrue("Returned " + results.getProductNames().size() + " products but should return more than 0", results.getProductNames().size() > 0);
+		
+		System.out.println("searchViewController.getPopulateSearchData() should complete within 3 seconds. It took " + getPopulateSearchDataTimeLength
+				+ " millis or " + getPopulateSearchElapsedSeconds + " seconds");
+		
+		// now try again to test caching
+		getPopulateSearchDataStartTime = System.currentTimeMillis();
+		results = searchViewController.getPopulateSearchData(required);
+		getPopulateSearchDataEndTime = System.currentTimeMillis();
+		getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
+		getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
+		
+		assertTrue("Returned " + results.getDeveloperNames().size() + " developers but should return more than 0", results.getDeveloperNames().size() > 0);
+		assertTrue("Returned " + results.getProductNames().size() + " products but should return more than 0", results.getProductNames().size() > 0);
+		
+		System.out.println("searchViewController.getPopulateSearchData() should complete immediately due to caching. It took "
+		+ getPopulateSearchDataTimeLength + " millis or " + getPopulateSearchElapsedSeconds + " seconds");
+		assertTrue("searchViewController.getPopulateSearchData() should complete in 0 seconds due to caching but took " + getPopulateSearchDataTimeLength + "ms", getPopulateSearchDataTimeLength < 100);
 	}
 	
 	/** 

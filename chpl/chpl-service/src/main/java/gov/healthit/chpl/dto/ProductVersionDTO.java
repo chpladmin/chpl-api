@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.ProductVersionEntity;
 
-public class ProductVersionDTO {
-
+public class ProductVersionDTO implements Serializable {
+	private static final long serialVersionUID = -1371133241003414009L;
 	private Long id;
 	private Date creationDate;
 	private Boolean deleted;

@@ -1,12 +1,12 @@
 package gov.healthit.chpl.domain;
 
-
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
-public class CertifiedProductSearchResult {
+public class CertifiedProductSearchResult implements Serializable {
+	private static final long serialVersionUID = 5076651267693735935L;
 	private Long id;
     private Long testingLabId;
     private String testingLabName;

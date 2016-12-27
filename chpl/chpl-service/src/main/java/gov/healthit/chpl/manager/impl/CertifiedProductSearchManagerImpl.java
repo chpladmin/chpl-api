@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -23,6 +24,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	
 	@Transactional
 	@Override
+	@Cacheable("defaultSearch")
 	public SearchResponse search(
 			SearchRequest searchRequest) {
 		

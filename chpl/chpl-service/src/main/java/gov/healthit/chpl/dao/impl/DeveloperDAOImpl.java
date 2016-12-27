@@ -43,7 +43,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	@Autowired DeveloperStatusDAO statusDao;
 
 	@Override
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
+	@CacheEvict(value = { "allDevelopers", "allDevelopersIncludingDeleted", "developerNames" }, allEntries=true)
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
 
 		DeveloperEntity entity = null;
@@ -140,7 +140,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	@Override
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
+	@CacheEvict(value = { "allDevelopers", "allDevelopersIncludingDeleted", "developerNames" }, allEntries=true)
 	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException {
 		DeveloperEntity entity = this.getEntityById(dto.getId());
 
@@ -223,6 +223,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 
 	@Override
+	@CacheEvict(value = { "allDevelopers", "allDevelopersIncludingDeleted", "developerNames" }, allEntries=true)
 	public DeveloperDTO updateStatus(DeveloperDTO toUpdate) throws EntityRetrievalException {
 		DeveloperEntity entityToUpdate = this.getEntityById(toUpdate.getId());
 		if(entityToUpdate == null) {
@@ -242,6 +243,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	@Override
+	@CacheEvict(value = { "allDevelopers", "allDevelopersIncludingDeleted", "developerNames" }, allEntries=true)
 	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto) {
 		DeveloperACBMapEntity mapping = getTransparencyMappingEntity(dto.getDeveloperId(), dto.getAcbId());
 		if(mapping == null) {
@@ -258,6 +260,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 	@Override
 	@Transactional
+	@CacheEvict(value = { "allDevelopers", "allDevelopersIncludingDeleted", "developerNames" }, allEntries=true)
 	public void delete(Long id) throws EntityRetrievalException {
 		DeveloperEntity toDelete = getEntityById(id);
 
@@ -270,6 +273,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 
 	@Override
+	@CacheEvict(value = { "allDevelopers", "allDevelopersIncludingDeleted", "developerNames" }, allEntries=true)
 	public void deleteTransparencyMapping(Long developerId, Long acbId) {
 		DeveloperACBMapEntity toDelete = getTransparencyMappingEntity(developerId, acbId);
 		if(toDelete != null) {
@@ -446,7 +450,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		entityManager.flush();
 	}
 	
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
+	@CacheEvict(value = { "allDevelopers", "allDevelopersIncludingDeleted", "developerNames" }, allEntries=true)
 	private void update(DeveloperEntity entity) {
 		entityManager.merge(entity);
 		entityManager.flush();

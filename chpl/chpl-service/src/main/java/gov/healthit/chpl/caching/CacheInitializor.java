@@ -11,11 +11,12 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 
 @Component
 public class CacheInitializor {
-	@Autowired private CacheInitializorImpl cacheInitializorImpl;
-
-	  @PostConstruct
-	  public void initialize() throws IOException, EntityRetrievalException {
-		  //cacheInitializorImpl.initializeSearchOptions();
-		  cacheInitializorImpl.initializeCertificationIdManager();
-	  }
+//	@Autowired private CacheInitializorImpl cacheInitializorImpl;
+//
+//	  @PostConstruct
+//	  public void initialize() throws IOException, EntityRetrievalException {
+//		  cacheInitializorImpl.initializeSearchOptions();
+//		  cacheInitializorImpl.initializeCertificationIdManager();
+//		  cacheInitializorImpl.initializeSearch();
+//	  }
 }

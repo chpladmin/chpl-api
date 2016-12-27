@@ -55,10 +55,11 @@ public class ControllerProfileTests {
 	/** Given ...
 	 *  When ...
 	 *  Then ...
+	 * @throws InvalidArgumentsException 
 	 */
 	@Transactional 
 	@Test
-	public void test_SearchViewController_() {
+	public void test_SearchViewController_() throws InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		SearchRequest searchFilters = new SearchRequest();
 		List<String> cqms = new ArrayList<String>();

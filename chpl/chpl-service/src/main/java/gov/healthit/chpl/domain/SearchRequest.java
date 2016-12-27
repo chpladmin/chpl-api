@@ -1,11 +1,14 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SearchRequest {
+public class SearchRequest implements Serializable {
+	private static final long serialVersionUID = 1179207628639701580L;
+
 	public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";
 	
 	String searchTerm = null;
