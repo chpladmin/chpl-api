@@ -1,5 +1,5 @@
 #!/bin/bash
-(set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters
+#(set -o igncr) 2>/dev/null && set -o igncr; # this comment is required to trick cygwin into dealing with windows vs. linux EOL characters
 
 # to clean up the XML files regularly, add a line to a crontab on the machine hosting the application that looks something like:
 # 15 5 * * * cd /some/directory/chpl-api/chpl/chpl-service && ./cleanupXml.sh
