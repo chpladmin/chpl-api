@@ -130,6 +130,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	}
 	
 	@Override
+	@Cacheable("cpDetailsSearch")
 	public List<CertifiedProductDetailsDTO> search(
 			SearchRequest searchRequest) {
 		

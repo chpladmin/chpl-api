@@ -149,7 +149,7 @@
 		<persistence strategy="localTempSwap" />
 	</cache>
 	
-	<cache name="defaultSearch"
+	<cache name="cpDetailsSearch"
 		maxEntriesLocalHeap="1000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
@@ -159,6 +159,5 @@
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
 	</cache>
-	
 
 </ehcache>
