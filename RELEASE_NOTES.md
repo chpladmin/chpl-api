@@ -14,7 +14,8 @@ _Date TBD_
 * Send questionable activity email when product owner changes (not during a merge)
 * Add /surveillance/download[?type=all|basic|nonconformities] endpoint to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
 * Add lookup to new tables for certification status event history
-* Add date of last certification status change to certified product details
+* Add date of last certification status change to certified product detailis
+* Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
