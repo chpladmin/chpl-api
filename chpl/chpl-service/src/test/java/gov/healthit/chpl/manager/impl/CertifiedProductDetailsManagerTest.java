@@ -86,6 +86,18 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	
 	@Test
 	@Transactional
+	public void testCertifiedProductDetailsDecertificationDate() throws EntityRetrievalException{
+		
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(17L);
+		Calendar expected = GregorianCalendar.getInstance();
+		expected.set(2016, 4, 20, 13, 14, 0);
+		expected.set(Calendar.MILLISECOND, 0);
+		assertEquals(expected.getTime().getTime(), detail.getDecertificationDate().longValue());
+		
+	}
+	
+	@Test
+	@Transactional
 	public void testCertifiedProductDetailsChplProductNumber() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);

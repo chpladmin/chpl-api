@@ -99,6 +99,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "phone_number, "
 			+ "title, "
 			+ "certification_date, "
+			+ "decertification_date, "
 			+ "count_certifications, "
 			+ "count_cqms, "
 			+ "last_modified_date, "

@@ -128,6 +128,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		if(dto.getCertificationDate() != null) {
 			searchDetails.setCertificationDate(dto.getCertificationDate().getTime());
 		}
+		
+		if(dto.getDecertificationDate() != null) {
+			searchDetails.setDecertificationDate(dto.getDecertificationDate().getTime());
+		}
 			
 		searchDetails.getCertificationEdition().put("id", dto.getCertificationEditionId());
 		searchDetails.getCertificationEdition().put("name", dto.getYear());

@@ -196,6 +196,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_date")
     private Date certificationDate;
     
+    @Column(name = "decertification_date")
+    private Date decertificationDate;
+    
     @Column(name = "count_certifications")
     private Integer countCertifications;
     
@@ -832,5 +835,13 @@ public class CertifiedProductDetailsEntity {
 
 	public void setCertificationStatusDate(Date certificationStatusDate) {
 		this.certificationStatusDate = certificationStatusDate;
+	}
+
+	public Date getDecertificationDate() {
+		return decertificationDate;
+	}
+
+	public void setDecertificationDate(Date decertificationDate) {
+		this.decertificationDate = decertificationDate;
 	}	
 }

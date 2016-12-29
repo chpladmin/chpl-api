@@ -28,6 +28,7 @@ public class CertifiedProductSearchDetails {
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	private Map<String, Object> testingLab = new HashMap<String, Object>();
 	private Long certificationDate;
+	private Long decertificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
 	private Integer countSurveillance;
@@ -304,5 +305,11 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
 		this.countClosedNonconformities = countClosedNonconformities;
+	}
+	public Long getDecertificationDate() {
+		return decertificationDate;
+	}
+	public void setDecertificationDate(Long decertificationDate) {
+		this.decertificationDate = decertificationDate;
 	}
 }

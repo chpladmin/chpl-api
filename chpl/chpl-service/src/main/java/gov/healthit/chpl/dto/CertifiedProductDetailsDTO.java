@@ -43,6 +43,7 @@ public class CertifiedProductDetailsDTO {
     private ProductVersionDTO version;
     private Date creationDate;
     private Date certificationDate;
+    private Date decertificationDate;
     private Integer countCertifications;
     private Integer countCqms;
     private Integer countSurveillance;
@@ -160,6 +161,7 @@ public class CertifiedProductDetailsDTO {
     	this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
+    	this.decertificationDate = entity.getDecertificationDate();
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
     	this.countSurveillance = entity.getCountSurveillance();
@@ -567,5 +569,13 @@ public class CertifiedProductDetailsDTO {
 
 	public void setCertificationStatusDate(Date certificationStatusDate) {
 		this.certificationStatusDate = certificationStatusDate;
+	}
+
+	public Date getDecertificationDate() {
+		return decertificationDate;
+	}
+
+	public void setDecertificationDate(Date decertificationDate) {
+		this.decertificationDate = decertificationDate;
 	}
 }
