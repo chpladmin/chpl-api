@@ -40,6 +40,9 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			if(dto.getCertificationDate() != null) {
 				searchResult.setCertificationDate(dto.getCertificationDate().getTime());
 			}
+			if(dto.getDecertificationDate() != null) {
+				searchResult.setDecertificationDate(dto.getDecertificationDate().getTime());
+			}
 			
 			searchResult.getCertificationEdition().put("id", dto.getCertificationEditionId());
 			searchResult.getCertificationEdition().put("name", dto.getYear());

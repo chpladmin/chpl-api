@@ -25,6 +25,7 @@ public class CertifiedProductSearchResult {
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	private Long certificationDate;
+	private Long decertificationDate;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
@@ -239,6 +240,12 @@ public class CertifiedProductSearchResult {
 	}
 	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
 		this.countClosedNonconformities = countClosedNonconformities;
+	}
+	public Long getDecertificationDate() {
+		return decertificationDate;
+	}
+	public void setDecertificationDate(Long decertificationDate) {
+		this.decertificationDate = decertificationDate;
 	}
 	
 }
