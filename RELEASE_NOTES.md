@@ -25,6 +25,7 @@ _Date TBD_
 	Add caching for /search API call
 	Update caching for /search_options API call
 	Cache underlying data that improves call speed for many other API calls
+* TO-DO DURING DEPLOYMENT: Add this line to environment.properties: enableCacheInitialization=true
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
