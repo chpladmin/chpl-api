@@ -2,8 +2,8 @@ package gov.healthit.chpl.caching;
 
 import javax.annotation.PostConstruct;
 
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
 import net.sf.ehcache.CacheManager;
@@ -18,8 +18,8 @@ public class ClearAllCachesImpl {
 		manager = CacheManager.getInstance();
     }
 	
-	@Around("@annotation(ClearAllCaches)")
-    public void aroundClearAllCachesMethod() {
+	@Before("@annotation(ClearAllCaches)")
+    public void beforeClearAllCachesMethod() {
           manager.clearAll();
     }
 }
