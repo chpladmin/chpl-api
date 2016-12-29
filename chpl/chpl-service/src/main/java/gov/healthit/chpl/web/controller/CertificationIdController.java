@@ -8,7 +8,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -99,7 +99,7 @@ public class CertificationIdController {
 			+ "Returns a list of basic product information, " 
 			+ "Criteria and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
 	@RequestMapping(value="/create", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces={MediaType.APPLICATION_JSON_VALUE})
-	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries = true)
+	@ClearAllCaches
 	public @ResponseBody CertificationIdResults createCertificationId(@RequestParam(required=true) List<Long> ids) 
 	throws InvalidArgumentsException, CertificationIdException {
 		return this.findCertificationByProductIds(ids, true);

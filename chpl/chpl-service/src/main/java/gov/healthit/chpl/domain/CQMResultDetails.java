@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,8 +11,8 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 
-public class CQMResultDetails {
-	
+public class CQMResultDetails implements Serializable {
+	private static final long serialVersionUID = -7077008682408284325L;
 	private Long id;
 	private String number;
 	private String cmsId;

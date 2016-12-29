@@ -34,7 +34,6 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;

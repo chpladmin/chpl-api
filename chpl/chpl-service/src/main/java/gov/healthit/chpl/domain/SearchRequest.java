@@ -147,4 +147,62 @@ public class SearchRequest implements Serializable {
 	public void setHasHadSurveillance(Boolean hasHadSurveillance) {
 		this.hasHadSurveillance = hasHadSurveillance;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((searchTerm == null) ? 0 : searchTerm.hashCode());
+		result = prime * result
+				+ ((certificationStatuses == null) ? 0 : certificationStatuses.hashCode());
+		result = prime * result + ((certificationEditions == null) ? 0 : certificationEditions.hashCode());
+		result = prime * result
+				+ ((certificationCriteria == null) ? 0 : certificationCriteria.hashCode());
+		result = prime * result
+				+ ((cqms == null) ? 0 : cqms.hashCode());
+		result = prime * result
+				+ ((certificationBodies == null) ? 0 : certificationBodies.hashCode());
+		result = prime * result
+				+ ((surveillance == null) ? 0 : surveillance.hashCode());
+		result = prime * result
+				+ ((certificationBodies == null) ? 0 : certificationBodies.hashCode());
+		result = prime * result
+				+ ((hasHadSurveillance == null) ? 0 : hasHadSurveillance.hashCode());
+		result = prime * result
+				+ ((developer == null) ? 0 : developer.hashCode());
+		result = prime * result
+				+ ((product == null) ? 0 : product.hashCode());
+		result = prime * result
+				+ ((version == null) ? 0 : version.hashCode());
+		result = prime * result
+				+ ((practiceType == null) ? 0 : practiceType.hashCode());
+		result = prime * result
+				+ ((certificationDateStart == null) ? 0 : certificationDateStart.hashCode());
+		result = prime * result
+				+ ((certificationDateEnd == null) ? 0 : certificationDateEnd.hashCode());
+		result = prime * result
+				+ ((orderBy == null) ? 0 : orderBy.hashCode());
+		result = prime * result
+				+ ((sortDescending == null) ? 0 : sortDescending.hashCode());
+		result = prime * result
+				+ ((pageNumber == null) ? 0 : pageNumber.hashCode());
+		result = prime * result
+				+ ((pageSize == null) ? 0 : pageSize.hashCode());
+		result = prime * result
+				+ ((practiceType == null) ? 0 : practiceType.hashCode());
+		return result;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SearchRequest other = (SearchRequest) obj;
+		return this.hashCode() == other.hashCode();
+	}
 }

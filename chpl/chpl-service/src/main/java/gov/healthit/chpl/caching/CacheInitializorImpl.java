@@ -20,7 +20,6 @@ import gov.healthit.chpl.dao.impl.CertifiedProductSearchResultDAOImpl;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SurveillanceSearchOptions;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.manager.impl.CertificationIdManagerImpl;
 import gov.healthit.chpl.manager.impl.SearchMenuManagerImpl;
 
@@ -31,8 +30,8 @@ public class CacheInitializorImpl {
 	@Autowired private CertificationIdManagerImpl certificationIdManager;
 	@Autowired private SearchMenuManagerImpl searchMenuManager;
 	@Autowired private CertifiedProductSearchResultDAOImpl certifiedProductSearchManager;
-	@Autowired PendingCertifiedProductDAO pcpDao;
-	@Autowired CertificationStatusDAO statusDao;
+	@Autowired private PendingCertifiedProductDAO pcpDao;
+	@Autowired private CertificationStatusDAO statusDao;
 	
 	@Async
 	@Transactional
@@ -52,17 +51,10 @@ public class CacheInitializorImpl {
 		searchMenuManager.getCertificationCriterionNumbers(true);
 		logger.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
 		
-		logger.info("Starting cache initialization for CertificationIdManager.getAll()");
-		certificationIdManager.getAll();
-		logger.info("Finished cache initialization for CertificationIdManager.getAll()");
-		logger.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
-		certificationIdManager.getAllWithProducts();
-		logger.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");
-		
-		logger.info("Starting cache initialization for pendingCPManager.getPending()");
+		logger.info("Starting cache initialization for /pending");
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
 		pcpDao.findByStatus(statusDto.getId());
-		logger.info("Finished cache initialization for pendingCPManager.getPending()");
+		logger.info("Finished cache initialization for /pending");
 		
 		logger.info("Starting cache initialization for /search DAO method");
 		SearchRequest searchFilters = new SearchRequest();
@@ -83,7 +75,6 @@ public class CacheInitializorImpl {
 		certStatuses.add("Terminated by ONC");
 		List<String> cqms = new ArrayList<String>();
 		Set<SurveillanceSearchOptions> survs = new HashSet<SurveillanceSearchOptions>();
-		 
 		searchFilters.setCertificationBodies(certBodies);
 		searchFilters.setCertificationCriteria(certCriteria);
 		searchFilters.setCertificationDateEnd(null);
@@ -104,6 +95,13 @@ public class CacheInitializorImpl {
 		searchFilters.setVersion(null);
 		certifiedProductSearchManager.search(searchFilters);
 		logger.info("Finished cache initialization for /search DAO method");
+		
+		logger.info("Starting cache initialization for CertificationIdManager.getAll()");
+		certificationIdManager.getAll();
+		logger.info("Finished cache initialization for CertificationIdManager.getAll()");
+		logger.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
+		certificationIdManager.getAllWithProducts();
+		logger.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");
 	}
 	
 }

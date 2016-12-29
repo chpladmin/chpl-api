@@ -1,7 +1,10 @@
 package gov.healthit.chpl.domain;
 
-public class MeaningfulUseUser {
-	
+import java.io.Serializable;
+
+public class MeaningfulUseUser implements Serializable {
+	private static final long serialVersionUID = -4837891204615959268L;
+
 	public MeaningfulUseUser(){}
 	
 	public MeaningfulUseUser(String productNumber,  Long numberOfUsers){

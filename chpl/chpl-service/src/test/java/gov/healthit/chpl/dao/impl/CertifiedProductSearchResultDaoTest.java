@@ -44,6 +44,7 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import junit.framework.TestCase;
+import net.sf.ehcache.CacheManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -61,6 +62,8 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	@Autowired
 	private CertifiedProductDAO cpDao;
 	
+	CacheManager manager = CacheManager.getInstance();
+	
 	private static JWTAuthenticatedUser adminUser;
 	
 	@BeforeClass
@@ -72,6 +75,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
+	
 	@Test
 	@Transactional
 	public void testCountSearchResults(){
@@ -188,6 +192,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testSearchActiveSurveillanceWithoutNonconformities() throws EntityRetrievalException {
+		manager.clearAll();
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
@@ -325,6 +330,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testSearchActiveSurveillanceWithNonconformities() throws EntityRetrievalException {
+		manager.clearAll();
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
@@ -518,6 +524,74 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		timeLength = endTime - startTime;
 		elapsedSecs = timeLength / 1000.0;
 		System.out.println("search returned " + results.size() + " total search results.");
+		System.out.println("search completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		assertTrue("search should complete within 100 ms but took " + timeLength
+				+ " millis or " + elapsedSecs + " seconds", timeLength < 100);
+	}
+	
+	/** 
+	 * Tests that the default /search call countMultiFilterSearchResults() caches its data
+	 */
+	@Transactional
+	@Test
+	public void test_countMultiFilterSearchResults_CachesData() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SearchRequest searchFilters = new SearchRequest();
+		List<String> certBodies = new ArrayList<String>();
+		certBodies.add("Drummond Group");
+		certBodies.add("ICSA Labs");
+		certBodies.add("InfoGard");
+		List<String> certCriteria = new ArrayList<String>();
+		List<String> certEditions = new ArrayList<String>();
+		certEditions.add("2014");
+		certEditions.add("2015");
+		List<String> certStatuses = new ArrayList<String>();
+		certStatuses.add("Active");
+		certStatuses.add("Suspended by ONC-ACB");
+		certStatuses.add("Withdrawn by Developer");
+		certStatuses.add("Withdrawn by ONC-ACB");
+		certStatuses.add("Suspended by ONC");
+		certStatuses.add("Terminated by ONC");
+		List<String> cqms = new ArrayList<String>();
+		Set<SurveillanceSearchOptions> survs = new HashSet<SurveillanceSearchOptions>();
+		 
+		searchFilters.setCertificationBodies(certBodies);
+		searchFilters.setCertificationCriteria(certCriteria);
+		searchFilters.setCertificationDateEnd(null);
+		searchFilters.setCertificationDateStart(null);
+		searchFilters.setCertificationEditions(certEditions);
+		searchFilters.setCertificationStatuses(certStatuses);
+		searchFilters.setCqms(cqms);
+		searchFilters.setDeveloper(null);
+		searchFilters.setHasHadSurveillance(null);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setPracticeType(null);
+		searchFilters.setProduct(null);
+		searchFilters.setSearchTerm(null);
+		searchFilters.setSortDescending(false);
+		searchFilters.setSurveillance(survs);
+		searchFilters.setVersion(null);
+		long startTime = System.currentTimeMillis();
+		Long result = searchResultDAO.countMultiFilterSearchResults(searchFilters);
+		// search should now be cached
+		long endTime = System.currentTimeMillis();
+		long timeLength = endTime - startTime;
+		double elapsedSecs = timeLength / 1000.0;
+		
+		assertTrue("Returned " + result + " which should have a count more than 0", result > 0);
+		
+		System.out.println("search completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		// now compare cached time vs non-cached time
+		startTime = System.currentTimeMillis();
+		result = searchResultDAO.countMultiFilterSearchResults(searchFilters);
+		endTime = System.currentTimeMillis();
+		timeLength = endTime - startTime;
+		elapsedSecs = timeLength / 1000.0;
 		System.out.println("search completed in  " + timeLength
 				+ " millis or " + elapsedSecs + " seconds");
 		

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -14,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -126,7 +126,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = false)
-	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts", "cpDetailsSearch" }, allEntries=true)
+	@ClearAllCaches
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CertificationIdDTO result = CertificationIdDAO.create(productIds, year);
@@ -139,7 +139,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts", "cpDetailsSearch"  }, allEntries=true)
+	@ClearAllCaches
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CertificationIdDTO result = CertificationIdDAO.create(dto);

@@ -8,7 +8,6 @@ import javax.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -72,7 +72,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@CacheEvict("cpDetailsSearch")
+	@ClearAllCaches
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		//check that the developer of this product is Active
 		if(dto.getDeveloperId() == null) {
@@ -99,7 +99,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@CacheEvict("cpDetailsSearch")
+	@ClearAllCaches
 	public ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductDTO beforeDTO = productDao.getById(dto.getId());
@@ -136,7 +136,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@CacheEvict("cpDetailsSearch")
+	@ClearAllCaches
 	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		ProductDTO beforeDTO = productDao.getById(dto.getId());
 
@@ -164,7 +164,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@CacheEvict("cpDetailsSearch")
+	@ClearAllCaches
 	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductDTO toDelete = productDao.getById(productId);
@@ -192,7 +192,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@CacheEvict("cpDetailsSearch")
+	@ClearAllCaches
 	public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();

@@ -1,6 +1,8 @@
 package gov.healthit.chpl.domain;
 
-public enum ActivityConcept {
+import java.io.Serializable;
+
+public enum ActivityConcept implements Serializable {
 	
 	ACTIVITY_CONCEPT_CERTIFIED_PRODUCT(1L, "CERTIFIED_PRODUCT"),
 	ACTIVITY_CONCEPT_PRODUCT(2L, "PRODUCT"),

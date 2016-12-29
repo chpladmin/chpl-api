@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
@@ -19,7 +19,7 @@ import gov.healthit.chpl.entity.ProductClassificationTypeEntity;
 public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements ProductClassificationTypeDAO {
 
 	@Override
-	@CacheEvict(value = { "classificationNames" }, allEntries=true)
+	@ClearAllCaches
 	public void create(ProductClassificationTypeDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
 		
@@ -50,7 +50,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 	}
 
 	@Override
-	@CacheEvict(value = { "classificationNames" }, allEntries=true)
+	@ClearAllCaches
 	public void update(ProductClassificationTypeDTO dto) throws EntityRetrievalException {
 		
 		ProductClassificationTypeEntity entity = this.getEntityById(dto.getId());
@@ -65,7 +65,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 	}
 
 	@Override
-	@CacheEvict(value = { "classificationNames" }, allEntries=true)
+	@ClearAllCaches
 	public void delete(Long id) {
 		Query query = entityManager.createQuery("UPDATE ProductClassificationTypeEntity SET deleted = true WHERE product_classification_type_id = :entityid");
 		query.setParameter("entityid", id);
@@ -107,14 +107,14 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 		return null;
 	}
 	
-	@CacheEvict(value = { "classificationNames" }, allEntries=true)
+	@ClearAllCaches
 	private void create(ProductClassificationTypeEntity entity) {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
-	@CacheEvict(value = { "classificationNames" }, allEntries=true)
+	@ClearAllCaches
 	private void update(ProductClassificationTypeEntity entity) {
 		
 		entityManager.merge(entity);	

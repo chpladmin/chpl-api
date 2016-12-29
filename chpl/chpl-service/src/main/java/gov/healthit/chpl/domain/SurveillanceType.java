@@ -1,6 +1,9 @@
 package gov.healthit.chpl.domain;
 
-public class SurveillanceType {
+import java.io.Serializable;
+
+public class SurveillanceType implements Serializable {
+	private static final long serialVersionUID = 5788880200952752783L;
 	private Long id;
 	private String name;
 	

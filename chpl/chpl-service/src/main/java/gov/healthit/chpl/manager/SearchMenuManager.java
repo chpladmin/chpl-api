@@ -6,7 +6,6 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 
 public interface SearchMenuManager {

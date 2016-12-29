@@ -7,11 +7,11 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -23,7 +23,7 @@ import gov.healthit.chpl.entity.CertifiedProductEntity;
 @Repository(value="certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
 	
-	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries=true)
+	@ClearAllCaches
 	@Transactional(readOnly=false)
 	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityCreationException{
 		
@@ -110,7 +110,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		}
 	}
 	
-	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries=true)
+	@ClearAllCaches
 	@Transactional(readOnly=false)
 	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException{
 		
@@ -148,7 +148,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return new CertifiedProductDTO(entity);
 	}
 	
-	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries=true)
+	@ClearAllCaches
 	@Transactional(readOnly=false)
 	public CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO dto) throws EntityRetrievalException, IOException{
 		if(dto.getChplProductNumber() == null || dto.getMeaningfulUseUsers() == null){
@@ -174,7 +174,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		}
 	}
 	
-	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries=true)
+	@ClearAllCaches
 	@Transactional(readOnly=false)
 	public void delete(Long productId){
 		
@@ -393,7 +393,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
-	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries=true)
+	@ClearAllCaches
 	@Transactional(readOnly=false)
 	private void create(CertifiedProductEntity product) {
 		
@@ -401,7 +401,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entityManager.flush();
 	}
 	
-	@CacheEvict(value = { "allCertIds", "allCertIdsWithProducts" }, allEntries=true)
+	@ClearAllCaches
 	@Transactional(readOnly=false)
 	private void update(CertifiedProductEntity product) {
 		

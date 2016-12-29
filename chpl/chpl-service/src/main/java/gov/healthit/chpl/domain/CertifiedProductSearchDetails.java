@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class CertifiedProductSearchDetails {
-	
+public class CertifiedProductSearchDetails implements Serializable {
+	private static final long serialVersionUID = 2903219171127034775L;
 	private Long id;
     private String chplProductNumber;
     private String reportFileLocation;

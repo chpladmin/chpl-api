@@ -29,7 +29,6 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.manager.SearchMenuManager;
 import net.sf.ehcache.CacheManager;
@@ -494,5 +493,35 @@ public class SearchMenuManagerTest {
 			assertTrue("Statuses.withdrawnByAcb should not be null", status.getWithdrawnByAcb() != null);
 			assertTrue("Statuses.withdrawnByAcb should be >= 0", status.getWithdrawnByAcb() >= 0);
 		}
+	}
+	
+	/** 
+	 * Tests that getEditionNames() caches its data
+	 */
+	@Transactional
+	@Test
+	public void test_getEditionNames_CacheRefreshesWithParameter() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		long startTime = System.currentTimeMillis();
+		Set<KeyValueModel> firstResult = searchMenuManager.getEditionNames(true);
+		// search should now be cached
+		long endTime = System.currentTimeMillis();
+		long timeLength = endTime - startTime;
+		double elapsedSecs = timeLength / 1000.0;
+		
+		assertTrue("Returned " + firstResult + " which should have a count more than 0", firstResult.size() > 0);
+		
+		System.out.println("search completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		// now compare cached time vs non-cached time
+		startTime = System.currentTimeMillis();
+		Set<KeyValueModel> secondResult = searchMenuManager.getEditionNames(false);
+		endTime = System.currentTimeMillis();
+		timeLength = endTime - startTime;
+		elapsedSecs = timeLength / 1000.0;
+		System.out.println("search completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		assertTrue("firstResult should not match secondResult", firstResult.size() != secondResult.size());
 	}
 }

@@ -1,9 +1,9 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 
-public class CQMCriterion {
-	
-	
+public class CQMCriterion implements Serializable {
+	private static final long serialVersionUID = -1847517952030827806L;
 	private Long criterionId;
 	private String cmsId;
 	private Long cqmCriterionTypeId;

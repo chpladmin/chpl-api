@@ -1,7 +1,5 @@
 package gov.healthit.chpl.certificationId;
 
-import gov.healthit.chpl.certificationId.Validator;
-
 public class Validator20142015 extends Validator {
 
 	public Validator20142015() {

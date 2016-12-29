@@ -17,6 +17,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -44,12 +45,20 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
+import gov.healthit.chpl.caching.CacheInitializor;
+import gov.healthit.chpl.caching.CacheInitializorImpl;
+
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
+@EnableAspectJAutoProxy
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+@ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {
+		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
+		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializorImpl.class),
+		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializor.class)
+		})
 public class CHPLTestConfig implements EnvironmentAware {
 	
 	private Environment env;
@@ -67,7 +76,6 @@ public class CHPLTestConfig implements EnvironmentAware {
         ds.setPassword(env.getRequiredProperty("testDbPassword"));
 		return ds;
 	}
-	
 	
 	@Bean
 	@Autowired

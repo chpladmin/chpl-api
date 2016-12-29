@@ -1,9 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.Permission;
 
-public enum ChplPermission {
+public enum ChplPermission implements Serializable {
 	READ(),
 	DELETE(),
 	ADMIN();

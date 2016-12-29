@@ -6,12 +6,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -40,7 +40,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 	
 	@Override
 	@Transactional
-	@CacheEvict("pendingProducts")
+	@ClearAllCaches
 	public PendingCertifiedProductDTO create(PendingCertifiedProductEntity toCreate) {		
 		toCreate.setLastModifiedDate(new Date());
 		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -234,7 +234,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 
 	@Override
 	@Transactional
-	@CacheEvict("pendingProducts")
+	@ClearAllCaches
 	public void delete(Long pendingProductId) throws EntityRetrievalException {
 		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
 		if(entity == null) {
@@ -249,7 +249,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 	
 
 	@Override
-	@CacheEvict("pendingProducts")
+	@ClearAllCaches
 	public void updateStatus(Long pendingProductId, CertificationStatusDTO status) throws EntityRetrievalException {
 		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
 		if(entity == null) {
@@ -274,7 +274,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		return dtos;
 	}
 	
-	@Cacheable("pendingProducts")
+	@Cacheable("findByStatus")
 	public List<PendingCertifiedProductDTO> findByStatus(Long statusId) {
 		List<PendingCertifiedProductEntity> entities = getEntitiesByStatus(statusId);
 		List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
@@ -313,7 +313,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		return entity.getId();
 	}
 	
-	@CacheEvict("pendingProducts")
+	@ClearAllCaches
 	private void update(PendingCertifiedProductEntity product) {
 		
 		entityManager.merge(product);	
