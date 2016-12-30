@@ -52,7 +52,7 @@ import gov.healthit.chpl.caching.CacheInitializorImpl;
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy(proxyTargetClass=true)
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
