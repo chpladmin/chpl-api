@@ -23,7 +23,6 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	private static final Logger logger = LogManager.getLogger(CertificationCriterionDAOImpl.class);
 
 	@Override
-	@ClearAllCaches
 	public CertificationCriterionDTO create(CertificationCriterionDTO dto) throws EntityCreationException, EntityRetrievalException {
 		
 		CertificationCriterionEntity entity = null;
@@ -60,7 +59,6 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	}
 
 	@Override
-	@ClearAllCaches
 	public CertificationCriterionDTO update(CertificationCriterionDTO dto) throws EntityRetrievalException, EntityCreationException {
 		
 		CertificationCriterionEntity entity = this.getEntityById(dto.getId());;
@@ -85,7 +83,6 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	}
 	
 	@Override
-	@ClearAllCaches
 	public void delete(Long criterionId) {
 		
 		Query query = entityManager.createQuery("UPDATE CertificationCriterionEntity SET deleted = true WHERE certification_criterion_id = :entityid");
@@ -165,7 +162,6 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		return result;
 	}
 	
-	@ClearAllCaches
 	private void create(CertificationCriterionEntity entity) {
 		
 		entityManager.persist(entity);
@@ -173,7 +169,6 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		
 	}
 	
-	@ClearAllCaches
 	private void update(CertificationCriterionEntity entity) {
 		
 		entityManager.merge(entity);	

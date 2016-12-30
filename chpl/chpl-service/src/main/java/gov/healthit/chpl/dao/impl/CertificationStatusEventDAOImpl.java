@@ -19,7 +19,6 @@ import gov.healthit.chpl.entity.CertificationStatusEventEntity;
 public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements CertificationStatusEventDAO {
 	
 	@Override
-	@ClearAllCaches
 	public CertificationStatusEventDTO create(CertificationStatusEventDTO dto)
 			throws EntityCreationException, EntityRetrievalException {
 		
@@ -47,7 +46,6 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 	}
 
 	@Override
-	@ClearAllCaches
 	public CertificationStatusEventDTO update(CertificationStatusEventDTO dto)
 			throws EntityRetrievalException {
 		CertificationStatusEventEntity entity = this.getEntityById(dto.getId());
@@ -66,7 +64,6 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 	}
 
 	@Override
-	@ClearAllCaches
 	public void delete(Long id) throws EntityRetrievalException {
 		
 		CertificationStatusEventEntity toDelete = getEntityById(id);
@@ -126,7 +123,6 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 		return certificationDateDto;
 	}
 
-	@ClearAllCaches
 	private void create(CertificationStatusEventEntity entity) {
 		
 		entityManager.persist(entity);
@@ -134,7 +130,6 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 		
 	}
 	
-	@ClearAllCaches
 	private void update(CertificationStatusEventEntity entity) {
 		
 		entityManager.merge(entity);	

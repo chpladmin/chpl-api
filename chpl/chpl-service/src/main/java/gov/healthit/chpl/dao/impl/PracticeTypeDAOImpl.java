@@ -19,7 +19,6 @@ import gov.healthit.chpl.entity.PracticeTypeEntity;
 public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO {
 
 	@Override
-	@ClearAllCaches
 	public void create(PracticeTypeDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
 		
@@ -51,7 +50,6 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 	}
 
 	@Override
-	@ClearAllCaches
 	public void update(PracticeTypeDTO dto) throws EntityRetrievalException {
 		
 		PracticeTypeEntity entity = this.getEntityById(dto.getId());
@@ -67,7 +65,6 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 	}
 
 	@Override
-	@ClearAllCaches
 	public void delete(Long id) {
 		Query query = entityManager.createQuery("UPDATE PracticeTypeEntity SET deleted = true WHERE practice_type_id = :entityid");
 		query.setParameter("entityid", id);
@@ -107,14 +104,12 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 		
 	}
 	
-	@ClearAllCaches
 	private void create(PracticeTypeEntity entity) {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
-	@ClearAllCaches
 	private void update(PracticeTypeEntity entity) {
 		
 		entityManager.merge(entity);	

@@ -23,7 +23,6 @@ import gov.healthit.chpl.entity.CertifiedProductEntity;
 @Repository(value="certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
 	
-	@ClearAllCaches
 	@Transactional(readOnly=false)
 	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityCreationException{
 		
@@ -110,7 +109,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		}
 	}
 	
-	@ClearAllCaches
 	@Transactional(readOnly=false)
 	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException{
 		
@@ -148,7 +146,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return new CertifiedProductDTO(entity);
 	}
 	
-	@ClearAllCaches
 	@Transactional(readOnly=false)
 	public CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO dto) throws EntityRetrievalException, IOException{
 		if(dto.getChplProductNumber() == null || dto.getMeaningfulUseUsers() == null){
@@ -174,7 +171,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		}
 	}
 	
-	@ClearAllCaches
 	@Transactional(readOnly=false)
 	public void delete(Long productId){
 		
@@ -393,7 +389,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		return dtoResults;
 	}
 	
-	@ClearAllCaches
 	@Transactional(readOnly=false)
 	private void create(CertifiedProductEntity product) {
 		
@@ -401,7 +396,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entityManager.flush();
 	}
 	
-	@ClearAllCaches
 	@Transactional(readOnly=false)
 	private void update(CertifiedProductEntity product) {
 		

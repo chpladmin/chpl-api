@@ -29,7 +29,6 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Autowired AddressDAO addressDao;
 	
 	@Transactional
-	@ClearAllCaches
 	public CertificationBodyDTO create(CertificationBodyDTO dto) throws EntityRetrievalException, EntityCreationException {
 		CertificationBodyEntity entity = null;
 		try {
@@ -84,7 +83,6 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 
 	@Transactional
-	@ClearAllCaches
 	public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException{
 		
 		CertificationBodyEntity entity = getEntityById(dto.getId(), true);	
@@ -138,7 +136,6 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 	
 	@Transactional
-	@ClearAllCaches
 	public void delete(Long acbId){
 		
 		// TODO: How to delete this without leaving orphans
@@ -211,14 +208,12 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		return maxCode;
 	}
 	
-	@ClearAllCaches
 	private void create(CertificationBodyEntity acb) {
 		
 		entityManager.persist(acb);
 		entityManager.flush();
 	}
 	
-	@ClearAllCaches
 	private void update(CertificationBodyEntity acb) {
 		
 		entityManager.merge(acb);

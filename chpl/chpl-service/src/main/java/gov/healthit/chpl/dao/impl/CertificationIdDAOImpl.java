@@ -45,7 +45,6 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
 	@Override
 	@Transactional
-	@ClearAllCaches
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException {
 		CertificationIdEntity entity = null;
 		CertificationIdDTO newDto = null;
@@ -93,7 +92,6 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	
 	@Override
 	@Transactional
-	@ClearAllCaches
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
 		
 		CertificationIdEntity entity = null;
@@ -258,7 +256,6 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		return results;
 	}
 	
-	@ClearAllCaches
 	private void create(CertificationIdEntity entity) {
 		
 		entityManager.persist(entity);

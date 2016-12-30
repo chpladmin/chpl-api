@@ -16,6 +16,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -72,6 +74,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value="certified-products")
 @RestController
 @RequestMapping("/certified_products")
+@Aspect
 public class CertifiedProductController {
 	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductController.class);
@@ -144,6 +147,7 @@ public class CertifiedProductController {
 					+ " user must have ROLE_ADMIN.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
 		throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, 
 		JsonProcessingException, ValidationException {
@@ -370,6 +374,7 @@ public class CertifiedProductController {
 					+ " until validated and approved by an appropriate ACB administrator.")
 	@RequestMapping(value="/pending", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {		
 		List<PendingCertifiedProductDTO> allProductDtos = pcpManager.getPending();
 		
@@ -399,6 +404,7 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		pcpManager.reject(id);
 		return "{\"success\" : true }";
@@ -413,6 +419,7 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public synchronized @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
@@ -443,6 +450,7 @@ public class CertifiedProductController {
 					+ " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
 	@RequestMapping(value="/meaningful_use_users/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
+	@ClearAllCaches
 	public @ResponseBody MeaningfulUseUserResults uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
 		if (file.isEmpty()) {
 			throw new ValidationException("You cannot upload an empty file!");
@@ -546,6 +554,7 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB(s) specified in the file.")
 	@RequestMapping(value="/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
+	@ClearAllCaches
 	public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file) throws 
 			ValidationException, MaxUploadSizeExceededException {
 		if (file.isEmpty()) {

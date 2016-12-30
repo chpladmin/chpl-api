@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
@@ -41,6 +42,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value="certification-ids")
 @RestController
 @RequestMapping("/certification_ids")
+@Aspect
 public class CertificationIdController {
 
 	@Autowired CertifiedProductManager certifiedProductManager;

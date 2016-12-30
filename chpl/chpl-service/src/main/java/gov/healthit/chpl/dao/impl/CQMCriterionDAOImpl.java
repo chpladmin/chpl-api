@@ -21,7 +21,6 @@ import gov.healthit.chpl.entity.CQMVersionEntity;
 public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO {
 
 	@Override
-	@ClearAllCaches
 	public CQMCriterionDTO create(CQMCriterionDTO dto)
 			throws EntityCreationException, EntityRetrievalException {
 		CQMCriterionEntity entity = null;
@@ -64,7 +63,6 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	}
 
 	@Override
-	@ClearAllCaches
 	public void update(CQMCriterionDTO dto)
 			throws EntityRetrievalException, EntityCreationException {
 		
@@ -91,7 +89,6 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 	}
 
 	@Override
-	@ClearAllCaches
 	public void delete(Long criterionId) {
 		
 		Query query = entityManager.createQuery("UPDATE CQMCriterionEntity SET deleted = true WHERE cqm_criterion_id = :entityid");
@@ -153,14 +150,12 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		return new CQMCriterionDTO(entity);
 	}
 	
-	@ClearAllCaches
 	private void create(CQMCriterionEntity entity) {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
-	@ClearAllCaches
 	private void update(CQMCriterionEntity entity) {
 		
 		entityManager.merge(entity);	

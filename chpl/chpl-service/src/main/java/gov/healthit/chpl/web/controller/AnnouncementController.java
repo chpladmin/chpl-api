@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Announcement;
@@ -107,6 +108,7 @@ public class AnnouncementController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public Announcement updateAnnouncement(@RequestBody Announcement announcementInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
 		AnnouncementDTO toUpdate = new AnnouncementDTO();
 		toUpdate.setId(announcementInfo.getId());
@@ -125,6 +127,7 @@ public class AnnouncementController {
 			notes="Only CHPL users with ROLE_ADMIN are able to delete announcements.")
 	@RequestMapping(value="/{announcementId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public String deleteAnnouncement(@PathVariable("announcementId") Long announcementId) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {

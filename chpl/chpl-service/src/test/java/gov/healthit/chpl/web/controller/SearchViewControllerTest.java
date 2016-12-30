@@ -35,7 +35,6 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
-import net.sf.ehcache.CacheManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -47,9 +46,6 @@ import net.sf.ehcache.CacheManager;
 public class SearchViewControllerTest {
 	@Autowired
 	SearchViewController searchViewController = new SearchViewController();
-	
-	@Autowired
-	CacheManager cacheManager = CacheManager.getInstance();
 
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -187,7 +183,6 @@ public class SearchViewControllerTest {
 	@Rollback(true)
 	@Test
 	public void test_getPopulateSearchData_simpleAsTrue_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		cacheManager.clearAll();
 		long getPopulateSearchDataStartTime = System.currentTimeMillis();
 		Boolean required = true;
 		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required);
@@ -223,7 +218,6 @@ public class SearchViewControllerTest {
 	@Rollback(true)
 	@Test
 	public void test_getPopulateSearchData_simpleAsFalse_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		cacheManager.clearAll();
 		long getPopulateSearchDataStartTime = System.currentTimeMillis();
 		Boolean required = false;
 		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required);

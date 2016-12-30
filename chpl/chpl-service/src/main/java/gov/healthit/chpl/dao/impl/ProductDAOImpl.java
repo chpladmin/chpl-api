@@ -27,7 +27,6 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
 	
 	@Override
-	@ClearAllCaches
 	public ProductDTO create(ProductDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
 		
@@ -66,7 +65,6 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	@Override
-	@ClearAllCaches
 	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException {
 		ProductEntity entity = this.getEntityById(dto.getId());
 		//update product data
@@ -138,7 +136,6 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 
 	@Override
-	@ClearAllCaches
 	@Transactional
 	public void delete(Long id) throws EntityRetrievalException {
 		ProductEntity toDelete = getEntityById(id);
@@ -162,7 +159,6 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	@Override
-	@ClearAllCaches
 	public ProductOwnerDTO addOwnershipHistory(ProductOwnerDTO toAdd) {
 		ProductInsertableOwnerEntity entityToAdd = new ProductInsertableOwnerEntity();
 		entityToAdd.setProductId(toAdd.getProductId());
@@ -181,7 +177,6 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	@Override
-	@ClearAllCaches
 	public void deletePreviousOwner(Long previousOwnershipId) throws EntityRetrievalException {
 		ProductActiveOwnerEntity toDelete = getProductPreviousOwner(previousOwnershipId);
 		if(toDelete == null) {
@@ -289,14 +284,12 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		return result;
 	}
 	
-	@ClearAllCaches
 	private void create(ProductEntity entity) {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
-	@ClearAllCaches
 	private void update(ProductEntity entity) {
 		
 		entityManager.merge(entity);	

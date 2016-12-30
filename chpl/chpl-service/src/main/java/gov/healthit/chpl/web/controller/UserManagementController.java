@@ -42,6 +42,7 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -82,6 +83,7 @@ public class UserManagementController {
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) 
 			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
 			EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
@@ -130,6 +132,7 @@ public class UserManagementController {
 	@RequestMapping(value="/confirm", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public User confirmUser(@RequestBody String hash) 
 			throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
 		InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
@@ -156,6 +159,7 @@ public class UserManagementController {
 	@RequestMapping(value="/authorize", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public String authorizeUser(@RequestBody AuthorizeCredentials credentials) 
 			throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
 		if(StringUtils.isEmpty(credentials.getHash())) {
@@ -204,6 +208,7 @@ public class UserManagementController {
 	@RequestMapping(value="/invite", method=RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public UserInvitation inviteUser(@RequestBody UserInvitation invitation) 
 			throws InvalidArgumentsException, UserCreationException, UserRetrievalException, 
 			UserPermissionRetrievalException, AddressException, MessagingException {
@@ -252,6 +257,7 @@ public class UserManagementController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public User updateUserDetails(@RequestBody User userInfo) throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
 		if(userInfo.getUserId() <= 0) {
@@ -272,6 +278,7 @@ public class UserManagementController {
 					+ "The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{userId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public String deleteUser(@PathVariable("userId") Long userId) 
 			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		if(userId <= 0) {
@@ -336,6 +343,7 @@ public class UserManagementController {
 	@RequestMapping(value="/revoke_role", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
+	@ClearAllCaches
 	public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
 		String isSuccess = String.valueOf(false);

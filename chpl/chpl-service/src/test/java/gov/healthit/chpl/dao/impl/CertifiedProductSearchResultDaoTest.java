@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.CacheInvalidationRule;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -44,7 +46,6 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import junit.framework.TestCase;
-import net.sf.ehcache.CacheManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -62,7 +63,9 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	@Autowired
 	private CertifiedProductDAO cpDao;
 	
-	CacheManager manager = CacheManager.getInstance();
+	@Rule
+    @Autowired
+    public CacheInvalidationRule cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -192,7 +195,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testSearchActiveSurveillanceWithoutNonconformities() throws EntityRetrievalException {
-		manager.clearAll();
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
@@ -330,7 +332,6 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	@Transactional
 	@Rollback(true)
 	public void testSearchActiveSurveillanceWithNonconformities() throws EntityRetrievalException {
-		manager.clearAll();
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
