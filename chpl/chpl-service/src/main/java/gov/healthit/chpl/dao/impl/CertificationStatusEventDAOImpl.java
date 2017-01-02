@@ -8,7 +8,6 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -19,7 +18,6 @@ import gov.healthit.chpl.entity.CertificationStatusEventEntity;
 public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements CertificationStatusEventDAO {
 	
 	@Override
-	@ClearAllCaches
 	public CertificationStatusEventDTO create(CertificationStatusEventDTO dto)
 			throws EntityCreationException, EntityRetrievalException {
 		
@@ -47,7 +45,6 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 	}
 
 	@Override
-	@ClearAllCaches
 	public CertificationStatusEventDTO update(CertificationStatusEventDTO dto)
 			throws EntityRetrievalException {
 		CertificationStatusEventEntity entity = this.getEntityById(dto.getId());
@@ -66,7 +63,6 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 	}
 
 	@Override
-	@ClearAllCaches
 	public void delete(Long id) throws EntityRetrievalException {
 		
 		CertificationStatusEventEntity toDelete = getEntityById(id);
@@ -126,7 +122,6 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 		return certificationDateDto;
 	}
 
-	@ClearAllCaches
 	private void create(CertificationStatusEventEntity entity) {
 		
 		entityManager.persist(entity);
@@ -134,7 +129,6 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 		
 	}
 	
-	@ClearAllCaches
 	private void update(CertificationStatusEventEntity entity) {
 		
 		entityManager.merge(entity);	

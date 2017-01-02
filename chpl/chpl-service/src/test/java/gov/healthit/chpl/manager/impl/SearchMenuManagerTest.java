@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.CacheInvalidationRule;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -31,7 +33,6 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.manager.SearchMenuManager;
-import net.sf.ehcache.CacheManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -45,7 +46,9 @@ public class SearchMenuManagerTest {
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser testUser3;
-	@Autowired CacheManager cacheManager = CacheManager.getInstance();
+	@Rule
+    @Autowired
+    public CacheInvalidationRule cacheInvalidationRule;
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {

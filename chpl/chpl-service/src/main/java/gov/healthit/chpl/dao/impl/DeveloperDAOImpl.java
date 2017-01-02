@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -43,7 +42,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	@Autowired DeveloperStatusDAO statusDao;
 
 	@Override
-	@ClearAllCaches
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException {
 
 		DeveloperEntity entity = null;
@@ -140,7 +138,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	@Override
-	@ClearAllCaches
 	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException {
 		DeveloperEntity entity = this.getEntityById(dto.getId());
 
@@ -223,7 +220,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 
 	@Override
-	@ClearAllCaches
 	public DeveloperDTO updateStatus(DeveloperDTO toUpdate) throws EntityRetrievalException {
 		DeveloperEntity entityToUpdate = this.getEntityById(toUpdate.getId());
 		if(entityToUpdate == null) {
@@ -243,7 +239,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	@Override
-	@ClearAllCaches
 	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto) {
 		DeveloperACBMapEntity mapping = getTransparencyMappingEntity(dto.getDeveloperId(), dto.getAcbId());
 		if(mapping == null) {
@@ -260,7 +255,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 	@Override
 	@Transactional
-	@ClearAllCaches
 	public void delete(Long id) throws EntityRetrievalException {
 		DeveloperEntity toDelete = getEntityById(id);
 
@@ -273,7 +267,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 
 	@Override
-	@ClearAllCaches
 	public void deleteTransparencyMapping(Long developerId, Long acbId) {
 		DeveloperACBMapEntity toDelete = getTransparencyMappingEntity(developerId, acbId);
 		if(toDelete != null) {
@@ -450,7 +443,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		entityManager.flush();
 	}
 	
-	@ClearAllCaches
 	private void update(DeveloperEntity entity) {
 		entityManager.merge(entity);
 		entityManager.flush();

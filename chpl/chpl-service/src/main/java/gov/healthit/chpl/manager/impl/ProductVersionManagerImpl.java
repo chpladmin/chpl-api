@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -72,6 +73,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@ClearAllCaches
 	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		//check that the developer of this version is Active
 		if(dto.getProductId() == null) {
@@ -99,6 +101,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@ClearAllCaches
 	public ProductVersionDTO update(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		ProductVersionDTO before = dao.getById(dto.getId());
@@ -123,6 +126,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@ClearAllCaches
 	public void delete(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		ProductVersionDTO before = dao.getById(dto.getId());
 		
@@ -143,6 +147,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@ClearAllCaches
 	public void delete(Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		ProductVersionDTO toDelete = dao.getById(id);
@@ -165,6 +170,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();

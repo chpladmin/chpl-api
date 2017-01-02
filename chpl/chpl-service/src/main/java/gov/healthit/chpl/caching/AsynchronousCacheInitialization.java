@@ -14,28 +14,28 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
-import gov.healthit.chpl.dao.impl.CertifiedProductSearchResultDAOImpl;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SurveillanceSearchOptions;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
-import gov.healthit.chpl.manager.impl.CertificationIdManagerImpl;
-import gov.healthit.chpl.manager.impl.SearchMenuManagerImpl;
+import gov.healthit.chpl.manager.CertificationIdManager;
+import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Component
-public class CacheInitializorImpl {
-	private static final Logger logger = LogManager.getLogger(CacheInitializorImpl.class);
+public class AsynchronousCacheInitialization {
+	private static final Logger logger = LogManager.getLogger(AsynchronousCacheInitialization.class);
 	
-	@Autowired private CertificationIdManagerImpl certificationIdManager;
-	@Autowired private SearchMenuManagerImpl searchMenuManager;
-	@Autowired private CertifiedProductSearchResultDAOImpl certifiedProductSearchManager;
+	@Autowired private CertificationIdManager certificationIdManager;
+	@Autowired private SearchMenuManager searchMenuManager;
+	@Autowired private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 	@Autowired private PendingCertifiedProductDAO pcpDao;
 	@Autowired private CertificationStatusDAO statusDao;
 	
 	@Async
 	@Transactional
-	public void initializeCaches() throws IOException, EntityRetrievalException, InterruptedException {
+	public void initializeSearchOptions() throws EntityRetrievalException{
 		logger.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
 		searchMenuManager.getCertBodyNames();
 		searchMenuManager.getEditionNames(false);
@@ -50,12 +50,20 @@ public class CacheInitializorImpl {
 		searchMenuManager.getCertificationCriterionNumbers(false);
 		searchMenuManager.getCertificationCriterionNumbers(true);
 		logger.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
-		
+	}
+	
+	@Async
+	@Transactional
+	public void initializePending() throws EntityRetrievalException{
 		logger.info("Starting cache initialization for /pending");
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
 		pcpDao.findByStatus(statusDto.getId());
 		logger.info("Finished cache initialization for /pending");
-		
+	}
+	
+	@Async
+	@Transactional
+	public void initializeSearch() throws EntityRetrievalException{
 		logger.info("Starting cache initialization for /search DAO method");
 		SearchRequest searchFilters = new SearchRequest();
 		List<String> certBodies = new ArrayList<String>();
@@ -93,12 +101,21 @@ public class CacheInitializorImpl {
 		searchFilters.setSortDescending(false);
 		searchFilters.setSurveillance(survs);
 		searchFilters.setVersion(null);
-		certifiedProductSearchManager.search(searchFilters);
+		certifiedProductSearchResultDAO.search(searchFilters);
 		logger.info("Finished cache initialization for /search DAO method");
-		
+	}
+	
+	@Async
+	@Transactional
+	public void initializeCertificationIdsGetAll() throws IOException, EntityRetrievalException, InterruptedException {
 		logger.info("Starting cache initialization for CertificationIdManager.getAll()");
 		certificationIdManager.getAll();
 		logger.info("Finished cache initialization for CertificationIdManager.getAll()");
+	}
+	
+	@Async
+	@Transactional
+	public void initializeCertificationIdsGetAllWithProducts() throws IOException, EntityRetrievalException, InterruptedException {
 		logger.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
 		certificationIdManager.getAllWithProducts();
 		logger.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");

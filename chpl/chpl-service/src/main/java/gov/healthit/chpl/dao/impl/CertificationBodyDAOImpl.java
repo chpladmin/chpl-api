@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -29,7 +28,6 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	@Autowired AddressDAO addressDao;
 	
 	@Transactional
-	@ClearAllCaches
 	public CertificationBodyDTO create(CertificationBodyDTO dto) throws EntityRetrievalException, EntityCreationException {
 		CertificationBodyEntity entity = null;
 		try {
@@ -84,7 +82,6 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 
 	@Transactional
-	@ClearAllCaches
 	public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException{
 		
 		CertificationBodyEntity entity = getEntityById(dto.getId(), true);	
@@ -138,7 +135,6 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 	
 	@Transactional
-	@ClearAllCaches
 	public void delete(Long acbId){
 		
 		// TODO: How to delete this without leaving orphans
@@ -211,14 +207,12 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		return maxCode;
 	}
 	
-	@ClearAllCaches
 	private void create(CertificationBodyEntity acb) {
 		
 		entityManager.persist(acb);
 		entityManager.flush();
 	}
 	
-	@ClearAllCaches
 	private void update(CertificationBodyEntity acb) {
 		
 		entityManager.merge(acb);

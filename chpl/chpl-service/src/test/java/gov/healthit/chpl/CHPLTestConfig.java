@@ -46,7 +46,6 @@ import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 import gov.healthit.chpl.caching.CacheInitializor;
-import gov.healthit.chpl.caching.CacheInitializorImpl;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled=true)
@@ -56,7 +55,6 @@ import gov.healthit.chpl.caching.CacheInitializorImpl;
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
-		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializorImpl.class),
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializor.class)
 		})
 public class CHPLTestConfig implements EnvironmentAware {

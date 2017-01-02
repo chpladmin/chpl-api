@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -40,7 +39,6 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 	
 	@Override
 	@Transactional
-	@ClearAllCaches
 	public PendingCertifiedProductDTO create(PendingCertifiedProductEntity toCreate) {		
 		toCreate.setLastModifiedDate(new Date());
 		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -234,7 +232,6 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 
 	@Override
 	@Transactional
-	@ClearAllCaches
 	public void delete(Long pendingProductId) throws EntityRetrievalException {
 		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
 		if(entity == null) {
@@ -249,7 +246,6 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 	
 
 	@Override
-	@ClearAllCaches
 	public void updateStatus(Long pendingProductId, CertificationStatusDTO status) throws EntityRetrievalException {
 		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
 		if(entity == null) {
@@ -275,6 +271,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 	}
 	
 	@Cacheable("findByStatus")
+	@Transactional
 	public List<PendingCertifiedProductDTO> findByStatus(Long statusId) {
 		List<PendingCertifiedProductEntity> entities = getEntitiesByStatus(statusId);
 		List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
@@ -313,7 +310,6 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		return entity.getId();
 	}
 	
-	@ClearAllCaches
 	private void update(PendingCertifiedProductEntity product) {
 		
 		entityManager.merge(product);	

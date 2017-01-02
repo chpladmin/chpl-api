@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -45,7 +44,6 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
 	@Override
 	@Transactional
-	@ClearAllCaches
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException {
 		CertificationIdEntity entity = null;
 		CertificationIdDTO newDto = null;
@@ -93,7 +91,6 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	
 	@Override
 	@Transactional
-	@ClearAllCaches
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
 		
 		CertificationIdEntity entity = null;
@@ -258,7 +255,6 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		return results;
 	}
 	
-	@ClearAllCaches
 	private void create(CertificationIdEntity entity) {
 		
 		entityManager.persist(entity);

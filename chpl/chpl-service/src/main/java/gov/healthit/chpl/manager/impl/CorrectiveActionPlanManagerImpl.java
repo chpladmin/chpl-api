@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanCertificationResultDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanDAO;
@@ -34,6 +35,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+	@ClearAllCaches
 	public CorrectiveActionPlanDetails create(Long acbId, CorrectiveActionPlanDTO toCreate)
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
@@ -48,6 +50,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+	@ClearAllCaches
 	public CorrectiveActionPlanDocumentationDTO addDocumentationToPlan(Long acbId, CorrectiveActionPlanDocumentationDTO doc)
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		CorrectiveActionPlanDocumentationDTO created = capDocDao.create(doc);
@@ -58,6 +61,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+	@ClearAllCaches
 	public CorrectiveActionPlanDetails addCertificationsToPlan(Long acbId,
 			Long correctiveActionPlanId, List<CorrectiveActionPlanCertificationResultDTO> certs)
 					throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -75,6 +79,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+	@ClearAllCaches
 	public void removeCertificationsFromPlan(Long acbId, List<CorrectiveActionPlanCertificationResultDTO> certs)
 					throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
@@ -87,6 +92,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+	@ClearAllCaches
 	public CorrectiveActionPlanCertificationResultDTO updateCertification(Long acbId, CorrectiveActionPlanCertificationResultDTO cert)
 					throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		CorrectiveActionPlanCertificationResultDTO updatedCert = capCertDao.update(cert);
@@ -97,6 +103,7 @@ public class CorrectiveActionPlanManagerImpl implements CorrectiveActionPlanMana
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+	@ClearAllCaches
 	public void removeDocumentation(Long acbId, CorrectiveActionPlanDocumentationDTO toRemove) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {		
 		capDocDao.delete(toRemove.getId());
