@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ApiKey;
@@ -51,7 +50,6 @@ public class ApiKeyController {
 	@RequestMapping(value="/register", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException, AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
 		
 		Date now = new Date();
@@ -79,7 +77,6 @@ public class ApiKeyController {
 	@RequestMapping(value="/revoke", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String revoke(@RequestBody ApiKey key,
 			@RequestHeader(value="API-Key", required = false) String userApiKey,
 			@RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {

@@ -29,7 +29,6 @@ import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -102,7 +101,6 @@ public class CertificationBodyController {
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public CertificationBody createAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		CertificationBodyDTO toCreate = new CertificationBodyDTO();
 		toCreate.setAcbCode(acbInfo.getAcbCode());
@@ -134,7 +132,6 @@ public class CertificationBodyController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
 		CertificationBodyDTO toUpdate = new CertificationBodyDTO();
 		toUpdate.setId(acbInfo.getId());
@@ -166,7 +163,6 @@ public class CertificationBodyController {
 			notes="The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{acbId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String deleteAcb(@PathVariable("acbId") Long acbId) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {
@@ -181,7 +177,6 @@ public class CertificationBodyController {
 					+ " The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{acbId}/undelete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String undeleteAcb(@PathVariable("acbId") Long acbId) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {
@@ -201,7 +196,6 @@ public class CertificationBodyController {
 	@RequestMapping(value="/add_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String addUserToAcb(@RequestBody UpdateUserAndAcbRequest updateRequest) 
 									throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 		
@@ -228,7 +222,6 @@ public class CertificationBodyController {
 	@RequestMapping(value="{acbId}/remove_user/{userId}", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String deleteUserFromAcb(@PathVariable Long acbId, @PathVariable Long userId) 
 								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException{
 		

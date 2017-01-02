@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -86,7 +85,6 @@ public class ProductVersionController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public ProductVersion updateVersion(@RequestBody(required=true) UpdateVersionsRequest versionInfo) throws 
 		EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
 		

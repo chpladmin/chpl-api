@@ -26,11 +26,12 @@ public class CacheInitializor {
 	private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
 	private CacheManager manager;
 	
-	//@Autowired private AsynchronousCacheInitialization asynchronousCacheInitialization;
+	@Autowired private AsynchronousCacheInitialization asynchronousCacheInitialization;
 
 	  @PostConstruct
 	  @Async
 	  public void initialize() throws IOException, EntityRetrievalException, InterruptedException {
+		  manager = CacheManager.getInstance();
 		  Properties props = new Properties();
 		  InputStream in = CacheInitializor.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 		  
@@ -47,11 +48,11 @@ public class CacheInitializor {
 		  
 		  try {
 			if(enableCacheInitializationValue != null && enableCacheInitializationValue.equalsIgnoreCase("true")){
-//				  asynchronousCacheInitialization.initializeSearchOptions();
-//				  asynchronousCacheInitialization.initializePending();
-//				  asynchronousCacheInitialization.initializeSearch();
-//				  asynchronousCacheInitialization.initializeCertificationIdsGetAll();
-//				  asynchronousCacheInitialization.initializeCertificationIdsGetAllWithProducts();
+				  asynchronousCacheInitialization.initializeSearchOptions();
+				  asynchronousCacheInitialization.initializePending();
+				  asynchronousCacheInitialization.initializeSearch();
+				  asynchronousCacheInitialization.initializeCertificationIdsGetAll();
+				  asynchronousCacheInitialization.initializeCertificationIdsGetAllWithProducts();
 			  }
 		} catch (Exception e) {
 			System.out.println("Caching failed to initialize");
@@ -68,6 +69,6 @@ public class CacheInitializor {
 	@After("@annotation(ClearAllCaches)")
 	public void afterClearAllCachesMethod() throws IOException, EntityRetrievalException, InterruptedException {
 		logger.info("Initializing all caches after @ClearAllCaches method execution.");
-		//initialize();
+		initialize();
 	}
 }

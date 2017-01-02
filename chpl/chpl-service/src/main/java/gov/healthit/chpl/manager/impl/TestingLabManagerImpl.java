@@ -60,6 +60,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public TestingLabDTO create(TestingLabDTO atl) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		String maxCode = testingLabDAO.getMaxCode();
 		int maxCodeValue = Integer.parseInt(maxCode);
@@ -94,6 +95,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, admin)")
+	@ClearAllCaches
 	public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
 		
 		TestingLabDTO toUpdate = testingLabDAO.getById(atl.getId());
@@ -106,6 +108,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public void undelete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		TestingLabDTO original = testingLabDAO.getById(atl.getId(), true);
 		atl.setDeleted(false);
@@ -117,6 +120,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public void delete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException,
 		EntityRetrievalException, UserRetrievalException {
 		//get the users associated with this ATL
@@ -237,6 +241,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "(hasRole('ROLE_ATL_ADMIN') and hasPermission(#atl, admin))")
+	@ClearAllCaches
 	public void addPermission(TestingLabDTO atl, Long userId, Permission permission) throws UserRetrievalException {
 		MutableAcl acl;
 		ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
@@ -266,6 +271,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ATL_ADMIN') and hasPermission(#atl, admin))")
+	@ClearAllCaches
 	public void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission) {
 		ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -289,6 +295,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ATL_ADMIN') and hasPermission(#atl, admin))")
+	@ClearAllCaches
 	public void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -312,6 +319,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ATL_ADMIN')") 
+	@ClearAllCaches
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException {
 		if(userDto.getSubjectName() == null) {
 			userDto = userDAO.getById(userDto.getId());

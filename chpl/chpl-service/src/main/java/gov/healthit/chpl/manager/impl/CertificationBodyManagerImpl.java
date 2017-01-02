@@ -62,6 +62,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		//assign a code
 		String maxCode = certificationBodyDAO.getMaxCode();
@@ -97,6 +98,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
+	@ClearAllCaches
 	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
 		
 		CertificationBodyDTO result = null;
@@ -110,6 +112,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public void undelete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		CertificationBodyDTO original = certificationBodyDAO.getById(acb.getId(), true);
 		acb.setDeleted(false);
@@ -121,6 +124,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public void delete(CertificationBodyDTO acb) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {
@@ -243,6 +247,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
+	@ClearAllCaches
 	public void addPermission(CertificationBodyDTO acb, Long userId, Permission permission) throws UserRetrievalException {
 		MutableAcl acl;
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
@@ -275,6 +280,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
+	@ClearAllCaches
 	public void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission) {
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -301,6 +307,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
+	@ClearAllCaches
 	public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -327,6 +334,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')") 
+	@ClearAllCaches
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException {
 		if(userDto.getSubjectName() == null) {
 			userDto = userDAO.getById(userDto.getId());

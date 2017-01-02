@@ -29,7 +29,6 @@ import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ChplPermission;
@@ -101,7 +100,6 @@ public class TestingLabController {
 	@RequestMapping(value="/create", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public TestingLab create(@RequestBody TestingLab atlInfo) throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		TestingLabDTO toCreate = new TestingLabDTO();
 		toCreate.setTestingLabCode(atlInfo.getAtlCode());
@@ -134,7 +132,6 @@ public class TestingLabController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public TestingLab update(@RequestBody TestingLab atlInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
 		TestingLabDTO toUpdate = new TestingLabDTO();
 		toUpdate.setId(atlInfo.getId());
@@ -167,7 +164,6 @@ public class TestingLabController {
 			notes="The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{atlId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String deleteAtl(@PathVariable("atlId") Long atlId) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 		
@@ -182,7 +178,6 @@ public class TestingLabController {
 					+ " The logged in user must have ROLE_ADMIN.")
 	@RequestMapping(value="/{atlId}/undelete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String undeleteAtl(@PathVariable("atlId") Long atlId) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		
@@ -202,7 +197,6 @@ public class TestingLabController {
 	@RequestMapping(value="/add_user", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String addUserToAtl(@RequestBody UpdateUserAndAtlRequest updateRequest) 
 									throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 		
@@ -229,7 +223,6 @@ public class TestingLabController {
 	@RequestMapping(value="{atlId}/remove_user/{userId}", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String deleteUserFromAtl(@PathVariable Long atlId, @PathVariable Long userId) 
 								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException{
 		

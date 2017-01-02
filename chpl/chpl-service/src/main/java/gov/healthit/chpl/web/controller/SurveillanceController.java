@@ -37,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -155,7 +154,6 @@ public class SurveillanceController {
 					+ " and administrative authority on the ACB associated with the certified product is required.")
 	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public synchronized @ResponseBody Surveillance createSurveillance(
 			@RequestBody(required = true) Surveillance survToInsert) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -200,7 +198,6 @@ public class SurveillanceController {
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/{surveillanceId}/nonconformity/{nonconformityId}/document/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	@ClearAllCaches
 	public @ResponseBody String uploadNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
 			@PathVariable("nonconformityId") Long nonconformityId,
 			@RequestParam("file") MultipartFile file) throws 
@@ -249,7 +246,6 @@ public class SurveillanceController {
 					+ " and administrative authority on the ACB associated with the certified product is required.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public synchronized @ResponseBody Surveillance updateSurveillance(
 			@RequestBody(required = true) Surveillance survToUpdate) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -295,7 +291,6 @@ public class SurveillanceController {
 					+ " and administrative authority on the ACB associated with the certified product is required.")
 	@RequestMapping(value="/{surveillanceId}/delete", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public synchronized @ResponseBody String deleteSurveillance(
 			@PathVariable(value = "surveillanceId") Long surveillanceId) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -335,7 +330,6 @@ public class SurveillanceController {
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/{surveillanceId}/nonconformity/{nonconformityId}/document/{docId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public String deleteNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
 			@PathVariable("nonconformityId") Long nonconformityId,
 			@PathVariable("docId") Long docId) 
@@ -372,7 +366,6 @@ public class SurveillanceController {
 	@ApiOperation(value="Reject (effectively delete) a pending surveillance item.")
 	@RequestMapping(value="/pending/{pendingSurvId}/reject", method=RequestMethod.POST,
 			produces = "application/json; charset=utf-8")
-	@ClearAllCaches
 	public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") Long id) {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
 		survManager.deletePendingSurveillance(acbs, id);
@@ -391,7 +384,6 @@ public class SurveillanceController {
 					+ " and administrative authority on the ACB associated with the certified product is required.")
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	@ClearAllCaches
 	public synchronized @ResponseBody Surveillance confirmPendingSurveillance(
 			@RequestBody(required = true) Surveillance survToInsert) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -508,7 +500,6 @@ public class SurveillanceController {
 					+ " and administrative authority on the ACB(s) responsible for the product(s) in the file.")
 	@RequestMapping(value="/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	@ClearAllCaches
 	public @ResponseBody SurveillanceResults upload(@RequestParam("file") MultipartFile file) throws 
 			ValidationException, MaxUploadSizeExceededException {
 		if (file.isEmpty()) {
