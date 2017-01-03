@@ -171,7 +171,7 @@ public class UserAuthenticator implements Authenticator {
 		try {
 			user = getUser(credentials);
 		} catch (BadCredentialsException e) {
-			throw new BadCredentialsException(e.getMessage());
+			throw new BadCredentialsException("Bad username and password combination.");
 		} catch (AccountStatusException e1) {
 			throw new JWTCreationException(e1.getMessage());
 		} catch (UserRetrievalException e2) {
