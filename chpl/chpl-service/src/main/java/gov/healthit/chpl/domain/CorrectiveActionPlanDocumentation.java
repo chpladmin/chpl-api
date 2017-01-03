@@ -1,9 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 
-public class CorrectiveActionPlanDocumentation {
-	
+public class CorrectiveActionPlanDocumentation implements Serializable {
+	private static final long serialVersionUID = -2571420590662242822L;
 	private Long id;
 	private String fileName;
 	private String fileType;

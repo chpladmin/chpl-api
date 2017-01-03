@@ -1,9 +1,12 @@
 package gov.healthit.chpl.dto;
 
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity;
 
-public class CertifiedProductQmsStandardDTO {
+public class CertifiedProductQmsStandardDTO implements Serializable {
+	private static final long serialVersionUID = -2498158351086396042L;
 	private Long id;
 	private Long certifiedProductId;
 	private Long qmsStandardId;

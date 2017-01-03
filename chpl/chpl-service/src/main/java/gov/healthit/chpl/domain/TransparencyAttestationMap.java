@@ -1,6 +1,9 @@
 package gov.healthit.chpl.domain;
 
-public class TransparencyAttestationMap {
+import java.io.Serializable;
+
+public class TransparencyAttestationMap implements Serializable {
+	private static final long serialVersionUID = 584097086020777727L;
 	private Long acbId;
 	private String acbName;
 	private String attestation;

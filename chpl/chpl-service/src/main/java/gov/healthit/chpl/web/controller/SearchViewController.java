@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -491,14 +490,25 @@ public class SearchViewController {
 			notes="This returns all of the other /data/{something} results in one single response.")
 	@RequestMapping(value="/data/search_options", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	@Cacheable("searchOptionsCache")
 	public @ResponseBody PopulateSearchOptions getPopulateSearchData(
 			@RequestParam(value = "simple", required = false) Boolean simple
 			) throws EntityRetrievalException {
 		if (simple == null){
 			simple = false;
 		}
-		return searchMenuManager.getPopulateSearchOptions(simple);
+		
+		PopulateSearchOptions searchOptions = new PopulateSearchOptions();
+		searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames());
+		searchOptions.setEditions(searchMenuManager.getEditionNames(simple));
+		searchOptions.setCertificationStatuses(searchMenuManager.getCertificationStatuses());
+		searchOptions.setPracticeTypeNames(searchMenuManager.getPracticeTypeNames());
+		searchOptions.setProductClassifications(searchMenuManager.getClassificationNames());
+		searchOptions.setProductNames(searchMenuManager.getProductNames());
+		searchOptions.setDeveloperNames(searchMenuManager.getDeveloperNames());
+		searchOptions.setCqmCriterionNumbers(searchMenuManager.getCQMCriterionNumbers(simple));
+		searchOptions.setCertificationCriterionNumbers(searchMenuManager.getCertificationCriterionNumbers(simple));
+		
+		return searchOptions;
 	}
 	
 	@ApiOperation(value="Get all developer decertifications in the CHPL", 

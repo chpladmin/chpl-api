@@ -1,12 +1,16 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 
-public class CertificationResultTestParticipant {
+public class CertificationResultTestParticipant implements Serializable {
+	private static final long serialVersionUID = -5404897845633867927L;
+
 	private static final Logger logger = LogManager.getLogger(CertificationResultTestParticipant.class);
 
 	private Long id;

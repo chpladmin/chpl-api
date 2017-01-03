@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,8 +8,8 @@ import java.util.List;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.DeveloperEntity;
 
-public class DeveloperDTO {
-
+public class DeveloperDTO implements Serializable {
+	private static final long serialVersionUID = -2492373079266782228L;
 	private String developerCode;
 	private Long id;
 	private AddressDTO address;

@@ -1,8 +1,11 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.AccessibilityStandardEntity;
 
-public class AccessibilityStandardDTO {
+public class AccessibilityStandardDTO implements Serializable {
+	private static final long serialVersionUID = 4987850364061817190L;
 	private Long id;
 	private String name;
 	

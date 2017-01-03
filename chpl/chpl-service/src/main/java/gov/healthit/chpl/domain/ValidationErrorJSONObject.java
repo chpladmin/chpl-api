@@ -1,8 +1,10 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.Collection;
 
-public class ValidationErrorJSONObject {
+public class ValidationErrorJSONObject implements Serializable {
+	private static final long serialVersionUID = -2186304674032903240L;
 	private Collection<String> errorMessages;
 	private Collection<String> warningMessages;
 	public Collection<String> getErrorMessages() {

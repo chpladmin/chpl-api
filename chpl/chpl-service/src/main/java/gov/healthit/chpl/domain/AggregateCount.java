@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +12,8 @@ import gov.healthit.chpl.app.ReflectiveHelper;
  * @author dlucas
  *
  */
-public class AggregateCount {
+public class AggregateCount implements Serializable {
+	private static final long serialVersionUID = -6137989717222340192L;
 	private Integer totalCount;
 	private List<? extends Object> objectList = new ArrayList<Object>();
 	

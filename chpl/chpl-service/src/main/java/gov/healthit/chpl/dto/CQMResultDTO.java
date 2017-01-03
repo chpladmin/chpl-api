@@ -1,13 +1,14 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.entity.CQMResultEntity;
 
-public class CQMResultDTO {
-	
+public class CQMResultDTO implements Serializable {
+	private static final long serialVersionUID = 314245521842632450L;
 	private Long id;
 	private Long cqmCriterionId;
 	private Long certifiedProductId;

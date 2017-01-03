@@ -6,7 +6,6 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 
 public interface SearchMenuManager {
@@ -36,6 +35,5 @@ public interface SearchMenuManager {
 	public Set<KeyValueModel> getNonconformityTypeOptions();
 	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException;
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple);
-	public PopulateSearchOptions getPopulateSearchOptions(Boolean simple) throws EntityRetrievalException;
 	
 }

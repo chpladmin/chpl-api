@@ -1,12 +1,14 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.entity.PendingCqmCertificationCriteriaEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
-public class PendingCqmCriterionDTO {
+public class PendingCqmCriterionDTO implements Serializable {
+	private static final long serialVersionUID = -5341402809549146966L;
 	private Long id;
 	private Long cqmCriterionId;
 	private Long pendingCertifiedProductId;

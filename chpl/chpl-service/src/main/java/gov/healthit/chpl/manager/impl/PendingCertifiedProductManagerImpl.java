@@ -30,6 +30,7 @@ import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -197,6 +198,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	@ClearAllCaches
 	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
@@ -229,6 +231,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
+	@ClearAllCaches
 	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
@@ -244,6 +247,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
+	@ClearAllCaches
 	public void confirm(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
@@ -258,6 +262,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or  hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
+	@ClearAllCaches
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, Long userId, Permission permission) throws UserRetrievalException {
 		UserDTO user = userDAO.getById(userId);
 		addPermission(acb, pcpDto, user, permission);
@@ -267,6 +272,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or  hasRole('ROLE_INVITED_USER_CREATOR')  or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
+	@ClearAllCaches
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, UserDTO user, Permission permission) {
 		MutableAcl acl;
 		ObjectIdentity oid = new ObjectIdentityImpl(PendingCertifiedProductDTO.class, pcpDto.getId());
@@ -298,6 +304,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or  hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
+	@ClearAllCaches
 	public void addPermissionToAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, UserDTO user, Permission permission) {
 		List<PendingCertifiedProductDTO> pcps = getByAcb(acb);
 		for(PendingCertifiedProductDTO pcp : pcps) {
@@ -309,6 +316,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#pcpDto, admin))")
+	@ClearAllCaches
 	public void deletePermission(PendingCertifiedProductDTO pcpDto, Sid recipient, Permission permission) {
 		ObjectIdentity oid = new ObjectIdentityImpl(PendingCertifiedProductDTO.class, pcpDto.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -333,6 +341,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#pcpDto, admin))")
+	@ClearAllCaches
 	public void deleteUserPermissionsOnPendingCertifiedProduct(PendingCertifiedProductDTO pcpDto, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(PendingCertifiedProductDTO.class, pcpDto.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -359,6 +368,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and hasPermission(#acb, admin))")
+	@ClearAllCaches
 	public void deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(CertificationBodyDTO acb, Sid user) {
 		List<PendingCertifiedProductDTO> pcps = getByAcb(acb);
 		if(pcps != null && pcps.size() > 0) {
@@ -370,6 +380,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')") 
+	@ClearAllCaches
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException {
 		if(userDto.getSubjectName() == null) {
 			userDto = userDAO.getById(userDto.getId());

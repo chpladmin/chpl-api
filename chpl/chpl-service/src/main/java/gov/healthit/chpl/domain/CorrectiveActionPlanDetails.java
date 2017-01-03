@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,8 +11,8 @@ import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 import io.swagger.annotations.ApiModel;
 
 @ApiModel(description="The details about a corrective action plan. If resolved, all fields are required.")
-public class CorrectiveActionPlanDetails {
-	
+public class CorrectiveActionPlanDetails implements Serializable {
+	private static final long serialVersionUID = 1673042559452716629L;
 	private Long id;
 	private Long certifiedProductId;
 	private String acbName;

@@ -1,8 +1,11 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.CertificationResultUcdProcessEntity;
 
-public class CertificationResultUcdProcessDTO {
+public class CertificationResultUcdProcessDTO implements Serializable {
+	private static final long serialVersionUID = 6026116684333913764L;
 	private Long id;
 	private Long certificationResultId;
 	private Long ucdProcessId;
