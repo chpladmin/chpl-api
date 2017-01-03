@@ -124,12 +124,12 @@ public class SurveillanceValidator {
 		//any other type of surveillance should not have that value
 		if(surv.getType() != null && surv.getType().getName() != null && 
 			surv.getType().getName().equalsIgnoreCase("Randomized")) {
-			if(surv.getRandomizedSitesUsed() == null || surv.getRandomizedSitesUsed().intValue() <= 0) {
+			if(surv.getRandomizedSitesUsed() == null || surv.getRandomizedSitesUsed().intValue() < 0) {
 				surv.getErrorMessages().add("Randomized surveillance must provide a nonzero value for number of randomized sites used.");
 			}
 		} else if(surv.getType() != null && surv.getType().getName() != null && 
 				!surv.getType().getName().equalsIgnoreCase("Randomized")) {
-			if(surv.getRandomizedSitesUsed() != null && surv.getRandomizedSitesUsed().intValue() > 0) {
+			if(surv.getRandomizedSitesUsed() != null && surv.getRandomizedSitesUsed().intValue() >= 0) {
 				surv.getErrorMessages().add("Number of randomized sites used is not applicable for " + surv.getType().getName() + " surveillance.");
 			}
 		}
@@ -320,7 +320,7 @@ public class SurveillanceValidator {
 								surv.getErrorMessages().add("Number of sites passed is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
 							}
 							
-							if(nc.getTotalSites() == null || nc.getTotalSites().intValue() <= 0) {
+							if(nc.getTotalSites() == null || nc.getTotalSites().intValue() < 0) {
 								surv.getErrorMessages().add("Total number of sites is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + ". It must be greater than 0.");
 							}
 						} else if(surv.getType() != null && surv.getType().getName() != null && 

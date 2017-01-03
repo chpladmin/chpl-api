@@ -27,6 +27,9 @@ _Date TBD_
 	Cache underlying data that improves call speed for many other API calls
 * TO-DO DURING DEPLOYMENT: Add this line to environment.properties: enableCacheInitialization=true
 * /authenticate now returns 401 Unauthorized for bad credentials instead of 500 Internal Server Error
+* Add new certification status for products
+* Allow 0 for number of randomized sites and total sites for surveillance
+* Remove products marked Suspended By ONC from Decertified Product search
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
