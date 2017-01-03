@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -19,7 +18,6 @@ import gov.healthit.chpl.entity.PracticeTypeEntity;
 public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO {
 
 	@Override
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public void create(PracticeTypeDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
 		
@@ -51,7 +49,6 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 	}
 
 	@Override
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public void update(PracticeTypeDTO dto) throws EntityRetrievalException {
 		
 		PracticeTypeEntity entity = this.getEntityById(dto.getId());
@@ -67,7 +64,6 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 	}
 
 	@Override
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	public void delete(Long id) {
 		Query query = entityManager.createQuery("UPDATE PracticeTypeEntity SET deleted = true WHERE practice_type_id = :entityid");
 		query.setParameter("entityid", id);
@@ -107,14 +103,12 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 		
 	}
 	
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void create(PracticeTypeEntity entity) {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	private void update(PracticeTypeEntity entity) {
 		
 		entityManager.merge(entity);	

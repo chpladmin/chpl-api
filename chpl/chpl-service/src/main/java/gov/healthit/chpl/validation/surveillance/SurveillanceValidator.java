@@ -14,7 +14,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.Surveillance;
@@ -29,7 +28,6 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.SurveillanceEntity;
-import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerImpl;
 
 @Component("surveillanceValidator")
 public class SurveillanceValidator {

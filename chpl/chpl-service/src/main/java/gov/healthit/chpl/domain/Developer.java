@@ -1,12 +1,14 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 
-public class Developer {
+public class Developer implements Serializable {
+	private static final long serialVersionUID = 7341544844577617247L;
 	private Long developerId;
 	private String developerCode;
 	private String name;

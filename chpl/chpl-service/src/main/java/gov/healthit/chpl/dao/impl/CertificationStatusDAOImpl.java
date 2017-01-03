@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.CertificationStatusDAO;
@@ -37,6 +38,7 @@ public class CertificationStatusDAOImpl extends BaseDAOImpl implements Certifica
 	}
 
 	@Override
+	@Cacheable("getByStatusName")
 	public CertificationStatusDTO getByStatusName(String statusName) {
 		CertificationStatusEntity entity = getEntityByName(statusName);
 		return new CertificationStatusDTO(entity);

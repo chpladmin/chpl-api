@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.caching.CacheInvalidationRule;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -42,6 +44,9 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
+	@Rule
+    @Autowired
+    public CacheInvalidationRule cacheInvalidationRule;
 	
 	@Test
 	@Transactional

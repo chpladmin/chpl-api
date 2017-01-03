@@ -1,9 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 
-public class CQMResultCertification {
-	
+public class CQMResultCertification implements Serializable {
+	private static final long serialVersionUID = 2547864525772721622L;
 	private Long id;
 	private Long certificationId;
 	private String certificationNumber;

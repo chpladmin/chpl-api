@@ -1,6 +1,9 @@
 package gov.healthit.chpl.domain;
 
-public class SurveillanceNonconformityDocument {
+import java.io.Serializable;
+
+public class SurveillanceNonconformityDocument implements Serializable {
+	private static final long serialVersionUID = -7456509117016763596L;
 	private Long id;
 	private String fileName;
 	private String fileType;

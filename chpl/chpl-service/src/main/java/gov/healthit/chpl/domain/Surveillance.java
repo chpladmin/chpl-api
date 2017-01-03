@@ -1,11 +1,13 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class Surveillance {
+public class Surveillance implements Serializable {
+	private static final long serialVersionUID = 7018071250912371691L;
 	private Long id;
 	private String surveillanceIdToReplace;
 	private String friendlyId;

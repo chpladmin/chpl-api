@@ -1,8 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 
-public class CertificationResultAdditionalSoftware {
+public class CertificationResultAdditionalSoftware implements Serializable {
+	private static final long serialVersionUID = -4131156681875211987L;
 	private Long id;
 	private String name;
 	private String version;

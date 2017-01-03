@@ -1,8 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.AddressDTO;
 
-public class Address {
+public class Address implements Serializable {
+	private static final long serialVersionUID = 7978604053959537664L;
 	private Long addressId;
 	private String line1;
 	private String line2;

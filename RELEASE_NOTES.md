@@ -17,6 +17,15 @@ _Date TBD_
 * Add date of last certification status change to certified product detailis
 * Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
 * Add decertification date to certified product details * CHANGES XML DOWNLOAD FORMAT *
+* Improve website performance:
+	Initialize cache stores asynchronously at server startup
+	Increase cache timeout to 1 hour
+	Add caching for /certification_ids API call
+	Add caching for /pending API call
+	Add caching for /search API call
+	Update caching for /search_options API call
+	Cache underlying data that improves call speed for many other API calls
+* TO-DO DURING DEPLOYMENT: Add this line to environment.properties: enableCacheInitialization=true
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.

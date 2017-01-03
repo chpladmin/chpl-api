@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 
-public class CertificationBodyDTO {
-	
+public class CertificationBodyDTO implements Serializable {
+	private static final long serialVersionUID = 6650934397742636530L;
 	private String acbCode;
 	private Date creationDate;
 	private Boolean deleted;

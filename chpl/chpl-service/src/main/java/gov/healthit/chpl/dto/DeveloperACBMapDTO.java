@@ -1,9 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity;
 
-public class DeveloperACBMapDTO {
+public class DeveloperACBMapDTO implements Serializable {
+	private static final long serialVersionUID = -1860729017532925654L;
 	private Long id;
 	private Long developerId;
 	private Long acbId;
