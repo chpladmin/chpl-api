@@ -166,8 +166,6 @@ public class SearchRequest implements Serializable {
 		result = prime * result
 				+ ((surveillance == null) ? 0 : surveillance.hashCode());
 		result = prime * result
-				+ ((certificationBodies == null) ? 0 : certificationBodies.hashCode());
-		result = prime * result
 				+ ((hasHadSurveillance == null) ? 0 : hasHadSurveillance.hashCode());
 		result = prime * result
 				+ ((developer == null) ? 0 : developer.hashCode());
