@@ -545,7 +545,6 @@ public class SearchViewController {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		List<String> allowedCertificationStatuses = new ArrayList<String>();
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.SuspendedByOnc));
 		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByAcb));
 		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloper));
 		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview));

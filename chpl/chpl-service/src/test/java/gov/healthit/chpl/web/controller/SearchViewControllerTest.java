@@ -286,8 +286,7 @@ public class SearchViewControllerTest {
 		assertTrue(resp.getResults().size() == 7);
 		assertTrue("SearchResponse.pageSize should be equal to the number of results", resp.getPageSize() == resp.getResults().size());
 		for(CertifiedProductSearchResult cp : resp.getResults()){
-			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.SuspendedByOnc)) ||
-					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) || 
+			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) || 
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)) ||
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview)) ||
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc)));
