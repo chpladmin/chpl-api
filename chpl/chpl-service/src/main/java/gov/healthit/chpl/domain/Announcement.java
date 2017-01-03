@@ -1,13 +1,11 @@
 package gov.healthit.chpl.domain;
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.dto.AnnouncementDTO;
 
-
-public class Announcement{
-
-	
-
+public class Announcement implements Serializable {
+	private static final long serialVersionUID = -7647761708813529969L;
 	private Long id;
 	public String title;
 	private String text;
@@ -18,7 +16,6 @@ public class Announcement{
 	private Boolean deleted;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-
 
 	public Announcement(){}
 
@@ -33,7 +30,6 @@ public class Announcement{
 		this.lastModifiedDate = dto.getLastModifiedDate();
 		this.lastModifiedUser = dto.getLastModifiedUser();
 		this.creationDate = dto.getCreationDate();
-
 	}
 	
 	public String getTitle() {

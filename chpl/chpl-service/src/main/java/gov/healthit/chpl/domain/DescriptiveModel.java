@@ -1,6 +1,9 @@
 package gov.healthit.chpl.domain;
 
-public class DescriptiveModel extends KeyValueModel {
+import java.io.Serializable;
+
+public class DescriptiveModel extends KeyValueModel implements Serializable {
+	private static final long serialVersionUID = 1402909764642483654L;
 	private String title;
 	
 	public DescriptiveModel() {

@@ -1,8 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 
-public class CertifiedProductAccessibilityStandard {
+public class CertifiedProductAccessibilityStandard implements Serializable {
+	private static final long serialVersionUID = -676179466407109456L;
 	private Long id;
 	private Long accessibilityStandardId;
 	private String accessibilityStandardName;

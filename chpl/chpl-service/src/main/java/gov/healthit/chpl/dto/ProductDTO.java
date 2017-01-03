@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -10,8 +11,8 @@ import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 import gov.healthit.chpl.entity.ProductEntity;
 
-public class ProductDTO {
-	
+public class ProductDTO implements Serializable {
+	private static final long serialVersionUID = -5440560685496661764L;
 	private Long id;
 	private Date creationDate;
 	private Boolean deleted;

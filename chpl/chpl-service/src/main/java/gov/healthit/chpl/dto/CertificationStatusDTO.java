@@ -1,8 +1,11 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.CertificationStatusEntity;
 
-public class CertificationStatusDTO {
+public class CertificationStatusDTO implements Serializable {
+	private static final long serialVersionUID = 7214567031021821333L;
 	private Long id;
 	private String status;
 	

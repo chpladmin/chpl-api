@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,7 +29,8 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingTestTaskDTO;
 
-public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
+public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails implements Serializable {
+	private static final long serialVersionUID = -461584179489619328L;
 	private String recordStatus;
 	
 	public PendingCertifiedProductDetails() {}

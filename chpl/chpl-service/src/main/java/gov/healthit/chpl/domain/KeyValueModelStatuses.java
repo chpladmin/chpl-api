@@ -1,6 +1,9 @@
 package gov.healthit.chpl.domain;
 
-public class KeyValueModelStatuses extends KeyValueModel {
+import java.io.Serializable;
+
+public class KeyValueModelStatuses extends KeyValueModel implements Serializable {
+	private static final long serialVersionUID = -7750374871468678005L;
 	Statuses statuses;
 	
 	public KeyValueModelStatuses() {}

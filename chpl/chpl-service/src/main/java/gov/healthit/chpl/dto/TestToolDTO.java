@@ -1,8 +1,11 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.TestToolEntity;
 
-public class TestToolDTO {
+public class TestToolDTO implements Serializable {
+	private static final long serialVersionUID = 5106769538846598991L;
 	private Long id;
 	private String name;
 	private String description;

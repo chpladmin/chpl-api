@@ -1,14 +1,14 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "searchResults")
-public class SearchResponse {
-	
-	
+public class SearchResponse implements Serializable {
+	private static final long serialVersionUID = 5130424471766571329L;
 	private Integer recordCount;
 	private Integer pageSize;
 	private Integer pageNumber;

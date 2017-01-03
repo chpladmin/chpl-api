@@ -1,7 +1,9 @@
 package gov.healthit.chpl.dto;
 
-public class CQMMetDTO {
+import java.io.Serializable;
 
+public class CQMMetDTO implements Serializable {
+	private static final long serialVersionUID = -2966774346743452242L;
 	private String cmsId;
 	private String version;
 	private String domain;

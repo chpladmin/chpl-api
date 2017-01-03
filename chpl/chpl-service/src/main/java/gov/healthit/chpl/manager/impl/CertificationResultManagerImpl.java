@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -62,6 +63,7 @@ public class CertificationResultManagerImpl implements
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
+	@ClearAllCaches
 	public CertificationResultDTO create(Long acbId, CertificationResultDTO toCreate) throws EntityRetrievalException, EntityCreationException {
 		CertificationResultDTO created = certResultDAO.create(toCreate);
 		
@@ -150,6 +152,7 @@ public class CertificationResultManagerImpl implements
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
+	@ClearAllCaches
 	public CertificationResultDTO update(Long acbId, CertificationResultDTO toUpdate) throws EntityRetrievalException, EntityCreationException {
 		CertificationResultDTO updated = certResultDAO.update(toUpdate);
 		
@@ -179,7 +182,7 @@ public class CertificationResultManagerImpl implements
 		
 		return updated;
 	}
-
+	
 	private List<CertificationResultUcdProcessDTO> updateSed(CertificationResultDTO toUpdate) 
 		throws EntityCreationException, EntityRetrievalException {
 		//update ucd processes

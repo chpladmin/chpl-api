@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.CacheInvalidationRule;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -36,10 +38,8 @@ import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
-import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.DeveloperStatusType;
@@ -65,6 +65,9 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Autowired private CertifiedProductManager cpManager;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
 	@Autowired private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+	@Rule
+    @Autowired
+    public CacheInvalidationRule cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser testUser3;

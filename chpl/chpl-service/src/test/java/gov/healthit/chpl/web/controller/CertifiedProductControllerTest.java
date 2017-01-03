@@ -17,6 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.CacheInvalidationRule;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
@@ -54,6 +56,9 @@ public class CertifiedProductControllerTest {
 
 	private static final String CSV_SEPARATOR = ",";
 	private static final Logger logger = LogManager.getLogger(CertifiedProductControllerTest.class);
+	@Rule
+    @Autowired
+    public CacheInvalidationRule cacheInvalidationRule;
 	
 	@Autowired
 	CertifiedProductController certifiedProductController;

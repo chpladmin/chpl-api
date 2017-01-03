@@ -1,10 +1,12 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.dto.CertificationIdDTO;
 
-public class SimpleCertificationId {
+public class SimpleCertificationId implements Serializable {
+	private static final long serialVersionUID = 2521257609141032011L;
 	private String certificationId;
 	private Date created;
 	

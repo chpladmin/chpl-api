@@ -1,9 +1,10 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class ApiKeyActivity {
-	
+public class ApiKeyActivity implements Serializable {
+	private static final long serialVersionUID = 7717599216397121980L;
 	private Long id;
 	private Long apiKeyId;
 	private String apiKey;
