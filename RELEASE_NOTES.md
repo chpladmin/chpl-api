@@ -33,6 +33,7 @@ _Date TBD_
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
+* Fixes exception when getting back activity performed by a user that has since been deleted 
 
 --- 
 
