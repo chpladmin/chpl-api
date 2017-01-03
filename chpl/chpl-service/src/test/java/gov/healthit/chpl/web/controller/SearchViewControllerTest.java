@@ -289,6 +289,7 @@ public class SearchViewControllerTest {
 			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.SuspendedByOnc)) ||
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) || 
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)) ||
+					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview)) ||
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc)));
 		}
 	}
