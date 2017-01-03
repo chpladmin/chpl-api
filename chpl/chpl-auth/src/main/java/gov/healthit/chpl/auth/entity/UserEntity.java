@@ -23,8 +23,6 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name="`user`")
-@SQLDelete(sql = "UPDATE openchpl.\"user\" SET deleted = true WHERE user_id = ?")
-@Where(clause = "NOT deleted")
 public class UserEntity {
 
 	private static final long serialVersionUID = 1L;
