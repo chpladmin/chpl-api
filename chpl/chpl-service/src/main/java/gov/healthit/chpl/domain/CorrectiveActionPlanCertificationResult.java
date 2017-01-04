@@ -1,9 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 
-public class CorrectiveActionPlanCertificationResult {
-	
+public class CorrectiveActionPlanCertificationResult implements Serializable {
+	private static final long serialVersionUID = 3231545105468134475L;
 	private Long id;
 	private Long certificationCriterionId;
 	private String certificationCriterionNumber;

@@ -1,8 +1,11 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
 
-public class PendingCertifiedProductTargetedUserDTO {
+public class PendingCertifiedProductTargetedUserDTO implements Serializable {
+	private static final long serialVersionUID = 8450020346312080499L;
 	private Long id;
 	private Long pendingCertifiedProductId;
 	private Long targetedUserId;

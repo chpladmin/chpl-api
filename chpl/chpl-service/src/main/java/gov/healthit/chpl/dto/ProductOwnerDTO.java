@@ -1,9 +1,11 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.ProductOwnerEntity;
 
-public class ProductOwnerDTO {
-	
+public class ProductOwnerDTO implements Serializable {
+	private static final long serialVersionUID = 6840423832565720086L;
 	private Long id;
 	private Long productId;
 	private DeveloperDTO developer;

@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 
-public class CQMCriterionDTO {
-
+public class CQMCriterionDTO implements Serializable {
+	private static final long serialVersionUID = -2794095309532708038L;
 	private String cmsId;
 	private Long cqmCriterionTypeId;
 	private String cqmDomain;

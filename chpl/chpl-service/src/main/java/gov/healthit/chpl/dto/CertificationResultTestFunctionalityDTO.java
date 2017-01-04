@@ -1,8 +1,11 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.CertificationResultTestFunctionalityEntity;
 
-public class CertificationResultTestFunctionalityDTO {
+public class CertificationResultTestFunctionalityDTO implements Serializable {
+	private static final long serialVersionUID = 1504901339062574362L;
 	private Long id;
 	private Long certificationResultId;
 	private Long testFunctionalityId;

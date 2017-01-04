@@ -1,9 +1,13 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +21,16 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.CacheInvalidationRule;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -56,6 +63,10 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	@Autowired
 	private CertifiedProductDAO cpDao;
 	
+	@Rule
+    @Autowired
+    public CacheInvalidationRule cacheInvalidationRule;
+	
 	private static JWTAuthenticatedUser adminUser;
 	
 	@BeforeClass
@@ -67,6 +78,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
+	
 	@Test
 	@Transactional
 	public void testCountSearchResults(){
@@ -448,6 +460,144 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 			fail("EntityRetrievalException");
 		}
 		
+	}
+	
+	/** 
+	 * Tests that the default /search call caches its data
+	 */
+	@Transactional
+	@Test
+	public void test_cpDetailsSearch_CachesData() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SearchRequest searchFilters = new SearchRequest();
+		List<String> certBodies = new ArrayList<String>();
+		certBodies.add("Drummond Group");
+		certBodies.add("ICSA Labs");
+		certBodies.add("InfoGard");
+		List<String> certCriteria = new ArrayList<String>();
+		List<String> certEditions = new ArrayList<String>();
+		certEditions.add("2014");
+		certEditions.add("2015");
+		List<String> certStatuses = new ArrayList<String>();
+		certStatuses.add("Active");
+		certStatuses.add("Suspended by ONC-ACB");
+		certStatuses.add("Withdrawn by Developer");
+		certStatuses.add("Withdrawn by ONC-ACB");
+		certStatuses.add("Suspended by ONC");
+		certStatuses.add("Terminated by ONC");
+		List<String> cqms = new ArrayList<String>();
+		Set<SurveillanceSearchOptions> survs = new HashSet<SurveillanceSearchOptions>();
+		 
+		searchFilters.setCertificationBodies(certBodies);
+		searchFilters.setCertificationCriteria(certCriteria);
+		searchFilters.setCertificationDateEnd(null);
+		searchFilters.setCertificationDateStart(null);
+		searchFilters.setCertificationEditions(certEditions);
+		searchFilters.setCertificationStatuses(certStatuses);
+		searchFilters.setCqms(cqms);
+		searchFilters.setDeveloper(null);
+		searchFilters.setHasHadSurveillance(null);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setPracticeType(null);
+		searchFilters.setProduct(null);
+		searchFilters.setSearchTerm(null);
+		searchFilters.setSortDescending(false);
+		searchFilters.setSurveillance(survs);
+		searchFilters.setVersion(null);
+		long startTime = System.currentTimeMillis();
+		List<CertifiedProductDetailsDTO> results = searchResultDAO.search(searchFilters);
+		// search should now be cached
+		long endTime = System.currentTimeMillis();
+		long timeLength = endTime - startTime;
+		double elapsedSecs = timeLength / 1000.0;
+		
+		assertTrue("Returned " + results.size() + " results but should return more than 0", results.size() > 0);
+		
+		System.out.println("search returned " + results.size() + " total search results.");
+		System.out.println("search completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		// now compare cached time vs non-cached time
+		startTime = System.currentTimeMillis();
+		results = searchResultDAO.search(searchFilters);
+		endTime = System.currentTimeMillis();
+		timeLength = endTime - startTime;
+		elapsedSecs = timeLength / 1000.0;
+		System.out.println("search returned " + results.size() + " total search results.");
+		System.out.println("search completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		assertTrue("search should complete within 100 ms but took " + timeLength
+				+ " millis or " + elapsedSecs + " seconds", timeLength < 100);
+	}
+	
+	/** 
+	 * Tests that the default /search call countMultiFilterSearchResults() caches its data
+	 */
+	@Transactional
+	@Test
+	public void test_countMultiFilterSearchResults_CachesData() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+		SearchRequest searchFilters = new SearchRequest();
+		List<String> certBodies = new ArrayList<String>();
+		certBodies.add("Drummond Group");
+		certBodies.add("ICSA Labs");
+		certBodies.add("InfoGard");
+		List<String> certCriteria = new ArrayList<String>();
+		List<String> certEditions = new ArrayList<String>();
+		certEditions.add("2014");
+		certEditions.add("2015");
+		List<String> certStatuses = new ArrayList<String>();
+		certStatuses.add("Active");
+		certStatuses.add("Suspended by ONC-ACB");
+		certStatuses.add("Withdrawn by Developer");
+		certStatuses.add("Withdrawn by ONC-ACB");
+		certStatuses.add("Suspended by ONC");
+		certStatuses.add("Terminated by ONC");
+		List<String> cqms = new ArrayList<String>();
+		Set<SurveillanceSearchOptions> survs = new HashSet<SurveillanceSearchOptions>();
+		 
+		searchFilters.setCertificationBodies(certBodies);
+		searchFilters.setCertificationCriteria(certCriteria);
+		searchFilters.setCertificationDateEnd(null);
+		searchFilters.setCertificationDateStart(null);
+		searchFilters.setCertificationEditions(certEditions);
+		searchFilters.setCertificationStatuses(certStatuses);
+		searchFilters.setCqms(cqms);
+		searchFilters.setDeveloper(null);
+		searchFilters.setHasHadSurveillance(null);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setPracticeType(null);
+		searchFilters.setProduct(null);
+		searchFilters.setSearchTerm(null);
+		searchFilters.setSortDescending(false);
+		searchFilters.setSurveillance(survs);
+		searchFilters.setVersion(null);
+		long startTime = System.currentTimeMillis();
+		Long result = searchResultDAO.countMultiFilterSearchResults(searchFilters);
+		// search should now be cached
+		long endTime = System.currentTimeMillis();
+		long timeLength = endTime - startTime;
+		double elapsedSecs = timeLength / 1000.0;
+		
+		assertTrue("Returned " + result + " which should have a count more than 0", result > 0);
+		
+		System.out.println("search completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		// now compare cached time vs non-cached time
+		startTime = System.currentTimeMillis();
+		result = searchResultDAO.countMultiFilterSearchResults(searchFilters);
+		endTime = System.currentTimeMillis();
+		timeLength = endTime - startTime;
+		elapsedSecs = timeLength / 1000.0;
+		System.out.println("search completed in  " + timeLength
+				+ " millis or " + elapsedSecs + " seconds");
+		
+		assertTrue("search should complete within 100 ms but took " + timeLength
+				+ " millis or " + elapsedSecs + " seconds", timeLength < 100);
 	}
 	
 	

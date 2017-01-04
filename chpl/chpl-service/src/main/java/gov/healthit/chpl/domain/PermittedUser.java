@@ -1,10 +1,12 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
 import gov.healthit.chpl.auth.json.User;
 
-public class PermittedUser {
+public class PermittedUser implements Serializable {
+	private static final long serialVersionUID = -7978555260304001452L;
 	private User user;
 	private List<String> roles;
 	private List<String> permissions;

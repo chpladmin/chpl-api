@@ -1,12 +1,13 @@
 package gov.healthit.chpl.dto;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.CertificationStatusEventEntity;
 
-public class CertificationStatusEventDTO {
-	
+public class CertificationStatusEventDTO implements Serializable {
+	private static final long serialVersionUID = 1171613630377844762L;
 	private Long id;
 	private Long certifiedProductId;
 	private Date eventDate;

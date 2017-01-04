@@ -7,6 +7,7 @@ public enum CertificationStatusType {
 	Retired,
 	Pending,
 	WithdrawnByDeveloper("Withdrawn by Developer"),
+	WithdrawnByDeveloperUnderReview("Withdrawn by Developer Under Surveillance/Review"),
 	WithdrawnByAcb("Withdrawn by ONC-ACB"),
 	SuspendedByAcb("Suspended by ONC-ACB"),
 	SuspendedByOnc("Suspended by ONC"),

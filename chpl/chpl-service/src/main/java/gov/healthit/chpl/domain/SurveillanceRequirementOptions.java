@@ -1,9 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SurveillanceRequirementOptions {
+public class SurveillanceRequirementOptions implements Serializable {
+	private static final long serialVersionUID = 500382005925313527L;
 	private List<KeyValueModel> criteriaOptions2014;
 	private List<KeyValueModel> criteriaOptions2015;
 	private List<String> transparencyOptions;

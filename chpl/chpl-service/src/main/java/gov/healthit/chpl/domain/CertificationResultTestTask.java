@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,9 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 
-public class CertificationResultTestTask {
+public class CertificationResultTestTask implements Serializable {
+	private static final long serialVersionUID = -5239080984125704737L;
+
 	private static final Logger logger = LogManager.getLogger(CertificationResultTestTask.class);
 
 	private Long id;

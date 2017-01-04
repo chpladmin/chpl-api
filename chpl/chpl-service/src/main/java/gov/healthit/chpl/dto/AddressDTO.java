@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.AddressEntity;
 
-public class AddressDTO {
-
+public class AddressDTO implements Serializable {
+	private static final long serialVersionUID = -5340045233309684152L;
 	private Long id;
 	private String streetLineOne;
 	private String streetLineTwo;

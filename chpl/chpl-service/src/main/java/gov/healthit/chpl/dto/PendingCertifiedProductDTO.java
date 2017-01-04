@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dto;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,8 +33,8 @@ import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
-public class PendingCertifiedProductDTO {
-	
+public class PendingCertifiedProductDTO implements Serializable {
+	private static final long serialVersionUID = 8778880570983282001L;
 	private Long id;
 	private Long practiceTypeId;
     private Long developerId;

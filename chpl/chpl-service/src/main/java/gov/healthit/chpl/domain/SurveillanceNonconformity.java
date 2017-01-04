@@ -1,10 +1,12 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SurveillanceNonconformity {
+public class SurveillanceNonconformity implements Serializable {
+	private static final long serialVersionUID = -1116153210791576784L;
 	private Long id;
 	//this is either a certification criteria number or a textual description
 	private String nonconformityType;
