@@ -4,19 +4,6 @@
 _Date TBD_
 
 ### Features Added
-* Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details. 
-* Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
-* Change behavior if certified product is marked as suspended or terminated by ONC. These statuses also result in a developer status change and require ROLE_ADMIN
-* Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer. 
-* Add API call to get decertified certified products with pageCount set to the total number of decertified products
-* Add certificationDateStart and certificationDateEnd as advanced search parameters
-* Change corrective action plan search parameters to new surveillance search parameters - NOT BACKWARDS COMPATIBLE
-* Send questionable activity email when product owner changes (not during a merge)
-* Add /surveillance/download[?type=all|basic|nonconformities] endpoint to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
-* Add lookup to new tables for certification status event history
-* Add date of last certification status change to certified product detailis
-* Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
-* Add decertification date to certified product details * CHANGES XML DOWNLOAD FORMAT *
 * Improve website performance:
 	Initialize cache stores asynchronously at server startup
 	Increase cache timeout to 1 hour
@@ -30,10 +17,32 @@ _Date TBD_
 * Add new certification status for products
 * Allow 0 for number of randomized sites and total sites for surveillance
 * Remove products marked Suspended By ONC from Decertified Product search
+	
+### Bugs Fixed
+* Fixes exception when getting back activity performed by a user that has since been deleted 
+
+---
+
+## Version TBD
+_Date TBD_
+
+### Features Added
+* Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details. 
+* Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
+* Change behavior if certified product is marked as suspended or terminated by ONC. These statuses also result in a developer status change and require ROLE_ADMIN
+* Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer. 
+* Add API call to get decertified certified products with pageCount set to the total number of decertified products
+* Add certificationDateStart and certificationDateEnd as advanced search parameters
+* Change corrective action plan search parameters to new surveillance search parameters - NOT BACKWARDS COMPATIBLE
+* Send questionable activity email when product owner changes (not during a merge)
+* Add /surveillance/download[?type=all|basic|nonconformities] endpoint to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
+* Add lookup to new tables for certification status event history
+* Add date of last certification status change to certified product detailis
+* Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
+* Add decertification date to certified product details * CHANGES XML DOWNLOAD FORMAT *
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
-* Fixes exception when getting back activity performed by a user that has since been deleted 
 
 --- 
 
