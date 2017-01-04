@@ -167,10 +167,10 @@ public class CertifiedProductController {
 		if(!existingProduct.getCertificationStatus().get("id").toString().equals(
 				updateRequest.getCertificationStatus().get("id"))) {
 			//if the status is to or from suspended by onc make sure the user has admin
-			if((existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.getName()) 
-				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.getName())
-				|| existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.getName())
-				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.getName()))
+			if((existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString()) 
+				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString())
+				|| existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString())
+				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString()))
 				&& !Util.isUserRoleAdmin()) {
 				updateRequest.getErrorMessages().add("User " + Util.getUsername() 
 					+ " does not have permission to change certification status of " 
