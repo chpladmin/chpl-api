@@ -8,7 +8,7 @@
 	
 	<!-- /certification_ids caching -->
 	<cache name="allCertIdsWithProducts"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -19,7 +19,7 @@
 	</cache>
 	
 	<cache name="allCertIds"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -32,7 +32,7 @@
 	
 	<!-- /search_options caching -->
 	<cache name="allDevelopers"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -43,7 +43,7 @@
 	</cache>
 	
 	<cache name="allDevelopersIncludingDeleted"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -54,7 +54,7 @@
 	</cache>
 	
 	<cache name="certBodyNames"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -65,7 +65,7 @@
 	</cache>
 	
 	<cache name="editionNames"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -76,7 +76,7 @@
 	</cache>
 	
 	<cache name="certificationStatuses"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -87,7 +87,7 @@
 	</cache>
 	
 	<cache name="practiceTypeNames"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -98,7 +98,7 @@
 	</cache>
 	
 	<cache name="classificationNames"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -109,7 +109,7 @@
 	</cache>
 	
 	<cache name="productNames"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -120,7 +120,7 @@
 	</cache>
 	
 	<cache name="developerNames"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -131,7 +131,7 @@
 	</cache>
 	
 	<cache name="cqmCriterionNumbers"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -142,7 +142,7 @@
 	</cache>
 	
 	<cache name="certificationCriterionNumbers"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -155,7 +155,7 @@
 
 	<!-- /pending caching -->
 	<cache name="getByStatusName"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -166,7 +166,7 @@
 	</cache>
 	
 	<cache name="findByStatus"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -179,7 +179,7 @@
 	
 	<!-- /search caching -->
 	<cache name="search"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -190,7 +190,7 @@
 	</cache>
 	
 	<cache name="countMultiFilterSearchResults"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -201,7 +201,7 @@
 	</cache>
 	
 	<cache name="cpDetailsSearch"
-		maxEntriesLocalHeap="1000"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
