@@ -728,7 +728,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		
 		
 		//if all this was successful, insert a certification status event for the certification date
-		CertificationStatusDTO activeCertStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.getName());
+		CertificationStatusDTO activeCertStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
 		CertificationStatusEventDTO certEvent = new CertificationStatusEventDTO();
 		certEvent.setCreationDate(new Date());
 		certEvent.setDeleted(false);
@@ -777,17 +777,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		//if the updated certification status was suspended by onc or terminated by onc, 
 		//change the status of the related developer
 		CertificationStatusDTO updatedCertificationStatus = certStatusDao.getById(dto.getCertificationStatusId());
-		if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.getName()) || 
-			updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.getName())) {
+		if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString()) || 
+			updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString())) {
 			
 			//get developer
 			DeveloperDTO cpDeveloper = developerDao.getByVersion(dto.getProductVersionId());
 			if(Util.isUserRoleAdmin() && cpDeveloper != null) {
 				//find the new developer status
 				DeveloperStatusDTO devStatusDto = null;
-				if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.getName())) {
+				if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
 					devStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
-				} else if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.getName())) {
+				} else if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString())) {
 					devStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
 				}
 				//update the developer status

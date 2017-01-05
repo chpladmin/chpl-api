@@ -20,6 +20,7 @@ _Date TBD_
 	
 ### Bugs Fixed
 * Fixes exception when getting back activity performed by a user that has since been deleted 
+* Fixes innaccurate error message if a user tries to add surveillance to a product under an ACB they are not associated with
 
 ---
 
