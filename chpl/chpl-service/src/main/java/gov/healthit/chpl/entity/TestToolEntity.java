@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 
@@ -18,7 +19,7 @@ public class TestToolEntity {
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "test_tool_id")
+	@JoinColumn(name = "test_tool_id")
 	private Long id;
 	
 	@Column(name = "name")

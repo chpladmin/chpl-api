@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -29,7 +30,7 @@ public class CertifiedProductEntity {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column( name = "certified_product_id", nullable = false  )
+	@JoinColumn( name = "certified_product_id", nullable = false  )
 	private Long id;
     
     @Column(name = "product_code")

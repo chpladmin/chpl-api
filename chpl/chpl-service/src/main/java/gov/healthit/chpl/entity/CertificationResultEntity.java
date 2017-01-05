@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -34,7 +35,7 @@ public class CertificationResultEntity  implements Serializable {
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column(name = "certification_criterion_id", nullable = false )
+	@JoinColumn(name = "certification_criterion_id", nullable = false )
 	private Long certificationCriterionId;
 	
 	@Basic( optional = false )

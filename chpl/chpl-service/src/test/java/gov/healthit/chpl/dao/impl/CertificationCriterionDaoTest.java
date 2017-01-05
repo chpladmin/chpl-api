@@ -24,7 +24,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.caching.CacheInvalidationRule;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -46,7 +46,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 	
 	@Rule
     @Autowired
-    public CacheInvalidationRule cacheInvalidationRule;
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -293,5 +293,22 @@ public class CertificationCriterionDaoTest extends TestCase {
 		certificationCriterionDAO.delete(id);
 	}
 	
-
+	/**
+	 * Tests that getAllEntities() gets all non-deleted certification criterion that are associated with a certified product having ics == true
+	 * @throws EntityRetrievalException
+	 * @throws EntityCreationException
+	 */
+	@Test
+	@Transactional
+	public void testGetAllEntities() throws EntityRetrievalException, EntityCreationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		System.out.println("Running getAllEntities() test");
+		
+		List<CertificationCriterionDTO> certCritDTOs = certificationCriterionDAO.findAll();
+		
+		assertTrue("List of CertificationCriterionDTO should be > 0 but is " + certCritDTOs.size(), certCritDTOs.size() > 0);
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
 }

@@ -1,14 +1,15 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
 
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -18,14 +19,15 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ActivityEvent;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -34,13 +36,10 @@ import gov.healthit.chpl.domain.Product;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
-public class ProductControllerTest {
-	@Autowired ProductController productController;
-	@Rule
-    @Autowired
-    public UnitTestRules cacheInvalidationRule;
-	
+public class ActivityControllerTest {
 	private static JWTAuthenticatedUser adminUser;
+	
+	@Autowired ActivityController activityController;
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -52,22 +51,26 @@ public class ProductControllerTest {
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 	
-	@Test
+	/** 
+	 * Tests
+	 * @throws IOException 
+	 */
 	@Transactional
-	@Rollback(true)
-	public void getProductById() {
-		Product result = null;
-		try {
-			result = productController.getProductById(-1L);
-		} catch(EntityRetrievalException e) {
-			fail(e.getMessage());
-		}
-		assertNotNull(result);
-		assertNotNull(result.getOwner());
-		assertNotNull(result.getOwner().getDeveloperId());
-		assertEquals(-1, result.getOwner().getDeveloperId().longValue());
-		assertNotNull(result.getOwnerHistory());
-		assertEquals(1, result.getOwnerHistory().size());
-		assertEquals(-2, result.getOwnerHistory().get(0).getDeveloper().getDeveloperId().longValue());
+	@Test
+	public void test_listActivity_startDate_UndefinedReturnsOldestApiKeyActivity() throws EntityRetrievalException, EntityCreationException, IOException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		// Note: certification_criterion_id="59" has testTool="true", number 170.315 (h)(1) and title "Direct Project"
+		Long cpId = 1L; // this CP has ics_code = "1" & associated certification_result_id = 8 with certification_criterion_id="59"
+		Long cpId2 = 10L; // this CP has ics_code = "0" & associated certification_result_id = 9 with certification_criterion_id="59"
+		
+		List<ActivityEvent> cpActivityEvents = activityController.activityForCertifiedProductById(cpId, null, null);
+		
+		// Verify that cpActivityEvents
+		
+		//cpActivityEvents.get(0).getNewData().fields()
+		
+		List<ActivityEvent> cp2ActivityEvents = activityController.activityForCertifiedProductById(cpId2, null, null);
+		
+		assertTrue("", true);
 	}
 }

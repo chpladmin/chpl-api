@@ -25,7 +25,7 @@ public class CertificationResultTestToolEntity {
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column( name = "certification_result_id", nullable = false  )
+	@JoinColumn( name = "certification_result_id", nullable = false  )
 	private Long certificationResultId;
 	
 	@Column(name = "test_tool_id")
