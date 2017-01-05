@@ -9,8 +9,6 @@ import java.util.TreeSet;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,7 +57,6 @@ public class CertificationIdController {
 	@Secured({"ROLE_ADMIN", "ROLE_CMS_STAFF", "ROLE_ONC_STAFF"})
 	@ApiOperation(value="Retrieves a list of all CMS EHR Certification IDs along with the date they were created.")
 	@RequestMapping(value="/", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
-	@Cacheable("certificationIds")
 	public List<SimpleCertificationId> getAll() throws IOException {
 		List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
 		if(Util.isUserRoleAdmin() || Util.isUserRoleOncStaff()) {
@@ -103,7 +100,6 @@ public class CertificationIdController {
 			+ "Returns a list of basic product information, " 
 			+ "Criteria and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
 	@RequestMapping(value="/create", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE, produces={MediaType.APPLICATION_JSON_VALUE})
-	@CacheEvict("certificationIds")
 	public @ResponseBody CertificationIdResults createCertificationId(@RequestParam(required=true) List<Long> ids) 
 	throws InvalidArgumentsException, CertificationIdException {
 		return this.findCertificationByProductIds(ids, true);
