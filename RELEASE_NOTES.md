@@ -44,6 +44,8 @@ _Date TBD_
 * Add date of last certification status change to certified product detailis
 * Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
 * Add decertification date to certified product details * CHANGES XML DOWNLOAD FORMAT *
+* Add caching for /certifications_ids/ and /search_options(false), increase cache timeout for /search_options/, initialize cache at server startup
+* Add /surveillance/download[?all=true] endpoints to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.

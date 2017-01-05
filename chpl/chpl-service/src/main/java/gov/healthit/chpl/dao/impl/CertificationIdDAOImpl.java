@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.Query;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
 	@Override
 	@Transactional
+	@CacheEvict("certificationIds")
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException {
 		CertificationIdEntity entity = null;
 		CertificationIdDTO newDto = null;
@@ -91,6 +93,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	
 	@Override
 	@Transactional
+	@CacheEvict("certificationIds")
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
 		
 		CertificationIdEntity entity = null;
@@ -255,6 +258,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		return results;
 	}
 	
+	@CacheEvict("certificationIds")
 	private void create(CertificationIdEntity entity) {
 		
 		entityManager.persist(entity);
