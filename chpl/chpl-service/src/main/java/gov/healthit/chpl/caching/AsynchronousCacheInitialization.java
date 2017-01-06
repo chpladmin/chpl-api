@@ -75,4 +75,13 @@ public class AsynchronousCacheInitialization {
 		return new AsyncResult<>(true);
 	}
 	
+	@Async
+	@Transactional
+	public Future<Boolean> initializeDecertifiedDevelopers() throws IOException, EntityRetrievalException, InterruptedException {
+		logger.info("Starting cache initialization for DeveloperManager.getDecertifiedDevelopers()");
+		certificationIdManager.getAllWithProducts();
+		logger.info("Finished cache initialization for DeveloperManager.getDecertifiedDevelopers()");
+		return new AsyncResult<>(true);
+	}
+	
 }

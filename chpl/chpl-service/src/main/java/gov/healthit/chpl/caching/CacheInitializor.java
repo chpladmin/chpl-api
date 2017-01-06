@@ -37,6 +37,7 @@ public class CacheInitializor {
 	private Future<Boolean> isInitializeSearchOptionsDone;
 	private Future<Boolean> isInitializeCertificationIdsGetAllDone;
 	private Future<Boolean> isInitializeCertificationIdsGetAllWithProductsDone;
+	private Future<Boolean> isInitializeDecertifiedDevelopers;
 	private Properties props;
 	private String enableCacheInitializationValue;
 	
@@ -91,6 +92,11 @@ public class CacheInitializor {
 						isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
 					}
 					isInitializeCertificationIdsGetAllWithProductsDone = asynchronousCacheInitialization.initializeCertificationIdsGetAllWithProducts();
+					
+					if(isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()){
+						isInitializeDecertifiedDevelopers.cancel(true);
+					}
+					isInitializeDecertifiedDevelopers = asynchronousCacheInitialization.initializeDecertifiedDevelopers();
 				  }
 			} catch (Exception e) {
 				System.out.println("Caching failed to initialize");
@@ -123,6 +129,10 @@ public class CacheInitializor {
 			
 			if(isInitializeCertificationIdsGetAllWithProductsDone != null && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()){
 				isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
+			}
+			
+			if(isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()){
+				isInitializeDecertifiedDevelopers.cancel(true);
 			}
 			
 			logger.info("Clearing all caches before @ClearAllCaches method execution.");
