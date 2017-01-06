@@ -1,5 +1,29 @@
 # Release Notes
 
+## Version 7.0.0
+_6 January 2017_
+
+### Features Added
+* Improve website performance:
+	Initialize cache stores asynchronously at server startup
+	Increase cache timeout to 1 hour
+	Add caching for /certification_ids API call
+	Add caching for /pending API call
+	Add caching for /search API call
+	Update caching for /search_options API call
+	Cache underlying data that improves call speed for many other API calls
+* TO-DO DURING DEPLOYMENT: Add this line to environment.properties: enableCacheInitialization=true
+* /authenticate now returns 401 Unauthorized for bad credentials instead of 500 Internal Server Error
+* Add new certification status for products
+* Allow 0 for number of randomized sites and total sites for surveillance
+* Remove products marked Suspended By ONC from Decertified Product search
+	
+### Bugs Fixed
+* Fixes exception when getting back activity performed by a user that has since been deleted 
+* Fixes innaccurate error message if a user tries to add surveillance to a product under an ACB they are not associated with
+
+---
+
 ## Version TBD
 _Date TBD_
 
@@ -14,18 +38,9 @@ _Date TBD_
 * Send questionable activity email when product owner changes (not during a merge)
 * Add /surveillance/download[?type=all|basic|nonconformities] endpoint to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
 * Add lookup to new tables for certification status event history
-* Add date of last certification status change to certified product detailis
+* Add date of last certification status change to certified product details
 * Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
 * Add decertification date to certified product details * CHANGES XML DOWNLOAD FORMAT *
-* Improve website performance:
-	Initialize cache stores asynchronously at server startup
-	Increase cache timeout to 1 hour
-	Add caching for /certification_ids API call
-	Add caching for /pending API call
-	Add caching for /search API call
-	Update caching for /search_options API call
-	Cache underlying data that improves call speed for many other API calls
-* TO-DO DURING DEPLOYMENT: Add this line to environment.properties: enableCacheInitialization=true
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.

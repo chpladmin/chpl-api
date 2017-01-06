@@ -255,3 +255,4 @@ pip-log.txt
 /chpl/chpl-auth/src/test/resources/environment.auth.test.properties
 /chpl/chpl-service/test-target/
 /chpl/chpl-service/logs/
+/chpl/deploy-webapp.sh

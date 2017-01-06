@@ -63,50 +63,6 @@ public class AsynchronousCacheInitialization {
 	
 	@Async
 	@Transactional
-	public void initializeSearch() throws EntityRetrievalException{
-		logger.info("Starting cache initialization for /search DAO method");
-		SearchRequest searchFilters = new SearchRequest();
-		List<String> certBodies = new ArrayList<String>();
-		certBodies.add("Drummond Group");
-		certBodies.add("ICSA Labs");
-		certBodies.add("InfoGard");
-		List<String> certCriteria = new ArrayList<String>();
-		List<String> certEditions = new ArrayList<String>();
-		certEditions.add("2014");
-		certEditions.add("2015");
-		List<String> certStatuses = new ArrayList<String>();
-		certStatuses.add("Active");
-		certStatuses.add("Suspended by ONC-ACB");
-		certStatuses.add("Withdrawn by Developer");
-		certStatuses.add("Withdrawn by ONC-ACB");
-		certStatuses.add("Suspended by ONC");
-		certStatuses.add("Terminated by ONC");
-		List<String> cqms = new ArrayList<String>();
-		Set<SurveillanceSearchOptions> survs = new HashSet<SurveillanceSearchOptions>();
-		searchFilters.setCertificationBodies(certBodies);
-		searchFilters.setCertificationCriteria(certCriteria);
-		searchFilters.setCertificationDateEnd(null);
-		searchFilters.setCertificationDateStart(null);
-		searchFilters.setCertificationEditions(certEditions);
-		searchFilters.setCertificationStatuses(certStatuses);
-		searchFilters.setCqms(cqms);
-		searchFilters.setDeveloper(null);
-		searchFilters.setHasHadSurveillance(null);
-		searchFilters.setOrderBy("developer");
-		searchFilters.setPageNumber(0);
-		searchFilters.setPageSize(50);
-		searchFilters.setPracticeType(null);
-		searchFilters.setProduct(null);
-		searchFilters.setSearchTerm(null);
-		searchFilters.setSortDescending(false);
-		searchFilters.setSurveillance(survs);
-		searchFilters.setVersion(null);
-		certifiedProductSearchResultDAO.search(searchFilters);
-		logger.info("Finished cache initialization for /search DAO method");
-	}
-	
-	@Async
-	@Transactional
 	public void initializeCertificationIdsGetAll() throws IOException, EntityRetrievalException, InterruptedException {
 		logger.info("Starting cache initialization for CertificationIdManager.getAll()");
 		certificationIdManager.getAll();

@@ -50,7 +50,6 @@ public class CacheInitializor {
 			if(enableCacheInitializationValue != null && enableCacheInitializationValue.equalsIgnoreCase("true")){
 				  asynchronousCacheInitialization.initializeSearchOptions();
 				  asynchronousCacheInitialization.initializePending();
-				  asynchronousCacheInitialization.initializeSearch();
 				  asynchronousCacheInitialization.initializeCertificationIdsGetAll();
 				  asynchronousCacheInitialization.initializeCertificationIdsGetAllWithProducts();
 			  }
