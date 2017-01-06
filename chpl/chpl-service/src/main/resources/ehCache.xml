@@ -205,7 +205,7 @@
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="3600" timeToLiveSeconds="3600"
+		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -222,5 +222,18 @@
 		<persistence strategy="localTempSwap" />
 	</cache>
 	<!--  end /search caching -->
+	
+	<!-- decertifications/certified_products/ -->
+	<cache name="getDecertifiedDevelopers"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="100000"
+		eternal="false"
+		diskSpoolBufferSizeMB="20"
+		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	<!-- end decertifications/certified_products/ -->
 
 </ehcache>

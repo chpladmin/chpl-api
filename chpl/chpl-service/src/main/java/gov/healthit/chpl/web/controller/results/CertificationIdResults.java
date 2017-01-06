@@ -1,12 +1,14 @@
 package gov.healthit.chpl.web.controller.results;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
-public class CertificationIdResults {
-	
+public class CertificationIdResults implements Serializable {
+	private static final long serialVersionUID = 4350936762994127624L;
+
 	static public class Product {
 		private String name;
 		private Long productId;

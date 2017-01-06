@@ -30,9 +30,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
@@ -40,7 +38,6 @@ import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -516,25 +513,7 @@ public class SearchViewController {
 	@RequestMapping(value="/decertifications/developers", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
-		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
-		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
-		List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
-		
-		dtoList = developerManager.getDecertifiedDevelopers();
-		
-		for(DecertifiedDeveloperDTO dto : dtoList){
-			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
-			for(Long oncacbId : dto.getAcbIdList()){
-				CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
-				certifyingBody.add(cb);
-			}
-			
-			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getNumMeaningfulUse());
-			decertifiedDeveloperResults.add(decertifiedDeveloper);
-		}
-		
-		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
-		
+		DecertifiedDeveloperResults ddr = developerManager.getDecertifiedDevelopers();
 		return ddr;
 	}
 	
