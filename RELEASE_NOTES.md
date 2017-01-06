@@ -5,19 +5,19 @@ _Date TBD_
 
 ### Features Added
 * Improve website performance:
-	Initialize cache stores asynchronously at server startup
-	Increase cache timeout to 1 hour
-	Add caching for /certification_ids
-	Add caching for /pending
-	Add caching for /search
-	Add caching for /decertifications/developers
-	Add caching for /decertifications/certified_products
-	Update caching for /search_options API call
-	Cache underlying data that improves call speed for many other API calls
-* TO-DO DURING DEPLOYMENT: Add these lines to environment.properties: 
-	enableCacheInitialization=true
-	cacheClearTimeoutSecs=15
-	cacheInitializeTimeoutSecs=300
+  * Initialize cache stores asynchronously at server startup
+  * Increase cache timeout to 1 hour
+  * Add caching for /certification_ids API call
+  * Add caching for /pending API call
+  * Add caching for /search API call
+  * Add caching for /decertifications/developers
+  * Add caching for /decertifications/certified_products
+  * Update caching for /search_options API call
+  * Cache underlying data that improves call speed for many other API calls
+* TO-DO DURING DEPLOYMENT: Add these lines to environment.properties:
+  * `enableCacheInitialization=true`
+  * `cacheClearTimeoutSecs=15`
+  * `cacheInitializeTimeoutSecs=300`
 * /authenticate now returns 401 Unauthorized for bad credentials instead of 500 Internal Server Error
 * Add new certification status for products
 * Allow 0 for number of randomized sites and total sites for surveillance
