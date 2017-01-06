@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 7.0.0
+_6 January 2017_
 
 ### Features Added
 * Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details. 
@@ -14,7 +14,7 @@ _Date TBD_
 * Send questionable activity email when product owner changes (not during a merge)
 * Add /surveillance/download[?type=all|basic|nonconformities] endpoint to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
 * Add lookup to new tables for certification status event history
-* Add date of last certification status change to certified product detailis
+* Add date of last certification status change to certified product details
 * Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
 * Add decertification date to certified product details * CHANGES XML DOWNLOAD FORMAT *
 
