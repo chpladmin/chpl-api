@@ -32,7 +32,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableTransactionManagement(proxyTargetClass=true)
 @EnableWebSecurity
 @EnableAsync
-@EnableAspectJAutoProxy(proxyTargetClass=true)
+@EnableAspectJAutoProxy
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"})
 public class CHPLConfig implements EnvironmentAware {
