@@ -7,9 +7,11 @@ _6 January 2017_
 * Improve website performance:
 	Initialize cache stores asynchronously at server startup
 	Increase cache timeout to 1 hour
-	Add caching for /certification_ids API call
-	Add caching for /pending API call
-	Add caching for /search API call
+	Add caching for /certification_ids
+	Add caching for /pending
+	Add caching for /search
+	Add caching for /decertifications/developers
+	Add caching for /decertifications/certified_products
 	Update caching for /search_options API call
 	Cache underlying data that improves call speed for many other API calls
 * TO-DO DURING DEPLOYMENT: Add these lines to environment.properties: 
