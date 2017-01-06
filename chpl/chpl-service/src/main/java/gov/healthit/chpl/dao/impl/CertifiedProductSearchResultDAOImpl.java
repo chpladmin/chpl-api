@@ -1,25 +1,36 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SurveillanceSearchOptions;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 
 @Repository(value = "certifiedProductSearchResultDAO")
 public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		CertifiedProductSearchResultDAO {
-	
+	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchResultDAOImpl.class);
+
 	static final Map<String, String> columnNameRef = new HashMap<String, String>();
 	static {
 		
@@ -51,6 +62,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "product_classification_type_id, "
 			+ "other_acb, "
 			+ "certification_status_id, "
+			+ "last_certification_status_change, "
 			+ "deleted, "
 			+ "product_additional_software, "
 			+ "ics, "
@@ -87,6 +99,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "phone_number, "
 			+ "title, "
 			+ "certification_date, "
+			+ "decertification_date, "
 			+ "count_certifications, "
 			+ "count_cqms, "
 			+ "last_modified_date, "
@@ -96,9 +109,13 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "ics_code, "
 			+ "additional_software_code, "
 			+ "certified_date_code, "
-			+ "count_corrective_action_plans, "
-			+ "count_current_corrective_action_plans, "
-			+ "count_closed_corrective_action_plans ";
+			+ "meaningful_use_users, "
+			+ "acb_is_deleted, "
+			+ "count_surveillance_activities, "
+			+ "count_open_surveillance_activities, "
+			+ "count_closed_surveillance_activities, "
+			+ "count_open_nonconformities, "
+			+ "count_closed_nonconformities ";
 	
 	@Override
 	public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException {
@@ -186,11 +203,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += buildDeveloperFilter(searchRequest);
 		queryStr += buildProductFilter(searchRequest);
 		queryStr += buildProductVersionFilter(searchRequest);
-
+		queryStr += buildCertificationDateFilter(searchRequest);
 		queryStr += buildCertificationBodiesFilter(searchRequest);
 		queryStr += buildCertificationStatusFilter(searchRequest);
 		queryStr += buildCertificationEditionsFilter(searchRequest);
-		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
+		queryStr += buildSurveillanceFilter(searchRequest);
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		String sortOrder = "ASC ";
@@ -210,7 +227,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		populateDeveloperParameter(searchRequest, query);
 		populateProductParameter(searchRequest, query);
 		populateProductVersionParameter(searchRequest, query);
-		
+		populateCertificationDateFilter(searchRequest, query);
 		populateCertificationStatusParameter(searchRequest, query);
 		populateCertificationBodiesParameter(searchRequest, query);
 		populateCertificationEditionsParameter(searchRequest, query);
@@ -241,11 +258,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += buildDeveloperFilter(searchRequest);
 		queryStr += buildProductFilter(searchRequest);
 		queryStr += buildProductVersionFilter(searchRequest);
-
+		queryStr += buildCertificationDateFilter(searchRequest);
 		queryStr += buildCertificationBodiesFilter(searchRequest);
 		queryStr += buildCertificationStatusFilter(searchRequest);
 		queryStr += buildCertificationEditionsFilter(searchRequest);
-		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
+		queryStr += buildSurveillanceFilter(searchRequest);
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		String sortOrder = "ASC ";
@@ -264,7 +281,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		populateDeveloperParameter(searchRequest, query);
 		populateProductParameter(searchRequest, query);
 		populateProductVersionParameter(searchRequest, query);
-		
+		populateCertificationDateFilter(searchRequest, query);
 		populateCertificationStatusParameter(searchRequest, query);
 		populateCertificationBodiesParameter(searchRequest, query);
 		populateCertificationEditionsParameter(searchRequest, query);
@@ -303,11 +320,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += buildDeveloperFilter(searchRequest);
 		queryStr += buildProductFilter(searchRequest);
 		queryStr += buildProductVersionFilter(searchRequest);
-
+		queryStr += buildCertificationDateFilter(searchRequest);
 		queryStr += buildCertificationBodiesFilter(searchRequest);
 		queryStr += buildCertificationStatusFilter(searchRequest);
 		queryStr += buildCertificationEditionsFilter(searchRequest);
-		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
+		queryStr += buildSurveillanceFilter(searchRequest);
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		String sortOrder = "ASC ";
@@ -330,7 +347,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		populateDeveloperParameter(searchRequest, query);
 		populateProductParameter(searchRequest, query);
 		populateProductVersionParameter(searchRequest, query);
-		
+		populateCertificationDateFilter(searchRequest, query);
 		populateCertificationStatusParameter(searchRequest, query);
 		populateCertificationBodiesParameter(searchRequest, query);
 		populateCertificationEditionsParameter(searchRequest, query);
@@ -345,11 +362,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += buildDeveloperFilter(searchRequest);
 		queryStr += buildProductFilter(searchRequest);
 		queryStr += buildProductVersionFilter(searchRequest);
-
+		queryStr += buildCertificationDateFilter(searchRequest);
 		queryStr += buildCertificationBodiesFilter(searchRequest);
 		queryStr += buildCertificationStatusFilter(searchRequest);
 		queryStr += buildCertificationEditionsFilter(searchRequest);
-		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
+		queryStr += buildSurveillanceFilter(searchRequest);
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 		
 		String sortOrder = "ASC ";
@@ -365,7 +382,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		populateDeveloperParameter(searchRequest, query);
 		populateProductParameter(searchRequest, query);
 		populateProductVersionParameter(searchRequest, query);
-		
+		populateCertificationDateFilter(searchRequest, query);
 		populateCertificationStatusParameter(searchRequest, query);
 		populateCertificationBodiesParameter(searchRequest, query);
 		populateCertificationEditionsParameter(searchRequest, query);
@@ -374,17 +391,17 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	}
 
 	@Override
+	@Transactional
 	public Long countMultiFilterSearchResults(SearchRequest searchRequest) {
 		
 		Query query = getCountQueryForSearchFilters(searchRequest);
 		
 		Object queryResult = query.getSingleResult();
 		if (queryResult instanceof java.math.BigInteger){
-			java.math.BigInteger bigIntResult = (java.math.BigInteger) query.getSingleResult();
+			java.math.BigInteger bigIntResult = (java.math.BigInteger) queryResult;
 			return bigIntResult.longValue();
 		} else {
-			Long result = (Long) query.getSingleResult();
-			return result;
+			return (Long) queryResult;
 		}
 	}
 
@@ -432,11 +449,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += buildDeveloperFilter(searchRequest);
 		queryStr += buildProductFilter(searchRequest);
 		queryStr += buildProductVersionFilter(searchRequest);
-
+		queryStr += buildCertificationDateFilter(searchRequest);
 		queryStr += buildCertificationBodiesFilter(searchRequest);
 		queryStr += buildCertificationStatusFilter(searchRequest);
 		queryStr += buildCertificationEditionsFilter(searchRequest);
-		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
+		queryStr += buildSurveillanceFilter(searchRequest);
 		Query query = entityManager.createNativeQuery(queryStr);
 		query.setParameter("cqms", searchRequest.getCqms());	
 		// Use hashset in case list contains duplicates
@@ -447,7 +464,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		populateDeveloperParameter(searchRequest, query);
 		populateProductParameter(searchRequest, query);
 		populateProductVersionParameter(searchRequest, query);
-		
+		populateCertificationDateFilter(searchRequest, query);
 		populateCertificationStatusParameter(searchRequest, query);
 		populateCertificationBodiesParameter(searchRequest, query);
 		populateCertificationEditionsParameter(searchRequest, query);
@@ -479,11 +496,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += buildDeveloperFilter(searchRequest);
 		queryStr += buildProductFilter(searchRequest);
 		queryStr += buildProductVersionFilter(searchRequest);
-
+		queryStr += buildCertificationDateFilter(searchRequest);
 		queryStr += buildCertificationBodiesFilter(searchRequest);
 		queryStr += buildCertificationStatusFilter(searchRequest);
 		queryStr += buildCertificationEditionsFilter(searchRequest);
-		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
+		queryStr += buildSurveillanceFilter(searchRequest);
 		
 		Query query = entityManager.createNativeQuery(queryStr);
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
@@ -495,7 +512,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		populateDeveloperParameter(searchRequest, query);
 		populateProductParameter(searchRequest, query);
 		populateProductVersionParameter(searchRequest, query);
-		
+		populateCertificationDateFilter(searchRequest, query);
 		populateCertificationStatusParameter(searchRequest, query);
 		populateCertificationBodiesParameter(searchRequest, query);
 		populateCertificationEditionsParameter(searchRequest, query);
@@ -533,11 +550,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += buildDeveloperFilter(searchRequest);
 		queryStr += buildProductFilter(searchRequest);
 		queryStr += buildProductVersionFilter(searchRequest);
-
+		queryStr += buildCertificationDateFilter(searchRequest);
 		queryStr += buildCertificationBodiesFilter(searchRequest);
 		queryStr += buildCertificationStatusFilter(searchRequest);
 		queryStr += buildCertificationEditionsFilter(searchRequest);
-		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
+		queryStr += buildSurveillanceFilter(searchRequest);
 		
 		Query query = entityManager.createNativeQuery(queryStr);
 		query.setParameter("certs", searchRequest.getCertificationCriteria());
@@ -553,7 +570,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		populateDeveloperParameter(searchRequest, query);
 		populateProductParameter(searchRequest, query);
 		populateProductVersionParameter(searchRequest, query);
-		
+		populateCertificationDateFilter(searchRequest, query);
 		populateCertificationStatusParameter(searchRequest, query);
 		populateCertificationBodiesParameter(searchRequest, query);
 		populateCertificationEditionsParameter(searchRequest, query);
@@ -569,11 +586,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += buildDeveloperFilter(searchRequest);
 		queryStr += buildProductFilter(searchRequest);
 		queryStr += buildProductVersionFilter(searchRequest);
-
+		queryStr += buildCertificationDateFilter(searchRequest);
 		queryStr += buildCertificationBodiesFilter(searchRequest);
 		queryStr += buildCertificationStatusFilter(searchRequest);
 		queryStr += buildCertificationEditionsFilter(searchRequest);
-		queryStr += buildCorrectiveActionPlanFilter(searchRequest);
+		queryStr += buildSurveillanceFilter(searchRequest);
 		
 		Query query = entityManager.createQuery(queryStr);
 		
@@ -582,7 +599,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		populateDeveloperParameter(searchRequest, query);
 		populateProductParameter(searchRequest, query);
 		populateProductVersionParameter(searchRequest, query);
-		
+		populateCertificationDateFilter(searchRequest, query);
 		populateCertificationStatusParameter(searchRequest, query);
 		populateCertificationBodiesParameter(searchRequest, query);
 		populateCertificationEditionsParameter(searchRequest, query);
@@ -634,6 +651,54 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				query.setParameter("searchterm", "%"+searchRequest.getSearchTerm()+"%");
 			}
 		}
+	}
+	
+	private String buildCertificationDateFilter(SearchRequest searchRequest) {
+		String result = "";
+		if(!StringUtils.isEmpty(searchRequest.getCertificationDateStart())) {
+			result += " AND (certification_date >= :certificationDateStart) "; 
+		}
+		if(!StringUtils.isEmpty(searchRequest.getCertificationDateEnd())) {
+			result += " AND (certification_date <= :certificationDateEnd) ";
+		}
+		return result;
+	}
+	
+	private String populateCertificationDateFilter(SearchRequest searchRequest, Query query) {
+		SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+		
+		String result = "";
+		if(!StringUtils.isEmpty(searchRequest.getCertificationDateStart())) {
+			Date start = null;
+			try {
+				start = format.parse(searchRequest.getCertificationDateStart());
+				Calendar beginningOfDay = Calendar.getInstance();
+				beginningOfDay.setTime(start);
+				beginningOfDay.set(Calendar.HOUR, 0);
+				beginningOfDay.set(Calendar.MINUTE, 0);
+				beginningOfDay.set(Calendar.SECOND, 0);
+				beginningOfDay.set(Calendar.MILLISECOND, 0);
+				query.setParameter("certificationDateStart", beginningOfDay.getTime());
+			} catch(ParseException ex) {
+				logger.error("Could not parse " + searchRequest.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+			}
+		}
+		if(!StringUtils.isEmpty(searchRequest.getCertificationDateEnd())) {
+			Date end = null;
+			try {
+				end = format.parse(searchRequest.getCertificationDateEnd());
+				Calendar endOfDay = Calendar.getInstance();
+				endOfDay.setTime(end);
+				endOfDay.set(Calendar.HOUR, 23);
+				endOfDay.set(Calendar.MINUTE, 59);
+				endOfDay.set(Calendar.SECOND, 59);
+				endOfDay.set(Calendar.MILLISECOND, 999);
+				query.setParameter("certificationDateEnd", endOfDay.getTime());
+			} catch(ParseException ex) {
+				logger.error("Could not parse " + searchRequest.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+			}
+		}
+		return result;
 	}
 	
 	private String buildPracticeTypeFilter(SearchRequest searchRequest) {
@@ -765,24 +830,38 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 	}
 	
-	private String buildCorrectiveActionPlanFilter(SearchRequest searchRequest) {
+	private String buildSurveillanceFilter(SearchRequest searchRequest) {
 		String result = "";
-		if(searchRequest.getCorrectiveActionPlans() != null && searchRequest.getCorrectiveActionPlans().size() > 0) {
+		if(searchRequest.getHasHadSurveillance() != null) {
+			if(searchRequest.getHasHadSurveillance().booleanValue() == true) {
+				result += " AND count_surveillance_activities > 0 ";
+			} else if(searchRequest.getHasHadSurveillance().booleanValue() == false) {
+				result += " AND count_surveillance_activities = 0 ";
+			}
+		}
+		
+		if(searchRequest.getSurveillance() != null && searchRequest.getSurveillance().size() > 0) {
 			result += " AND (";
-			for(int i = 0; i < searchRequest.getCorrectiveActionPlans().size(); i++) {
-				if(i > 0) {
-					result += " OR ";
+			Iterator<SurveillanceSearchOptions> opts = searchRequest.getSurveillance().iterator();
+			while(opts.hasNext()) {
+				SurveillanceSearchOptions opt = opts.next();
+				switch(opt) {
+				case OPEN_SURVEILLANCE:
+					result += " count_open_surveillance_activities > 0 ";
+					break;
+				case CLOSED_SURVEILLANCE:
+					result += " count_closed_surveillance_activities > 0 ";
+					break;
+				case OPEN_NONCONFORMITY:
+					result += " count_open_nonconformities > 0 ";
+					break;
+				case CLOSED_NONCONFORMITY:
+					result += " count_closed_nonconformities > 0 ";
+					break;
 				}
-				switch(searchRequest.getCorrectiveActionPlans().get(i)) {
-				case SearchRequest.HAS_OPEN_CAP:
-					result += "count_current_corrective_action_plans > 0";
-					break;
-				case SearchRequest.HAS_CLOSED_CAP:
-					result += "count_closed_corrective_action_plans > 0";
-					break;
-				case SearchRequest.NEVER_HAD_CAP:
-					result += "count_corrective_action_plans = 0";
-					break;
+				
+				if(opts.hasNext()) {
+					result += " AND ";
 				}
 			}
 			result += ") ";

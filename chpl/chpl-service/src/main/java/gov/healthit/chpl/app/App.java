@@ -2,8 +2,6 @@ package gov.healthit.chpl.app;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,23 +10,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.app.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.app.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.app.presenter.CertifiedProductXmlPresenter;
+import gov.healthit.chpl.app.presenter.NonconformityCsvPresenter;
+import gov.healthit.chpl.app.presenter.SurveillanceCsvPresenter;
+import gov.healthit.chpl.app.presenter.SurveillanceReportCsvPresenter;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -81,6 +81,7 @@ public class App {
         //write out the file to a different location so as not to 
         //overwrite the existing download file
         List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findAll();
+        //List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findWithSurveillance();
 		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
 		//for(int i = 1; i < 10; i++) {
 			//CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
@@ -150,7 +151,7 @@ public class App {
 	        csvPresenter.presentAsFile(csvFile, resultMap.get(year));
         }
         
-        //write out a file containing all of the products
+        //put all of the products together
         CertifiedProductDownloadResponse allResults = new CertifiedProductDownloadResponse();
         for(String year : resultMap.keySet()) { 
         	CertifiedProductDownloadResponse result = resultMap.get(year);
@@ -158,16 +159,55 @@ public class App {
         	result.getProducts().clear();
         }
         
-        String newFileName = downloadFolder.getAbsolutePath() + File.separator + 
+        //write out an xml file with all product data
+        String allCpXmlFilename = downloadFolder.getAbsolutePath() + File.separator + 
         		"chpl-all-" + app.getTimestampFormat().format(now) + ".xml";
-        File newFile = new File(newFileName);
-        if(!newFile.exists()) {
-        	newFile.createNewFile();
+        File allCpXmlFile = new File(allCpXmlFilename);
+        if(!allCpXmlFile.exists()) {
+        	allCpXmlFile.createNewFile();
         } else {
-        	newFile.delete();
+        	allCpXmlFile.delete();
         }
         CertifiedProductXmlPresenter presenter = new CertifiedProductXmlPresenter();
-        presenter.presentAsFile(newFile, allResults);
+        presenter.presentAsFile(allCpXmlFile, allResults);
+        
+        //write out a csv file containing all surveillance
+        String allSurvCsvFilename = downloadFolder.getAbsolutePath() + File.separator + 
+        		"surveillance-all.csv";
+        File allSurvCsvFile = new File(allSurvCsvFilename);
+        if(!allSurvCsvFile.exists()) {
+        	allSurvCsvFile.createNewFile();
+        } else {
+        	allSurvCsvFile.delete();
+        }
+        SurveillanceCsvPresenter survCsvPresenter = new SurveillanceCsvPresenter();
+        survCsvPresenter.presentAsFile(allSurvCsvFile, allResults);
+        
+        //write out a csv file containing surveillance with nonconformities       
+        String nonconformityCsvFilename = downloadFolder.getAbsolutePath() + File.separator + 
+        		"surveillance-with-nonconformities.csv";
+        File nonconformityCsvFile = new File(nonconformityCsvFilename);
+        if(!nonconformityCsvFile.exists()) {
+        	nonconformityCsvFile.createNewFile();
+        } else {
+        	nonconformityCsvFile.delete();
+        }
+        
+        NonconformityCsvPresenter ncCsvPresenter = new NonconformityCsvPresenter();
+        ncCsvPresenter.presentAsFile(nonconformityCsvFile, allResults);
+        
+      //write out a csv file containing surveillance basic report     
+        String basicReportCsvName = downloadFolder.getAbsolutePath() + File.separator + 
+        		"surveillance-basic-report.csv";
+        File basicReportCsvFile = new File(basicReportCsvName);
+        if(!basicReportCsvFile.exists()) {
+        	basicReportCsvFile.createNewFile();
+        } else {
+        	basicReportCsvFile.delete();
+        }
+        
+        SurveillanceReportCsvPresenter basicReportCsvPresenter = new SurveillanceReportCsvPresenter();
+        basicReportCsvPresenter.presentAsFile(basicReportCsvFile, allResults);
         
         context.close();
 	}

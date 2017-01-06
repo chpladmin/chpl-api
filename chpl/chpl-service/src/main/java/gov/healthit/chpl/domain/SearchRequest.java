@@ -1,12 +1,12 @@
 package gov.healthit.chpl.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SearchRequest {
-	public static final String HAS_OPEN_CAP = "open";
-	public static final String HAS_CLOSED_CAP = "closed";
-	public static final String NEVER_HAD_CAP = "never";
+	public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";
 	
 	String searchTerm = null;
 	
@@ -20,13 +20,16 @@ public class SearchRequest {
 	List<String> cqms = new ArrayList<String>();
 	//search for any of these
 	List<String> certificationBodies = new ArrayList<String>();
-	//search for any of these, can be any of the static string values above
-	List<String> correctiveActionPlans = new ArrayList<String>();
+	//AND these
+	Set<SurveillanceSearchOptions> surveillance = new HashSet<SurveillanceSearchOptions>();
 	
+	Boolean hasHadSurveillance;
 	String developer = null;
 	String product = null;
 	String version = null;
 	String practiceType = null;
+	String certificationDateStart = null;
+	String certificationDateEnd = null;
 	
 	String orderBy = "product";
 	Boolean sortDescending = false;
@@ -68,12 +71,7 @@ public class SearchRequest {
 	public void setCertificationBodies(List<String> certificationBodies) {
 		this.certificationBodies = certificationBodies;
 	}
-	public List<String> getCorrectiveActionPlans() {
-		return correctiveActionPlans;
-	}
-	public void setCorrectiveActionPlans(List<String> correctiveActionPlans) {
-		this.correctiveActionPlans = correctiveActionPlans;
-	}
+
 	public String getDeveloper() {
 		return developer;
 	}
@@ -121,5 +119,29 @@ public class SearchRequest {
 	}
 	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
+	}
+	public String getCertificationDateStart() {
+		return certificationDateStart;
+	}
+	public void setCertificationDateStart(String certificationDateStart) {
+		this.certificationDateStart = certificationDateStart;
+	}
+	public String getCertificationDateEnd() {
+		return certificationDateEnd;
+	}
+	public void setCertificationDateEnd(String certificationDateEnd) {
+		this.certificationDateEnd = certificationDateEnd;
+	}
+	public Set<SurveillanceSearchOptions> getSurveillance() {
+		return surveillance;
+	}
+	public void setSurveillance(Set<SurveillanceSearchOptions> surveillance) {
+		this.surveillance = surveillance;
+	}
+	public Boolean getHasHadSurveillance() {
+		return hasHadSurveillance;
+	}
+	public void setHasHadSurveillance(Boolean hasHadSurveillance) {
+		this.hasHadSurveillance = hasHadSurveillance;
 	}
 }

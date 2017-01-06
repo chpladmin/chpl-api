@@ -1,7 +1,5 @@
 package gov.healthit.chpl.domain;
 
-import org.springframework.util.StringUtils;
-
 public class DescriptiveModel extends KeyValueModel {
 	private String title;
 	

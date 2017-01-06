@@ -1,8 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +23,9 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -293,7 +291,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			product.getOwnerHistory().add(historyToAdd);
 			//reassign those products to the new developer
 			product.setDeveloperId(createdDeveloper.getId());
-			productManager.update(product);
+			productManager.update(product, false);
 			
 		}
 		// - mark the passed in developers as deleted
@@ -312,6 +310,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		return createdDeveloper;
 	}
 	
+	@Transactional(readOnly = true)
+	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){
+		List<DecertifiedDeveloperDTO> developerDecertifiedDTOList = new ArrayList<DecertifiedDeveloperDTO>();
+		developerDecertifiedDTOList = developerDao.getDecertifiedDevelopers();
+		return developerDecertifiedDTOList;
+	}
+	
 	@Override
 	public void checkSuspiciousActivity(DeveloperDTO original, DeveloperDTO changed) {
 		String subject = "CHPL Questionable Activity";
@@ -324,6 +329,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		if( (original.getName() != null && changed.getName() == null) ||
 			(original.getName() == null && changed.getName() != null) ||
 			!original.getName().equals(changed.getName()) ) {
+			sendMsg = true;
+		}
+		
+		if( (original.getStatus().getId() != null && changed.getStatus().getId() == null) || 
+			(original.getStatus().getId() == null && changed.getStatus().getId() != null) ||
+			(original.getStatus().getId().longValue() != changed.getStatus().getId().longValue())) {
 			sendMsg = true;
 		}
 		

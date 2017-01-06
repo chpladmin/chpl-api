@@ -40,6 +40,9 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			if(dto.getCertificationDate() != null) {
 				searchResult.setCertificationDate(dto.getCertificationDate().getTime());
 			}
+			if(dto.getDecertificationDate() != null) {
+				searchResult.setDecertificationDate(dto.getDecertificationDate().getTime());
+			}
 			
 			searchResult.getCertificationEdition().put("id", dto.getCertificationEditionId());
 			searchResult.getCertificationEdition().put("name", dto.getYear());
@@ -84,9 +87,11 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			
 			searchResult.setCountCerts(dto.getCountCertifications());
 			searchResult.setCountCqms(dto.getCountCqms());
-			searchResult.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
-			searchResult.setCountCurrentCorrectiveActionPlans(dto.getCountCurrentCorrectiveActionPlans());
-			searchResult.setCountClosedCorrectiveActionPlans(dto.getCountClosedCorrectiveActionPlans());
+			searchResult.setCountSurveillance(dto.getCountSurveillance());
+			searchResult.setCountOpenSurveillance(dto.getCountOpenSurveillance());
+			searchResult.setCountClosedSurveillance(dto.getCountClosedSurveillance());
+			searchResult.setCountOpenNonconformities(dto.getCountOpenNonconformities());
+			searchResult.setCountClosedNonconformities(dto.getCountClosedNonconformities());
 			searchResult.setIcs(dto.getIcs());
 			searchResult.setSedTesting(dto.getSedTesting());
 			searchResult.setQmsTesting(dto.getQmsTesting());
@@ -94,6 +99,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 			searchResult.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 			searchResult.setTransparencyAttestation(dto.getTransparencyAttestation());
 			searchResult.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
+			searchResult.setNumMeaningfulUse(dto.getNumMeaningfulUse());
 			
 			searchResults.add(searchResult);
 		}

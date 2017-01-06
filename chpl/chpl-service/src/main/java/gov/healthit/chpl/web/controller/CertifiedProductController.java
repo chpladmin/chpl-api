@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,10 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandler;
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
-import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidator;
-import gov.healthit.chpl.certifiedProduct.validation.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -45,6 +44,8 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
@@ -55,12 +56,19 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
+import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -154,6 +162,24 @@ public class CertifiedProductController {
 		}
 		
 		CertifiedProductSearchDetails existingProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		
+		//make sure the old and new certification statuses aren't ONC bans
+		if(!existingProduct.getCertificationStatus().get("id").toString().equals(
+				updateRequest.getCertificationStatus().get("id"))) {
+			//if the status is to or from suspended by onc make sure the user has admin
+			if((existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString()) 
+				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString())
+				|| existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString())
+				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString()))
+				&& !Util.isUserRoleAdmin()) {
+				updateRequest.getErrorMessages().add("User " + Util.getUsername() 
+					+ " does not have permission to change certification status of " 
+					+ existingProduct.getChplProductNumber() + " from " 
+					+ existingProduct.getCertificationStatus().get("name").toString() + " to " 
+					+ updateRequest.getCertificationStatus().get("name").toString());
+			}
+		}
+		
 		//has the unique id changed? if so, make sure it is still unique
 		if(!existingProduct.getChplProductNumber().equals(updateRequest.getChplProductNumber())) {
 			try {
@@ -171,6 +197,7 @@ public class CertifiedProductController {
 		Long acbId = new Long(existingProduct.getCertifyingBody().get("id").toString());
 		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id").toString());
 		
+		//if the ACF owner is changed this is a separate action with different security
 		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
 			cpManager.changeOwnership(updateRequest.getId(), newAcbId);
 			CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
@@ -287,6 +314,9 @@ public class CertifiedProductController {
 		
 		//update certification date
 		cpManager.updateCertificationDate(acbId, toUpdate, new Date(updateRequest.getCertificationDate()));
+		
+		//possibly add something to certification status event
+		cpManager.updateCertificationStatusEvents(acbId, toUpdate);
 		
 		//update product certifications
 		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
@@ -410,6 +440,108 @@ public class CertifiedProductController {
 		
 		CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
 		return result;
+	}
+	
+	@ApiOperation(value="Upload a file to update the number of meaningful use users for each CHPL Product Number", 
+			notes="Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
+					+ " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
+	@RequestMapping(value="/meaningful_use_users/upload", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8") 
+	public @ResponseBody MeaningfulUseUserResults uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
+		if (file.isEmpty()) {
+			throw new ValidationException("You cannot upload an empty file!");
+		}
+		
+		if(!file.getContentType().equalsIgnoreCase("text/csv") &&
+				!file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
+			throw new ValidationException("File must be a CSV document.");
+		}
+		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
+		Set<MeaningfulUseUser> muusToUpdate = new LinkedHashSet<MeaningfulUseUser>();
+		Set<String> uniqueMuusFromFile = new LinkedHashSet<String>();
+		
+		BufferedReader reader = null;
+		CSVParser parser = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+			parser = new CSVParser(reader, CSVFormat.EXCEL);
+			
+			List<CSVRecord> records = parser.getRecords();
+			if(records.size() <= 1) {
+				throw new ValidationException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
+			}
+			
+			CSVRecord heading = null;
+			
+			for(int i = 1; i <= records.size(); i++){
+				CSVRecord currRecord = records.get(i-1);
+				MeaningfulUseUser muu = new MeaningfulUseUser();
+				
+				// add header if something similar to "chpl_product_number" and "num_meaningful_use" exists
+				if(heading == null && i == 1 && !StringUtils.isEmpty(currRecord.get(0).trim()) && currRecord.get(0).trim().contains("product")
+						&& !StringUtils.isEmpty(currRecord.get(1).trim()) && currRecord.get(1).trim().contains("meaning")) {
+					heading = currRecord;
+				}
+				// populate MeaningfulUseUserResults
+				else {
+					String chplProductNumber = currRecord.get(0).trim();
+					Long numMeaningfulUseUsers = null;
+					try{
+						numMeaningfulUseUsers = Long.parseLong(currRecord.get(1).trim());
+						muu.setProductNumber(chplProductNumber);
+						muu.setNumberOfUsers(numMeaningfulUseUsers);
+						muu.setCsvLineNumber(i);
+						// check if product number has already been updated
+						if(uniqueMuusFromFile.contains(muu.getProductNumber())){
+							throw new IOException();
+						}
+						muusToUpdate.add(muu);
+						uniqueMuusFromFile.add(muu.getProductNumber());
+					} catch (NumberFormatException e){
+						muu.setProductNumber(chplProductNumber);
+						muu.setCsvLineNumber(i);
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_use\" with value \"" + currRecord.get(1).trim() + "\" is invalid. "
+								+ "Value in field \"num_meaningful_use\" must be an integer.");
+						muusToUpdate.add(muu);
+						uniqueMuusFromFile.add(muu.getProductNumber());
+					}
+					catch (IOException e){
+						muu.setProductNumber(chplProductNumber);
+						muu.setCsvLineNumber(i);
+						Integer dupLineNumber = null;
+						// get line number with duplicate chpl_product_number
+						for (MeaningfulUseUser entry: muusToUpdate) {
+						     if (entry.getProductNumber().equals(muu.getProductNumber())){
+						    	 dupLineNumber = entry.getCsvLineNumber();
+						     }
+						   }
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
+								+ "Duplicate \"chpl_product_number\" at line " + dupLineNumber);
+						muusToUpdate.add(muu);
+					}
+				}
+			}
+		} catch(IOException ioEx) {
+			logger.error("Could not get input stream for uploaded file " + file.getName());			
+			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
+		} finally {
+			 try { parser.close(); } catch(Exception ignore) {}
+			try { reader.close(); } catch(Exception ignore) {}
+		}
+		
+		try {
+			meaningfulUseUserResults = cpManager.updateMeaningfulUseUsers(muusToUpdate);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		} catch (EntityCreationException e) {
+			e.printStackTrace();
+		} catch (EntityRetrievalException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+		return meaningfulUseUserResults;
 	}
 	
 	@ApiOperation(value="Upload a file with certified products", 

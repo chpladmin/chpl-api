@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.ProductOwnerEntity;
 
 public class CertifiedProductDetailsDTO {
 	
@@ -32,6 +31,7 @@ public class CertifiedProductDetailsDTO {
     private String otherAcb;
     private Long certificationStatusId;
     private String certificationStatusName;
+    private Date certificationStatusDate;
     private Long certificationEditionId;
     private String year;
     private Long certificationBodyId;
@@ -43,11 +43,14 @@ public class CertifiedProductDetailsDTO {
     private ProductVersionDTO version;
     private Date creationDate;
     private Date certificationDate;
+    private Date decertificationDate;
     private Integer countCertifications;
     private Integer countCqms;
-    private Integer countCorrectiveActionPlans;
-    private Integer countCurrentCorrectiveActionPlans;
-    private Integer countClosedCorrectiveActionPlans;
+    private Integer countSurveillance;
+    private Integer countOpenSurveillance;
+    private Integer countClosedSurveillance;
+    private Integer countOpenNonconformities;
+    private Integer countClosedNonconformities;
     private Date lastModifiedDate;
 	private Boolean ics;
 	private Boolean sedTesting;
@@ -56,6 +59,7 @@ public class CertifiedProductDetailsDTO {
 	private String productAdditionalSoftware;
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
+	private Long numMeaningfulUse;
 	
 	private List<CertifiedProductQmsStandardDTO> qmsStandards;
 	private List<TargetedUserDTO> targetedUsers;
@@ -87,6 +91,7 @@ public class CertifiedProductDetailsDTO {
     	this.certificationEditionId = entity.getCertificationEditionId();
     	this.certificationStatusId = entity.getCertificationStatusId();
     	this.certificationStatusName = entity.getCertificationStatusName();
+    	this.certificationStatusDate = entity.getCertificationStatusDate();
     	this.chplProductNumber = entity.getChplProductNumber();
     	this.otherAcb = entity.getOtherAcb();
     	this.practiceTypeId = entity.getPracticeTypeId();
@@ -99,6 +104,7 @@ public class CertifiedProductDetailsDTO {
     	this.sedTestingEnd = entity.getSedTestingEnd();
     	this.testingLabId = entity.getTestingLabId();
     	this.testingLabName = entity.getTestingLabName();
+    	this.numMeaningfulUse = entity.getMeaningfulUseUsers();
     	
 		this.developer = new DeveloperDTO();
     	this.developer.setId(entity.getDeveloperId());
@@ -155,11 +161,14 @@ public class CertifiedProductDetailsDTO {
     	this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
+    	this.decertificationDate = entity.getDecertificationDate();
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
-    	this.countCorrectiveActionPlans = entity.getCountCorrectiveActionPlans();
-    	this.countCurrentCorrectiveActionPlans = entity.getCountCurrentCorrectiveActionPlans();
-    	this.countClosedCorrectiveActionPlans = entity.getCountClosedCorrectiveActionPlans();
+    	this.countSurveillance = entity.getCountSurveillance();
+    	this.countOpenSurveillance = entity.getCountOpenSurveillance();
+    	this.countClosedSurveillance = entity.getCountClosedSurveillance();
+    	this.countOpenNonconformities = entity.getCountOpenNonconformities();
+    	this.countClosedNonconformities = entity.getCountClosedNonconformities();
     	this.lastModifiedDate = entity.getLastModifiedDate();
     }
     
@@ -295,13 +304,6 @@ public class CertifiedProductDetailsDTO {
 		this.certificationStatusName = certificationStatusName;
 	}
 	
-	public Integer getCountCorrectiveActionPlans() {
-		return countCorrectiveActionPlans;
-	}
-
-	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
-		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
 	public List<CertificationResultDetailsDTO> getCertResults() {
 		return certResults;
 	}
@@ -456,22 +458,7 @@ public class CertifiedProductDetailsDTO {
 	public void setQmsStandards(List<CertifiedProductQmsStandardDTO> qmsStandards) {
 		this.qmsStandards = qmsStandards;
 	}
-	public Integer getCountCurrentCorrectiveActionPlans() {
-		return countCurrentCorrectiveActionPlans;
-	}
-
-	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
-		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
-	}
-
-	public Integer getCountClosedCorrectiveActionPlans() {
-		return countClosedCorrectiveActionPlans;
-	}
-
-	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
-		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
-	}
-
+	
 	public List<TargetedUserDTO> getTargetedUsers() {
 		return targetedUsers;
 	}
@@ -526,5 +513,69 @@ public class CertifiedProductDetailsDTO {
 
 	public void setVersion(ProductVersionDTO version) {
 		this.version = version;
+	}
+
+	public Long getNumMeaningfulUse() {
+		return numMeaningfulUse;
+	}
+
+	public void setNumMeaningfulUse(Long numMeaningfulUse) {
+		this.numMeaningfulUse = numMeaningfulUse;
+	}
+
+	public Integer getCountSurveillance() {
+		return countSurveillance;
+	}
+
+	public void setCountSurveillance(Integer countSurveillance) {
+		this.countSurveillance = countSurveillance;
+	}
+
+	public Integer getCountOpenSurveillance() {
+		return countOpenSurveillance;
+	}
+
+	public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+		this.countOpenSurveillance = countOpenSurveillance;
+	}
+
+	public Integer getCountClosedSurveillance() {
+		return countClosedSurveillance;
+	}
+
+	public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+		this.countClosedSurveillance = countClosedSurveillance;
+	}
+
+	public Integer getCountOpenNonconformities() {
+		return countOpenNonconformities;
+	}
+
+	public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+		this.countOpenNonconformities = countOpenNonconformities;
+	}
+
+	public Integer getCountClosedNonconformities() {
+		return countClosedNonconformities;
+	}
+
+	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+		this.countClosedNonconformities = countClosedNonconformities;
+	}
+
+	public Date getCertificationStatusDate() {
+		return certificationStatusDate;
+	}
+
+	public void setCertificationStatusDate(Date certificationStatusDate) {
+		this.certificationStatusDate = certificationStatusDate;
+	}
+
+	public Date getDecertificationDate() {
+		return decertificationDate;
+	}
+
+	public void setDecertificationDate(Date decertificationDate) {
+		this.decertificationDate = decertificationDate;
 	}
 }

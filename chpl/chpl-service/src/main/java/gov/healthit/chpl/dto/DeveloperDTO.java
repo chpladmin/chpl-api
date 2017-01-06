@@ -52,7 +52,9 @@ public class DeveloperDTO {
 					entity.getDeveloperCertificationStatusesEntity().getRetired(), 
 					entity.getDeveloperCertificationStatusesEntity().getWithdrawnByDeveloper(), 
 					entity.getDeveloperCertificationStatusesEntity().getWithdrawnByAcb(), 
-					entity.getDeveloperCertificationStatusesEntity().getSuspendedByAcb());
+					entity.getDeveloperCertificationStatusesEntity().getSuspendedByAcb(),
+					entity.getDeveloperCertificationStatusesEntity().getSuspendedByOnc(),
+					entity.getDeveloperCertificationStatusesEntity().getTerminatedByOnc());
 		}
 	}
 	

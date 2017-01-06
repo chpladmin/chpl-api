@@ -1,9 +1,10 @@
 package gov.healthit.chpl.dao;
 
+import java.util.List;
+
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-
-import java.util.List;
 
 public interface DeveloperDAO {
 
@@ -26,4 +27,5 @@ public interface DeveloperDAO {
 	public void deleteTransparencyMapping(Long vendorId, Long acbId);
 	public DeveloperACBMapDTO getTransparencyMapping(Long vendorId, Long acbId);
 	public List<DeveloperACBMapDTO> getAllTransparencyMappings();
+	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers();
 }

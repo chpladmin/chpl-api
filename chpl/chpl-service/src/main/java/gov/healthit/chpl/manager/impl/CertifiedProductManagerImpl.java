@@ -1,15 +1,19 @@
 package gov.healthit.chpl.manager.impl;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.MessagingException;
+import javax.persistence.EntityNotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,19 +28,17 @@ import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationEventDAO;
+import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -59,6 +61,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -68,10 +71,9 @@ import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationEventDTO;
+import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -89,8 +91,8 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
@@ -120,6 +122,8 @@ import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
@@ -129,6 +133,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
@@ -153,11 +158,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired CQMCriterionDAO cqmCriterionDao;
 	@Autowired CertificationBodyDAO acbDao;
 	@Autowired DeveloperDAO developerDao;
+	@Autowired DeveloperStatusDAO devStatusDao;
 	@Autowired DeveloperManager developerManager;
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
-	@Autowired CertificationEventDAO eventDao;
-	@Autowired EventTypeDAO eventTypeDao;
+	@Autowired CertificationStatusEventDAO statusEventDao;
 	@Autowired CertificationResultManager certResultManager;
 	@Autowired TestToolDAO testToolDao;
 	@Autowired TestStandardDAO testStandardDao;
@@ -166,15 +171,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired UcdProcessDAO ucdDao;
 	@Autowired TestParticipantDAO testParticipantDao;
 	@Autowired TestTaskDAO testTaskDao;
+	@Autowired CertificationStatusDAO certStatusDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
-	
-	@Autowired
-	private CertificationResultDetailsDAO certificationResultDetailsDAO;
-
-	@Autowired
-	private CQMResultDetailsDAO cqmResultDetailsDAO;
 	
 	@Autowired
 	public CertifiedProductDetailsManager detailsManager;
@@ -185,12 +185,18 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	public CertifiedProductManagerImpl() {
 	}
 	
-	@Autowired CertificationStatusDAO statusDao;
 	
 	@Override
 	@Transactional(readOnly = true)
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		CertifiedProductDTO result = cpDao.getById(id);
+		return result;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
+		CertifiedProductDTO result = cpDao.getByChplNumber(chplProductNumber);
 		return result;
 	}
 	
@@ -308,7 +314,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			throw new EntityCreationException("Cannot determine certification status. Is this a new record? An update? A removal?");
 		}
 		if(status.trim().equalsIgnoreCase("new")) {
-			CertificationStatusDTO statusDto = statusDao.getByStatusName("Active");
+			CertificationStatusDTO statusDto = certStatusDao.getByStatusName("Active");
 			toCreate.setCertificationStatusId(statusDto.getId());
 		}
 		toCreate.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
@@ -719,30 +725,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		
-		//if all this was successful, insert a certification_event for the certification date, and the date it went active in CHPL (right now)
-		EventTypeDTO certificationEventType = eventTypeDao.getByName("Certification");
-		CertificationEventDTO certEvent = new CertificationEventDTO();
+		//if all this was successful, insert a certification status event for the certification date
+		CertificationStatusDTO activeCertStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
+		CertificationStatusEventDTO certEvent = new CertificationStatusEventDTO();
 		certEvent.setCreationDate(new Date());
 		certEvent.setDeleted(false);
 		Date certificationDate = pendingCp.getCertificationDate();
 		certEvent.setEventDate(certificationDate);
-		certEvent.setEventTypeId(certificationEventType.getId());
-		certEvent.setLastModifiedDate(new Date());
-		certEvent.setLastModifiedUser(Util.getCurrentUser().getId());
+		certEvent.setStatus(activeCertStatus);
 		certEvent.setCertifiedProductId(newCertifiedProduct.getId());
-		eventDao.create(certEvent);
-
-		//active event
-		EventTypeDTO activeEventType = eventTypeDao.getByName("Active");
-		CertificationEventDTO activeEvent = new CertificationEventDTO();
-		activeEvent.setCreationDate(new Date());
-		activeEvent.setDeleted(false);
-		activeEvent.setEventDate(new Date());
-		activeEvent.setEventTypeId(activeEventType.getId());
-		activeEvent.setLastModifiedDate(new Date());
-		activeEvent.setLastModifiedUser(Util.getCurrentUser().getId());
-		activeEvent.setCertifiedProductId(newCertifiedProduct.getId());
-		eventDao.create(activeEvent);
+		statusEventDao.create(certEvent);
 		
 		CertifiedProductSearchDetails details = detailsManager.getCertifiedProductDetails(newCertifiedProduct.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(), "Created "+newCertifiedProduct.getChplProductNumberForActivity(), null, details);
@@ -775,8 +767,40 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		CertifiedProductDTO result = cpDao.update(dto);		
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) 
+			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {		
+		//if the updated certification status was suspended by onc or terminated by onc, 
+		//change the status of the related developer
+		CertificationStatusDTO updatedCertificationStatus = certStatusDao.getById(dto.getCertificationStatusId());
+		if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString()) || 
+			updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString())) {
+			
+			//get developer
+			DeveloperDTO cpDeveloper = developerDao.getByVersion(dto.getProductVersionId());
+			if(Util.isUserRoleAdmin() && cpDeveloper != null) {
+				//find the new developer status
+				DeveloperStatusDTO devStatusDto = null;
+				if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
+					devStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
+				} else if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString())) {
+					devStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
+				}
+				//update the developer status
+				if(devStatusDto == null) {
+					throw new EntityRetrievalException("Could not locate developer status for certification status " + updatedCertificationStatus.getStatus());
+				}
+				cpDeveloper.setStatus(devStatusDto);
+				developerManager.update(cpDeveloper);
+			} else if (!Util.isUserRoleAdmin()) {
+				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id " + dto.getId());
+				throw new AccessDeniedException("User does not have admin permission to change related developer status.");	
+			} else if(cpDeveloper == null) {
+				logger.error("Could not find developer for product version with id " + dto.getProductVersionId());
+				throw new EntityNotFoundException("No developer could be located for the certified product in the update. Update cannot continue.");
+			}
+		}
+		
+		CertifiedProductDTO result = cpDao.update(dto);	
 		return result;
 	}	
 	
@@ -976,16 +1000,97 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		CertifiedProductDetailsDTO existingCp = cpDao.getDetailsById(productDto.getId());
 		if(existingCp != null && existingCp.getCertificationDate().getTime() != newCertDate.getTime()) {
-			List<CertificationEventDTO> certEvents = eventDao.findByCertifiedProductId(productDto.getId());
-			CertificationEventDTO foundEvent = null;
-			for(CertificationEventDTO certEvent : certEvents) {
-				if(certEvent.getEventTypeId().equals(1L)) { // certified event type
-					foundEvent = certEvent;
+			CertificationStatusEventDTO certificationEvent = statusEventDao.findInitialCertificationEventForCertifiedProduct(productDto.getId());
+			if(certificationEvent != null) {
+				certificationEvent.setEventDate(newCertDate);
+				statusEventDao.update(certificationEvent);
+			}
+		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
+	public void updateCertificationStatusEvents(Long acbId, CertifiedProductDTO productDto)
+		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		CertifiedProductDetailsDTO existingCp = cpDao.getDetailsById(productDto.getId());
+		if(existingCp != null && 
+			existingCp.getCertificationStatusId().longValue() != productDto.getCertificationStatusId().longValue()) {
+			CertificationStatusEventDTO certificationEvent = new CertificationStatusEventDTO();
+			certificationEvent.setCertifiedProductId(existingCp.getId());
+			certificationEvent.setEventDate(new Date());
+			CertificationStatusDTO status = certStatusDao.getById(productDto.getCertificationStatusId());
+			if(status == null) {
+				throw new EntityRetrievalException("No certification status found with id " + productDto.getCertificationStatusId());
+			}
+			certificationEvent.setStatus(status);
+			statusEventDao.create(certificationEvent);
+		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	@Transactional(readOnly = false)
+	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
+			throws EntityCreationException, EntityRetrievalException, IOException {
+		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
+		List<MeaningfulUseUser> errors = new ArrayList<MeaningfulUseUser>();
+		List<MeaningfulUseUser> results = new ArrayList<MeaningfulUseUser>();
+		
+		for(MeaningfulUseUser muu : meaningfulUseUserSet){
+			if(muu.getError() == null){
+				try{
+					// If bad input, add error for this MeaningfulUseUser and continue
+					if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())){
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" has invalid value: \"" + muu.getProductNumber() + "\".");
+					}
+					else if(muu.getNumberOfUsers() == null){
+						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_users\" has invalid value: \"" + muu.getNumberOfUsers() + "\".");
+					}
+					else{
+						CertifiedProductDTO dto = new CertifiedProductDTO();
+						// check if 2014 edition CHPL Product Number exists
+						if(cpDao.getByChplNumber(muu.getProductNumber()) != null){
+							dto.setChplProductNumber(muu.getProductNumber());
+							dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+						}
+						// check if 2015 edition CHPL Product Number exists
+						else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null){
+							dto.setChplProductNumber(muu.getProductNumber());
+							dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
+						}
+						// If neither exist, add error
+						else{
+							throw new EntityRetrievalException();
+						}
+						
+						try{
+							CertifiedProductDTO returnDto = cpDao.updateMeaningfulUseUsers(dto);
+							muu.setCertifiedProductId(returnDto.getId());
+							results.add(muu);
+						} catch (EntityRetrievalException e){
+							muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
+									+ "The provided \"chpl_product_number\" does not exist.");
+							errors.add(muu);
+						}
+					}
+				} catch (Exception e){	
+					muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""+ muu.getProductNumber() + "\" is invalid. "
+							+ "The provided \"chpl_product_number\" does not exist.");
+					errors.add(muu);
 				}
 			}
-			foundEvent.setEventDate(newCertDate);
-			eventDao.update(foundEvent);
+			else{
+				errors.add(muu);
+			}
 		}
+		
+		meaningfulUseUserResults.setMeaningfulUseUsers(results);
+		meaningfulUseUserResults.setErrors(errors);
+		return meaningfulUseUserResults;
 	}
 	
 	/**

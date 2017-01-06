@@ -25,8 +25,9 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
 		result.add("Product Name");
 		result.add("Version");
 		result.add("Practice Type");
-		result.add("Total CAPS");
-		result.add("Open CAPS");
+		result.add("Total Surveillance Activities");
+		result.add("Total Nonconformities");
+		result.add("Open Nonconformities");
 		if(getApplicableCriteria() != null) {
 			for(CertificationCriterionDTO criteria : getApplicableCriteria()) {
 				result.add(criteria.getNumber());
@@ -52,8 +53,9 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
 		result.add(data.getProduct().getName());
 		result.add(data.getVersion().getVersion());
 		result.add(data.getPracticeType().get("name").toString());
-		result.add(data.getCountCorrectiveActionPlans().toString());
-		result.add(data.getCountCurrentCorrectiveActionPlans().toString());
+		result.add(data.getCountSurveillance().toString());
+		result.add((data.getCountOpenNonconformities() + data.getCountClosedNonconformities())+"");
+		result.add(data.getCountOpenNonconformities().toString());
 		List<String> criteria = generateCriteriaValues(data);
 		result.addAll(criteria);
 		return result;

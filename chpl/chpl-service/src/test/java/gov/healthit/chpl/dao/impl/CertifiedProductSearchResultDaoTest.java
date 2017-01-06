@@ -1,11 +1,14 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,11 +20,24 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.SurveillanceDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.domain.SurveillanceRequirement;
+import gov.healthit.chpl.domain.SurveillanceRequirementType;
+import gov.healthit.chpl.domain.SurveillanceResultType;
+import gov.healthit.chpl.domain.SurveillanceSearchOptions;
+import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -35,17 +51,22 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 
 	@Autowired
 	private CertifiedProductSearchResultDAO searchResultDAO;
+	@Autowired
+	private SurveillanceDAO survDao;
+	@Autowired
+	private CertifiedProductDAO cpDao;
 	
+	private static JWTAuthenticatedUser adminUser;
 	
-//	@Test
-//	public void testGetDownloadResults() throws EntityRetrievalException {
-//		CertifiedProductDetailsDTO result = searchResultDAO.getAllDetailsById(1L);
-//		assertNotNull(result);
-//		assertNotNull(result.getCqmResults());
-//		assertNotNull(result.getCertResults());
-//		assertEquals(3, result.getCqmResults().size());
-//	}
-	
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		adminUser = new JWTAuthenticatedUser();
+		adminUser.setFirstName("Administrator");
+		adminUser.setId(-2L);
+		adminUser.setLastName("Administrator");
+		adminUser.setSubjectName("admin");
+		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+	}
 	@Test
 	@Transactional
 	public void testCountSearchResults(){
@@ -53,11 +74,11 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test");
 		Long countProducts = searchResultDAO.countMultiFilterSearchResults(searchRequest);
-		assertEquals(3, countProducts.intValue());
+		assertEquals(5, countProducts.intValue());
 		
 		searchRequest.setVersion("1.0.0");
 		Long countProductsVersionSpecific = searchResultDAO.countMultiFilterSearchResults(searchRequest);
-		assertEquals(2, countProductsVersionSpecific.intValue());
+		assertEquals(1, countProductsVersionSpecific.intValue());
 	}
 	
 	@Test
@@ -67,7 +88,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test Developer 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(5, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getDeveloper().getName().startsWith("Test Developer 1"));
@@ -97,7 +118,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVersion("1.0.1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(1, products.size());
+		assertEquals(3, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getVersion().getVersion().startsWith("1.0.1"));
@@ -126,7 +147,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.getCertificationBodies().add("InfoGard");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(4, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getCertificationBodyName().startsWith("InfoGard"));
@@ -141,7 +162,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(4, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getPracticeTypeName().startsWith("Ambulatory"));
@@ -155,29 +176,235 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(12, products.size());
 	}
 	
 	@Test
 	@Transactional
-	public void testSearchHasCAP(){
+	@Rollback(true)
+	public void testSearchActiveSurveillanceWithoutNonconformities() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Long insertedId = survDao.insertSurveillance(surv);
+		assertNotNull(insertedId);
+		SecurityContextHolder.getContext().setAuthentication(null);
 		
 		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setHasHadSurveillance(true);
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getCorrectiveActionPlans().add("closed");
+		searchRequest.setHasHadSurveillance(false);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(11, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_NONCONFORMITY);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_NONCONFORMITY);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getCorrectiveActionPlans().add("never");
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
-		assertEquals(2, products.size());
+		assertEquals(0, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
 	}
 	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testSearchClosedSurveillanceWithoutNonconformities() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date(System.currentTimeMillis() - (7*24*60*60*1000)));
+		surv.setEndDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Long insertedId = survDao.insertSurveillance(surv);
+		assertNotNull(insertedId);
+		SecurityContextHolder.getContext().setAuthentication(null);
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setHasHadSurveillance(true);
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.setHasHadSurveillance(false);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(11, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_NONCONFORMITY);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_NONCONFORMITY);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+	}
 	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testSearchActiveSurveillanceWithNonconformities() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		surv.getRequirements().add(req);
+
+		SurveillanceRequirement req2 = new SurveillanceRequirement();
+		req2.setRequirement("170.314 (a)(2)");
+		reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req2.setType(reqType);
+		resType = survDao.findSurveillanceResultType("Non-Conformity");
+		req2.setResult(resType);
+		surv.getRequirements().add(req2);
+		
+		SurveillanceNonconformity nc = new SurveillanceNonconformity();
+		nc.setCapApprovalDate(new Date());
+		nc.setCapMustCompleteDate(new Date());
+		nc.setCapStartDate(new Date());
+		nc.setDateOfDetermination(new Date());
+		nc.setDeveloperExplanation("Something");
+		nc.setFindings("Findings!");
+		nc.setSitesPassed(2);
+		nc.setNonconformityType("170.314 (a)(2)");
+		nc.setSummary("summary");
+		nc.setTotalSites(5);
+		SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
+		nc.setStatus(ncStatus);
+		req2.getNonconformities().add(nc);
+		
+		Long insertedId = survDao.insertSurveillance(surv);
+		assertNotNull(insertedId);
+		SecurityContextHolder.getContext().setAuthentication(null);
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setHasHadSurveillance(true);
+		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.setHasHadSurveillance(false);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(11, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_NONCONFORMITY);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_NONCONFORMITY);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(1, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+		
+		searchRequest = new SearchRequest();
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
+		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		products = searchResultDAO.search(searchRequest);
+		assertEquals(0, products.size());
+	}
 	
 	@Test
 	@Transactional

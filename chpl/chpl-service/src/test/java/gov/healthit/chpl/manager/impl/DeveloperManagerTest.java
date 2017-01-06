@@ -26,6 +26,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
@@ -70,6 +71,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetDeveloperAsAdmin() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		DeveloperDTO developer = developerManager.getById(-1L);
@@ -80,6 +82,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetDeveloperAsAcbAdmin() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		DeveloperDTO developer = developerManager.getById(-1L);
@@ -99,7 +102,7 @@ public class DeveloperManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<DeveloperDTO> developers = developerManager.getAllIncludingDeleted();
 		assertNotNull(developers);
-		assertEquals(9, developers.size());
+		assertEquals(12, developers.size());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -120,6 +123,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback
 	public void testDeveloperStatusChangeAllowedByAdmin() 
 			throws EntityRetrievalException, JsonProcessingException {
@@ -143,6 +147,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback(true)
 	public void testMergeDeveloper_productOwnershipHistoryAdded() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -195,6 +200,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback
 	public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive() 
 			throws EntityRetrievalException, JsonProcessingException {
@@ -217,6 +223,7 @@ public class DeveloperManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	@Rollback
 	public void testDeveloperStatusChangeNotAllowedByNonAdmin() 
 			throws EntityRetrievalException, JsonProcessingException {
@@ -236,5 +243,19 @@ public class DeveloperManagerTest extends TestCase {
 		assertTrue(failed);
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	/**
+	 * Given the CHPL is accepting search requests
+	 * When I call the REST API's /decertified/developers, the controller calls the developerManager.getDecertifiedDevelopers()
+	 * Then the manager returns a list of DeveloperDecertifiedDTO with expected results
+	 */
+	@Transactional
+	@Rollback(true) 
+	@Test
+	public void testGetDecertifiedDevelopers() {
+		List<DecertifiedDeveloperDTO> dtoList = developerManager.getDecertifiedDevelopers();
+		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + dtoList.size(), 
+				dtoList.size() == 2);
 	}
 }

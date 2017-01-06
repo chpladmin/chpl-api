@@ -13,18 +13,18 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.CertificationEventDAO;
+import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.EventTypeDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationEvent;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -42,10 +42,11 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationEventDTO;
+import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -56,13 +57,14 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.dto.EventTypeDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service("certifiedProductDetailsManager")
@@ -90,14 +92,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	private CertificationResultManager certResultManager;
 	
 	@Autowired
-	private CertificationEventDAO certificationEventDAO;
+	private CertificationStatusEventDAO certStatusEventDao;
 	
 	@Autowired
-	private EventTypeDAO eventTypeDAO;
+	private CertificationStatusDAO certStatusDao;
 	
 	@Autowired
 	private CertificationResultRules certRules;
 
+	@Autowired private SurveillanceManager survManager;
+	
 	private CQMCriterionDAO cqmCriterionDAO;
 	
 	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
@@ -124,6 +128,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		if(dto.getCertificationDate() != null) {
 			searchDetails.setCertificationDate(dto.getCertificationDate().getTime());
 		}
+		
+		if(dto.getDecertificationDate() != null) {
+			searchDetails.setDecertificationDate(dto.getDecertificationDate().getTime());
+		}
 			
 		searchDetails.getCertificationEdition().put("id", dto.getCertificationEditionId());
 		searchDetails.getCertificationEdition().put("name", dto.getYear());
@@ -139,6 +147,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
 		searchDetails.getCertificationStatus().put("id", dto.getCertificationStatusId());
 		searchDetails.getCertificationStatus().put("name", dto.getCertificationStatusName());
+		searchDetails.getCertificationStatus().put("date", dto.getCertificationStatusDate());
 			
 		searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId());
 		searchDetails.getCertifyingBody().put("name", dto.getCertificationBodyName());
@@ -179,9 +188,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		searchDetails.setCountCerts(dto.getCountCertifications());
 		searchDetails.setCountCqms(dto.getCountCqms());
-		searchDetails.setCountCorrectiveActionPlans(dto.getCountCorrectiveActionPlans());
-		searchDetails.setCountCurrentCorrectiveActionPlans(dto.getCountCurrentCorrectiveActionPlans());
-		searchDetails.setCountClosedCorrectiveActionPlans(dto.getCountClosedCorrectiveActionPlans());
+		searchDetails.setCountSurveillance(dto.getCountSurveillance());
+		searchDetails.setCountOpenSurveillance(dto.getCountOpenSurveillance());
+		searchDetails.setCountClosedSurveillance(dto.getCountClosedSurveillance());
+		searchDetails.setCountOpenNonconformities(dto.getCountOpenNonconformities());
+		searchDetails.setCountClosedNonconformities(dto.getCountClosedNonconformities());
+		searchDetails.setNumMeaningfulUse(dto.getNumMeaningfulUse());
+		
+		
+		List<Surveillance> cpSurveillance = survManager.getByCertifiedProduct(dto.getId());
+		searchDetails.setSurveillance(cpSurveillance);
 		
 		//get qms standards
 		List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(dto.getId());
@@ -420,7 +436,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		searchDetails.setCqmResults(cqmResults);
 		
-		searchDetails.setCertificationEvents(getCertificationEvents(dto.getId()));
+		searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
 		
 		return searchDetails;
 	}
@@ -433,31 +449,23 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		this.cqmCriteria = cqmCriteria;
 	}
 	
-	private List<CertificationEvent> getCertificationEvents(Long certifiedProductId) throws EntityRetrievalException{
+	private List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId) throws EntityRetrievalException{
 		
-		List<CertificationEvent> certEvents = new ArrayList<CertificationEvent>();
-		List<CertificationEventDTO> eventDTOs = certificationEventDAO.findByCertifiedProductId(certifiedProductId);	
+		List<CertificationStatusEvent> certEvents = new ArrayList<CertificationStatusEvent>();
+		List<CertificationStatusEventDTO> certStatusDtos = certStatusEventDao.findByCertifiedProductId(certifiedProductId);	
 		
-		for (CertificationEventDTO event : eventDTOs){
+		for (CertificationStatusEventDTO certStatusDto : certStatusDtos){
+			CertificationStatusEvent cse = new CertificationStatusEvent();
+			cse.setId(certStatusDto.getId());								
+			cse.setEventDate(certStatusDto.getEventDate().getTime() + "");
+			cse.setLastModifiedUser(certStatusDto.getLastModifiedUser());
+			cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime() + "");
 			
-			CertificationEvent ce = new CertificationEvent();
-			
-			ce.setId(event.getId());
-			ce.setCity(event.getCity());
-								
-			ce.setEventDate(event.getEventDate().getTime() + "");
-			ce.setLastModifiedUser(event.getLastModifiedUser());
-			ce.setLastModifiedDate(event.getLastModifiedDate().getTime() + "");
-			ce.setState(event.getState());
-			ce.setEventTypeId(event.getEventTypeId());
-			
-			EventTypeDTO eventTypeDTO = eventTypeDAO.getById(event.getEventTypeId());
-			ce.setEventTypeDescription(eventTypeDTO.getDescription());
-			ce.setEventTypeName(eventTypeDTO.getName());
-			
-			certEvents.add(ce);
+			CertificationStatusDTO statusDto = certStatusDao.getById(certStatusDto.getStatus().getId());
+			cse.setCertificationStatusId(statusDto.getId());
+			cse.setCertificationStatusName(statusDto.getStatus());
+			certEvents.add(cse);
 		}
-		
 		return certEvents;
 	}
 	

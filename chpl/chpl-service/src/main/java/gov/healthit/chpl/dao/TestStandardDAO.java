@@ -2,7 +2,6 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
-import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 
 public interface TestStandardDAO {

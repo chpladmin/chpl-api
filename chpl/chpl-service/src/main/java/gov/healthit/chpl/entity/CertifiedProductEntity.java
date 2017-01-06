@@ -103,6 +103,10 @@ public class CertifiedProductEntity {
 	@Column(name ="certification_status_id", nullable = false)
 	private Long certificationStatusId;
 	
+	@Basic(optional = true)
+	@Column(name ="meaningful_use_users", nullable = true)
+	private Long meaningfulUseUsers;
+	
 	@Column(name = "transparency_attestation_url")
 	private String transparencyAttestationUrl;
 	
@@ -360,6 +364,13 @@ public class CertifiedProductEntity {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
+	public Long getMeaningfulUseUsers(){
+		return meaningfulUseUsers;
+	}
+	public void setMeaningfulUseUsers(Long meaningfulUseUsers){
+		this.meaningfulUseUsers = meaningfulUseUsers;
+	}
+	
 	public String getTransparencyAttestationUrl() {
 		return transparencyAttestationUrl;
 	}

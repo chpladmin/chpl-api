@@ -1,8 +1,8 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.PracticeTypeDTO;
-
 import java.util.List;
+
+import gov.healthit.chpl.dto.PracticeTypeDTO;
 
 public interface PracticeTypeDAO {
 	

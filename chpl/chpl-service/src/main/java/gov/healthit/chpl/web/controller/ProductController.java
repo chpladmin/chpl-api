@@ -1,10 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +104,7 @@ public class ProductController {
 			for(Long productId : productInfo.getProductIds()) {
 				ProductDTO toUpdate = productManager.getById(productId);
 				toUpdate.setDeveloperId(productInfo.newDeveloperId());
-				result = productManager.update(toUpdate);
+				result = productManager.update(toUpdate, true);
 			}
 		} else {
 			if(productInfo.getProductIds().size() > 1) {
@@ -156,7 +153,7 @@ public class ProductController {
 						toUpdate.getOwnerHistory().add(prevOwnerDTO);
 					}
 				}
-				result = productManager.update(toUpdate);
+				result = productManager.update(toUpdate, true);
 			}	
 		}
 

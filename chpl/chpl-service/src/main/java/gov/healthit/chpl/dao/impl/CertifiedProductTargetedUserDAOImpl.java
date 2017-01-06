@@ -12,9 +12,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity;
 
 @Repository(value="certifiedProductTargetedUserDao")

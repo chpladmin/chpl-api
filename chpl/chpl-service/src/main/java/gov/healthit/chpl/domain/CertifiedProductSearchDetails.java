@@ -28,24 +28,29 @@ public class CertifiedProductSearchDetails {
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	private Map<String, Object> testingLab = new HashMap<String, Object>();
 	private Long certificationDate;
+	private Long decertificationDate;
 	private Integer countCerts;
 	private Integer countCqms;
-	private Integer countCorrectiveActionPlans;
-	private Integer countCurrentCorrectiveActionPlans;
-	private Integer countClosedCorrectiveActionPlans;
+	private Integer countSurveillance;
+	private Integer countOpenSurveillance;
+	private Integer countClosedSurveillance;
+	private Integer countOpenNonconformities;
+	private Integer countClosedNonconformities;
+	private List<Surveillance> surveillance = new ArrayList<Surveillance>();
 	private Boolean ics;
 	private Boolean accessibilityCertified;
 	private String productAdditionalSoftware;
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long lastModifiedDate;
+	private Long numMeaningfulUse;
 	
 	private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
-	private List<CertificationEvent> certificationEvents = new ArrayList<CertificationEvent>();
+	private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 	
 	private Set<String> warningMessages = new HashSet<String>();
 	private Set<String> errorMessages = new HashSet<String>();
@@ -141,11 +146,11 @@ public class CertifiedProductSearchDetails {
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
 	}
-	public List<CertificationEvent> getCertificationEvents(){
+	public List<CertificationStatusEvent> getCertificationEvents(){
 		return certificationEvents;
 	}
 	public void setCertificationEvents(
-			List<CertificationEvent> certificationEvents) {
+			List<CertificationStatusEvent> certificationEvents) {
 		this.certificationEvents = certificationEvents;
 	}
 	public Long getLastModifiedDate() {
@@ -172,13 +177,7 @@ public class CertifiedProductSearchDetails {
 	public void setErrorMessages(Set<String> errorMessages) {
 		this.errorMessages = errorMessages;
 	}
-	public Integer getCountCorrectiveActionPlans() {
-		return countCorrectiveActionPlans;
-	}
-	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
-		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
-
+	
 	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
@@ -222,18 +221,7 @@ public class CertifiedProductSearchDetails {
 	public void setQmsStandards(List<CertifiedProductQmsStandard> qmsStandards) {
 		this.qmsStandards = qmsStandards;
 	}
-	public Integer getCountCurrentCorrectiveActionPlans() {
-		return countCurrentCorrectiveActionPlans;
-	}
-	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
-		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
-	}
-	public Integer getCountClosedCorrectiveActionPlans() {
-		return countClosedCorrectiveActionPlans;
-	}
-	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
-		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
-	}
+
 	public List<CertifiedProductTargetedUser> getTargetedUsers() {
 		return targetedUsers;
 	}
@@ -275,5 +263,53 @@ public class CertifiedProductSearchDetails {
 	}
 	public void setVersion(ProductVersion version) {
 		this.version = version;
+	}
+	public List<Surveillance> getSurveillance() {
+		return surveillance;
+	}
+	public void setSurveillance(List<Surveillance> surveillance) {
+		this.surveillance = surveillance;
+	}
+	public Long getNumMeaningfulUse() {
+		return numMeaningfulUse;
+	}
+	public void setNumMeaningfulUse(Long numMeaningfulUse) {
+		this.numMeaningfulUse = numMeaningfulUse;
+	}
+	public Integer getCountSurveillance() {
+		return countSurveillance;
+	}
+	public void setCountSurveillance(Integer countSurveillance) {
+		this.countSurveillance = countSurveillance;
+	}
+	public Integer getCountOpenSurveillance() {
+		return countOpenSurveillance;
+	}
+	public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+		this.countOpenSurveillance = countOpenSurveillance;
+	}
+	public Integer getCountClosedSurveillance() {
+		return countClosedSurveillance;
+	}
+	public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+		this.countClosedSurveillance = countClosedSurveillance;
+	}
+	public Integer getCountOpenNonconformities() {
+		return countOpenNonconformities;
+	}
+	public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+		this.countOpenNonconformities = countOpenNonconformities;
+	}
+	public Integer getCountClosedNonconformities() {
+		return countClosedNonconformities;
+	}
+	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+		this.countClosedNonconformities = countClosedNonconformities;
+	}
+	public Long getDecertificationDate() {
+		return decertificationDate;
+	}
+	public void setDecertificationDate(Long decertificationDate) {
+		this.decertificationDate = decertificationDate;
 	}
 }

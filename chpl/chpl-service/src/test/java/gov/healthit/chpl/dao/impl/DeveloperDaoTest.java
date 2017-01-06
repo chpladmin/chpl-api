@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AddressDTO;
+import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
@@ -57,10 +59,11 @@ public class DeveloperDaoTest extends TestCase {
 	}
 
 	@Test
+	@Transactional
 	public void getAllDevelopers() {
 		List<DeveloperDTO> results = developerDao.findAll();
 		assertNotNull(results);
-		assertEquals(7, results.size());
+		assertEquals(9, results.size());
 		DeveloperDTO first = results.get(0);
 		assertNotNull(first.getStatus());
 		assertNotNull(first.getStatus().getId());
@@ -68,6 +71,7 @@ public class DeveloperDaoTest extends TestCase {
 	}
 
 	@Test
+	@Transactional
 	public void getDeveloperWithAddress() {
 		Long developerId = -1L;
 		DeveloperDTO developer = null;
@@ -84,6 +88,7 @@ public class DeveloperDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void getDeveloperWithoutAddress() {
 		Long developerId = -3L;
 		DeveloperDTO developer = null;
@@ -238,17 +243,59 @@ public class DeveloperDaoTest extends TestCase {
 		DeveloperDTO developer = developerDao.findAll().get(0);
 		
 		DeveloperACBMapDTO dto = new DeveloperACBMapDTO();
-		dto.setAcbId(-3L);
+		dto.setAcbId(-8L);
 		dto.setDeveloperId(developer.getId());
 		dto.setTransparencyAttestation("N/A");
 		DeveloperACBMapDTO createdMapping = developerDao.createTransparencyMapping(dto);
 		
 		assertNotNull(createdMapping);
 		
-		dto = developerDao.getTransparencyMapping(developer.getId(), -3L);
+		dto = developerDao.getTransparencyMapping(developer.getId(), -8L);
 		assertNotNull(dto);
 		assertEquals("N/A", dto.getTransparencyAttestation());
 		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	/**
+	 * Given the CHPL is accepting search requests
+	 * When I call the REST API's /decertified/developers
+	 * Then DeveloperDAOImpl.getCertifiedDevelopers() returns List<DeveloperDecertifiedDTO>
+	 * Then the returned list contains no duplicates (unique developerName for each row)
+	 * Then the returned list contains the proper array of ONC_ACBs
+	 * Then the returned list contains the sum of all of the developer's CP.numMeaningfulUse
+	 */
+	@Test
+	@Transactional
+	public void getDecertifiedDevelopers() {
+		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+		dtoList = developerDao.getDecertifiedDevelopers();
+		assertTrue(dtoList.size() == 2);
+		assertTrue(dtoList.get(0).getDeveloperId() == -10L || dtoList.get(0).getDeveloperId() == -11L);
+		assertTrue(dtoList.get(0).getNumMeaningfulUse() == 66 || dtoList.get(0).getNumMeaningfulUse() == 73);
+		assertTrue(dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
+				dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
+		if(dtoList.get(0).getDeveloperId() == -11L){
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
+		}
+		else{
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-3L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-2L));
+		}
+		
+		assertTrue(dtoList.get(1).getNumMeaningfulUse() == 66 || dtoList.get(1).getNumMeaningfulUse() == 73);
+		assertTrue(dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
+				dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
+		if(dtoList.get(1).getDeveloperId() == -10L){
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
+		}
+		else{
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-3L));
+			assertTrue(dtoList.get(0).getAcbIdList().contains(-2L));
+		}
 	}
 	
 }

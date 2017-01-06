@@ -1,9 +1,5 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,14 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
-import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
-import gov.healthit.chpl.entity.CertificationIdEntity;
+import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationIdManager;
 

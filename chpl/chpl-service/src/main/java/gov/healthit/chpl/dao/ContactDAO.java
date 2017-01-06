@@ -1,9 +1,9 @@
 package gov.healthit.chpl.dao;
 
+import java.util.List;
+
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.entity.ContactEntity;
-
-import java.util.List;
 
 public interface ContactDAO {
 	

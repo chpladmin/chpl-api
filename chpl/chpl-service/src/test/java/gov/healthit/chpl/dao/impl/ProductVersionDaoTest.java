@@ -2,7 +2,6 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.List;
 
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -47,13 +47,15 @@ public class ProductVersionDaoTest extends TestCase {
 	}
 
 	@Test
+	@Transactional
 	public void getAllProductVersions() {
 		List<ProductVersionDTO> results = versionDao.findAll();
 		assertNotNull(results);
-		assertEquals(8, results.size());
+		assertEquals(14, results.size());
 	}
 
 	@Test
+	@Transactional
 	public void getVersionById() {
 		Long versionId = 1L;
 		ProductVersionDTO version = null;
@@ -67,6 +69,7 @@ public class ProductVersionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void getVersionByProduct() {
 		Long productId = -1L;
 		List<ProductVersionDTO> versions = null;

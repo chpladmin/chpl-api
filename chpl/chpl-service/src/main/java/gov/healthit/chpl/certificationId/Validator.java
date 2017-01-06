@@ -1,17 +1,12 @@
 package gov.healthit.chpl.certificationId;
 
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CQMMetDTO;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.TreeSet;
-import java.util.SortedSet;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import gov.healthit.chpl.dto.CQMMetDTO;
 
 public abstract class Validator {
 

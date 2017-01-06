@@ -1,10 +1,10 @@
 package gov.healthit.chpl.dto;
 
+import java.util.Date;
+
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.entity.ActivityEntity;
-
-import java.util.Date;
 
 
 public class ActivityDTO {

@@ -1,8 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -10,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -65,6 +62,10 @@ public class CertifiedProductDetailsEntity {
 	@Basic(optional = true) 
     @Column(name = "sed_intended_user_description")
     private String sedIntendedUserDescription;
+	
+	@Basic(optional = true)
+	@Column(name ="meaningful_use_users")
+	private Long meaningfulUseUsers;
 
 	@Basic(optional = true) 
     @Column(name = "sed_testing_end")
@@ -91,6 +92,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_status_name")
     private String certificationStatusName;
     
+    @Column(name = "last_certification_status_change")
+    private Date certificationStatusDate;
+    
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
     
@@ -105,6 +109,9 @@ public class CertifiedProductDetailsEntity {
     
     @Column(name = "certification_body_code")
     private String certificationBodyCode;
+    
+    @Column(name = "acb_is_deleted")
+    private Boolean acbIsDeleted;
     
     @Column(name = "product_classification_name")
     private String productClassificationName;
@@ -189,21 +196,30 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_date")
     private Date certificationDate;
     
+    @Column(name = "decertification_date")
+    private Date decertificationDate;
+    
     @Column(name = "count_certifications")
     private Integer countCertifications;
     
     @Column(name = "count_cqms")
     private Integer countCqms;
     
-    @Column(name = "count_corrective_action_plans")
-    private Integer countCorrectiveActionPlans;
-
-    @Column(name = "count_current_corrective_action_plans")
-    private Integer countCurrentCorrectiveActionPlans;
+    @Column(name = "count_surveillance_activities")
+    private Integer countSurveillance;
     
-    @Column(name = "count_closed_corrective_action_plans")
-    private Integer countClosedCorrectiveActionPlans;
+    @Column(name = "count_open_surveillance_activities")
+    private Integer countOpenSurveillance;
     
+    @Column(name = "count_closed_surveillance_activities")
+    private Integer countClosedSurveillance;
+    
+    @Column(name = "count_open_nonconformities")
+    private Integer countOpenNonconformities;
+    
+    @Column(name = "count_closed_nonconformities")
+    private Integer countClosedNonconformities;
+    		
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
 
@@ -332,6 +348,14 @@ public class CertifiedProductDetailsEntity {
 	public void setCertificationBodyName(String certificationBodyName) {
 		this.certificationBodyName = certificationBodyName;
 	}
+	
+	public Boolean getAcbIsDeleted() {
+		return this.acbIsDeleted;
+	}
+	
+	public void setAcbIsDeleted(Boolean acbIsDeleted) {
+		this.acbIsDeleted = acbIsDeleted;
+	}
 
 	public String getProductClassificationName() {
 		return productClassificationName;
@@ -420,15 +444,7 @@ public class CertifiedProductDetailsEntity {
 	public void setCountCqms(Integer countCqms) {
 		this.countCqms = countCqms;
 	}
-	
-    public Integer getCountCorrectiveActionPlans() {
-		return countCorrectiveActionPlans;
-	}
 
-	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
-		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
-	
 	public Date getCreationDate(){
 		return creationDate;
 	}
@@ -604,6 +620,14 @@ public class CertifiedProductDetailsEntity {
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
 	}
+	
+	public Long getMeaningfulUseUsers(){
+		return meaningfulUseUsers;
+	}
+	
+	public void setMeaningfulUseUsers(Long meaningfulUseUsers){
+		this.meaningfulUseUsers = meaningfulUseUsers;
+	}
 
 	public String getTransparencyAttestationUrl() {
 		return transparencyAttestationUrl;
@@ -611,21 +635,6 @@ public class CertifiedProductDetailsEntity {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
-	}
-	public Integer getCountCurrentCorrectiveActionPlans() {
-		return countCurrentCorrectiveActionPlans;
-	}
-
-	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
-		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
-	}
-
-	public Integer getCountClosedCorrectiveActionPlans() {
-		return countClosedCorrectiveActionPlans;
-	}
-
-	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
-		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
 	}
 
 	public Boolean getAccessibilityCertified() {
@@ -778,5 +787,61 @@ public class CertifiedProductDetailsEntity {
 
 	public void setProduct(ProductEntity product) {
 		this.product = product;
+	}
+
+	public Integer getCountSurveillance() {
+		return countSurveillance;
+	}
+
+	public void setCountSurveillance(Integer countSurveillance) {
+		this.countSurveillance = countSurveillance;
+	}
+
+	public Integer getCountOpenSurveillance() {
+		return countOpenSurveillance;
+	}
+
+	public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+		this.countOpenSurveillance = countOpenSurveillance;
+	}
+
+	public Integer getCountClosedSurveillance() {
+		return countClosedSurveillance;
+	}
+
+	public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+		this.countClosedSurveillance = countClosedSurveillance;
+	}
+
+	public Integer getCountOpenNonconformities() {
+		return countOpenNonconformities;
+	}
+
+	public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+		this.countOpenNonconformities = countOpenNonconformities;
+	}
+
+	public Integer getCountClosedNonconformities() {
+		return countClosedNonconformities;
+	}
+
+	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+		this.countClosedNonconformities = countClosedNonconformities;
+	}
+
+	public Date getCertificationStatusDate() {
+		return certificationStatusDate;
+	}
+
+	public void setCertificationStatusDate(Date certificationStatusDate) {
+		this.certificationStatusDate = certificationStatusDate;
+	}
+
+	public Date getDecertificationDate() {
+		return decertificationDate;
+	}
+
+	public void setDecertificationDate(Date decertificationDate) {
+		this.decertificationDate = decertificationDate;
 	}	
 }

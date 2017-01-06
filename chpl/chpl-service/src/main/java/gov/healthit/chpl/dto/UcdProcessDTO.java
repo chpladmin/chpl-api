@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.TestToolEntity;
 import gov.healthit.chpl.entity.UcdProcessEntity;
 
 public class UcdProcessDTO {

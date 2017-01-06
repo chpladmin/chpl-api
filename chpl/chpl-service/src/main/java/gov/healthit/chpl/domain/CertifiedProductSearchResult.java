@@ -25,6 +25,7 @@ public class CertifiedProductSearchResult {
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	private Long certificationDate;
+	private Long decertificationDate;
 	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
@@ -34,9 +35,13 @@ public class CertifiedProductSearchResult {
 	private String transparencyAttestationUrl;
 	private Integer countCerts;
 	private Integer countCqms;
-	private Integer countCorrectiveActionPlans;
-	private Integer countCurrentCorrectiveActionPlans;
-	private Integer countClosedCorrectiveActionPlans;
+	private Integer countSurveillance;
+	private Integer countOpenSurveillance;
+	private Integer countClosedSurveillance;
+	private Integer countOpenNonconformities;
+	private Integer countClosedNonconformities;
+	
+	private Long numMeaningfulUse;
 	
 	public Long getId() {
 		return id;
@@ -134,12 +139,6 @@ public class CertifiedProductSearchResult {
 	public void setCertificationStatus(Map<String, Object> certificationStatus) {
 		this.certificationStatus = certificationStatus;
 	}
-	public Integer getCountCorrectiveActionPlans() {
-		return countCorrectiveActionPlans;
-	}
-	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
-		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
 	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
@@ -188,18 +187,6 @@ public class CertifiedProductSearchResult {
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
-	public Integer getCountCurrentCorrectiveActionPlans() {
-		return countCurrentCorrectiveActionPlans;
-	}
-	public void setCountCurrentCorrectiveActionPlans(Integer countCurrentCorrectiveActionPlans) {
-		this.countCurrentCorrectiveActionPlans = countCurrentCorrectiveActionPlans;
-	}
-	public Integer getCountClosedCorrectiveActionPlans() {
-		return countClosedCorrectiveActionPlans;
-	}
-	public void setCountClosedCorrectiveActionPlans(Integer countClosedCorrectiveActionPlans) {
-		this.countClosedCorrectiveActionPlans = countClosedCorrectiveActionPlans;
-	}
 	public Boolean getAccessibilityCertified() {
 		return accessibilityCertified;
 	}
@@ -217,6 +204,48 @@ public class CertifiedProductSearchResult {
 	}
 	public void setSedTestingEnd(Date sedTestingEnd) {
 		this.sedTestingEnd = sedTestingEnd;
+	}
+	public Long getNumMeaningfulUse() {
+		return numMeaningfulUse;
+	}
+	public void setNumMeaningfulUse(Long numMeaningfulUse) {
+		this.numMeaningfulUse = numMeaningfulUse;
+	}
+	public Integer getCountSurveillance() {
+		return countSurveillance;
+	}
+	public void setCountSurveillance(Integer countSurveillance) {
+		this.countSurveillance = countSurveillance;
+	}
+	public Integer getCountOpenSurveillance() {
+		return countOpenSurveillance;
+	}
+	public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+		this.countOpenSurveillance = countOpenSurveillance;
+	}
+	public Integer getCountClosedSurveillance() {
+		return countClosedSurveillance;
+	}
+	public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+		this.countClosedSurveillance = countClosedSurveillance;
+	}
+	public Integer getCountOpenNonconformities() {
+		return countOpenNonconformities;
+	}
+	public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+		this.countOpenNonconformities = countOpenNonconformities;
+	}
+	public Integer getCountClosedNonconformities() {
+		return countClosedNonconformities;
+	}
+	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+		this.countClosedNonconformities = countClosedNonconformities;
+	}
+	public Long getDecertificationDate() {
+		return decertificationDate;
+	}
+	public void setDecertificationDate(Long decertificationDate) {
+		this.decertificationDate = decertificationDate;
 	}
 	
 }
