@@ -12,7 +12,10 @@ _6 January 2017_
 	Add caching for /search API call
 	Update caching for /search_options API call
 	Cache underlying data that improves call speed for many other API calls
-* TO-DO DURING DEPLOYMENT: Add this line to environment.properties: enableCacheInitialization=true
+* TO-DO DURING DEPLOYMENT: Add these lines to environment.properties: 
+	enableCacheInitialization=true
+	cacheClearTimeoutSecs=15
+	cacheInitializeTimeoutSecs=300
 * /authenticate now returns 401 Unauthorized for bad credentials instead of 500 Internal Server Error
 * Add new certification status for products
 * Allow 0 for number of randomized sites and total sites for surveillance
