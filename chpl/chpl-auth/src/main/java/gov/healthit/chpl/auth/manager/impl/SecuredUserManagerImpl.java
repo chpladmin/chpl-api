@@ -1,18 +1,6 @@
 package gov.healthit.chpl.auth.manager.impl;
 
 
-import gov.healthit.chpl.auth.dao.UserContactDAO;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.entity.UserEntity;
-import gov.healthit.chpl.auth.manager.SecuredUserManager;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserManagementException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +20,18 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import gov.healthit.chpl.auth.dao.UserContactDAO;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.auth.manager.SecuredUserManager;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.UserCreationException;
+import gov.healthit.chpl.auth.user.UserManagementException;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Service
 public class SecuredUserManagerImpl implements SecuredUserManager {

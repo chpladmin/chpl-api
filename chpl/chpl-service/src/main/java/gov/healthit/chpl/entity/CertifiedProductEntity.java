@@ -1,14 +1,18 @@
 package gov.healthit.chpl.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -29,8 +33,8 @@ public class CertifiedProductEntity {
 	
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@JoinColumn( name = "certified_product_id", nullable = false  )
+	@Basic(optional = false)
+	@Column(name = "certified_product_id", nullable = false)
 	private Long id;
     
     @Column(name = "product_code")
@@ -125,6 +129,15 @@ public class CertifiedProductEntity {
 	
 	@Column(name = "product_additional_software")
 	private String productAdditionalSoftware;
+	
+	@Basic(optional = true)
+	@OneToMany(targetEntity = CertificationResultEntity.class, mappedBy = "certifiedProduct", fetch = FetchType.LAZY)
+	private List<CertificationResultEntity> certificationResult;
+	
+	@Basic(optional = true)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "certified_product_id", nullable = false, insertable=false, updatable=false)
+	private CertifiedProductEntity certifiedProduct;
 	
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -402,5 +415,9 @@ public class CertifiedProductEntity {
 
 	public void setSedTestingEnd(Date sedTestingEnd) {
 		this.sedTestingEnd = sedTestingEnd;
+	}
+	
+	public CertifiedProductEntity getCertifiedProduct(){
+		return this;
 	}
 }

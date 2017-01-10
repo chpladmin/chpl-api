@@ -2,15 +2,20 @@ package gov.healthit.chpl.entity;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -30,16 +35,16 @@ public class CertificationResultEntity  implements Serializable {
 
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "certification_result_id", nullable = false  )
+	@Basic(optional = false)
+    @Column(name = "certification_result_id", nullable = false)
 	private Long id;
 	
-	@Basic( optional = false )
-	@JoinColumn(name = "certification_criterion_id", nullable = false )
+	@Basic(optional = false)
+	@Column(name = "certification_criterion_id", nullable = false)
 	private Long certificationCriterionId;
 	
-	@Basic( optional = false )
-	@Column(name = "certified_product_id", nullable = false )
+	@Basic(optional = false)
+	@Column(name = "certified_product_id", nullable = false)
 	private Long certifiedProductId;
 	
 	@Column(name = "gap")
@@ -54,8 +59,8 @@ public class CertificationResultEntity  implements Serializable {
 	@Column(name = "g2_success")
 	private Boolean g2Success;
 	
-	@Basic( optional = false )
-	@Column(name = "success", nullable = false  )
+	@Basic(optional = false)
+	@Column(name = "success", nullable = false)
 	private Boolean success;
 	
 	@Column(name = "api_documentation")
@@ -64,6 +69,20 @@ public class CertificationResultEntity  implements Serializable {
 	@Column(name = "privacy_security_framework")
 	private String privacySecurityFramework;
 	
+	@Basic(optional = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="certificationResultId")
+	private List<CertificationResultTestToolEntity> certificationResultTestTool = new ArrayList<CertificationResultTestToolEntity>();
+	
+	@Basic(optional = true)
+	@ManyToOne
+	@JoinColumn(name = "certified_product_id", nullable = false, insertable=false, updatable=false)
+	private CertifiedProductEntity certifiedProduct;
+	
+	@Basic(optional = false)
+	@ManyToOne(targetEntity = CertificationCriterionEntity.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_criterion_id", nullable = false, insertable = false, updatable = false)
+	private CertificationCriterionEntity certificationCriterion;
+
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -101,14 +120,17 @@ public class CertificationResultEntity  implements Serializable {
 	public void setCertificationCriterionId(final Long certificationCriterionId) {
 		this.certificationCriterionId = certificationCriterionId;
 	}
-
-	 /**
+	
+	public void setCertificationCriterion(CertificationCriterionEntity certificationCriterion) {
+		this.certificationCriterion = certificationCriterion;
+	}
+	
+	/**
 	 * Return the value associated with the column: certifiedProduct.
 	 * @return A CertifiedProduct object (this.certifiedProduct)
 	 */
 	public Long getCertifiedProductId() {
 		return this.certifiedProductId;
-		
 	}
 	
 	 /**  
@@ -256,5 +278,21 @@ public class CertificationResultEntity  implements Serializable {
 
 	public void setPrivacySecurityFramework(String privacySecurityFramework) {
 		this.privacySecurityFramework = privacySecurityFramework;
+	}
+	
+	public List<CertificationResultTestToolEntity> getCertificationResultTestTool() {
+		return certificationResultTestTool;
+	}
+
+	public void setCertificationResultTestTool(List<CertificationResultTestToolEntity> certificationResultTestTool) {
+		this.certificationResultTestTool = certificationResultTestTool;
+	}
+
+	public CertifiedProductEntity getCertifiedProduct() {
+		return certifiedProduct;
+	}
+
+	public void setCertifiedProduct(CertifiedProductEntity certifiedProduct) {
+		this.certifiedProduct = certifiedProduct;
 	}
 }

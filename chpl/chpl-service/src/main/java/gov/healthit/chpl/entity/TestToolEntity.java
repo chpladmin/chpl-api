@@ -5,11 +5,15 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 
 
 @Entity
@@ -18,8 +22,9 @@ public class TestToolEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
+	@Basic(optional = false)
 	@JoinColumn(name = "test_tool_id")
+	@Column(name = "test_tool_id")
 	private Long id;
 	
 	@Column(name = "name")
@@ -30,6 +35,10 @@ public class TestToolEntity {
 
 	@Column(name = "retired")
 	private Boolean retired;
+	
+	@Basic(optional = true)
+	@OneToOne(optional = true, targetEntity = CertificationResultTestToolEntity.class, mappedBy = "testTool", fetch = FetchType.LAZY)
+	private CertificationResultTestTool certificationResultTestTool;
 	
 	public Long getId() {
 		return id;

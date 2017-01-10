@@ -176,16 +176,16 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	}
 	
 	private List<CertificationCriterionEntity> getAllEntities() {
-		Query query = entityManager.createQuery( //"SELECT cce FROM CertificationCriterionEntity as cce "
-//				+ "WHERE cce.id IN ( "
-				//+ 
-				"SELECT c.id "
-				+ "FROM CertificationCriterionEntity as c "
-				+ "LEFT JOIN c.id as cr "
-//				+ "LEFT JOIN certificationResultTestToolEntity as crtt "
-//				+ "LEFT JOIN testToolEntity as tt "
-//				+ "LEFT JOIN certifiedProductEntity as cp "
-//				+ "WHERE (tt.retired = true AND cp.ics = true) OR (tt.retired = false) AND c.deleted = false " //) "
+		Query query = entityManager.createQuery(
+				"SELECT cce "
+				+ "FROM CertificationCriterionEntity cce "
+				+ "WHERE cce.id IN ( "
+				+ "SELECT c.id FROM CertificationCriterionEntity c "
+				+ "LEFT JOIN c.certificationResult cr "
+				+ "LEFT JOIN cr.certifiedProduct cp "
+				+ "LEFT JOIN cr.certificationResultTestTool crtt "
+				+ "LEFT JOIN crtt.testTool tt "
+				+ "WHERE (tt.retired = true AND cp.ics = true) OR (tt.retired = false) AND c.deleted = false)"
 				, CertificationCriterionEntity.class);
 		List<CertificationCriterionEntity> result = query.getResultList();
 		
