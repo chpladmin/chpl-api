@@ -18,7 +18,7 @@ _Date TBD_
   * `enableCacheInitialization=true`
   * `cacheClearTimeoutSecs=15`
   * `cacheInitializeTimeoutSecs=300`
-* /authenticate now returns 401 Unauthorized for bad credentials instead of 500 Internal Server Error
+* /authenticate now returns 403 Forbidden for bad credentials instead of 500 Internal Server Error
 * Add new certification status for products
 * Allow 0 for number of randomized sites and total sites for surveillance
 * Remove products marked Suspended By ONC from Decertified Product search

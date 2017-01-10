@@ -157,7 +157,7 @@ public class SurveillanceController {
 	public synchronized @ResponseBody Surveillance createSurveillance(
 			@RequestBody(required = true) Surveillance survToInsert) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, 
-		EntityRetrievalException, AccessDeniedException, JsonProcessingException {
+		EntityRetrievalException, CertificationBodyAccessException, JsonProcessingException {
 		survToInsert.getErrorMessages().clear();
 		
 		//validate first. this ensures we have all the info filled in 
@@ -174,7 +174,7 @@ public class SurveillanceController {
 		try {
 			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(AccessDeniedException ex) {
-			throw new AccessDeniedException("User does not have permission to add surveillance to a certified product under ACB " + beforeCp.getCertifyingBody().get("name"));
+			throw new CertificationBodyAccessException("User does not have permission to add surveillance to a certified product under ACB " + beforeCp.getCertifyingBody().get("name"));
 		} catch(EntityRetrievalException ex) {
 			logger.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
