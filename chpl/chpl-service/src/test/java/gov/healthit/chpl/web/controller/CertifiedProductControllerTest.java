@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
@@ -42,6 +43,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
@@ -309,6 +311,45 @@ public class CertifiedProductControllerTest {
 				apiResult.getMeaningfulUseUsers().get(4).getNumberOfUsers().equals(50L));
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(4).getCertifiedProductId() + " but should return " + 1L, 
 				apiResult.getMeaningfulUseUsers().get(4).getCertifiedProductId() == 1L);
+	}
+	
+	/** 
+	 * Given that a user with ROLE_ADMIN edits/updates an existing Certified Product
+	 * When the UI calls the API at /certified_products/update
+	 * When the user tries to update a Certified Product with ics = true and retired test tool = true and set ics = false
+	 * Then the API returns an error
+	 * @throws IOException 
+	 * @throws JSONException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_updateCertifiedProduct_icsAndRetiredEqualTrue_icsFalseReturnsError() throws EntityRetrievalException, EntityCreationException, IOException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
+		updateRequest.setCertificationDate(1440090840000L);
+		updateRequest.setId(1L);
+//		Map<String, Object> certificationEdition = new HashMap<String, Object>();
+//		CertificationEditionDTO ce = new CertificationEditionDTO();
+
+//		updateRequest.setCertificationEdition();
+		//assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().size() + " but should return 5 results", apiResult.getMeaningfulUseUsers().size() == 5);
+		
+	}
+	
+	/** 
+	 * Given that a user with ROLE_ADMIN selects a Certified Product to view on the CHPL
+	 * When the UI calls the API at /certified_products/{certifiedProductId}/details
+	 * Then the API returns the Certified Product Details
+	 * @throws IOException 
+	 * @throws JSONException 
+	 */
+	@Transactional
+	@Test
+	public void test_getCertifiedProductById() throws EntityRetrievalException, EntityCreationException, IOException {
+		CertifiedProductSearchDetails cpDetails = certifiedProductController.getCertifiedProductById(1L);
+		assertNotNull(cpDetails);
 	}
 	
 }

@@ -47,8 +47,8 @@ public class CertificationResultDetailsDaoTest {
 		
 		List<CertificationResultDetailsDTO> dtos = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(1L);
 		
-		assertEquals(5, dtos.size());
-		assertEquals("170.314 (a)(1)", dtos.get(0).getNumber());
+		assertEquals(6, dtos.size());
+		assertEquals("170.314 (a)(1)", dtos.get(1).getNumber());
 		assertEquals(true, dtos.get(0).getSuccess());
 	}
 	
