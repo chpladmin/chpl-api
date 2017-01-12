@@ -52,7 +52,6 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)

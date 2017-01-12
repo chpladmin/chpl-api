@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -26,9 +25,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

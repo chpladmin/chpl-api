@@ -1,14 +1,10 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,9 +22,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import junit.framework.TestCase;
 
