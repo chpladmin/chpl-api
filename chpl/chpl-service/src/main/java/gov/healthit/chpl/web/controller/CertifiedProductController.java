@@ -203,8 +203,8 @@ public class CertifiedProductController {
 				retiredTestToolNumbers.add(cce.getNumber());
 			}
 			
-			updateRequest.getErrorMessages().add("Cannot set Ics to false for a Certified Product with Ics=true and attested criteria that have a retired Test Tool. "
-					+ "The following are attested criteria have a retired Test Tool: " + retiredTestToolNumbers.toString());
+			updateRequest.getErrorMessages().add("Cannot set ICS to false for a Certified Product with ICS=true and attested criteria that have a retired Test Tool. "
+					+ "The following are attested criteria that have a retired Test Tool: " + retiredTestToolNumbers.toString());
 		}
 		
 		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {
