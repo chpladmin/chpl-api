@@ -19,7 +19,8 @@ public class AuthExceptionControllerAdvice {
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ErrorJSONObject> exception(AccessDeniedException e) {
-		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access Denied"), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage() == null ? "Access Denied" : e.getMessage()), 
+				HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(UserRetrievalException.class)

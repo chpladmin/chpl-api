@@ -1,11 +1,13 @@
 package gov.healthit.chpl.web.controller.results;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 
-public class MeaningfulUseUserResults {
+public class MeaningfulUseUserResults implements Serializable {
+	private static final long serialVersionUID = 4864758331142716185L;
 	private List<MeaningfulUseUser> results;
 	private List<MeaningfulUseUser> errors;
 

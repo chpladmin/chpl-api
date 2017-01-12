@@ -1,11 +1,12 @@
 package gov.healthit.chpl.caching;
 
 import java.io.IOException;
-
+import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class AsynchronousCacheInitialization {
 	
 	@Async
 	@Transactional
-	public void initializeSearchOptions() throws EntityRetrievalException{
+	public Future<Boolean> initializeSearchOptions() throws EntityRetrievalException{
 		logger.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
 		searchMenuManager.getCertBodyNames();
 		searchMenuManager.getEditionNames(false);
@@ -42,31 +43,44 @@ public class AsynchronousCacheInitialization {
 		searchMenuManager.getCertificationCriterionNumbers(false);
 		searchMenuManager.getCertificationCriterionNumbers(true);
 		logger.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
+		return new AsyncResult<>(true);
 	}
 	
 	@Async
 	@Transactional
-	public void initializePending() throws EntityRetrievalException{
+	public Future<Boolean> initializePending() throws EntityRetrievalException{
 		logger.info("Starting cache initialization for /pending");
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
 		pcpDao.findByStatus(statusDto.getId());
 		logger.info("Finished cache initialization for /pending");
+		return new AsyncResult<>(true);
 	}
 	
 	@Async
 	@Transactional
-	public void initializeCertificationIdsGetAll() throws IOException, EntityRetrievalException, InterruptedException {
+	public Future<Boolean> initializeCertificationIdsGetAll() throws IOException, EntityRetrievalException, InterruptedException {
 		logger.info("Starting cache initialization for CertificationIdManager.getAll()");
 		certificationIdManager.getAll();
 		logger.info("Finished cache initialization for CertificationIdManager.getAll()");
+		return new AsyncResult<>(true);
 	}
 	
 	@Async
 	@Transactional
-	public void initializeCertificationIdsGetAllWithProducts() throws IOException, EntityRetrievalException, InterruptedException {
+	public Future<Boolean> initializeCertificationIdsGetAllWithProducts() throws IOException, EntityRetrievalException, InterruptedException {
 		logger.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
 		certificationIdManager.getAllWithProducts();
 		logger.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");
+		return new AsyncResult<>(true);
+	}
+	
+	@Async
+	@Transactional
+	public Future<Boolean> initializeDecertifiedDevelopers() throws IOException, EntityRetrievalException, InterruptedException {
+		logger.info("Starting cache initialization for DeveloperManager.getDecertifiedDevelopers()");
+		certificationIdManager.getAllWithProducts();
+		logger.info("Finished cache initialization for DeveloperManager.getDecertifiedDevelopers()");
+		return new AsyncResult<>(true);
 	}
 	
 }

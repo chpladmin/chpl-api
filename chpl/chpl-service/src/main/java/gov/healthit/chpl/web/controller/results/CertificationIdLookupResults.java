@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller.results;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -10,8 +11,9 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
-public class CertificationIdLookupResults {
-	
+public class CertificationIdLookupResults implements Serializable {
+	private static final long serialVersionUID = 494982326653301352L;
+
 	static public class Product {
 		private Long id;
 		private String name;

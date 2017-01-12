@@ -22,10 +22,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.ClearAllCaches;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -38,6 +41,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
@@ -49,6 +53,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Autowired DeveloperDAO developerDao;	
 	@Autowired ProductManager productManager;
 	@Autowired CertificationBodyManager acbManager;
+	@Autowired CertificationBodyDAO certificationBodyDao;
 
 	@Autowired
 	ActivityManager activityManager;
@@ -320,10 +325,28 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	}
 	
 	@Transactional(readOnly = true)
-	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){
+	@Cacheable("getDecertifiedDevelopers")
+	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException{
 		List<DecertifiedDeveloperDTO> developerDecertifiedDTOList = new ArrayList<DecertifiedDeveloperDTO>();
-		developerDecertifiedDTOList = developerDao.getDecertifiedDevelopers();
-		return developerDecertifiedDTOList;
+		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
+		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+		List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
+		
+		dtoList = developerDao.getDecertifiedDevelopers();
+		
+		for(DecertifiedDeveloperDTO dto : dtoList){
+			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
+			for(Long oncacbId : dto.getAcbIdList()){
+				CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
+				certifyingBody.add(cb);
+			}
+			
+			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getNumMeaningfulUse());
+			decertifiedDeveloperResults.add(decertifiedDeveloper);
+		}
+		
+		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
+		return ddr;
 	}
 	
 	@Override

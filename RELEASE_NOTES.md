@@ -4,37 +4,53 @@
 _Date TBD_
 
 ### Features Added
-* Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details. 
-* Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
-* Change behavior if certified product is marked as suspended or terminated by ONC. These statuses also result in a developer status change and require ROLE_ADMIN
-* Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer. 
-* Add API call to get decertified certified products with pageCount set to the total number of decertified products
-* Add certificationDateStart and certificationDateEnd as advanced search parameters
-* Change corrective action plan search parameters to new surveillance search parameters - NOT BACKWARDS COMPATIBLE
-* Send questionable activity email when product owner changes (not during a merge)
-* Add /surveillance/download[?type=all|basic|nonconformities] endpoint to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
-* Add lookup to new tables for certification status event history
-* Add date of last certification status change to certified product detailis
-* Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
-* Add decertification date to certified product details * CHANGES XML DOWNLOAD FORMAT *
 * Improve website performance:
-	Initialize cache stores asynchronously at server startup
-	Increase cache timeout to 1 hour
-	Add caching for /certification_ids API call
-	Add caching for /pending API call
-	Add caching for /search API call
-	Update caching for /search_options API call
-	Cache underlying data that improves call speed for many other API calls
-* TO-DO DURING DEPLOYMENT: Add this line to environment.properties: enableCacheInitialization=true
-* /authenticate now returns 401 Unauthorized for bad credentials instead of 500 Internal Server Error
+  * Initialize cache stores asynchronously at server startup
+  * Increase cache timeout to 1 hour
+  * Add caching for /certification_ids API call
+  * Add caching for /pending API call
+  * Add caching for /search API call
+  * Add caching for /decertifications/developers
+  * Add caching for /decertifications/certified_products
+  * Update caching for /search_options API call
+  * Cache underlying data that improves call speed for many other API calls
+* TO-DO DURING DEPLOYMENT: Add these lines to environment.properties:
+  * `enableCacheInitialization=true`
+  * `cacheClearTimeoutSecs=15`
+  * `cacheInitializeTimeoutSecs=300`
+* /authenticate now returns 403 Forbidden for bad credentials instead of 500 Internal Server Error
 * Add new certification status for products
 * Allow 0 for number of randomized sites and total sites for surveillance
 * Remove products marked Suspended By ONC from Decertified Product search
 
 ### Bugs Fixed
+* Fixes exception when getting back activity performed by a user that has since been deleted
+* Fixes innaccurate error message if a user tries to add surveillance to a product under an ACB they are not associated with
+
+---
+
+## Version 7.0.0
+_6 January 2017_
+
+### Features Added
+* Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details.
+* Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
+* Change behavior if certified product is marked as suspended or terminated by ONC. These statuses also result in a developer status change and require ROLE_ADMIN
+* Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer.
+* Add API call to get decertified certified products with pageCount set to the total number of decertified products
+* Add certificationDateStart and certificationDateEnd as advanced search parameters
+* Change corrective action plan search parameters to new surveillance search parameters - *NOT BACKWARDS COMPATIBLE*
+* Send questionable activity email when product owner changes (not during a merge)
+* Add /surveillance/download[?type=all|basic|nonconformities] endpoint to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
+* Add lookup to new tables for certification status event history
+* Add date of last certification status change to certified product details
+* Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
+* Add decertification date to certified product details *CHANGES XML DOWNLOAD FORMAT*
+
+### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
 
---- 
+---
 
 ## Version 6.0.1
 _17 November 2016_
@@ -42,7 +58,7 @@ _17 November 2016_
 ### Bugs Fixed
 * Mark all DAO methods that return certified product details as transactional so they can retrieve the product owner history. Fixes issue with summary email being sent and with xml download not being generated.
 
---- 
+---
 
 ## Version 6.0.0
 _15 November 2016_
@@ -55,7 +71,7 @@ _15 November 2016_
 * Make it impossible to confirm duplicate pending certified products
 * Ability to edit a certified product without security authorization
 
---- 
+---
 
 ## Version 5.2.0
 _21 October 2016_
@@ -126,7 +142,7 @@ _19 September 2016_
 
 ### Bugs fixed
 * Pending 2015 products can now have CQM versions modified
-* API Documentation Link is now correctly validated on upload and edit 
+* API Documentation Link is now correctly validated on upload and edit
 * Added new style product number to CAP Activity Report descriptions
 
 ---
