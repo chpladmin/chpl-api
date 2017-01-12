@@ -1,10 +1,6 @@
 package gov.healthit.chpl.caching;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,11 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationStatusDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SurveillanceSearchOptions;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -29,7 +22,6 @@ public class AsynchronousCacheInitialization {
 	
 	@Autowired private CertificationIdManager certificationIdManager;
 	@Autowired private SearchMenuManager searchMenuManager;
-	@Autowired private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 	@Autowired private PendingCertifiedProductDAO pcpDao;
 	@Autowired private CertificationStatusDAO statusDao;
 	

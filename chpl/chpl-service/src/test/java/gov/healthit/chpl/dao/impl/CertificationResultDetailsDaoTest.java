@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -48,8 +48,15 @@ public class CertificationResultDetailsDaoTest {
 		List<CertificationResultDetailsDTO> dtos = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(1L);
 		
 		assertEquals(6, dtos.size());
-		assertEquals("170.314 (a)(1)", dtos.get(1).getNumber());
-		assertEquals(true, dtos.get(0).getSuccess());
+		Boolean hasNumber = false;
+		for(CertificationResultDetailsDTO dto : dtos){
+			if(dto.getNumber().equalsIgnoreCase("170.314 (a)(1)")){
+				hasNumber = true;
+				assertEquals(true, dto.getSuccess());
+			}
+		}
+		assertTrue("Result should contain CertificationResultDTO with number equal to 170.314 (a)(1)", hasNumber);
+		
 	}
 	
 }

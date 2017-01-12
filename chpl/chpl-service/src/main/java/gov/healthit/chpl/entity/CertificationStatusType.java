@@ -3,9 +3,9 @@ package gov.healthit.chpl.entity;
 import org.springframework.util.StringUtils;
 
 public enum CertificationStatusType {
-	Active,
-	Retired,
-	Pending,
+	Active("Active"),
+	Retired("Retired"),
+	Pending("Pending"),
 	WithdrawnByDeveloper("Withdrawn by Developer"),
 	WithdrawnByDeveloperUnderReview("Withdrawn by Developer Under Surveillance/Review"),
 	WithdrawnByAcb("Withdrawn by ONC-ACB"),

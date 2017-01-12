@@ -49,7 +49,6 @@ public class CertificationCriterionEntity implements Serializable {
 	@Column( name = "automated_numerator_capable"  )
 	private Boolean automatedNumeratorCapable;
 	
-	
 	@Basic( optional = false )
 	@Column( name = "certification_edition_id", nullable = false  )
 	private Long certificationEditionId;

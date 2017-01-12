@@ -26,8 +26,7 @@ public class CertificationResultTestToolEntity {
 	private Long id;
 	
 	@Basic(optional = true)
-	@ManyToOne(targetEntity = CertificationResultEntity.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_result_id", nullable = false)
+	@Column(name = "certification_result_id", nullable = false)
 	private Long certificationResultId;
 	
 	@Column(name = "test_tool_id")
@@ -37,9 +36,14 @@ public class CertificationResultTestToolEntity {
 	private String version;
 	
 	@Basic(optional = true)
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_tool_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private TestToolEntity testTool;
+	
+	@Basic(optional = true)
+	@ManyToOne(targetEntity = CertificationResultEntity.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_result_id", nullable = false, insertable = false, updatable = false)
+	private CertificationResultEntity certificationResult;
 	
 	public Long getId() {
 		return id;
@@ -120,5 +124,13 @@ public class CertificationResultTestToolEntity {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public CertificationResultEntity getCertificationResult() {
+		return certificationResult;
+	}
+
+	public void setCertificationResult(CertificationResultEntity certificationResult) {
+		this.certificationResult = certificationResult;
 	}
 }

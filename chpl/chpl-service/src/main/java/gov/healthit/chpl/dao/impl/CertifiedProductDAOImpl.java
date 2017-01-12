@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.CertifiedProductEntity;
 
@@ -386,6 +387,27 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			dtoResults.add(new CertifiedProductDetailsDTO(result));
 		}
 		return dtoResults;
+	}
+	
+	@Transactional(readOnly=true)
+	public Boolean hasRetiredTestTool(Long cpId) {
+		Query query = entityManager.createQuery(
+				"SELECT c FROM CertificationCriterionEntity c "
+				+ "LEFT JOIN c.certificationResult cr "
+				+ "LEFT JOIN cr.certifiedProduct cp "
+				+ "LEFT JOIN cr.certificationResultTestTool crtt "
+				+ "LEFT JOIN crtt.testTool tt "
+				+ "WHERE (tt.retired = true AND cp.icsCode = '1') AND c.deleted = false AND cp.id = :cpId)"
+				, CertificationCriterionEntity.class);
+		query.setParameter("cpId", cpId);
+		List<CertificationCriterionEntity> result = query.getResultList();
+		
+		if(result.size() > 0){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 	
 	@Transactional(readOnly=false)

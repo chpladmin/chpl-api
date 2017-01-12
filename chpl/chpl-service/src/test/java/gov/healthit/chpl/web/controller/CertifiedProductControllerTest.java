@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +47,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -329,11 +332,21 @@ public class CertifiedProductControllerTest {
 		
 		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
 		updateRequest.setCertificationDate(1440090840000L);
+		// Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 that has retired = true
 		updateRequest.setId(1L);
-//		Map<String, Object> certificationEdition = new HashMap<String, Object>();
-//		CertificationEditionDTO ce = new CertificationEditionDTO();
+		updateRequest.setIcs(false);
+		Map<String, Object> certificationEdition = new HashMap<String, Object>();
+		String certEdition = "2015";
+		certificationEdition.put("name", certEdition);
+		updateRequest.setCertificationEdition(certificationEdition);
+		try {
+			certifiedProductController.updateCertifiedProduct(updateRequest);
+		} catch (InvalidArgumentsException e) {
+			e.printStackTrace();
+		} catch (ValidationException e) {
+			assertNotNull(e);
+		}
 
-//		updateRequest.setCertificationEdition();
 		//assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().size() + " but should return 5 results", apiResult.getMeaningfulUseUsers().size() == 5);
 		
 	}
@@ -348,6 +361,7 @@ public class CertifiedProductControllerTest {
 	@Transactional
 	@Test
 	public void test_getCertifiedProductById() throws EntityRetrievalException, EntityCreationException, IOException {
+		Long cpId = 1L;
 		CertifiedProductSearchDetails cpDetails = certifiedProductController.getCertifiedProductById(1L);
 		assertNotNull(cpDetails);
 	}

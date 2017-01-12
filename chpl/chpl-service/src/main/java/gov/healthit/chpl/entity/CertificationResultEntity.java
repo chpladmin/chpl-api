@@ -1,8 +1,6 @@
 package gov.healthit.chpl.entity;
 
-
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -70,8 +68,8 @@ public class CertificationResultEntity  implements Serializable {
 	private String privacySecurityFramework;
 	
 	@Basic(optional = true)
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="certificationResultId")
-	private List<CertificationResultTestToolEntity> certificationResultTestTool = new ArrayList<CertificationResultTestToolEntity>();
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="certificationResult")
+	private List<CertificationResultTestToolEntity> certificationResultTestTool;
 	
 	@Basic(optional = true)
 	@ManyToOne

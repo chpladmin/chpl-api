@@ -16,7 +16,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -73,7 +73,6 @@ import io.swagger.annotations.ApiOperation;
 @Api(value="certified-products")
 @RestController
 @RequestMapping("/certified_products")
-@Aspect
 public class CertifiedProductController {
 	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductController.class);
@@ -85,6 +84,7 @@ public class CertifiedProductController {
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired ActivityManager activityManager;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
+	@Autowired CertifiedProductDAO cpDao;
 
 	@ApiOperation(value="List all certified products", 
 			notes="Default behavior is to return all certified products in the system. "
@@ -186,6 +186,10 @@ public class CertifiedProductController {
 					updateRequest.getErrorMessages().add("The CHPL Product Number has changed. The new CHPL Product Number " + updateRequest.getChplProductNumber() + " must be unique among all other certified products but one already exists with the same ID.");
 				}
 			} catch(EntityRetrievalException ex) {}
+		}
+		
+		if(updateRequest.getIcs().equals("false") && existingProduct.getIcs().equals("true") && cpDao.hasRetiredTestTool(existingProduct.getId()) == true){
+			updateRequest.getErrorMessages().add("Cannot set Ics to false for a Certified Product with Ics=true and an associated retired Test Tool.");
 		}
 		
 		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {

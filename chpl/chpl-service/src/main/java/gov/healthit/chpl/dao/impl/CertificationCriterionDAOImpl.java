@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -175,6 +176,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		
 	}
 	
+	@Transactional
 	private List<CertificationCriterionEntity> getAllEntities() {
 		Query query = entityManager.createQuery(
 				"SELECT cce "

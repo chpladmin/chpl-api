@@ -1,9 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -156,6 +153,25 @@ public class CertifiedProductDaoTest {
 		productDao.delete(productId);
 		CertifiedProductDTO deletedProduct = productDao.getById(productId);
 		assertTrue(deletedProduct.getDeleted());
+	}
+	
+	/**
+	 * Given that I am authenticated as an admin
+	 * When I check to see if a CP id has an associated retired test tool
+	 * Then a CP with an associated TestTool that is retired returns true
+	 * Then a CP without an associated TestTool that is retired returns false
+	 * @throws EntityRetrievalException 
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void test_hasRetiredTestTool() throws EntityRetrievalException {
+		Long productId = 1L;
+		Boolean result = productDao.hasRetiredTestTool(productId);
+		assertTrue("CP with id = 1 should have a retired test tool", result);
+		
+		productId = 2L;
+		result = productDao.hasRetiredTestTool(productId);
+		assertFalse("CP with id = 2 should NOT have a retired test tool", result);
 	}
 	
 //	@Test

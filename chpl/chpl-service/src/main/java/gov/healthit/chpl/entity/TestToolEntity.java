@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -10,7 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.CertificationResultTestTool;
@@ -37,8 +38,8 @@ public class TestToolEntity {
 	private Boolean retired;
 	
 	@Basic(optional = true)
-	@OneToOne(optional = true, targetEntity = CertificationResultTestToolEntity.class, mappedBy = "testTool", fetch = FetchType.LAZY)
-	private CertificationResultTestTool certificationResultTestTool;
+	@OneToMany(targetEntity = CertificationResultTestToolEntity.class, fetch = FetchType.LAZY)
+	private List<CertificationResultTestTool> certificationResultTestTool;
 	
 	public Long getId() {
 		return id;
@@ -111,5 +112,13 @@ public class TestToolEntity {
 
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
+	}
+
+	public List<CertificationResultTestTool> getCertificationResultTestTool() {
+		return certificationResultTestTool;
+	}
+
+	public void setCertificationResultTestTool(List<CertificationResultTestTool> certificationResultTestTool) {
+		this.certificationResultTestTool = certificationResultTestTool;
 	}
 }
