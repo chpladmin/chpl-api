@@ -50,25 +50,21 @@ public class ActivityControllerTest {
 	}
 	
 	/** 
-	 * Tests
+	 * Tests that listActivity returns results for a Certified Product
 	 * @throws IOException 
 	 */
 	@Transactional
 	@Test
-	public void test_listActivity_startDate_UndefinedReturnsOldestApiKeyActivity() throws EntityRetrievalException, EntityCreationException, IOException{
+	public void test_listActivity() throws EntityRetrievalException, EntityCreationException, IOException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		// Note: certification_criterion_id="59" has testTool="true", number 170.315 (h)(1) and title "Direct Project"
 		Long cpId = 1L; // this CP has ics_code = "1" & associated certification_result_id = 8 with certification_criterion_id="59"
 		Long cpId2 = 10L; // this CP has ics_code = "0" & associated certification_result_id = 9 with certification_criterion_id="59"
 		
 		List<ActivityEvent> cpActivityEvents = activityController.activityForCertifiedProductById(cpId, null, null);
-		
-		// Verify that cpActivityEvents
-		
-		//cpActivityEvents.get(0).getNewData().fields()
+		assertTrue(cpActivityEvents.size() == 4);
 		
 		List<ActivityEvent> cp2ActivityEvents = activityController.activityForCertifiedProductById(cpId2, null, null);
-		
-		assertTrue("", true);
+		assertTrue(cp2ActivityEvents.size() == 0);
 	}
 }
