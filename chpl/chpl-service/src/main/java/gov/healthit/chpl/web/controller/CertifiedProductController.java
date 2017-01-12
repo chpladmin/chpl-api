@@ -54,6 +54,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -188,8 +189,22 @@ public class CertifiedProductController {
 			} catch(EntityRetrievalException ex) {}
 		}
 		
-		if(updateRequest.getIcs().equals("false") && existingProduct.getIcs().equals("true") && cpDao.hasRetiredTestTool(existingProduct.getId()) == true){
-			updateRequest.getErrorMessages().add("Cannot set Ics to false for a Certified Product with Ics=true and an associated retired Test Tool.");
+		List<CertificationCriterionEntity> retiredTestTools = cpDao.getRetiredTestTools(existingProduct.getId());
+		Boolean hasRetiredTestTool = false;
+		if(retiredTestTools.size() > 0){
+			hasRetiredTestTool = true;
+		}
+		
+		Boolean updateIcs = updateRequest.getIcs();
+		Boolean existingProductIcs = existingProduct.getIcs();
+		if(updateIcs == false && existingProductIcs == true && hasRetiredTestTool == true){
+			List<Long> retiredTestToolIds = new ArrayList<Long>();
+			for(CertificationCriterionEntity cce : retiredTestTools){
+				retiredTestToolIds.add(cce.getId());
+			}
+			
+			updateRequest.getErrorMessages().add("Cannot set Ics to false for a Certified Product with Ics=true and an associated retired Test Tool. "
+					+ "The following are associated retired Test Tool Ids: " + retiredTestToolIds.toString());
 		}
 		
 		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {

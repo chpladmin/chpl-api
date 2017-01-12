@@ -5,6 +5,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 public interface CertifiedProductDAO {
 	
@@ -33,5 +34,5 @@ public interface CertifiedProductDAO {
 	
 	public List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds);
 	public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(Long vendorId);
-	public Boolean hasRetiredTestTool(Long cpId);
+	public List<CertificationCriterionEntity> getRetiredTestTools(Long cpId);
 }

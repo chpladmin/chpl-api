@@ -166,11 +166,11 @@ public class CertifiedProductDaoTest {
 	@Transactional(readOnly = true)
 	public void test_hasRetiredTestTool() throws EntityRetrievalException {
 		Long productId = 1L;
-		Boolean result = productDao.hasRetiredTestTool(productId);
+		Boolean result = productDao.getRetiredTestTools(productId);
 		assertTrue("CP with id = 1 should have a retired test tool", result);
 		
 		productId = 2L;
-		result = productDao.hasRetiredTestTool(productId);
+		result = productDao.getRetiredTestTools(productId);
 		assertFalse("CP with id = 2 should NOT have a retired test tool", result);
 	}
 	

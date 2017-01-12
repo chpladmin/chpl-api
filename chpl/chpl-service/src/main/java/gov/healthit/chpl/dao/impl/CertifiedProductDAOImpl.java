@@ -390,7 +390,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	@Transactional(readOnly=true)
-	public Boolean hasRetiredTestTool(Long cpId) {
+	public List<CertificationCriterionEntity> getRetiredTestTools(Long cpId) {
 		Query query = entityManager.createQuery(
 				"SELECT c FROM CertificationCriterionEntity c "
 				+ "LEFT JOIN c.certificationResult cr "
@@ -401,13 +401,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 				, CertificationCriterionEntity.class);
 		query.setParameter("cpId", cpId);
 		List<CertificationCriterionEntity> result = query.getResultList();
-		
-		if(result.size() > 0){
-			return true;
-		}
-		else{
-			return false;
-		}
+		return result;
 	}
 	
 	@Transactional(readOnly=false)
