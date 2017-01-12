@@ -198,13 +198,13 @@ public class CertifiedProductController {
 		Boolean updateIcs = updateRequest.getIcs();
 		Boolean existingProductIcs = existingProduct.getIcs();
 		if(updateIcs == false && existingProductIcs == true && hasRetiredTestTool == true){
-			List<Long> retiredTestToolIds = new ArrayList<Long>();
+			List<String> retiredTestToolNumbers = new ArrayList<String>();
 			for(CertificationCriterionEntity cce : retiredTestTools){
-				retiredTestToolIds.add(cce.getId());
+				retiredTestToolNumbers.add(cce.getNumber());
 			}
 			
-			updateRequest.getErrorMessages().add("Cannot set Ics to false for a Certified Product with Ics=true and an associated retired Test Tool. "
-					+ "The following are associated retired Test Tool Ids: " + retiredTestToolIds.toString());
+			updateRequest.getErrorMessages().add("Cannot set Ics to false for a Certified Product with Ics=true and attested criteria that have a retired Test Tool. "
+					+ "The following are attested criteria have a retired Test Tool: " + retiredTestToolNumbers.toString());
 		}
 		
 		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {

@@ -32,6 +32,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = gov.healthit.chpl.CHPLTestConfig.class)
@@ -158,20 +159,20 @@ public class CertifiedProductDaoTest {
 	/**
 	 * Given that I am authenticated as an admin
 	 * When I check to see if a CP id has an associated retired test tool
-	 * Then a CP with an associated TestTool that is retired returns true
-	 * Then a CP without an associated TestTool that is retired returns false
+	 * Then a CP's associated retired TestTools are returned
+	 * Then a CP without an associated retired TestTool returns no results
 	 * @throws EntityRetrievalException 
 	 */
 	@Test
 	@Transactional(readOnly = true)
 	public void test_hasRetiredTestTool() throws EntityRetrievalException {
 		Long productId = 1L;
-		Boolean result = productDao.getRetiredTestTools(productId);
-		assertTrue("CP with id = 1 should have a retired test tool", result);
+		List<CertificationCriterionEntity> result = productDao.getRetiredTestTools(productId);
+		assertTrue("CP with id = 1 should have two retired test tools", result.size() == 2);
 		
 		productId = 2L;
 		result = productDao.getRetiredTestTools(productId);
-		assertFalse("CP with id = 2 should NOT have a retired test tool", result);
+		assertTrue("CP with id = 2 should NOT have a retired test tool", result.size() == 0);
 	}
 	
 //	@Test

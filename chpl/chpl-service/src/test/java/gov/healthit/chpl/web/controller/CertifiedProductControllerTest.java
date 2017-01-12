@@ -13,8 +13,10 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +47,9 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CQMResultCertification;
+import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
@@ -332,22 +337,76 @@ public class CertifiedProductControllerTest {
 		
 		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
 		updateRequest.setCertificationDate(1440090840000L);
-		// Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 that has retired = true
-		updateRequest.setId(1L);
+		updateRequest.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 that has retired = true
 		updateRequest.setIcs(false);
+		updateRequest.setChplProductNumber("CHP-024050");
+		Map<String, Object> certStatus = new HashMap<String, Object>();
+		certStatus.put("name", "Active");
+		updateRequest.setCertificationStatus(certStatus);
 		Map<String, Object> certificationEdition = new HashMap<String, Object>();
 		String certEdition = "2015";
 		certificationEdition.put("name", certEdition);
 		updateRequest.setCertificationEdition(certificationEdition);
+		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
+		CertificationResult cr = new CertificationResult();
+		cr.setAdditionalSoftware(null);
+		cr.setApiDocumentation(null);
+		cr.setG1Success(false);
+		cr.setG2Success(false);
+		cr.setGap(null);
+		cr.setNumber("170.314 (b)(6)");
+		cr.setPrivacySecurityFramework(null);
+		cr.setSed(null);
+		cr.setSuccess(false);
+		cr.setTestDataUsed(null);
+		cr.setTestFunctionality(null);
+		cr.setTestProcedures(null);
+		cr.setTestStandards(null);
+		cr.setTestTasks(null);
+		cr.setTestToolsUsed(null);
+		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
+		cr.setUcdProcesses(null);
+		certificationResults.add(cr);
+		updateRequest.setCertificationResults(certificationResults);
+		List<CQMResultDetails> cqms = new ArrayList<CQMResultDetails>();
+		CQMResultDetails cqm = new CQMResultDetails();
+		Set<String> versions = new HashSet<String>();
+		versions.add("v0");
+		versions.add("v1");
+		versions.add("v2");
+		versions.add("v3");
+		versions.add("v4");
+		versions.add("v5");
+		cqm.setAllVersions(versions);
+		cqm.setCmsId("CMS60");
+		List<CQMResultCertification> cqmResultCertifications = new ArrayList<CQMResultCertification>();
+		cqm.setCriteria(cqmResultCertifications);
+		cqm.setDescription("Acute myocardial infarction (AMI) patients with ST-segment elevation on the ECG closest to arrival time receiving "
+				+ "fibrinolytic therapy during the hospital visit"); 
+		cqm.setDomain(null);
+		cqm.setId(0L);
+		cqm.setNqfNumber("0164");
+		cqm.setNumber(null);
+		cqm.setSuccess(true);
+		Set<String> successVersions = new HashSet<String>();
+		successVersions.add("v2");
+		successVersions.add("v3");
+		cqm.setSuccessVersions(successVersions);
+		cqm.setTitle("Fibrinolytic Therapy Received Within 30 Minutes of Hospital Arrival");
+		cqm.setTypeId(2L);
+		cqms.add(cqm);
+		updateRequest.setCqmResults(cqms);
 		try {
 			certifiedProductController.updateCertifiedProduct(updateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
 			assertNotNull(e);
+			assertTrue(e.getErrorMessages().contains("Cannot set Ics to false for a Certified "
+					+ "Product with Ics=true and attested criteria that have a retired Test Tool. "
+					+ "The following are attested criteria have a retired Test Tool: "
+					+ "[170.314 (a)(1), 170.314 (a)(1)]"));
 		}
-
-		//assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().size() + " but should return 5 results", apiResult.getMeaningfulUseUsers().size() == 5);
 		
 	}
 	
