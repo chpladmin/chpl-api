@@ -187,7 +187,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 				+ "LEFT JOIN cr.certifiedProduct cp "
 				+ "LEFT JOIN cr.certificationResultTestTool crtt "
 				+ "LEFT JOIN crtt.testTool tt "
-				+ "WHERE (tt.retired = true AND cp.icsCode = '1') OR (tt.retired = false) AND c.deleted = false)"
+				+ "WHERE (tt.retired = true AND CAST(cp.icsCode as integer) >= 1) OR (tt.retired = false) AND c.deleted = false)"
 				, CertificationCriterionEntity.class);
 		List<CertificationCriterionEntity> result = query.getResultList();
 		

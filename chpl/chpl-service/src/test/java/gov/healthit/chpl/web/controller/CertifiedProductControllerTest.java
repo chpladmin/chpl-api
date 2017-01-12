@@ -336,7 +336,7 @@ public class CertifiedProductControllerTest {
 		
 		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
 		updateRequest.setCertificationDate(1440090840000L);
-		updateRequest.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 that has retired = true
+		updateRequest.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
 		updateRequest.setIcs(false);
 		updateRequest.setChplProductNumber("CHP-024050");
 		Map<String, Object> certStatus = new HashMap<String, Object>();
@@ -401,10 +401,9 @@ public class CertifiedProductControllerTest {
 			e.printStackTrace();
 		} catch (ValidationException e) {
 			assertNotNull(e);
-			assertTrue(e.getErrorMessages().contains("Cannot set Ics to false for a Certified "
-					+ "Product with Ics=true and attested criteria that have a retired Test Tool. "
-					+ "The following are attested criteria have a retired Test Tool: "
-					+ "[170.314 (a)(1), 170.314 (a)(1)]"));
+			assertTrue(e.getErrorMessages().contains("Cannot set ICS to false for a Certified Product "
+					+ "with ICS=true and attested criteria that have a retired Test Tool. The following "
+					+ "are attested criteria that have a retired Test Tool: [170.314 (a)(1), 170.314 (a)(1)]"));
 		}
 		
 	}
