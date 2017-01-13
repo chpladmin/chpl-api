@@ -1,17 +1,18 @@
 package gov.healthit.chpl.auth.authentication;
 
 
-import static org.junit.Assert.*;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.user.User;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.jwt.JWTValidationException;
+import gov.healthit.chpl.auth.user.User;
 
 
 

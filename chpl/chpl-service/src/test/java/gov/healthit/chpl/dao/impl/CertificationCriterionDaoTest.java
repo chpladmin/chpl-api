@@ -1,8 +1,13 @@
 package gov.healthit.chpl.dao.impl;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -24,11 +29,12 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.caching.CacheInvalidationRule;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,14 +45,16 @@ import junit.framework.TestCase;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertificationCriterionDaoTest extends TestCase {
-
+	
+	@PersistenceContext
+	protected EntityManager entityManager;
 	
 	@Autowired
 	private CertificationCriterionDAO certificationCriterionDAO;
 	
 	@Rule
     @Autowired
-    public CacheInvalidationRule cacheInvalidationRule;
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -293,5 +301,70 @@ public class CertificationCriterionDaoTest extends TestCase {
 		certificationCriterionDAO.delete(id);
 	}
 	
-
+	/**
+	 * Tests that getAllEntities() gets all non-deleted certification criterion that are associated with a certified product
+	 * Must have (TestTool.retired = true AND CP.ics_code = true) OR (TestTool.retired = false) AND CertCriterion.deleted = false
+	 * @throws EntityRetrievalException
+	 * @throws EntityCreationException
+	 */
+	@Test
+	@Transactional
+	public void testGetAllEntities() throws EntityRetrievalException, EntityCreationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		System.out.println("Running getAllEntities() test");
+		List<CertificationCriterionDTO> certCritDTOs = certificationCriterionDAO.findAll();
+		assertTrue("List of CertificationCriterionDTO should equal 2 but is " + certCritDTOs.size(), certCritDTOs.size() == 2);
+		
+		List<Long> certCritIdList = new ArrayList<Long>();
+		for(CertificationCriterionDTO dto : certCritDTOs){
+			certCritIdList.add(dto.getId());
+			assertFalse(dto.getDeleted());
+		}
+		
+		// Verify that results are returned where TT is retired and CP.ics_code = 1
+		List<CertificationCriterionEntity> certCritWithTTRetiredAndIcsCodeEqualsOne = getAllRetiredEntitiesWithIcsCodeEqualsOne();
+		for(CertificationCriterionEntity cce : certCritWithTTRetiredAndIcsCodeEqualsOne){
+			assertTrue(certCritIdList.contains(cce.getId()));
+		}
+		
+		// Verify that no results are returned where TT is retired and CP.ics_code <> 1
+		List<CertificationCriterionEntity> retiredEntitiesWithIcsNotOne = getAllRetiredEntitiesWithIcsCodeNotOne();
+		for(Long id : certCritIdList){
+			for(CertificationCriterionEntity cce : retiredEntitiesWithIcsNotOne){
+				assertFalse(cce.getId().equals(id));
+			}
+		}
+	}
+	
+	private List<CertificationCriterionEntity> getAllRetiredEntitiesWithIcsCodeNotOne() {
+		Query query = entityManager.createQuery(
+				"SELECT cce "
+				+ "FROM CertificationCriterionEntity cce "
+				+ "WHERE cce.id IN ( "
+				+ "SELECT c.id FROM CertificationCriterionEntity c "
+				+ "LEFT JOIN c.certificationResult cr "
+				+ "LEFT JOIN cr.certifiedProduct cp "
+				+ "LEFT JOIN cr.certificationResultTestTool crtt "
+				+ "LEFT JOIN crtt.testTool tt "
+				+ "WHERE (tt.retired = true AND cp.icsCode <> '1') AND c.deleted = false)"
+				, CertificationCriterionEntity.class);
+		List<CertificationCriterionEntity> result = query.getResultList();
+		
+		return result;
+	}
+	
+	private List<CertificationCriterionEntity> getAllRetiredEntitiesWithIcsCodeEqualsOne() {
+		Query query = entityManager.createQuery(
+				"SELECT c FROM CertificationCriterionEntity c "
+				+ "LEFT JOIN c.certificationResult cr "
+				+ "LEFT JOIN cr.certifiedProduct cp "
+				+ "LEFT JOIN cr.certificationResultTestTool crtt "
+				+ "LEFT JOIN crtt.testTool tt "
+				+ "WHERE (tt.retired = true AND cp.icsCode = '1') AND c.deleted = false"
+				, CertificationCriterionEntity.class);
+		List<CertificationCriterionEntity> result = query.getResultList();
+		
+		return result;
+	}
 }

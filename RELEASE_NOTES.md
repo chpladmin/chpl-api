@@ -22,6 +22,7 @@ _Date TBD_
 * Add new certification status for products
 * Allow 0 for number of randomized sites and total sites for surveillance
 * Remove products marked Suspended By ONC from Decertified Product search
+* Allow retired test tools where certified product ICS=true
 
 ### Bugs Fixed
 * Fixes exception when getting back activity performed by a user that has since been deleted

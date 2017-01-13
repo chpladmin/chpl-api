@@ -431,11 +431,6 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
 		
 		for (CertificationCriterionDTO dto : dtos) {
-			if (simple){
-				if (certificationEditionDAO.getById(dto.getCertificationEditionId()).getRetired().equals(true)) {
-					continue;
-				}
-			}
 			criterionNames.add( new DescriptiveModel(dto.getId(), dto.getNumber(), dto.getTitle()));
 		}
 		

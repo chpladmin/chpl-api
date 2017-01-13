@@ -1,13 +1,10 @@
 package gov.healthit.chpl.auth.authentication;
 
-import static org.junit.Assert.*;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +22,14 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.jwt.JWTValidationException;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
