@@ -62,7 +62,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 	
 	private List<MacraMeasureEntity> getMeasuresByCertificationCriteria(String criteriaNumber) {
 		Query query = entityManager.createQuery( "FROM MacraMeasureEntity mme "
-				+ "LEFT OUTER JOIN FETCH CertificationCriterionEntity cce "
+				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
 				+ "WHERE (NOT mme.deleted = true) "
 				+ "AND (UPPER(cce.number) = :criteriaNumber)", MacraMeasureEntity.class);
 		query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
@@ -72,7 +72,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 	
 	private MacraMeasureEntity getMeasureByCertificationCriteriaAndValue(String criteriaNumber, String value) {
 		Query query = entityManager.createQuery( "FROM MacraMeasureEntity mme "
-				+ "LEFT OUTER JOIN FETCH CertificationCriterionEntity cce "
+				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
 				+ "WHERE (NOT mme.deleted = true) "
 				+ "AND (UPPER(cce.number) = :criteriaNumber) "
 				+ "AND (UPPER(mme.value) = :value)", MacraMeasureEntity.class);
