@@ -17,6 +17,8 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultG1MacraMeasureEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultG2MacraMeasureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
@@ -155,6 +157,28 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 					ttEntity.setCreationDate(new Date());
 					ttEntity.setDeleted(false);
 					entityManager.persist(ttEntity);
+				}
+			}
+			
+			if(criterion.getG1MacraMeasures() != null && criterion.getG1MacraMeasures().size() > 0) {
+				for(PendingCertificationResultG1MacraMeasureEntity mmEntity : criterion.getG1MacraMeasures()) {
+					mmEntity.setPendingCertificationResultId(criterion.getId());
+					mmEntity.setLastModifiedDate(new Date());	
+					mmEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					mmEntity.setCreationDate(new Date());
+					mmEntity.setDeleted(false);
+					entityManager.persist(mmEntity);
+				}
+			}
+			
+			if(criterion.getG2MacraMeasures() != null && criterion.getG2MacraMeasures().size() > 0) {
+				for(PendingCertificationResultG2MacraMeasureEntity mmEntity : criterion.getG2MacraMeasures()) {
+					mmEntity.setPendingCertificationResultId(criterion.getId());
+					mmEntity.setLastModifiedDate(new Date());	
+					mmEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					mmEntity.setCreationDate(new Date());
+					mmEntity.setDeleted(false);
+					entityManager.persist(mmEntity);
 				}
 			}
 			

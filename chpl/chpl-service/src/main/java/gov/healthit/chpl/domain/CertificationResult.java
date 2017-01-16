@@ -25,6 +25,8 @@ public class CertificationResult implements Serializable {
 	private List<CertificationResultAdditionalSoftware> additionalSoftware;
 	private List<CertificationResultTestStandard> testStandards;
 	private List<CertificationResultTestTool> testToolsUsed;
+	private List<CertificationResultMacraMeasure> g1MacraMeasures;
+	private List<CertificationResultMacraMeasure> g2MacraMeasures;
 	private List<CertificationResultTestTask> testTasks;
 	
 	public CertificationResult(){
@@ -36,6 +38,8 @@ public class CertificationResult implements Serializable {
 		 testProcedures = new ArrayList<CertificationResultTestProcedure>();
 		 testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 		 testTasks = new ArrayList<CertificationResultTestTask>();
+		 g1MacraMeasures = new ArrayList<CertificationResultMacraMeasure>();
+		 g2MacraMeasures = new ArrayList<CertificationResultMacraMeasure>();
 	}
 
 	public CertificationResult(CertificationResultDetailsDTO certResult) {
@@ -170,5 +174,21 @@ public class CertificationResult implements Serializable {
 
 	public void setPrivacySecurityFramework(String privacySecurityFramework) {
 		this.privacySecurityFramework = privacySecurityFramework;
+	}
+	
+	public List<CertificationResultMacraMeasure> getG1MacraMeasures() {
+		return g1MacraMeasures;
+	}
+
+	public void setG1MacraMeasures(List<CertificationResultMacraMeasure> g1MacraMeasures) {
+		this.g1MacraMeasures = g1MacraMeasures;
+	}
+
+	public List<CertificationResultMacraMeasure> getG2MacraMeasures() {
+		return g2MacraMeasures;
+	}
+
+	public void setG2MacraMeasures(List<CertificationResultMacraMeasure> g2MacraMeasures) {
+		this.g2MacraMeasures = g2MacraMeasures;
 	}
 }

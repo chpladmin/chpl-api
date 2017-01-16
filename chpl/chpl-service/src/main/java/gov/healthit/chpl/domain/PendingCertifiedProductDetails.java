@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
@@ -296,6 +297,24 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				}
 			} else {
 				cert.setTestStandards(null);
+			}
+			
+			if(certCriterion.getG1Measures() != null) {
+				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG1Measures()) {
+					CertificationResultMacraMeasure measure = new CertificationResultMacraMeasure(mm);
+					cert.getG1MacraMeasures().add(measure);
+				}
+			} else {
+				cert.setG1MacraMeasures(null);
+			}
+			
+			if(certCriterion.getG2Measures() != null) {
+				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG2Measures()) {
+					CertificationResultMacraMeasure measure = new CertificationResultMacraMeasure(mm);
+					cert.getG2MacraMeasures().add(measure);
+				}
+			} else {
+				cert.setG2MacraMeasures(null);
 			}
 			
 			if(certCriterion.getTestTasks() != null && certCriterion.getTestTasks().size() > 0) {

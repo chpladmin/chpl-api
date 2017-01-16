@@ -7,7 +7,7 @@ import java.util.Set;
 public class SearchOption implements Serializable {
 	private static final long serialVersionUID = -6671338026335670632L;
 	private boolean expandable;
-	private Set<KeyValueModel> data;
+	private Set<? extends KeyValueModel> data;
 	
 	public SearchOption() {
 		this.data = new HashSet<KeyValueModel>();
@@ -21,11 +21,11 @@ public class SearchOption implements Serializable {
 		this.expandable = expandable;
 	}
 
-	public Set<KeyValueModel> getData() {
+	public Set<? extends KeyValueModel> getData() {
 		return data;
 	}
 
-	public void setData(Set<KeyValueModel> data) {
+	public void setData(Set<? extends KeyValueModel> data) {
 		this.data = data;
 	}
 	

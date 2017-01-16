@@ -6,6 +6,8 @@ import java.util.List;
 
 import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultG1MacraMeasureEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultG2MacraMeasureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
@@ -36,6 +38,8 @@ public class PendingCertificationResultDTO implements Serializable {
 	private List<PendingCertificationResultTestProcedureDTO> testProcedures;
 	private List<PendingCertificationResultTestStandardDTO> testStandards;
 	private List<PendingCertificationResultTestToolDTO> testTools;
+	private List<PendingCertificationResultMacraMeasureDTO> g1Measures;
+	private List<PendingCertificationResultMacraMeasureDTO> g2Measures;
 	private List<PendingCertificationResultTestTaskDTO> testTasks;
 	
 	public PendingCertificationResultDTO() {
@@ -46,6 +50,8 @@ public class PendingCertificationResultDTO implements Serializable {
 		testProcedures = new ArrayList<PendingCertificationResultTestProcedureDTO>();
 		testStandards = new ArrayList<PendingCertificationResultTestStandardDTO>();
 		testTools = new ArrayList<PendingCertificationResultTestToolDTO>();
+		g1Measures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
+		g2Measures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
 		testTasks = new ArrayList<PendingCertificationResultTestTaskDTO>();
 	}
 	
@@ -103,6 +109,18 @@ public class PendingCertificationResultDTO implements Serializable {
 		if(entity.getTestTools() != null) {
 			for(PendingCertificationResultTestToolEntity e : entity.getTestTools()) {
 				this.getTestTools().add(new PendingCertificationResultTestToolDTO(e));
+			}
+		}
+		
+		if(entity.getG1MacraMeasures() != null) {
+			for(PendingCertificationResultG1MacraMeasureEntity e : entity.getG1MacraMeasures()) {
+				this.getG1Measures().add(new PendingCertificationResultMacraMeasureDTO(e));
+			}
+		}
+		
+		if(entity.getG2MacraMeasures() != null) {
+			for(PendingCertificationResultG2MacraMeasureEntity e : entity.getG2MacraMeasures()) {
+				this.getG2Measures().add(new PendingCertificationResultMacraMeasureDTO(e));
 			}
 		}
 		
@@ -266,6 +284,22 @@ public class PendingCertificationResultDTO implements Serializable {
 
 	public void setPrivacySecurityFramework(String privacySecurityFramework) {
 		this.privacySecurityFramework = privacySecurityFramework;
+	}
+
+	public List<PendingCertificationResultMacraMeasureDTO> getG1Measures() {
+		return g1Measures;
+	}
+
+	public void setG1Measures(List<PendingCertificationResultMacraMeasureDTO> g1Measures) {
+		this.g1Measures = g1Measures;
+	}
+
+	public List<PendingCertificationResultMacraMeasureDTO> getG2Measures() {
+		return g2Measures;
+	}
+
+	public void setG2Measures(List<PendingCertificationResultMacraMeasureDTO> g2Measures) {
+		this.g2Measures = g2Measures;
 	}
 	
 	

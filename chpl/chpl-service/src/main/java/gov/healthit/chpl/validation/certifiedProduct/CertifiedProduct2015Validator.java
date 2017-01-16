@@ -12,17 +12,22 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
@@ -33,6 +38,7 @@ import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.entity.PendingCertificationResultG1MacraMeasureEntity;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
@@ -72,6 +78,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 	@Autowired TestToolDAO testToolDao;
 	@Autowired TestFunctionalityDAO testFuncDao;
 	@Autowired AccessibilityStandardDAO asDao;
+	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	
 	@Override
@@ -375,6 +382,34 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
+						cert.getG1Measures() != null && cert.getG1Measures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1Measures()) {
+						if(pendingMeasureMap.getMacraMeasureId() == null) {
+							MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(), pendingMeasureMap.getEnteredValue());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure: '" + pendingMeasureMap.getEnteredValue() + "'.");
+							} else {
+								pendingMeasureMap.setMacraMeasure(foundMeasure);
+							}
+						}
+					}
+				}
+				
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
+						cert.getG2Measures() != null && cert.getG2Measures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2Measures()) {
+						if(pendingMeasureMap.getMacraMeasureId() == null) {
+							MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(), pendingMeasureMap.getEnteredValue());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure: '" + pendingMeasureMap.getEnteredValue() + "'.");
+							} else {
+								pendingMeasureMap.setMacraMeasure(foundMeasure);
+							}
+						}
+					}
+				}
+				
 				if(!gapEligibleAndTrue && 
 					(cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestData() == null || cert.getTestData().size() == 0)) {
@@ -738,6 +773,48 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
+						cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					for(CertificationResultMacraMeasure measureMap : cert.getG1MacraMeasures()) {
+						if(measureMap.getMeasure() == null || measureMap.getMeasure().getId() == null) {
+							product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure.");
+						} else {
+							//confirm the measure id is valid
+							MacraMeasureDTO foundMeasure = macraDao.getById(measureMap.getMeasure().getId());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure. No measure found with ID '" + measureMap.getMeasure().getId() + "'.");
+							} else if(!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid G1 Macra Measure. Measure with ID '" + 
+										measureMap.getMeasure().getId() + "' is the measure '" + foundMeasure.getName() + 
+										"' and is for criteria '" + foundMeasure.getCriteria().getNumber() + "'.");
+							} else {								
+								measureMap.setMeasure(new MacraMeasure(foundMeasure));
+							}
+						}
+					}
+				}
+				
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
+						cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					for(CertificationResultMacraMeasure measureMap : cert.getG2MacraMeasures()) {
+						if(measureMap.getMeasure() == null || measureMap.getMeasure().getId() == null) {
+							product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure.");
+						} else {
+							//confirm the measure id is valid
+							MacraMeasureDTO foundMeasure = macraDao.getById(measureMap.getMeasure().getId());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure. No measure found with ID '" + measureMap.getMeasure().getId() + "'.");
+							} else if(!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid G2 Macra Measure. Measure with ID '" + 
+										measureMap.getMeasure().getId() + "' is the measure '" + foundMeasure.getName() + 
+										"' and is for criteria '" + foundMeasure.getCriteria().getNumber() + "'.");
+							} else {								
+								measureMap.setMeasure(new MacraMeasure(foundMeasure));
+							}
+						}
+					}
+				}
+				
 				if(!gapEligibleAndTrue && 
 					(cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {

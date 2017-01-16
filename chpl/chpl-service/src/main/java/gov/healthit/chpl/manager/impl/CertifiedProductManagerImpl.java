@@ -40,6 +40,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -53,6 +54,7 @@ import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestParticipant;
@@ -62,6 +64,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -74,6 +77,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -94,8 +98,10 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
@@ -125,6 +131,7 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.DeveloperStatusType;
+import gov.healthit.chpl.entity.PendingCertificationResultG1MacraMeasureEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
@@ -172,6 +179,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired UcdProcessDAO ucdDao;
 	@Autowired TestParticipantDAO testParticipantDao;
 	@Autowired TestTaskDAO testTaskDao;
+	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertificationStatusDAO certStatusDao;
 	
 	@Autowired
@@ -599,6 +607,34 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							} else {
 								logger.error("Could not insert test tool with null id. Name was " + tool.getName());
 							}
+						}
+					}
+				}
+				
+				if(certResult.getG1Measures() != null && certResult.getG1Measures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1Measures()) {
+						//the validator set the macraMeasure value so it's definitely filled in
+						if(pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
+							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
+							crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
+							crMeasure.setCertificationResultId(createdCert.getId());
+							certDao.addG1MacraMeasureMapping(crMeasure);
+						} else {
+							logger.error("Found G1 Macra Measure with null value for " + certResult.getNumber());
+						}
+					}
+				}
+				
+				if(certResult.getG2Measures() != null && certResult.getG2Measures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1Measures()) {
+						//the validator set the macraMeasure value so it's definitely filled in
+						if(pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
+							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
+							crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
+							crMeasure.setCertificationResultId(createdCert.getId());
+							certDao.addG2MacraMeasureMapping(crMeasure);
+						} else {
+							logger.error("Found G2 Macra Measure with null value for " + certResult.getNumber());
 						}
 					}
 				}
@@ -1242,6 +1278,34 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							testTool.setTestToolVersion(newTestTool.getTestToolVersion());
 							testTool.setCertificationResultId(oldResult.getId());
 							oldResult.getTestTools().add(testTool);
+						}
+					}
+					
+					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.G1_SUCCESS) ||
+							newCertResult.getG1MacraMeasures() == null || newCertResult.getG1MacraMeasures().size() == 0) {
+						oldResult.setG1Measures(new ArrayList<CertificationResultMacraMeasureDTO>());
+					} else {
+						for(CertificationResultMacraMeasure newMeasure : newCertResult.getG1MacraMeasures()) {
+							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
+							crMeasure.setCertificationResultId(oldResult.getId());
+							MacraMeasureDTO mmDto = new MacraMeasureDTO();
+							mmDto.setId(newMeasure.getMeasure().getId());
+							crMeasure.setMeasure(mmDto);
+							oldResult.getG1Measures().add(crMeasure);
+						}
+					}
+					
+					if(!certRules.hasCertOption(criterionDTO.getNumber(), CertificationResultRules.G2_SUCCESS) ||
+							newCertResult.getG2MacraMeasures() == null || newCertResult.getG2MacraMeasures().size() == 0) {
+						oldResult.setG2Measures(new ArrayList<CertificationResultMacraMeasureDTO>());
+					} else {
+						for(CertificationResultMacraMeasure newMeasure : newCertResult.getG2MacraMeasures()) {
+							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
+							crMeasure.setCertificationResultId(oldResult.getId());
+							MacraMeasureDTO mmDto = new MacraMeasureDTO();
+							mmDto.setId(newMeasure.getMeasure().getId());
+							crMeasure.setMeasure(mmDto);
+							oldResult.getG2Measures().add(crMeasure);
 						}
 					}
 					

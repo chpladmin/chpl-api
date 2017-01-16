@@ -20,6 +20,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -30,9 +31,12 @@ import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
@@ -51,6 +55,7 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -103,6 +108,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Autowired
 	private DeveloperDAO developerDAO;
+	
+	@Autowired private MacraMeasureDAO macraDao;
 	
 	
 	@Transactional
@@ -420,6 +427,20 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			results.add(new KeyValueModel(result.getId(), result.getName()));
 		}
 		return results;
+	}
+	
+	@Transactional
+	@Override
+	@Cacheable("macrameasures")
+	public Set<CriteriaSpecificDescriptiveModel> getMacraMeasures() {
+		List<MacraMeasureDTO> measureDtos = macraDao.findAll();
+		Set<CriteriaSpecificDescriptiveModel> measures = new HashSet<CriteriaSpecificDescriptiveModel>();
+		
+		for (MacraMeasureDTO dto : measureDtos) {
+			measures.add(new CriteriaSpecificDescriptiveModel(dto.getId(), dto.getValue(), dto.getName(), 
+					dto.getDescription(), new CertificationCriterion(dto.getCriteria())));
+		}
+		return measures;
 	}
 	
 	@Transactional
