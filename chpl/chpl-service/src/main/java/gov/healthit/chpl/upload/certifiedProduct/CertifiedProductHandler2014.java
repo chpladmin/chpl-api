@@ -699,7 +699,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				ttEntity.setTestToolVersion(testToolVersion);
 				TestToolDTO testTool = testToolDao.getByName(testToolName);
 				if(testTool != null) {
-					if(testTool.isRetired() && product.getIcs().equals("false")) {
+					if(testTool.isRetired() && product.getIcs() == false) {
 						product.getErrorMessages().add("Test tool '" + testToolName + "' has been retired for a product with ICS=false. Please remove it from the upload file and add a different test tool if necessary.");
 					}
 					ttEntity.setTestToolId(testTool.getId());
