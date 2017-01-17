@@ -5,6 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -13,9 +16,11 @@ import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
@@ -24,19 +29,23 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
+	private static final Logger logger = LogManager.getLogger(CertifiedProductValidator.class);
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired TestingLabDAO atlDao;
 	@Autowired CertificationEditionDAO certEditionDao;
 	@Autowired CertificationBodyDAO acbDao;
 	@Autowired DeveloperDAO developerDao;
+	@Autowired TestToolDAO testToolDao;
 	
 	@Autowired
 	protected CertificationResultRules certRules;
@@ -408,6 +417,20 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
 					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
 				}
+				
+				if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+					for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
+						if(testTool.getTestToolId() == null) {
+							product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + cert.getNumber() + ".");
+						} else {
+							TestToolDTO tt = testToolDao.getById(testTool.getTestToolId());
+							if(tt != null && tt.isRetired() && product.getIcs() == false) {
+								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' for Certification Result + '" + cert.getNumber() 
+								+ "' has been retired for product with ICS=false.");
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -451,6 +474,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						cert.isGap() == null) {
 					product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
 				}
+				
 				//Jennifer asked to take out the test procedure validation for existing products
 				//so that when users are on the edit screen, they are not required
 				//to have test procedures for all certifications

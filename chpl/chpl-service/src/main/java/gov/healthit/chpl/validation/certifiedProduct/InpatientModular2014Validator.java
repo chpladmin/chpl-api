@@ -91,8 +91,9 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
 							product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + cert.getNumber() + ".");
 						} else {
 							TestToolDTO tt = ttDao.getById(testTool.getTestToolId());
-							if(tt != null && tt.isRetired()) {
-								product.getErrorMessages().add("Cannot use test tool '" + tt.getName() + "' since it is retired. Please choose a different test tool for " + cert.getNumber() + ".");
+							if(tt != null && tt.isRetired() && product.getIcs() == false) {
+								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' for Certification Result + '" + cert.getNumber() 
+								+ "' has been retired for product with ICS=false.");
 							}
 						}
 					}

@@ -643,7 +643,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						boolean certStillExists = false;
 						boolean certHasRetiredTool = false;
 						//make sure this test tool still exists in the passed in product/cert
-						//because users are not allowed to remove exisitng test tools if they are retired
+						//because users are not allowed to remove existing test tools if they are retired
 						for(CertificationResult cert : product.getCertificationResults()) {
 							if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
 								if(cert.getNumber().equals(oldCert.getNumber())) {
@@ -656,6 +656,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 								}
 							}
 						}
+						
 						if(certStillExists && !certHasRetiredTool) {
 							product.getErrorMessages().add("Certification " + oldCert.getNumber() + " exists but is missing the required test tool '" + testTool.getName() + "'. This tool was present before and cannt be removed since it is retired.");
 						}
