@@ -10,10 +10,12 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
@@ -91,9 +93,25 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 							product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + cert.getNumber() + ".");
 						} else {
 							TestToolDTO tt = ttDao.getById(testTool.getTestToolId());
-							if(tt != null && tt.isRetired() && product.getIcs() == false) {
-								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
-								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							String[] idParts = product.getUniqueId().split("\\.");
+							if(idParts.length < 9) {
+								logger.error("CHPL ID must have 9 parts separated by '.'");
+							}
+							if(tt != null && tt.isRetired() && idParts[6].toString().equals("0")) {
+								Boolean containsInheritedCertificationStatus = false;
+								for (String error: product.getErrorMessages()) {
+									if(error.contains("Inherited Certification Status is true")){
+										containsInheritedCertificationStatus = true;
+									}
+								}
+								if(containsInheritedCertificationStatus){
+									product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+								}
+								else{
+									product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+								}
 							}
 						}
 					}

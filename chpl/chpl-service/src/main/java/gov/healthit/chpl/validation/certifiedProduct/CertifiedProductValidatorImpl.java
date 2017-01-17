@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
@@ -422,9 +423,25 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 							product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + cert.getNumber() + ".");
 						} else {
 							TestToolDTO tt = testToolDao.getById(testTool.getTestToolId());
-							if(tt != null && tt.isRetired() && product.getIcs() == false) {
-								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
-								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							String[] idParts = product.getUniqueId().split("\\.");
+							if(idParts.length < 9) {
+								logger.error("CHPL ID must have 9 parts separated by '.'");
+							}
+							if(tt != null && tt.isRetired() && idParts[6].toString().equals("0")) {
+								Boolean containsInheritedCertificationStatus = false;
+								for (String error: product.getErrorMessages()) {
+									if(error.contains("Inherited Certification Status is true")){
+										containsInheritedCertificationStatus = true;
+									}
+								}
+								if(containsInheritedCertificationStatus){
+									product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+								}
+								else{
+									product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+								}
 							}
 						}
 					}
@@ -465,6 +482,39 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 //				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
 //			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
 //		}
+		
+		for(CertificationResult cert : product.getCertificationResults()) {
+			if(cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
+				for(CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
+					if(testTool.getTestToolId() == null) {
+						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getTestToolName() + "' for certification " 
+					+ cert.getNumber() + ".");
+					} else {
+						TestToolDTO tt = testToolDao.getById(testTool.getTestToolId());
+						String[] idParts = product.getChplProductNumber().split("\\.");
+						if(idParts.length < 9) {
+							logger.error("CHPL ID must have 9 parts separated by '.'");
+						}
+						if(tt != null && tt.isRetired() && idParts[6].toString().equals("0")) {
+							Boolean containsInheritedCertificationStatus = false;
+							for (String error: product.getErrorMessages()) {
+								if(error.contains("Inherited Certification Status is true")){
+									containsInheritedCertificationStatus = true;
+								}
+							}
+							if(containsInheritedCertificationStatus){
+								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+							else{
+								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+						}
+					}
+				}
+			}
+		}
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
 			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
