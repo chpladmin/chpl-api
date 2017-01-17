@@ -423,8 +423,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						} else {
 							TestToolDTO tt = testToolDao.getById(testTool.getTestToolId());
 							if(tt != null && tt.isRetired() && product.getIcs() == false) {
-								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' for Certification Result '" + cert.getNumber() 
-								+ "' has been retired for product with ICS=false.");
+								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
 						}
 					}
