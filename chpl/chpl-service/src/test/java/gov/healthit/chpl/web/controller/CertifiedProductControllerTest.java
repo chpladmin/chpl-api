@@ -50,6 +50,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
@@ -323,8 +324,17 @@ public class CertifiedProductControllerTest {
 	/** 
 	 * Given that a user with ROLE_ADMIN edits/updates an existing Certified Product
 	 * When the UI calls the API at /certified_products/update
-	 * When the user tries to update a Certified Product with ics = true and retired test tool = true and set ics = false
+	 * When the user tries to update a Certified Product with the following:
+	 * existing ics = true
+	 * retired test tool = true
+	 * Inherited Certification Status unchecked THEN set ics = false
 	 * Then the API returns an error
+	 * 
+	 * When the user tries to update a Certified Product with the following:
+	 * existing ics = true
+	 * retired test tool = true
+	 * Inherited Certification Status checked THEN set ics = false
+	 * Then the API returns a warning
 	 * @throws IOException 
 	 * @throws JSONException 
 	 */
@@ -338,7 +348,7 @@ public class CertifiedProductControllerTest {
 		updateRequest.setCertificationDate(1440090840000L);
 		updateRequest.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
 		updateRequest.setIcs(false);
-		updateRequest.setChplProductNumber("CHP-024050");
+		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
 		Map<String, Object> certStatus = new HashMap<String, Object>();
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
@@ -362,7 +372,14 @@ public class CertifiedProductControllerTest {
 		cr.setTestProcedures(null);
 		cr.setTestStandards(null);
 		cr.setTestTasks(null);
-		cr.setTestToolsUsed(null);
+		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
+		CertificationResultTestTool crtt = new CertificationResultTestTool();
+		crtt.setId(2L);
+		crtt.setRetired(true);
+		crtt.setTestToolId(2L);
+		crtt.setTestToolName("Transport Test Tool");
+		crttList.add(crtt);
+		cr.setTestToolsUsed(crttList);
 		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
 		cr.setUcdProcesses(null);
 		certificationResults.add(cr);
@@ -401,9 +418,19 @@ public class CertifiedProductControllerTest {
 			e.printStackTrace();
 		} catch (ValidationException e) {
 			assertNotNull(e);
-			assertTrue(e.getErrorMessages().contains("Cannot set ICS to false for a Certified Product "
-					+ "with ICS=true and attested criteria that have a retired Test Tool. The following "
-					+ "are attested criteria that have a retired Test Tool: [170.314 (a)(1), 170.314 (a)(1)]"));
+			assertTrue(e.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+		}
+		
+		updateRequest.setIcs(true);
+		try {
+			certifiedProductController.updateCertifiedProduct(updateRequest);
+		} catch (InvalidArgumentsException e) {
+			e.printStackTrace();
+		} catch (ValidationException e) {
+			assertNotNull(e);
+			assertTrue(e.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
 		}
 		
 	}
