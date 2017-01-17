@@ -92,7 +92,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 						} else {
 							TestToolDTO tt = ttDao.getById(testTool.getTestToolId());
 							if(tt != null && tt.isRetired() && product.getIcs() == false) {
-								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' for Certification Result + '" + cert.getNumber() 
+								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' for Certification Result '" + cert.getNumber() 
 								+ "' has been retired for product with ICS=false.");
 							}
 						}
