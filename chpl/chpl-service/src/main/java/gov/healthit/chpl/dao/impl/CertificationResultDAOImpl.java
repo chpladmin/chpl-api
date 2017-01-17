@@ -698,7 +698,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
 				+ "where (NOT mm.deleted = true) "
 				+ "AND (mm.certificationResultId = :certificationResultId) "
-				+ "AND (mm.macraMeasureId = :macraMeasureId)", 
+				+ "AND (mm.id = :macraMeasureId)", 
 				CertificationResultG1MacraMeasureEntity.class );
 		query.setParameter("certificationResultId", certificationResultId);
 		query.setParameter("macraMeasureId", macraMeasureId);
@@ -811,7 +811,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
 				+ "where (NOT mm.deleted = true) "
 				+ "AND (mm.certificationResultId = :certificationResultId) "
-				+ "AND (mm.macraMeasureId = :macraMeasureId)", 
+				+ "AND (mm.id = :macraMeasureId)", 
 				CertificationResultG2MacraMeasureEntity.class );
 		query.setParameter("certificationResultId", certificationResultId);
 		query.setParameter("macraMeasureId", macraMeasureId);

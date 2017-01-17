@@ -34,9 +34,11 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
 import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -460,6 +462,118 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResultTestParticipant part : taskParts) {
 			assertEquals(4, part.getAgeRangeId().longValue());
 		}		
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback(true)
+	public void testUpdateG1MacraMeasures() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		dto.setId(3L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(dto.getId());
+		List<CertificationResult> certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		CertificationResult cert = certs.get(0);
+		assertNotNull(cert);
+		List<CertificationResultMacraMeasure> measures = cert.getG1MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(1, measures.size());
+		CertificationResultMacraMeasure measure = measures.get(0);
+		assertEquals(-1L, measure.getId().longValue());
+		MacraMeasure newMeasure = new MacraMeasure();
+		newMeasure.setId(2L);
+		measure.setMeasure(newMeasure);
+		
+		cpManager.updateCertifications(-1L, dto, certs);
+		
+		details = cpdManager.getCertifiedProductDetails(3L);
+		certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		cert = certs.get(0);
+		assertNotNull(cert);
+		measures = cert.getG1MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(1, measures.size());
+		measure = measures.get(0);
+		assertEquals(2L, measure.getMeasure().getId().longValue());
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback(true)
+	public void testAddG2Measure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		dto.setId(3L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(dto.getId());
+		List<CertificationResult> certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		CertificationResult cert = certs.get(0);
+		assertNotNull(cert);
+		
+		MacraMeasure newMeasure = new MacraMeasure();
+		newMeasure.setId(1L);
+		CertificationResultMacraMeasure measure = new CertificationResultMacraMeasure();
+		measure.setMeasure(newMeasure);
+		cert.getG2MacraMeasures().add(measure);
+
+		cpManager.updateCertifications(-1L, dto, certs);
+		
+		details = cpdManager.getCertifiedProductDetails(3L);
+		certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		cert = certs.get(0);
+		assertNotNull(cert);
+		List<CertificationResultMacraMeasure> measures = cert.getG2MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(1, measures.size());
+		measure = measures.get(0);
+		assertEquals(1L, measure.getMeasure().getId().longValue());
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback(true)
+	public void testDeleteG1MacraMeasure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		dto.setId(3L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(dto.getId());
+		List<CertificationResult> certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		CertificationResult cert = certs.get(0);
+		assertNotNull(cert);
+		cert.getG1MacraMeasures().clear();
+
+		cpManager.updateCertifications(-1L, dto, certs);
+		
+		details = cpdManager.getCertifiedProductDetails(3L);
+		certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		cert = certs.get(0);
+		assertNotNull(cert);
+		List<CertificationResultMacraMeasure> measures = cert.getG1MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(0, measures.size());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}

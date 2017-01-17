@@ -91,5 +91,4 @@ public class MacraMeasureDaoTest extends TestCase {
 		MacraMeasureDTO result = macraDao.getByCriteriaNumberAndValue("170.315 (b)(1)", "Junk Value");
 		assertNull(result);
 	}
-	
 }

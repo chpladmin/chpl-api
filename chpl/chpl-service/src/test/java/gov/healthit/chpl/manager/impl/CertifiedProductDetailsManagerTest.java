@@ -24,10 +24,12 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import junit.framework.TestCase;
 
@@ -291,6 +293,31 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsTransparencyAttestationFalse() throws EntityRetrievalException{
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(4L);
 		assertNull(detail.getTransparencyAttestation());
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsMacraMeasures() throws EntityRetrievalException{
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(3L);
+		assertNotNull(detail);
+		assertNotNull(detail.getCertificationResults());
+		assertEquals(1, detail.getCertificationResults().size());
+		
+		CertificationResult cert = detail.getCertificationResults().get(0);
+		assertNotNull(cert.getG1MacraMeasures());
+		assertEquals(1, cert.getG1MacraMeasures().size());
+		
+		CertificationResultMacraMeasure mm = cert.getG1MacraMeasures().get(0);
+		assertNotNull(mm.getId());
+		assertEquals(-1L, mm.getId().longValue());
+		assertNotNull(mm.getMeasure());
+		assertEquals(1L, mm.getMeasure().getId().longValue());
+		assertNotNull(mm.getMeasure().getAbbreviation());
+		assertNotNull(mm.getMeasure().getName());
+		assertNotNull(mm.getMeasure().getDescription());
+		
+		assertNotNull(cert.getG2MacraMeasures());
+		assertEquals(0, cert.getG2MacraMeasures().size());
 	}
 }
 
