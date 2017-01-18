@@ -136,20 +136,14 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + cert.getNumber() + ".");
 					} else {
 						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
-						String[] idParts = product.getUniqueId().split("\\.");
-						if(idParts.length < 9) {
-							logger.error("CHPL ID must have 9 parts separated by '.'");
-						}
-						else{
-							if(tt != null && tt.isRetired() && idParts[6].toString().equals("0")) {
-								if(super.hasInheritedStatus){
-									product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
-									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-								}
-								else{
-									product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
-									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-								}
+						if(tt != null && tt.isRetired()) {
+							if(super.hasIcsConflict){
+								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+							else{
+								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
 						}
 					}
@@ -282,20 +276,14 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getTestToolName() + "' for certification " + cert.getNumber() + ".");
 					} else {
 						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
-						String[] idParts = product.getChplProductNumber().split("\\.");
-						if(idParts.length < 9) {
-							logger.error("CHPL ID must have 9 parts separated by '.'");
-						}
-						else{
-							if(tt != null && tt.isRetired() && idParts[6].toString().equals("0")) {
-								if(super.hasInheritedStatus){
-									product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
-									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-								}
-								else{
-									product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
-									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-								}
+						if(tt != null && tt.isRetired()) {
+							if(super.hasIcsConflict){
+								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+							else{
+								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
 						}
 					}

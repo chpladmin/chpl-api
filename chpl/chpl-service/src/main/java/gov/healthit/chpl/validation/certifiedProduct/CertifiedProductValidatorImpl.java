@@ -43,7 +43,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	@Autowired
 	protected CertificationResultRules certRules;
 	
-	protected Boolean hasInheritedStatus;
+	protected Boolean hasIcsConflict;
 	
 	Pattern urlRegex;
 	
@@ -150,18 +150,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(StringUtils.isEmpty(icsCode) || !icsCode.matches("^\\d+$")) {
 			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
 		}
-		
-		if(product.getIcs()){
-			hasInheritedStatus=true;
-		}
-		else{
-			hasInheritedStatus=false;
-		}
 			
+		hasIcsConflict = false;
 		if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
 			product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
+			hasIcsConflict = true;
 		} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
 			product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
+			hasIcsConflict = true;
 		}
 		if(additionalSoftwareCode.equals("0")) {
 			boolean hasAS = false;
@@ -250,17 +246,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
 			}
 			
-			if(product.getIcs()){
-				hasInheritedStatus=true;
-			}
-			else{
-				hasInheritedStatus=false;
-			}
-			
+			hasIcsConflict = false;
 			if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
 				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
+				hasIcsConflict = true;
 			} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
 				product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
+				hasIcsConflict = true;
 			}
 			if(additionalSoftwareCode.equals("0")) {
 				boolean hasAS = false;
