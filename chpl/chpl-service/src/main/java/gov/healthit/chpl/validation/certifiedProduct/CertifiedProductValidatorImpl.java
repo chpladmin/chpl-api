@@ -5,8 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -19,7 +17,6 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
@@ -28,16 +25,13 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
-	private static final Logger logger = LogManager.getLogger(CertifiedProductValidator.class);
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired TestingLabDAO atlDao;
@@ -48,6 +42,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	
 	@Autowired
 	protected CertificationResultRules certRules;
+	
+	protected Boolean hasInheritedStatus;
 	
 	Pattern urlRegex;
 	
@@ -154,6 +150,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(StringUtils.isEmpty(icsCode) || !icsCode.matches("^\\d+$")) {
 			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
 		}
+		
+		if(product.getIcs()){
+			hasInheritedStatus=true;
+		}
+		else{
+			hasInheritedStatus=false;
+		}
 			
 		if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
 			product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
@@ -245,6 +248,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			
 			if(StringUtils.isEmpty(icsCode) || !icsCode.matches("^\\d+$")) {
 				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
+			}
+			
+			if(product.getIcs()){
+				hasInheritedStatus=true;
+			}
+			else{
+				hasInheritedStatus=false;
 			}
 			
 			if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
@@ -416,36 +426,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
 					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
 				}
-				
-				if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
-					for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
-						if(testTool.getTestToolId() == null) {
-							product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + cert.getNumber() + ".");
-						} else {
-							TestToolDTO tt = testToolDao.getById(testTool.getTestToolId());
-							String[] idParts = product.getUniqueId().split("\\.");
-							if(idParts.length < 9) {
-								logger.error("CHPL ID must have 9 parts separated by '.'");
-							}
-							if(tt != null && tt.isRetired() && idParts[6].toString().equals("0")) {
-								Boolean containsInheritedCertificationStatus = false;
-								for (String error: product.getErrorMessages()) {
-									if(error.contains("Inherited Certification Status is true")){
-										containsInheritedCertificationStatus = true;
-									}
-								}
-								if(containsInheritedCertificationStatus){
-									product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
-									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-								}
-								else{
-									product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
-									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-								}
-							}
-						}
-					}
-				}
 			}
 		}
 	}
@@ -484,45 +464,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 //		}
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
-			if(cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
-				for(CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
-					if(testTool.getTestToolId() == null) {
-						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getTestToolName() + "' for certification " 
-					+ cert.getNumber() + ".");
-					} else {
-						TestToolDTO tt = testToolDao.getById(testTool.getTestToolId());
-						String[] idParts = product.getChplProductNumber().split("\\.");
-						if(idParts.length < 9) {
-							logger.error("CHPL ID must have 9 parts separated by '.'");
-						}
-						if(tt != null && tt.isRetired() && idParts[6].toString().equals("0")) {
-							Boolean containsInheritedCertificationStatus = false;
-							for (String error: product.getErrorMessages()) {
-								if(error.contains("Inherited Certification Status is true")){
-									containsInheritedCertificationStatus = true;
-								}
-							}
-							if(containsInheritedCertificationStatus){
-								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
-								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-							}
-							else{
-								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
-								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		for(CertificationResult cert : product.getCertificationResults()) {
 			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
 						cert.isGap() == null) {
 					product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
 				}
-				
 				//Jennifer asked to take out the test procedure validation for existing products
 				//so that when users are on the edit screen, they are not required
 				//to have test procedures for all certifications

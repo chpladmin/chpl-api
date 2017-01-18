@@ -11,7 +11,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +57,12 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -72,6 +82,9 @@ public class CertifiedProductControllerTest {
 	
 	@Autowired
 	CertifiedProductController certifiedProductController;
+	
+	@Autowired
+	CertifiedProductValidatorFactory validatorFactory;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -322,40 +335,55 @@ public class CertifiedProductControllerTest {
 	}
 	
 	/** 
-	 * Given that a user with ROLE_ADMIN edits/updates an existing Certified Product
-	 * When the UI calls the API at /certified_products/update
-	 * When the user tries to update a Certified Product with the following:
-	 * existing ics = true
-	 * retired test tool = true
-	 * Inherited Certification Status unchecked THEN set ics = false
-	 * Then the API returns an error
+	 * This tests 4 scenarios for CP Update(CertifiedProductSearchDetails) to determine that a warning is returned for mismatched Certification Status + CHPL Product Number ICS. 
+	 * An error should be returned when Certification Status + CHPL Product Number ICS are matching Boolean values 
+	 * because a Certified Product cannot carry a retired Test Tool when the CP ICS = false.
 	 * 
-	 * When the user tries to update a Certified Product with the following:
+	 * 1. 2015 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
+	 * Given that a user with sufficient privileges edits/updates an existing Certified Product 
+	 * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the ACB that certified the product. 
+	 * If a different ACB is passed in as part of the request, an ownership change will take place and the logged in user must have ROLE_ADMIN)
+	 * When the UI calls the API at /certified_products/update
+	 * When the user tries to update a 2015 Certified Product with the following:
 	 * existing ics = true
 	 * retired test tool = true
-	 * Inherited Certification Status checked THEN set ics = false
-	 * Then the API returns a warning
+	 * Inherited Certification Status false(unchecked) and the user sets the CHPL Product Number's ICS to 0
+	 * Then the API returns an error because there is no mismatch between Certification Status and CHPL Product Number ICS
+	 * 
+	 * 2. 2015 Certification Edition + true Certification Status + false ICS = returns warning (mismatch)
+	 * When the user tries to update a 2015 Certified Product with the following:
+	 * existing ics = true
+	 * retired test tool = true
+	 * Inherited Certification Status true(checked) and the user sets the CHPL Product Number's ICS to 0
+	 * Then the API returns a warning because Inherited Certification Status and CHPL Product Number ICS are mismatched
+	 * 
+	 * 3. 2014 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
+	 * * When the user tries to update a 2014 Certified Product with the following:
+	 * existing ics = false
+	 * retired test tool = true
+	 * Inherited Certification Status false(unchecked) and the user sets the CHPL Product Number's ICS to 0
+	 * Then the API returns an error because there is no mismatch between Certification Status and CHPL Product Number ICS
+	 * 
+	 * 4. 2014 Certification Edition + true Certification Status + false ICS = returns warning (mismatch)
+	 * * When the user tries to update a 2014 Certified Product with the following:
+	 * existing ics = true
+	 * retired test tool = true
+	 * Inherited Certification Status true(checked) and the user sets the CHPL Product Number's ICS to 0
+	 * Then the API returns a warning because Inherited Certification Status and CHPL Product Number ICS are mismatched
 	 * @throws IOException 
 	 * @throws JSONException 
 	 */
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_updateCertifiedProduct_icsAndRetiredEqualTrue_icsFalseReturnsError() throws EntityRetrievalException, EntityCreationException, IOException {
+	public void test_updateCertifiedProductSearchDetails_icsAndRetiredTTs_warningvsError() throws EntityRetrievalException, EntityCreationException, IOException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
 		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
 		updateRequest.setCertificationDate(1440090840000L);
 		updateRequest.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
-		updateRequest.setIcs(false);
-		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
 		Map<String, Object> certStatus = new HashMap<String, Object>();
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
-		Map<String, Object> certificationEdition = new HashMap<String, Object>();
-		String certEdition = "2015";
-		certificationEdition.put("name", certEdition);
-		updateRequest.setCertificationEdition(certificationEdition);
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -412,12 +440,19 @@ public class CertifiedProductControllerTest {
 		cqm.setTypeId(2L);
 		cqms.add(cqm);
 		updateRequest.setCqmResults(cqms);
+		Map<String, Object> certificationEdition = new HashMap<String, Object>();
+		String certEdition = "2015";
+		certificationEdition.put("name", certEdition);
+		updateRequest.setCertificationEdition(certificationEdition);
+		updateRequest.setIcs(false); // Inherited Status = product.getIcs();
+		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
 		try {
 			certifiedProductController.updateCertifiedProduct(updateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
 			assertNotNull(e);
+			// ICS is false, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. No mismatch = error message
 			assertTrue(e.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
 					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
 		}
@@ -429,10 +464,225 @@ public class CertifiedProductControllerTest {
 			e.printStackTrace();
 		} catch (ValidationException e) {
 			assertNotNull(e);
+			// ICS is true, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. Mismatch = warning message
+			assertTrue(e.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+		}
+		Map<String, Object> classificationType = new HashMap<String, Object>();
+		classificationType.put("name", "Modular EHR");
+		updateRequest.setClassificationType(classificationType);
+		Map<String, Object> practiceType = new HashMap<String, Object>();
+		practiceType.put("name", "AMBULATORY");
+		updateRequest.setPracticeType(practiceType);
+		Map<String, Object> certificationEdition2014 = new HashMap<String, Object>();
+		String certEdition2014 = "2014";
+		certificationEdition2014.put("name", certEdition2014);
+		updateRequest.setCertificationEdition(certificationEdition2014);
+		updateRequest.setIcs(false);
+		try {
+			certifiedProductController.updateCertifiedProduct(updateRequest);
+		} catch (InvalidArgumentsException e) {
+			e.printStackTrace();
+		} catch (ValidationException e) {
+			assertNotNull(e);
+			// 2014 certEdition; ICS is false, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. No mismatch = error message
+			assertTrue(e.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+		}
+		
+		updateRequest.setIcs(true);
+		try {
+			certifiedProductController.updateCertifiedProduct(updateRequest);
+		} catch (InvalidArgumentsException e) {
+			e.printStackTrace();
+		} catch (ValidationException e) {
+			assertNotNull(e);
+			// 2014 certEdition; ICS is true, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. Mismatch = warning message
 			assertTrue(e.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
 					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
 		}
 		
+	}
+	
+	/** 
+	 * This tests 4 scenarios for CP Update(PendingCertifiedProductDTO) to determine that a warning is returned for mismatched Certification Status + CHPL Product Number ICS. 
+	 * An error should be returned when Certification Status + CHPL Product Number ICS are matching Boolean values 
+	 * because a Certified Product cannot carry a retired Test Tool when the CP ICS = false.
+	 * 
+	 * 1. 2015 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
+	 * Given that a user with sufficient privileges edits/updates an existing Certified Product 
+	 * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the ACB that certified the product. 
+	 * If a different ACB is passed in as part of the request, an ownership change will take place and the logged in user must have ROLE_ADMIN)
+	 * When the UI calls the API at /certified_products/update
+	 * When the user tries to update a 2015 Certified Product with the following:
+	 * existing ics = true
+	 * retired test tool = true
+	 * Inherited Certification Status false(unchecked) and the user sets the CHPL Product Number's ICS to 0
+	 * Then the API returns an error because there is no mismatch between Certification Status and CHPL Product Number ICS
+	 * 
+	 * 2. 2015 Certification Edition + true Certification Status + false ICS = returns warning (mismatch)
+	 * When the user tries to update a 2015 Certified Product with the following:
+	 * existing ics = true
+	 * retired test tool = true
+	 * Inherited Certification Status true(checked) and the user sets the CHPL Product Number's ICS to 0
+	 * Then the API returns a warning because Inherited Certification Status and CHPL Product Number ICS are mismatched
+	 * 
+	 * 3. 2014 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
+	 * * When the user tries to update a 2014 Certified Product with the following:
+	 * existing ics = false
+	 * retired test tool = true
+	 * Inherited Certification Status false(unchecked) and the user sets the CHPL Product Number's ICS to 0
+	 * Then the API returns an error because there is no mismatch between Certification Status and CHPL Product Number ICS
+	 * 
+	 * 4. 2014 Certification Edition + true Certification Status + false ICS = returns warning (mismatch)
+	 * * When the user tries to update a 2014 Certified Product with the following:
+	 * existing ics = true
+	 * retired test tool = true
+	 * Inherited Certification Status true(checked) and the user sets the CHPL Product Number's ICS to 0
+	 * Then the API returns a warning because Inherited Certification Status and CHPL Product Number ICS are mismatched
+	 * @throws IOException 
+	 * @throws ParseException 
+	 * @throws JSONException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_updatePendingCertifiedProductDTO_icsAndRetiredTTs_warningvsError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		PendingCertifiedProductDTO pcpDTO = new PendingCertifiedProductDTO();
+		String certDateString = "11-09-2016";
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		Date inputDate = dateFormat.parse(certDateString);
+		pcpDTO.setCertificationDate(inputDate);
+		pcpDTO.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
+		//Map<String, Object> certStatus = new HashMap<String, Object>();
+		//certStatus.put("name", "Active");
+		//updateRequest.set(certStatus);
+		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
+		CertificationResultTestTool crtt = new CertificationResultTestTool();
+		crtt.setId(1L);
+		crtt.setRetired(true);
+		crtt.setTestToolId(2L);
+		crtt.setTestToolName("Transport Test Tool");
+		crttList.add(crtt);
+		List<PendingCertificationResultDTO> pcrDTOs = new ArrayList<PendingCertificationResultDTO>();
+		PendingCertificationResultDTO pcpCertResultDTO1 = new PendingCertificationResultDTO();
+		pcpCertResultDTO1.setPendingCertifiedProductId(1L);
+		pcpCertResultDTO1.setId(1L);
+		pcpCertResultDTO1.setAdditionalSoftware(null);
+		pcpCertResultDTO1.setApiDocumentation(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setGap(null);
+		pcpCertResultDTO1.setNumber("170.314 (b)(6)");
+		pcpCertResultDTO1.setPrivacySecurityFramework(null);
+		pcpCertResultDTO1.setSed(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setTestData(null);
+		pcpCertResultDTO1.setTestFunctionality(null);
+		pcpCertResultDTO1.setTestProcedures(null);
+		pcpCertResultDTO1.setTestStandards(null);
+		pcpCertResultDTO1.setTestTasks(null);
+		pcpCertResultDTO1.setMeetsCriteria(true);
+		List<PendingCertificationResultTestToolDTO> pcprttdtoList = new ArrayList<PendingCertificationResultTestToolDTO>();
+		PendingCertificationResultTestToolDTO pcprttdto1 = new PendingCertificationResultTestToolDTO();
+		pcprttdto1.setId(2L);
+		pcprttdto1.setName("Transport Test Tool");
+		pcprttdto1.setPendingCertificationResultId(1L);
+		pcprttdto1.setTestToolId(2L);
+		pcprttdto1.setVersion(null);
+		PendingCertificationResultTestToolDTO pcprttdto2 = new PendingCertificationResultTestToolDTO();
+		pcprttdto2.setId(3L);
+		pcprttdto2.setName("Transport Test Tool");
+		pcprttdto2.setPendingCertificationResultId(1L);
+		pcprttdto2.setTestToolId(3L);
+		pcprttdto2.setVersion(null);
+		pcprttdtoList.add(pcprttdto1);
+		pcprttdtoList.add(pcprttdto2);
+		pcpCertResultDTO1.setTestTools(pcprttdtoList);
+		pcrDTOs.add(pcpCertResultDTO1);
+		PendingCertificationResultDTO pcpCertResultDTO2 = new PendingCertificationResultDTO();
+		pcpCertResultDTO2.setId(2L);
+		pcpCertResultDTO2.setAdditionalSoftware(null);
+		pcpCertResultDTO2.setApiDocumentation(null);
+		pcpCertResultDTO2.setG1Success(false);
+		pcpCertResultDTO2.setG2Success(false);
+		pcpCertResultDTO2.setGap(null);
+		pcpCertResultDTO2.setNumber("170.314 (b)(6)");
+		pcpCertResultDTO2.setPrivacySecurityFramework(null);
+		pcpCertResultDTO2.setSed(null);
+		pcpCertResultDTO2.setG1Success(false);
+		pcpCertResultDTO2.setG2Success(false);
+		pcpCertResultDTO2.setTestData(null);
+		pcpCertResultDTO2.setTestFunctionality(null);
+		pcpCertResultDTO2.setTestProcedures(null);
+		pcpCertResultDTO2.setTestStandards(null);
+		pcpCertResultDTO2.setTestTasks(null);
+		pcpCertResultDTO2.setMeetsCriteria(true);
+		pcpCertResultDTO2.setTestTools(pcprttdtoList);
+		pcrDTOs.add(pcpCertResultDTO2);
+		pcpDTO.setCertificationCriterion(pcrDTOs);
+		List<PendingCqmCriterionDTO> cqmCriterionDTOList = new ArrayList<PendingCqmCriterionDTO>();
+		PendingCqmCriterionDTO cqm = new PendingCqmCriterionDTO();
+		cqm.setVersion("v0");;
+		cqm.setCmsId("CMS60");
+		cqm.setCqmCriterionId(0L);
+		cqm.setCqmNumber(null); 
+		cqm.setDomain(null);
+		cqm.setId(0L);
+		cqm.setNqfNumber("0164");
+		cqm.setTitle("Fibrinolytic Therapy Received Within 30 Minutes of Hospital Arrival");
+		cqm.setTypeId(2L);
+		cqmCriterionDTOList.add(cqm);
+		pcpDTO.setCqmCriterion(cqmCriterionDTOList);
+		String certEdition = "2015";
+		pcpDTO.setCertificationEdition(certEdition);
+		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
+		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
+		pcpDTO.setUniqueId("15.07.07.2642.EIC04.36.0.1.160402");
+		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+		if(validator != null) {
+			validator.validate(pcpDTO);
+		}
+		// test 1
+		// ICS is false, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. No mismatch = error message
+		assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+		
+		// test 2
+		pcpDTO.setIcs(true); // Inherited Status = product.getIcs();
+		validator = validatorFactory.getValidator(pcpDTO);
+		if(validator != null) {
+			validator.validate(pcpDTO);
+		}
+		// ICS is false, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. No mismatch = error message
+		assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+		
+		// test 3
+		certEdition = "2014";
+		pcpDTO.setCertificationEdition(certEdition);
+		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
+		pcpDTO.setPracticeType("AMBULATORY");
+		pcpDTO.setProductClassificationName("Modular EHR");
+		validator = validatorFactory.getValidator(pcpDTO);
+		if(validator != null) {
+			validator.validate(pcpDTO);
+		}
+		// ICS is false, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. No mismatch = error message
+		assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+		
+		// test 4
+		pcpDTO.setIcs(true);
+		validator = validatorFactory.getValidator(pcpDTO);
+		if(validator != null) {
+			validator.validate(pcpDTO);
+		}
+		// ICS is false, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. No mismatch = error message
+		assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
 	}
 	
 	/** 

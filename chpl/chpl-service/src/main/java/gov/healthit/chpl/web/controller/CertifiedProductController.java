@@ -195,18 +195,6 @@ public class CertifiedProductController {
 			hasRetiredTestTool = true;
 		}
 		
-//		Boolean updateIcs = updateRequest.getIcs();
-//		Boolean existingProductIcs = existingProduct.getIcs();
-//		if(updateIcs == false && existingProductIcs == true && hasRetiredTestTool == true){
-//			List<String> retiredTestToolNumbers = new ArrayList<String>();
-//			for(CertificationCriterionEntity cce : retiredTestTools){
-//				retiredTestToolNumbers.add(cce.getNumber());
-//			}
-//			
-//			updateRequest.getErrorMessages().add("Cannot set ICS to false for a Certified Product with ICS=true and attested criteria that have a retired Test Tool. "
-//					+ "The following are attested criteria that have a retired Test Tool: " + retiredTestToolNumbers.toString());
-//		}
-		
 		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {
 			throw new ValidationException(updateRequest.getErrorMessages(), updateRequest.getWarningMessages());
 		}
