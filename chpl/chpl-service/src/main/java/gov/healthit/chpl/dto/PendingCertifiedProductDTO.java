@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestParticipant;
@@ -303,6 +304,38 @@ public class PendingCertifiedProductDTO implements Serializable {
 					toolDto.setVersion(tool.getTestToolVersion());
 					toolDto.setTestToolId(tool.getTestToolId());
 					certDto.getTestTools().add(toolDto);
+				}
+			}
+			
+			if(crResult.getG1MacraMeasures() != null && crResult.getG1MacraMeasures().size() > 0) {
+				for(CertificationResultMacraMeasure mm : crResult.getG1MacraMeasures()) {
+					PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
+					mmDto.setId(mm.getId());
+					if(mm.getMeasure() != null) {
+						mmDto.setMacraMeasureId(mm.getMeasure().getId());
+
+						MacraMeasureDTO measure = new MacraMeasureDTO();
+						measure.setId(mm.getMeasure().getId());
+						measure.setValue(mm.getMeasure().getAbbreviation());
+						mmDto.setMacraMeasure(measure);
+					}
+					certDto.getG1MacraMeasures().add(mmDto);
+				}
+			}
+			
+			if(crResult.getG2MacraMeasures() != null && crResult.getG2MacraMeasures().size() > 0) {
+				for(CertificationResultMacraMeasure mm : crResult.getG2MacraMeasures()) {
+					PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
+					mmDto.setId(mm.getId());
+					if(mm.getMeasure() != null) {
+						mmDto.setMacraMeasureId(mm.getMeasure().getId());
+						
+						MacraMeasureDTO measure = new MacraMeasureDTO();
+						measure.setId(mm.getMeasure().getId());
+						measure.setValue(mm.getMeasure().getAbbreviation());
+						mmDto.setMacraMeasure(measure);
+					}
+					certDto.getG2MacraMeasures().add(mmDto);
 				}
 			}
 			

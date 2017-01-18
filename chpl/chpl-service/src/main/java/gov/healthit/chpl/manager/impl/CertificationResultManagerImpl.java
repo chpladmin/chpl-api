@@ -176,7 +176,7 @@ public class CertificationResultManagerImpl implements
 		updated.setG1Measures(g1Measures);
 		
 		List<CertificationResultMacraMeasureDTO> g2Measures = updateG2Measures(toUpdate);
-		updated.setG1Measures(g2Measures);
+		updated.setG2Measures(g2Measures);
 		
 		 List<CertificationResultTestDataDTO> data = updateTestData(toUpdate);
 		updated.setTestData(data);
@@ -450,7 +450,7 @@ public class CertificationResultManagerImpl implements
 	
 	private List<CertificationResultMacraMeasureDTO> updateG2Measures(CertificationResultDTO toUpdate) 
 			throws EntityCreationException, EntityRetrievalException {
-		//update g1 mappings
+		//update g2 mappings
 		List<CertificationResultMacraMeasureDTO> existingG2Mappings = certResultDAO.getG2MacraMeasuresForCertificationResult(toUpdate.getId());
 		List<CertificationResultMacraMeasureDTO> mappingsToAdd = new ArrayList<CertificationResultMacraMeasureDTO>();
 		List<CertificationResultMacraMeasureDTO> mappingsToRemove = new ArrayList<CertificationResultMacraMeasureDTO>();

@@ -299,8 +299,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				cert.setTestStandards(null);
 			}
 			
-			if(certCriterion.getG1Measures() != null) {
-				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG1Measures()) {
+			if(certCriterion.getG1MacraMeasures() != null) {
+				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG1MacraMeasures()) {
 					CertificationResultMacraMeasure measure = new CertificationResultMacraMeasure(mm);
 					cert.getG1MacraMeasures().add(measure);
 				}
@@ -308,8 +308,8 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				cert.setG1MacraMeasures(null);
 			}
 			
-			if(certCriterion.getG2Measures() != null) {
-				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG2Measures()) {
+			if(certCriterion.getG2MacraMeasures() != null) {
+				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG2MacraMeasures()) {
 					CertificationResultMacraMeasure measure = new CertificationResultMacraMeasure(mm);
 					cert.getG2MacraMeasures().add(measure);
 				}

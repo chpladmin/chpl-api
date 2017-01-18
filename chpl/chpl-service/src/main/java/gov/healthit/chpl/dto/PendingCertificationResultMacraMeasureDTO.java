@@ -17,6 +17,7 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
 	
 	public PendingCertificationResultMacraMeasureDTO(PendingCertificationResultG1MacraMeasureEntity entity) {
 		this.setId(entity.getId());
+		this.setEnteredValue(entity.getEnteredValue());
 		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
 		this.macraMeasureId = entity.getMacraId();
 		if(entity.getMacraMeasure() != null) {
@@ -27,6 +28,7 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
 	
 	public PendingCertificationResultMacraMeasureDTO(PendingCertificationResultG2MacraMeasureEntity entity) {
 		this.setId(entity.getId());
+		this.setEnteredValue(entity.getEnteredValue());
 		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
 		this.macraMeasureId = entity.getMacraId();
 		if(entity.getMacraMeasure() != null) {

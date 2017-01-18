@@ -611,8 +611,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					}
 				}
 				
-				if(certResult.getG1Measures() != null && certResult.getG1Measures().size() > 0) {
-					for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1Measures()) {
+				if(certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1MacraMeasures()) {
 						//the validator set the macraMeasure value so it's definitely filled in
 						if(pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
 							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
@@ -625,8 +625,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					}
 				}
 				
-				if(certResult.getG2Measures() != null && certResult.getG2Measures().size() > 0) {
-					for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1Measures()) {
+				if(certResult.getG2MacraMeasures() != null && certResult.getG2MacraMeasures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG2MacraMeasures()) {
 						//the validator set the macraMeasure value so it's definitely filled in
 						if(pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
 							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();

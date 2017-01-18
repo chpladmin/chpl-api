@@ -87,7 +87,9 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 	
 	private MacraMeasureEntity getEntityById(Long id) {
 		MacraMeasureEntity entity = null;
-		Query query = entityManager.createQuery( "from MacraMeasureEntity where (NOT deleted = true) AND (id = :entityid) ", MacraMeasureEntity.class );
+		Query query = entityManager.createQuery( "from MacraMeasureEntity mme "
+				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion "
+				+ "where (NOT mme.deleted = true) AND (mme.id = :entityid) ", MacraMeasureEntity.class );
 		query.setParameter("entityid", id);
 		List<MacraMeasureEntity> result = query.getResultList();
 		

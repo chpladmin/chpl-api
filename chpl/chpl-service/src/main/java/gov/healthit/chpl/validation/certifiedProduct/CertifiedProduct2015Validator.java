@@ -383,8 +383,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				}
 			
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
-						cert.getG1Measures() != null && cert.getG1Measures().size() > 0) {
-					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1Measures()) {
+						cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
 						if(pendingMeasureMap.getMacraMeasureId() == null) {
 							MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(), pendingMeasureMap.getEnteredValue());
 							if(foundMeasure == null || foundMeasure.getId() == null) {
@@ -397,8 +397,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				}
 				
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
-						cert.getG2Measures() != null && cert.getG2Measures().size() > 0) {
-					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2Measures()) {
+						cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2MacraMeasures()) {
 						if(pendingMeasureMap.getMacraMeasureId() == null) {
 							MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(), pendingMeasureMap.getEnteredValue());
 							if(foundMeasure == null || foundMeasure.getId() == null) {
