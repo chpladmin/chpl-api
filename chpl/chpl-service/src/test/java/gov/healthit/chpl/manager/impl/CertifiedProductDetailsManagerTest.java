@@ -142,7 +142,14 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 				hasTwoAdditionalSoftware = true;
 			}
 		}
-		CertificationResult cert = detail.getCertificationResults().get(1);
+		
+		CertificationResult cert = null;
+		for(CertificationResult cr : detail.getCertificationResults()){
+			if(cr.getNumber().equalsIgnoreCase("170.314 (a)(1)")){
+				cert = cr;
+			}
+		}
+		
 		assertNotNull(cert.getAdditionalSoftware());
 		assertTrue(hasTwoAdditionalSoftware);
 		
