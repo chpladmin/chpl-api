@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.MeaningfulUseAccurateAsOf;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
@@ -147,10 +148,13 @@ public class MeaningfulUseController {
 			notes="Value can be edited by ROLE_ADMIN and ROLE_CMS_STAFF using the POST version of this request ")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8") 
-	public @ResponseBody Date getAccurateAsOfDate() {
+	public @ResponseBody MeaningfulUseAccurateAsOf getAccurateAsOfDate() {
+		MeaningfulUseAccurateAsOf muuAccurate = new MeaningfulUseAccurateAsOf();
+		
+		MeaningfulUseAccurateAsOf mua = new MeaningfulUseAccurateAsOf();
 		Date accurateAsOfDate = new Date();
 	
-		return accurateAsOfDate;
+		return muuAccurate;
 	}
 	
 	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is good as of", 
