@@ -45,6 +45,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	
 	protected Boolean hasIcsConflict;
 	
+	protected String icsCode;
+	
 	Pattern urlRegex;
 	
 	public CertifiedProductValidatorImpl() {
@@ -74,7 +76,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String developerCode = uniqueIdParts[3];
 		String productCode = uniqueIdParts[4];
 		String versionCode = uniqueIdParts[5];
-		String icsCode = uniqueIdParts[6];
+		icsCode = uniqueIdParts[6];
 		String additionalSoftwareCode = uniqueIdParts[7];
 		String certifiedDateCode = uniqueIdParts[8];
 		
@@ -215,7 +217,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			//validate that these pieces match up with data
 			String productCode = uniqueIdParts[4];
 			String versionCode = uniqueIdParts[5];
-			String icsCode = uniqueIdParts[6];
+			icsCode = uniqueIdParts[6];
 			String additionalSoftwareCode = uniqueIdParts[7];
 			String certifiedDateCode = uniqueIdParts[8];
 			
