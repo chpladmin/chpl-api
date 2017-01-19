@@ -1,16 +1,11 @@
 package gov.healthit.chpl.dao.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -22,19 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.caching.CacheInvalidationRule;
-import gov.healthit.chpl.dao.AddressDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperACBMapDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
-import gov.healthit.chpl.entity.DeveloperStatusType;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

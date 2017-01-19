@@ -1,5 +1,17 @@
 package gov.healthit.chpl.auth.manager.impl;
 
+import java.security.SecureRandom;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import gov.healthit.chpl.auth.dao.UserContactDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
@@ -16,20 +28,6 @@ import gov.healthit.chpl.auth.user.UserConversionHelper;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-
-import java.security.SecureRandom;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserManagerImpl implements UserManager {

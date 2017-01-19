@@ -30,11 +30,12 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.caching.CacheInvalidationRule;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = gov.healthit.chpl.CHPLTestConfig.class)
@@ -51,7 +52,7 @@ public class CertifiedProductDaoTest {
 	
 	@Rule
     @Autowired
-    public CacheInvalidationRule cacheInvalidationRule;
+    public UnitTestRules cacheInvalidationRule;
 
 	private static JWTAuthenticatedUser authUser;
 	private static Pattern urlPattern = Pattern.compile(URL_PATTERN);
@@ -156,6 +157,25 @@ public class CertifiedProductDaoTest {
 		productDao.delete(productId);
 		CertifiedProductDTO deletedProduct = productDao.getById(productId);
 		assertTrue(deletedProduct.getDeleted());
+	}
+	
+	/**
+	 * Given that I am authenticated as an admin
+	 * When I check to see if a CP id has an associated retired test tool
+	 * Then a CP's associated retired TestTools are returned
+	 * Then a CP without an associated retired TestTool returns no results
+	 * @throws EntityRetrievalException 
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void test_hasRetiredTestTool() throws EntityRetrievalException {
+		Long productId = 1L;
+		List<CertificationCriterionEntity> result = productDao.getRetiredTestTools(productId);
+		assertTrue("CP with id = 1 should have two retired test tools", result.size() == 2);
+		
+		productId = 2L;
+		result = productDao.getRetiredTestTools(productId);
+		assertTrue("CP with id = 2 should NOT have a retired test tool", result.size() == 0);
 	}
 	
 //	@Test

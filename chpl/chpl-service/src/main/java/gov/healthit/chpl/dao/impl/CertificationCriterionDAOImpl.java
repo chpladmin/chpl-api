@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -175,11 +176,22 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		
 	}
 	
+	@Transactional
 	private List<CertificationCriterionEntity> getAllEntities() {
+		Query query = entityManager.createQuery(
+				"SELECT cce "
+				+ "FROM CertificationCriterionEntity cce "
+				+ "WHERE cce.id IN ( "
+				+ "SELECT c.id FROM CertificationCriterionEntity c "
+				+ "LEFT JOIN c.certificationResult cr "
+				+ "LEFT JOIN cr.certifiedProduct cp "
+				+ "LEFT JOIN cr.certificationResultTestTool crtt "
+				+ "LEFT JOIN crtt.testTool tt "
+				+ "WHERE (tt.retired = true AND CAST(cp.icsCode as integer) >= 1) OR (tt.retired = false) AND c.deleted = false)"
+				, CertificationCriterionEntity.class);
+		List<CertificationCriterionEntity> result = query.getResultList();
 		
-		List<CertificationCriterionEntity> result = entityManager.createQuery( "from CertificationCriterionEntity where (NOT deleted = true) ", CertificationCriterionEntity.class).getResultList();
 		return result;
-		
 	}
 	
 	private List<CertificationCriterionEntity> getEntitiesByCertificationEditionYear(String year) {

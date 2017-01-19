@@ -1,10 +1,5 @@
 package gov.healthit.chpl.auth.filter;
 
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.json.ErrorJSONObject;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.user.User;
-
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -18,6 +13,11 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.json.ErrorJSONObject;
+import gov.healthit.chpl.auth.jwt.JWTValidationException;
+import gov.healthit.chpl.auth.user.User;
 
 public class JWTAuthenticationFilter extends GenericFilterBean {
 	

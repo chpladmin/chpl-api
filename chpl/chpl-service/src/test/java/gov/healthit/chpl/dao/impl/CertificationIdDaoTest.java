@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.caching.CacheInvalidationRule;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -40,7 +40,7 @@ public class CertificationIdDaoTest extends TestCase {
 	
 	@Rule
     @Autowired
-    public CacheInvalidationRule cacheInvalidationRule;
+    public UnitTestRules cacheInvalidationRule;
 	
 	
 	@Test

@@ -1,7 +1,9 @@
 package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -34,7 +37,8 @@ public class CertificationCriterionEntity implements Serializable {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column( name = "certification_criterion_id", nullable = false  )
+    @Column (name = "certification_criterion_id", nullable = false)
+    @JoinColumn (name = "certification_criterion_id", nullable = false)
 	private Long id;
 
 	@Basic( optional = true )
@@ -45,7 +49,6 @@ public class CertificationCriterionEntity implements Serializable {
 	@Column( name = "automated_numerator_capable"  )
 	private Boolean automatedNumeratorCapable;
 	
-	
 	@Basic( optional = false )
 	@Column( name = "certification_edition_id", nullable = false  )
 	private Long certificationEditionId;
@@ -54,6 +57,10 @@ public class CertificationCriterionEntity implements Serializable {
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_edition_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private CertificationEditionEntity certificationEdition;
+	
+	@Basic(optional = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="certificationCriterion")
+	private List<CertificationResultEntity> certificationResult = new ArrayList<CertificationResultEntity>();
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -386,6 +393,14 @@ public class CertificationCriterionEntity implements Serializable {
 
 	public void setCertificationEdition(CertificationEditionEntity certificationEdition) {
 		this.certificationEdition = certificationEdition;
+	}
+	
+	public List<CertificationResultEntity> getCertificationResult() {
+		return certificationResult;
+	}
+
+	public void setCertificationResult(List<CertificationResultEntity> certificationResult) {
+		this.certificationResult = certificationResult;
 	}
 	
 }

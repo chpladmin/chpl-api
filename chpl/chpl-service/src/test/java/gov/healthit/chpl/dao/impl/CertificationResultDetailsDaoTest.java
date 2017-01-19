@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -20,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.caching.CacheInvalidationRule;
 import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
@@ -44,12 +45,12 @@ public class CertificationResultDetailsDaoTest {
 	
 	@Rule
     @Autowired
-    public CacheInvalidationRule cacheInvalidationRule;
+    public UnitTestRules cacheInvalidationRule;
 	
 	@Test
 	@Transactional(readOnly = true)
 	public void testGetG1MacraMeasuresForCertificationResult() {
-		List<CertificationResultMacraMeasureDTO> g1Measures = certResultDao.getG1MacraMeasuresForCertificationResult(8L);
+		List<CertificationResultMacraMeasureDTO> g1Measures = certResultDao.getG1MacraMeasuresForCertificationResult(10L);
 		assertNotNull(g1Measures);
 		assertEquals(1, g1Measures.size());
 		assertNotNull(g1Measures.get(0).getId());
@@ -60,7 +61,7 @@ public class CertificationResultDetailsDaoTest {
 	@Test
 	@Transactional(readOnly = true)
 	public void testGetG2MacraMeasuresForCertificationResult() {
-		List<CertificationResultMacraMeasureDTO> g2Measures = certResultDao.getG2MacraMeasuresForCertificationResult(8L);
+		List<CertificationResultMacraMeasureDTO> g2Measures = certResultDao.getG2MacraMeasuresForCertificationResult(10L);
 		assertNotNull(g2Measures);
 		assertEquals(0, g2Measures.size());
 	}
@@ -71,9 +72,16 @@ public class CertificationResultDetailsDaoTest {
 		
 		List<CertificationResultDetailsDTO> dtos = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(1L);
 		
-		assertEquals(5, dtos.size());
-		assertEquals("170.314 (a)(1)", dtos.get(0).getNumber());
-		assertEquals(true, dtos.get(0).getSuccess());
+		assertEquals(6, dtos.size());
+		Boolean hasNumber = false;
+		for(CertificationResultDetailsDTO dto : dtos){
+			if(dto.getNumber().equalsIgnoreCase("170.314 (a)(1)")){
+				hasNumber = true;
+				assertEquals(true, dto.getSuccess());
+			}
+		}
+		assertTrue("Result should contain CertificationResultDTO with number equal to 170.314 (a)(1)", hasNumber);
+		
 	}
 	
 }

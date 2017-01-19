@@ -384,12 +384,12 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		}	
 		
 		//certification year
-		String certificaitonYear = record.get(colIndex++).trim();
-		pendingCertifiedProduct.setCertificationEdition(certificaitonYear);
+		String certificationYear = record.get(colIndex++).trim();
+		pendingCertifiedProduct.setCertificationEdition(certificationYear);
 		if(!pendingCertifiedProduct.getCertificationEdition().equals("2015")) {
 			pendingCertifiedProduct.getErrorMessages().add("Expecting certification year 2015 but found '" + pendingCertifiedProduct.getCertificationEdition() + "' for product " + pendingCertifiedProduct.getUniqueId());
 		}
-		CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
+		CertificationEditionDTO foundEdition = editionDao.getByYear(certificationYear);
 		if(foundEdition != null) {
 			pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
 		}
@@ -954,9 +954,6 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 				ttEntity.setTestToolVersion(testToolVersion);
 				TestToolDTO testTool = testToolDao.getByName(testToolName);
 				if(testTool != null) {
-					if(testTool.isRetired()) {
-						product.getErrorMessages().add("Test tool '" + testToolName + "' has been retired. Please remove it from the upload file and add a different test tool if necessary.");
-					}
 					ttEntity.setTestToolId(testTool.getId());
 				}
 				cert.getTestTools().add(ttEntity);

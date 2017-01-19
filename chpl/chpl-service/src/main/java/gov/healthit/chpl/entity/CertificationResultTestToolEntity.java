@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -20,12 +21,12 @@ public class CertificationResultTestToolEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
+	@Basic(optional = false)
 	@Column(name = "certification_result_test_tool_id")
 	private Long id;
 	
-	@Basic( optional = false )
-	@Column( name = "certification_result_id", nullable = false  )
+	@Basic(optional = true)
+	@Column(name = "certification_result_id", nullable = false)
 	private Long certificationResultId;
 	
 	@Column(name = "test_tool_id")
@@ -34,10 +35,15 @@ public class CertificationResultTestToolEntity {
 	@Column(name = "version")
 	private String version;
 	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@Basic(optional = true)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_tool_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private TestToolEntity testTool;
+	
+	@Basic(optional = true)
+	@ManyToOne(targetEntity = CertificationResultEntity.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_result_id", nullable = false, insertable = false, updatable = false)
+	private CertificationResultEntity certificationResult;
 	
 	public Long getId() {
 		return id;
@@ -118,5 +124,13 @@ public class CertificationResultTestToolEntity {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public CertificationResultEntity getCertificationResult() {
+		return certificationResult;
+	}
+
+	public void setCertificationResult(CertificationResultEntity certificationResult) {
+		this.certificationResult = certificationResult;
 	}
 }

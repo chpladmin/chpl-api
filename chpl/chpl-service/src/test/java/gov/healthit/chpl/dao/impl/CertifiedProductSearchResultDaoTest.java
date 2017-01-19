@@ -27,7 +27,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.caching.CacheInvalidationRule;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -65,7 +65,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	
 	@Rule
     @Autowired
-    public CacheInvalidationRule cacheInvalidationRule;
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -453,7 +453,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 			assertEquals("CHP-024050",product.getChplProductNumber());
 			assertEquals(2, product.getCertificationEditionId().intValue());
 			assertEquals("Test Developer 1", product.getDeveloper().getName());
-			assertEquals(3, product.getCountCertifications().intValue());
+			assertEquals(4, product.getCountCertifications().intValue());
 			assertEquals(0, product.getCountCqms().intValue());
 			
 		} catch (EntityRetrievalException e) {

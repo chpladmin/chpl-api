@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.caching.CacheInvalidationRule;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -48,7 +48,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
 	@Rule
     @Autowired
-    public CacheInvalidationRule cacheInvalidationRule;
+    public UnitTestRules cacheInvalidationRule;
 	
 	@Test
 	@Transactional
@@ -134,12 +134,26 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCertificationResults() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(5 , detail.getCertificationResults().size());
+		assertEquals(6 , detail.getCertificationResults().size());
 		
 		//check additional software
-		CertificationResult cert = detail.getCertificationResults().get(0);
+		Boolean hasTwoAdditionalSoftware = false;
+		for(CertificationResult result : detail.getCertificationResults()){
+			assertNotNull(result.getAdditionalSoftware());
+			if(result.getAdditionalSoftware().size() == 2){
+				hasTwoAdditionalSoftware = true;
+			}
+		}
+		
+		CertificationResult cert = null;
+		for(CertificationResult cr : detail.getCertificationResults()){
+			if(cr.getNumber().equalsIgnoreCase("170.314 (a)(1)")){
+				cert = cr;
+			}
+		}
+		
 		assertNotNull(cert.getAdditionalSoftware());
-		assertEquals(2, cert.getAdditionalSoftware().size());
+		assertTrue(hasTwoAdditionalSoftware);
 		
 		//check test functionality
 		assertNull(cert.getTestFunctionality());
@@ -195,7 +209,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCountCerts() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(3 , detail.getCountCerts().intValue());
+		assertEquals(4 , detail.getCountCerts().intValue());
 	}
 	
 	@Test

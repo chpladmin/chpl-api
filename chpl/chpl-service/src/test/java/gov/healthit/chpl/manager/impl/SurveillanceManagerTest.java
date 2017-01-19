@@ -26,7 +26,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.caching.CacheInvalidationRule;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
@@ -62,7 +62,7 @@ public class SurveillanceManagerTest extends TestCase {
 	
 	@Rule
     @Autowired
-    public CacheInvalidationRule cacheInvalidationRule;
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser acbUser;

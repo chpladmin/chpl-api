@@ -363,9 +363,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							TestToolDTO foundTestTool = testToolDao.getByName(pendingToolMap.getName());
 							if(foundTestTool == null || foundTestTool.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + pendingToolMap.getName() + "'.");
-							} else if(foundTestTool.isRetired()) {
-								product.getErrorMessages().add("Cannot use test tool '" + foundTestTool.getName() + "' since it is retired. Please choose a different test tool for " + cert.getNumber() + ".");
-							}
+							} 
 						}
 					}
 				}
@@ -422,7 +420,30 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 //					if(cert.getTestTasks() == null || cert.getTestTasks().size() == 0) {
 //						product.getErrorMessages().add("Test tasks are required for certification " + cert.getNumber() + ".");
 //					}
-//				}
+//				}	
+			}
+		}
+		
+		// Allow retired test tool only if CP ICS = true
+		for(PendingCertificationResultDTO certResult : product.getCertificationCriterion()) {
+			if(certResult.getTestTools() != null && certResult.getTestTools().size() > 0) {
+				for(PendingCertificationResultTestToolDTO testTool : certResult.getTestTools()) {
+					if(testTool.getTestToolId() == null) {
+						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + certResult.getNumber() + ".");
+					} else {
+						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
+						if(tt != null && tt.isRetired() && super.icsCode.equals("0")) {
+							if(super.hasIcsConflict){
+								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + certResult.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+							else {
+								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + certResult.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -678,7 +699,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						boolean certStillExists = false;
 						boolean certHasRetiredTool = false;
 						//make sure this test tool still exists in the passed in product/cert
-						//because users are not allowed to remove exisitng test tools if they are retired
+						//because users are not allowed to remove existing test tools if they are retired
 						for(CertificationResult cert : product.getCertificationResults()) {
 							if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
 								if(cert.getNumber().equals(oldCert.getNumber())) {
@@ -691,8 +712,32 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 								}
 							}
 						}
+						
 						if(certStillExists && !certHasRetiredTool) {
 							product.getErrorMessages().add("Certification " + oldCert.getNumber() + " exists but is missing the required test tool '" + testTool.getName() + "'. This tool was present before and cannt be removed since it is retired.");
+						}
+					}
+				}
+			}
+		}
+		
+		// Allow retired test tool only if CP ICS = true
+		for(CertificationResult certResult : product.getCertificationResults()) {
+			if(certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
+				for(CertificationResultTestTool testTool : certResult.getTestToolsUsed()) {
+					if(testTool.getTestToolId() == null) {
+						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getTestToolName() + "' for certification " + certResult.getNumber() + ".");
+					} else {
+						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
+						if(tt != null && tt.isRetired() && super.icsCode.equals("0")) {
+							if(super.hasIcsConflict){
+								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + certResult.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+							else {
+								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + certResult.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
 						}
 					}
 				}

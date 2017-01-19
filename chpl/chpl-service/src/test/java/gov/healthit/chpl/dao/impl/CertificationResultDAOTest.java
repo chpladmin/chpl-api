@@ -1,15 +1,13 @@
-package gov.healthit.chpl.web.controller;
+package gov.healthit.chpl.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,8 +22,11 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -33,9 +34,11 @@ import gov.healthit.chpl.domain.Product;
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
-@DatabaseSetup("classpath:data/testData.xml") 
-public class ProductControllerTest {
-	@Autowired ProductController productController;
+@DatabaseSetup("classpath:data/testData.xml")
+public class CertificationResultDAOTest extends TestCase {
+
+	@Autowired private CertificationResultDAO certificationResultDAO;
+	
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -52,22 +55,23 @@ public class ProductControllerTest {
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 	
+	/**
+	 * Tests that the getTestToolsForCertificationResult() returns 
+	 * Given that a user requests for a Certified Product Details
+	 * When the getTestToolsForCertificationResult() method is called for a CertificationResult with more than one associated test tool
+	 * Then a valid result is returned
+	 * @throws EntityRetrievalException
+	 * @throws EntityCreationException
+	 */
 	@Test
 	@Transactional
-	@Rollback(true)
-	public void getProductById() {
-		Product result = null;
-		try {
-			result = productController.getProductById(-1L);
-		} catch(EntityRetrievalException e) {
-			fail(e.getMessage());
-		}
-		assertNotNull(result);
-		assertNotNull(result.getOwner());
-		assertNotNull(result.getOwner().getDeveloperId());
-		assertEquals(-1, result.getOwner().getDeveloperId().longValue());
-		assertNotNull(result.getOwnerHistory());
-		assertEquals(1, result.getOwnerHistory().size());
-		assertEquals(-2, result.getOwnerHistory().get(0).getDeveloper().getDeveloperId().longValue());
+	public void test_getTestToolsForCertificationResult() throws EntityRetrievalException, EntityCreationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		System.out.println("Running getTestToolsForCertificationResult() test");
+		Long certResultId = 1L; // certResultId = 1 is associated with two certificationResultTestTools (id=1 & id=3)
+		List<CertificationResultTestToolDTO> certCritDTOs = certificationResultDAO.getTestToolsForCertificationResult(certResultId);
+		assertTrue("getTestToolsForCertificationResult() should return two CertificationResultTestTool but returned " + certCritDTOs.size(), certCritDTOs.size() == 2);
 	}
+	
 }

@@ -13,6 +13,7 @@ import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
@@ -37,9 +38,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	@Autowired CertificationEditionDAO certEditionDao;
 	@Autowired CertificationBodyDAO acbDao;
 	@Autowired DeveloperDAO developerDao;
+	@Autowired TestToolDAO testToolDao;
 	
 	@Autowired
 	protected CertificationResultRules certRules;
+	
+	protected Boolean hasIcsConflict;
+	
+	protected String icsCode;
 	
 	Pattern urlRegex;
 	
@@ -70,7 +76,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String developerCode = uniqueIdParts[3];
 		String productCode = uniqueIdParts[4];
 		String versionCode = uniqueIdParts[5];
-		String icsCode = uniqueIdParts[6];
+		icsCode = uniqueIdParts[6];
 		String additionalSoftwareCode = uniqueIdParts[7];
 		String certifiedDateCode = uniqueIdParts[8];
 		
@@ -147,10 +153,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
 		}
 			
+		hasIcsConflict = false;
 		if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
 			product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
+			hasIcsConflict = true;
 		} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
 			product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
+			hasIcsConflict = true;
 		}
 		if(additionalSoftwareCode.equals("0")) {
 			boolean hasAS = false;
@@ -208,7 +217,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			//validate that these pieces match up with data
 			String productCode = uniqueIdParts[4];
 			String versionCode = uniqueIdParts[5];
-			String icsCode = uniqueIdParts[6];
+			icsCode = uniqueIdParts[6];
 			String additionalSoftwareCode = uniqueIdParts[7];
 			String certifiedDateCode = uniqueIdParts[8];
 			
@@ -239,10 +248,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
 			}
 			
+			hasIcsConflict = false;
 			if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
 				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
+				hasIcsConflict = true;
 			} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
 				product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
+				hasIcsConflict = true;
 			}
 			if(additionalSoftwareCode.equals("0")) {
 				boolean hasAS = false;
