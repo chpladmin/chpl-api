@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -142,12 +143,21 @@ public class MeaningfulUseController {
 		return meaningfulUseUserResults;
 	}
 	
-//	@ApiOperation(value="", 
-//			notes=" ")
-//	@RequestMapping(value="accurate_as_of", method=RequestMethod.GET,
-//			produces="application/json; charset=utf-8") 
-//	public @ResponseBody MeaningfulUseUserResults uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
-//		
-//	
-//	}
+	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is good as of", 
+			notes="Value can be edited by ROLE_ADMIN and ROLE_CMS_STAFF using the POST version of this request ")
+	@RequestMapping(value="/accurate_as_of", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8") 
+	public @ResponseBody Date getAccurateAsOfDate() {
+		Date accurateAsOfDate = new Date();
+	
+		return accurateAsOfDate;
+	}
+	
+	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is good as of", 
+			notes="Value can be edited by ROLE_ADMIN and ROLE_CMS_STAFF using the POST version of this request ")
+	@RequestMapping(value="/accurate_as_of", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8") 
+	public @ResponseBody void setAccurateAsOfDate() {
+		
+	}
 }
