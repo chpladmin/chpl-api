@@ -657,7 +657,7 @@ public class CertifiedProductControllerTest {
 			validator.validate(pcpDTO);
 		}
 		// ICS is false, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. No mismatch = error message
-		assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+		assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
 					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
 		
 		// test 3
@@ -681,7 +681,7 @@ public class CertifiedProductControllerTest {
 			validator.validate(pcpDTO);
 		}
 		// ICS is false, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. No mismatch = error message
-		assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+		assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
 					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
 	}
 	
