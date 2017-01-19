@@ -304,9 +304,6 @@ public class CertifiedProductControllerTest {
 		Date inputDate = dateFormat.parse(certDateString);
 		pcpDTO.setCertificationDate(inputDate);
 		pcpDTO.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
-		//Map<String, Object> certStatus = new HashMap<String, Object>();
-		//certStatus.put("name", "Active");
-		//updateRequest.set(certStatus);
 		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
 		CertificationResultTestTool crtt = new CertificationResultTestTool();
 		crtt.setId(1L);
@@ -445,7 +442,7 @@ public class CertifiedProductControllerTest {
 	@Test
 	public void test_getCertifiedProductById() throws EntityRetrievalException, EntityCreationException, IOException {
 		Long cpId = 1L;
-		CertifiedProductSearchDetails cpDetails = certifiedProductController.getCertifiedProductById(1L);
+		CertifiedProductSearchDetails cpDetails = certifiedProductController.getCertifiedProductById(cpId);
 		assertNotNull(cpDetails);
 	}
 	
