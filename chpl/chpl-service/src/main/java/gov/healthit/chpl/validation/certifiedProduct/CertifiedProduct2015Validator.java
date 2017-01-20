@@ -687,20 +687,20 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		}
 		
 		// Allow retired test tool only if CP ICS = true
-		for(CertificationResult certResult : product.getCertificationResults()) {
-			if(certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
-				for(CertificationResultTestTool testTool : certResult.getTestToolsUsed()) {
-					if(testTool.getTestToolId() == null) {
-						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getTestToolName() + "' for certification " + certResult.getNumber() + ".");
+		for(CertificationResult cert : product.getCertificationResults()) {
+			if(cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
+				for(CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
+					if(StringUtils.isEmpty(testTool.getTestToolName())) {
+						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
 					} else {
-						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
+						TestToolDTO tt = super.testToolDao.getByName(testTool.getTestToolName());
 						if(tt != null && tt.isRetired() && super.icsCode.equals("0")) {
-							if(super.hasIcsConflict){
-								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + certResult.getNumber() 
+							if(super.hasIcsConflict) {
+								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
-							else {
-								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + certResult.getNumber() 
+							else if(tt != null) {
+								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
 						}
