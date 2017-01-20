@@ -132,11 +132,14 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
 				for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
-					if(testTool.getTestToolId() == null) {
-						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + cert.getNumber() + ".");
+					if(StringUtils.isEmpty(testTool.getName())) {
+						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
 					} else {
-						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
-						if(tt != null && tt.isRetired() && super.icsCode.equals("0")) {
+						TestToolDTO tt = super.testToolDao.getByName(testTool.getName());
+						if(tt == null) {
+							product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
+						}
+						else if(tt.isRetired() && super.icsCode.equals("0")) {
 							if(super.hasIcsConflict){
 								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
