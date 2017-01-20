@@ -84,14 +84,6 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 						(cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
 						product.getErrorMessages().add("Test Tools are required for certification " + cert.getNumber() + ".");
 				}
-				
-				if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
-					for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
-						if(testTool.getTestToolId() == null) {
-							product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + cert.getNumber() + ".");
-						} 
-					}
-				}
 			}
 		}
 	}
