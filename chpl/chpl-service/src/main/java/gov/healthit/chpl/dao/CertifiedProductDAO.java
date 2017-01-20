@@ -34,5 +34,4 @@ public interface CertifiedProductDAO {
 	
 	public List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds);
 	public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(Long vendorId);
-	public List<CertificationCriterionEntity> getRetiredTestTools(Long cpId);
 }

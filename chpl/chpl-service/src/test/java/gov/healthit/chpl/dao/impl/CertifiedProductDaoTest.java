@@ -158,31 +158,4 @@ public class CertifiedProductDaoTest {
 		CertifiedProductDTO deletedProduct = productDao.getById(productId);
 		assertTrue(deletedProduct.getDeleted());
 	}
-	
-	/**
-	 * Given that I am authenticated as an admin
-	 * When I check to see if a CP id has an associated retired test tool
-	 * Then a CP's associated retired TestTools are returned
-	 * Then a CP without an associated retired TestTool returns no results
-	 * @throws EntityRetrievalException 
-	 */
-	@Test
-	@Transactional(readOnly = true)
-	public void test_hasRetiredTestTool() throws EntityRetrievalException {
-		Long productId = 1L;
-		List<CertificationCriterionEntity> result = productDao.getRetiredTestTools(productId);
-		assertTrue("CP with id = 1 should have two retired test tools", result.size() == 2);
-		
-		productId = 2L;
-		result = productDao.getRetiredTestTools(productId);
-		assertTrue("CP with id = 2 should NOT have a retired test tool", result.size() == 0);
-	}
-	
-//	@Test
-//	public void getByUniqueId() throws EntityRetrievalException {
-//		String id = "14.";
-//		CertifiedProductDetailsDTO cpDetails = productDao.getByChplUniqueId(id);
-//		assertNotNull(cpDetails);
-//		assertEquals(cpDetails.getChplProductNumber(), id);
-//	}
 }
