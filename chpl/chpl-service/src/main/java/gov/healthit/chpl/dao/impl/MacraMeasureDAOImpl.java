@@ -28,7 +28,9 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 	
 	@Override
 	public List<MacraMeasureDTO> findAll() {
-		Query query = entityManager.createQuery( "from MacraMeasureEntity where (NOT deleted = true)", MacraMeasureEntity.class );
+		Query query = entityManager.createQuery("from MacraMeasureEntity mme "
+				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+				+ "WHERE (NOT mme.deleted = true)", MacraMeasureEntity.class );
 		List<MacraMeasureEntity> results = query.getResultList();
 		
 		List<MacraMeasureDTO> dtos = new ArrayList<MacraMeasureDTO>(results.size());

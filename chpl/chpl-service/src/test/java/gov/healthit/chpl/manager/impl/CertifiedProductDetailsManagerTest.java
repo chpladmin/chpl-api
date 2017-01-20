@@ -332,6 +332,16 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		assertNotNull(cert.getG2MacraMeasures());
 		assertEquals(0, cert.getG2MacraMeasures().size());
+		
+		boolean foundA1 = false;
+		for(CertificationResult cr : detail.getCertificationResults()) {
+			if(cr.getNumber().equals("170.315 (a)(1)")) {
+				foundA1 = true;
+				assertNotNull(cr.getAllowedMacraMeasures());
+				assertEquals(1, cr.getAllowedMacraMeasures().size());
+			}
+		}
+		assertTrue(foundA1);
 	}
 }
 

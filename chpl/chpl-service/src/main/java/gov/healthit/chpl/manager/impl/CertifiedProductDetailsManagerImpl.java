@@ -21,6 +21,7 @@ import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -41,6 +42,7 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.Surveillance;
@@ -64,6 +66,7 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
@@ -105,13 +108,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	@Autowired private SurveillanceManager survManager;
 	
 	private CQMCriterionDAO cqmCriterionDAO;
+	private MacraMeasureDAO macraDao;
 	
 	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
+	private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 	
 	@Autowired
-	public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO){
+	public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO, MacraMeasureDAO macraDao){
 		this.cqmCriterionDAO = cqmCriterionDAO;
+		this.macraDao = macraDao;
+		
 		loadCQMCriteria();
+		loadCriteriaMacraMeasures();
 	}
 	
 
@@ -374,6 +382,13 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				result.setTestTasks(null);
 			}
 			
+			//set allowed macra measures (if any)
+			for(MacraMeasure measure : macraMeasures) {
+				if(measure.getCriteria().getNumber().equals(result.getNumber())) {
+					result.getAllowedMacraMeasures().add(measure);
+				}
+			}
+			
 			certificationResults.add(result);
 		}
 		searchDetails.setCertificationResults(certificationResults);
@@ -489,6 +504,14 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			certEvents.add(cse);
 		}
 		return certEvents;
+	}
+	
+	private void loadCriteriaMacraMeasures() {
+		List<MacraMeasureDTO> dtos = macraDao.findAll();
+		for(MacraMeasureDTO dto : dtos) {
+			MacraMeasure measure = new MacraMeasure(dto);
+			macraMeasures.add(measure);
+		}
 	}
 	
 	private void loadCQMCriteria(){
