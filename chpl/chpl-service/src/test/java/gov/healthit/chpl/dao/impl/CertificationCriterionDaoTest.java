@@ -314,57 +314,12 @@ public class CertificationCriterionDaoTest extends TestCase {
 		
 		System.out.println("Running getAllEntities() test");
 		List<CertificationCriterionDTO> certCritDTOs = certificationCriterionDAO.findAll();
-		assertTrue("List of CertificationCriterionDTO should equal 2 but is " + certCritDTOs.size(), certCritDTOs.size() == 2);
+		assertEquals(164, certCritDTOs.size());
 		
 		List<Long> certCritIdList = new ArrayList<Long>();
 		for(CertificationCriterionDTO dto : certCritDTOs){
 			certCritIdList.add(dto.getId());
 			assertFalse(dto.getDeleted());
 		}
-		
-		// Verify that results are returned where TT is retired and CP.ics_code = 1
-		List<CertificationCriterionEntity> certCritWithTTRetiredAndIcsCodeEqualsOne = getAllRetiredEntitiesWithIcsCodeEqualsOne();
-		for(CertificationCriterionEntity cce : certCritWithTTRetiredAndIcsCodeEqualsOne){
-			assertTrue(certCritIdList.contains(cce.getId()));
-		}
-		
-		// Verify that no results are returned where TT is retired and CP.ics_code <> 1
-		List<CertificationCriterionEntity> retiredEntitiesWithIcsNotOne = getAllRetiredEntitiesWithIcsCodeNotOne();
-		for(Long id : certCritIdList){
-			for(CertificationCriterionEntity cce : retiredEntitiesWithIcsNotOne){
-				assertFalse(cce.getId().equals(id));
-			}
-		}
-	}
-	
-	private List<CertificationCriterionEntity> getAllRetiredEntitiesWithIcsCodeNotOne() {
-		Query query = entityManager.createQuery(
-				"SELECT cce "
-				+ "FROM CertificationCriterionEntity cce "
-				+ "WHERE cce.id IN ( "
-				+ "SELECT c.id FROM CertificationCriterionEntity c "
-				+ "LEFT JOIN c.certificationResult cr "
-				+ "LEFT JOIN cr.certifiedProduct cp "
-				+ "LEFT JOIN cr.certificationResultTestTool crtt "
-				+ "LEFT JOIN crtt.testTool tt "
-				+ "WHERE (tt.retired = true AND cp.icsCode <> '1') AND c.deleted = false)"
-				, CertificationCriterionEntity.class);
-		List<CertificationCriterionEntity> result = query.getResultList();
-		
-		return result;
-	}
-	
-	private List<CertificationCriterionEntity> getAllRetiredEntitiesWithIcsCodeEqualsOne() {
-		Query query = entityManager.createQuery(
-				"SELECT c FROM CertificationCriterionEntity c "
-				+ "LEFT JOIN c.certificationResult cr "
-				+ "LEFT JOIN cr.certifiedProduct cp "
-				+ "LEFT JOIN cr.certificationResultTestTool crtt "
-				+ "LEFT JOIN crtt.testTool tt "
-				+ "WHERE (tt.retired = true AND cp.icsCode = '1') AND c.deleted = false"
-				, CertificationCriterionEntity.class);
-		List<CertificationCriterionEntity> result = query.getResultList();
-		
-		return result;
 	}
 }

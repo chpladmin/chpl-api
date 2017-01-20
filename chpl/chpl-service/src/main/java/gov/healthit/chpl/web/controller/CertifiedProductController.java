@@ -187,12 +187,6 @@ public class CertifiedProductController {
 			} catch(EntityRetrievalException ex) {}
 		}
 		
-		List<CertificationCriterionEntity> retiredTestTools = cpDao.getRetiredTestTools(existingProduct.getId());
-		Boolean hasRetiredTestTool = false;
-		if(retiredTestTools.size() > 0){
-			hasRetiredTestTool = true;
-		}
-		
 		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {
 			throw new ValidationException(updateRequest.getErrorMessages(), updateRequest.getWarningMessages());
 		}

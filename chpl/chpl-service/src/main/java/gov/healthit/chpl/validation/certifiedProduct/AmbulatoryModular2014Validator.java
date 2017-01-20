@@ -170,36 +170,6 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 			logger.error("Could not find certified product details with id " + product.getId(), ex);
 		}
 		
-		//compare old with current - they cannot remove test tools
-		for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
-			if(oldCert.isSuccess() != null && oldCert.isSuccess() == Boolean.TRUE && oldCert.getTestToolsUsed() != null) {
-				for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
-					TestToolDTO testTool = ttDao.getById(oldTestTool.getTestToolId());
-					if(testTool.isRetired()) {
-						boolean certStillExists = false;
-						boolean certHasRetiredTool = false;
-						//make sure this test tool still exists in the passed in product/cert
-						//because users are not allowed to remove exisitng test tools if they are retired
-						for(CertificationResult cert : product.getCertificationResults()) {
-							if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
-								if(cert.getNumber().equals(oldCert.getNumber())) {
-									certStillExists = true;
-									for(CertificationResultTestTool newTestTool : cert.getTestToolsUsed()) {
-										if(newTestTool.getTestToolId().equals(oldTestTool.getTestToolId())) {
-											certHasRetiredTool = true;
-										}
-									}
-								}
-							}
-						}
-						if(certStillExists && !certHasRetiredTool) {
-							product.getErrorMessages().add("Certification " + oldCert.getNumber() + " exists but is missing the required test tool '" + testTool.getName() + "'. This tool was present before and cannt be removed since it is retired.");
-						}
-					}
-				}
-			}
-		}
-		
 		//compare current test tools with old ones - they cannot add any additional retired tools or change versions
 		//now check all the new certs for whatever is required
 		for(CertificationResult cert : product.getCertificationResults()) {
@@ -211,33 +181,6 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 							TestToolDTO foundTestTool = ttDao.getByName(toolMap.getTestToolName());
 							if(foundTestTool == null || foundTestTool.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + toolMap.getTestToolName() + "'.");
-							} else if(foundTestTool.isRetired() && oldProduct != null) {
-								//this retired tool is acceptable if it is not new 
-								//and the version has not been changed
-								boolean certMatch = false;
-								boolean retiredToolMatch = false;
-								boolean versionMatch = true;
-								for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
-									if(oldCert.getNumber().equals(cert.getNumber())) {
-										certMatch = true;
-										for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
-											if(oldTestTool.getTestToolId().equals(foundTestTool.getId())) {
-												retiredToolMatch = true;
-												
-												if(!oldTestTool.getTestToolVersion().equals(toolMap.getTestToolVersion())) {
-													versionMatch = false;
-												}
-											}
-										}
-									}
-								}
-								if(!certMatch) {
-									product.getErrorMessages().add("Cannot add a retired product to " + cert.getNumber());
-								} else if(certMatch && !retiredToolMatch) {
-									product.getErrorMessages().add("Certification " + cert.getNumber() + " has test tool " + foundTestTool.getName() + " but did not have that before. Retired test tools cannot be added to products.");
-								} else if(certMatch && retiredToolMatch && !versionMatch) {
-									product.getErrorMessages().add("Certification " + cert.getNumber() + " cannot change the test tool version for " + foundTestTool.getName() + " since that test tool is retired.");
-								}
 							}
 						}
 					}

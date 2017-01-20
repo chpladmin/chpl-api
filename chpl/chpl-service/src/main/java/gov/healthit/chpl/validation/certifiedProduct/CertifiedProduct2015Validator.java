@@ -356,9 +356,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							TestToolDTO foundTestTool = testToolDao.getByName(pendingToolMap.getName());
 							if(foundTestTool == null || foundTestTool.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + pendingToolMap.getName() + "'.");
-							} else if(foundTestTool.isRetired()) {
-								product.getErrorMessages().add("Cannot use test tool '" + foundTestTool.getName() + "' since it is retired. Please choose a different test tool for " + cert.getNumber() + ".");
-							}
+							} 
 						}
 					}
 				}
@@ -399,12 +397,12 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + certResult.getNumber() + ".");
 					} else {
 						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
-						if(tt != null && tt.isRetired()) {
+						if(tt != null && tt.isRetired() && super.icsCode.equals("0")) {
 							if(super.hasIcsConflict){
 								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + certResult.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
-							else{
+							else {
 								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + certResult.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
@@ -696,12 +694,12 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getTestToolName() + "' for certification " + certResult.getNumber() + ".");
 					} else {
 						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
-						if(tt != null && tt.isRetired()) {
+						if(tt != null && tt.isRetired() && super.icsCode.equals("0")) {
 							if(super.hasIcsConflict){
 								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + certResult.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
-							else{
+							else {
 								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + certResult.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
@@ -740,35 +738,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							TestToolDTO foundTestTool = testToolDao.getByName(toolMap.getTestToolName());
 							if(foundTestTool == null || foundTestTool.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + toolMap.getTestToolName() + "'.");
-							} else if(foundTestTool.isRetired() && oldProduct != null) {
-								//this retired tool is acceptable if it is not new 
-								//and the version has not been changed
-								boolean certMatch = false;
-								boolean retiredToolMatch = false;
-								boolean versionMatch = true;
-								for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
-									if(oldCert.getNumber().equals(cert.getNumber())) {
-										certMatch = true;
-										for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
-											if(oldTestTool.getTestToolId().equals(foundTestTool.getId())) {
-												retiredToolMatch = true;
-												
-												if(!oldTestTool.getTestToolVersion().equals(toolMap.getTestToolVersion())) {
-													versionMatch = false;
-												}
-											}
-										}
-									}
-								}
-								
-								if(!certMatch) {
-									product.getErrorMessages().add("Cannot add a retired product to " + cert.getNumber());
-								} else if(certMatch && !retiredToolMatch) {
-									product.getErrorMessages().add("Certification " + cert.getNumber() + " has test tool " + foundTestTool.getName() + " but did not have that before. Retired test tools cannot be added to products.");
-								} else if(certMatch && retiredToolMatch && !versionMatch) {
-									product.getErrorMessages().add("Certification " + cert.getNumber() + " cannot change the test tool version for " + foundTestTool.getName() + " since that test tool is retired.");
-								}
-							}
+							} 
 						}
 					}
 				}
