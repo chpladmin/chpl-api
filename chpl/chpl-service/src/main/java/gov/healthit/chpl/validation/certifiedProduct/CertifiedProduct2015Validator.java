@@ -697,12 +697,12 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						if(tt == null){
 							product.getErrorMessages().add("No test tool with " + testTool.getTestToolName() + " was found for criteria " + cert.getNumber() + ".");
 						}
-						else if(tt != null && tt.isRetired() && super.icsCode.equals("0")) {
+						else if(tt.isRetired() && super.icsCode.equals("0")) {
 							if(super.hasIcsConflict) {
 								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
-							else if(tt != null) {
+							else {
 								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
