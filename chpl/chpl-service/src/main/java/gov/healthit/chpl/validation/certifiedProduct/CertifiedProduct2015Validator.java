@@ -738,35 +738,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							TestToolDTO foundTestTool = testToolDao.getByName(toolMap.getTestToolName());
 							if(foundTestTool == null || foundTestTool.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + toolMap.getTestToolName() + "'.");
-							} else if(foundTestTool.isRetired() && oldProduct != null) {
-								//this retired tool is acceptable if it is not new 
-								//and the version has not been changed
-								boolean certMatch = false;
-								boolean retiredToolMatch = false;
-								boolean versionMatch = true;
-								for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
-									if(oldCert.getNumber().equals(cert.getNumber())) {
-										certMatch = true;
-										for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
-											if(oldTestTool.getTestToolId().equals(foundTestTool.getId())) {
-												retiredToolMatch = true;
-												
-												if(!oldTestTool.getTestToolVersion().equals(toolMap.getTestToolVersion())) {
-													versionMatch = false;
-												}
-											}
-										}
-									}
-								}
-								
-								if(!certMatch) {
-									product.getErrorMessages().add("Cannot add a retired product to " + cert.getNumber());
-								} else if(certMatch && !retiredToolMatch) {
-									product.getErrorMessages().add("Certification " + cert.getNumber() + " has test tool " + foundTestTool.getName() + " but did not have that before. Retired test tools cannot be added to products.");
-								} else if(certMatch && retiredToolMatch && !versionMatch) {
-									product.getErrorMessages().add("Certification " + cert.getNumber() + " cannot change the test tool version for " + foundTestTool.getName() + " since that test tool is retired.");
-								}
-							}
+							} 
 						}
 					}
 				}
