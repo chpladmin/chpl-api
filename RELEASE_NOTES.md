@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 7.1.0
+_23 January 2017_
 
 ### Features Added
 * Improve website performance:
