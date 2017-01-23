@@ -35,14 +35,18 @@ import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -69,7 +73,9 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Autowired UserDAO userDAO;
 	@Autowired private MutableAclService mutableAclService;
 	@Autowired private CQMCriterionDAO cqmCriterionDAO;
+	@Autowired private MacraMeasureDAO macraDao;
 	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
+	private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 	
 	@Autowired
 	private ActivityManager activityManager;
@@ -77,6 +83,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@PostConstruct
 	public void setup() {
 		loadCQMCriteria();
+		loadCriteriaMacraMeasures();
 	}
 
 	@Override
@@ -104,6 +111,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
 		PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(dto);
 		addAllVersionsToCmsCriterion(pcpDetails);
+		addAllMeasuresToCertificationCriteria(pcpDetails);
 		
 		return pcpDetails;
 	}
@@ -188,6 +196,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		for(PendingCertifiedProductDTO product : products) {
 			PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
 			addAllVersionsToCmsCriterion(pcpDetails);
+			addAllMeasuresToCertificationCriteria(pcpDetails);
 			result.add(pcpDetails);
 		}
 		
@@ -428,6 +437,14 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		return permissionExists;
 	}
 	
+	private void loadCriteriaMacraMeasures() {
+		List<MacraMeasureDTO> dtos = macraDao.findAll();
+		for(MacraMeasureDTO dto : dtos) {
+			MacraMeasure measure = new MacraMeasure(dto);
+			macraMeasures.add(measure);
+		}
+	}
+	
 	private void loadCQMCriteria() {		
 		List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
 		for (CQMCriterionDTO dto: dtos) {
@@ -511,6 +528,18 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 					result.getAllVersions().add(cqm.getCqmVersion());
 					result.setTypeId(cqm.getCqmCriterionTypeId());
 					pcpDetails.getCqmResults().add(result);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void addAllMeasuresToCertificationCriteria(PendingCertifiedProductDetails pcpDetails) {
+		//now add allMeasures for criteria
+		for(CertificationResult cert : pcpDetails.getCertificationResults()) {
+			for(MacraMeasure measure : macraMeasures) {
+				if(measure.getCriteria().getNumber().equals(cert.getNumber())) {
+					cert.getAllowedMacraMeasures().add(measure);
 				}
 			}
 		}

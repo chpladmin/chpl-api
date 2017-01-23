@@ -130,6 +130,17 @@
 		<persistence strategy="localTempSwap" />
 	</cache>
 	
+	<cache name="macrameasures"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="100000"
+		eternal="false"
+		diskSpoolBufferSizeMB="20"
+		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
 	<cache name="cqmCriterionNumbers"
 		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"

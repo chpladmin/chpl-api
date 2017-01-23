@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager;
 import java.util.Set;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
@@ -33,6 +34,7 @@ public interface SearchMenuManager {
 	public Set<KeyValueModel> getNonconformityStatusTypes();
 	public SurveillanceRequirementOptions getSurveillanceRequirementOptions();
 	public Set<KeyValueModel> getNonconformityTypeOptions();
+	public Set<CriteriaSpecificDescriptiveModel> getMacraMeasures();
 	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException;
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple);
 	

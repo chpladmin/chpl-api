@@ -31,6 +31,7 @@ import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
@@ -405,6 +406,18 @@ public class SearchViewController {
 		Set<KeyValueModel> data = searchMenuManager.getAccessibilityStandards();
 		SearchOption result = new SearchOption();
 		result.setExpandable(true);
+		result.setData(data);
+		return result;
+	}
+	
+	@ApiOperation(value="Get all possible macra measure options in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/macra_measures", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchOption getMacraMeasures() {
+		Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getMacraMeasures();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
 		result.setData(data);
 		return result;
 	}

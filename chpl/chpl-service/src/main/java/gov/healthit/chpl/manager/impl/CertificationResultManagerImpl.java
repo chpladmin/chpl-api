@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
@@ -25,6 +26,7 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -33,6 +35,7 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
@@ -56,6 +59,7 @@ public class CertificationResultManagerImpl implements
 	@Autowired private EducationTypeDAO educationTypeDAO;
 	@Autowired private TestTaskDAO testTaskDAO;
 	@Autowired private UcdProcessDAO ucdDao;
+	@Autowired private MacraMeasureDAO mmDao;
 
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -168,6 +172,12 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultTestToolDTO> tools = updateTestTools(toUpdate);
 		updated.setTestTools(tools);
 			
+		List<CertificationResultMacraMeasureDTO> g1Measures = updateG1Measures(toUpdate);
+		updated.setG1Measures(g1Measures);
+		
+		List<CertificationResultMacraMeasureDTO> g2Measures = updateG2Measures(toUpdate);
+		updated.setG2Measures(g2Measures);
+		
 		 List<CertificationResultTestDataDTO> data = updateTestData(toUpdate);
 		updated.setTestData(data);
 		
@@ -388,6 +398,105 @@ public class CertificationResultManagerImpl implements
 		}
 		return certResultDAO.getTestToolsForCertificationResult(toUpdate.getId());
 	}
+	
+	private List<CertificationResultMacraMeasureDTO> updateG1Measures(CertificationResultDTO toUpdate) 
+			throws EntityCreationException, EntityRetrievalException {
+		//update g1 mappings
+		List<CertificationResultMacraMeasureDTO> existingG1Mappings = certResultDAO.getG1MacraMeasuresForCertificationResult(toUpdate.getId());
+		List<CertificationResultMacraMeasureDTO> mappingsToAdd = new ArrayList<CertificationResultMacraMeasureDTO>();
+		List<CertificationResultMacraMeasureDTO> mappingsToRemove = new ArrayList<CertificationResultMacraMeasureDTO>();
+
+		for (CertificationResultMacraMeasureDTO newMapping : toUpdate.getG1Measures()){
+			MacraMeasureDTO measure = null;
+			if(newMapping.getMeasure() != null && newMapping.getMeasure().getId() != null) {
+				measure = mmDao.getById(newMapping.getMeasure().getId());
+			}
+			//TODO: we don't have the criteria number here but could look up by value if we had that
+			if(measure != null) {
+				//do not create a new one
+				newMapping.setMeasure(measure);
+				
+				CertificationResultMacraMeasureDTO existingMapping = certResultDAO.lookupG1MacraMeasureMapping(newMapping.getCertificationResultId(), newMapping.getMeasure().getId());
+				if(existingMapping == null) {
+					mappingsToAdd.add(newMapping);
+				} else {
+					certResultDAO.updateG1MacrameasureMapping(newMapping);
+				}
+			}
+		}
+				
+		for(CertificationResultMacraMeasureDTO currMapping : existingG1Mappings) {
+			boolean isInUpdate = false;
+			for (CertificationResultMacraMeasureDTO toUpdateMapping : toUpdate.getG1Measures()){
+				if(toUpdateMapping.getMeasure() != null && toUpdateMapping.getMeasure().getId() != null && 
+						toUpdateMapping.getMeasure().getId().longValue() == currMapping.getMeasure().getId().longValue()) {
+					isInUpdate = true;
+				}
+			}
+			if(!isInUpdate) {
+				mappingsToRemove.add(currMapping);
+			}
+		}
+					
+		for(CertificationResultMacraMeasureDTO toAdd : mappingsToAdd) {
+			toAdd.setCertificationResultId(toUpdate.getId());
+			certResultDAO.addG1MacraMeasureMapping(toAdd);
+		}
+		for(CertificationResultMacraMeasureDTO toRemove : mappingsToRemove) {
+			certResultDAO.deleteG1MacraMeasureMapping(toRemove.getId());
+		}
+		return certResultDAO.getG1MacraMeasuresForCertificationResult(toUpdate.getId());
+	}
+	
+	private List<CertificationResultMacraMeasureDTO> updateG2Measures(CertificationResultDTO toUpdate) 
+			throws EntityCreationException, EntityRetrievalException {
+		//update g2 mappings
+		List<CertificationResultMacraMeasureDTO> existingG2Mappings = certResultDAO.getG2MacraMeasuresForCertificationResult(toUpdate.getId());
+		List<CertificationResultMacraMeasureDTO> mappingsToAdd = new ArrayList<CertificationResultMacraMeasureDTO>();
+		List<CertificationResultMacraMeasureDTO> mappingsToRemove = new ArrayList<CertificationResultMacraMeasureDTO>();
+
+		for (CertificationResultMacraMeasureDTO newMapping : toUpdate.getG2Measures()){
+			MacraMeasureDTO measure = null;
+			if(newMapping.getMeasure() != null && newMapping.getMeasure().getId() != null) {
+				measure = mmDao.getById(newMapping.getMeasure().getId());
+			}
+			//TODO: we don't have the criteria number here but could look up by value if we had that
+			if(measure != null) {
+				//do not create a new one
+				newMapping.setMeasure(measure);
+				
+				CertificationResultMacraMeasureDTO existingMapping = certResultDAO.lookupG2MacraMeasureMapping(newMapping.getCertificationResultId(), newMapping.getMeasure().getId());
+				if(existingMapping == null) {
+					mappingsToAdd.add(newMapping);
+				} else {
+					certResultDAO.updateG2MacrameasureMapping(newMapping);
+				}
+			}
+		}
+				
+		for(CertificationResultMacraMeasureDTO currMapping : existingG2Mappings) {
+			boolean isInUpdate = false;
+			for (CertificationResultMacraMeasureDTO toUpdateMapping : toUpdate.getG2Measures()){
+				if(toUpdateMapping.getMeasure() != null && toUpdateMapping.getMeasure().getId() != null && 
+						toUpdateMapping.getMeasure().getId().longValue() == currMapping.getMeasure().getId().longValue()) {
+					isInUpdate = true;
+				}
+			}
+			if(!isInUpdate) {
+				mappingsToRemove.add(currMapping);
+			}
+		}
+					
+		for(CertificationResultMacraMeasureDTO toAdd : mappingsToAdd) {
+			toAdd.setCertificationResultId(toUpdate.getId());
+			certResultDAO.addG2MacraMeasureMapping(toAdd);
+		}
+		for(CertificationResultMacraMeasureDTO toRemove : mappingsToRemove) {
+			certResultDAO.deleteG2MacraMeasureMapping(toRemove.getId());
+		}
+		return certResultDAO.getG2MacraMeasuresForCertificationResult(toUpdate.getId());
+	}
+	
 	private List<CertificationResultTestDataDTO> updateTestData(CertificationResultDTO toUpdate) 
 		throws EntityCreationException, EntityRetrievalException {
 		//update test data
@@ -655,6 +764,16 @@ public class CertificationResultManagerImpl implements
 	@Override
 	public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestFunctionalityForCertificationResult(certificationResultId);
+	}
+	
+	@Override
+	public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(Long certificationResultId) {
+		return certResultDAO.getG1MacraMeasuresForCertificationResult(certificationResultId);
+	}
+	
+	@Override
+	public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId) {
+		return certResultDAO.getG2MacraMeasuresForCertificationResult(certificationResultId);
 	}
 	
 	@Override

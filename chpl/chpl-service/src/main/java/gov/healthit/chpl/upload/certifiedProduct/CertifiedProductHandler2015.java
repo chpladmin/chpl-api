@@ -24,6 +24,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
@@ -39,6 +40,8 @@ import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultG1MacraMeasureEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultG2MacraMeasureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
@@ -61,6 +64,11 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	
 	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler2015.class);
+	//we will ignore g1 and g2 macra measures for (g)(7) criteria for now 
+	//they shouldn't be there but it's hard for users to change the spreadsheet
+	protected static final String G1_CRITERIA_TO_IGNORE = "170.315 (g)(7)";
+	protected static final String G2_CRITERIA_TO_IGNORE = "170.315 (g)(7)";
+	
 	private List<PendingTestParticipantEntity> participants;
 	private List<PendingTestTaskEntity> tasks;
 	
@@ -773,10 +781,12 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						currIndex++;
 						break;
 					case "MEASURE SUCCESSFULLY TESTED FOR G1":
-						cert.setG1Success(asBoolean(firstRow.get(currIndex++).trim()));
+						parseG1Measures(cert, currIndex);
+						currIndex++;
 						break;
 					case "MEASURE SUCCESSFULLY TESTED FOR G2":
-						cert.setG2Success(asBoolean(firstRow.get(currIndex++).trim()));
+						parseG2Measures(cert, currIndex);
+						currIndex++;
 						break;
 					case "ADDITIONAL SOFTWARE":
 						Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
@@ -947,6 +957,48 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 					ttEntity.setTestToolId(testTool.getId());
 				}
 				cert.getTestTools().add(ttEntity);
+			}
+		}
+	}
+	
+	private void parseG1Measures(PendingCertificationResultEntity cert, int measureCol) {
+		//ignore measures for G7
+		if(cert.getMappedCriterion().getNumber().equals(G1_CRITERIA_TO_IGNORE)) {
+			return;
+		}
+		
+		for(CSVRecord row : getRecord()) {
+			String measureVal = row.get(measureCol).trim();
+			if(!StringUtils.isEmpty(measureVal) && 
+					!measureVal.equalsIgnoreCase(Boolean.FALSE.toString()) && !measureVal.equals("0")) {
+				PendingCertificationResultG1MacraMeasureEntity mmEntity = new PendingCertificationResultG1MacraMeasureEntity();
+				mmEntity.setEnteredValue(measureVal);
+				MacraMeasureDTO mmDto = macraDao.getByCriteriaNumberAndValue(cert.getMappedCriterion().getNumber(), measureVal);
+				if(mmDto != null) {
+					mmEntity.setMacraId(mmDto.getId());
+				}
+				cert.getG1MacraMeasures().add(mmEntity);
+			}
+		}
+	}
+	
+	private void parseG2Measures(PendingCertificationResultEntity cert, int measureCol) {
+		//ignore measures for G7
+		if(cert.getMappedCriterion().getNumber().equals(G2_CRITERIA_TO_IGNORE)) {
+			return;
+		}
+				
+		for(CSVRecord row : getRecord()) {
+			String measureVal = row.get(measureCol).trim();
+			if(!StringUtils.isEmpty(measureVal) && 
+					!measureVal.equalsIgnoreCase(Boolean.FALSE.toString()) && !measureVal.equals("0")) {
+				PendingCertificationResultG2MacraMeasureEntity mmEntity = new PendingCertificationResultG2MacraMeasureEntity();
+				mmEntity.setEnteredValue(measureVal.trim());
+				MacraMeasureDTO mmDto = macraDao.getByCriteriaNumberAndValue(cert.getMappedCriterion().getNumber(), measureVal);
+				if(mmDto != null) {
+					mmEntity.setMacraId(mmDto.getId());
+				}
+				cert.getG2MacraMeasures().add(mmEntity);
 			}
 		}
 	}
