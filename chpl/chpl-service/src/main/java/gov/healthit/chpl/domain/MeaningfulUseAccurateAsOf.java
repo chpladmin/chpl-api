@@ -1,7 +1,8 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;
 
@@ -9,21 +10,24 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
 	private static final long serialVersionUID = -4803763243075068608L;
 	
 	private Long id;
-	private Date accurateAsOfDate;
+	private Long accurateAsOfDate;
 	private Boolean deleted;
 	private Long lastModifiedUser;
-	private Date creationDate;
-	private Date lastModifiedDate;
+	private Long creationDate;
+	private Long lastModifiedDate;
+	
+	private Set<String> warningMessages = new HashSet<String>();
+	private Set<String> errorMessages = new HashSet<String>();
 	
 	public MeaningfulUseAccurateAsOf(){};
 	
 	public MeaningfulUseAccurateAsOf(MeaningfulUseAccurateAsOfDTO muuDTO){
 		this.id = muuDTO.getId();
-		this.accurateAsOfDate = muuDTO.getAccurateAsOfDate();
+		this.accurateAsOfDate = muuDTO.getAccurateAsOfDate().getTime();
 		this.deleted = muuDTO.getDeleted();
 		this.lastModifiedUser = muuDTO.getLastModifiedUser();
-		this.creationDate = muuDTO.getCreationDate();
-		this.lastModifiedDate = muuDTO.getLastModifiedDate();
+		this.creationDate = muuDTO.getCreationDate().getTime();
+		this.lastModifiedDate = muuDTO.getLastModifiedDate().getTime();
 	};
 	
 	public Long getId() {
@@ -34,11 +38,11 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
 		this.id = id;
 	}
 
-	public Date getAccurateAsOfDate() {
+	public Long getAccurateAsOfDate() {
 		return accurateAsOfDate;
 	}
 
-	public void setAccurateAsOfDate(Date accurateAsOfDate) {
+	public void setAccurateAsOfDate(Long accurateAsOfDate) {
 		this.accurateAsOfDate = accurateAsOfDate;
 	}
 
@@ -58,20 +62,36 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
-	public Date getCreationDate() {
+	public Long getCreationDate() {
 		return creationDate;
 	}
 
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(Long creationDate) {
 		this.creationDate = creationDate;
 	}
 
-	public Date getLastModifiedDate() {
+	public Long getLastModifiedDate() {
 		return lastModifiedDate;
 	}
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
+	public void setLastModifiedDate(Long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Set<String> getWarningMessages() {
+		return warningMessages;
+	}
+
+	public void setWarningMessages(Set<String> warningMessages) {
+		this.warningMessages = warningMessages;
+	}
+
+	public Set<String> getErrorMessages() {
+		return errorMessages;
+	}
+
+	public void setErrorMessages(Set<String> errorMessages) {
+		this.errorMessages = errorMessages;
 	}
 
 }

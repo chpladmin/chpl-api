@@ -29,7 +29,9 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.MeaningfulUseAccurateAsOf;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.MeaningfulUseManager;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +43,7 @@ public class MeaningfulUseController {
 	private static final Logger logger = LogManager.getLogger(MeaningfulUseController.class);
 	
 	@Autowired CertifiedProductManager cpManager;
+	@Autowired MeaningfulUseManager muManager;
 	
 	@ApiOperation(value="Upload a file to update the number of meaningful use users for each CHPL Product Number", 
 			notes="Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
@@ -144,24 +147,22 @@ public class MeaningfulUseController {
 		return meaningfulUseUserResults;
 	}
 	
-	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is good as of", 
-			notes="Value can be edited by ROLE_ADMIN and ROLE_CMS_STAFF using the POST version of this request ")
+	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is good as of.", 
+			notes="Value can be edited by ROLE_ADMIN and ROLE_CMS_STAFF using the POST version of this request.")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8") 
 	public @ResponseBody MeaningfulUseAccurateAsOf getAccurateAsOfDate() {
-		MeaningfulUseAccurateAsOf muuAccurate = new MeaningfulUseAccurateAsOf();
-		
-		MeaningfulUseAccurateAsOf mua = new MeaningfulUseAccurateAsOf();
-		Date accurateAsOfDate = new Date();
-	
+		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
+		MeaningfulUseAccurateAsOf muuAccurate = new MeaningfulUseAccurateAsOf(dto);
 		return muuAccurate;
 	}
 	
-	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is good as of", 
-			notes="Value can be edited by ROLE_ADMIN and ROLE_CMS_STAFF using the POST version of this request ")
+	@ApiOperation(value="Update the Meaningful Use Accurate As Of date.", 
+			notes="This is a single system-wide value that indicates when the last meaningful use user file data is good as of.")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	public @ResponseBody void setAccurateAsOfDate() {
-		
+	public @ResponseBody void updateMeaningfulUseAccurateAsOf(@RequestParam(required=true) MeaningfulUseAccurateAsOf meaningfulUseAccurateAsOf) {
+		MeaningfulUseAccurateAsOfDTO dto = new MeaningfulUseAccurateAsOfDTO(meaningfulUseAccurateAsOf);
+		muManager.updateMeaningfulUseAccurateAsOf(dto);
 	}
 }

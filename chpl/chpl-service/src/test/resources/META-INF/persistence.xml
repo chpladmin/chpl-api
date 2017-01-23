@@ -22,6 +22,8 @@
 		<class>gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationResultG1MacraMeasureEntity</class>
+		<class>gov.healthit.chpl.entity.CertificationResultG2MacraMeasureEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultTestDataEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultTestProcedureEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationResultTestFunctionalityEntity</class>
@@ -54,9 +56,12 @@
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
 		<class>gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity</class>
+		<class>gov.healthit.chpl.entity.MacraMeasureEntity</class>
 		<class>gov.healthit.chpl.entity.NonconformityStatusEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCertificationResultG1MacraMeasureEntity</class>
+		<class>gov.healthit.chpl.entity.PendingCertificationResultG2MacraMeasureEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity</class>

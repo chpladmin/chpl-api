@@ -5,7 +5,6 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 public interface CertifiedProductDAO {
 	

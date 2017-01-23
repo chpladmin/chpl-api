@@ -34,7 +34,7 @@ public class MeaningfulUseDAOImpl extends BaseDAOImpl implements MeaningfulUseDA
 	}
 	
 	@Transactional
-	public void updateAccurateAsOfDate(MeaningfulUseAccurateAsOfDTO muuAccurateDTO){
+	public MeaningfulUseAccurateAsOfDTO updateAccurateAsOf(MeaningfulUseAccurateAsOfDTO muuAccurateDTO){
 		MeaningfulUseAccurateAsOfEntity muuEntity = new MeaningfulUseAccurateAsOfEntity();
 		muuEntity.setId(muuAccurateDTO.getId());
 		muuEntity.setAccurateAsOfDate(muuAccurateDTO.getAccurateAsOfDate());
@@ -43,6 +43,8 @@ public class MeaningfulUseDAOImpl extends BaseDAOImpl implements MeaningfulUseDA
 		muuEntity.setLastModifiedUser(Util.getCurrentUser().getId());
 		muuEntity.setDeleted(false);
 		update(muuEntity);
+		MeaningfulUseAccurateAsOfDTO dto = new MeaningfulUseAccurateAsOfDTO(muuEntity);
+		return dto;
 	}
 	
 	private void update(MeaningfulUseAccurateAsOfEntity entity) {

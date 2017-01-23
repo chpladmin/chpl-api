@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.MeaningfulUseAccurateAsOf;
 import gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity;
 
 public class MeaningfulUseAccurateAsOfDTO implements Serializable {
@@ -25,6 +26,15 @@ public class MeaningfulUseAccurateAsOfDTO implements Serializable {
 		this.creationDate = muuEntity.getCreationDate();
 		this.lastModifiedDate = muuEntity.getLastModifiedDate();
 	};
+	
+	public MeaningfulUseAccurateAsOfDTO(MeaningfulUseAccurateAsOf meaningfulUseAccurateAsOf){
+		this.id = meaningfulUseAccurateAsOf.getId();
+		this.accurateAsOfDate = new Date(meaningfulUseAccurateAsOf.getAccurateAsOfDate());
+		this.deleted = meaningfulUseAccurateAsOf.getDeleted();
+		this.lastModifiedUser = meaningfulUseAccurateAsOf.getLastModifiedUser();
+		this.creationDate = new Date(meaningfulUseAccurateAsOf.getCreationDate());
+		this.lastModifiedDate = new Date(meaningfulUseAccurateAsOf.getLastModifiedDate());
+	}
 	
 	public Long getId() {
 		return id;

@@ -16,6 +16,8 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -52,7 +55,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -145,7 +147,7 @@ public class CertifiedProductController {
 					+ " user must have ROLE_ADMIN.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
+	public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
 		throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, 
 		JsonProcessingException, ValidationException {
 		
@@ -358,12 +360,16 @@ public class CertifiedProductController {
 		}
 		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
 		
+		//search for the product by id to get it with all the updates
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
 		cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
 		
-		//search for the product by id to get it with all the updates
-		return changedProduct;
+		
+		if(!changedProduct.getChplProductNumber().equals(existingProduct.getChplProductNumber())) {
+			return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, HttpStatus.CREATED); //201
+		}
+		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="List pending certified products.", 
@@ -378,6 +384,7 @@ public class CertifiedProductController {
 		for(PendingCertifiedProductDTO product : allProductDtos) {
 			PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
 			pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
+			pcpManager.addAllMeasuresToCertificationCriteria(pcpDetails);
 			result.add(pcpDetails);
 		}
 		

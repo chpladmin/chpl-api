@@ -18,6 +18,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
@@ -59,6 +60,7 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 	@Autowired protected UcdProcessDAO ucdDao;
 	@Autowired protected EducationTypeDAO educationDao;
 	@Autowired protected AgeRangeDAO ageDao;
+	@Autowired protected MacraMeasureDAO macraDao;
 	
 	@Autowired private PendingCertifiedProductDAO pendingCpDao;
 	

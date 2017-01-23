@@ -80,7 +80,7 @@ public class MeaningfulUseDAOTest {
 		Date date = new Date(timeInMillis);
 		
 		accurateAsOfDTO.setAccurateAsOfDate(date);
-		meaningfulUseDao.updateAccurateAsOfDate(accurateAsOfDTO);
+		meaningfulUseDao.updateAccurateAsOf(accurateAsOfDTO);
 		accurateAsOfDTO = meaningfulUseDao.getMeaningfulUseAccurateAsOf();
 		Date returnedDate = accurateAsOfDTO.getAccurateAsOfDate();
 		assertTrue(date.compareTo(returnedDate) == 0);
