@@ -792,20 +792,21 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 			
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
 						cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-					for(CertificationResultMacraMeasure measureMap : cert.getG1MacraMeasures()) {
-						if(measureMap.getMeasure() == null || measureMap.getMeasure().getId() == null) {
+					for(int i = 0; i < cert.getG1MacraMeasures().size(); i++) {
+						MacraMeasure measure = cert.getG1MacraMeasures().get(i);
+						if(measure == null || measure.getId() == null) {
 							product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure.");
 						} else {
 							//confirm the measure id is valid
-							MacraMeasureDTO foundMeasure = macraDao.getById(measureMap.getMeasure().getId());
+							MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
 							if(foundMeasure == null || foundMeasure.getId() == null) {
-								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure. No measure found with ID '" + measureMap.getMeasure().getId() + "'.");
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure. No measure found with ID '" + measure.getId() + "'.");
 							} else if(!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid G1 Macra Measure. Measure with ID '" + 
-										measureMap.getMeasure().getId() + "' is the measure '" + foundMeasure.getName() + 
+										measure.getId() + "' is the measure '" + foundMeasure.getName() + 
 										"' and is for criteria '" + foundMeasure.getCriteria().getNumber() + "'.");
 							} else {								
-								measureMap.setMeasure(new MacraMeasure(foundMeasure));
+								cert.getG1MacraMeasures().set(i, new MacraMeasure(foundMeasure));
 							}
 						}
 					}
@@ -813,20 +814,21 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
 						cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-					for(CertificationResultMacraMeasure measureMap : cert.getG2MacraMeasures()) {
-						if(measureMap.getMeasure() == null || measureMap.getMeasure().getId() == null) {
+					for(int i = 0; i < cert.getG2MacraMeasures().size(); i++) {
+						MacraMeasure measure = cert.getG2MacraMeasures().get(i);
+						if(measure == null || measure.getId() == null) {
 							product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure.");
 						} else {
 							//confirm the measure id is valid
-							MacraMeasureDTO foundMeasure = macraDao.getById(measureMap.getMeasure().getId());
+							MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
 							if(foundMeasure == null || foundMeasure.getId() == null) {
-								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure. No measure found with ID '" + measureMap.getMeasure().getId() + "'.");
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure. No measure found with ID '" + measure.getId() + "'.");
 							} else if(!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid G2 Macra Measure. Measure with ID '" + 
-										measureMap.getMeasure().getId() + "' is the measure '" + foundMeasure.getName() + 
+										measure.getId() + "' is the measure '" + foundMeasure.getName() + 
 										"' and is for criteria '" + foundMeasure.getCriteria().getNumber() + "'.");
-							} else {								
-								measureMap.setMeasure(new MacraMeasure(foundMeasure));
+							} else {
+								cert.getG2MacraMeasures().set(i, new MacraMeasure(foundMeasure));
 							}
 						}
 					}

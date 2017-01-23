@@ -1285,11 +1285,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							newCertResult.getG1MacraMeasures() == null || newCertResult.getG1MacraMeasures().size() == 0) {
 						oldResult.setG1Measures(new ArrayList<CertificationResultMacraMeasureDTO>());
 					} else {
-						for(CertificationResultMacraMeasure newMeasure : newCertResult.getG1MacraMeasures()) {
+						for(MacraMeasure newMeasure : newCertResult.getG1MacraMeasures()) {
 							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
 							crMeasure.setCertificationResultId(oldResult.getId());
 							MacraMeasureDTO mmDto = new MacraMeasureDTO();
-							mmDto.setId(newMeasure.getMeasure().getId());
+							mmDto.setId(newMeasure.getId());
 							crMeasure.setMeasure(mmDto);
 							oldResult.getG1Measures().add(crMeasure);
 						}
@@ -1299,11 +1299,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							newCertResult.getG2MacraMeasures() == null || newCertResult.getG2MacraMeasures().size() == 0) {
 						oldResult.setG2Measures(new ArrayList<CertificationResultMacraMeasureDTO>());
 					} else {
-						for(CertificationResultMacraMeasure newMeasure : newCertResult.getG2MacraMeasures()) {
+						for(MacraMeasure newMeasure : newCertResult.getG2MacraMeasures()) {
 							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
 							crMeasure.setCertificationResultId(oldResult.getId());
 							MacraMeasureDTO mmDto = new MacraMeasureDTO();
-							mmDto.setId(newMeasure.getMeasure().getId());
+							mmDto.setId(newMeasure.getId());
 							crMeasure.setMeasure(mmDto);
 							oldResult.getG2Measures().add(crMeasure);
 						}

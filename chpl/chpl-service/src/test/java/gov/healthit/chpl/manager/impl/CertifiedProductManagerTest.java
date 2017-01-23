@@ -29,12 +29,9 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
 import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -62,11 +59,9 @@ import junit.framework.TestCase;
 public class CertifiedProductManagerTest extends TestCase {
 	
 	@Autowired private DeveloperManager devManager;
-	@Autowired private DeveloperDAO devDao;
 	@Autowired private CertificationStatusDAO certStatusDao;
 	@Autowired private CertifiedProductManager cpManager;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
-	@Autowired private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -481,14 +476,14 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertEquals(1, certs.size());
 		CertificationResult cert = certs.get(0);
 		assertNotNull(cert);
-		List<CertificationResultMacraMeasure> measures = cert.getG1MacraMeasures();
+		List<MacraMeasure> measures = cert.getG1MacraMeasures();
 		assertNotNull(measures);
 		assertEquals(1, measures.size());
-		CertificationResultMacraMeasure measure = measures.get(0);
-		assertEquals(-1L, measure.getId().longValue());
+		MacraMeasure measure = measures.get(0);
+		assertNotNull(measure);
 		MacraMeasure newMeasure = new MacraMeasure();
 		newMeasure.setId(2L);
-		measure.setMeasure(newMeasure);
+		cert.getG1MacraMeasures().set(0, newMeasure);
 		
 		cpManager.updateCertifications(-1L, dto, certs);
 		
@@ -501,8 +496,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		measures = cert.getG1MacraMeasures();
 		assertNotNull(measures);
 		assertEquals(1, measures.size());
-		measure = measures.get(0);
-		assertEquals(2L, measure.getMeasure().getId().longValue());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
@@ -525,9 +518,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		MacraMeasure newMeasure = new MacraMeasure();
 		newMeasure.setId(1L);
-		CertificationResultMacraMeasure measure = new CertificationResultMacraMeasure();
-		measure.setMeasure(newMeasure);
-		cert.getG2MacraMeasures().add(measure);
+		cert.getG2MacraMeasures().add(newMeasure);
 
 		cpManager.updateCertifications(-1L, dto, certs);
 		
@@ -537,11 +528,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertEquals(1, certs.size());
 		cert = certs.get(0);
 		assertNotNull(cert);
-		List<CertificationResultMacraMeasure> measures = cert.getG2MacraMeasures();
+		List<MacraMeasure> measures = cert.getG2MacraMeasures();
 		assertNotNull(measures);
 		assertEquals(1, measures.size());
-		measure = measures.get(0);
-		assertEquals(1L, measure.getMeasure().getId().longValue());
+		MacraMeasure measure = measures.get(0);
+		assertEquals(1L, measure.getId().longValue());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
@@ -571,7 +562,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertEquals(1, certs.size());
 		cert = certs.get(0);
 		assertNotNull(cert);
-		List<CertificationResultMacraMeasure> measures = cert.getG1MacraMeasures();
+		List<MacraMeasure> measures = cert.getG1MacraMeasures();
 		assertNotNull(measures);
 		assertEquals(0, measures.size());
 		

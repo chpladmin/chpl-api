@@ -24,12 +24,11 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import junit.framework.TestCase;
 
@@ -321,14 +320,12 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		assertNotNull(cert.getG1MacraMeasures());
 		assertEquals(1, cert.getG1MacraMeasures().size());
 		
-		CertificationResultMacraMeasure mm = cert.getG1MacraMeasures().get(0);
-		assertNotNull(mm.getId());
-		assertEquals(-1L, mm.getId().longValue());
-		assertNotNull(mm.getMeasure());
-		assertEquals(1L, mm.getMeasure().getId().longValue());
-		assertNotNull(mm.getMeasure().getAbbreviation());
-		assertNotNull(mm.getMeasure().getName());
-		assertNotNull(mm.getMeasure().getDescription());
+		MacraMeasure mm = cert.getG1MacraMeasures().get(0);
+		assertNotNull(mm);
+		assertEquals(1L, mm.getId().longValue());
+		assertNotNull(mm.getAbbreviation());
+		assertNotNull(mm.getName());
+		assertNotNull(mm.getDescription());
 		
 		assertNotNull(cert.getG2MacraMeasures());
 		assertEquals(0, cert.getG2MacraMeasures().size());

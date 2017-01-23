@@ -301,8 +301,14 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			
 			if(certCriterion.getG1MacraMeasures() != null) {
 				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG1MacraMeasures()) {
-					CertificationResultMacraMeasure measure = new CertificationResultMacraMeasure(mm);
-					cert.getG1MacraMeasures().add(measure);
+					if(mm.getMacraMeasure() != null) {
+						MacraMeasure measure = new MacraMeasure(mm.getMacraMeasure());
+						cert.getG1MacraMeasures().add(measure);
+					} else {
+						MacraMeasure measure = new MacraMeasure();
+						measure.setId(mm.getMacraMeasureId());
+						cert.getG1MacraMeasures().add(measure);
+					}
 				}
 			} else {
 				cert.setG1MacraMeasures(null);
@@ -310,8 +316,14 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			
 			if(certCriterion.getG2MacraMeasures() != null) {
 				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG2MacraMeasures()) {
-					CertificationResultMacraMeasure measure = new CertificationResultMacraMeasure(mm);
-					cert.getG2MacraMeasures().add(measure);
+					if(mm.getMacraMeasure() != null) {
+						MacraMeasure measure = new MacraMeasure(mm.getMacraMeasure());
+						cert.getG2MacraMeasures().add(measure);
+					} else {
+						MacraMeasure measure = new MacraMeasure();
+						measure.setId(mm.getMacraMeasureId());
+						cert.getG2MacraMeasures().add(measure);
+					}
 				}
 			} else {
 				cert.setG2MacraMeasures(null);

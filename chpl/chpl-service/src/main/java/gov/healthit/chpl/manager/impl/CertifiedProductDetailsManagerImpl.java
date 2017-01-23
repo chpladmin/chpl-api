@@ -344,7 +344,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
 				List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG1MacraMeasuresForCertificationResult(certResult.getId());
 				for(CertificationResultMacraMeasureDTO currResult : measures) {
-					CertificationResultMacraMeasure mmResult = new CertificationResultMacraMeasure(currResult);
+					MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
 					result.getG1MacraMeasures().add(mmResult);
 				}
 			} else {
@@ -354,7 +354,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
 				List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG2MacraMeasuresForCertificationResult(certResult.getId());
 				for(CertificationResultMacraMeasureDTO currResult : measures) {
-					CertificationResultMacraMeasure mmResult = new CertificationResultMacraMeasure(currResult);
+					MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
 					result.getG2MacraMeasures().add(mmResult);
 				}
 			} else {
