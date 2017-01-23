@@ -30,6 +30,7 @@ public interface PendingCertifiedProductManager {
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 			
 	public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails);
+	public void addAllMeasuresToCertificationCriteria(PendingCertifiedProductDetails pcpDetails);
 	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void confirm(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void addPermission(CertificationBodyDTO acb, PendingCertifiedProductDTO pcpDto, Long userId, Permission permission) throws UserRetrievalException;

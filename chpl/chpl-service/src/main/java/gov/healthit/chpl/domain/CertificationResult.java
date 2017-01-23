@@ -17,6 +17,8 @@ public class CertificationResult implements Serializable {
 	private Boolean g2Success;
 	private String apiDocumentation;
 	private String privacySecurityFramework;
+	private List<MacraMeasure> allowedMacraMeasures;
+
 	
 	private List<CertificationResultUcdProcess> ucdProcesses;
 	private List<CertificationResultTestFunctionality> testFunctionality;
@@ -25,9 +27,12 @@ public class CertificationResult implements Serializable {
 	private List<CertificationResultAdditionalSoftware> additionalSoftware;
 	private List<CertificationResultTestStandard> testStandards;
 	private List<CertificationResultTestTool> testToolsUsed;
+	private List<MacraMeasure> g1MacraMeasures;
+	private List<MacraMeasure> g2MacraMeasures;
 	private List<CertificationResultTestTask> testTasks;
 	
 	public CertificationResult(){
+		allowedMacraMeasures = new ArrayList<MacraMeasure>();
 		ucdProcesses = new ArrayList<CertificationResultUcdProcess>();
 		 additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
 		 testStandards = new ArrayList<CertificationResultTestStandard>();
@@ -36,6 +41,16 @@ public class CertificationResult implements Serializable {
 		 testProcedures = new ArrayList<CertificationResultTestProcedure>();
 		 testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
 		 testTasks = new ArrayList<CertificationResultTestTask>();
+		 g1MacraMeasures = new ArrayList<MacraMeasure>();
+		 g2MacraMeasures = new ArrayList<MacraMeasure>();
+	}
+
+	public List<MacraMeasure> getAllowedMacraMeasures() {
+		return allowedMacraMeasures;
+	}
+
+	public void setAllowedMacraMeasures(List<MacraMeasure> allowedMacraMeasures) {
+		this.allowedMacraMeasures = allowedMacraMeasures;
 	}
 
 	public CertificationResult(CertificationResultDetailsDTO certResult) {
@@ -170,5 +185,21 @@ public class CertificationResult implements Serializable {
 
 	public void setPrivacySecurityFramework(String privacySecurityFramework) {
 		this.privacySecurityFramework = privacySecurityFramework;
+	}
+	
+	public List<MacraMeasure> getG1MacraMeasures() {
+		return g1MacraMeasures;
+	}
+
+	public void setG1MacraMeasures(List<MacraMeasure> g1MacraMeasures) {
+		this.g1MacraMeasures = g1MacraMeasures;
+	}
+
+	public List<MacraMeasure> getG2MacraMeasures() {
+		return g2MacraMeasures;
+	}
+
+	public void setG2MacraMeasures(List<MacraMeasure> g2MacraMeasures) {
+		this.g2MacraMeasures = g2MacraMeasures;
 	}
 }
