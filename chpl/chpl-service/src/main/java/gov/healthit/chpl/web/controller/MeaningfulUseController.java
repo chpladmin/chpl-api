@@ -3,7 +3,6 @@ package gov.healthit.chpl.web.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -147,22 +146,40 @@ public class MeaningfulUseController {
 		return meaningfulUseUserResults;
 	}
 	
-	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is good as of.", 
-			notes="Value can be edited by ROLE_ADMIN and ROLE_CMS_STAFF using the POST version of this request.")
+	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is accurate as of.", 
+			notes="This is a single system-wide value.")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8") 
 	public @ResponseBody MeaningfulUseAccurateAsOf getAccurateAsOfDate() {
 		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
 		MeaningfulUseAccurateAsOf muuAccurate = new MeaningfulUseAccurateAsOf(dto);
+		if(StringUtils.isEmpty(muuAccurate.getId().toString()) && StringUtils.isEmpty(muuAccurate.getAccurateAsOfDate().toString())){
+			muuAccurate.getErrorMessages().add("Could not obtain the accurate as of date.");
+		}
 		return muuAccurate;
 	}
 	
 	@ApiOperation(value="Update the Meaningful Use Accurate As Of date.", 
-			notes="This is a single system-wide value that indicates when the last meaningful use user file data is good as of.")
+			notes="Accurate as of date value can be edited by a user with ROLE_ADMIN and ROLE_CMS_STAFF.")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	public @ResponseBody void updateMeaningfulUseAccurateAsOf(@RequestParam(required=true) MeaningfulUseAccurateAsOf meaningfulUseAccurateAsOf) {
-		MeaningfulUseAccurateAsOfDTO dto = new MeaningfulUseAccurateAsOfDTO(meaningfulUseAccurateAsOf);
-		muManager.updateMeaningfulUseAccurateAsOf(dto);
+	public @ResponseBody MeaningfulUseAccurateAsOf updateMeaningfulUseAccurateAsOf(@RequestParam(required=true) MeaningfulUseAccurateAsOf meaningfulUseAccurateAsOf) {
+		MeaningfulUseAccurateAsOfDTO dto = null;
+		if(meaningfulUseAccurateAsOf.getAccurateAsOfDate() == null || StringUtils.isEmpty(meaningfulUseAccurateAsOf.getAccurateAsOfDate().toString())){
+			meaningfulUseAccurateAsOf.getErrorMessages().add("AccurateAsOfDate cannot be null");
+			return meaningfulUseAccurateAsOf;
+		}
+		else if(meaningfulUseAccurateAsOf.getId() == null || StringUtils.isEmpty(meaningfulUseAccurateAsOf.getId().toString())){
+			MeaningfulUseAccurateAsOf mua = getAccurateAsOfDate();
+			mua.setAccurateAsOfDate(meaningfulUseAccurateAsOf.getAccurateAsOfDate());
+			dto = new MeaningfulUseAccurateAsOfDTO(mua);
+			dto = muManager.updateMeaningfulUseAccurateAsOf(dto);
+			return new MeaningfulUseAccurateAsOf(dto);
+		}
+		else{
+			dto = new MeaningfulUseAccurateAsOfDTO(meaningfulUseAccurateAsOf);
+			dto = muManager.updateMeaningfulUseAccurateAsOf(dto);
+			return new MeaningfulUseAccurateAsOf(dto);
+		}
 	}
 }

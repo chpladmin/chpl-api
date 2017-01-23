@@ -4,8 +4,6 @@ import java.util.Date;
 
 import javax.persistence.Query;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,20 +14,14 @@ import gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity;
 
 @Repository("meaningfulUseDAO")
 public class MeaningfulUseDAOImpl extends BaseDAOImpl implements MeaningfulUseDAO {
-	private static final Logger logger = LogManager.getLogger(MeaningfulUseDAOImpl.class);
 	
 	@Transactional
 	public MeaningfulUseAccurateAsOfDTO getMeaningfulUseAccurateAsOf(){
 		Query query = entityManager.createQuery("SELECT muu from MeaningfulUseAccurateAsOfEntity muu where (NOT muu.deleted = true)", 
 				MeaningfulUseAccurateAsOfEntity.class);
-		
-		MeaningfulUseAccurateAsOfEntity muuAccurateEntity = (MeaningfulUseAccurateAsOfEntity) query.getSingleResult();
-		if(muuAccurateEntity == null){
-			logger.error("getAccurateAsOfDate() returned null result");
-		}
-		
-		MeaningfulUseAccurateAsOfDTO muuAccurateDTO = new MeaningfulUseAccurateAsOfDTO(muuAccurateEntity);
-		
+		MeaningfulUseAccurateAsOfEntity entity = null;
+		entity = (MeaningfulUseAccurateAsOfEntity) query.getSingleResult();
+		MeaningfulUseAccurateAsOfDTO muuAccurateDTO = new MeaningfulUseAccurateAsOfDTO(entity);
 		return muuAccurateDTO;
 	}
 	

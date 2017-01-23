@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -26,7 +27,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.MeaningfulUseDAO;
-import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;import gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity;
+import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -67,21 +68,20 @@ public class MeaningfulUseDAOTest {
 	
 	/**
 	 * Given a user has set the Meaningful Use User Accurate As Of Date on the UI
-	 * When the user sends an HTTP.GET request
-	 * Then the MeaningfulUseDAO returns the date
+	 * When the user sends an HTTP.POST
+	 * Then the MeaningfulUseDAO updates the database and returns the DTO
 	 */
 	@Test
 	@Transactional
 	@Rollback
 	public void updateAccurateAsOfDate() {
+		SecurityContextHolder.getContext().setAuthentication(authUser);
 		MeaningfulUseAccurateAsOfDTO accurateAsOfDTO = meaningfulUseDao.getMeaningfulUseAccurateAsOf();
 		Calendar cal = Calendar.getInstance();
 		Long timeInMillis = cal.getTimeInMillis();
 		Date date = new Date(timeInMillis);
-		
 		accurateAsOfDTO.setAccurateAsOfDate(date);
-		meaningfulUseDao.updateAccurateAsOf(accurateAsOfDTO);
-		accurateAsOfDTO = meaningfulUseDao.getMeaningfulUseAccurateAsOf();
+		accurateAsOfDTO = meaningfulUseDao.updateAccurateAsOf(accurateAsOfDTO);
 		Date returnedDate = accurateAsOfDTO.getAccurateAsOfDate();
 		assertTrue(date.compareTo(returnedDate) == 0);
 	}

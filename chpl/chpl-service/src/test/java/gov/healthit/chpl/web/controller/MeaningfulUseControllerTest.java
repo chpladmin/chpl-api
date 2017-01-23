@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -40,6 +41,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.MeaningfulUseAccurateAsOf;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
@@ -303,6 +305,71 @@ public class MeaningfulUseControllerTest {
 				apiResult.getMeaningfulUseUsers().get(4).getNumberOfUsers().equals(50L));
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(4).getCertifiedProductId() + " but should return " + 1L, 
 				apiResult.getMeaningfulUseUsers().get(4).getCertifiedProductId() == 1L);
+	}
+	
+	/**
+	 * Given a user has set the Meaningful Use User Accurate As Of Date on the UI
+	 * When the user sends an HTTP.POST
+	 * Then the MeaningfulUseDAO updates the database and returns the DTO
+	 */
+	@Test
+	@Transactional
+	@Rollback
+	public void updateAccurateAsOfDate() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		MeaningfulUseAccurateAsOf mua = meaningfulUseController.getAccurateAsOfDate();
+		Calendar cal = Calendar.getInstance();
+		Long timeInMillis = cal.getTimeInMillis();
+		mua.setAccurateAsOfDate(timeInMillis);
+		MeaningfulUseAccurateAsOf accurateAsOf = meaningfulUseController.updateMeaningfulUseAccurateAsOf(mua);
+		assertTrue(accurateAsOf.getAccurateAsOfDate().equals(mua.getAccurateAsOfDate()));
+	}
+	
+	/**
+	 * Given a user has set the Meaningful Use User Accurate As Of Date on the UI
+	 * When the user sends an HTTP.POST with all MeaningfulUseAccurateAsOf fields as null except the date
+	 * Then the MeaningfulUseDAO updates the database and returns the DTO
+	 */
+	@Test
+	@Transactional
+	@Rollback
+	public void updateAccurateAsOfDate_onlyDateNonNull() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		MeaningfulUseAccurateAsOf mua = new MeaningfulUseAccurateAsOf();
+		Calendar cal = Calendar.getInstance();
+		Long timeInMillis = cal.getTimeInMillis();
+		mua.setAccurateAsOfDate(timeInMillis);
+		MeaningfulUseAccurateAsOf accurateAsOf = meaningfulUseController.updateMeaningfulUseAccurateAsOf(mua);
+		assertTrue(accurateAsOf.getAccurateAsOfDate().equals(mua.getAccurateAsOfDate()));
+	}
+	
+	/**
+	 * Given a user has set the Meaningful Use User Accurate As Of Date on the UI
+	 * When the user sends an HTTP.POST with accurateAsOf as null
+	 * Then an error message is returned
+	 */
+	@Test
+	@Transactional
+	@Rollback
+	public void updateAccurateAsOfDate_accurateAsOfDateIsNull() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		MeaningfulUseAccurateAsOf mua = new MeaningfulUseAccurateAsOf();
+		mua.setAccurateAsOfDate(null);
+		MeaningfulUseAccurateAsOf accurateAsOf = meaningfulUseController.updateMeaningfulUseAccurateAsOf(mua);
+		assertTrue(accurateAsOf.getErrorMessages().size() > 0);
+	}
+	
+	/**
+	 * Given a user has set the Meaningful Use User Accurate As Of Date on the UI
+	 * When the user sends an HTTP.GET request
+	 * Then the MeaningfulUseDAO returns the date
+	 */
+	@Test
+	@Transactional
+	public void getAccurateAsOfDate() {
+		MeaningfulUseAccurateAsOf mua = meaningfulUseController.getAccurateAsOfDate();
+		assertTrue(mua.getAccurateAsOfDate() != null);
+		assertTrue(mua.getAccurateAsOfDate().compareTo(1480485600000L) == 0);
 	}
 	
 }
