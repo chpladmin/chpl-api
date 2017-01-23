@@ -28,6 +28,7 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import junit.framework.TestCase;
 
@@ -305,6 +306,39 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsTransparencyAttestationFalse() throws EntityRetrievalException{
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(4L);
 		assertNull(detail.getTransparencyAttestation());
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsMacraMeasures() throws EntityRetrievalException{
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(3L);
+		assertNotNull(detail);
+		assertNotNull(detail.getCertificationResults());
+		assertEquals(1, detail.getCertificationResults().size());
+		
+		CertificationResult cert = detail.getCertificationResults().get(0);
+		assertNotNull(cert.getG1MacraMeasures());
+		assertEquals(1, cert.getG1MacraMeasures().size());
+		
+		MacraMeasure mm = cert.getG1MacraMeasures().get(0);
+		assertNotNull(mm);
+		assertEquals(1L, mm.getId().longValue());
+		assertNotNull(mm.getAbbreviation());
+		assertNotNull(mm.getName());
+		assertNotNull(mm.getDescription());
+		
+		assertNotNull(cert.getG2MacraMeasures());
+		assertEquals(0, cert.getG2MacraMeasures().size());
+		
+		boolean foundA1 = false;
+		for(CertificationResult cr : detail.getCertificationResults()) {
+			if(cr.getNumber().equals("170.315 (a)(1)")) {
+				foundA1 = true;
+				assertNotNull(cr.getAllowedMacraMeasures());
+				assertEquals(1, cr.getAllowedMacraMeasures().size());
+			}
+		}
+		assertTrue(foundA1);
 	}
 }
 

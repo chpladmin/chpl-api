@@ -1,7 +1,15 @@
 # Release Notes
 
+## Verison TBD
+_Date TBD_
+
+### Features Added
+* Add G1 and G2 macra measures to certified product upload, edit and detail display
+
+---
+
 ## Version 7.1.0
-_23 January 2017_
+_Date 23 January 2017_
 
 ### Features Added
 * Improve website performance:

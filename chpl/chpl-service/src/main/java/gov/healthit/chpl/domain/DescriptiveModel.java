@@ -15,6 +15,11 @@ public class DescriptiveModel extends KeyValueModel implements Serializable {
 		this.title = title;
 	}
 	
+	public DescriptiveModel(Long id, String name, String title, String description) {
+		super(id, name, description);
+		this.title = title;
+	}
+	
 	public String getTitle() {
 		return title;
 	}
