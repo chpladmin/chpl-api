@@ -1,7 +1,5 @@
 package gov.healthit.chpl.validation.certifiedProduct;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -19,8 +17,6 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2014Validator")
 public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl {
-	private static final Logger logger = LogManager.getLogger(CertifiedProduct2014Validator.class);
-
 	private static final String[] g1ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
 			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
 			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)", "170.314 (a)(18)", 

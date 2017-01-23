@@ -1,30 +1,21 @@
 package gov.healthit.chpl.validation.certifiedProduct;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
-import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("inpatientModular2014Validator")
 public class InpatientModular2014Validator extends CertifiedProduct2014Validator {
-	private static final Logger logger = LogManager.getLogger(AmbulatoryModular2014Validator.class);
 
 	private static final String[] g1ComplementaryCerts = {"170.314 (b)(5)(B)", "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(6)"};
 	private static final String[] g2ComplementaryCerts = {"170.314 (b)(5)(B)","170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(6)"};
 		
-	@Autowired private TestToolDAO ttDao;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 
 	@Override
@@ -148,67 +139,6 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
 		super.validateDemographics(product);
 		
 		//NOTE: this is not supposed to match the list of things checked for pending products
-		
-		//we do have to check for retired test tools here though because users are not allowed to:
-				//1. remove a retired test tool that was previously used, or 
-				//2. add a retired test tool that was not previously used, or
-				//3. change the test tool version of a retired test tool
-				
-				//have to get the old product to compare previous and current test tools
-				CertifiedProductSearchDetails oldProduct = null;
-				try {
-						oldProduct = cpdManager.getCertifiedProductDetails(product.getId());
-				} catch(EntityRetrievalException ex) {
-					logger.error("Could not find certified product details with id " + product.getId(), ex);
-				}
-				
-				//compare old with current - they cannot remove test tools
-				for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
-					if(oldCert.isSuccess() != null && oldCert.isSuccess() == Boolean.TRUE && oldCert.getTestToolsUsed() != null) {
-						for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
-							TestToolDTO testTool = ttDao.getById(oldTestTool.getTestToolId());
-							if(testTool.isRetired()) {
-								boolean certStillExists = false;
-								boolean certHasRetiredTool = false;
-								//make sure this test tool still exists in the passed in product/cert
-								//because users are not allowed to remove exisitng test tools if they are retired
-								for(CertificationResult cert : product.getCertificationResults()) {
-									if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
-										if(cert.getNumber().equals(oldCert.getNumber())) {
-											certStillExists = true;
-											for(CertificationResultTestTool newTestTool : cert.getTestToolsUsed()) {
-												if(newTestTool.getTestToolId().equals(oldTestTool.getTestToolId())) {
-													certHasRetiredTool = true;
-												}
-											}
-										}
-									}
-								}
-								if(certStillExists && !certHasRetiredTool) {
-									product.getErrorMessages().add("Certification " + oldCert.getNumber() + " exists but is missing the required test tool '" + testTool.getName() + "'. This tool was present before and cannt be removed since it is retired.");
-								}
-							}
-						}
-					}
-				}
-				
-				//compare current test tools with old ones - they cannot add any additional retired tools or change versions
-				//now check all the new certs for whatever is required
-				for(CertificationResult cert : product.getCertificationResults()) {
-					if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
-						if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED) &&
-								cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
-							for(CertificationResultTestTool toolMap : cert.getTestToolsUsed()) {
-								if(toolMap.getTestToolId() == null) {
-									TestToolDTO foundTestTool = ttDao.getByName(toolMap.getTestToolName());
-									if(foundTestTool == null || foundTestTool.getId() == null) {
-										product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + toolMap.getTestToolName() + "'.");
-									} 
-								}
-							}
-						}
-					}
-				}
 	}
 	
 	@Override
