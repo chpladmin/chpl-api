@@ -1,7 +1,5 @@
 package gov.healthit.chpl.validation.certifiedProduct;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -19,8 +17,6 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2014Validator")
 public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl {
-	private static final Logger logger = LogManager.getLogger(CertifiedProduct2014Validator.class);
-
 	private static final String[] g1ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
 			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
 			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)", "170.314 (a)(18)", 
@@ -132,11 +128,14 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
 				for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
-					if(testTool.getTestToolId() == null) {
-						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + cert.getNumber() + ".");
+					if(StringUtils.isEmpty(testTool.getName())) {
+						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
 					} else {
-						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
-						if(tt != null && tt.isRetired() && super.icsCode.equals("0")) {
+						TestToolDTO tt = super.testToolDao.getByName(testTool.getName());
+						if(tt == null) {
+							product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
+						}
+						else if(tt.isRetired() && super.icsCode.equals("0")) {
 							if(super.hasIcsConflict){
 								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");

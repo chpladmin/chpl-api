@@ -5,13 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
@@ -38,8 +35,6 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2015Validator")
 public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl {
-	private static final Logger logger = LogManager.getLogger(CertifiedProduct2015Validator.class);
-
 	private static final String[] aComplimentaryCerts = {"170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)",
 			"170.315 (d)(4)", "170.315 (d)(5)", "170.315 (d)(6)", "170.315 (d)(7)"};
 	
@@ -390,20 +385,23 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		}
 		
 		// Allow retired test tool only if CP ICS = true
-		for(PendingCertificationResultDTO certResult : product.getCertificationCriterion()) {
-			if(certResult.getTestTools() != null && certResult.getTestTools().size() > 0) {
-				for(PendingCertificationResultTestToolDTO testTool : certResult.getTestTools()) {
-					if(testTool.getTestToolId() == null) {
-						product.getErrorMessages().add("There was no test tool found matching '" + testTool.getName() + "' for certification " + certResult.getNumber() + ".");
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+				for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
+					if(StringUtils.isEmpty(testTool.getName())) {
+						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
 					} else {
-						TestToolDTO tt = super.testToolDao.getById(testTool.getTestToolId());
-						if(tt != null && tt.isRetired() && super.icsCode.equals("0")) {
+						TestToolDTO tt = super.testToolDao.getByName(testTool.getName());
+						if(tt == null) {
+							product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
+						}
+						else if(tt.isRetired() && super.icsCode.equals("0")) {
 							if(super.hasIcsConflict){
-								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + certResult.getNumber() 
+								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
 							else {
-								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + certResult.getNumber() 
+								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
 						}
@@ -642,48 +640,6 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		if(product.getAccessibilityStandards() == null || product.getAccessibilityStandards().size() == 0) {
 			product.getErrorMessages().add("Accessibility standards are required.");
-		}
-		
-		//have to get the old product to compare previous and current test tools
-		CertifiedProductSearchDetails oldProduct = null;
-		try {
-				oldProduct = cpdManager.getCertifiedProductDetails(product.getId());
-		} catch(EntityRetrievalException ex) {
-			logger.error("Could not find certified product details with id " + product.getId(), ex);
-		}
-		
-		//we do have to check for retired test tools here because users are not allowed to:
-		//1. remove a retired test tool that was previously used, or 
-		//2. add a retired test tool that was not previously used, or
-		//3. change the test tool version of a retired test tool
-		for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
-			if(oldCert.isSuccess() != null && oldCert.isSuccess() == Boolean.TRUE && oldCert.getTestToolsUsed() != null) {
-				for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
-					TestToolDTO testTool = testToolDao.getById(oldTestTool.getTestToolId());
-					if(testTool.isRetired()) {
-						boolean certStillExists = false;
-						boolean certHasRetiredTool = false;
-						//make sure this test tool still exists in the passed in product/cert
-						//because users are not allowed to remove existing test tools if they are retired
-						for(CertificationResult cert : product.getCertificationResults()) {
-							if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
-								if(cert.getNumber().equals(oldCert.getNumber())) {
-									certStillExists = true;
-									for(CertificationResultTestTool newTestTool : cert.getTestToolsUsed()) {
-										if(newTestTool.getTestToolId().equals(oldTestTool.getTestToolId())) {
-											certHasRetiredTool = true;
-										}
-									}
-								}
-							}
-						}
-						
-						if(certStillExists && !certHasRetiredTool) {
-							product.getErrorMessages().add("Certification " + oldCert.getNumber() + " exists but is missing the required test tool '" + testTool.getName() + "'. This tool was present before and cannt be removed since it is retired.");
-						}
-					}
-				}
-			}
 		}
 		
 		// Allow retired test tool only if CP ICS = true
