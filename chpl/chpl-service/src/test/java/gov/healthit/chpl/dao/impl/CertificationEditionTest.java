@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import junit.framework.TestCase;
@@ -32,6 +34,10 @@ public class CertificationEditionTest extends TestCase {
 
 	@Autowired private CertificationEditionDAO ceDao;	
 	private static JWTAuthenticatedUser authUser;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {

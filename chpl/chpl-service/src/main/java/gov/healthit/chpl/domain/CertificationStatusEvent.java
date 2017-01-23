@@ -1,10 +1,9 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 
-
-
-public class CertificationStatusEvent {
-
+public class CertificationStatusEvent implements Serializable {
+	private static final long serialVersionUID = -2498656549844148886L;
 	private Long id;
 	private String eventDate;
 	private Long certificationStatusId;

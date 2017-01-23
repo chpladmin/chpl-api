@@ -6,15 +6,17 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
+import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2014Validator")
 public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl {
-
 	private static final String[] g1ComplementaryCerts = {"170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", 
 			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(9)", "170.314 (a)(11)",
 			"170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)", "170.314 (a)(18)", 
@@ -120,6 +122,32 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		
 		if(StringUtils.isEmpty(product.getReportFileLocation())) {
 			product.getErrorMessages().add("A test result summary URL is required.");
+		}
+		
+		// Allow retired test tool only if CP ICS = true
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+				for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
+					if(StringUtils.isEmpty(testTool.getName())) {
+						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
+					} else {
+						TestToolDTO tt = super.testToolDao.getByName(testTool.getName());
+						if(tt == null) {
+							product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
+						}
+						else if(tt.isRetired() && super.icsCode.equals("0")) {
+							if(super.hasIcsConflict){
+								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+							else {
+								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
@@ -237,6 +265,32 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 		
 		if(StringUtils.isEmpty(product.getReportFileLocation())) {
 			product.getErrorMessages().add("A test result summary URL is required.");
+		}
+		
+		// Allow retired test tool only if CP ICS = true
+		for(CertificationResult cert : product.getCertificationResults()) {
+			if(cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
+				for(CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
+					if(StringUtils.isEmpty(testTool.getTestToolName())) {
+						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
+					} else {
+						TestToolDTO tt = super.testToolDao.getByName(testTool.getTestToolName());
+						if(tt == null){
+							product.getErrorMessages().add("No test tool with " + testTool.getTestToolName() + " was found for criteria " + cert.getNumber() + ".");
+						}
+						else if(tt.isRetired() && super.icsCode.equals("0")) {
+							if(super.hasIcsConflict) {
+								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+							else {
+								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		//this is not supposed to matcht the list of things checked for pending products

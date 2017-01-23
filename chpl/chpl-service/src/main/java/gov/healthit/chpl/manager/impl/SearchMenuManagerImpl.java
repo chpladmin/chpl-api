@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,6 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
@@ -107,6 +107,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
+	@Cacheable("classificationNames")
 	public Set<KeyValueModel> getClassificationNames() {
 		
 		List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDAO.findAll();
@@ -121,9 +122,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
+	@Cacheable("editionNames")
 	public Set<KeyValueModel> getEditionNames(Boolean simple) {
-		
-		
 		
 		List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
 		Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
@@ -143,6 +143,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
+	@Cacheable("certificationStatuses")
 	public Set<KeyValueModel> getCertificationStatuses() {
 		List<CertificationStatusDTO> certificationStatuses = certificationStatusDao.findAll();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
@@ -156,6 +157,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
+	@Cacheable("practiceTypeNames")
 	public Set<KeyValueModel> getPracticeTypeNames() {
 		
 		List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDAO.findAll();
@@ -170,6 +172,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
+	@Cacheable("productNames")
 	public Set<KeyValueModelStatuses> getProductNames() {
 		
 		List<ProductDTO> productDTOs = this.productDAO.findAll();
@@ -184,6 +187,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
+	@Cacheable("developerNames")
 	public Set<KeyValueModelStatuses> getDeveloperNames() {
 		
 		List<DeveloperDTO> developerDTOs = this.developerDAO.findAll();
@@ -198,6 +202,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
+	@Cacheable("certBodyNames")
 	public Set<KeyValueModel> getCertBodyNames() {
 		
 		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(false);
@@ -419,17 +424,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
+	@Cacheable("certificationCriterionNumbers")
 	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException{
 
 		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
 		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
 		
 		for (CertificationCriterionDTO dto : dtos) {
-			if (simple){
-				if (certificationEditionDAO.getById(dto.getCertificationEditionId()).getRetired().equals(true)) {
-					continue;
-				}
-			}
 			criterionNames.add( new DescriptiveModel(dto.getId(), dto.getNumber(), dto.getTitle()));
 		}
 		
@@ -439,6 +440,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
+	@Cacheable("cqmCriterionNumbers")
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple){
 
 		List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
@@ -465,24 +467,5 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			criterionNames.add( new DescriptiveModel(dto.getId(), idNumber, dto.getTitle()));
 		}
 		return criterionNames;
-	}
-
-	@Transactional
-	@Override
-	public PopulateSearchOptions getPopulateSearchOptions(Boolean simple) throws EntityRetrievalException {
-		
-		PopulateSearchOptions searchOptions = new PopulateSearchOptions();
-		searchOptions.setCertBodyNames(this.getCertBodyNames());
-		searchOptions.setEditions(this.getEditionNames(simple));
-		searchOptions.setCertificationStatuses(this.getCertificationStatuses());
-		searchOptions.setPracticeTypeNames(this.getPracticeTypeNames());
-		searchOptions.setProductClassifications(this.getClassificationNames());
-		searchOptions.setProductNames(this.getProductNames());
-		searchOptions.setDeveloperNames(this.getDeveloperNames());
-		searchOptions.setCqmCriterionNumbers(this.getCQMCriterionNumbers(simple));
-		searchOptions.setCertificationCriterionNumbers(this.getCertificationCriterionNumbers(simple));
-		
-		return searchOptions;
-		
 	}
 }

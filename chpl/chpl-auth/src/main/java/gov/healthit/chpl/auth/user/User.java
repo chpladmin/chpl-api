@@ -1,13 +1,13 @@
 package gov.healthit.chpl.auth.user;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-
 import java.util.Collection;
 import java.util.Set;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 public interface User extends UserDetails , Authentication {
 	

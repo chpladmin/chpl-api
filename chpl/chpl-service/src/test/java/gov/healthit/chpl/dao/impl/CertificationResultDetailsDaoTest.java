@@ -1,9 +1,11 @@
 package gov.healthit.chpl.dao.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
@@ -35,15 +38,26 @@ public class CertificationResultDetailsDaoTest {
 	@Autowired
 	CertificationResultDetailsDAO certificationResultDetailsDAO;
 	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
+	
 	@Test
 	@Transactional
 	public void testGetCQMResultDetailsByCertifiedProductId() throws EntityRetrievalException{
 		
 		List<CertificationResultDetailsDTO> dtos = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(1L);
 		
-		assertEquals(5, dtos.size());
-		assertEquals("170.314 (a)(1)", dtos.get(0).getNumber());
-		assertEquals(true, dtos.get(0).getSuccess());
+		assertEquals(6, dtos.size());
+		Boolean hasNumber = false;
+		for(CertificationResultDetailsDTO dto : dtos){
+			if(dto.getNumber().equalsIgnoreCase("170.314 (a)(1)")){
+				hasNumber = true;
+				assertEquals(true, dto.getSuccess());
+			}
+		}
+		assertTrue("Result should contain CertificationResultDTO with number equal to 170.314 (a)(1)", hasNumber);
+		
 	}
 	
 }

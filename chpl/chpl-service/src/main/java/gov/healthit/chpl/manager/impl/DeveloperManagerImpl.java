@@ -10,6 +10,7 @@ import javax.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.ClearAllCaches;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -36,6 +41,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
@@ -47,12 +53,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Autowired DeveloperDAO developerDao;	
 	@Autowired ProductManager productManager;
 	@Autowired CertificationBodyManager acbManager;
+	@Autowired CertificationBodyDAO certificationBodyDao;
 
 	@Autowired
 	ActivityManager activityManager;
 	
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable("allDevelopers")
 	public List<DeveloperDTO> getAll() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAll();
 		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
@@ -62,6 +70,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@Cacheable("allDevelopersIncludingDeleted")
 	public List<DeveloperDTO> getAllIncludingDeleted() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAllIncludingDeleted();
 		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
@@ -97,6 +106,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
+	@ClearAllCaches
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO beforeDev = getById(developer.getId());
@@ -168,6 +178,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
+	@ClearAllCaches
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		DeveloperDTO created = developerDao.create(dto);
@@ -190,6 +201,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
+	@ClearAllCaches
 	public void delete(DeveloperDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO toDelete = developerDao.getById(dto.getId());
@@ -213,6 +225,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
+	@ClearAllCaches
 	public void delete(Long developerId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO toDelete = developerDao.getById(developerId);
@@ -236,6 +249,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
+	@ClearAllCaches
 	public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
@@ -311,10 +325,28 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	}
 	
 	@Transactional(readOnly = true)
-	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){
+	@Cacheable("getDecertifiedDevelopers")
+	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException{
 		List<DecertifiedDeveloperDTO> developerDecertifiedDTOList = new ArrayList<DecertifiedDeveloperDTO>();
-		developerDecertifiedDTOList = developerDao.getDecertifiedDevelopers();
-		return developerDecertifiedDTOList;
+		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
+		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+		List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
+		
+		dtoList = developerDao.getDecertifiedDevelopers();
+		
+		for(DecertifiedDeveloperDTO dto : dtoList){
+			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
+			for(Long oncacbId : dto.getAcbIdList()){
+				CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
+				certifyingBody.add(cb);
+			}
+			
+			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getNumMeaningfulUse());
+			decertifiedDeveloperResults.add(decertifiedDeveloper);
+		}
+		
+		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
+		return ddr;
 	}
 	
 	@Override

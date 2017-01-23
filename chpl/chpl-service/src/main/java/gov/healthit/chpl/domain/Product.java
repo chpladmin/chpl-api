@@ -1,12 +1,14 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 
-public class Product {
+public class Product implements Serializable {
+	private static final long serialVersionUID = 2177195816284265811L;
 	private Long productId;
 	private String name;
 	private String reportFileLocation;

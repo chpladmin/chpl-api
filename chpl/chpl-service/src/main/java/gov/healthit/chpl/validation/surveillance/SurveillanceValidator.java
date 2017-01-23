@@ -14,7 +14,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.Surveillance;
@@ -29,7 +28,6 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.SurveillanceEntity;
-import gov.healthit.chpl.manager.impl.CertifiedProductDetailsManagerImpl;
 
 @Component("surveillanceValidator")
 public class SurveillanceValidator {
@@ -126,12 +124,12 @@ public class SurveillanceValidator {
 		//any other type of surveillance should not have that value
 		if(surv.getType() != null && surv.getType().getName() != null && 
 			surv.getType().getName().equalsIgnoreCase("Randomized")) {
-			if(surv.getRandomizedSitesUsed() == null || surv.getRandomizedSitesUsed().intValue() <= 0) {
+			if(surv.getRandomizedSitesUsed() == null || surv.getRandomizedSitesUsed().intValue() < 0) {
 				surv.getErrorMessages().add("Randomized surveillance must provide a nonzero value for number of randomized sites used.");
 			}
 		} else if(surv.getType() != null && surv.getType().getName() != null && 
 				!surv.getType().getName().equalsIgnoreCase("Randomized")) {
-			if(surv.getRandomizedSitesUsed() != null && surv.getRandomizedSitesUsed().intValue() > 0) {
+			if(surv.getRandomizedSitesUsed() != null && surv.getRandomizedSitesUsed().intValue() >= 0) {
 				surv.getErrorMessages().add("Number of randomized sites used is not applicable for " + surv.getType().getName() + " surveillance.");
 			}
 		}
@@ -322,7 +320,7 @@ public class SurveillanceValidator {
 								surv.getErrorMessages().add("Number of sites passed is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
 							}
 							
-							if(nc.getTotalSites() == null || nc.getTotalSites().intValue() <= 0) {
+							if(nc.getTotalSites() == null || nc.getTotalSites().intValue() < 0) {
 								surv.getErrorMessages().add("Total number of sites is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + ". It must be greater than 0.");
 							}
 						} else if(surv.getType() != null && surv.getType().getName() != null && 

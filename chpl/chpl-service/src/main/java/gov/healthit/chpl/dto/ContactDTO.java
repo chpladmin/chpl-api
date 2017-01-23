@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.ContactEntity;
 
-public class ContactDTO {
-
+public class ContactDTO implements Serializable {
+	private static final long serialVersionUID = 5417465972193498436L;
 	private Long id;
 	private String firstName;
 	private String lastName;

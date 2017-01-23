@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,8 +8,8 @@ import java.util.Set;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
 
-public class CertificationEditionDTO {
-	
+public class CertificationEditionDTO implements Serializable {
+	private static final long serialVersionUID = -2554595626818018414L;
 	private Long id;
 	private Set<CertificationCriterionDTO> certificationCriterions = new HashSet<CertificationCriterionDTO>();
 	private Date creationDate;

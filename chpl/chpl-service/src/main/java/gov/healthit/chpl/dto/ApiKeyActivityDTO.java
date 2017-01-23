@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 
-public class ApiKeyActivityDTO {
-	
+public class ApiKeyActivityDTO implements Serializable {
+	private static final long serialVersionUID = 8932636865845455436L;
 	private Long id;
 	private Long apiKeyId;
 	private String apiCallPath;

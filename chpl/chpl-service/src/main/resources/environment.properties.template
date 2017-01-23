@@ -8,6 +8,9 @@ questionableActivityEmail=theonc.certification@hhs.gov;onc_chpl@hhs.gov
 questionableActivityThresholdDays=0
 summaryEmail=dlucas@ainq.com
 summaryEmailPeriodInDays=7
+enableCacheInitialization=true
+cacheClearTimeoutSecs=15
+cacheInitializeTimeoutSecs=300
 
 #chpl-service download jar properties
 dbDriverClass=org.postgresql.Driver

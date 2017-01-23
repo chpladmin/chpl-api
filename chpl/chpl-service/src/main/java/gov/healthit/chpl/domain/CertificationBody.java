@@ -1,9 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
-public class CertificationBody {
-	
+public class CertificationBody implements Serializable {
+	private static final long serialVersionUID = 5328477887912042588L;
 	private Long id;
 	private String acbCode;
 	private String name;

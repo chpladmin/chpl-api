@@ -18,6 +18,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ValidationErrorJSONObject;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
+import gov.healthit.chpl.web.controller.CertificationBodyAccessException;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.ValidationException;
 
@@ -80,6 +81,12 @@ public class ApiExceptionControllerAdvice {
 		error.setErrorMessages(e.getErrorMessages());
 		error.setWarningMessages(e.getWarningMessages());
 		return new ResponseEntity<ValidationErrorJSONObject>(error, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(CertificationBodyAccessException.class)
+	public ResponseEntity<ErrorJSONObject> exception(CertificationBodyAccessException e) {
+		logger.error("Caught ACB access exception.", e);		
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage() != null ? e.getMessage() : "Unauthorized ACB Access."), HttpStatus.FORBIDDEN);
 	}
 	
 	@ExceptionHandler(Exception.class)

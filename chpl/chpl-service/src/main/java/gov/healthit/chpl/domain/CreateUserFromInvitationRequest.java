@@ -1,8 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
 
-public class CreateUserFromInvitationRequest {
+public class CreateUserFromInvitationRequest implements Serializable {
+	private static final long serialVersionUID = 5216297040793549351L;
 	private String hash;
 	private UserCreationJSONObject user;
 	

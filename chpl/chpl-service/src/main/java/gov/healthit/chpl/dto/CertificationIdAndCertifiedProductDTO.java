@@ -1,12 +1,14 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity;
 
-public class CertificationIdAndCertifiedProductDTO {
+public class CertificationIdAndCertifiedProductDTO implements Serializable {
+	private static final long serialVersionUID = 4517668914795030238L;
 	private Long ehrCertificationId;
 	private String certificationId;
 	private Date creationDate;

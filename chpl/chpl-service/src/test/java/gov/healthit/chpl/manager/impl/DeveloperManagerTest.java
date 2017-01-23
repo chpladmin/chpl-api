@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,10 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
@@ -35,6 +36,7 @@ import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -49,6 +51,9 @@ public class DeveloperManagerTest extends TestCase {
 	@Autowired private DeveloperManager developerManager;
 	@Autowired private ProductManager productManager;
 	@Autowired private DeveloperStatusDAO devStatusDao;
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser testUser3;
@@ -249,13 +254,14 @@ public class DeveloperManagerTest extends TestCase {
 	 * Given the CHPL is accepting search requests
 	 * When I call the REST API's /decertified/developers, the controller calls the developerManager.getDecertifiedDevelopers()
 	 * Then the manager returns a list of DeveloperDecertifiedDTO with expected results
+	 * @throws EntityRetrievalException 
 	 */
 	@Transactional
 	@Rollback(true) 
 	@Test
-	public void testGetDecertifiedDevelopers() {
-		List<DecertifiedDeveloperDTO> dtoList = developerManager.getDecertifiedDevelopers();
-		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + dtoList.size(), 
-				dtoList.size() == 2);
+	public void testGetDecertifiedDevelopers() throws EntityRetrievalException {
+		DecertifiedDeveloperResults results = developerManager.getDecertifiedDevelopers();
+		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + results.getDecertifiedDeveloperResults().size(), 
+				results.getDecertifiedDeveloperResults().size() == 2);
 	}
 }

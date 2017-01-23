@@ -1,9 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SearchOption {
+public class SearchOption implements Serializable {
+	private static final long serialVersionUID = -6671338026335670632L;
 	private boolean expandable;
 	private Set<KeyValueModel> data;
 	

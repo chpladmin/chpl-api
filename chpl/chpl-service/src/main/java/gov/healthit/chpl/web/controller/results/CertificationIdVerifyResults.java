@@ -1,11 +1,12 @@
 package gov.healthit.chpl.web.controller.results;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CertificationIdVerifyResults {
-
+public class CertificationIdVerifyResults implements Serializable {
+	private static final long serialVersionUID = -3582436342627660622L;
 	List<VerifyResult> results = new ArrayList<VerifyResult>();
 
 	public CertificationIdVerifyResults() {

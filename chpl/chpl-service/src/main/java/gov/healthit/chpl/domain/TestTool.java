@@ -1,6 +1,9 @@
 package gov.healthit.chpl.domain;
 
-public class TestTool extends KeyValueModel {
+import java.io.Serializable;
+
+public class TestTool extends KeyValueModel implements Serializable {
+	private static final long serialVersionUID = -3761135258251736516L;
 	private boolean retired;
 	
 	public TestTool() {

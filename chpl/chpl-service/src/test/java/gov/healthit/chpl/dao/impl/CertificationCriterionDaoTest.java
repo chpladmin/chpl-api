@@ -1,10 +1,16 @@
 package gov.healthit.chpl.dao.impl;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +29,12 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -37,10 +45,16 @@ import junit.framework.TestCase;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertificationCriterionDaoTest extends TestCase {
-
+	
+	@PersistenceContext
+	protected EntityManager entityManager;
 	
 	@Autowired
 	private CertificationCriterionDAO certificationCriterionDAO;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -287,5 +301,25 @@ public class CertificationCriterionDaoTest extends TestCase {
 		certificationCriterionDAO.delete(id);
 	}
 	
-
+	/**
+	 * Tests that getAllEntities() gets all non-deleted certification criterion that are associated with a certified product
+	 * Must have (TestTool.retired = true AND CP.ics_code = true) OR (TestTool.retired = false) AND CertCriterion.deleted = false
+	 * @throws EntityRetrievalException
+	 * @throws EntityCreationException
+	 */
+	@Test
+	@Transactional
+	public void testGetAllEntities() throws EntityRetrievalException, EntityCreationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		System.out.println("Running getAllEntities() test");
+		List<CertificationCriterionDTO> certCritDTOs = certificationCriterionDAO.findAll();
+		assertEquals(164, certCritDTOs.size());
+		
+		List<Long> certCritIdList = new ArrayList<Long>();
+		for(CertificationCriterionDTO dto : certCritDTOs){
+			certCritIdList.add(dto.getId());
+			assertFalse(dto.getDeleted());
+		}
+	}
 }

@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
-public class CertificationCriterionDTO {
-
+public class CertificationCriterionDTO implements Serializable {
+	private static final long serialVersionUID = -1129602624256345286L;
 	private Long id;
 	private Boolean automatedMeasureCapable;
 	private Boolean automatedNumeratorCapable;

@@ -1,7 +1,9 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 
-public class UpdateUserAndAtlRequest {
+public class UpdateUserAndAtlRequest implements Serializable {
+	private static final long serialVersionUID = 1961898850619311406L;
 	private Long atlId;
 	private Long userId;
 	private ChplPermission authority;

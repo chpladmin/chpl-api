@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -31,9 +30,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
@@ -41,7 +38,6 @@ import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -491,14 +487,25 @@ public class SearchViewController {
 			notes="This returns all of the other /data/{something} results in one single response.")
 	@RequestMapping(value="/data/search_options", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	@Cacheable("searchOptionsCache")
 	public @ResponseBody PopulateSearchOptions getPopulateSearchData(
 			@RequestParam(value = "simple", required = false) Boolean simple
 			) throws EntityRetrievalException {
 		if (simple == null){
 			simple = false;
 		}
-		return searchMenuManager.getPopulateSearchOptions(simple);
+		
+		PopulateSearchOptions searchOptions = new PopulateSearchOptions();
+		searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames());
+		searchOptions.setEditions(searchMenuManager.getEditionNames(simple));
+		searchOptions.setCertificationStatuses(searchMenuManager.getCertificationStatuses());
+		searchOptions.setPracticeTypeNames(searchMenuManager.getPracticeTypeNames());
+		searchOptions.setProductClassifications(searchMenuManager.getClassificationNames());
+		searchOptions.setProductNames(searchMenuManager.getProductNames());
+		searchOptions.setDeveloperNames(searchMenuManager.getDeveloperNames());
+		searchOptions.setCqmCriterionNumbers(searchMenuManager.getCQMCriterionNumbers(simple));
+		searchOptions.setCertificationCriterionNumbers(searchMenuManager.getCertificationCriterionNumbers(simple));
+		
+		return searchOptions;
 	}
 	
 	@ApiOperation(value="Get all developer decertifications in the CHPL", 
@@ -506,25 +513,7 @@ public class SearchViewController {
 	@RequestMapping(value="/decertifications/developers", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
-		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
-		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
-		List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
-		
-		dtoList = developerManager.getDecertifiedDevelopers();
-		
-		for(DecertifiedDeveloperDTO dto : dtoList){
-			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
-			for(Long oncacbId : dto.getAcbIdList()){
-				CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
-				certifyingBody.add(cb);
-			}
-			
-			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getNumMeaningfulUse());
-			decertifiedDeveloperResults.add(decertifiedDeveloper);
-		}
-		
-		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
-		
+		DecertifiedDeveloperResults ddr = developerManager.getDecertifiedDevelopers();
 		return ddr;
 	}
 	
@@ -545,9 +534,9 @@ public class SearchViewController {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		List<String> allowedCertificationStatuses = new ArrayList<String>();
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.SuspendedByOnc));
 		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByAcb));
 		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloper));
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview));
 		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.TerminatedByOnc));
 		
 		searchRequest.setCertificationStatuses(allowedCertificationStatuses);

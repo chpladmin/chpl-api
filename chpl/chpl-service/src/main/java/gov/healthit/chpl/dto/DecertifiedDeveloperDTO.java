@@ -1,9 +1,11 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DecertifiedDeveloperDTO {
+public class DecertifiedDeveloperDTO implements Serializable {
+	private static final long serialVersionUID = 5686501038412355764L;
 	private Long developerId;
 	private List<Long> acbIdList;
 	private String developerStatus;

@@ -1,11 +1,13 @@
 package gov.healthit.chpl.web.controller.results;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.domain.Surveillance;
 
-public class SurveillanceResults {
+public class SurveillanceResults implements Serializable {
+	private static final long serialVersionUID = 6767406136348327093L;
 	private List<Surveillance> pendingSurveillance;
 
 	public SurveillanceResults() {

@@ -1,11 +1,13 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
-public class CertifiedProduct {
-	
+public class CertifiedProduct implements Serializable {
+	private static final long serialVersionUID = -6634520925641244762L;
 	private Long id;
     private String chplProductNumber;
 	private String lastModifiedDate;

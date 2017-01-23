@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,12 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = gov.healthit.chpl.CHPLTestConfig.class)
@@ -46,6 +49,10 @@ public class CertifiedProductDaoTest {
 	@Autowired
 	private CertifiedProductDAO productDao;
 	static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 
 	private static JWTAuthenticatedUser authUser;
 	private static Pattern urlPattern = Pattern.compile(URL_PATTERN);
@@ -151,12 +158,4 @@ public class CertifiedProductDaoTest {
 		CertifiedProductDTO deletedProduct = productDao.getById(productId);
 		assertTrue(deletedProduct.getDeleted());
 	}
-	
-//	@Test
-//	public void getByUniqueId() throws EntityRetrievalException {
-//		String id = "14.";
-//		CertifiedProductDetailsDTO cpDetails = productDao.getByChplUniqueId(id);
-//		assertNotNull(cpDetails);
-//		assertEquals(cpDetails.getChplProductNumber(), id);
-//	}
 }
