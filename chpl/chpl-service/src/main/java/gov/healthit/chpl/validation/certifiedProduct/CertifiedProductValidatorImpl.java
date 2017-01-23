@@ -256,29 +256,20 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
 				hasIcsConflict = true;
 			}
-			if(additionalSoftwareCode.equals("0")) {
-				boolean hasAS = false;
-				for(CertificationResult cert : product.getCertificationResults()) {
-					if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-						hasAS = true;
-					}
-				}
-				if(hasAS) {
-					product.getErrorMessages().add("The unique id indicates the product does not have additional software but some is listed for the product.");
-				}
-			} else if(additionalSoftwareCode.equals("1")) {
-				boolean hasAS = false;
-				for(CertificationResult cert : product.getCertificationResults()) {
-					if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-						hasAS = true;
-					}
-				}
-				if(!hasAS) {
-					product.getErrorMessages().add("The unique id indicates the product has additional software but none is listed for the product.");
-				}
-			} else {
+			
+			if(!additionalSoftwareCode.equals("0") && !additionalSoftwareCode.equals("1")) {
 				product.getErrorMessages().add("The additional software part of the unique ID must be 0 or 1.");
+			} else {
+				boolean hasAS = false;
+				for(CertificationResult cert : product.getCertificationResults()) {
+					if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+						hasAS = true;
+					}
+				}
+				String desiredAdditionalSoftwareCode = hasAS ? "1" : "0";
+				
 			}
+			
 			SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
 			try {
 				Date idDate = idDateFormat.parse(certifiedDateCode);
