@@ -41,9 +41,8 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.MeaningfulUseAccurateAsOf;
+import gov.healthit.chpl.domain.AccurateAsOfDate;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
-import gov.healthit.chpl.web.controller.results.AccurateAsOfDateResult;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -321,8 +320,10 @@ public class MeaningfulUseControllerTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Calendar cal = Calendar.getInstance();
 		Long timeInMillis = cal.getTimeInMillis();
-		meaningfulUseController.updateMeaningfulUseAccurateAsOf(timeInMillis);
-		AccurateAsOfDateResult result = meaningfulUseController.getAccurateAsOfDate();
+		AccurateAsOfDate ad = new AccurateAsOfDate();
+		ad.setAccurateAsOfDate(timeInMillis);
+		meaningfulUseController.updateMeaningfulUseAccurateAsOf(ad);
+		AccurateAsOfDate result = meaningfulUseController.getAccurateAsOfDate();
 		assertTrue(result.getAccurateAsOfDate().equals(timeInMillis));
 	}
 	
