@@ -1,7 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,6 +42,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AccurateAsOfDate;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
+import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -52,7 +51,7 @@ import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
-public class MeaningfulUseControllerTest {
+public class MeaningfulUseControllerTest extends TestCase {
 	private static final Logger logger = LogManager.getLogger(MeaningfulUseControllerTest.class);
 	
 	private static final String CSV_SEPARATOR = ",";

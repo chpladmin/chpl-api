@@ -572,4 +572,44 @@ public class SearchViewController {
 		return resp;
 	}
 	
+	@ApiOperation(value="Get decertified certified products in the CHPL with inactive certificates", 
+			notes="Returns only decertified certified products with inactive certificates. "
+					+ "Includes their decertified statuses and the total count of decertified certified products as the recordCount.")
+	@RequestMapping(value="/decertifications/inactive_certificates", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchResponse getDecertifiedInactiveCertificateCertifiedProducts (
+			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
+			@RequestParam(value = "pageSize", required = false) Integer pageSize,
+			@RequestParam(value = "orderBy", required = false) String orderBy,
+			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending) throws EntityRetrievalException {
+		SearchResponse resp = new SearchResponse();
+		
+		if (pageNumber == null){
+			pageNumber = 0;
+		}
+		
+		SearchRequest searchRequest = new SearchRequest();
+		List<String> allowedCertificationStatuses = new ArrayList<String>();
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloper));
+		
+		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
+		
+		searchRequest.setPageNumber(pageNumber);
+		if(pageSize == null){
+			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
+		}
+		
+		if (orderBy != null){
+			searchRequest.setOrderBy(orderBy);
+		}
+		
+		if (sortDescending != null){
+			searchRequest.setSortDescending(sortDescending);
+		}
+		
+		resp = certifiedProductSearchManager.search(searchRequest);
+		
+		return resp;
+	}
+	
 }
