@@ -577,7 +577,7 @@ public class SearchViewController {
 					+ "Includes their decertified statuses and the total count of decertified certified products as the recordCount.")
 	@RequestMapping(value="/decertifications/inactive_certificates", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody SearchResponse getDecertifiedCertifiedProducts (
+	public @ResponseBody SearchResponse getDecertifiedInactiveCertificateCertifiedProducts (
 			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
 			@RequestParam(value = "pageSize", required = false) Integer pageSize,
 			@RequestParam(value = "orderBy", required = false) String orderBy,
