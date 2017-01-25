@@ -1,14 +1,14 @@
-package gov.healthit.chpl.web.controller.results;
+package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-public class AccurateAsOfDateResult implements Serializable {
+public class AccurateAsOfDate implements Serializable {
 	private static final long serialVersionUID = 8162304032624386529L;
 	private Long accurateAsOfDate;
 	
-	public AccurateAsOfDateResult(){};
+	public AccurateAsOfDate(){};
 	
-	public AccurateAsOfDateResult(Long accurateAsOfDate){
+	public AccurateAsOfDate(Long accurateAsOfDate){
 		this.accurateAsOfDate = accurateAsOfDate;
 	};
 	

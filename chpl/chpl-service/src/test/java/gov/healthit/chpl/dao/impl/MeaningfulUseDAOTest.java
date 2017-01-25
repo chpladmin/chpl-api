@@ -63,7 +63,6 @@ public class MeaningfulUseDAOTest {
 	public void getAccurateAsOfDate() {
 		MeaningfulUseAccurateAsOfDTO accurateAsOfDTO = meaningfulUseDao.getMeaningfulUseAccurateAsOf();
 		assertTrue(accurateAsOfDTO.getAccurateAsOfDate() != null);
-		assertTrue(accurateAsOfDTO.getAccurateAsOfDate().getTime() >= 1480482000000L);
 	}
 	
 	/**

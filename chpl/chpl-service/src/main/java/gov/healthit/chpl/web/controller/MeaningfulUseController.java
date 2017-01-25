@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,12 +30,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.MeaningfulUseAccurateAsOf;
+import gov.healthit.chpl.domain.AccurateAsOfDate;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.MeaningfulUseManager;
-import gov.healthit.chpl.web.controller.results.AccurateAsOfDateResult;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -154,13 +154,13 @@ public class MeaningfulUseController {
 			notes="This is a single system-wide value.")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8") 
-	public @ResponseBody AccurateAsOfDateResult getAccurateAsOfDate() throws EntityRetrievalException {
+	public @ResponseBody AccurateAsOfDate getAccurateAsOfDate() throws EntityRetrievalException {
 		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
 		if(dto == null){
 			throw new EntityRetrievalException("Could not retrieve entity for MeaningfulUseAccurateAsOf");
 		}
 		
-		AccurateAsOfDateResult ar = new AccurateAsOfDateResult(dto.getAccurateAsOfDate().getTime());
+		AccurateAsOfDate ar = new AccurateAsOfDate(dto.getAccurateAsOfDate().getTime());
 		return ar;
 	}
 	
@@ -168,10 +168,11 @@ public class MeaningfulUseController {
 			notes="Accurate as of date value can be edited by a user with ROLE_ADMIN and ROLE_CMS_STAFF.")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	@ResponseStatus(value = HttpStatus.OK)
-	public void updateMeaningfulUseAccurateAsOf(@RequestParam(required=true) long timeInMillis) throws EntityRetrievalException, ValidationException {		
+	public @ResponseBody AccurateAsOfDate updateMeaningfulUseAccurateAsOf(@RequestBody(required=true) AccurateAsOfDate accurateAsOfDate) {		
 		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
-		dto.setAccurateAsOfDate(new Date(timeInMillis));
+		dto.setAccurateAsOfDate(new Date(accurateAsOfDate.getAccurateAsOfDate()));
 		dto = muManager.updateMeaningfulUseAccurateAsOf(dto);
+		AccurateAsOfDate result = new AccurateAsOfDate(dto.getAccurateAsOfDate().getTime());
+		return result;
 	}
 }
