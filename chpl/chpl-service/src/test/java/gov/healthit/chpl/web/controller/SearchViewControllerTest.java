@@ -359,4 +359,23 @@ public class SearchViewControllerTest {
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc)));
 		}
 	}
+	
+	/** 
+	 * Given that a user with no security calls the API
+	 * When the API is called at /decertifications/certified_products
+	 * Then the API returns a SearchResponse object with only decertified inactive certificate CPs
+	 * Then the pageSize is equivalent to the sum of all the decertified CPs
+	 * @throws EntityRetrievalException 
+	 */
+	@Transactional
+	@Test
+	public void test_searchDecertifiedInactiveCertCPs() throws EntityRetrievalException {	
+		SearchResponse resp = searchViewController.getDecertifiedInactiveCertificateCertifiedProducts(null, null, null, null);		
+		
+		assertTrue(resp.getResults().size() == 6);
+		assertTrue("SearchResponse.pageSize should be equal to the number of results", resp.getPageSize() == resp.getResults().size());
+		for(CertifiedProductSearchResult cp : resp.getResults()){
+			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)));
+		}
+	}
 }
