@@ -168,10 +168,11 @@ public class MeaningfulUseController {
 			notes="Accurate as of date value can be edited by a user with ROLE_ADMIN and ROLE_CMS_STAFF.")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	@ResponseStatus(value = HttpStatus.OK)
-	public void updateMeaningfulUseAccurateAsOf(@RequestBody(required=true) AccurateAsOfDate accurateAsOfDate) {		
+	public @ResponseBody AccurateAsOfDate updateMeaningfulUseAccurateAsOf(@RequestBody(required=true) AccurateAsOfDate accurateAsOfDate) {		
 		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
 		dto.setAccurateAsOfDate(new Date(accurateAsOfDate.getAccurateAsOfDate()));
 		dto = muManager.updateMeaningfulUseAccurateAsOf(dto);
+		AccurateAsOfDate result = new AccurateAsOfDate(dto.getAccurateAsOfDate().getTime());
+		return result;
 	}
 }
