@@ -1,8 +1,6 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;
 
@@ -15,9 +13,6 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
 	private Long lastModifiedUser;
 	private Long creationDate;
 	private Long lastModifiedDate;
-	
-	private Set<String> warningMessages = new HashSet<String>();
-	private Set<String> errorMessages = new HashSet<String>();
 	
 	public MeaningfulUseAccurateAsOf(){};
 	
@@ -76,22 +71,6 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
 
 	public void setLastModifiedDate(Long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	public Set<String> getWarningMessages() {
-		return warningMessages;
-	}
-
-	public void setWarningMessages(Set<String> warningMessages) {
-		this.warningMessages = warningMessages;
-	}
-
-	public Set<String> getErrorMessages() {
-		return errorMessages;
-	}
-
-	public void setErrorMessages(Set<String> errorMessages) {
-		this.errorMessages = errorMessages;
 	}
 
 }

@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,11 +14,13 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +34,7 @@ import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.MeaningfulUseManager;
+import gov.healthit.chpl.web.controller.results.AccurateAsOfDateResult;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -150,36 +154,24 @@ public class MeaningfulUseController {
 			notes="This is a single system-wide value.")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8") 
-	public @ResponseBody MeaningfulUseAccurateAsOf getAccurateAsOfDate() {
+	public @ResponseBody AccurateAsOfDateResult getAccurateAsOfDate() throws EntityRetrievalException {
 		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
-		MeaningfulUseAccurateAsOf muuAccurate = new MeaningfulUseAccurateAsOf(dto);
-		if(StringUtils.isEmpty(muuAccurate.getId().toString()) && StringUtils.isEmpty(muuAccurate.getAccurateAsOfDate().toString())){
-			muuAccurate.getErrorMessages().add("Could not obtain the accurate as of date.");
+		if(dto == null){
+			throw new EntityRetrievalException("Could not retrieve entity for MeaningfulUseAccurateAsOf");
 		}
-		return muuAccurate;
+		
+		AccurateAsOfDateResult ar = new AccurateAsOfDateResult(dto.getAccurateAsOfDate().getTime());
+		return ar;
 	}
 	
 	@ApiOperation(value="Update the Meaningful Use Accurate As Of date.", 
 			notes="Accurate as of date value can be edited by a user with ROLE_ADMIN and ROLE_CMS_STAFF.")
 	@RequestMapping(value="/accurate_as_of", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
-	public @ResponseBody MeaningfulUseAccurateAsOf updateMeaningfulUseAccurateAsOf(@RequestParam(required=true) MeaningfulUseAccurateAsOf meaningfulUseAccurateAsOf) {
-		MeaningfulUseAccurateAsOfDTO dto = null;
-		if(meaningfulUseAccurateAsOf.getAccurateAsOfDate() == null || StringUtils.isEmpty(meaningfulUseAccurateAsOf.getAccurateAsOfDate().toString())){
-			meaningfulUseAccurateAsOf.getErrorMessages().add("AccurateAsOfDate cannot be null");
-			return meaningfulUseAccurateAsOf;
-		}
-		else if(meaningfulUseAccurateAsOf.getId() == null || StringUtils.isEmpty(meaningfulUseAccurateAsOf.getId().toString())){
-			MeaningfulUseAccurateAsOf mua = getAccurateAsOfDate();
-			mua.setAccurateAsOfDate(meaningfulUseAccurateAsOf.getAccurateAsOfDate());
-			dto = new MeaningfulUseAccurateAsOfDTO(mua);
-			dto = muManager.updateMeaningfulUseAccurateAsOf(dto);
-			return new MeaningfulUseAccurateAsOf(dto);
-		}
-		else{
-			dto = new MeaningfulUseAccurateAsOfDTO(meaningfulUseAccurateAsOf);
-			dto = muManager.updateMeaningfulUseAccurateAsOf(dto);
-			return new MeaningfulUseAccurateAsOf(dto);
-		}
+	@ResponseStatus(value = HttpStatus.OK)
+	public void updateMeaningfulUseAccurateAsOf(@RequestParam(required=true) long timeInMillis) throws EntityRetrievalException, ValidationException {		
+		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
+		dto.setAccurateAsOfDate(new Date(timeInMillis));
+		dto = muManager.updateMeaningfulUseAccurateAsOf(dto);
 	}
 }
