@@ -7,6 +7,7 @@ _Date TBD_
 * Add G1 and G2 macra measures to certified product upload, edit and detail display
 * Add functionality to get Meaningful Use User Accurate As Of Date and update it
 * Check certification date and additional software code vs supplied data for CP edit and update code if necessary
+* Add API call for decertified certified products with inactive certificates
 
 ---
 
