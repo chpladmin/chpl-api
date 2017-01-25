@@ -352,11 +352,10 @@ public class SearchViewControllerTest extends TestCase {
 	public void test_searchDecertifiedCPs() throws EntityRetrievalException {	
 		SearchResponse resp = searchViewController.getDecertifiedCertifiedProducts(null, null, null, null);		
 		
-		assertTrue(resp.getResults().size() == 7);
+		assertTrue(resp.getResults().size() == 1);
 		assertEquals((Integer) resp.getResults().size(), resp.getPageSize());
 		for(CertifiedProductSearchResult cp : resp.getResults()){
 			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) || 
-					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)) ||
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview)) ||
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc)));
 		}

@@ -8,6 +8,7 @@ _Date TBD_
 * Add functionality to get Meaningful Use User Accurate As Of Date and update it
 * Check certification date and additional software code vs supplied data for CP edit and update code if necessary
 * Add API call for decertified certified products with inactive certificates
+* Update API call for decertified certified products to not include products with certification status 'Withdrawn by Developer'
 
 ---
 
