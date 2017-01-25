@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
+	protected static final int CHPL_PRODUCT_ID_PARTS = 9;
 	protected static final int EDITION_CODE_INDEX = 0;
 	protected static final int ATL_CODE_INDEX = 1;
 	protected static final int ACB_CODE_INDEX = 2;
@@ -66,20 +68,49 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		urlRegex = Pattern.compile(URL_PATTERN);
 	}
 	
-	@Override
-	public void validate(PendingCertifiedProductDTO product) {
-		//make sure the unique id is really uniqiue
+	private void validateUniqueId(PendingCertifiedProductDTO product) {
 		try {
 			CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(product.getUniqueId());
 			if(dup != null) {
 				product.getErrorMessages().add("The id " + product.getUniqueId() + " must be unique among all other certified products but one already exists with this ID.");
 			}
 		} catch(EntityRetrievalException ex) {}
-		
+	}
+	
+	private void validateUniqueId(CertifiedProductSearchDetails product) {
+		try {
+			CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(product.getChplProductNumber());
+			if(dup != null) {
+				product.getErrorMessages().add("The id " + product.getChplProductNumber() + " must be unique among all other certified products but one already exists with this ID.");
+			}
+		} catch(EntityRetrievalException ex) {}
+	}
+	
+	private void updateChplProductNumber(CertifiedProductSearchDetails product, int productNumberIndex, String newValue) {
+		String[] uniqueIdParts = product.getChplProductNumber().split("\\.");
+		if(uniqueIdParts != null && uniqueIdParts.length == CHPL_PRODUCT_ID_PARTS) {
+			String newChplProductCode = "";
+			for(int idx = 0; idx < uniqueIdParts.length; idx++) {
+				if(idx == productNumberIndex) {
+					newChplProductCode += newValue;
+				} else {
+					newChplProductCode += uniqueIdParts[idx];
+				}
+				
+				if(idx < uniqueIdParts.length-1) {
+					newChplProductCode += ".";
+				}
+			}
+			product.setChplProductNumber(newChplProductCode);
+		}
+	}
+	
+	@Override
+	public void validate(PendingCertifiedProductDTO product) {
 		String uniqueId = product.getUniqueId();
 		String[] uniqueIdParts = uniqueId.split("\\.");
-		if(uniqueIdParts == null || uniqueIdParts.length != 9) {
-			product.getErrorMessages().add("The unique CHPL ID '" + uniqueId + "' must have 9 parts separated by '.'");
+		if(uniqueIdParts == null || uniqueIdParts.length != CHPL_PRODUCT_ID_PARTS) {
+			product.getErrorMessages().add("The unique CHPL ID '" + uniqueId + "' must have " + CHPL_PRODUCT_ID_PARTS + " parts separated by '.'");
 			return;
 		} 
 		//validate that these pieces match up with data
@@ -208,6 +239,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add("Could not parse the certification date part of the product id: " + certifiedDateCode);
 		}
 		
+		//make sure the unique id is really uniqiue
+		validateUniqueId(product);
+		
 		validateDemographics(product);
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
@@ -226,7 +260,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		//if it's a new product, check the id parts
 		String uniqueId = product.getChplProductNumber();
 		String[] uniqueIdParts = uniqueId.split("\\.");
-		if(uniqueIdParts != null && uniqueIdParts.length == 9) {
+		if(uniqueIdParts != null && uniqueIdParts.length == CHPL_PRODUCT_ID_PARTS) {
 			
 			//validate that these pieces match up with data
 			String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
@@ -282,29 +316,22 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 				String desiredAdditionalSoftwareCode = hasAS ? "1" : "0";
 				if(!additionalSoftwareCode.equals(desiredAdditionalSoftwareCode)) {
-					String newChplProductCode = "";
-					for(int idx = 0; idx < uniqueIdParts.length; idx++) {
-						if(idx == ADDITIONAL_SOFTWARE_CODE_INDEX) {
-							newChplProductCode += desiredAdditionalSoftwareCode;
-						} else {
-							newChplProductCode += uniqueIdParts[idx];
-						}
-						
-						if(idx < uniqueIdParts.length-1) {
-							newChplProductCode += ".";
-						}
-					}
-					product.setChplProductNumber(newChplProductCode);
+					updateChplProductNumber(product, ADDITIONAL_SOFTWARE_CODE_INDEX, desiredAdditionalSoftwareCode);
 					productIdChanged = true;
 				}
 			}
 			
 			SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
+			idDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			try {
 				Date idDate = idDateFormat.parse(certifiedDateCode);
 				if(product.getCertificationDate() == null || 
 						idDate.getTime() != product.getCertificationDate().longValue()) {
-					product.getErrorMessages().add("The certification date provided in the unique id does not match the certification date of the product.");
+					
+					//change the certified date code to match the new certification date
+					String desiredCertificationDateCode = idDateFormat.format(product.getCertificationDate());
+					updateChplProductNumber(product, CERTIFIED_DATE_CODE_INDEX, desiredCertificationDateCode);
+					productIdChanged = true;
 				}
 			} catch (ParseException pex) {
 				product.getErrorMessages().add("Could not parse the certification date part of the product id: " + certifiedDateCode);
@@ -312,12 +339,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		
 		if(productIdChanged) {
-			try {
-				CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(product.getChplProductNumber());
-				if(dup != null) {
-					product.getErrorMessages().add("The CHPL product number must be changed because of changes to the product's data. However, the new CHPL product number: '" + product.getChplProductNumber() + "' will not be unique among all other certified products because one already exists with this ID.");
-				}
-			} catch(EntityRetrievalException ex) {}
+			//make sure the unique id is really unique - only check this if we know it changed
+			//because if it hasn't changes there will be 1 product with its id
+			validateUniqueId(product);
 		}
 		
 		validateDemographics(product);
