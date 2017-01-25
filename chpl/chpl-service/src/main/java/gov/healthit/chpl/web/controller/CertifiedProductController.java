@@ -16,8 +16,10 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -364,9 +366,10 @@ public class CertifiedProductController {
 		cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
 		
-		
 		if(!changedProduct.getChplProductNumber().equals(existingProduct.getChplProductNumber())) {
-			return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, HttpStatus.CREATED); //201
+			 HttpHeaders responseHeaders = new HttpHeaders();
+			 responseHeaders.set("CHPL-Id-Changed", existingProduct.getChplProductNumber());
+			return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
 		}
 		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, HttpStatus.OK);
 	}

@@ -2,7 +2,10 @@ package gov.healthit.chpl.validation.certifiedProduct;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,16 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
+	protected static final int EDITION_CODE_INDEX = 0;
+	protected static final int ATL_CODE_INDEX = 1;
+	protected static final int ACB_CODE_INDEX = 2;
+	protected static final int DEVELOPER_CODE_INDEX = 3;
+	protected static final int PRODUCT_CODE_INDEX = 4;
+	protected static final int VERSION_CODE_INDEX = 5;
+	protected static final int ICS_CODE_INDEX = 6;
+	protected static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
+	protected static final int CERTIFIED_DATE_CODE_INDEX = 8;
+	
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired TestingLabDAO atlDao;
@@ -70,15 +83,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			return;
 		} 
 		//validate that these pieces match up with data
-		String editionCode = uniqueIdParts[0];
-		String atlCode = uniqueIdParts[1];
-		String acbCode = uniqueIdParts[2];
-		String developerCode = uniqueIdParts[3];
-		String productCode = uniqueIdParts[4];
-		String versionCode = uniqueIdParts[5];
-		icsCode = uniqueIdParts[6];
-		String additionalSoftwareCode = uniqueIdParts[7];
-		String certifiedDateCode = uniqueIdParts[8];
+		String editionCode = uniqueIdParts[EDITION_CODE_INDEX];
+		String atlCode = uniqueIdParts[ATL_CODE_INDEX];
+		String acbCode = uniqueIdParts[ACB_CODE_INDEX];
+		String developerCode = uniqueIdParts[DEVELOPER_CODE_INDEX];
+		String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
+		String versionCode = uniqueIdParts[VERSION_CODE_INDEX];
+		icsCode = uniqueIdParts[ICS_CODE_INDEX];
+		String additionalSoftwareCode = uniqueIdParts[ADDITIONAL_SOFTWARE_CODE_INDEX];
+		String certifiedDateCode = uniqueIdParts[CERTIFIED_DATE_CODE_INDEX];
 		
 		try {
 			CertificationEditionDTO certificationEdition = certEditionDao.getById(product.getCertificationEditionId());
@@ -208,18 +221,19 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 	}
 	@Override
-	public void validate(CertifiedProductSearchDetails product) {		
+	public void validate(CertifiedProductSearchDetails product) {
+		boolean productIdChanged = false;
 		//if it's a new product, check the id parts
 		String uniqueId = product.getChplProductNumber();
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == 9) {
 			
 			//validate that these pieces match up with data
-			String productCode = uniqueIdParts[4];
-			String versionCode = uniqueIdParts[5];
-			icsCode = uniqueIdParts[6];
-			String additionalSoftwareCode = uniqueIdParts[7];
-			String certifiedDateCode = uniqueIdParts[8];
+			String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
+			String versionCode = uniqueIdParts[VERSION_CODE_INDEX];
+			icsCode = uniqueIdParts[ICS_CODE_INDEX];
+			String additionalSoftwareCode = uniqueIdParts[ADDITIONAL_SOFTWARE_CODE_INDEX];
+			String certifiedDateCode = uniqueIdParts[CERTIFIED_DATE_CODE_INDEX];
 			
 			try {
 				if(product.getDeveloper() != null && product.getDeveloper().getDeveloperId() != null) {
@@ -256,29 +270,35 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
 				hasIcsConflict = true;
 			}
-			if(additionalSoftwareCode.equals("0")) {
-				boolean hasAS = false;
-				for(CertificationResult cert : product.getCertificationResults()) {
-					if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-						hasAS = true;
-					}
-				}
-				if(hasAS) {
-					product.getErrorMessages().add("The unique id indicates the product does not have additional software but some is listed for the product.");
-				}
-			} else if(additionalSoftwareCode.equals("1")) {
-				boolean hasAS = false;
-				for(CertificationResult cert : product.getCertificationResults()) {
-					if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-						hasAS = true;
-					}
-				}
-				if(!hasAS) {
-					product.getErrorMessages().add("The unique id indicates the product has additional software but none is listed for the product.");
-				}
-			} else {
+			
+			if(!additionalSoftwareCode.equals("0") && !additionalSoftwareCode.equals("1")) {
 				product.getErrorMessages().add("The additional software part of the unique ID must be 0 or 1.");
+			} else {
+				boolean hasAS = false;
+				for(CertificationResult cert : product.getCertificationResults()) {
+					if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+						hasAS = true;
+					}
+				}
+				String desiredAdditionalSoftwareCode = hasAS ? "1" : "0";
+				if(!additionalSoftwareCode.equals(desiredAdditionalSoftwareCode)) {
+					String newChplProductCode = "";
+					for(int idx = 0; idx < uniqueIdParts.length; idx++) {
+						if(idx == ADDITIONAL_SOFTWARE_CODE_INDEX) {
+							newChplProductCode += desiredAdditionalSoftwareCode;
+						} else {
+							newChplProductCode += uniqueIdParts[idx];
+						}
+						
+						if(idx < uniqueIdParts.length-1) {
+							newChplProductCode += ".";
+						}
+					}
+					product.setChplProductNumber(newChplProductCode);
+					productIdChanged = true;
+				}
 			}
+			
 			SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
 			try {
 				Date idDate = idDateFormat.parse(certifiedDateCode);
@@ -289,6 +309,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			} catch (ParseException pex) {
 				product.getErrorMessages().add("Could not parse the certification date part of the product id: " + certifiedDateCode);
 			}
+		}
+		
+		if(productIdChanged) {
+			try {
+				CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(product.getChplProductNumber());
+				if(dup != null) {
+					product.getErrorMessages().add("The CHPL product number must be changed because of changes to the product's data. However, the new CHPL product number: '" + product.getChplProductNumber() + "' will not be unique among all other certified products because one already exists with this ID.");
+				}
+			} catch(EntityRetrievalException ex) {}
 		}
 		
 		validateDemographics(product);
