@@ -36,7 +36,6 @@ import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;

@@ -1,16 +1,9 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.MacraMeasureEntity;
-import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
-import gov.healthit.chpl.entity.ProductEntity;
 
 public class MacraMeasureDTO implements Serializable {
 	private static final long serialVersionUID = -1863384989196377585L;
