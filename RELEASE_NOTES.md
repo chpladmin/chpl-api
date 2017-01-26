@@ -9,6 +9,7 @@ _Date TBD_
 * Check certification date and additional software code vs supplied data for CP edit and update code if necessary
 * Add API call for decertified certified products with inactive certificates
 * Update API call for decertified certified products to not include products with certification status 'Withdrawn by Developer'
+* When a Certified Product is marked as "Withdrawn by Developer under Surveillance/Review" by an ONC_ADMIN or ACB_ADMIN, update Developer Status to "Under Certification Ban by ONC"
 
 ---
 
