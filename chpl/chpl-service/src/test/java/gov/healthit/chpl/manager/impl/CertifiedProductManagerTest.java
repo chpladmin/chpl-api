@@ -120,8 +120,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(dev);
 		assertNotNull(dev.getStatus());
 		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), dev.getStatus().getStatusName());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -146,8 +144,48 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(dev);
 		assertNotNull(dev.getStatus());
 		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
+	public void testNonAdminUserNotAllowedToChangeStatusToWithdrawnByDeveloperUnderReview() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(testUser3);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+		assertNotNull(stat);
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		cp.setCertificationStatusId(stat.getId());
+		boolean success = true;
+		try {
+			cpManager.update(1L, cp);
+		} catch(AccessDeniedException adEx) {
+			success = false;
+		}
+		assertFalse(success);
 		
-		SecurityContextHolder.getContext().setAuthentication(null);
+		DeveloperDTO dev = devManager.getById(-1L);
+		assertNotNull(dev);
+		assertNotNull(dev.getStatus());
+		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
+	public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReview() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+		assertNotNull(stat);
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		cp.setCertificationStatusId(stat.getId());
+		cpManager.update(1L, cp);
+		
+		DeveloperDTO dev = devManager.getById(-1L);
+		assertNotNull(dev);
+		assertNotNull(dev.getStatus());
+		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), dev.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -166,8 +204,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(dev);
 		assertNotNull(dev.getStatus());
 		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), dev.getStatus().getStatusName());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -192,8 +228,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(dev);
 		assertNotNull(dev.getStatus());
 		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -233,9 +267,6 @@ public class CertifiedProductManagerTest extends TestCase {
 			}
 		}
 		assertTrue(changedParticipantExists);
-		
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -270,8 +301,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResultTestParticipant part : taskParts) {
 			assertEquals("Teacher", part.getOccupation());
 		}		
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -305,8 +334,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResultTestParticipant part : taskParts) {
 			assertEquals(2, part.getEducationTypeId().longValue());
 		}		
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	/**
@@ -457,8 +484,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResultTestParticipant part : taskParts) {
 			assertEquals(4, part.getAgeRangeId().longValue());
 		}		
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -496,8 +521,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		measures = cert.getG1MacraMeasures();
 		assertNotNull(measures);
 		assertEquals(1, measures.size());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -533,8 +556,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertEquals(1, measures.size());
 		MacraMeasure measure = measures.get(0);
 		assertEquals(1L, measure.getId().longValue());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -565,9 +586,5 @@ public class CertifiedProductManagerTest extends TestCase {
 		List<MacraMeasure> measures = cert.getG1MacraMeasures();
 		assertNotNull(measures);
 		assertEquals(0, measures.size());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 }
-
-

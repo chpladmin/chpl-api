@@ -812,7 +812,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		//change the status of the related developer
 		CertificationStatusDTO updatedCertificationStatus = certStatusDao.getById(dto.getCertificationStatusId());
 		if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString()) || 
-			updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString())) {
+			updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString())|| 
+			updatedCertificationStatus.getStatus().equals(CertificationStatusType.WithdrawnByDeveloperUnderReview.toString())) {
 			
 			//get developer
 			DeveloperDTO cpDeveloper = developerDao.getByVersion(dto.getProductVersionId());
@@ -821,9 +822,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				DeveloperStatusDTO devStatusDto = null;
 				if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
 					devStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
-				} else if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString())) {
+				} else if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString()) ||
+						updatedCertificationStatus.getStatus().equals(CertificationStatusType.WithdrawnByDeveloperUnderReview.toString())) {
 					devStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
-				}
+				} 
 				//update the developer status
 				if(devStatusDto == null) {
 					throw new EntityRetrievalException("Could not locate developer status for certification status " + updatedCertificationStatus.getStatus());
