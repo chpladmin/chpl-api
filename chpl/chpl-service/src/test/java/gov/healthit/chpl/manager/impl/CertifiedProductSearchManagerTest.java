@@ -1,5 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +22,8 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
+import gov.healthit.chpl.domain.search.BasicSearchResponse;
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import junit.framework.TestCase;
 
@@ -216,4 +221,30 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 	}
 	
+	@Test
+	@Transactional(readOnly = true)
+	public void testBasicSearch() {
+		BasicSearchResponse response = certifiedProductSearchManager.search();
+		
+		assertNotNull(response);
+		assertNotNull(response.getResults());
+		assertEquals(16, response.getResults().size());
+		
+		boolean checkedCriteria = false;
+		boolean checkedCqms = false;
+		for(CertifiedProductBasicSearchResult result : response.getResults()) {
+			if(result.getId().longValue() == 1L) {
+				checkedCriteria = true;
+				assertNotNull(result.getCriteriaMet().size());
+				assertEquals(4, result.getCriteriaMet().size());
+			}
+			if(result.getId().longValue() == 2L) {
+				checkedCqms = true;
+				assertNotNull(result.getCqmsMet().size());
+				assertEquals(2, result.getCqmsMet().size());
+			}
+		}
+		assertTrue(checkedCriteria);
+		assertTrue(checkedCqms);
+	}
 }

@@ -39,6 +39,7 @@ import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
+import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -77,6 +78,17 @@ public class SearchViewController {
 	
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
+	@ApiOperation(value="Get basic data about all certified products in the system.", 
+			notes="")
+	@RequestMapping(value="/certified_products", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody BasicSearchResponse getAllCertifiedProducts() {
+		
+		BasicSearchResponse response = certifiedProductSearchManager.search();
+		return response;
+	}
+	
+	
 	@ApiOperation(value="Get all data about a certified product.", 
 			notes="")
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
