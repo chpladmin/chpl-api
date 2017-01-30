@@ -261,7 +261,6 @@ public class DeveloperManagerTest extends TestCase {
 	@Test
 	public void testGetDecertifiedDevelopers() throws EntityRetrievalException {
 		DecertifiedDeveloperResults results = developerManager.getDecertifiedDevelopers();
-		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + results.getDecertifiedDeveloperResults().size(), 
-				results.getDecertifiedDeveloperResults().size() == 2);
+		assertEquals(1, results.getDecertifiedDeveloperResults().size());
 	}
 }
