@@ -10,6 +10,7 @@ _Date TBD_
 * Add API call for decertified certified products with inactive certificates
 * Update API call for decertified certified products to not include products with certification status 'Withdrawn by Developer'
 * When a Certified Product is marked as "Withdrawn by Developer under Surveillance/Review" by an ONC_ADMIN or ACB_ADMIN, update Developer Status to "Under Certification Ban by ONC"
+* Exclude Developers with status "Suspended by ONC" from the /decertifications/developers API call
 
 ---
 
