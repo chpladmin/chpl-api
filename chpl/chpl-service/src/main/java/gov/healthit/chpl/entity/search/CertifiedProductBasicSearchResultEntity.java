@@ -43,6 +43,9 @@ public class CertifiedProductBasicSearchResultEntity {
 	@Column(name = "vendor_name")
 	private String developer;
 	
+	@Column(name = "owner_history")
+	private String previousDevelopers;
+	
 	@Column( name = "certification_date")
 	private Date certificationDate;
 	
@@ -201,5 +204,13 @@ public class CertifiedProductBasicSearchResultEntity {
 
 	public void setCqms(String cqms) {
 		this.cqms = cqms;
+	}
+
+	public String getPreviousDevelopers() {
+		return previousDevelopers;
+	}
+
+	public void setPreviousDevelopers(String previousDevelopers) {
+		this.previousDevelopers = previousDevelopers;
 	}
 }

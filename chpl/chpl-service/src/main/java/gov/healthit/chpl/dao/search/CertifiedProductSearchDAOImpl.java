@@ -8,11 +8,9 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
@@ -20,9 +18,7 @@ import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 @Repository("certifiedProductSearchDAO")
 public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
-	
-	@Autowired private CertificationResultDAO certDao;
-	
+		
 	public List<CertifiedProductBasicSearchResult> getAllCertifiedProducts() {
 		Query query = entityManager.createQuery("SELECT cps "
 				+ "FROM CertifiedProductBasicSearchResultEntity cps "
@@ -55,8 +51,17 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 			result.setHasOpenSurveillance(dbResult.getHasOpenSurveillance());
 			result.setHasOpenNonconformities(dbResult.getHasOpenNonconformities());
 			
+			if(!StringUtils.isEmpty(dbResult.getPreviousDevelopers())) {
+				String[] splitDevelopers = dbResult.getPreviousDevelopers().split(";");
+				if(splitDevelopers != null && splitDevelopers.length > 0) {
+					for(int i = 0; i < splitDevelopers.length; i++) {
+						result.getPreviousDevelopers().add(splitDevelopers[i].trim());
+					}
+				}
+			}
+			
 			if(!StringUtils.isEmpty(dbResult.getCerts())) {
-				String[] splitCerts = dbResult.getCerts().split(",");
+				String[] splitCerts = dbResult.getCerts().split(";");
 				if(splitCerts != null && splitCerts.length > 0) {
 					for(int i = 0; i < splitCerts.length; i++) {
 						result.getCriteriaMet().add(splitCerts[i].trim());
@@ -65,7 +70,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 			}
 			
 			if(!StringUtils.isEmpty(dbResult.getCqms())) {
-				String[] splitCqms = dbResult.getCqms().split(",");
+				String[] splitCqms = dbResult.getCqms().split(";");
 				if(splitCqms != null && splitCqms.length > 0) {
 					for(int i = 0; i < splitCqms.length; i++) {
 						result.getCqmsMet().add(splitCqms[i].trim());

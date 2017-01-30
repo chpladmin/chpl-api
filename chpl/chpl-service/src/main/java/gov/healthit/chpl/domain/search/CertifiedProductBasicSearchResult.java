@@ -22,10 +22,12 @@ public class CertifiedProductBasicSearchResult implements Serializable {
 	private boolean hasOpenSurveillance;
 	private boolean hasOpenNonconformities;
 	
+	private List<String> previousDevelopers; //list of previous developer names that owned the product
 	private List<String> criteriaMet; //list of criteria numbers
 	private List<String> cqmsMet; //map of cqm number to list of versions that were met
 	
 	public CertifiedProductBasicSearchResult() {
+		previousDevelopers = new ArrayList<String>();
 		criteriaMet = new ArrayList<String>();
 		cqmsMet = new ArrayList<String>();
 	}
@@ -133,5 +135,13 @@ public class CertifiedProductBasicSearchResult implements Serializable {
 
 	public void setAcbCertificationId(String acbCertificationId) {
 		this.acbCertificationId = acbCertificationId;
+	}
+
+	public List<String> getPreviousDevelopers() {
+		return previousDevelopers;
+	}
+
+	public void setPreviousDevelopers(List<String> previousDevelopers) {
+		this.previousDevelopers = previousDevelopers;
 	}
 }
