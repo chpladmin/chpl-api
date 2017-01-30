@@ -327,7 +327,6 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Transactional(readOnly = true)
 	@Cacheable("getDecertifiedDevelopers")
 	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException{
-		List<DecertifiedDeveloperDTO> developerDecertifiedDTOList = new ArrayList<DecertifiedDeveloperDTO>();
 		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
