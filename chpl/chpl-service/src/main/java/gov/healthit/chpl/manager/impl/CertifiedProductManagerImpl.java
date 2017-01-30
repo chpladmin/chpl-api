@@ -12,6 +12,7 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -283,7 +284,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
-	@ClearAllCaches
+	@CacheEvict(value = {"allDevelopers", "allDevelopersIncludingDeleted", "developerNames", "productNames", "findByStatus", "search", "countMultiFilterSearchResults"})
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
@@ -794,7 +795,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	@ClearAllCaches
+	@CacheEvict(value = {"allDevelopers", "allDevelopersIncludingDeleted", "developerNames", "search", "countMultiFilterSearchResults", "getDecertifiedDevelopers"})
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) 
 			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {		
 		//if the updated certification status was suspended by onc or terminated by onc, 
@@ -1064,7 +1065,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	@Transactional(readOnly = false)
-	@ClearAllCaches
+	@CacheEvict(value = "getDecertifiedDevelopers")
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, IOException {
 		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();

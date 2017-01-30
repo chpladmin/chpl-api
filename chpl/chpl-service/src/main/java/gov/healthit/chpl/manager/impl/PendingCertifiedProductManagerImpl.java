@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
@@ -207,7 +208,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	@ClearAllCaches
+	@CacheEvict(value = "findByStatus")
 	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
@@ -240,7 +241,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
-	@ClearAllCaches
+	@CacheEvict(value = "findByStatus")
 	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
@@ -256,7 +257,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
-	@ClearAllCaches
+	@CacheEvict(value = "findByStatus")
 	public void confirm(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);

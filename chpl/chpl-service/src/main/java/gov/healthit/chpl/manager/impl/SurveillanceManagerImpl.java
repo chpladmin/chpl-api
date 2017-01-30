@@ -10,6 +10,7 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -116,7 +117,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
+	@CacheEvict(value = {"search", "countMultiFilterSearchResults"})
 	public Long createSurveillance(Long acbId, Surveillance surv) {
 		Long insertedId = null;
 		
@@ -153,7 +154,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
+	@CacheEvict(value = {"search", "countMultiFilterSearchResults"})
 	public void updateSurveillance(Long acbId, Surveillance surv) {
 		try {
 			survDao.updateSurveillance(surv);
@@ -168,7 +169,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
+	@CacheEvict(value = {"search", "countMultiFilterSearchResults"})
 	public void deleteSurveillance(Long acbId, Long survId) {		
 		Surveillance surv = new Surveillance();
 		surv.setId(survId);

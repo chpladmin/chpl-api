@@ -8,6 +8,7 @@ import javax.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -73,7 +74,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
+	@CacheEvict(value = {"search", "countMultiFilterSearchResults"})
 	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		//check that the developer of this version is Active
 		if(dto.getProductId() == null) {
@@ -101,7 +102,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
+	@CacheEvict(value = {"search", "countMultiFilterSearchResults"})
 	public ProductVersionDTO update(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		ProductVersionDTO before = dao.getById(dto.getId());
@@ -126,7 +127,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@ClearAllCaches
+	@CacheEvict(value = {"search", "countMultiFilterSearchResults"})
 	public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
