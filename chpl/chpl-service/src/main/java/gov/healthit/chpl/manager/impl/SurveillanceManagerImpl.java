@@ -135,7 +135,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
 	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc) {
 		Long insertedId = null;
 		
@@ -187,7 +186,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
 	public void deleteNonconformityDocument(Long acbId, Long documentId) {
 		try {
 			survDao.deleteNonconformityDocument(documentId);
@@ -232,7 +230,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	@ClearAllCaches
 	public Long createPendingSurveillance(Long acbId, Surveillance surv) {	
 		Long insertedId = null;
 		
@@ -249,7 +246,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	@ClearAllCaches
 	public void deletePendingSurveillance(Long acbId, Long survId) {		
 		Surveillance surv = new Surveillance();
 		surv.setId(survId);
@@ -264,7 +260,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
-	@ClearAllCaches
 	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId)
 		throws EntityNotFoundException, AccessDeniedException {
 		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId);

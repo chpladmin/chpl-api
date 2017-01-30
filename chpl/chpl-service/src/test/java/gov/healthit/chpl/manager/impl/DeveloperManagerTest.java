@@ -264,4 +264,5 @@ public class DeveloperManagerTest extends TestCase {
 		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + results.getDecertifiedDeveloperResults().size(), 
 				results.getDecertifiedDeveloperResults().size() == 2);
 	}
+	
 }

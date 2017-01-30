@@ -199,53 +199,6 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		return created;
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@Transactional(readOnly = false)
-	@ClearAllCaches
-	public void delete(DeveloperDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		DeveloperDTO toDelete = developerDao.getById(dto.getId());
-		
-		if(toDelete.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-		
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() > 0) {
-			for(CertificationBodyDTO acb : availableAcbs) {
-				developerDao.deleteTransparencyMapping(dto.getId(), acb.getId());
-			}
-		}
-		developerDao.delete(dto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, toDelete.getId(), "Developer "+toDelete.getName()+" has been deleted.", toDelete, null);
-		
-	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@Transactional(readOnly = false)
-	@ClearAllCaches
-	public void delete(Long developerId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		DeveloperDTO toDelete = developerDao.getById(developerId);
-		
-		if(toDelete.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-		
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() > 0) {
-			for(CertificationBodyDTO acb : availableAcbs) {
-				developerDao.deleteTransparencyMapping(developerId, acb.getId());
-			}
-		}
-		developerDao.delete(developerId);
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, toDelete.getId(), "Developer "+toDelete.getName()+" has been deleted.", toDelete, null);
-	}
-	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
@@ -327,7 +280,6 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Transactional(readOnly = true)
 	@Cacheable("getDecertifiedDevelopers")
 	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException{
-		List<DecertifiedDeveloperDTO> developerDecertifiedDTOList = new ArrayList<DecertifiedDeveloperDTO>();
 		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();

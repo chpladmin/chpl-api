@@ -15,8 +15,6 @@ public interface DeveloperManager {
 	public DeveloperDTO getById(Long id) throws EntityRetrievalException;
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public void delete(DeveloperDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public void delete(Long developerId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public void checkSuspiciousActivity(DeveloperDTO original, DeveloperDTO changed);
 	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException;

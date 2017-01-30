@@ -132,7 +132,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	
 	@Override
 	@Transactional
-	@Cacheable("cpDetailsSearch")
 	public List<CertifiedProductDetailsDTO> search(
 			SearchRequest searchRequest) {
 		

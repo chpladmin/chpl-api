@@ -135,17 +135,4 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null, result);
 		return result;
 	}
-	
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
-	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
-		CertificationIdDTO result = CertificationIdDAO.create(dto);
-		
-		String activityMsg = "CertificationId "+dto.getCertificationId()+" was created.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null, result);
-		return result;
-	}
 }

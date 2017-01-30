@@ -56,99 +56,9 @@ public class CertificationResultManagerImpl implements
 	@Autowired private TestProcedureDAO testProcedureDAO;
 	@Autowired private TestFunctionalityDAO testFunctionalityDAO;
 	@Autowired private TestParticipantDAO testParticipantDAO;
-	@Autowired private EducationTypeDAO educationTypeDAO;
 	@Autowired private TestTaskDAO testTaskDAO;
 	@Autowired private UcdProcessDAO ucdDao;
 	@Autowired private MacraMeasureDAO mmDao;
-
-	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
-			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
-			+ ")")
-	@Transactional(readOnly = false)
-	@ClearAllCaches
-	public CertificationResultDTO create(Long acbId, CertificationResultDTO toCreate) throws EntityRetrievalException, EntityCreationException {
-		CertificationResultDTO created = certResultDAO.create(toCreate);
-		
-		if(toCreate.getUcdProcesses() != null && toCreate.getUcdProcesses().size() > 0) {
-			for(CertificationResultUcdProcessDTO ucdMapping : toCreate.getUcdProcesses()) {
-				ucdMapping.setCertificationResultId(created.getId());
-				CertificationResultUcdProcessDTO createdMapping = certResultDAO.addUcdProcessMapping(ucdMapping);
-				created.getUcdProcesses().add(createdMapping);	
-			}
-		}
-		
-		for (CertificationResultAdditionalSoftwareDTO asMapping : toCreate.getAdditionalSoftware()){
-			asMapping.setCertificationResultId(created.getId());
-			CertificationResultAdditionalSoftwareDTO createdMapping = certResultDAO.addAdditionalSoftwareMapping(asMapping);
-			created.getAdditionalSoftware().add(createdMapping);
-		}
-		
-		for (CertificationResultTestStandardDTO mapping : toCreate.getTestStandards()){
-			if(mapping.getTestStandardId() == null) {
-				TestStandardDTO newTestStandard = new TestStandardDTO();
-				newTestStandard.setDescription(mapping.getTestStandardDescription());
-				newTestStandard = testStandardDAO.create(newTestStandard);
-				mapping.setTestStandardId(newTestStandard.getId());
-			}
-			CertificationResultTestStandardDTO mappingToCreate = new CertificationResultTestStandardDTO();
-			mappingToCreate.setCertificationResultId(created.getId());
-			mappingToCreate.setTestStandardId(mapping.getTestStandardId());
-			CertificationResultTestStandardDTO createdMapping = certResultDAO.addTestStandardMapping(mappingToCreate);
-			created.getTestStandards().add(createdMapping);
-		}
-		
-		for (CertificationResultTestToolDTO mapping : toCreate.getTestTools()){
-			if(mapping.getTestToolId() == null) {
-				TestToolDTO newTestTool = new TestToolDTO();
-				newTestTool.setName(mapping.getTestToolName());
-				newTestTool = testToolDAO.create(newTestTool);
-				mapping.setTestToolId(newTestTool.getId());
-			}
-			CertificationResultTestToolDTO mappingToCreate = new CertificationResultTestToolDTO();
-			mappingToCreate.setCertificationResultId(created.getId());
-			mappingToCreate.setTestToolId(mapping.getTestToolId());
-			mappingToCreate.setTestToolVersion(mapping.getTestToolVersion());
-			CertificationResultTestToolDTO createdMapping = certResultDAO.addTestToolMapping(mappingToCreate);
-			created.getTestTools().add(createdMapping);
-		}
-		
-		for (CertificationResultTestDataDTO mapping : toCreate.getTestData()){
-			mapping.setCertificationResultId(created.getId());
-			CertificationResultTestDataDTO createdMapping = certResultDAO.addTestDataMapping(mapping);
-			created.getTestData().add(createdMapping);
-		}
-		
-		for (CertificationResultTestProcedureDTO mapping : toCreate.getTestProcedures()){
-			if(mapping.getTestProcedureId() == null) {
-				TestProcedureDTO newTestProcedure = new TestProcedureDTO();
-				newTestProcedure.setVersion(mapping.getTestProcedureVersion());
-				newTestProcedure = testProcedureDAO.create(newTestProcedure);
-				mapping.setTestProcedureId(newTestProcedure.getId());
-			}
-			CertificationResultTestProcedureDTO mappingToCreate = new CertificationResultTestProcedureDTO();
-			mappingToCreate.setCertificationResultId(created.getId());
-			mappingToCreate.setTestProcedureId(mapping.getTestProcedureId());
-			CertificationResultTestProcedureDTO createdMapping = certResultDAO.addTestProcedureMapping(mappingToCreate);
-			created.getTestProcedures().add(createdMapping);
-		}
-		
-		for (CertificationResultTestFunctionalityDTO mapping : toCreate.getTestFunctionality()){
-			if(mapping.getTestFunctionalityId() == null) {
-				TestFunctionalityDTO newTestFunctionality = new TestFunctionalityDTO();
-				newTestFunctionality.setName(mapping.getTestFunctionalityName());
-				newTestFunctionality = testFunctionalityDAO.create(newTestFunctionality);
-				mapping.setTestFunctionalityId(newTestFunctionality.getId());
-			}
-			CertificationResultTestFunctionalityDTO mappingToCreate = new CertificationResultTestFunctionalityDTO();
-			mappingToCreate.setCertificationResultId(created.getId());
-			mappingToCreate.setTestFunctionalityId(mapping.getTestFunctionalityId());
-			CertificationResultTestFunctionalityDTO createdMapping = certResultDAO.addTestFunctionalityMapping(mappingToCreate);
-			created.getTestFunctionality().add(createdMapping);
-		}
-		return created;
-	}
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -156,7 +66,6 @@ public class CertificationResultManagerImpl implements
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	@ClearAllCaches
 	public CertificationResultDTO update(Long acbId, CertificationResultDTO toUpdate) throws EntityRetrievalException, EntityCreationException {
 		CertificationResultDTO updated = certResultDAO.update(toUpdate);
 		

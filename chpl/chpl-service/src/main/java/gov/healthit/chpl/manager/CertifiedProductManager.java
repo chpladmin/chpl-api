@@ -33,7 +33,6 @@ public interface CertifiedProductManager {
 	
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) throws EntityRetrievalException;
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	
