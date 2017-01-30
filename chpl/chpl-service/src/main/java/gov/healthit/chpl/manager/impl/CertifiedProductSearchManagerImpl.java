@@ -27,6 +27,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	
 	@Transactional(readOnly = true)
 	@Override
+	@Cacheable("basicsearch")
 	public BasicSearchResponse search() {
 		List<CertifiedProductBasicSearchResult> results = basicCpSearchDao.getAllCertifiedProducts();
 		BasicSearchResponse response = new BasicSearchResponse();

@@ -14,13 +14,8 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
-import gov.healthit.chpl.entity.CertificationResultEntity;
-import gov.healthit.chpl.entity.search.BasicCQMResultEntity;
-import gov.healthit.chpl.entity.search.BasicCertificationResultEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
-import gov.healthit.chpl.manager.impl.InvitationManagerImpl;
 
 @Repository("certifiedProductSearchDAO")
 public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
@@ -31,12 +26,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 	public List<CertifiedProductBasicSearchResult> getAllCertifiedProducts() {
 		Query query = entityManager.createQuery("SELECT cps "
 				+ "FROM CertifiedProductBasicSearchResultEntity cps "
-//				+ "LEFT JOIN FETCH cps.certificationResults certResults "
-//				+ "LEFT JOIN FETCH certResults.certificationCriterion cert "
-//				+ "LEFT JOIN FETCH cert.certificationEdition "
-//				+ "LEFT JOIN FETCH cps.cqmResults cqmResults "
-//				+ "LEFT JOIN FETCH cqmResults.cqmCriterion cqm "
-//				+ "LEFT JOIN FETCH cqm.cqmVersion "
 				, CertifiedProductBasicSearchResultEntity.class);
 		
 		Date startDate = new Date();
@@ -55,6 +44,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 			result.setEdition(dbResult.getEdition());
 			result.setAtl(dbResult.getAtlName());
 			result.setAcb(dbResult.getAcbName());
+			result.setAcbCertificationId(dbResult.getAcbCertificationId());
 			result.setPracticeType(dbResult.getPracticeTypeName());
 			result.setDeveloper(dbResult.getDeveloper());
 			result.setProduct(dbResult.getProduct());

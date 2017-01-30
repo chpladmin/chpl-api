@@ -1,17 +1,11 @@
 package gov.healthit.chpl.entity.search;
 
 import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "certified_product_search")
@@ -34,7 +28,10 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "certification_body_name")
     private String acbName;
     
-    @Column(name = "practice_type_name")
+    @Column(name = "acb_certification_id")
+    private String acbCertificationId;
+
+	@Column(name = "practice_type_name")
     private String practiceTypeName;
     
 	@Column( name = "product_version")
@@ -118,6 +115,14 @@ public class CertifiedProductBasicSearchResultEntity {
 		this.practiceTypeName = practiceTypeName;
 	}
 
+    public String getAcbCertificationId() {
+		return acbCertificationId;
+	}
+
+	public void setAcbCertificationId(String acbCertificationId) {
+		this.acbCertificationId = acbCertificationId;
+	}
+	
 	public String getVersion() {
 		return version;
 	}

@@ -36,8 +36,6 @@
 		<class>gov.healthit.chpl.entity.CertificationStatusEventEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity</class>
-		<class>gov.healthit.chpl.entity.search.BasicCertificationResultEntity</class>
-		<class>gov.healthit.chpl.entity.search.BasicCQMResultEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity</class>

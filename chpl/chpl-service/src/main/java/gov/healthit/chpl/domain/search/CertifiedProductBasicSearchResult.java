@@ -11,6 +11,7 @@ public class CertifiedProductBasicSearchResult implements Serializable {
 	private String edition;
 	private String atl;
 	private String acb;
+	private String acbCertificationId;
 	private String practiceType;
 	private String developer;
 	private String product;
@@ -124,5 +125,13 @@ public class CertifiedProductBasicSearchResult implements Serializable {
 	}
 	public void setCqmsMet(List<String> cqmsMet) {
 		this.cqmsMet = cqmsMet;
+	}
+
+	public String getAcbCertificationId() {
+		return acbCertificationId;
+	}
+
+	public void setAcbCertificationId(String acbCertificationId) {
+		this.acbCertificationId = acbCertificationId;
 	}
 }
