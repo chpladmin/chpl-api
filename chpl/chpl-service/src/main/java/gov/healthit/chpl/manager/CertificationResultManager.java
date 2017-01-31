@@ -18,7 +18,6 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 
 public interface CertificationResultManager {
 	
-	public CertificationResultDTO create(Long acbId, CertificationResultDTO result) throws EntityRetrievalException, EntityCreationException;
 	public CertificationResultDTO update(Long acbId, CertificationResultDTO result) throws EntityRetrievalException, EntityCreationException;
 
 	

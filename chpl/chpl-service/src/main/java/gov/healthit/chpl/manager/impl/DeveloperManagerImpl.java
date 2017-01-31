@@ -10,6 +10,7 @@ import javax.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,7 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.ClearAllCaches;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -60,7 +61,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	@Cacheable("allDevelopers")
+	@Cacheable(CacheNames.allDevelopers)
 	public List<DeveloperDTO> getAll() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAll();
 		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
@@ -70,7 +71,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@Cacheable("allDevelopersIncludingDeleted")
+	@Cacheable(CacheNames.allDevelopersIncludingDeleted)
 	public List<DeveloperDTO> getAllIncludingDeleted() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAllIncludingDeleted();
 		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
@@ -106,7 +107,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.search, 
+			CacheNames.countMultiFilterSearchResults, CacheNames.getDecertifiedDevelopers})
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO beforeDev = getById(developer.getId());
@@ -178,7 +180,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.search, 
+			CacheNames.countMultiFilterSearchResults})
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		DeveloperDTO created = developerDao.create(dto);
@@ -199,57 +202,11 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		return created;
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@Transactional(readOnly = false)
-	@ClearAllCaches
-	public void delete(DeveloperDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		DeveloperDTO toDelete = developerDao.getById(dto.getId());
-		
-		if(toDelete.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-		
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() > 0) {
-			for(CertificationBodyDTO acb : availableAcbs) {
-				developerDao.deleteTransparencyMapping(dto.getId(), acb.getId());
-			}
-		}
-		developerDao.delete(dto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, toDelete.getId(), "Developer "+toDelete.getName()+" has been deleted.", toDelete, null);
-		
-	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@Transactional(readOnly = false)
-	@ClearAllCaches
-	public void delete(Long developerId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		DeveloperDTO toDelete = developerDao.getById(developerId);
-		
-		if(toDelete.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-		
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() > 0) {
-			for(CertificationBodyDTO acb : availableAcbs) {
-				developerDao.deleteTransparencyMapping(developerId, acb.getId());
-			}
-		}
-		developerDao.delete(developerId);
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, toDelete.getId(), "Developer "+toDelete.getName()+" has been deleted.", toDelete, null);
-	}
-	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.search, 
+			CacheNames.countMultiFilterSearchResults, CacheNames.getDecertifiedDevelopers})
 	public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
@@ -325,7 +282,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	}
 	
 	@Transactional(readOnly = true)
-	@Cacheable("getDecertifiedDevelopers")
+	@Cacheable(CacheNames.getDecertifiedDevelopers)
 	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException{
 		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();

@@ -8,6 +8,7 @@ import javax.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.caching.ClearAllCaches;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -73,7 +74,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		//check that the developer of this version is Active
 		if(dto.getProductId() == null) {
@@ -101,7 +102,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public ProductVersionDTO update(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		ProductVersionDTO before = dao.getById(dto.getId());
@@ -122,55 +123,11 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		checkSuspiciousActivity(before, after);
 		return after;
 	}
-
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
-	public void delete(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		ProductVersionDTO before = dao.getById(dto.getId());
-		
-		//check that the developer of this version is Active	
-		DeveloperDTO dev = devDao.getByVersion(before.getId());
-		if(dev == null) {
-			throw new EntityRetrievalException("Cannot find developer of version id " + before.getId());
-		}
-		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "The version " + before.getVersion()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-		
-		delete(dto.getId());
-	}
-
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
-	public void delete(Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		ProductVersionDTO toDelete = dao.getById(id);
-		//check that the developer of this version is Active	
-		DeveloperDTO dev = devDao.getByVersion(toDelete.getId());
-		if(dev == null) {
-			throw new EntityRetrievalException("Cannot find developer of version id " + toDelete.getId());
-		}
-		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "The version " + toDelete.getVersion()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-				
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, toDelete.getId(), "Product Version "+toDelete.getVersion()+" deleted for product "+toDelete.getProductId(), toDelete, null);
-		dao.delete(id);
-	}
-	
 	
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();

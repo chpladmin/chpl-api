@@ -20,6 +20,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
@@ -132,7 +133,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	
 	@Override
 	@Transactional
-	@Cacheable("cpDetailsSearch")
 	public List<CertifiedProductDetailsDTO> search(
 			SearchRequest searchRequest) {
 		
@@ -395,7 +395,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	@Override
 	@Transactional
-	@Cacheable("countMultiFilterSearchResults")
+	@Cacheable(CacheNames.countMultiFilterSearchResults)
 	public Long countMultiFilterSearchResults(SearchRequest searchRequest) {
 		
 		Query query = getCountQueryForSearchFilters(searchRequest);

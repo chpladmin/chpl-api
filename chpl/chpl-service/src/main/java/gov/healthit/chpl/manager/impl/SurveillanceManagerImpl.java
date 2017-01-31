@@ -10,6 +10,7 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.ClearAllCaches;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
@@ -116,7 +117,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public Long createSurveillance(Long acbId, Surveillance surv) {
 		Long insertedId = null;
 		
@@ -135,7 +136,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
 	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc) {
 		Long insertedId = null;
 		
@@ -154,7 +154,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public void updateSurveillance(Long acbId, Surveillance surv) {
 		try {
 			survDao.updateSurveillance(surv);
@@ -169,7 +169,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public void deleteSurveillance(Long acbId, Long survId) {		
 		Surveillance surv = new Surveillance();
 		surv.setId(survId);
@@ -187,7 +187,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@ClearAllCaches
 	public void deleteNonconformityDocument(Long acbId, Long documentId) {
 		try {
 			survDao.deleteNonconformityDocument(documentId);
@@ -232,7 +231,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	@ClearAllCaches
 	public Long createPendingSurveillance(Long acbId, Surveillance surv) {	
 		Long insertedId = null;
 		
@@ -249,7 +247,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	@ClearAllCaches
 	public void deletePendingSurveillance(Long acbId, Long survId) {		
 		Surveillance surv = new Surveillance();
 		surv.setId(survId);
@@ -264,7 +261,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
-	@ClearAllCaches
 	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId)
 		throws EntityNotFoundException, AccessDeniedException {
 		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId);

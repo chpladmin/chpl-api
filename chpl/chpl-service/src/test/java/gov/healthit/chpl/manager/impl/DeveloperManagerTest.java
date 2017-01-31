@@ -263,4 +263,5 @@ public class DeveloperManagerTest extends TestCase {
 		DecertifiedDeveloperResults results = developerManager.getDecertifiedDevelopers();
 		assertEquals(1, results.getDecertifiedDeveloperResults().size());
 	}
+	
 }

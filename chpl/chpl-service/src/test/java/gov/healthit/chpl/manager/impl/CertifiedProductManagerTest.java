@@ -114,7 +114,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
 		cp.setCertificationStatusId(stat.getId());
-		cpManager.update(1L, cp);
+		CertifiedProductSearchDetails cpDetails = null;
+		cpManager.update(1L, cp, cpDetails);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -134,7 +135,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
-			cpManager.update(1L, cp);
+			CertifiedProductSearchDetails cpDetails = null;
+			cpManager.update(1L, cp, cpDetails);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -158,7 +160,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
-			cpManager.update(1L, cp);
+			CertifiedProductSearchDetails cpDetails = null;
+			cpManager.update(1L, cp, cpDetails);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -180,7 +183,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
 		cp.setCertificationStatusId(stat.getId());
-		cpManager.update(1L, cp);
+		CertifiedProductSearchDetails cpDetails = null;
+		cpManager.update(1L, cp, cpDetails);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -198,7 +202,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
 		cp.setCertificationStatusId(stat.getId());
-		cpManager.update(1L, cp);
+		CertifiedProductSearchDetails cpDetails = null;
+		cpManager.update(1L, cp, cpDetails);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -218,7 +223,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
-			cpManager.update(1L, cp);
+			CertifiedProductSearchDetails cpDetails = null;
+			cpManager.update(1L, cp, cpDetails);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
