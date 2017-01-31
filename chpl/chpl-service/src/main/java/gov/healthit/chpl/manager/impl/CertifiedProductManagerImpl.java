@@ -795,7 +795,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {"allDevelopers", "allDevelopersIncludingDeleted", "developerNames", "search", "countMultiFilterSearchResults", "getDecertifiedDevelopers"})
+	@CacheEvict(value = {"allDevelopers", "allDevelopersIncludingDeleted", "search", "countMultiFilterSearchResults"})
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) 
 			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {		
 		//if the updated certification status was suspended by onc or terminated by onc, 
