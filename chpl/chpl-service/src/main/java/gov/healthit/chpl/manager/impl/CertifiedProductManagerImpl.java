@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -288,7 +289,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {"allDevelopers", "allDevelopersIncludingDeleted", "developerNames", "productNames", "findByStatus", "search", "countMultiFilterSearchResults"})
+	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.productNames, CacheNames.findByStatus, 
+			CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
@@ -799,7 +801,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {"allDevelopers", "allDevelopersIncludingDeleted", "search", "countMultiFilterSearchResults"})
+	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, CertifiedProductSearchDetails updateRequest) 
 			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {		
 		//if the updated certification status was suspended by onc or terminated by onc, 
@@ -1159,7 +1161,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = "getDecertifiedDevelopers")
+	@CacheEvict(value = CacheNames.getDecertifiedDevelopers)
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, IOException {
 		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();

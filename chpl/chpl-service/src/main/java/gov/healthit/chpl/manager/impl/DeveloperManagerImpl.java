@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -106,7 +107,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {"allDevelopers", "allDevelopersIncludingDeleted", "developerNames", "search", "countMultiFilterSearchResults", "getDecertifiedDevelopers"})
+	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.search, 
+			CacheNames.countMultiFilterSearchResults, CacheNames.getDecertifiedDevelopers})
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO beforeDev = getById(developer.getId());
@@ -178,7 +180,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {"allDevelopers", "allDevelopersIncludingDeleted", "developerNames", "search", "countMultiFilterSearchResults"})
+	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.search, 
+			CacheNames.countMultiFilterSearchResults})
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		DeveloperDTO created = developerDao.create(dto);
@@ -202,7 +205,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {"allDevelopers", "allDevelopersIncludingDeleted", "developerNames", "search", "countMultiFilterSearchResults", "getDecertifiedDevelopers"})
+	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.search, 
+			CacheNames.countMultiFilterSearchResults, CacheNames.getDecertifiedDevelopers})
 	public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
