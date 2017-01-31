@@ -52,14 +52,17 @@ public class CertifiedProductBasicSearchResultEntity {
 	@Column( name = "certification_status_name")
 	private String certificationStatus;
 	
-	@Column(name = "has_had_surveillance")
-	private Boolean hasHadSurveillance;
-	
     @Column(name = "has_open_surveillance")
     private Boolean hasOpenSurveillance;
+    
+    @Column(name = "has_closed_surveillance")
+    private Boolean hasClosedSurveillance;
 
     @Column(name = "has_open_nonconformities")
     private Boolean hasOpenNonconformities;
+    
+    @Column(name = "has_closed_nonconformities")
+    private Boolean hasClosedNonconformities;
   
     @Column(name = "certs")
     private String certs; // comma-separated list of all certification criteria met by the certified product
@@ -166,14 +169,6 @@ public class CertifiedProductBasicSearchResultEntity {
 		this.certificationStatus = certificationStatus;
 	}
 
-	public Boolean getHasHadSurveillance() {
-		return hasHadSurveillance;
-	}
-
-	public void setHasHadSurveillance(Boolean hasHadSurveillance) {
-		this.hasHadSurveillance = hasHadSurveillance;
-	}
-
 	public Boolean getHasOpenSurveillance() {
 		return hasOpenSurveillance;
 	}
@@ -212,5 +207,21 @@ public class CertifiedProductBasicSearchResultEntity {
 
 	public void setPreviousDevelopers(String previousDevelopers) {
 		this.previousDevelopers = previousDevelopers;
+	}
+
+	public Boolean getHasClosedSurveillance() {
+		return hasClosedSurveillance;
+	}
+
+	public void setHasClosedSurveillance(Boolean hasClosedSurveillance) {
+		this.hasClosedSurveillance = hasClosedSurveillance;
+	}
+
+	public Boolean getHasClosedNonconformities() {
+		return hasClosedNonconformities;
+	}
+
+	public void setHasClosedNonconformities(Boolean hasClosedNonconformities) {
+		this.hasClosedNonconformities = hasClosedNonconformities;
 	}
 }

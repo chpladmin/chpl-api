@@ -21,6 +21,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,7 +48,7 @@ public class CertifiedProductBasicSearchDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getAllCertifiedProducts() {
 		Date startDate = new Date();
-		List<CertifiedProductBasicSearchResult> results = cpSearchDao.getAllCertifiedProducts();
+		List<CertifiedProductFlatSearchResult> results = cpSearchDao.getAllCertifiedProducts();
 		Date endDate = new Date();
 		System.out.println("Search took " + ((endDate.getTime() - startDate.getTime())/1000) + " seconds");
 		
@@ -56,16 +57,20 @@ public class CertifiedProductBasicSearchDAOTest extends TestCase {
 		
 		boolean checkedCriteria = false;
 		boolean checkedCqms = false;
-		for(CertifiedProductBasicSearchResult result : results) {
+		for(CertifiedProductFlatSearchResult result : results) {
 			if(result.getId().longValue() == 1L) {
 				checkedCriteria = true;
-				assertNotNull(result.getCriteriaMet().size());
-				assertEquals(4, result.getCriteriaMet().size());
+				assertNotNull(result.getCriteriaMet());
+				assertTrue(result.getCriteriaMet().length() > 0);
+//				assertNotNull(result.getCriteriaMet());
+//				assertEquals(4, result.getCriteriaMet().size());
 			}
 			if(result.getId().longValue() == 2L) {
 				checkedCqms = true;
-				assertNotNull(result.getCqmsMet().size());
-				assertEquals(2, result.getCqmsMet().size());
+				assertNotNull(result.getCqmsMet());
+				assertTrue(result.getCqmsMet().length() > 0);
+//				assertNotNull(result.getCqmsMet());
+//				assertEquals(2, result.getCqmsMet().size());
 			}
 		}
 		assertTrue(checkedCriteria);

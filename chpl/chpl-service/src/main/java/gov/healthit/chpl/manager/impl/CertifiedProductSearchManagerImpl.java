@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 
@@ -27,11 +28,11 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	
 	@Transactional(readOnly = true)
 	@Override
-	@Cacheable("basicsearch")
+	@Cacheable("search")
 	public BasicSearchResponse search() {
-		List<CertifiedProductBasicSearchResult> results = basicCpSearchDao.getAllCertifiedProducts();
+		List<CertifiedProductFlatSearchResult> results = basicCpSearchDao.getAllCertifiedProducts();
 		BasicSearchResponse response = new BasicSearchResponse();
-		response.getResults().addAll(results);
+		response.setResults(results);
 		return response;
 	}
 	

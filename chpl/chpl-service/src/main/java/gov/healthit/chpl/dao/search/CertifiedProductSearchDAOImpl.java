@@ -9,17 +9,16 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Repository("certifiedProductSearchDAO")
 public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
 		
-	public List<CertifiedProductBasicSearchResult> getAllCertifiedProducts() {
+	public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts() {
 		Query query = entityManager.createQuery("SELECT cps "
 				+ "FROM CertifiedProductBasicSearchResultEntity cps "
 				, CertifiedProductBasicSearchResultEntity.class);
@@ -31,10 +30,11 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		return convert(results);
 	}
 	
-	private List<CertifiedProductBasicSearchResult> convert(List<CertifiedProductBasicSearchResultEntity> dbResults) {
-		List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>(dbResults.size());
+	private List<CertifiedProductFlatSearchResult> convert(List<CertifiedProductBasicSearchResultEntity> dbResults) {
+		List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>(dbResults.size());
 		for(CertifiedProductBasicSearchResultEntity dbResult : dbResults) {
-			CertifiedProductBasicSearchResult result = new CertifiedProductBasicSearchResult();
+			//CertifiedProductBasicSearchResult result = new CertifiedProductBasicSearchResult();
+			CertifiedProductFlatSearchResult result = new CertifiedProductFlatSearchResult();
 			result.setId(dbResult.getId());
 			result.setChplProductNumber(dbResult.getChplProductNumber());
 			result.setEdition(dbResult.getEdition());
@@ -47,36 +47,40 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 			result.setVersion(dbResult.getVersion());
 			result.setCertificationDate(dbResult.getCertificationDate().getTime());
 			result.setCertificationStatus(dbResult.getCertificationStatus());
-			result.setHasHadSurveillance(dbResult.getHasHadSurveillance());
 			result.setHasOpenSurveillance(dbResult.getHasOpenSurveillance());
+			result.setHasClosedSurveillance(dbResult.getHasClosedSurveillance());
 			result.setHasOpenNonconformities(dbResult.getHasOpenNonconformities());
+			result.setHasClosedNonconformities(dbResult.getHasClosedNonconformities());
+			result.setCriteriaMet(dbResult.getCerts());
+			result.setCqmsMet(dbResult.getCqms());
+			result.setPreviousDevelopers(dbResult.getPreviousDevelopers());
 			
-			if(!StringUtils.isEmpty(dbResult.getPreviousDevelopers())) {
-				String[] splitDevelopers = dbResult.getPreviousDevelopers().split(";");
-				if(splitDevelopers != null && splitDevelopers.length > 0) {
-					for(int i = 0; i < splitDevelopers.length; i++) {
-						result.getPreviousDevelopers().add(splitDevelopers[i].trim());
-					}
-				}
-			}
-			
-			if(!StringUtils.isEmpty(dbResult.getCerts())) {
-				String[] splitCerts = dbResult.getCerts().split(";");
-				if(splitCerts != null && splitCerts.length > 0) {
-					for(int i = 0; i < splitCerts.length; i++) {
-						result.getCriteriaMet().add(splitCerts[i].trim());
-					}
-				}
-			}
-			
-			if(!StringUtils.isEmpty(dbResult.getCqms())) {
-				String[] splitCqms = dbResult.getCqms().split(";");
-				if(splitCqms != null && splitCqms.length > 0) {
-					for(int i = 0; i < splitCqms.length; i++) {
-						result.getCqmsMet().add(splitCqms[i].trim());
-					}
-				}
-			}
+//			if(!StringUtils.isEmpty(dbResult.getPreviousDevelopers())) {
+//				String[] splitDevelopers = dbResult.getPreviousDevelopers().split("\u263A");
+//				if(splitDevelopers != null && splitDevelopers.length > 0) {
+//					for(int i = 0; i < splitDevelopers.length; i++) {
+//						result.getPreviousDevelopers().add(splitDevelopers[i].trim());
+//					}
+//				}
+//			}
+//			
+//			if(!StringUtils.isEmpty(dbResult.getCerts())) {
+//				String[] splitCerts = dbResult.getCerts().split("\u263A");
+//				if(splitCerts != null && splitCerts.length > 0) {
+//					for(int i = 0; i < splitCerts.length; i++) {
+//						result.getCriteriaMet().add(splitCerts[i].trim());
+//					}
+//				}
+//			}
+//			
+//			if(!StringUtils.isEmpty(dbResult.getCqms())) {
+//				String[] splitCqms = dbResult.getCqms().split("\u263A");
+//				if(splitCqms != null && splitCqms.length > 0) {
+//					for(int i = 0; i < splitCqms.length; i++) {
+//						result.getCqmsMet().add(splitCqms[i].trim());
+//					}
+//				}
+//			}
 			
 			results.add(result);
 		}
