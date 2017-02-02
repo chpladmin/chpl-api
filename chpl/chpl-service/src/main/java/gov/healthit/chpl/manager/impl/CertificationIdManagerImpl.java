@@ -76,7 +76,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	@Cacheable(CacheNames.allCertIds)
+	@Cacheable(CacheNames.ALL_CERT_IDS)
 	/**
 	 * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF || ROLE_CMS_STAFF
 	 */
@@ -91,7 +91,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 
 	@Override
 	@Transactional(readOnly = true)
-	@Cacheable(CacheNames.allCertIdsWithProducts)
+	@Cacheable(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS)
 	/**
 	 * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF
 	 */
@@ -126,7 +126,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {CacheNames.allCertIds, CacheNames.allCertIdsWithProducts})
+	@CacheEvict(value = {CacheNames.ALL_CERT_IDS, CacheNames.ALL_CERT_IDS_WITH_PRODUCTS}, allEntries=true)
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CertificationIdDTO result = CertificationIdDAO.create(productIds, year);

@@ -6,12 +6,10 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -295,7 +293,6 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		return dtos;
 	}
 	
-	@Cacheable(CacheNames.findByStatus)
 	@Transactional
 	public List<PendingCertifiedProductDTO> findByStatus(Long statusId) {
 		List<PendingCertifiedProductEntity> entities = getEntitiesByStatus(statusId);

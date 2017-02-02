@@ -282,7 +282,7 @@ public class CertifiedProductController {
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {		
 		List<PendingCertifiedProductDTO> allProductDtos = pcpManager.getPending();
-		
+				
 		List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
 		for(PendingCertifiedProductDTO product : allProductDtos) {
 			PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
@@ -290,7 +290,6 @@ public class CertifiedProductController {
 			pcpManager.addAllMeasuresToCertificationCriteria(pcpDetails);
 			result.add(pcpDetails);
 		}
-		
 		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
 		results.getPendingCertifiedProducts().addAll(result);
 		return results;
