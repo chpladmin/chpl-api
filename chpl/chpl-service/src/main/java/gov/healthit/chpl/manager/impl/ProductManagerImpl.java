@@ -8,6 +8,7 @@ import javax.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.caching.ClearAllCaches;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -72,7 +73,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.productNames, CacheNames.basicSearch, CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		//check that the developer of this product is Active
 		if(dto.getDeveloperId() == null) {
@@ -99,7 +100,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.productNames, CacheNames.basicSearch, CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductDTO beforeDTO = productDao.getById(dto.getId());
@@ -132,67 +133,11 @@ public class ProductManagerImpl implements ProductManager {
 		return result;
 		
 	}
-
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
-	public void delete(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		ProductDTO beforeDTO = productDao.getById(dto.getId());
-
-		//check that the developer of this product is Active
-		if(beforeDTO.getDeveloperId() == null) {
-			throw new EntityCreationException("Cannot delete a product without a developer ID.");
-		}
-					
-		DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
-		if(dev == null) {
-			throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
-		}
-		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "The product " + beforeDTO.getName()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-				
-		delete(dto.getId());
-		String activityMsg = "Product "+dto.getName()+" was deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, dto.getId(), activityMsg, dto, null);
-	
-	}
-
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
-	public void delete(Long productId) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
-		ProductDTO toDelete = productDao.getById(productId);
-		//check that the developer of this product is Active
-		if(toDelete.getDeveloperId() == null) {
-			throw new EntityCreationException("Cannot delete a product without a developer ID.");
-		}
-					
-		DeveloperDTO dev = devDao.getById(toDelete.getDeveloperId());
-		if(dev == null) {
-			throw new EntityRetrievalException("Cannot find developer with id " + toDelete.getDeveloperId());
-		}
-		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "The product " + toDelete.getName()+ " cannot be deleted since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-		
-		String activityMsg = "Product "+ toDelete.getName() +" was deleted.";
-		productDao.delete(productId);
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, productId, activityMsg, toDelete , null);
-		
-	}
 	
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.productNames, CacheNames.basicSearch, CacheNames.search, CacheNames.countMultiFilterSearchResults})
 	public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();

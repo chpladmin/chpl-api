@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
@@ -28,7 +29,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	
 	@Transactional(readOnly = true)
 	@Override
-	@Cacheable("search")
+	@Cacheable(CacheNames.basicSearch)
 	public BasicSearchResponse search() {
 		List<CertifiedProductFlatSearchResult> results = basicCpSearchDao.getAllCertifiedProducts();
 		BasicSearchResponse response = new BasicSearchResponse();
@@ -38,7 +39,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	
 	@Transactional
 	@Override
-	@Cacheable("search")
+	@Cacheable(CacheNames.search)
 	public SearchResponse search(
 			SearchRequest searchRequest) {
 		

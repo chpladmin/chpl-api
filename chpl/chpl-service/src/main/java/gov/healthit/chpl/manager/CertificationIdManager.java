@@ -20,7 +20,6 @@ public interface CertificationIdManager {
 	public List<SimpleCertificationId> getAll();
 	public List<SimpleCertificationId> getAllWithProducts();
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds);
 	public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds);
 }

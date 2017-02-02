@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -113,7 +114,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	@Cacheable("classificationNames")
+	@Cacheable(CacheNames.classificationNames)
 	public Set<KeyValueModel> getClassificationNames() {
 		
 		List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDAO.findAll();
@@ -128,7 +129,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	@Cacheable("editionNames")
+	@Cacheable(CacheNames.editionNames)
 	public Set<KeyValueModel> getEditionNames(Boolean simple) {
 		
 		List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
@@ -149,7 +150,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	@Cacheable("certificationStatuses")
+	@Cacheable(CacheNames.certificationStatuses)
 	public Set<KeyValueModel> getCertificationStatuses() {
 		List<CertificationStatusDTO> certificationStatuses = certificationStatusDao.findAll();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
@@ -163,7 +164,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	@Cacheable("practiceTypeNames")
+	@Cacheable(CacheNames.practiceTypeNames)
 	public Set<KeyValueModel> getPracticeTypeNames() {
 		
 		List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDAO.findAll();
@@ -178,7 +179,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	@Cacheable("productNames")
+	@Cacheable(CacheNames.productNames)
 	public Set<KeyValueModelStatuses> getProductNames() {
 		
 		List<ProductDTO> productDTOs = this.productDAO.findAll();
@@ -193,7 +194,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	@Cacheable("developerNames")
+	@Cacheable(CacheNames.developerNames)
 	public Set<KeyValueModelStatuses> getDeveloperNames() {
 		
 		List<DeveloperDTO> developerDTOs = this.developerDAO.findAll();
@@ -208,7 +209,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	@Cacheable("certBodyNames")
+	@Cacheable(CacheNames.certBodyNames)
 	public Set<KeyValueModel> getCertBodyNames() {
 		
 		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(false);
@@ -430,7 +431,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	@Cacheable("macrameasures")
+	@Cacheable(CacheNames.macrameasures)
 	public Set<CriteriaSpecificDescriptiveModel> getMacraMeasures() {
 		List<MacraMeasureDTO> measureDtos = macraDao.findAll();
 		Set<CriteriaSpecificDescriptiveModel> measures = new HashSet<CriteriaSpecificDescriptiveModel>();
@@ -444,7 +445,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	@Cacheable("certificationCriterionNumbers")
+	@Cacheable(CacheNames.certificationCriterionNumbers)
 	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException{
 
 		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
@@ -460,7 +461,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	@Cacheable("certificationCriterion")
+	@Cacheable(CacheNames.certificationCriterionWithEditions)
 	public Set<CertificationCriterion> getCertificationCriterion() {
 
 		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
@@ -476,7 +477,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	@Cacheable("cqmCriterionNumbers")
+	@Cacheable(CacheNames.cqmCriterionNumbers)
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple){
 
 		List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();

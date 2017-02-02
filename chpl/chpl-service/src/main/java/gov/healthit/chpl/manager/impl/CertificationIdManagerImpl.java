@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.caching.ClearAllCaches;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -76,7 +76,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	@Cacheable("allCertIds")
+	@Cacheable(CacheNames.allCertIds)
 	/**
 	 * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF || ROLE_CMS_STAFF
 	 */
@@ -91,7 +91,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 
 	@Override
 	@Transactional(readOnly = true)
-	@Cacheable("allCertIdsWithProducts")
+	@Cacheable(CacheNames.allCertIdsWithProducts)
 	/**
 	 * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF
 	 */
@@ -126,25 +126,12 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = false)
-	@ClearAllCaches
+	@CacheEvict(value = {CacheNames.allCertIds, CacheNames.allCertIdsWithProducts})
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CertificationIdDTO result = CertificationIdDAO.create(productIds, year);
 
 		String activityMsg = "CertificationId "+result.getCertificationId()+" was created.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null, result);
-		return result;
-	}
-	
-	@Override
-	@Transactional(readOnly = false)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@ClearAllCaches
-	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
-		CertificationIdDTO result = CertificationIdDAO.create(dto);
-		
-		String activityMsg = "CertificationId "+dto.getCertificationId()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null, result);
 		return result;
 	}

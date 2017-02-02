@@ -26,9 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
@@ -63,12 +61,6 @@ public class SearchViewController {
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
-	
-	@Autowired 
-	private CertificationBodyDAO certificationBodyDao;
-	
-	@Autowired 
-	private DeveloperDAO developerDao;
 	
 	@Autowired
 	private DeveloperManager developerManager;
