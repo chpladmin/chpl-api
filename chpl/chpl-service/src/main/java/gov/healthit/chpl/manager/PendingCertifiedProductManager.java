@@ -17,7 +17,6 @@ import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
-import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 
 public interface PendingCertifiedProductManager {
@@ -25,7 +24,6 @@ public interface PendingCertifiedProductManager {
 	public List<PendingCertifiedProductDTO> getByAcb(CertificationBodyDTO acb);
 	public List<PendingCertifiedProductDetails> getDetailsByAcb(CertificationBodyDTO acb);
 	public List<PendingCertifiedProductDTO> getPending();
-	public PendingCertifiedProductResults getPendingCertifiedProductResults(List<PendingCertifiedProductDTO> products);
 	public List<CQMCriterion> getApplicableCriteria(PendingCertifiedProductDTO pendingCpDto);
 	
 	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
