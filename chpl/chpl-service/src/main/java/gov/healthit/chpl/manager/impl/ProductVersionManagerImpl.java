@@ -74,7 +74,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@CacheEvict(value = {CacheNames.search, CacheNames.countMultiFilterSearchResults})
+	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	public ProductVersionDTO create(ProductVersionDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		//check that the developer of this version is Active
 		if(dto.getProductId() == null) {
@@ -102,7 +102,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@CacheEvict(value = {CacheNames.search, CacheNames.countMultiFilterSearchResults})
+	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	public ProductVersionDTO update(ProductVersionDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		ProductVersionDTO before = dao.getById(dto.getId());
@@ -127,7 +127,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@CacheEvict(value = {CacheNames.search, CacheNames.countMultiFilterSearchResults})
+	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();

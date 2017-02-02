@@ -1,6 +1,7 @@
 package gov.healthit.chpl.caching;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,11 +12,10 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
-import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.manager.CertificationIdManager;
+import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Component
@@ -24,8 +24,7 @@ public class AsynchronousCacheInitialization {
 	
 	@Autowired private CertificationIdManager certificationIdManager;
 	@Autowired private SearchMenuManager searchMenuManager;
-	@Autowired private PendingCertifiedProductDAO pcpDao;
-	@Autowired private CertificationStatusDAO statusDao;
+	@Autowired private PendingCertifiedProductManager pcpManager;
 	
 	@Async
 	@Transactional
@@ -51,8 +50,8 @@ public class AsynchronousCacheInitialization {
 	@Transactional
 	public Future<Boolean> initializePending() throws EntityRetrievalException{
 		logger.info("Starting cache initialization for /pending");
-		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
-		pcpDao.findByStatus(statusDto.getId());
+		List<PendingCertifiedProductDTO> pendingResults = pcpManager.getPending();
+		pcpManager.getPendingCertifiedProductResults(pendingResults);
 		logger.info("Finished cache initialization for /pending");
 		return new AsyncResult<>(true);
 	}

@@ -176,8 +176,8 @@
 	<!-- end /search_options caching -->
 
 	<!-- /pending caching -->
-	<cache name="getByStatusName"
-		maxEntriesLocalHeap="1000"
+	<cache name="getPending"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
@@ -187,8 +187,8 @@
 		<persistence strategy="localTempSwap" />
 	</cache>
 	
-	<cache name="findByStatus"
-		maxEntriesLocalHeap="1000"
+	<cache name="getPendingCertifiedProductResults"
+		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="100000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"

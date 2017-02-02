@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
@@ -58,6 +59,7 @@ import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFa
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 @Service
 public class PendingCertifiedProductManagerImpl implements PendingCertifiedProductManager {
@@ -92,13 +94,30 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@PostFilter("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "(hasPermission(filterObject, read) or hasPermission(filterObject, admin)))")
+	@Cacheable(CacheNames.GET_PENDING)
 	public List<PendingCertifiedProductDTO> getPending() {
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
 		List<PendingCertifiedProductDTO> products = pcpDao.findByStatus(statusDto.getId());
 		updateCertResults(products);
-		validate(products);
-		
+		validate(products);	
 		return products;
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	@Cacheable(CacheNames.GET_PENDING_CERTIFIED_PRODUCT_RESULTS)
+	public PendingCertifiedProductResults getPendingCertifiedProductResults(List<PendingCertifiedProductDTO> products){
+		List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
+		for(PendingCertifiedProductDTO product : products) {
+			PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
+			addAllVersionsToCmsCriterion(pcpDetails);
+			addAllMeasuresToCertificationCriteria(pcpDetails);
+			result.add(pcpDetails);
+		}
+		
+		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
+		results.getPendingCertifiedProducts().addAll(result);
+		return results;
 	}
 	
 	@Override
@@ -208,7 +227,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	@CacheEvict(value = CacheNames.findByStatus)
+	@CacheEvict(value = {CacheNames.GET_PENDING, CacheNames.GET_PENDING_CERTIFIED_PRODUCT_RESULTS}, allEntries = true)
 	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
@@ -241,7 +260,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
-	@CacheEvict(value = CacheNames.findByStatus)
+	@CacheEvict(value = {CacheNames.GET_PENDING, CacheNames.GET_PENDING_CERTIFIED_PRODUCT_RESULTS}, allEntries = true)
 	public void reject(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
@@ -257,7 +276,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
 			+ "hasPermission(#pendingProductId, 'gov.healthit.chpl.dto.PendingCertifiedProductDTO', admin)")
-	@CacheEvict(value = CacheNames.findByStatus)
+	@CacheEvict(value = {CacheNames.GET_PENDING, CacheNames.GET_PENDING_CERTIFIED_PRODUCT_RESULTS}, allEntries = true)
 	public void confirm(Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);

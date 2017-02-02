@@ -281,18 +281,11 @@ public class CertifiedProductController {
 	@RequestMapping(value="/pending", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {		
-		List<PendingCertifiedProductDTO> allProductDtos = pcpManager.getPending();
-		
-		List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
-		for(PendingCertifiedProductDTO product : allProductDtos) {
-			PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
-			pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
-			pcpManager.addAllMeasuresToCertificationCriteria(pcpDetails);
-			result.add(pcpDetails);
-		}
-		
+		List<PendingCertifiedProductDTO> products = pcpManager.getPending();
 		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
-		results.getPendingCertifiedProducts().addAll(result);
+		if(products != null){
+			results = pcpManager.getPendingCertifiedProductResults(products);
+		}
 		return results;
 	}
 	

@@ -39,7 +39,6 @@ public class CertificationStatusDAOImpl extends BaseDAOImpl implements Certifica
 	}
 
 	@Override
-	@Cacheable(CacheNames.getByStatusName)
 	public CertificationStatusDTO getByStatusName(String statusName) {
 		CertificationStatusEntity entity = getEntityByName(statusName);
 		return new CertificationStatusDTO(entity);

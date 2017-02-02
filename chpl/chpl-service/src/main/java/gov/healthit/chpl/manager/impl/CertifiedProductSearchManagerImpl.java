@@ -25,7 +25,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	
 	@Transactional
 	@Override
-	@Cacheable(CacheNames.search)
+	@Cacheable(CacheNames.SEARCH)
 	public SearchResponse search(
 			SearchRequest searchRequest) {
 		
