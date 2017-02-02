@@ -13,6 +13,9 @@ _Date TBD_
 * Exclude Developers with status "Suspended by ONC" from the /decertifications/developers API call
 * Selectively evict caches in order to improve website performance
 
+### Bugs Fixed
+* Update 2014 validator retired test tool logic to handle CHPL-XXXX products that will not have an icsCode
+
 ---
 
 ## Version 7.1.0
