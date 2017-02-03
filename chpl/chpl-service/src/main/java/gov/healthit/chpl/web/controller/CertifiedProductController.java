@@ -173,7 +173,7 @@ public class CertifiedProductController {
 			try {
 				boolean isDup = cpManager.chplIdExists(updateRequest.getChplProductNumber());
 				if(isDup) {
-					updateRequest.getErrorMessages().add("The CHPL Product Number has changed. The new CHPL Product Number " + updateRequest.getChplProductNumber() + " must be unique among all other certified products but one already exists with the same ID.");
+					updateRequest.getErrorMessages().add("The CHPL Product Number has changed. The new CHPL Product Number " + updateRequest.getChplProductNumber() + " must be unique among all other certified products but one already exists with the same ID. Edit a part of the CHPL product number (e.g. the version code) to make it unique.");
 				}
 			} catch(EntityRetrievalException ex) {}
 		}
