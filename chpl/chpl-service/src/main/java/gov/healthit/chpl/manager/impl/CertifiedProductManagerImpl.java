@@ -1171,7 +1171,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		List<MeaningfulUseUser> results = new ArrayList<MeaningfulUseUser>();
 		
 		for(MeaningfulUseUser muu : meaningfulUseUserSet){
-			if(muu.getError() == null){
+			if(StringUtils.isEmpty(muu.getError())){
 				try{
 					// If bad input, add error for this MeaningfulUseUser and continue
 					if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())){
@@ -1218,7 +1218,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 		}
 		
-		meaningfulUseUserResults.setMeaningfulUseUsers(results);
+		meaningfulUseUserResults.setResults(results);
 		meaningfulUseUserResults.setErrors(errors);
 		return meaningfulUseUserResults;
 	}
