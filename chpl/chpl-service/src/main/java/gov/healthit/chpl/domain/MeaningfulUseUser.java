@@ -8,7 +8,7 @@ public class MeaningfulUseUser implements Serializable {
 	private Long certifiedProductId;
 	private Long numberOfUsers;
 	private Integer csvLineNumber;
-	private String error = "";
+	private String error;
 	
 	public MeaningfulUseUser(){}
 	

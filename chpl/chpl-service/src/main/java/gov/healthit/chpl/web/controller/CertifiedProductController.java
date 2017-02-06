@@ -55,6 +55,7 @@ import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -354,8 +355,8 @@ public class CertifiedProductController {
 	@RequestMapping(value="/meaningful_use_users/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
 	@Deprecated
-	public @ResponseBody void uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
-		meaningfulUseController.uploadMeaningfulUseUsers(file);
+	public @ResponseBody MeaningfulUseUserResults uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
+		return meaningfulUseController.uploadMeaningfulUseUsers(file);
 	}
 	
 	@ApiOperation(value="Upload a file with certified products", 
