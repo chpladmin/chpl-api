@@ -7,23 +7,24 @@ import java.util.List;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 
 public class MeaningfulUseUserResults implements Serializable {
-	private static final long serialVersionUID = 4864758331142716185L;
+	private static final long serialVersionUID = 4865758231142816185L;
 	private List<MeaningfulUseUser> results;
 	private List<MeaningfulUseUser> errors;
 
 	public MeaningfulUseUserResults() {
 		results = new ArrayList<MeaningfulUseUser>();
+		errors = new ArrayList<MeaningfulUseUser>();
 	}
 	
 	public MeaningfulUseUserResults(List<MeaningfulUseUser> results) {
 		this.results = results;
 	}
 
-	public List<MeaningfulUseUser> getMeaningfulUseUsers() {
+	public List<MeaningfulUseUser> getResults() {
 		return results;
 	}
 
-	public void setMeaningfulUseUsers(List<MeaningfulUseUser> results) {
+	public void setResults(List<MeaningfulUseUser> results) {
 		this.results = results;
 	}
 
