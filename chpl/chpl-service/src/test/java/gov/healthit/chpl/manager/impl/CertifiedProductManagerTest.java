@@ -362,10 +362,10 @@ public class CertifiedProductManagerTest extends TestCase {
 		muu.add(u2);
 		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
 		assertNotNull(results);
-		assertTrue(results.getResults().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
-		assertTrue(results.getResults().get(0).getNumberOfUsers() == 10L);
-		assertTrue(results.getResults().get(1).getProductNumber().equalsIgnoreCase("CHP-024051"));
-		assertTrue(results.getResults().get(1).getNumberOfUsers() == 20L);
+		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
+		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("CHP-024051"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
 	}
 	
 	/**
@@ -388,8 +388,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		muu.add(u2);
 		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
 		assertNotNull(results);
-		assertTrue(results.getResults().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
-		assertTrue(results.getResults().get(0).getNumberOfUsers() == 10L);
+		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
+		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
 		assertTrue(results.getErrors().get(0).getError() != null);
 		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("badChplProductNumber"));
 		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 20L);
@@ -417,13 +417,13 @@ public class CertifiedProductManagerTest extends TestCase {
 		muu.add(u3);
 		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muu);
 		assertNotNull(results);
-		assertTrue(results.getResults().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
-		assertTrue(results.getResults().get(0).getNumberOfUsers() == 10L);
+		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
+		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
 		assertTrue(results.getErrors().get(0).getError() != null);
 		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("CHPL-024051"));
 		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 20L);
-		assertTrue(results.getResults().get(1).getProductNumber().equalsIgnoreCase("CHP-024051"));
-		assertTrue(results.getResults().get(1).getNumberOfUsers() == 30L);
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("CHP-024051"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 30L);
 	}
 	
 	/**
@@ -449,10 +449,10 @@ public class CertifiedProductManagerTest extends TestCase {
 		muuSet.add(u3);
 		MeaningfulUseUserResults results = cpManager.updateMeaningfulUseUsers(muuSet);
 		assertNotNull(results);
-		assertTrue(results.getResults().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
-		assertTrue(results.getResults().get(0).getNumberOfUsers() == 10L);
-		assertTrue(results.getResults().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC08.36.1.1.160402"));
-		assertTrue(results.getResults().get(1).getNumberOfUsers() == 20L);
+		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
+		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC08.36.1.1.160402"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
 		assertTrue(results.getErrors().get(0).getError() != null);
 		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.EIC10.99.1.1.160403"));
 		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 30L);
