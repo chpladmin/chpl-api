@@ -25,6 +25,7 @@ import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
@@ -303,6 +304,34 @@ public class PendingCertifiedProductDTO implements Serializable {
 					toolDto.setVersion(tool.getTestToolVersion());
 					toolDto.setTestToolId(tool.getTestToolId());
 					certDto.getTestTools().add(toolDto);
+				}
+			}
+			
+			if(crResult.getG1MacraMeasures() != null && crResult.getG1MacraMeasures().size() > 0) {
+				for(MacraMeasure mm : crResult.getG1MacraMeasures()) {
+					PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
+					mmDto.setId(mm.getId());
+					mmDto.setMacraMeasureId(mm.getId());
+
+					MacraMeasureDTO measure = new MacraMeasureDTO();
+					measure.setId(mm.getId());
+					measure.setValue(mm.getAbbreviation());
+					mmDto.setMacraMeasure(measure);
+					certDto.getG1MacraMeasures().add(mmDto);
+				}
+			}
+			
+			if(crResult.getG2MacraMeasures() != null && crResult.getG2MacraMeasures().size() > 0) {
+				for(MacraMeasure mm : crResult.getG2MacraMeasures()) {
+					PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
+					mmDto.setId(mm.getId());
+					mmDto.setMacraMeasureId(mm.getId());
+						
+					MacraMeasureDTO measure = new MacraMeasureDTO();
+					measure.setId(mm.getId());
+					measure.setValue(mm.getAbbreviation());
+					mmDto.setMacraMeasure(measure);
+					certDto.getG2MacraMeasures().add(mmDto);
 				}
 			}
 			

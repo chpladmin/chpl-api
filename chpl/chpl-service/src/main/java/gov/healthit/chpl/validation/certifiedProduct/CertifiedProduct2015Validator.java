@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
@@ -19,7 +20,10 @@ import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
@@ -67,6 +71,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 	@Autowired TestToolDAO testToolDao;
 	@Autowired TestFunctionalityDAO testFuncDao;
 	@Autowired AccessibilityStandardDAO asDao;
+	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	
 	@Override
@@ -368,6 +373,34 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
+						cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
+						if(pendingMeasureMap.getMacraMeasureId() == null) {
+							MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(), pendingMeasureMap.getEnteredValue());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure: '" + pendingMeasureMap.getEnteredValue() + "'.");
+							} else {
+								pendingMeasureMap.setMacraMeasure(foundMeasure);
+							}
+						}
+					}
+				}
+				
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
+						cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2MacraMeasures()) {
+						if(pendingMeasureMap.getMacraMeasureId() == null) {
+							MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(), pendingMeasureMap.getEnteredValue());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure: '" + pendingMeasureMap.getEnteredValue() + "'.");
+							} else {
+								pendingMeasureMap.setMacraMeasure(foundMeasure);
+							}
+						}
+					}
+				}
+				
 				if(!gapEligibleAndTrue && 
 					(cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestData() == null || cert.getTestData().size() == 0)) {
@@ -714,6 +747,50 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
+						cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					for(int i = 0; i < cert.getG1MacraMeasures().size(); i++) {
+						MacraMeasure measure = cert.getG1MacraMeasures().get(i);
+						if(measure == null || measure.getId() == null) {
+							product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure.");
+						} else {
+							//confirm the measure id is valid
+							MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure. No measure found with ID '" + measure.getId() + "'.");
+							} else if(!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid G1 Macra Measure. Measure with ID '" + 
+										measure.getId() + "' is the measure '" + foundMeasure.getName() + 
+										"' and is for criteria '" + foundMeasure.getCriteria().getNumber() + "'.");
+							} else {								
+								cert.getG1MacraMeasures().set(i, new MacraMeasure(foundMeasure));
+							}
+						}
+					}
+				}
+				
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
+						cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					for(int i = 0; i < cert.getG2MacraMeasures().size(); i++) {
+						MacraMeasure measure = cert.getG2MacraMeasures().get(i);
+						if(measure == null || measure.getId() == null) {
+							product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure.");
+						} else {
+							//confirm the measure id is valid
+							MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure. No measure found with ID '" + measure.getId() + "'.");
+							} else if(!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid G2 Macra Measure. Measure with ID '" + 
+										measure.getId() + "' is the measure '" + foundMeasure.getName() + 
+										"' and is for criteria '" + foundMeasure.getCriteria().getNumber() + "'.");
+							} else {
+								cert.getG2MacraMeasures().set(i, new MacraMeasure(foundMeasure));
+							}
+						}
+					}
+				}
+				
 				if(!gapEligibleAndTrue && 
 					(cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {

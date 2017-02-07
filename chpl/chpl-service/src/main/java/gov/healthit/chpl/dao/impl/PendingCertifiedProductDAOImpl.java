@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +16,8 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultG1MacraMeasureEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultG2MacraMeasureEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
@@ -158,6 +159,28 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 				}
 			}
 			
+			if(criterion.getG1MacraMeasures() != null && criterion.getG1MacraMeasures().size() > 0) {
+				for(PendingCertificationResultG1MacraMeasureEntity mmEntity : criterion.getG1MacraMeasures()) {
+					mmEntity.setPendingCertificationResultId(criterion.getId());
+					mmEntity.setLastModifiedDate(new Date());	
+					mmEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					mmEntity.setCreationDate(new Date());
+					mmEntity.setDeleted(false);
+					entityManager.persist(mmEntity);
+				}
+			}
+			
+			if(criterion.getG2MacraMeasures() != null && criterion.getG2MacraMeasures().size() > 0) {
+				for(PendingCertificationResultG2MacraMeasureEntity mmEntity : criterion.getG2MacraMeasures()) {
+					mmEntity.setPendingCertificationResultId(criterion.getId());
+					mmEntity.setLastModifiedDate(new Date());	
+					mmEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+					mmEntity.setCreationDate(new Date());
+					mmEntity.setDeleted(false);
+					entityManager.persist(mmEntity);
+				}
+			}
+			
 			if(criterion.getTestTasks() != null && criterion.getTestTasks().size() > 0) {
 				for(PendingCertificationResultTestTaskEntity ttEntity : criterion.getTestTasks()) {
 					if(ttEntity.getTestTask() != null) {
@@ -270,7 +293,6 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		return dtos;
 	}
 	
-	@Cacheable("findByStatus")
 	@Transactional
 	public List<PendingCertifiedProductDTO> findByStatus(Long statusId) {
 		List<PendingCertifiedProductEntity> entities = getEntitiesByStatus(statusId);

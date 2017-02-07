@@ -275,33 +275,16 @@ public class DeveloperDaoTest extends TestCase {
 	public void getDecertifiedDevelopers() {
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		dtoList = developerDao.getDecertifiedDevelopers();
-		assertTrue(dtoList.size() == 2);
+		assertTrue(dtoList.size() == 1);
 		assertTrue(dtoList.get(0).getDeveloperId() == -10L || dtoList.get(0).getDeveloperId() == -11L);
 		assertTrue(dtoList.get(0).getNumMeaningfulUse() == 66 || dtoList.get(0).getNumMeaningfulUse() == 73);
-		assertTrue(dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
-				dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
-		if(dtoList.get(0).getDeveloperId() == -11L){
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
-		}
-		else{
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-3L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-2L));
-		}
-		
-		assertTrue(dtoList.get(1).getNumMeaningfulUse() == 66 || dtoList.get(1).getNumMeaningfulUse() == 73);
-		assertTrue(dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
-				dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
-		if(dtoList.get(1).getDeveloperId() == -10L){
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
-		}
-		else{
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-3L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-2L));
-		}
+		assertTrue(dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
 	}
 	
 }

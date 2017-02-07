@@ -6,6 +6,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -17,7 +18,6 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 
 public interface CertificationResultManager {
 	
-	public CertificationResultDTO create(Long acbId, CertificationResultDTO result) throws EntityRetrievalException, EntityCreationException;
 	public CertificationResultDTO update(Long acbId, CertificationResultDTO result) throws EntityRetrievalException, EntityCreationException;
 
 	
@@ -29,6 +29,8 @@ public interface CertificationResultManager {
 	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(Long certificationResultId);
+	public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(Long certificationResultId);
+	public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForTask(Long certificationResultTaskId);
 }

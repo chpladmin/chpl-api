@@ -5,7 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
@@ -111,5 +113,16 @@ public class XmlParsingTest {
 		System.out.println("Testing " + input);
 		input = Util.coerceToCriterionNumberFormat(input);
 		System.out.println("\tResult: " + input);
+	}
+	
+	@Test
+	public void testGmtDateCode() {
+		long millis = 1460246400000L; //should be april 10 2016
+		String expectedResult = "160410";
+		SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
+		idDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+	
+		String result = idDateFormat.format(new Date(millis));
+		assertEquals(expectedResult, result);
 	}
 }

@@ -21,6 +21,7 @@ import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -40,6 +41,7 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.Surveillance;
@@ -48,6 +50,7 @@ import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -62,6 +65,7 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
@@ -103,13 +107,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	@Autowired private SurveillanceManager survManager;
 	
 	private CQMCriterionDAO cqmCriterionDAO;
+	private MacraMeasureDAO macraDao;
 	
 	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
+	private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 	
 	@Autowired
-	public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO){
+	public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO, MacraMeasureDAO macraDao){
 		this.cqmCriterionDAO = cqmCriterionDAO;
+		this.macraDao = macraDao;
+		
 		loadCQMCriteria();
+		loadCriteriaMacraMeasures();
 	}
 	
 
@@ -331,6 +340,26 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				result.setTestFunctionality(null);
 			}
 			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+				List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG1MacraMeasuresForCertificationResult(certResult.getId());
+				for(CertificationResultMacraMeasureDTO currResult : measures) {
+					MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
+					result.getG1MacraMeasures().add(mmResult);
+				}
+			} else {
+				result.setG1MacraMeasures(null);
+			}
+			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+				List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG2MacraMeasuresForCertificationResult(certResult.getId());
+				for(CertificationResultMacraMeasureDTO currResult : measures) {
+					MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
+					result.getG2MacraMeasures().add(mmResult);
+				}
+			} else {
+				result.setG2MacraMeasures(null);
+			}
+			
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
 				List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
 				for(CertificationResultTestTaskDTO currResult : testTask) {
@@ -350,6 +379,13 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				}
 			} else {
 				result.setTestTasks(null);
+			}
+			
+			//set allowed macra measures (if any)
+			for(MacraMeasure measure : macraMeasures) {
+				if(measure.getCriteria().getNumber().equals(result.getNumber())) {
+					result.getAllowedMacraMeasures().add(measure);
+				}
 			}
 			
 			certificationResults.add(result);
@@ -467,6 +503,14 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			certEvents.add(cse);
 		}
 		return certEvents;
+	}
+	
+	private void loadCriteriaMacraMeasures() {
+		List<MacraMeasureDTO> dtos = macraDao.findAll();
+		for(MacraMeasureDTO dto : dtos) {
+			MacraMeasure measure = new MacraMeasure(dto);
+			macraMeasures.add(measure);
+		}
 	}
 	
 	private void loadCQMCriteria(){

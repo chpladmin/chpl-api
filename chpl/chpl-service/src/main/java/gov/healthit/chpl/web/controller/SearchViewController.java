@@ -26,11 +26,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
@@ -61,12 +60,6 @@ public class SearchViewController {
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
-	
-	@Autowired 
-	private CertificationBodyDAO certificationBodyDao;
-	
-	@Autowired 
-	private DeveloperDAO developerDao;
 	
 	@Autowired
 	private DeveloperManager developerManager;
@@ -409,6 +402,18 @@ public class SearchViewController {
 		return result;
 	}
 	
+	@ApiOperation(value="Get all possible macra measure options in the CHPL", 
+			notes="This is useful for knowing what values one might possibly search for.")
+	@RequestMapping(value="/data/macra_measures", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchOption getMacraMeasures() {
+		Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getMacraMeasures();
+		SearchOption result = new SearchOption();
+		result.setExpandable(false);
+		result.setData(data);
+		return result;
+	}
+	
 	@ApiOperation(value="Get all possible developer status options in the CHPL")
 	@RequestMapping(value="/data/developer_statuses", method=RequestMethod.GET,
 				produces = "application/json; charset=utf-8")
@@ -535,9 +540,48 @@ public class SearchViewController {
 		SearchRequest searchRequest = new SearchRequest();
 		List<String> allowedCertificationStatuses = new ArrayList<String>();
 		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByAcb));
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloper));
 		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview));
 		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.TerminatedByOnc));
+		
+		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
+		
+		searchRequest.setPageNumber(pageNumber);
+		if(pageSize == null){
+			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
+		}
+		
+		if (orderBy != null){
+			searchRequest.setOrderBy(orderBy);
+		}
+		
+		if (sortDescending != null){
+			searchRequest.setSortDescending(sortDescending);
+		}
+		
+		resp = certifiedProductSearchManager.search(searchRequest);
+		
+		return resp;
+	}
+	
+	@ApiOperation(value="Get decertified certified products in the CHPL with inactive certificates", 
+			notes="Returns only decertified certified products with inactive certificates. "
+					+ "Includes their decertified statuses and the total count of decertified certified products as the recordCount.")
+	@RequestMapping(value="/decertifications/inactive_certificates", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody SearchResponse getDecertifiedInactiveCertificateCertifiedProducts (
+			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
+			@RequestParam(value = "pageSize", required = false) Integer pageSize,
+			@RequestParam(value = "orderBy", required = false) String orderBy,
+			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending) throws EntityRetrievalException {
+		SearchResponse resp = new SearchResponse();
+		
+		if (pageNumber == null){
+			pageNumber = 0;
+		}
+		
+		SearchRequest searchRequest = new SearchRequest();
+		List<String> allowedCertificationStatuses = new ArrayList<String>();
+		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloper));
 		
 		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
 		

@@ -1,7 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +33,7 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
+import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -43,7 +42,7 @@ import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
-public class SearchViewControllerTest {
+public class SearchViewControllerTest extends TestCase {
 	@Autowired
 	SearchViewController searchViewController = new SearchViewController();
 
@@ -350,13 +349,31 @@ public class SearchViewControllerTest {
 	public void test_searchDecertifiedCPs() throws EntityRetrievalException {	
 		SearchResponse resp = searchViewController.getDecertifiedCertifiedProducts(null, null, null, null);		
 		
-		assertTrue(resp.getResults().size() == 7);
-		assertTrue("SearchResponse.pageSize should be equal to the number of results", resp.getPageSize() == resp.getResults().size());
+		assertTrue(resp.getResults().size() == 1);
+		assertEquals((Integer) resp.getResults().size(), resp.getPageSize());
 		for(CertifiedProductSearchResult cp : resp.getResults()){
 			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) || 
-					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)) ||
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview)) ||
 					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc)));
+		}
+	}
+	
+	/** 
+	 * Given that a user with no security calls the API
+	 * When the API is called at /decertifications/certified_products
+	 * Then the API returns a SearchResponse object with only decertified inactive certificate CPs
+	 * Then the pageSize is equivalent to the sum of all the decertified CPs
+	 * @throws EntityRetrievalException 
+	 */
+	@Transactional
+	@Test
+	public void test_searchDecertifiedInactiveCertCPs() throws EntityRetrievalException {	
+		SearchResponse resp = searchViewController.getDecertifiedInactiveCertificateCertifiedProducts(null, null, null, null);		
+		
+		assertTrue(resp.getResults().size() == 6);
+		assertEquals((Integer) resp.getResults().size(), resp.getPageSize());
+		for(CertifiedProductSearchResult cp : resp.getResults()){
+			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)));
 		}
 	}
 }

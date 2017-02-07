@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -34,7 +33,6 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
