@@ -493,9 +493,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		for (CertificationStatusEventDTO certStatusDto : certStatusDtos){
 			CertificationStatusEvent cse = new CertificationStatusEvent();
 			cse.setId(certStatusDto.getId());								
-			cse.setEventDate(certStatusDto.getEventDate().getTime() + "");
+			cse.setEventDate(certStatusDto.getEventDate().getTime());
 			cse.setLastModifiedUser(certStatusDto.getLastModifiedUser());
-			cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime() + "");
+			cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime());
 			
 			CertificationStatusDTO statusDto = certStatusDao.getById(certStatusDto.getStatus().getId());
 			cse.setCertificationStatusId(statusDto.getId());

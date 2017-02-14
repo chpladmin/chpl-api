@@ -67,7 +67,7 @@ public class ParseActivitiesTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		String[] args = {"2015-01-01", "2016-09-29", "7"};
 		parseActivities.setCommandLineArgs(args);
-		InputStream in = App.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+		InputStream in = DownloadableResourceCreatorApp.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 		parseActivities.loadProperties(in);
 		Properties props;
 		if (in == null) {

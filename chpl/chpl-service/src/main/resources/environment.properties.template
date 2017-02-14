@@ -12,6 +12,14 @@ enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
 
+#oversight email properties 
+oversightEmailDailyTo=kekey@ainq.com
+oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
+oversighEmailDailyContent=<h2>Check Attachment for Data</h2>
+suspendedDaysAllowed=30
+capApprovalDaysAllowed=75
+capStartDaysAllowed=10
+
 #chpl-service download jar properties
 dbDriverClass=org.postgresql.Driver
 dataSourceName=java:/comp/env/jdbc/openchpl

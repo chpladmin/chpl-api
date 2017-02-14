@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.app.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.app.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.app.presenter.CertifiedProductXmlPresenter;
-import gov.healthit.chpl.app.presenter.NonconformityCsvPresenter;
-import gov.healthit.chpl.app.presenter.SurveillanceCsvPresenter;
-import gov.healthit.chpl.app.presenter.SurveillanceReportCsvPresenter;
+import gov.healthit.chpl.app.surveillance.presenter.NonconformityCsvPresenter;
+import gov.healthit.chpl.app.surveillance.presenter.SurveillanceCsvPresenter;
+import gov.healthit.chpl.app.surveillance.presenter.SurveillanceReportCsvPresenter;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -31,24 +31,24 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
-@Component("app")
-public class App {
+@Component("resourceApp")
+public class DownloadableResourceCreatorApp {
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-	private static final Logger logger = LogManager.getLogger(App.class);
+	private static final Logger logger = LogManager.getLogger(DownloadableResourceCreatorApp.class);
 
 	private SimpleDateFormat timestampFormat;
 	private CertifiedProductDetailsManager cpdManager;
 	private CertifiedProductDAO certifiedProductDAO;
 	private CertificationCriterionDAO criteriaDao;
 	
-    public App() {
+    public DownloadableResourceCreatorApp() {
     	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
     
 	public static void main( String[] args ) throws Exception {	
 		//read in properties - we need these to set up the data source context
 		Properties props = null;
-		InputStream in = App.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+		InputStream in = DownloadableResourceCreatorApp.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 		
 		if (in == null) {
 			props = null;
@@ -66,8 +66,7 @@ public class App {
 		 
 		 //init spring classes
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		 System.out.println(context.getClassLoader());
-		 App app = new App();
+		 DownloadableResourceCreatorApp app = new DownloadableResourceCreatorApp();
 		 app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
 		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
 		 app.setCriteriaDao((CertificationCriterionDAO)context.getBean("certificationCriterionDAO"));

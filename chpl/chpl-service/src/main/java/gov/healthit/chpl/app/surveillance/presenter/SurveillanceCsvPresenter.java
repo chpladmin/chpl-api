@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.presenter;
+package gov.healthit.chpl.app.surveillance.presenter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -14,6 +14,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -26,8 +27,14 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  * @author kekey
  *
  */
+@Component("surveillanceCsvPresenter")
 public class SurveillanceCsvPresenter {
 	private static final Logger logger = LogManager.getLogger(SurveillanceCsvPresenter.class);
+	protected DateTimeFormatter dateFormatter;
+	
+	public SurveillanceCsvPresenter() {
+		dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
+	}
 	
 	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
 		FileWriter writer = null;
@@ -106,7 +113,7 @@ public class SurveillanceCsvPresenter {
 			LocalDateTime survStartDate = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(surv.getStartDate().getTime()), 
 				    ZoneId.systemDefault());
-			firstRow.add(DateTimeFormatter.BASIC_ISO_DATE.format(survStartDate));
+			firstRow.add(dateFormatter.format(survStartDate));
 		} else {
 			firstRow.add("");
 		}
@@ -114,7 +121,7 @@ public class SurveillanceCsvPresenter {
 			LocalDateTime survEndDate = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(surv.getEndDate().getTime()), 
 				    ZoneId.systemDefault());
-			firstRow.add(DateTimeFormatter.BASIC_ISO_DATE.format(survEndDate));
+			firstRow.add(dateFormatter.format(survEndDate));
 		} else {
 			firstRow.add("");
 		}
@@ -226,7 +233,7 @@ public class SurveillanceCsvPresenter {
 			LocalDateTime ncDeterminationDate = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()), 
 				    ZoneId.systemDefault());
-			ncRow.add(DateTimeFormatter.BASIC_ISO_DATE.format(ncDeterminationDate));
+			ncRow.add(dateFormatter.format(ncDeterminationDate));
 		} else {
 			ncRow.add("");
 		}
@@ -234,7 +241,7 @@ public class SurveillanceCsvPresenter {
 			LocalDateTime ncApprovalDate = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()), 
 				    ZoneId.systemDefault());
-			ncRow.add(DateTimeFormatter.BASIC_ISO_DATE.format(ncApprovalDate));
+			ncRow.add(dateFormatter.format(ncApprovalDate));
 		} else {
 			ncRow.add("");
 		}
@@ -242,7 +249,7 @@ public class SurveillanceCsvPresenter {
 			LocalDateTime ncStartDate = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(nc.getCapStartDate().getTime()), 
 				    ZoneId.systemDefault());
-			ncRow.add(DateTimeFormatter.BASIC_ISO_DATE.format(ncStartDate));
+			ncRow.add(dateFormatter.format(ncStartDate));
 		} else {
 			ncRow.add("");
 		}
@@ -250,7 +257,7 @@ public class SurveillanceCsvPresenter {
 			LocalDateTime ncMustCompleteDate = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()), 
 				    ZoneId.systemDefault());
-			ncRow.add(DateTimeFormatter.BASIC_ISO_DATE.format(ncMustCompleteDate));
+			ncRow.add(dateFormatter.format(ncMustCompleteDate));
 		} else {
 			ncRow.add("");
 		}
@@ -258,7 +265,7 @@ public class SurveillanceCsvPresenter {
 			LocalDateTime ncEndDate = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(nc.getCapEndDate().getTime()), 
 				    ZoneId.systemDefault());
-			ncRow.add(DateTimeFormatter.BASIC_ISO_DATE.format(ncEndDate));
+			ncRow.add(dateFormatter.format(ncEndDate));
 		} else {
 			ncRow.add("");
 		}
