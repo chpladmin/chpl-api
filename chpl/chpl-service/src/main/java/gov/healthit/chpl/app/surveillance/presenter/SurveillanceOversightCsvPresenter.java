@@ -80,6 +80,7 @@ public class SurveillanceOversightCsvPresenter extends SurveillanceReportCsvPres
 
 	public void setNumDaysUntilOngoing(int numDaysUntilOngoing) {
 		this.numDaysUntilOngoing = numDaysUntilOngoing;
+		ruleCalculator.setNumDaysUntilOngoing(this.numDaysUntilOngoing);
 	}
 	
 	@Override

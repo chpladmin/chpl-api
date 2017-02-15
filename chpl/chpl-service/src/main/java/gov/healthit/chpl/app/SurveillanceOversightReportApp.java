@@ -126,16 +126,16 @@ public class SurveillanceOversightReportApp {
         }
         int numCsvRows = app.getPresenter().presentAsFile(dailySurveillanceReportFile, allCps);
        
-        String toEmailProp = props.getProperty("oversightEmailDailyTo");
-        String[] toEmail = toEmailProp.split(";");
-        String subject = props.getProperty("oversightEmailDailySubject");
-        String htmlMessage = props.getProperty("oversighEmailDailyContent");
-        if(numCsvRows == 0) {
-        	htmlMessage = props.getProperty("oversightEmailDailyNoContent");
-        }
-        List<File> files = new ArrayList<File>();
-        files.add(dailySurveillanceReportFile);
-        app.getMailUtils().sendEmail(toEmail, subject, htmlMessage, files, props);
+//        String toEmailProp = props.getProperty("oversightEmailDailyTo");
+//        String[] toEmail = toEmailProp.split(";");
+//        String subject = props.getProperty("oversightEmailDailySubject");
+//        String htmlMessage = props.getProperty("oversighEmailDailyContent");
+//        if(numCsvRows == 0) {
+//        	htmlMessage = props.getProperty("oversightEmailDailyNoContent");
+//        }
+//        List<File> files = new ArrayList<File>();
+//        files.add(dailySurveillanceReportFile);
+//        app.getMailUtils().sendEmail(toEmail, subject, htmlMessage, files, props);
         context.close();
 	}
 	
