@@ -27,6 +27,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		result.add("Product");
 		result.add("Version");
 		result.add("CHPL ID");
+		result.add("URL");
+		result.add("ONC-ACB");
 		result.add("Certification Status");
 		result.add("Date of Last Status Change");
 		result.add("Date Surveillance Began");
@@ -52,24 +54,23 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 	protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<List<String>> result = new ArrayList<List<String>>();
 		
-		List<String> prependFields = getPrependFields(data, surv);
 		List<String> survFields = getSurveillanceFields(data, surv);
-		List<String> appendFields = getAppendFields(data, surv);
-		List<String> row = new ArrayList<String>();
 		
-		row.addAll(prependFields);
 		if(surv.getRequirements() == null || surv.getRequirements().size() == 0) {
+			List<String> row = new ArrayList<String>();
 			row.addAll(survFields);
 			row.addAll(getNoNonconformityFields(data, surv));
 			result.add(row);
 		} else {
 			for(SurveillanceRequirement req : surv.getRequirements()) {	
 				if(req.getNonconformities() == null || req.getNonconformities().size() == 0) {
+					List<String> row = new ArrayList<String>();
 					row.addAll(survFields);
 					row.addAll(getNoNonconformityFields(data, surv));
 					result.add(row);
 				} else {
 					for(SurveillanceNonconformity nc : req.getNonconformities()) {
+						List<String> row = new ArrayList<String>();
 						row.addAll(survFields);
 						row.addAll(getNonconformityFields(data, surv, nc));
 						result.add(row);
@@ -77,16 +78,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 				}
 			}
 		}
-		row.addAll(appendFields);
 		return result;
-	}
-	
-	protected List<String> getPrependFields(CertifiedProductSearchDetails data, Surveillance surv) {
-		return new ArrayList<String>();
-	}
-	
-	protected List<String> getAppendFields(CertifiedProductSearchDetails data, Surveillance surv) {
-		return new ArrayList<String>();
 	}
 	
 	protected List<String> getSurveillanceFields(CertifiedProductSearchDetails data, Surveillance surv) {
@@ -95,6 +87,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		survFields.add(data.getProduct().getName());
 		survFields.add(data.getVersion().getVersion());
 		survFields.add(data.getChplProductNumber());
+		survFields.add(props.getProperty("chplUrlBegin") + "#/product/" + data.getId());
+		survFields.add(data.getCertifyingBody().get("name").toString());
 		survFields.add(data.getCertificationStatus().get("name").toString());
 		Long lastCertificationChangeMillis = ((Date)data.getCertificationStatus().get("date")).getTime();
 		if(lastCertificationChangeMillis.longValue() == data.getCertificationDate().longValue()) {

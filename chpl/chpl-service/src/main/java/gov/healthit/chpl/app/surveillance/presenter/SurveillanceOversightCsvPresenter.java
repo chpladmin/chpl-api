@@ -1,21 +1,15 @@
 package gov.healthit.chpl.app.surveillance.presenter;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.app.surveillance.RuleComplianceCalculator;
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.OversightRuleResult;
 import gov.healthit.chpl.domain.Surveillance;
@@ -30,7 +24,6 @@ import gov.healthit.chpl.domain.SurveillanceOversightRule;
 @Component("surveillanceOversightCsvPresenter")
 public class SurveillanceOversightCsvPresenter extends SurveillanceReportCsvPresenter {
 	private static final Logger logger = LogManager.getLogger(SurveillanceOversightCsvPresenter.class);
-	private Properties props;
 	private int numDaysUntilOngoing;
 	@Autowired private RuleComplianceCalculator ruleCalculator;
 	
@@ -38,46 +31,16 @@ public class SurveillanceOversightCsvPresenter extends SurveillanceReportCsvPres
 	}
 	
 	@Override
-	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
-		FileWriter writer = null;
-		CSVPrinter csvPrinter = null;
-		try {
-			writer = new FileWriter(file);
-			csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-			csvPrinter.printRecord(generateHeaderValues());
-			
-			for(CertifiedProductSearchDetails cp : cpList.getProducts()) {
-				if(cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
-					for(Surveillance currSurveillance : cp.getSurveillance()) {
-						List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
-						for(List<String> rowValue : rowValues) {
-							csvPrinter.printRecord(rowValue);
-						}
-					}
-				} 
-			}
-		} catch(IOException ex) {
-			logger.error("Could not write file " + file.getName(), ex);
-		} finally {
-			try {
-				writer.flush();
-				writer.close();
-				csvPrinter.flush();
-				csvPrinter.close();
-			} catch(Exception ignore) {}
-		}
-	}
-	
-	@Override
 	protected List<String> generateHeaderValues() {
 		List<String> result = super.generateHeaderValues();
-		result.add(11, SurveillanceOversightRule.LONG_SUSPENSION.getTitle());
-		result.add(12, SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle());
-		result.add(13, SurveillanceOversightRule.CAP_NOT_STARTED.getTitle());
-		result.add(14, SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle());
+		result.add(13, SurveillanceOversightRule.LONG_SUSPENSION.getTitle());
+		result.add(14, SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle());
+		result.add(15, SurveillanceOversightRule.CAP_NOT_STARTED.getTitle());
+		result.add(16, SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle());
 		return result;
 	}
 	
+	@Override
 	protected List<String> getNoNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<String> ncFields = super.getNoNonconformityFields(data, surv);
 		Map<SurveillanceOversightRule, OversightRuleResult> oversightResult = 
@@ -93,6 +56,7 @@ public class SurveillanceOversightCsvPresenter extends SurveillanceReportCsvPres
 		return ncFields;
 	}
 	
+	@Override
 	protected List<String> getNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv, SurveillanceNonconformity nc) {
 		List<String> ncFields = super.getNoNonconformityFields(data, surv);		
 		Map<SurveillanceOversightRule, OversightRuleResult> oversightResult = 
@@ -117,13 +81,10 @@ public class SurveillanceOversightCsvPresenter extends SurveillanceReportCsvPres
 	public void setNumDaysUntilOngoing(int numDaysUntilOngoing) {
 		this.numDaysUntilOngoing = numDaysUntilOngoing;
 	}
-
-	public Properties getProps() {
-		return props;
-	}
-
+	
+	@Override
 	public void setProps(Properties props) {
-		this.props = props;
+		super.setProps(props);
 		ruleCalculator.setProps(props);
 	}
 }

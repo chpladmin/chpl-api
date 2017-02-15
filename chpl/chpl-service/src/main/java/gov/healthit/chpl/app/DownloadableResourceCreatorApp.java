@@ -178,6 +178,7 @@ public class DownloadableResourceCreatorApp {
         	allSurvCsvFile.delete();
         }
         SurveillanceCsvPresenter survCsvPresenter = new SurveillanceCsvPresenter();
+        survCsvPresenter.setProps(props);
         survCsvPresenter.presentAsFile(allSurvCsvFile, allResults);
         
         //write out a csv file containing surveillance with nonconformities       
@@ -191,6 +192,7 @@ public class DownloadableResourceCreatorApp {
         }
         
         NonconformityCsvPresenter ncCsvPresenter = new NonconformityCsvPresenter();
+        ncCsvPresenter.setProps(props);
         ncCsvPresenter.presentAsFile(nonconformityCsvFile, allResults);
         
       //write out a csv file containing surveillance basic report     
@@ -204,6 +206,7 @@ public class DownloadableResourceCreatorApp {
         }
         
         SurveillanceReportCsvPresenter basicReportCsvPresenter = new SurveillanceReportCsvPresenter();
+        basicReportCsvPresenter.setProps(props);
         basicReportCsvPresenter.presentAsFile(basicReportCsvFile, allResults);
         
         context.close();

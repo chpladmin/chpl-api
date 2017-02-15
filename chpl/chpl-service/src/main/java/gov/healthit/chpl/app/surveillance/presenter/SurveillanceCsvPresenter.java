@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -30,13 +31,15 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 @Component("surveillanceCsvPresenter")
 public class SurveillanceCsvPresenter {
 	private static final Logger logger = LogManager.getLogger(SurveillanceCsvPresenter.class);
+	protected Properties props;
 	protected DateTimeFormatter dateFormatter;
 	
 	public SurveillanceCsvPresenter() {
 		dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
 	}
 	
-	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
+	public int presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
+		int numRows = 0;
 		FileWriter writer = null;
 		CSVPrinter csvPrinter = null;
 		try {
@@ -48,6 +51,7 @@ public class SurveillanceCsvPresenter {
 				if(cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
 					for(Surveillance currSurveillance : cp.getSurveillance()) {
 						List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
+						numRows += rowValues.size();
 						for(List<String> rowValue : rowValues) {
 							csvPrinter.printRecord(rowValue);
 						}
@@ -64,13 +68,16 @@ public class SurveillanceCsvPresenter {
 				csvPrinter.close();
 			} catch(Exception ignore) {}
 		}
+		return numRows;
 	}
 
 	protected List<String> generateHeaderValues() {
 		List<String> result = new ArrayList<String>();
 		result.add("RECORD_STATUS__C");
 		result.add("UNIQUE_CHPL_ID__C");
+		result.add("URL");
 		result.add("ACB_NAME");
+		result.add("CERTIFICATION_STATUS");
 		result.add("DEVELOPER_NAME");
 		result.add("PRODUCT_NAME");
 		result.add("PRODUCT_VERSION");
@@ -104,7 +111,9 @@ public class SurveillanceCsvPresenter {
 		List<String> firstRow = new ArrayList<String>();
 		firstRow.add("Update");
 		firstRow.add(data.getChplProductNumber());
+		firstRow.add(props.getProperty("chplUrlBegin") + "#/product/" + data.getId());
 		firstRow.add(data.getCertifyingBody().get("name").toString());
+		firstRow.add(data.getCertificationStatus().get("name").toString());
 		firstRow.add(data.getDeveloper().getName());
 		firstRow.add(data.getProduct().getName());
 		firstRow.add(data.getVersion().getVersion());
@@ -300,5 +309,13 @@ public class SurveillanceCsvPresenter {
 			ncRow.add("");
 		}
 		return ncRow;
+	}
+	
+	public Properties getProps() {
+		return props;
+	}
+
+	public void setProps(Properties props) {
+		this.props = props;
 	}
 }

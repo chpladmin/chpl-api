@@ -16,6 +16,7 @@ cacheInitializeTimeoutSecs=300
 oversightEmailDailyTo=kekey@ainq.com
 oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
 oversighEmailDailyContent=<h2>Check Attachment for Data</h2>
+oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
 suspendedDaysAllowed=30
 capApprovalDaysAllowed=75
 capStartDaysAllowed=10
