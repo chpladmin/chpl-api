@@ -5,10 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,42 +14,36 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.app.presenter.CertifiedProduct2014CsvPresenter;
-import gov.healthit.chpl.app.presenter.CertifiedProductCsvPresenter;
-import gov.healthit.chpl.app.presenter.CertifiedProductXmlPresenter;
-import gov.healthit.chpl.app.surveillance.presenter.NonconformityCsvPresenter;
-import gov.healthit.chpl.app.surveillance.presenter.SurveillanceCsvPresenter;
 import gov.healthit.chpl.app.surveillance.presenter.SurveillanceOversightCsvPresenter;
-import gov.healthit.chpl.app.surveillance.presenter.SurveillanceReportCsvPresenter;
 import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
-@Component("surveillanceApp")
-public class SurveillanceOversightReportApp {
+@Component("surveillanceDailyReportApp")
+public class SurveillanceOversightReportDailyApp {
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-	private static final Logger logger = LogManager.getLogger(SurveillanceOversightReportApp.class);
-
+	private static final Logger logger = LogManager.getLogger(SurveillanceOversightReportDailyApp.class);
+	private static final String FILENAME = "surveillance-oversight-daily-report.csv";
+	
 	private SimpleDateFormat timestampFormat;
 	private CertifiedProductDetailsManager cpdManager;
 	private CertifiedProductDAO certifiedProductDAO;
 	private SurveillanceOversightCsvPresenter presenter;
 	private SendMailUtil mailUtils;
 	
-    public SurveillanceOversightReportApp() {
+    public SurveillanceOversightReportDailyApp() {
     	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
     
 	public static void main( String[] args ) throws Exception {
 		int numDaysRuleBreaksBeforeMarkedOngoing = 1; // daily report
 		if(args.length > 1) {
-			//might also be 7 for a weekly report, 30 for monthly, etc
+			//could be another number if we want to count broken rules as new for 2 or 3 days
+			//after they are first broken
 			try {
 				Integer numDaysArg = new Integer(args[1]);
 				if(numDaysArg != null && numDaysArg > 0) {
@@ -62,9 +53,10 @@ public class SurveillanceOversightReportApp {
 				logger.error("Could not parse " + args[1] + " as an integer.");
 			}
 		}
+		
 		//read in properties - we need these to set up the data source context
 		Properties props = null;
-		InputStream in = SurveillanceOversightReportApp.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+		InputStream in = SurveillanceOversightReportDailyApp.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 		
 		if (in == null) {
 			props = null;
@@ -82,12 +74,13 @@ public class SurveillanceOversightReportApp {
 		 
 		 //init spring classes
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		 SurveillanceOversightReportApp app = new SurveillanceOversightReportApp();
+		 SurveillanceOversightReportDailyApp app = new SurveillanceOversightReportDailyApp();
 		 app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
 		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
 		 app.setPresenter((SurveillanceOversightCsvPresenter)context.getBean("surveillanceOversightCsvPresenter"));
 		 app.getPresenter().setProps(props);
 	     app.getPresenter().setNumDaysUntilOngoing(numDaysRuleBreaksBeforeMarkedOngoing);
+	     app.getPresenter().setIncludeOngoing(false);
 		 app.setMailUtils((SendMailUtil)context.getBean("SendMailUtil"));
 		 
 		 //where to store this file
@@ -116,26 +109,26 @@ public class SurveillanceOversightReportApp {
 		allCps.setProducts(allCertifiedProductDetails);
 		
         //write out a csv file containing all surveillance
-        String dailySurveillanceReportFilename = downloadFolder.getAbsolutePath() + File.separator + 
-        		"surveillance-oversight-report-daily.csv";
-        File dailySurveillanceReportFile = new File(dailySurveillanceReportFilename);
-        if(!dailySurveillanceReportFile.exists()) {
-        	dailySurveillanceReportFile.createNewFile();
+        String surveillanceReportFilename = downloadFolder.getAbsolutePath() + File.separator + FILENAME;
+        File surveillanceReportFile = new File(surveillanceReportFilename);
+        if(!surveillanceReportFile.exists()) {
+        	surveillanceReportFile.createNewFile();
         } else {
-        	dailySurveillanceReportFile.delete();
+        	surveillanceReportFile.delete();
         }
-        int numCsvRows = app.getPresenter().presentAsFile(dailySurveillanceReportFile, allCps);
+        int numCsvRows = app.getPresenter().presentAsFile(surveillanceReportFile, allCps);
        
-//        String toEmailProp = props.getProperty("oversightEmailDailyTo");
-//        String[] toEmail = toEmailProp.split(";");
-//        String subject = props.getProperty("oversightEmailDailySubject");
-//        String htmlMessage = props.getProperty("oversighEmailDailyContent");
-//        if(numCsvRows == 0) {
-//        	htmlMessage = props.getProperty("oversightEmailDailyNoContent");
-//        }
-//        List<File> files = new ArrayList<File>();
-//        files.add(dailySurveillanceReportFile);
-//        app.getMailUtils().sendEmail(toEmail, subject, htmlMessage, files, props);
+        String toEmailProp = props.getProperty("oversightEmailDailyTo");
+        String[] toEmail = toEmailProp.split(";");
+        String subject = props.getProperty("oversightEmailDailySubject");
+        String htmlMessage = props.getProperty("<h3>Daily Surveillance Report</h3>" +
+        		"<p>" + numCsvRows + " surveillance or nonconformities have newly broken oversight rules.</p>.");
+        if(numCsvRows == 0) {
+        	htmlMessage = props.getProperty("oversightEmailDailyNoContent");
+        }
+        List<File> files = new ArrayList<File>();
+        files.add(surveillanceReportFile);
+        app.getMailUtils().sendEmail(toEmail, subject, htmlMessage, files, props);
         context.close();
 	}
 	

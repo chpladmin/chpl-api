@@ -1,5 +1,6 @@
 package gov.healthit.chpl.app.surveillance.presenter;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -25,6 +26,8 @@ import gov.healthit.chpl.domain.SurveillanceOversightRule;
 public class SurveillanceOversightCsvPresenter extends SurveillanceReportCsvPresenter {
 	private static final Logger logger = LogManager.getLogger(SurveillanceOversightCsvPresenter.class);
 	private int numDaysUntilOngoing;
+	private boolean includeOngoing = false;
+	
 	@Autowired private RuleComplianceCalculator ruleCalculator;
 	
 	public SurveillanceOversightCsvPresenter() {
@@ -33,11 +36,35 @@ public class SurveillanceOversightCsvPresenter extends SurveillanceReportCsvPres
 	@Override
 	protected List<String> generateHeaderValues() {
 		List<String> result = super.generateHeaderValues();
-		result.add(13, SurveillanceOversightRule.LONG_SUSPENSION.getTitle());
-		result.add(14, SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle());
-		result.add(15, SurveillanceOversightRule.CAP_NOT_STARTED.getTitle());
-		result.add(16, SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle());
+		result.add(SurveillanceOversightRule.LONG_SUSPENSION.getColumnOffset(), SurveillanceOversightRule.LONG_SUSPENSION.getTitle());
+		result.add(SurveillanceOversightRule.CAP_NOT_APPROVED.getColumnOffset(), SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle());
+		result.add(SurveillanceOversightRule.CAP_NOT_STARTED.getColumnOffset(), SurveillanceOversightRule.CAP_NOT_STARTED.getTitle());
+		result.add(SurveillanceOversightRule.CAP_NOT_COMPLETED.getColumnOffset(), SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle());
 		return result;
+	}
+	
+	@Override
+	protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails data, Surveillance surv) {
+		List<List<String>> allSurveillanceRows = super.generateMultiRowValue(data, surv);
+		
+		//we only want to include surveillance rows that broke one or more rules, possibly only new rules
+		Iterator<List<String>> rowValueIter = allSurveillanceRows.iterator();
+		boolean includeRow = false;
+		while(rowValueIter.hasNext()) {
+			List<String> rowValues = rowValueIter.next();
+			String resultStr = rowValues.get(SurveillanceOversightRule.LONG_SUSPENSION.getColumnOffset());
+			OversightRuleResult result = OversightRuleResult.valueOf(resultStr);
+			if(includeOngoing && result == OversightRuleResult.NEW) {
+				includeRow = true;
+			} else if(result != OversightRuleResult.OK) {
+				includeRow = true;
+			}
+			if(!includeRow) {
+				rowValueIter.remove();
+			}
+		}
+		
+		return allSurveillanceRows;
 	}
 	
 	@Override
@@ -87,5 +114,13 @@ public class SurveillanceOversightCsvPresenter extends SurveillanceReportCsvPres
 	public void setProps(Properties props) {
 		super.setProps(props);
 		ruleCalculator.setProps(props);
+	}
+
+	public boolean isIncludeOngoing() {
+		return includeOngoing;
+	}
+
+	public void setIncludeOngoing(boolean includeOngoing) {
+		this.includeOngoing = includeOngoing;
 	}
 }
