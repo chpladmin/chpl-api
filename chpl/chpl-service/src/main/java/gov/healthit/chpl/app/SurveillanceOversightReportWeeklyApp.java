@@ -23,7 +23,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
-@Component("surveillanceDailyReportApp")
+@Component("surveillanceWeeklyReportApp")
 public class SurveillanceOversightReportWeeklyApp {
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
 	private static final Logger logger = LogManager.getLogger(SurveillanceOversightReportWeeklyApp.class);
@@ -40,7 +40,7 @@ public class SurveillanceOversightReportWeeklyApp {
     }
     
 	public static void main( String[] args ) throws Exception {
-		int numDaysRuleBreaksBeforeMarkedOngoing = 7; // weekly report
+		int numDaysRuleBreaksBeforeMarkedOngoing = 7; 
 		if(args.length > 1) {
 			//could be another number if we want to count broken rules as new for 2 or 3 days
 			//after they are first broken instead of a week
@@ -122,7 +122,8 @@ public class SurveillanceOversightReportWeeklyApp {
         String[] toEmail = toEmailProp.split(";");
         String subject = props.getProperty("oversightEmailWeeklySubject");
         String htmlMessage = props.getProperty("<h3>Weekly Surveillance Report</h3>" +
-        		"<p>" + numCsvRows + " surveillance or nonconformities have broken oversight rules.</p>.");        if(numCsvRows == 0) {
+        		"<p>" + numCsvRows + " surveillance or nonconformities have broken oversight rules.</p>.");        
+        if(numCsvRows == 0) {
         	htmlMessage = props.getProperty("oversightEmailWeeklyNoContent");
         }
         List<File> files = new ArrayList<File>();

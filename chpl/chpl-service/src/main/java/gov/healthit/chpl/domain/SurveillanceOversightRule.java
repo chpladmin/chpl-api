@@ -1,10 +1,10 @@
 package gov.healthit.chpl.domain;
 
 public enum SurveillanceOversightRule {
-	LONG_SUSPENSION("Lengthy Suspension Rule", 13),
-	CAP_NOT_APPROVED("CAP Not Approved Rule", 14),
-	CAP_NOT_STARTED("CAP Not Started Rule", 15),
-	CAP_NOT_COMPLETED("CAP Not Completed Rule", 16);
+	LONG_SUSPENSION("Lengthy Suspension Rule", 11),
+	CAP_NOT_APPROVED("CAP Not Approved Rule", 12),
+	CAP_NOT_STARTED("CAP Not Started Rule", 13),
+	CAP_NOT_COMPLETED("CAP Not Completed Rule", 14);
 	
 	private String title;
 	private int columnOffset;
