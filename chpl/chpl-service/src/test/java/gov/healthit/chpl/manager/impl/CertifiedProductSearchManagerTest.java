@@ -19,6 +19,9 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
+import gov.healthit.chpl.domain.search.BasicSearchResponse;
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import junit.framework.TestCase;
 
@@ -216,4 +219,45 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 	}
 	
+	@Test
+	@Transactional(readOnly = true)
+	public void testBasicSearch() {
+		BasicSearchResponse response = certifiedProductSearchManager.search();
+		
+		assertNotNull(response);
+		assertNotNull(response.getResults());
+		assertEquals(16, response.getResults().size());
+		
+		boolean checkedCriteria = false;
+		boolean checkedCqms = false;
+		for(gov.healthit.chpl.domain.search.CertifiedProductSearchResult result : response.getResults()) {
+			if(result instanceof CertifiedProductBasicSearchResult) {
+				CertifiedProductBasicSearchResult basicResult = (CertifiedProductBasicSearchResult) result;
+				if(result.getId().longValue() == 1L) {
+					checkedCriteria = true;
+					assertNotNull(basicResult.getCriteriaMet().size());
+					assertEquals(4, basicResult.getCriteriaMet().size());
+				}
+				if(result.getId().longValue() == 2L) {
+					checkedCqms = true;
+					assertNotNull(basicResult.getCqmsMet().size());
+					assertEquals(2, basicResult.getCqmsMet().size());
+				}
+			} else if(result instanceof CertifiedProductFlatSearchResult) {
+				CertifiedProductFlatSearchResult flatResult = (CertifiedProductFlatSearchResult) result;
+				if(result.getId().longValue() == 1L) {
+					checkedCriteria = true;
+					assertNotNull(flatResult.getCriteriaMet());
+					assertTrue(flatResult.getCriteriaMet().length() > 0);
+				}
+				if(result.getId().longValue() == 2L) {
+					checkedCqms = true;
+					assertNotNull(flatResult.getCqmsMet());
+					assertTrue(flatResult.getCqmsMet().length() > 0);
+				}
+			}
+		}
+		assertTrue(checkedCriteria);
+		assertTrue(checkedCqms);
+	}
 }

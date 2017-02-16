@@ -290,7 +290,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, 
-			CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, 
+			CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.BASIC_SEARCH,
 			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -803,7 +803,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ ")")
 	@Transactional(readOnly = false)
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.SEARCH, 
-			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+			CacheNames.BASIC_SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, CertifiedProductSearchDetails updateRequest) 
 			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {		
 		//if the updated certification status was suspended by onc or terminated by onc, 

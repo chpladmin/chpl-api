@@ -461,6 +461,22 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
+	@Cacheable(CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS)
+	public Set<CertificationCriterion> getCertificationCriterion() {
+
+		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
+		Set<CertificationCriterion> criterion = new HashSet<CertificationCriterion>();
+		
+		for (CertificationCriterionDTO dto : dtos) {
+			criterion.add( new CertificationCriterion(dto));
+		}
+		
+		return criterion;
+		
+	}
+	
+	@Transactional
+	@Override
 	@Cacheable(CacheNames.CQM_CRITERION_NUMBERS)
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple){
 
