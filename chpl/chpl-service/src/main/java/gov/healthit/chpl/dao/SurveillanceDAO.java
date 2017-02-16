@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.SurveillanceEntity;
 import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
+import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 
 public interface SurveillanceDAO {
 	public Long insertSurveillance(Surveillance surv);
@@ -42,4 +43,6 @@ public interface SurveillanceDAO {
 	public List<SurveillanceNonconformityStatus> getAllSurveillanceNonconformityStatusTypes();
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type);
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id);
+	public List<SurveillanceEntity> getAllSurveillance();
+	public List<SurveillanceNonconformityEntity> getAllSurveillanceNonConformities();
 }

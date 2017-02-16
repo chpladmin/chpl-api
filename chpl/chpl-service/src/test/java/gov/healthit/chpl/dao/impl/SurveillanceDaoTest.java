@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +38,8 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.entity.SurveillanceEntity;
+import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 import junit.framework.TestCase;
 
 
@@ -262,5 +265,21 @@ public class SurveillanceDaoTest extends TestCase {
 			assertNotNull(result.getName());
 			assertTrue(result.getName().length() > 0);
 		}
+	}
+	
+	@Test
+	@Transactional
+	public void testGetAllSurveillance() {
+		List<SurveillanceEntity> results = survDao.getAllSurveillance();
+		assertNotNull(results);
+		assertEquals(6, results.size());
+	}
+	
+	@Test
+	@Transactional
+	public void testGetAllSurveillanceNonConformities() {
+		List<SurveillanceNonconformityEntity> results = survDao.getAllSurveillanceNonConformities();
+		assertNotNull(results);
+		assertEquals(4, results.size());
 	}
 }
