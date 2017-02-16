@@ -33,7 +33,6 @@ public class CacheInitializor {
 	private Long tClearAllStart;
 	private Long tClearAllEnd;
 	private Double tClearAllElapsedSecs;
-	private Future<Boolean> isInitializePendingDone;
 	private Future<Boolean> isInitializeSearchOptionsDone;
 	private Future<Boolean> isInitializeCertificationIdsGetAllDone;
 	private Future<Boolean> isInitializeCertificationIdsGetAllWithProductsDone;
@@ -78,11 +77,6 @@ public class CacheInitializor {
 					}
 					isInitializeSearchOptionsDone = asynchronousCacheInitialization.initializeSearchOptions();
 					
-					if(isInitializePendingDone != null && !isInitializePendingDone.isDone()){
-						isInitializePendingDone.cancel(true);	
-					}
-					isInitializePendingDone = asynchronousCacheInitialization.initializePending();
-					
 					if(isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()){
 						isInitializeCertificationIdsGetAllDone.cancel(true);
 					}
@@ -117,10 +111,6 @@ public class CacheInitializor {
 			// Stop initializing caches if running
 			if(isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()){
 				isInitializeSearchOptionsDone.cancel(true);
-			}
-			
-			if(isInitializePendingDone != null && !isInitializePendingDone.isDone()){
-				isInitializePendingDone.cancel(true);	
 			}
 			
 			if(isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()){

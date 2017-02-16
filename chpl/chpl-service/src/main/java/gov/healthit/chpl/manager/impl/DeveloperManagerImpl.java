@@ -61,7 +61,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@Override
 	@Transactional(readOnly = true)
-	@Cacheable(CacheNames.allDevelopers)
+	@Cacheable(CacheNames.ALL_DEVELOPERS)
 	public List<DeveloperDTO> getAll() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAll();
 		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
@@ -71,7 +71,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@Cacheable(CacheNames.allDevelopersIncludingDeleted)
+	@Cacheable(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED)
 	public List<DeveloperDTO> getAllIncludingDeleted() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAllIncludingDeleted();
 		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
@@ -107,8 +107,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.basicSearch, CacheNames.search, 
-			CacheNames.countMultiFilterSearchResults, CacheNames.getDecertifiedDevelopers})
+	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES, 
+			CacheNames.SEARCH, CacheNames.BASIC_SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS, CacheNames.GET_DECERTIFIED_DEVELOPERS}, allEntries=true)
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO beforeDev = getById(developer.getId());
@@ -180,8 +180,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.basicSearch, CacheNames.search, 
-			CacheNames.countMultiFilterSearchResults})
+	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES, 
+			CacheNames.SEARCH, CacheNames.BASIC_SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		DeveloperDTO created = developerDao.create(dto);
@@ -205,8 +205,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {CacheNames.allDevelopers, CacheNames.allDevelopersIncludingDeleted, CacheNames.developerNames, CacheNames.basicSearch, CacheNames.search, 
-			CacheNames.countMultiFilterSearchResults, CacheNames.getDecertifiedDevelopers})
+	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES, 
+			CacheNames.SEARCH, CacheNames.BASIC_SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS, CacheNames.GET_DECERTIFIED_DEVELOPERS}, allEntries=true)
 	public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
@@ -282,7 +282,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	}
 	
 	@Transactional(readOnly = true)
-	@Cacheable(CacheNames.getDecertifiedDevelopers)
+	@Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
 	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException{
 		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();

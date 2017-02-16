@@ -395,7 +395,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	@Override
 	@Transactional
-	@Cacheable(CacheNames.countMultiFilterSearchResults)
+	@Cacheable(CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS)
 	public Long countMultiFilterSearchResults(SearchRequest searchRequest) {
 		
 		Query query = getCountQueryForSearchFilters(searchRequest);

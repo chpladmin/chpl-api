@@ -29,7 +29,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	
 	@Transactional(readOnly = true)
 	@Override
-	@Cacheable(CacheNames.basicSearch)
+	@Cacheable(CacheNames.BASIC_SEARCH)
 	public BasicSearchResponse search() {
 		List<CertifiedProductFlatSearchResult> results = basicCpSearchDao.getAllCertifiedProducts();
 		BasicSearchResponse response = new BasicSearchResponse();
@@ -39,7 +39,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	
 	@Transactional
 	@Override
-	@Cacheable(CacheNames.search)
+	@Cacheable(CacheNames.SEARCH)
 	public SearchResponse search(
 			SearchRequest searchRequest) {
 		

@@ -1,10 +1,10 @@
 # Release Notes
 
-## Verison TBD
-_Date TBD_
+## Verison 8.0.0
+_7 February 2017_
 
 ### Features Added
-* Add G1 and G2 macra measures to certified product upload, edit and detail display
+* Add G1 and G2 macra measures to certified product upload, edit and detail display *BREAKS BACKWARDS COMPATIBILITY*
 * Add functionality to get Meaningful Use User Accurate As Of Date and update it
 * Check certification date and additional software code vs supplied data for CP edit and update code if necessary
 * Add API call for decertified certified products with inactive certificates
@@ -13,10 +13,13 @@ _Date TBD_
 * Exclude Developers with status "Suspended by ONC" from the /decertifications/developers API call
 * Selectively evict caches in order to improve website performance
 
+### Bugs Fixed
+* Update 2014 validator retired test tool logic to handle CHPL-XXXXXX products that will not have an icsCode
+
 ---
 
 ## Version 7.1.0
-_Date 23 January 2017_
+_23 January 2017_
 
 ### Features Added
 * Improve website performance:
@@ -29,7 +32,7 @@ _Date 23 January 2017_
   * Add caching for /decertifications/certified_products
   * Update caching for /search_options API call
   * Cache underlying data that improves call speed for many other API calls
-* TO-DO DURING DEPLOYMENT: Add these lines to environment.properties:
+* Added properties to environment.properties related to cache timeout
   * `enableCacheInitialization=true`
   * `cacheClearTimeoutSecs=15`
   * `cacheInitializeTimeoutSecs=300`

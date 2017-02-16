@@ -1,25 +1,23 @@
 package gov.healthit.chpl.caching;
 
 public class CacheNames {
-	public static final String allCertIdsWithProducts = "allCertIdsWithProducts";
-	public static final String allCertIds = "allCertIds";
-	public static final String allDevelopers = "allDevelopers";
-	public static final String allDevelopersIncludingDeleted = "allDevelopersIncludingDeleted";
-	public static final String certBodyNames = "certBodyNames";
-	public static final String editionNames = "editionNames";
-	public static final String certificationStatuses = "certificationStatuses";
-	public static final String practiceTypeNames = "practiceTypeNames";
-	public static final String classificationNames = "classificationNames";
-	public static final String productNames = "productNames";
-	public static final String developerNames = "developerNames";
-	public static final String macrameasures = "macrameasures";
-	public static final String cqmCriterionNumbers = "cqmCriterionNumbers";
-	public static final String certificationCriterionNumbers = "certificationCriterionNumbers";
-	public static final String certificationCriterionWithEditions = "certificationCriterionWithEditions";
-	public static final String getByStatusName = "getByStatusName";
-	public static final String findByStatus = "findByStatus";
-	public static final String search = "search";
-	public static final String basicSearch = "basicSearch";
-	public static final String countMultiFilterSearchResults = "countMultiFilterSearchResults";
-	public static final String getDecertifiedDevelopers = "getDecertifiedDevelopers";
+	public static final String ALL_CERT_IDS_WITH_PRODUCTS = "allCertIdsWithProducts";
+	public static final String ALL_CERT_IDS = "allCertIds";
+	public static final String ALL_DEVELOPERS = "allDevelopers";
+	public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
+	public static final String CERT_BODY_NAMES = "certBodyNames";
+	public static final String EDITION_NAMES = "editionNames";
+	public static final String CERTIFICATION_STATUSES = "certificationStatuses";
+	public static final String PRACTICE_TYPE_NAMES = "practiceTypeNames";
+	public static final String CLASSIFICATION_NAMES = "classificationNames";
+	public static final String PRODUCT_NAMES = "productNames";
+	public static final String DEVELOPER_NAMES = "developerNames";
+	public static final String MACRA_MEASURES = "macrameasures";
+	public static final String CQM_CRITERION_NUMBERS = "cqmCriterionNumbers";
+	public static final String CERTIFICATION_CRITERION_NUMBERS = "certificationCriterionNumbers";
+	public static final String CERTIFICATION_CRITERION_WITH_EDITIONS = "certificationCriterionWithEditions";
+	public static final String SEARCH = "search";
+	public static final String BASIC_SEARCH = "basicSearch";
+	public static final String COUNT_MULTI_FILTER_SEARCH_RESULTS = "countMultiFilterSearchResults";
+	public static final String GET_DECERTIFIED_DEVELOPERS = "getDecertifiedDevelopers";
 }
