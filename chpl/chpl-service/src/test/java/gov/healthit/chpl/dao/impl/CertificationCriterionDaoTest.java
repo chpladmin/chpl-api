@@ -85,7 +85,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-1L);
 		dto.setNumber("CERT123");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(false);
 		dto.setTitle("Test Cert Criterion");
 		
@@ -101,7 +101,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
 		assertEquals(result.getNumber(), check.getNumber());
-		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
+//		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
 		assertEquals(result.getRequiresSed(), result.getRequiresSed());
 		assertEquals(result.getTitle(), result.getTitle());
 		
@@ -129,7 +129,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-1L);
 		dto.setNumber("CERT123");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(false);
 		dto.setTitle("Test Cert Criterion");
 		
@@ -146,7 +146,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-2L);
 		result.setNumber("CERT124");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(true);
 		dto.setTitle("Test Cert Criterion 1");
 		
@@ -164,7 +164,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
 		assertEquals(result.getNumber(), check.getNumber());
-		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
+//		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
 		assertEquals(result.getRequiresSed(), result.getRequiresSed());
 		assertEquals(result.getTitle(), result.getTitle());
 		
@@ -191,7 +191,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-1L);
 		dto.setNumber("CERT123");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(false);
 		dto.setTitle("Test Cert Criterion");
 		
@@ -207,7 +207,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
 		assertEquals(result.getNumber(), check.getNumber());
-		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
+//		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
 		assertEquals(result.getRequiresSed(), result.getRequiresSed());
 		assertEquals(result.getTitle(), result.getTitle());
 		
@@ -257,7 +257,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-1L);
 		dto.setNumber("CERT123");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(false);
 		dto.setTitle("Test Cert Criterion");
 		
@@ -273,7 +273,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
 		assertEquals(result.getNumber(), check.getNumber());
-		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
+//		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
 		assertEquals(result.getRequiresSed(), result.getRequiresSed());
 		assertEquals(result.getTitle(), result.getTitle());
 		

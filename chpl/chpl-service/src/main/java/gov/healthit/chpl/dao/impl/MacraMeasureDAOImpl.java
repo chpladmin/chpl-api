@@ -30,6 +30,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 	public List<MacraMeasureDTO> findAll() {
 		Query query = entityManager.createQuery("from MacraMeasureEntity mme "
 				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+				+ "LEFT OUTER JOIN FETCH cce.certificationEdition "
 				+ "WHERE (NOT mme.deleted = true)", MacraMeasureEntity.class );
 		List<MacraMeasureEntity> results = query.getResultList();
 		
@@ -65,6 +66,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 	private List<MacraMeasureEntity> getMeasuresByCertificationCriteria(String criteriaNumber) {
 		Query query = entityManager.createQuery( "FROM MacraMeasureEntity mme "
 				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+				+ "LEFT OUTER JOIN FETCH cce.certificationEdition "
 				+ "WHERE (NOT mme.deleted = true) "
 				+ "AND (UPPER(cce.number) = :criteriaNumber)", MacraMeasureEntity.class);
 		query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
@@ -75,6 +77,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 	private MacraMeasureEntity getMeasureByCertificationCriteriaAndValue(String criteriaNumber, String value) {
 		Query query = entityManager.createQuery( "FROM MacraMeasureEntity mme "
 				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+				+ "LEFT OUTER JOIN FETCH cce.certificationEdition "
 				+ "WHERE (NOT mme.deleted = true) "
 				+ "AND (UPPER(cce.number) = :criteriaNumber) "
 				+ "AND (UPPER(mme.value) = :value)", MacraMeasureEntity.class);
@@ -90,7 +93,8 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 	private MacraMeasureEntity getEntityById(Long id) {
 		MacraMeasureEntity entity = null;
 		Query query = entityManager.createQuery( "from MacraMeasureEntity mme "
-				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion "
+				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
+				+ "LEFT OUTER JOIN FETCH cce.certificationEdition "
 				+ "where (NOT mme.deleted = true) AND (mme.id = :entityid) ", MacraMeasureEntity.class );
 		query.setParameter("entityid", id);
 		List<MacraMeasureEntity> result = query.getResultList();

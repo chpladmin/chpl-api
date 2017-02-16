@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Features Added
+* Add basic search API endpoint to return all certified products
+
+---
+
 ## Verison 8.0.0
 _7 February 2017_
 
