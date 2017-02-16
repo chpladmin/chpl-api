@@ -57,11 +57,7 @@ public class CertificationCriterionEntity implements Serializable {
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_edition_id", unique=true, nullable = true, insertable=false, updatable= false)
 	private CertificationEditionEntity certificationEdition;
-//	
-//	@Basic(optional = true)
-//	@OneToMany(fetch = FetchType.LAZY, mappedBy="certificationCriterion")
-//	private List<CertificationResultEntity> certificationResult = new ArrayList<CertificationResultEntity>();
-//	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -87,11 +83,6 @@ public class CertificationCriterionEntity implements Serializable {
 	@Basic( optional = true )
 	@Column( length = 15  )
 	private String number;
-	
-//	@ManyToOne(fetch = FetchType.LAZY )
-//	@Basic( optional = true )
-//	@JoinColumn(name = "parent_criterion_id", nullable = true )
-//	private CertificationCriterionEntity parentCriterion;
 	
 	@Basic( optional = true )
 	@Column( name = "requires_sed"  )
@@ -308,24 +299,6 @@ public class CertificationCriterionEntity implements Serializable {
 		this.number = number;
 	}
 
-//	 /**
-//	 * Return the value associated with the column: parentCriterion.
-//	 * @return A CertificationCriterion object (this.parentCriterion)
-//	 */
-//	public CertificationCriterionEntity getParentCriterion() {
-//		return this.parentCriterion;
-//		
-//	}
-//
-//  
-//	 /**  
-//	 * Set the value related to the column: parentCriterion.
-//	 * @param parentCriterion the parentCriterion value you wish to set
-//	 */
-//	public void setParentCriterion(final CertificationCriterionEntity parentCriterion) {
-//		this.parentCriterion = parentCriterion;
-//	}
-
 	 /**
 	 * Return the value associated with the column: requiresSed.
 	 * @return A Boolean object (this.requiresSed)
@@ -394,13 +367,4 @@ public class CertificationCriterionEntity implements Serializable {
 	public void setCertificationEdition(CertificationEditionEntity certificationEdition) {
 		this.certificationEdition = certificationEdition;
 	}
-	
-//	public List<CertificationResultEntity> getCertificationResult() {
-//		return certificationResult;
-//	}
-//
-//	public void setCertificationResult(List<CertificationResultEntity> certificationResult) {
-//		this.certificationResult = certificationResult;
-//	}
-	
 }
