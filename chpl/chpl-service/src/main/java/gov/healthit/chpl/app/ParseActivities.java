@@ -505,10 +505,7 @@ public class ParseActivities{
 		 email.setEmailTo(props.getProperty("summaryEmail").toString().split(";"));
 		 email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		 String htmlPreText = "<pre><br>";
-		 String htmlPostText = "</br></pre>";
 		 StringBuilder emailMessage = new StringBuilder();
-				 emailMessage.append(htmlPreText);
 				 emailMessage.append("<ul><li>Date: " + calendarCounter.getTime() + "</li>");
 				 emailMessage.append("<li>Total Developers: " + this.totalDevelopers + "</li>");
 				 emailMessage.append("<li>Total Products: " + this.totalProducts + "</li>");
@@ -521,7 +518,6 @@ public class ParseActivities{
 				 emailMessage.append("<li>Total Non-conformities: " + this.totalNumNonConformities + "</li>");
 				 emailMessage.append("<li>Total Open Non-conformities: " + this.numOpenNonConformities + "</li>");
 				 emailMessage.append("<li>Total Closed Non-conformities: " + this.numClosedNonConformities + "</li></ul>");
-				 emailMessage.append(htmlPostText);
 		 email.setEmailMessage(emailMessage.toString());
 		 email.setProps(props);
 		 email.setFiles(files);
