@@ -335,7 +335,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 			if(cr.getNumber().equals("170.315 (a)(1)")) {
 				foundA1 = true;
 				assertNotNull(cr.getAllowedMacraMeasures());
-				assertEquals(1, cr.getAllowedMacraMeasures().size());
+				assertEquals(2, cr.getAllowedMacraMeasures().size());
 			}
 		}
 		assertTrue(foundA1);
