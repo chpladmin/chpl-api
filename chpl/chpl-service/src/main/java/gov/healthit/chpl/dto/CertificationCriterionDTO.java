@@ -18,7 +18,6 @@ public class CertificationCriterionDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private String number;
-//	private Long parentCriterionId;
 	private Boolean requiresSed;
 	private String title;
 	
@@ -38,13 +37,6 @@ public class CertificationCriterionDTO implements Serializable {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.number = entity.getNumber();
-//		
-//		if (!(entity.getParentCriterion() == null)){
-//			this.parentCriterionId = entity.getParentCriterion().getId();
-//		} else {
-//			this.parentCriterionId = null;
-//		}
-		
 		
 		this.requiresSed = entity.isRequiresSed();
 		this.title = entity.getTitle();
@@ -112,12 +104,6 @@ public class CertificationCriterionDTO implements Serializable {
 	public void setNumber(String number) {
 		this.number = number;
 	}
-//	public Long getParentCriterionId() {
-//		return parentCriterionId;
-//	}
-//	public void setParentCriterionId(Long parentCriterionId) {
-//		this.parentCriterionId = parentCriterionId;
-//	}
 	public Boolean getRequiresSed() {
 		return requiresSed;
 	}
