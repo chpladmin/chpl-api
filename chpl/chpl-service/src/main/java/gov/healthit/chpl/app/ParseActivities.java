@@ -507,6 +507,7 @@ public class ParseActivities{
 	 */
 	public void setEmailProperties(){
 		 email.setEmailTo(props.getProperty("summaryEmail").toString().split(";"));
+		 logger.info("Sending email to " + props.getProperty("summaryEmail").toString().split(";"));
 		 email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		 StringBuilder emailMessage = new StringBuilder();

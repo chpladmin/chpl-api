@@ -14,6 +14,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
@@ -255,7 +256,11 @@ public class SendMailUtil {
 		msg.setContent(multipart, "text/html");
 
 		// sends the e-mail
-		Transport.send(msg);
+		try {
+			Transport.send(msg);
+		} catch (SendFailedException e) {
+			logger.info(e);
+		}
 	}
 
 }
