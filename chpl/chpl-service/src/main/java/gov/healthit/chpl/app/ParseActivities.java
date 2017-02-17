@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,7 @@ import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 @Component("parseActivities")
 public class ParseActivities{
 	private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+	private static final Logger logger = LogManager.getLogger(ParseActivities.class);
 	private Email email;
 	public DeveloperDAO developerDAO;
 	public CertifiedProductDAO certifiedProductDAO;
@@ -134,6 +137,7 @@ public class ParseActivities{
 		 parseActivities.email.sendEmail(parseActivities.email.getEmailTo(), parseActivities.email.getEmailSubject(), 
 				 parseActivities.email.getEmailMessage(), 
 				  parseActivities.email.getProps(), parseActivities.email.getFiles());
+		 logger.info("Completed ParseActivities execution.");
 		 context.close();
 	}
 	
@@ -519,6 +523,7 @@ public class ParseActivities{
 				 emailMessage.append("<li>Total Open Non-conformities: " + this.numOpenNonConformities + "</li>");
 				 emailMessage.append("<li>Total Closed Non-conformities: " + this.numClosedNonConformities + "</li></ul>");
 		 email.setEmailMessage(emailMessage.toString());
+		 logger.info(emailMessage.toString());
 		 email.setProps(props);
 		 email.setFiles(files);
 	}
