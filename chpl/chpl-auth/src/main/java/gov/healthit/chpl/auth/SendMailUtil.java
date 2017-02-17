@@ -9,11 +9,13 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.mail.AuthenticationFailedException;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
@@ -255,7 +257,25 @@ public class SendMailUtil {
 		msg.setContent(multipart, "text/html");
 
 		// sends the e-mail
-		Transport.send(msg);
+		Boolean emailSentSuccessfully = false;
+		try {
+			Transport.send(msg);
+			emailSentSuccessfully = true;
+			logger.info("email sent successfully");
+		} catch (SendFailedException e) {
+			logger.info("SendFailedException. " + e.getMessage());
+		} catch (AuthenticationFailedException e) {
+			logger.info("AuthenticationFailedException. " + e.getMessage());
+		} catch (MessagingException e) {
+			logger.info("MessagingException. " + e.getMessage());
+		} catch (Exception e) {
+			logger.info("Exception while sending email. " + e.getMessage());
+		}
+
+		if (!emailSentSuccessfully) {
+			logger.info("Email did not send successfully.");
+		}
+
 	}
 
 }
