@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -456,18 +457,24 @@ public class SurveillanceController {
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="text/csv")
 	public void download(@RequestParam(value="type", required=false, defaultValue="") String type,
-			HttpServletRequest request, HttpServletResponse response) throws IOException {	
-		String downloadFileLocation = env.getProperty("downloadFolderPath");
-		String filenameToDownload = "surveillance-with-nonconformities.csv";
-		if(type.equalsIgnoreCase("all")) {
-			filenameToDownload = "surveillance-all.csv";
-		} else if(type.equalsIgnoreCase("basic")) {
-			filenameToDownload = "surveillance-basic-report.csv";
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		File downloadFile = null;
+		try {
+			if(type.equalsIgnoreCase("all")) {
+				downloadFile = survManager.getDownloadFile("surveillance-all.csv");
+			} else if(type.equalsIgnoreCase("basic")) {
+				downloadFile = survManager.getProtectedDownloadFile("surveillance-basic-report.csv");
+			} else {
+				downloadFile = survManager.getDownloadFile("surveillance-with-nonconformities.csv");
+			}
+		} catch(IOException ex) {
+			response.getWriter().append(ex.getMessage());
+			return;
 		}
-		
-		File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
-		if(!downloadFile.exists() || !downloadFile.canRead()) {
-			response.getWriter().write("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
+
+		if(downloadFile == null) {
+			response.getWriter().append("There was an error getting the file requested.");
 			return;
 		}
 		
