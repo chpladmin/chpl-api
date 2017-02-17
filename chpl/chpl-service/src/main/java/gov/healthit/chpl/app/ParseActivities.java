@@ -18,6 +18,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import javax.mail.AuthenticationFailedException;
+import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -135,8 +141,8 @@ public class ParseActivities{
 		 parseActivities.setFiles(parseActivities.getFiles());
 		 parseActivities.setEmailProperties();
 		 parseActivities.email.sendEmail(parseActivities.email.getEmailTo(), parseActivities.email.getEmailSubject(), 
-				 parseActivities.email.getEmailMessage(), 
-				  parseActivities.email.getProps(), parseActivities.email.getFiles());
+						 parseActivities.email.getEmailMessage(), 
+						  parseActivities.email.getProps(), parseActivities.email.getFiles());
 		 logger.info("Completed ParseActivities execution.");
 		 context.close();
 	}
@@ -507,7 +513,7 @@ public class ParseActivities{
 	 */
 	public void setEmailProperties(){
 		 email.setEmailTo(props.getProperty("summaryEmail").toString().split(";"));
-		 logger.info("Sending email to " + props.getProperty("summaryEmail").toString().split(";"));
+		 logger.info("Sending email to " + props.getProperty("summaryEmail").toString());
 		 email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		 StringBuilder emailMessage = new StringBuilder();
