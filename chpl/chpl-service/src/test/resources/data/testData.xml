@@ -643,6 +643,60 @@
 	<contact contact_id="-2" first_name="Administrator" last_name="Administrator" email="info@ainq.com" phone_number="(301) 560-6999" title="boss" signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	<contact contact_id="1" first_name="TEST" last_name="USER" email="test@ainq.com" phone_number="(301) 560-6999" title="employee" signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 
+	<surveillance id="-1" certified_product_id="10" friendly_id="SURV01" start_date="2016-01-06 12:43:00.015" 
+		end_date="2016-09-01 12:43:00.015" type_id="1" randomized_sites_used="4" creation_date="2016-01-06 12:42:00.000" 
+		last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
+	<surveillance id = "-2" certified_product_id="10" friendly_id="SURV02" start_date="2016-02-06 12:43:00.015" end_date="2016-09-01 12:43:00.015" 
+       type_id="2" randomized_sites_used="9" creation_date="2016-02-06 12:42:00.000" last_modified_date="2016-10-06 12:42:00.000" 
+       last_modified_user="-1" deleted="FALSE" />
+    <surveillance id = "-3" certified_product_id="10" friendly_id="SURV03" start_date="2016-04-06 12:43:00.015" end_date="2016-09-01 12:43:00.015" 
+       type_id="1" creation_date="2016-04-06 12:42:00.000" last_modified_date="2016-10-06 12:42:00.000" 
+       last_modified_user="-1" deleted="FALSE" />
+       
+    <surveillance_requirement id="-1" surveillance_id="-1" type_id="1" certification_criterion_id="61" requirement="170.523(k)(2)" 
+       result_id="1" creation_date="2016-04-06 12:42:00.000" last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" 
+       deleted="FALSE" />
+    <surveillance_requirement id="-2" surveillance_id="-1" type_id="2" result_id="1" creation_date="2016-04-06 12:42:00.000" 
+    last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
+    <surveillance_requirement id="-3" surveillance_id="-2" type_id="1" result_id="2" creation_date="2016-04-06 12:42:00.000" 
+    last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
+    
+    <surveillance_nonconformity id="-1" surveillance_requirement_id="-1" certification_criterion_id="61" 
+       nonconformity_type="170.314 (a)(1)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
+       corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
+       corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
+       summary="conformity" findings="N/A" sites_passed="4" total_sites="10" developer_explanation="test dev expl" 
+       resolution="test resolution" creation_date="2016-01-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
+       deleted="FALSE"/>
+    <surveillance_nonconformity id="-2" surveillance_requirement_id="-1"
+       nonconformity_type="170.523 (k)(2)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
+       corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
+       corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
+       summary="conformity" findings="N/A" sites_passed="1" total_sites="2" developer_explanation="test dev expl" 
+       resolution="test resolution" creation_date="2016-02-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
+       deleted="FALSE"/>
+    <surveillance_nonconformity id="-3" surveillance_requirement_id="-1"
+       nonconformity_type="170.523 (k)(2)" nonconformity_status_id="2" date_of_determination="2016-05-06 12:42:00.000" 
+       corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
+       corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
+       summary="conformity" findings="N/A" sites_passed="1" total_sites="2" developer_explanation="test dev expl" 
+       resolution="test resolution" creation_date="2016-03-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
+       deleted="FALSE"/>
+    <surveillance_nonconformity id="-4" surveillance_requirement_id="-2"
+       nonconformity_type="170.523 (k)(2)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
+       corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
+       corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
+       summary="conformity" findings="N/A" developer_explanation="test dev expl" 
+       resolution="test resolution" creation_date="2016-04-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
+       deleted="FALSE"/>
+    <surveillance_nonconformity id="-5" surveillance_requirement_id="-2"
+       nonconformity_type="170.523 (k)(2)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
+       corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
+       corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
+       summary="conformity" findings="N/A" sites_passed="4" total_sites="10" developer_explanation="test dev expl" 
+       resolution="test resolution" creation_date="2016-03-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
+       deleted="TRUE"/>    
+
 	<user user_id="-2" user_name="admin" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="-2" />
 	<user user_id="1" user_name="TESTUSER" password="$2a$10$hJnf2sF4hTE9W4UdOQcBZ.mGzTyPjHsHHdYXkVCG.2.R8a6b2JjDi" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
 	<user user_id="2" user_name="testUser2" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
