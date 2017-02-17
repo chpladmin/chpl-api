@@ -1,5 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.io.FileExistsException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -317,6 +320,27 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		} catch(MessagingException me) {
 			logger.error("Could not send questionable activity email", me);
 		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	public File getProtectedDownloadFile(String filenameToDownload) throws IOException {
+		return getFileFromDownloadFolder(filenameToDownload);
+	}
+	
+	@Override
+	public File getDownloadFile(String filenameToDownload) throws IOException {
+		return getFileFromDownloadFolder(filenameToDownload);
+	}
+	
+	private File getFileFromDownloadFolder(String filenameToDownload) throws IOException {
+		String downloadFileLocation = env.getProperty("downloadFolderPath");
+		
+		File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
+		if(!downloadFile.exists() || !downloadFile.canRead()) {
+			throw new IOException("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
+		} 
+		return downloadFile;
 	}
 	
 	private Surveillance convertToDomain(PendingSurveillanceEntity pr) {
