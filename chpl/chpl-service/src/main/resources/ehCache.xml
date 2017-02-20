@@ -199,7 +199,7 @@
 	</cache>
 	
 	<cache name="preFetchedBasicSearch"
-		maxEntriesLocalHeap="10000"
+		maxEntriesLocalHeap="300000"
 		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
