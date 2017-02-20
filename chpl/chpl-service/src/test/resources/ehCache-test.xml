@@ -17,10 +17,21 @@
 		<persistence strategy="localTempSwap" />
 	</cache>
 	
+	<defaultCache
+		maxEntriesLocalHeap="10000"
+		eternal="false"
+		timeToIdleSeconds="120"
+		timeToLiveSeconds="120"
+		maxEntriesLocalDisk="10000000"
+		diskExpiryThreadIntervalSeconds="120"
+		memoryStoreEvictionPolicy="LRU">
+		<persistence strategy="localTempSwap"/>
+	</defaultCache>
+	
 	<!-- /certification_ids caching -->
 	<cache name="allCertIdsWithProducts"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -30,8 +41,8 @@
 	</cache>
 	
 	<cache name="allCertIds"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -43,8 +54,8 @@
 	
 	<!-- /search_options caching -->
 	<cache name="allDevelopers"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -54,8 +65,8 @@
 	</cache>
 	
 	<cache name="allDevelopersIncludingDeleted"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -65,8 +76,8 @@
 	</cache>
 	
 	<cache name="certBodyNames"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -76,8 +87,8 @@
 	</cache>
 	
 	<cache name="editionNames"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -87,8 +98,8 @@
 	</cache>
 	
 	<cache name="certificationStatuses"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -98,8 +109,8 @@
 	</cache>
 	
 	<cache name="practiceTypeNames"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -109,8 +120,8 @@
 	</cache>
 	
 	<cache name="classificationNames"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -120,8 +131,8 @@
 	</cache>
 	
 	<cache name="productNames"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -131,8 +142,8 @@
 	</cache>
 	
 	<cache name="developerNames"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -143,7 +154,7 @@
 	
 	<cache name="macrameasures"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -153,8 +164,8 @@
 	</cache>
 	
 	<cache name="cqmCriterionNumbers"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -164,8 +175,8 @@
 	</cache>
 	
 	<cache name="certificationCriterionNumbers"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -176,7 +187,7 @@
 	
 	<cache name="certificationCriterionWithEditions"
 		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -188,8 +199,19 @@
 	
 	<!-- /search caching -->
 	<cache name="basicSearch"
+		maxEntriesLocalHeap="300000"
+		maxEntriesLocalDisk="10000000"
+		eternal="false"
+		diskSpoolBufferSizeMB="20"
+		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+	<cache name="preFetchedBasicSearch"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -199,8 +221,8 @@
 	</cache>
 	
 	<cache name="search"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -210,8 +232,8 @@
 	</cache>
 	
 	<cache name="countMultiFilterSearchResults"
-		maxEntriesLocalHeap="1000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
@@ -224,7 +246,7 @@
 	<!-- decertifications/certified_products/ -->
 	<cache name="getDecertifiedDevelopers"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
+		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
 		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
