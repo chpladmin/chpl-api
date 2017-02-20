@@ -6,17 +6,6 @@
 
 	<diskStore path="java.io.tmpdir" />
 	
-	<cache name="aclCache"
-		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
-		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="300" timeToLiveSeconds="600"
-		memoryStoreEvictionPolicy="LFU"
-		transactionalMode="off">
-		<persistence strategy="localTempSwap" />
-	</cache>
-	
 	<defaultCache
 		maxEntriesLocalHeap="10000"
 		eternal="false"
@@ -210,7 +199,7 @@
 	</cache>
 	
 	<cache name="preFetchedBasicSearch"
-		maxEntriesLocalHeap="10000"
+		maxEntriesLocalHeap="300000"
 		maxEntriesLocalDisk="10000000"
 		eternal="false"
 		diskSpoolBufferSizeMB="20"
