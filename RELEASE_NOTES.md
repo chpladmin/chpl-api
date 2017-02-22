@@ -25,11 +25,11 @@ _Date TBD_
  ```
   * To run the weekly report at 00:05 on Wednesdays, add a line like the below to crontab
  ```
- 5 0 * * 3 cd /directory/where/chpl/is/installed/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
+ 5 0 * * 3 cd /chpl/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
  ```
   * To run the daily report at 00:05 every day, add a line like the below to crontab
  ```
- 5 0 * * * cd /directory/where/chpl/is/installed/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
+ 5 0 * * * cd /chpl/chpl-api/chpl/chpl-service && ./generateDailySurveillanceOversightReport.sh
  ```
 
 ---
