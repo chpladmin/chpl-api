@@ -12,18 +12,19 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 @Component(value="longSuspensionComplianceChecker")
-public class LongSuspensionComplianceChecker extends SurveillanceRuleComplianceChecker {
+public class LongSuspensionComplianceChecker implements RuleComplianceChecker {
 	private int numDaysAllowed = 0;
 	
 	public SurveillanceOversightRule getRuleChecked() {
 		return SurveillanceOversightRule.LONG_SUSPENSION;
 	}
 	
-	public Date check(CertifiedProductSearchDetails cp, Surveillance surv) {
+	public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
 		Date result = null;
 		if(cp.getCertificationStatus().get("name").equals(CertificationStatusType.SuspendedByAcb.getName())) {
 			List<CertificationStatusEvent> statusEvents = cp.getCertificationEvents();

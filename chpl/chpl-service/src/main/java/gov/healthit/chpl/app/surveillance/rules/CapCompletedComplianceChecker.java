@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
-import gov.healthit.chpl.domain.OversightRuleResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 @Component(value="capCompletedComplianceChecker")
-public class CapCompletedComplianceChecker extends NonconformityRuleComplianceChecker {
+public class CapCompletedComplianceChecker implements RuleComplianceChecker {
 	int numDaysAllowed = 0;
 	
 	public SurveillanceOversightRule getRuleChecked() {
 		return SurveillanceOversightRule.CAP_NOT_COMPLETED;
 	}
-	public Date check(Surveillance surv, SurveillanceNonconformity nc) {
+	public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
 		Date result = null;
 		if(nc.getCapEndDate() == null) {
 			LocalDateTime capMustCompleteDate = null;

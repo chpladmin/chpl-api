@@ -113,6 +113,7 @@ public class SurveillanceOversightReportDailyApp {
         
         //were any rules broken?
         boolean anyRulesBroken = false;
+        
         for(SurveillanceOversightRule rule : brokenRules.keySet()) {
         	Integer brokenRuleCount = brokenRules.get(rule);
         	if(brokenRuleCount.intValue() > 0) {
@@ -123,10 +124,10 @@ public class SurveillanceOversightReportDailyApp {
         	htmlMessage += props.getProperty("oversightEmailDailyNoContent");
         } else {
         	htmlMessage += "<ul>";
-        	for(SurveillanceOversightRule rule : brokenRules.keySet()) {
-        		Integer brokenRuleCount = brokenRules.get(rule);
-            	htmlMessage += "<li>" + rule.getTitle() + ": " + brokenRuleCount + "</li>";
-            }
+        	htmlMessage += "<li>" + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.LONG_SUSPENSION) + "</li>";
+        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_APPROVED) + "</li>";
+        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_STARTED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_STARTED) + "</li>";
+        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_COMPLETED) + "</li>";
         	htmlMessage += "</ul>";
         }
        

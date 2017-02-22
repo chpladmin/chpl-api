@@ -8,18 +8,19 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
 
 @Component(value="capStartedComplianceChecker")
-public class CapStartedComplianceChecker extends NonconformityRuleComplianceChecker {
+public class CapStartedComplianceChecker implements RuleComplianceChecker {
 	private int numDaysAllowed = 0;
 	
 	public SurveillanceOversightRule getRuleChecked() {
 		return SurveillanceOversightRule.CAP_NOT_STARTED;
 	}
-	public Date check(Surveillance surv, SurveillanceNonconformity nc) {
+	public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
 		Date result = null;
 		if(nc.getCapStartDate() == null) {
 			LocalDateTime capApprovalDate = null;

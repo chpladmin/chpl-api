@@ -107,7 +107,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 	@Override
 	protected List<String> getNoNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<String> ncFields = super.getNoNonconformityFields(data, surv);
-		List<OversightRuleResult> oversightResult = ruleCalculator.calculateCompliance(data, surv);
+		List<OversightRuleResult> oversightResult = ruleCalculator.calculateCompliance(data, surv, null);
 		
 		if(oversightResult != null && oversightResult.size() > 0 &&
 			oversightResult.get(0) != null) {
@@ -129,8 +129,8 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 	@Override
 	protected List<String> getNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv, SurveillanceNonconformity nc) {
 		List<String> ncFields = super.getNonconformityFields(data, surv, nc);		
-		List<OversightRuleResult> oversightResult = ruleCalculator.calculateCompliance(data, surv);
-		oversightResult.addAll(ruleCalculator.calculateCompliance(data, surv, nc));
+		List<OversightRuleResult> oversightResult = ruleCalculator.calculateCompliance(data, surv, nc);
+		//oversightResult.addAll(ruleCalculator.calculateCompliance(data, surv, nc));
 		
 		for(OversightRuleResult currResult : oversightResult) {
 			String dateBrokenStr = "";

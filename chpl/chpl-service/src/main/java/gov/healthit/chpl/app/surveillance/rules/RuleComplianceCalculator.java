@@ -23,38 +23,32 @@ public class RuleComplianceCalculator {
 		
 	public RuleComplianceCalculator() {
 	}
-	
-	public List<OversightRuleResult> calculateCompliance(CertifiedProductSearchDetails cp, Surveillance surv) {
-		List<OversightRuleResult> survRuleResults = new ArrayList<OversightRuleResult>();
-		
-		OversightRuleResult lscResult = new OversightRuleResult();
-		lscResult.setRule(lsc.getRuleChecked());
-		lscResult.setDateBroken(lsc.check(cp, surv));
-		
-		//right now there's only one rule but leaving room for 
-		//the possibility that they may add more
-		survRuleResults.add(lscResult);
-		return survRuleResults;
-	}
 
 	public List<OversightRuleResult> calculateCompliance(
 			CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
 		List<OversightRuleResult> survRuleResults = new ArrayList<OversightRuleResult>();
 
-		OversightRuleResult capApprovalResult = new OversightRuleResult();
-		capApprovalResult.setRule(capApproval.getRuleChecked());
-		capApprovalResult.setDateBroken(capApproval.check(surv, nc));
-		survRuleResults.add(capApprovalResult);
+		OversightRuleResult lscResult = new OversightRuleResult();
+		lscResult.setRule(lsc.getRuleChecked());
+		lscResult.setDateBroken(lsc.check(cp, surv, null));
+		survRuleResults.add(lscResult);
 		
-		OversightRuleResult capStartedResult = new OversightRuleResult();
-		capStartedResult.setRule(capStarted.getRuleChecked());
-		capStartedResult.setDateBroken(capStarted.check(surv, nc));
-		survRuleResults.add(capStartedResult);
-		
-		OversightRuleResult capCompletedResult = new OversightRuleResult();
-		capCompletedResult.setRule(capCompleted.getRuleChecked());
-		capCompletedResult.setDateBroken(capCompleted.check(surv, nc));
-		survRuleResults.add(capCompletedResult);
+		if(nc != null) {
+			OversightRuleResult capApprovalResult = new OversightRuleResult();
+			capApprovalResult.setRule(capApproval.getRuleChecked());
+			capApprovalResult.setDateBroken(capApproval.check(cp, surv, nc));
+			survRuleResults.add(capApprovalResult);
+			
+			OversightRuleResult capStartedResult = new OversightRuleResult();
+			capStartedResult.setRule(capStarted.getRuleChecked());
+			capStartedResult.setDateBroken(capStarted.check(cp, surv, nc));
+			survRuleResults.add(capStartedResult);
+			
+			OversightRuleResult capCompletedResult = new OversightRuleResult();
+			capCompletedResult.setRule(capCompleted.getRuleChecked());
+			capCompletedResult.setDateBroken(capCompleted.check(cp, surv, nc));
+			survRuleResults.add(capCompletedResult);
+		}
 		return survRuleResults;
 	}
 
