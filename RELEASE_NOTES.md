@@ -12,20 +12,26 @@ _Date TBD_
 * Add daily and weekly surveillance oversight reports to calculate which surveillance items have broken a given set of rules.
   * TODO DURING DEPLOYMENT:
   * Add the following properties to src-{env}.properties:
-  `#oversight email properties 
-   oversightEmailDailyTo=kekey@ainq.com
-   oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
-   oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
-   oversightEmailWeeklyTo=kekey@ainq.com
-   oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
-   oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
-   suspendedDaysAllowed=30
-   capApprovalDaysAllowed=75  
-   capStartDaysAllowed=10`
+ ```
+ #oversight email properties 
+ oversightEmailDailyTo=kekey@ainq.com
+ oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
+ oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
+ oversightEmailWeeklyTo=kekey@ainq.com
+ oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
+ oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
+ suspendedDaysAllowed=30
+ capApprovalDaysAllowed=75  
+ capStartDaysAllowed=10
+ ```
   * Add line to the crontab to run the weekly report (at 00:05 on wednesdays in example below)
-  `5 0 * * 4 cd /home/ldap/andrew.larned/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh`
+ ```
+ 5 0 * * 4 cd /home/ldap/andrew.larned/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
+ ```
   * Add line to the crontab to run the daily report (at 00:05 every day in the example below)
-  `5 0 * * * cd /home/ldap/andrew.larned/chpl-api/chpl/chpl-service && ./generateDailySurveillanceOversightReport.sh`
+```
+5 0 * * * cd /home/ldap/andrew.larned/chpl-api/chpl/chpl-service && ./generateDailySurveillanceOversightReport.sh
+```
 
 ---
 
