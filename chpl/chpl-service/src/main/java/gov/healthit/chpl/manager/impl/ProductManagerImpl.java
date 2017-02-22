@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ClearBasicSearch;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -73,7 +74,8 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.BASIC_SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
 	public ProductDTO create(ProductDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		//check that the developer of this product is Active
 		if(dto.getDeveloperId() == null) {
@@ -100,7 +102,8 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.BASIC_SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
 	public ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		ProductDTO beforeDTO = productDao.getById(dto.getId());
@@ -137,7 +140,8 @@ public class ProductManagerImpl implements ProductManager {
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.BASIC_SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
 	public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();

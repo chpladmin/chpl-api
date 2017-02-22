@@ -6,6 +6,8 @@ _Date TBD_
 ### Features Added
 * Add basic search API endpoint to return all certified products
 * Add surveillance statistics to weekly email
+* Protect basic surveillance report and only allow download by ONC ADMIN and ONC STAFF
+* Add functionality to allow a "rolling cache" that refreshes the cache asynchronously while allowing the user to view currently available cached data
 
 ---
 
