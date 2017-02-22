@@ -10,27 +10,26 @@ _Date TBD_
 * Add functionality to allow a "rolling cache" that refreshes the cache asynchronously while allowing the user to view currently available cached data
 * Add columns to surveillance reports (ACB Name, certification status, hyperlink to CHPL listing) and reformat dates (yyyy/mm/dd)
 * Add daily and weekly surveillance oversight reports to calculate which surveillance items have broken a given set of rules.
-  * TODO DURING DEPLOYMENT:
-  * Add the following properties to src-{env}.properties:
+  * Environment properties have been added:
  ```
  #oversight email properties 
- oversightEmailDailyTo=kekey@ainq.com
+ oversightEmailDailyTo=sample@email.com
  oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
  oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
- oversightEmailWeeklyTo=kekey@ainq.com
+ oversightEmailWeeklyTo=sample@email.com
  oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
  oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
  suspendedDaysAllowed=30
  capApprovalDaysAllowed=75  
  capStartDaysAllowed=10
  ```
-  * Add line to the crontab to run the weekly report (at 00:05 on wednesdays in example below)
+  * To run the weekly report at 00:05 on Wednesdays, add a line like the below to crontab
  ```
- 5 0 * * 3 cd /home/ldap/andrew.larned/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
+ 5 0 * * 3 cd /directory/where/chpl/is/installed/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
  ```
-  * Add line to the crontab to run the daily report (at 00:05 every day in the example below)
+  * To run the daily report at 00:05 every day, add a line like the below to crontab
  ```
- 5 0 * * * cd /home/ldap/andrew.larned/chpl-api/chpl/chpl-service && ./generateDailySurveillanceOversightReport.sh
+ 5 0 * * * cd /directory/where/chpl/is/installed/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
  ```
 
 ---
