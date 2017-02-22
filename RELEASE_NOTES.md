@@ -29,9 +29,9 @@ _Date TBD_
  5 0 * * 4 cd /home/ldap/andrew.larned/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
  ```
   * Add line to the crontab to run the daily report (at 00:05 every day in the example below)
-```
-5 0 * * * cd /home/ldap/andrew.larned/chpl-api/chpl/chpl-service && ./generateDailySurveillanceOversightReport.sh
-```
+ ```
+ 5 0 * * * cd /home/ldap/andrew.larned/chpl-api/chpl/chpl-service && ./generateDailySurveillanceOversightReport.sh
+ ```
 
 ---
 
