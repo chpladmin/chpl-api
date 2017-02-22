@@ -38,8 +38,7 @@ public class SurveillanceCsvPresenter {
 		dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
 	}
 	
-	public int presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
-		int numRows = 0;
+	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
 		FileWriter writer = null;
 		CSVPrinter csvPrinter = null;
 		try {
@@ -51,7 +50,6 @@ public class SurveillanceCsvPresenter {
 				if(cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
 					for(Surveillance currSurveillance : cp.getSurveillance()) {
 						List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
-						numRows += rowValues.size();
 						for(List<String> rowValue : rowValues) {
 							csvPrinter.printRecord(rowValue);
 						}
@@ -68,7 +66,6 @@ public class SurveillanceCsvPresenter {
 				csvPrinter.close();
 			} catch(Exception ignore) {}
 		}
-		return numRows;
 	}
 
 	protected List<String> generateHeaderValues() {

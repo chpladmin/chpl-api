@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -13,7 +14,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.domain.OversightRuleResult;
 
 @Component(value="longSuspensionComplianceChecker")
 public class LongSuspensionComplianceChecker extends SurveillanceRuleComplianceChecker {
@@ -22,8 +22,9 @@ public class LongSuspensionComplianceChecker extends SurveillanceRuleComplianceC
 	public SurveillanceOversightRule getRuleChecked() {
 		return SurveillanceOversightRule.LONG_SUSPENSION;
 	}
-	public OversightRuleResult check(CertifiedProductSearchDetails cp, Surveillance surv) {
-		OversightRuleResult result = OversightRuleResult.OK;
+	
+	public Date check(CertifiedProductSearchDetails cp, Surveillance surv) {
+		Date result = null;
 		if(cp.getCertificationStatus().get("name").equals(CertificationStatusType.SuspendedByAcb.getName())) {
 			List<CertificationStatusEvent> statusEvents = cp.getCertificationEvents();
 			//find the most recent one
@@ -41,11 +42,10 @@ public class LongSuspensionComplianceChecker extends SurveillanceRuleComplianceC
 						    ZoneId.systemDefault());
 				Duration timeBetween = Duration.between(statusDate, LocalDateTime.now());
 				long numDays = timeBetween.toDays();
-				if(numDays == getNumDaysAllowed()+getDaysUntilOngoing()) {
-					result = OversightRuleResult.NEW;
-				} else if(numDays > getNumDaysAllowed()+getDaysUntilOngoing()) {
-					result = OversightRuleResult.ONGOING;
-				}
+				if(numDays > getNumDaysAllowed()) {
+					LocalDateTime dateBroken = statusDate.plusDays(getNumDaysAllowed()+1);
+			        result = Date.from(dateBroken.atZone(ZoneId.systemDefault()).toInstant());
+				} 
 			}
 		}
 		return result;

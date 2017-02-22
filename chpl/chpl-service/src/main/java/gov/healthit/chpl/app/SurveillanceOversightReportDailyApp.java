@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,12 +15,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.app.surveillance.presenter.SurveillanceOversightCsvPresenter;
+import gov.healthit.chpl.app.surveillance.presenter.SurveillanceOversightNewBrokenRulesCsvPresenter;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
@@ -32,28 +34,14 @@ public class SurveillanceOversightReportDailyApp {
 	private SimpleDateFormat timestampFormat;
 	private CertifiedProductDetailsManager cpdManager;
 	private CertifiedProductDAO certifiedProductDAO;
-	private SurveillanceOversightCsvPresenter presenter;
+	private SurveillanceOversightNewBrokenRulesCsvPresenter presenter;
 	private SendMailUtil mailUtils;
 	
     public SurveillanceOversightReportDailyApp() {
     	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
     
-	public static void main( String[] args ) throws Exception {
-		int numDaysRuleBreaksBeforeMarkedOngoing = 1; // daily report
-		if(args.length > 1) {
-			//could be another number if we want to count broken rules as new for 2 or 3 days
-			//after they are first broken
-			try {
-				Integer numDaysArg = new Integer(args[1]);
-				if(numDaysArg != null && numDaysArg > 0) {
-					numDaysRuleBreaksBeforeMarkedOngoing = numDaysArg.intValue();
-				}
-			} catch(NumberFormatException nfe) {
-				logger.error("Could not parse " + args[1] + " as an integer.");
-			}
-		}
-		
+	public static void main( String[] args ) throws Exception {		
 		//read in properties - we need these to set up the data source context
 		Properties props = null;
 		InputStream in = SurveillanceOversightReportDailyApp.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
@@ -77,10 +65,8 @@ public class SurveillanceOversightReportDailyApp {
 		 SurveillanceOversightReportDailyApp app = new SurveillanceOversightReportDailyApp();
 		 app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
 		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-		 app.setPresenter((SurveillanceOversightCsvPresenter)context.getBean("surveillanceOversightCsvPresenter"));
+		 app.setPresenter((SurveillanceOversightNewBrokenRulesCsvPresenter)context.getBean("surveillanceOversightNewBrokenRulesCsvPresenter"));
 		 app.getPresenter().setProps(props);
-	     app.getPresenter().setNumDaysUntilOngoing(numDaysRuleBreaksBeforeMarkedOngoing);
-	     app.getPresenter().setIncludeOngoing(false);
 		 app.setMailUtils((SendMailUtil)context.getBean("SendMailUtil"));
 		 
 		 //where to store this file
@@ -116,16 +102,34 @@ public class SurveillanceOversightReportDailyApp {
         } else {
         	surveillanceReportFile.delete();
         }
-        int numCsvRows = app.getPresenter().presentAsFile(surveillanceReportFile, allCps);
-       
+        
+        app.getPresenter().presentAsFile(surveillanceReportFile, allCps);
+        Map<SurveillanceOversightRule, Integer> brokenRules = app.getPresenter().getNewBrokenRulesCounts();
+        
         String toEmailProp = props.getProperty("oversightEmailDailyTo");
         String[] toEmail = toEmailProp.split(";");
         String subject = props.getProperty("oversightEmailDailySubject");
-        String htmlMessage = props.getProperty("<h3>Daily Surveillance Report</h3>" +
-        		"<p>" + numCsvRows + " surveillance or nonconformities have newly broken oversight rules.</p>.");
-        if(numCsvRows == 0) {
-        	htmlMessage = props.getProperty("oversightEmailDailyNoContent");
+        String htmlMessage = "<h3>Daily Surveillance Report</h3>";
+        
+        //were any rules broken?
+        boolean anyRulesBroken = false;
+        for(SurveillanceOversightRule rule : brokenRules.keySet()) {
+        	Integer brokenRuleCount = brokenRules.get(rule);
+        	if(brokenRuleCount.intValue() > 0) {
+        		anyRulesBroken = true;
+        	}
         }
+        if(!anyRulesBroken) {
+        	htmlMessage += props.getProperty("oversightEmailDailyNoContent");
+        } else {
+        	htmlMessage += "<ul>";
+        	for(SurveillanceOversightRule rule : brokenRules.keySet()) {
+        		Integer brokenRuleCount = brokenRules.get(rule);
+            	htmlMessage += "<li>" + rule.getTitle() + ": " + brokenRuleCount + "</li>";
+            }
+        	htmlMessage += "</ul>";
+        }
+       
         List<File> files = new ArrayList<File>();
         files.add(surveillanceReportFile);
         app.getMailUtils().sendEmail(toEmail, subject, htmlMessage, files, props);
@@ -156,11 +160,11 @@ public class SurveillanceOversightReportDailyApp {
 		this.cpdManager = cpdManager;
 	}
 
-	public SurveillanceOversightCsvPresenter getPresenter() {
+	public SurveillanceOversightNewBrokenRulesCsvPresenter getPresenter() {
 		return presenter;
 	}
 
-	public void setPresenter(SurveillanceOversightCsvPresenter presenter) {
+	public void setPresenter(SurveillanceOversightNewBrokenRulesCsvPresenter presenter) {
 		this.presenter = presenter;
 	}
 

@@ -1,26 +1,20 @@
-package gov.healthit.chpl.app.surveillance;
+package gov.healthit.chpl.app.surveillance.rules;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.app.surveillance.rules.CapApprovalComplianceChecker;
-import gov.healthit.chpl.app.surveillance.rules.CapCompletedComplianceChecker;
-import gov.healthit.chpl.app.surveillance.rules.CapStartedComplianceChecker;
-import gov.healthit.chpl.app.surveillance.rules.LongSuspensionComplianceChecker;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.OversightRuleResult;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.SurveillanceOversightRule;
 
 @Component("ruleComplianceCalculator")
 public class RuleComplianceCalculator {
 	private Properties props;
-	private int numDaysUntilOngoing;
 	
 	@Autowired private LongSuspensionComplianceChecker lsc;
 	@Autowired private CapApprovalComplianceChecker capApproval;
@@ -30,27 +24,38 @@ public class RuleComplianceCalculator {
 	public RuleComplianceCalculator() {
 	}
 	
-	public Map<SurveillanceOversightRule, OversightRuleResult> calculateCompliance(CertifiedProductSearchDetails cp, Surveillance surv) {
-		Map<SurveillanceOversightRule, OversightRuleResult> ruleCompliance
-			= new HashMap<SurveillanceOversightRule, OversightRuleResult>();
-	
-		OversightRuleResult result = lsc.check(cp, surv);
-		ruleCompliance.put(lsc.getRuleChecked(), result);
-		return ruleCompliance;
+	public List<OversightRuleResult> calculateCompliance(CertifiedProductSearchDetails cp, Surveillance surv) {
+		List<OversightRuleResult> survRuleResults = new ArrayList<OversightRuleResult>();
+		
+		OversightRuleResult lscResult = new OversightRuleResult();
+		lscResult.setRule(lsc.getRuleChecked());
+		lscResult.setDateBroken(lsc.check(cp, surv));
+		
+		//right now there's only one rule but leaving room for 
+		//the possibility that they may add more
+		survRuleResults.add(lscResult);
+		return survRuleResults;
 	}
 
-	public Map<SurveillanceOversightRule, OversightRuleResult> calculateCompliance(
+	public List<OversightRuleResult> calculateCompliance(
 			CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
-		Map<SurveillanceOversightRule, OversightRuleResult> ruleCompliance
-			= new HashMap<SurveillanceOversightRule, OversightRuleResult>();
+		List<OversightRuleResult> survRuleResults = new ArrayList<OversightRuleResult>();
+
+		OversightRuleResult capApprovalResult = new OversightRuleResult();
+		capApprovalResult.setRule(capApproval.getRuleChecked());
+		capApprovalResult.setDateBroken(capApproval.check(surv, nc));
+		survRuleResults.add(capApprovalResult);
 		
-		OversightRuleResult result = capApproval.check(surv, nc);
-		ruleCompliance.put(capApproval.getRuleChecked(), result);
-		result = capStarted.check(surv, nc);
-		ruleCompliance.put(capStarted.getRuleChecked(), result);
-		result = capCompleted.check(surv, nc);
-		ruleCompliance.put(capCompleted.getRuleChecked(), result);
-		return ruleCompliance;
+		OversightRuleResult capStartedResult = new OversightRuleResult();
+		capStartedResult.setRule(capStarted.getRuleChecked());
+		capStartedResult.setDateBroken(capStarted.check(surv, nc));
+		survRuleResults.add(capStartedResult);
+		
+		OversightRuleResult capCompletedResult = new OversightRuleResult();
+		capCompletedResult.setRule(capCompleted.getRuleChecked());
+		capCompletedResult.setDateBroken(capCompleted.check(surv, nc));
+		survRuleResults.add(capCompletedResult);
+		return survRuleResults;
 	}
 
 	public Properties getProps() {
@@ -62,19 +67,6 @@ public class RuleComplianceCalculator {
 		lsc.setNumDaysAllowed(new Integer(props.getProperty("suspendedDaysAllowed")).intValue());
 		capApproval.setNumDaysAllowed(new Integer(props.getProperty("capApprovalDaysAllowed")).intValue());
 		capStarted.setNumDaysAllowed(new Integer(props.getProperty("capStartDaysAllowed")).intValue());
-	}
-
-	public int getNumDaysUntilOngoing() {
-		return numDaysUntilOngoing;
-	}
-
-	public void setNumDaysUntilOngoing(int numDaysUntilOngoing) {
-		this.numDaysUntilOngoing = numDaysUntilOngoing;
-		
-		lsc.setDaysUntilOngoing(numDaysUntilOngoing);
-		capApproval.setDaysUntilOngoing(numDaysUntilOngoing);
-		capStarted.setDaysUntilOngoing(numDaysUntilOngoing);
-		capCompleted.setDaysUntilOngoing(numDaysUntilOngoing);
 	}
 
 	public LongSuspensionComplianceChecker getLsc() {

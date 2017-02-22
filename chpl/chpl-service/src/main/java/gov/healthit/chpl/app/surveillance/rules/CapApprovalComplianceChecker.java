@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
@@ -19,8 +20,9 @@ public class CapApprovalComplianceChecker extends NonconformityRuleComplianceChe
 	public SurveillanceOversightRule getRuleChecked() {
 		return SurveillanceOversightRule.CAP_NOT_APPROVED;
 	}
-	public OversightRuleResult check(Surveillance surv, SurveillanceNonconformity nc) {
-		OversightRuleResult result = OversightRuleResult.OK;
+	
+	public Date check(Surveillance surv, SurveillanceNonconformity nc) {
+		Date result = null;
 		
 		if(nc.getCapApprovalDate() == null) {
 			LocalDateTime capDateOfDetermination = null;
@@ -30,10 +32,9 @@ public class CapApprovalComplianceChecker extends NonconformityRuleComplianceChe
 					    ZoneId.systemDefault());
 				Duration timeBetween = Duration.between(capDateOfDetermination, LocalDateTime.now());
 				long numDays = timeBetween.toDays();
-				if(numDays == getNumDaysAllowed()+getDaysUntilOngoing()) {
-					result = OversightRuleResult.NEW;
-				} else if(numDays > getNumDaysAllowed()+getDaysUntilOngoing()) {
-					result = OversightRuleResult.ONGOING;
+				if(numDays > getNumDaysAllowed()) {
+					LocalDateTime dateBroken = capDateOfDetermination.plusDays(getNumDaysAllowed()+1);
+			        result = Date.from(dateBroken.atZone(ZoneId.systemDefault()).toInstant());
 				}
 			}
 		}
