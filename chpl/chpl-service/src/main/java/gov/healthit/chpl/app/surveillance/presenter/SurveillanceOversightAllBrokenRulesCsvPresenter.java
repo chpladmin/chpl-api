@@ -110,7 +110,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		List<OversightRuleResult> oversightResult = ruleCalculator.calculateCompliance(data, surv, null);
 		
 		if(oversightResult != null && oversightResult.size() > 0 &&
-			oversightResult.get(0) != null) {
+			oversightResult.get(0) != null && oversightResult.get(0).getDateBroken() != null) {
 			LocalDateTime dateBroken = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(oversightResult.get(0).getDateBroken().getTime()), 
 				    ZoneId.systemDefault());
