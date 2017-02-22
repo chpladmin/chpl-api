@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.presenter;
+package gov.healthit.chpl.app.surveillance.presenter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -10,6 +10,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -21,9 +22,11 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  * @author kekey
  *
  */
+@Component("surveillanceNonconformityCsvPresenter")
 public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 	private static final Logger logger = LogManager.getLogger(NonconformityCsvPresenter.class);
 	
+	@Override
 	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
 		FileWriter writer = null;
 		CSVPrinter csvPrinter = null;
