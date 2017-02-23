@@ -17,6 +17,7 @@ public class Surveillance implements Serializable {
 	private SurveillanceType type;
 	private Integer randomizedSitesUsed;
 	private Set<SurveillanceRequirement> requirements;
+	private String authority;
 	
 	private Set<String> errorMessages;
 	
@@ -104,4 +105,13 @@ public class Surveillance implements Serializable {
 	public void setFriendlyId(String friendlyId) {
 		this.friendlyId = friendlyId;
 	}
+
+	public String getAuthority() {
+		return authority;
+	}
+
+	public void setAuthority(String authority) {
+		this.authority = authority;
+	}
+
 }

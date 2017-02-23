@@ -66,6 +66,9 @@ public class SurveillanceEntity {
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
 	
+	@Column(name = "user_permission_id", insertable = false, updatable = true)
+	private Long userPermissionId;
+	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "surveillanceId"  )
 	@Basic( optional = false )
 	@Column( name = "surveillance_id", nullable = false  )
@@ -175,5 +178,13 @@ public class SurveillanceEntity {
 
 	public void setFriendlyId(String friendlyId) {
 		this.friendlyId = friendlyId;
+	}
+
+	public Long getUserPermissionId() {
+		return userPermissionId;
+	}
+
+	public void setUserPermissionId(Long userPermissionId) {
+		this.userPermissionId = userPermissionId;
 	}
 }

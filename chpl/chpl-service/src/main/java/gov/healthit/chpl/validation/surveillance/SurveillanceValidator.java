@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.domain.Authority;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -41,6 +44,7 @@ public class SurveillanceValidator {
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired CertificationResultDetailsDAO certResultDetailsDao;;
 	@Autowired CertificationCriterionDAO criterionDao;
+	@Autowired UserPermissionDAO userPermissionDao;
 	
 	public void validate(Surveillance surv) {
 		CertifiedProductDetailsDTO cpDetails = null;
@@ -131,6 +135,24 @@ public class SurveillanceValidator {
 				!surv.getType().getName().equalsIgnoreCase("Randomized")) {
 			if(surv.getRandomizedSitesUsed() != null && surv.getRandomizedSitesUsed().intValue() >= 0) {
 				surv.getErrorMessages().add("Number of randomized sites used is not applicable for " + surv.getType().getName() + " surveillance.");
+			}
+		}
+		
+		if(surv.getAuthority() == null){
+			surv.getErrorMessages().add("A surveillance authority is required but was null.");
+		}
+		else{
+			try {
+				if(surv.getAuthority() != Authority.ROLE_ONC_STAFF && surv.getAuthority() != Authority.ROLE_ACB_ADMIN){
+					surv.getErrorMessages().add("User must have authority for " + Authority.ROLE_ONC_STAFF + " or " 
+							+ Authority.ROLE_ACB_ADMIN);
+				}
+				Long id = userPermissionDao.getIdFromAuthority(surv.getAuthority());
+				if(id == null){
+					surv.getErrorMessages().add("No user permission id exists with authority " + surv.getAuthority());
+				}
+			} catch (UserPermissionRetrievalException e) {
+				surv.getErrorMessages().add("No user permission id exists with authority " + surv.getAuthority());
 			}
 		}
 		

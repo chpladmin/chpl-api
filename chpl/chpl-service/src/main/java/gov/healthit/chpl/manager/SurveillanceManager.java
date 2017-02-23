@@ -18,9 +18,9 @@ public interface SurveillanceManager {
 	public void validate(Surveillance surveillance);
 	public void sendSuspiciousActivityEmail(Surveillance questionableSurv);
 	
-	public Long createSurveillance(Long abcId, Surveillance surv);
+	public Long createSurveillance(Long abcId, Surveillance surv) throws Exception;
 	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc);
-	public void updateSurveillance(Long abcId, Surveillance surv);
+	public void updateSurveillance(Long acbId, Surveillance surv) throws Exception;
 	public Surveillance getById(Long survId) throws EntityNotFoundException;
 	public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
 	public List<Surveillance> getByCertifiedProduct(Long cpId);

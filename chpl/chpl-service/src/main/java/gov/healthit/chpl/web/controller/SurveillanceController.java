@@ -22,7 +22,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -157,8 +156,7 @@ public class SurveillanceController {
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance createSurveillance(
 			@RequestBody(required = true) Surveillance survToInsert) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, 
-		EntityRetrievalException, CertificationBodyAccessException, JsonProcessingException {
+		throws Exception {
 		survToInsert.getErrorMessages().clear();
 		
 		//validate first. this ensures we have all the info filled in 
@@ -390,7 +388,7 @@ public class SurveillanceController {
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance confirmPendingSurveillance(
 			@RequestBody(required = true) Surveillance survToInsert) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws Exception {
 		if(survToInsert == null || survToInsert.getId() == null) {
 			throw new ValidationException("An id must be provided in the request body.");
 		}
@@ -653,9 +651,8 @@ public class SurveillanceController {
 			} 
 			
 			if(surveilledProduct != null) {
-				CertificationBodyDTO owningAcb = null;
 				try {
-					owningAcb = acbManager.getById(surveilledProduct.getCertificationBodyId());
+					acbManager.getById(surveilledProduct.getCertificationBodyId());
 				} catch(EntityRetrievalException ex) {
 					pendingSurv.getErrorMessages().add("Unexpected error looking up certification body with id " + surveilledProduct.getCertificationBodyId());
 					logger.error("Could not look up ACB by id " + surveilledProduct.getCertificationBodyId());

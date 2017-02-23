@@ -1,6 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
@@ -33,7 +35,6 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)

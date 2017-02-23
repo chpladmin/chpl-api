@@ -9,7 +9,6 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
-import org.apache.commons.io.FileExistsException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearBasicSearch;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -58,6 +58,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Autowired SurveillanceDAO survDao;
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired SurveillanceValidator validator;
+	@Autowired UserPermissionDAO userPermissionDao;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -123,7 +124,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public Long createSurveillance(Long acbId, Surveillance surv) {
+	public Long createSurveillance(Long acbId, Surveillance surv) throws Exception {
 		Long insertedId = null;
 		
 		try {
@@ -161,7 +162,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public void updateSurveillance(Long acbId, Surveillance surv) {
+	public void updateSurveillance(Long acbId, Surveillance surv) throws Exception {
 		try {
 			survDao.updateSurveillance(surv);
 		} catch(Exception ex) {
@@ -431,6 +432,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		surv.setStartDate(entity.getStartDate());
 		surv.setEndDate(entity.getEndDate());
 		surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
+		surv.setAuthority(userPermissionDao.findById(entity.getUserPermissionId()).getAuthority());
 		
 		if(entity.getCertifiedProduct() != null) {
 			CertifiedProductEntity cpEntity = entity.getCertifiedProduct();

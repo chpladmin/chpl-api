@@ -51,17 +51,20 @@ public class PendingSurveillanceEntity {
 	@Column(name = "randomized_sites_used")
 	private Integer numRandomizedSites;
 	
-	@Column( name = "deleted")
+	@Column(name = "deleted")
 	private Boolean deleted;
 	
-	@Column( name = "last_modified_user")
+	@Column(name = "last_modified_user")
 	private Long lastModifiedUser;
 	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
+	@Column(name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
+	@Column(name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
+	
+	@Column(name = "user_permission_id", insertable = false, updatable = true)
+	private Long userPermissionId;
 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId"  )
 	@Basic( optional = false )
@@ -171,5 +174,13 @@ public class PendingSurveillanceEntity {
 
 	public void setSurvFriendlyIdToReplace(String survFriendlyIdToReplace) {
 		this.survFriendlyIdToReplace = survFriendlyIdToReplace;
+	}
+	
+	public Long getUserPermissionId() {
+		return userPermissionId;
+	}
+
+	public void setUserPermissionId(Long userPermissionId) {
+		this.userPermissionId = userPermissionId;
 	}
 }

@@ -643,79 +643,109 @@
 	<contact contact_id="-2" first_name="Administrator" last_name="Administrator" email="info@ainq.com" phone_number="(301) 560-6999" title="boss" signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	<contact contact_id="1" first_name="TEST" last_name="USER" email="test@ainq.com" phone_number="(301) 560-6999" title="employee" signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 
+	<user_permission user_permission_id="-2" name="ADMIN" description="This permission confers administrative privileges to its owner." authority="ROLE_ADMIN" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<user_permission user_permission_id="1" name="USER_CREATOR" description="This permission allows a user to create other users" authority="ROLE_USER_CREATOR" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<user_permission user_permission_id="2" name="ACB_ADMIN" description="This permission gives a user write access to their ACBs." authority="ROLE_ACB_ADMIN" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<user_permission user_permission_id="3" name="ACB_STAFF" description="This permission gives a user read access to their ACBs" authority="ROLE_ACB_STAFF" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<user_permission user_permission_id="4" name="ATL_ADMIN" description="This permission gives a user write access to their ATLs." authority="ROLE_ATL_ADMIN" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<user_permission user_permission_id="5" name="ATL_STAFF" description="This permission gives a user read access to their ATLs." authority="ROLE_ATL_STAFF" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+    <user_permission user_permission_id="6" name="CMS_STAFF" description="This permission gives a user read access to CMS reports." authority="ROLE_CMS_STAFF" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<user_permission user_permission_id="7" name="ONC_STAFF" description="This permission gives a user access to the CMS Download file and report navigation section. It denies editing of Users/Products/CPs/ACBs/etc. No user invitation ability." authority="ROLE_ONC_STAFF" creation_date="2016-10-14 12:43:00.015" last_modified_date="2016-10-14 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+
+	<surveillance_type id="1" name="Reactive" creation_date="2017-01-06 10:31:41.257" last_modified_date="2017-01-06 10:31:41.257"
+   		last_modified_user="-1" deleted="FALSE" />
+   	<surveillance_type id="2" name="Randomized" creation_date="2017-01-06 10:31:41.257" last_modified_date="2017-01-06 10:31:41.257"
+   		last_modified_user="-1" deleted="FALSE" />
+   		
+   	<surveillance_result id="1" name="Non-Conformity" creation_date="2017-01-06 10:31:41.326" 
+    	last_modified_date="2017-01-06 10:31:41.326" last_modified_user="-1" deleted="FALSE" />
+    <surveillance_result id="2" name="No Non-Conformity" creation_date="2017-01-06 10:31:41.326" 
+    	last_modified_date="2017-01-06 10:31:41.326" last_modified_user="-1" deleted="FALSE" />
+    	
+    <surveillance_requirement_type id="1" name="Certified Capability" creation_date="2017-01-06 10:31:41.311" 
+    	last_modified_date="2017-01-06 10:31:41.311" last_modified_user="-1" 
+        deleted="FALSE" />
+    <surveillance_requirement_type id="2" name="Transparency or Disclosure Requirement" creation_date="2017-01-06 10:31:41.311" 
+    	last_modified_date="2017-01-06 10:31:41.311" last_modified_user="-1" 
+        deleted="FALSE" />
+    <surveillance_requirement_type id="3" name="Other Requirement" creation_date="2017-01-06 10:31:41.311" 
+    	last_modified_date="2017-01-06 10:31:41.311" last_modified_user="-1" 
+        deleted="FALSE" />
+
 	<surveillance id="-1" certified_product_id="10" friendly_id="SURV01" start_date="2016-01-06 12:43:00.015" 
-		end_date="2016-09-01 12:43:00.015" type_id="1" randomized_sites_used="4" creation_date="2016-01-06 12:42:00.000" 
-		last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
-	<surveillance id = "-2" certified_product_id="10" friendly_id="SURV02" start_date="2016-02-06 12:43:00.015" end_date="2016-09-01 12:43:00.015" 
+		end_date="2016-09-01 12:43:00.015" type_id="1" creation_date="2016-01-06 12:42:00.000" 
+		last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" user_permission_id="2" deleted="FALSE" />
+	<surveillance id = "-2" certified_product_id="11" friendly_id="SURV02" start_date="2016-02-06 12:43:00.015" end_date="2016-09-01 12:43:00.015" 
        type_id="2" randomized_sites_used="9" creation_date="2016-02-06 12:42:00.000" last_modified_date="2016-10-06 12:42:00.000" 
-       last_modified_user="-1" deleted="FALSE" />
-    <surveillance id = "-3" certified_product_id="10" friendly_id="SURV03" start_date="2016-04-06 12:43:00.015" end_date="2016-09-01 12:43:00.015" 
+       last_modified_user="-1" user_permission_id="2" deleted="FALSE" />
+    <surveillance id = "-3" certified_product_id="11" friendly_id="SURV03" start_date="2016-04-06 12:43:00.015" end_date="2016-09-01 12:43:00.015" 
        type_id="1" creation_date="2016-04-06 12:42:00.000" last_modified_date="2016-10-06 12:42:00.000" 
-       last_modified_user="-1" deleted="FALSE" />
-       
-    <surveillance_requirement id="-1" surveillance_id="-1" type_id="1" certification_criterion_id="61" requirement="170.523(k)(2)" 
-       result_id="1" creation_date="2016-04-06 12:42:00.000" last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" 
-       deleted="FALSE" />
-    <surveillance_requirement id="-2" surveillance_id="-1" type_id="2" result_id="1" creation_date="2016-04-06 12:42:00.000" 
-    last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
-    <surveillance_requirement id="-3" surveillance_id="-2" type_id="1" result_id="2" creation_date="2016-04-06 12:42:00.000" 
-    last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
-    
+       last_modified_user="-1" user_permission_id="2" deleted="FALSE" />
+        
+    <surveillance_requirement id="-1" surveillance_id="-1" type_id="1" certification_criterion_id="61"
+        result_id="1" creation_date="2016-04-06 12:42:00.000" last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" 
+        deleted="FALSE" />
+    <surveillance_requirement id="-2" surveillance_id="-1" type_id="2" certification_criterion_id="61" result_id="1" creation_date="2016-04-06 12:42:00.000" 
+		last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
+    <surveillance_requirement id="-3" surveillance_id="-2" type_id="1" certification_criterion_id="61" result_id="2" creation_date="2016-04-06 12:42:00.000" 
+    	last_modified_date="2016-10-06 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
+        
     <surveillance_nonconformity id="-1" surveillance_requirement_id="-1" certification_criterion_id="61" 
-       nonconformity_type="170.314 (a)(1)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
+       nonconformity_type="170.523 (k)(1)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
        corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
        corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
        summary="conformity" findings="N/A" sites_passed="4" total_sites="10" developer_explanation="test dev expl" 
        resolution="test resolution" creation_date="2016-01-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
        deleted="FALSE"/>
     <surveillance_nonconformity id="-2" surveillance_requirement_id="-1"
-       nonconformity_type="170.523 (k)(2)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
+       nonconformity_type="170.523 (k)(1)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
        corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
        corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
        summary="conformity" findings="N/A" sites_passed="1" total_sites="2" developer_explanation="test dev expl" 
        resolution="test resolution" creation_date="2016-02-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
        deleted="FALSE"/>
     <surveillance_nonconformity id="-3" surveillance_requirement_id="-1"
-       nonconformity_type="170.523 (k)(2)" nonconformity_status_id="2" date_of_determination="2016-05-06 12:42:00.000" 
+       nonconformity_type="170.523 (k)(1)" nonconformity_status_id="2" date_of_determination="2016-05-06 12:42:00.000" 
        corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
        corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
        summary="conformity" findings="N/A" sites_passed="1" total_sites="2" developer_explanation="test dev expl" 
        resolution="test resolution" creation_date="2016-03-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
        deleted="FALSE"/>
     <surveillance_nonconformity id="-4" surveillance_requirement_id="-2"
-       nonconformity_type="170.523 (k)(2)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
+       nonconformity_type="170.523 (k)(1)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
        corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
        corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
        summary="conformity" findings="N/A" developer_explanation="test dev expl" 
        resolution="test resolution" creation_date="2016-04-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
        deleted="FALSE"/>
     <surveillance_nonconformity id="-5" surveillance_requirement_id="-2"
-       nonconformity_type="170.523 (k)(2)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
+       nonconformity_type="170.523 (k)(1)" nonconformity_status_id="1" date_of_determination="2016-05-06 12:42:00.000" 
        corrective_action_plan_approval_date="2016-05-01 12:42:00.000" corrective_action_start_date="2016-05-06 12:42:00.000" 
        corrective_action_must_complete_date="2016-05-06 12:42:00.000" corrective_action_end_date="2016-06-06 12:42:00.000" 
        summary="conformity" findings="N/A" sites_passed="4" total_sites="10" developer_explanation="test dev expl" 
        resolution="test resolution" creation_date="2016-03-01 12:42:00.000" last_modified_date="2016-07-01 12:42:00.000" last_modified_user="-1" 
-       deleted="TRUE"/>    
+       deleted="TRUE"/>
+       
+    <pending_surveillance id="-1" surveillance_id_to_replace="-1" certified_product_id="10" certified_product_unique_id="CHP-024050" 
+       start_date="2016-05-01 12:42:00.000" end_date="2016-06-01 12:42:00.000" type_value="1" creation_date="2016-05-01 12:42:00.000"
+       last_modified_date="2016-05-01 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
 
 	<user user_id="-2" user_name="admin" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="-2" />
 	<user user_id="1" user_name="TESTUSER" password="$2a$10$hJnf2sF4hTE9W4UdOQcBZ.mGzTyPjHsHHdYXkVCG.2.R8a6b2JjDi" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
 	<user user_id="2" user_name="testUser2" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
 	<user user_id="3" user_name="testUser3" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
 	<user user_id="4" user_name="atlUser" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
-
-	<user_permission user_permission_id="-2" name="ADMIN" description="This permission confers administrative privileges to its owner." authority="ROLE_ADMIN" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
-	<user_permission user_permission_id="2" name="USER_CREATOR" description="This permission allows a user to create other users" authority="ROLE_USER_CREATOR" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
-	<user_permission user_permission_id="3" name="ACB_ADMIN" description="This permission gives a user write access to their ACBs." authority="ROLE_ACB_ADMIN" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
-	<user_permission user_permission_id="4" name="ACB_STAFF" description="This permission gives a user read access to their ACBs." authority="ROLE_ACB_STAFF" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
-	<user_permission user_permission_id="5" name="ATL_ADMIN" description="This permission gives a user write access to their ACBs." authority="ROLE_ATL_ADMIN" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
-	<user_permission user_permission_id="6" name="ATL_STAFF" description="This permission gives a user read access to their ACBs." authority="ROLE_ATL_STAFF" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
-
+	<user user_id="5" user_name="cmsStaffUser" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
+	<user user_id="6" user_name="oncStaffUser" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="1" />
+	
 	<global_user_permission_map global_user_permission_id="1" user_id="-2" user_permission_id_user_permission="-2" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	<global_user_permission_map global_user_permission_id="2" user_id="1" user_permission_id_user_permission="3" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	<global_user_permission_map global_user_permission_id="3" user_id="2" user_permission_id_user_permission="4" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	<global_user_permission_map global_user_permission_id="4" user_id="3" user_permission_id_user_permission="3" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
 	<global_user_permission_map global_user_permission_id="5" user_id="4" user_permission_id_user_permission="5" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
-	
+	<global_user_permission_map global_user_permission_id="6" user_id="5" user_permission_id_user_permission="6" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+	<global_user_permission_map global_user_permission_id="7" user_id="6" user_permission_id_user_permission="7" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" />
+		
 	<activity activity_id="-1" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test1":"test1"}' activity_date="2015-01-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="1" deleted="FALSE" />
 	<activity activity_id="-2" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test2":"test2"}' activity_date="2015-10-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="1" deleted="FALSE" />
 	<activity activity_id="-3" description="Description Here" certification_body="1" original_data='{"test":"test"}' new_data='{"test3":"test3"}' activity_date="2015-10-05 12:43:00.015" activity_object_id="1" activity_object_concept_id="1" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="1" deleted="FALSE" />
