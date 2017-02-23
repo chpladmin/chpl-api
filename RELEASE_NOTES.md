@@ -8,6 +8,7 @@ _Date TBD_
 * Add surveillance statistics to weekly email
 * Protect basic surveillance report and only allow download by ONC ADMIN and ONC STAFF
 * Add functionality to allow a "rolling cache" that refreshes the cache asynchronously while allowing the user to view currently available cached data
+* Make caches eternal so the user gets cached data more often
 * Add columns to surveillance reports (ACB Name, certification status, hyperlink to CHPL listing) and reformat dates (yyyy/mm/dd)
 * Add daily and weekly surveillance oversight reports to calculate which surveillance items have broken a given set of rules.
   * Environment properties have been added:
