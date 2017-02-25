@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -138,23 +138,7 @@ public class SurveillanceValidator {
 			}
 		}
 		
-		if(surv.getAuthority() == null){
-			surv.getErrorMessages().add("A surveillance authority is required but was null.");
-		}
-		else{
-			try {
-				if(surv.getAuthority() != Authority.ROLE_ONC_STAFF && surv.getAuthority() != Authority.ROLE_ACB_ADMIN){
-					surv.getErrorMessages().add("User must have authority for " + Authority.ROLE_ONC_STAFF + " or " 
-							+ Authority.ROLE_ACB_ADMIN);
-				}
-				Long id = userPermissionDao.getIdFromAuthority(surv.getAuthority());
-				if(id == null){
-					surv.getErrorMessages().add("No user permission id exists with authority " + surv.getAuthority());
-				}
-			} catch (UserPermissionRetrievalException e) {
-				surv.getErrorMessages().add("No user permission id exists with authority " + surv.getAuthority());
-			}
-		}
+		validateSurveillanceAuthority(surv);
 		
 		validateSurveillanceRequirements(surv);
 		validateSurveillanceNonconformities(surv);
@@ -368,6 +352,28 @@ public class SurveillanceValidator {
 				if(req.getNonconformities() != null && req.getNonconformities().size() > 0) {
 					surv.getErrorMessages().add("Surveillance Requirement " + req.getRequirement() + " lists nonconformities but its result is not 'Non-Conformity'.");
 				}
+			}
+		}
+	}
+	
+	public void validateSurveillanceAuthority(Surveillance surv) {
+		Boolean hasOncStaff = Util.isUserRoleOncStaff();
+		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+		if(surv.getAuthority() == null){
+			// If user has ROLE_ONC_STAFF and ROLE_ACB_ADMIN, return error
+			if(hasAcbAdmin && hasOncStaff){
+				surv.getErrorMessages().add("User cannot have authority for " + Authority.ROLE_ONC_STAFF + 
+						" and " + Authority.ROLE_ACB_ADMIN + ".");
+			}	
+		}
+		else {
+			// Surveillance must have valid value of ROLE_ACB_ADMIN or ROLE_ONC_STAFF
+			if(!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN) && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC_STAFF)){
+				surv.getErrorMessages().add("Surveillance must have authority for " + Authority.ROLE_ONC_STAFF + " or " + Authority.ROLE_ACB_ADMIN);
+			}
+			// Cannot set surveillance authority to ROLE_ONC_STAFF for user lacking ROLE_ONC_STAFF
+			else if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ONC_STAFF) && !hasOncStaff){
+				surv.getErrorMessages().add("User must have authority " + Authority.ROLE_ONC_STAFF);
 			}
 		}
 	}

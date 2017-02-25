@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -52,6 +53,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
+import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -80,6 +82,8 @@ public class SurveillanceController {
 	private CertifiedProductDetailsManager cpdetailsManager;
 	@Autowired
 	private CertificationBodyManager acbManager;
+	@Autowired
+	private SurveillanceValidator survValidator;
 
 	@ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
 	@RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -166,6 +170,8 @@ public class SurveillanceController {
 		if(survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
 			throw new ValidationException(survToInsert.getErrorMessages(), null);
 		}
+		
+		updateAuthority(survToInsert);
 		
 		//look up the ACB
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
@@ -261,6 +267,8 @@ public class SurveillanceController {
 			throw new ValidationException(survToUpdate.getErrorMessages(), null);
 		}
 		
+		updateAuthority(survToUpdate);
+		
 		//look up the ACB
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
@@ -297,10 +305,17 @@ public class SurveillanceController {
 			@PathVariable(value = "surveillanceId") Long surveillanceId) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		Surveillance survToDelete = survManager.getById(surveillanceId);
-		
+			
 		if(survToDelete == null) {
 			throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
 		}
+		
+		survValidator.validateSurveillanceAuthority(survToDelete);
+		if(survToDelete.getErrorMessages() != null && survToDelete.getErrorMessages().size() > 0) {
+			throw new ValidationException(survToDelete.getErrorMessages(), null);
+		}
+		
+		updateAuthority(survToDelete);
 
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
@@ -663,6 +678,21 @@ public class SurveillanceController {
 							surveilledProduct.getCertificationBodyId());
 				}
 			} 
+		}
+	}
+	
+	private void updateAuthority(Surveillance surv){
+		if(surv.getErrorMessages().size() < 1){
+			Boolean hasOncStaff = Util.isUserRoleOncStaff();
+			Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+			if(surv.getAuthority() == null){
+				if(hasOncStaff){
+					surv.setAuthority(Authority.ROLE_ONC_STAFF);
+				}
+				else if(hasAcbAdmin){
+					surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+				}
+			}
 		}
 	}
 }

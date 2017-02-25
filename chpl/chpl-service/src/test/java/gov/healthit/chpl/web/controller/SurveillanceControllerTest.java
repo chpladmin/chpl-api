@@ -1,14 +1,14 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,21 +29,19 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.domain.SurveillanceNonconformity;
-import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
-import gov.healthit.chpl.entity.SurveillanceEntity;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.manager.SurveillanceManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -54,11 +52,22 @@ import gov.healthit.chpl.entity.SurveillanceEntity;
 @DatabaseSetup("classpath:data/testData.xml") 
 public class SurveillanceControllerTest {
 	@Autowired
+	private SurveillanceManager survManager;
+	@Autowired
 	SurveillanceController surveillanceController;
 	@Autowired
-	SurveillanceDAO surveillanceDao;
+	SurveillanceDAO survDao;
+	@Autowired
+	private CertifiedProductDAO cpDao;
 	
 private static JWTAuthenticatedUser adminUser;
+private static JWTAuthenticatedUser acbAdmin;
+private static JWTAuthenticatedUser oncStaff;
+private static JWTAuthenticatedUser oncAndAcb;
+
+@Rule
+@Autowired
+public UnitTestRules cacheInvalidationRule;
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -67,21 +76,38 @@ private static JWTAuthenticatedUser adminUser;
 		adminUser.setId(-2L);
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+		adminUser.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
+		
+		acbAdmin = new JWTAuthenticatedUser();
+		acbAdmin.setFirstName("Test");
+		acbAdmin.setId(3L);
+		acbAdmin.setLastName("User3");
+		acbAdmin.setSubjectName("testUser3");
+		acbAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
+		
+		oncStaff = new JWTAuthenticatedUser();
+		oncStaff.setFirstName("Test");
+		oncStaff.setId(3L);
+		oncStaff.setLastName("User");
+		oncStaff.setSubjectName("TESTUSER");
+		oncStaff.getPermissions().add(new GrantedPermission(Authority.ROLE_ONC_STAFF));
+		
+		oncAndAcb = new JWTAuthenticatedUser();
+		oncAndAcb.setFirstName("Test");
+		oncAndAcb.setId(3L);
+		oncAndAcb.setLastName("User");
+		oncAndAcb.setSubjectName("TESTUSER");
+		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ONC_STAFF));
+		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
 	}
 	
-	/** 
-	 * Tests the following when updating a surveillance:
-	 * 1. null authority returns an error
-	 * 2. Invalid authority returns an error
-	 * 		a. Authority that does not exist (i.e. ONC_STAFF or FooBar)
-	 * 		b. Authority is not ROLE_ONC_STAFF or ROLE_ACB_ADMIN
-	 * 3. Valid authority updates database
-	 * 		a. Authority equals ROLE_ONC_STAFF
-	 * 		b. Authority equals ROLE_ACB_ADMIN
+	/** 1. 
+	 * Given I am authenticated as only ROLE_ONC_STAFF
+	 * Given I have authority on the ACB
+	 * When I create a surveillance and pass in null authority to the API
+	 * Then openchpl.surveillance.user_permission_id matches my user authority of ROLE_ONC_STAFF
+	 * Then survManager.getById(insertedSurv) returns the authority for ROLE_ONC_STAFF
 	 * @throws ValidationException 
-	 */
-	/**
 	 * @throws EntityRetrievalException
 	 * @throws JsonProcessingException
 	 * @throws EntityCreationException
@@ -91,110 +117,862 @@ private static JWTAuthenticatedUser adminUser;
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_updateSurveillance_updatesAuthority()
+	public void test_createSurveillance_nullUsesUserObject_OncStaff()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Surveillance survRequest = new Surveillance();
-		survRequest.setAuthority(null);
+		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
 		CertifiedProduct cp = new CertifiedProduct();
-		cp.setId(10L);
-		cp.setEdition("2014");
-		cp.setChplProductNumber("CHP-024050");
-		survRequest.setCertifiedProduct(cp);
-		Boolean causedValidationException = false;
-		try{
-			surveillanceController.updateSurveillance(survRequest);
-		} catch(ValidationException e){
-			causedValidationException = true;
-			assertTrue(e.getErrorMessages().contains("A surveillance authority is required but was null."));
-		}
-		assertTrue(causedValidationException);
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(null);
 		
-		survRequest.setAuthority("FooBar");
-		causedValidationException = false;
-		try{
-			surveillanceController.updateSurveillance(survRequest);
-		} catch(ValidationException e){
-			causedValidationException = true;
-			assertTrue(e.getErrorMessages().contains("User must have authority for " + Authority.ROLE_ONC_STAFF + " or " 
-					+ Authority.ROLE_ACB_ADMIN));
-		}
-		assertTrue(causedValidationException);
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
 		
-		survRequest.setAuthority(Authority.ROLE_ONC_STAFF);
-		survRequest.setStartDate(new Date());
-		survRequest.setEndDate(new Date());
-		survRequest.setFriendlyId("SURV01");
-		survRequest.setId(-1L);
-		survRequest.setSurveillanceIdToReplace("SURV01");
-		SurveillanceType survType = new SurveillanceType();
-		survType.setId(1L);
-		survType.setName("Reactive");
-		survRequest.setType(survType);
-		Set<SurveillanceRequirement> requirements = new HashSet<SurveillanceRequirement>();
-		SurveillanceRequirement survReq = new SurveillanceRequirement();
-		survReq.setId(-1L);
-		survReq.setRequirement("170.315 (h)(1)");
-		List<SurveillanceNonconformity> survNCs = new ArrayList<SurveillanceNonconformity>();
-		SurveillanceNonconformity NC = new SurveillanceNonconformity();
-		NC.setCapApprovalDate(new Date());
-		NC.setCapEndDate(new Date());
-		NC.setCapMustCompleteDate(new Date());
-		NC.setCapStartDate(new Date());
-		NC.setDateOfDetermination(new Date());
-		NC.setDeveloperExplanation("dev explanation");
-		NC.setFindings("some findings");
-		NC.setId(-1L);
-		NC.setNonconformityType(NonconformityType.K1.getName());
-		NC.setResolution("made some resolution");
-		//NC.setSitesPassed(8);
-		NC.setSummary("summary");
-		SurveillanceNonconformityStatus ncStatus = new SurveillanceNonconformityStatus();
-		ncStatus.setId(1L);
-		ncStatus.setName("Open");
-		NC.setStatus(ncStatus);
-		survNCs.add(NC);
-		survReq.setNonconformities(survNCs);
-		SurveillanceResultType survResType = new SurveillanceResultType();
-		survResType.setId(1L);
-		survResType.setName("Non-Conformity");
-		survReq.setResult(survResType);
-		SurveillanceRequirementType survReqType = new SurveillanceRequirementType();
-		survReqType.setId(1L);
-		survReqType.setName("Certified Capability");
-		survReq.setType(survReqType);
-		requirements.add(survReq);
-		survRequest.setRequirements(requirements);
+		surv.getRequirements().add(req);
 		
-		causedValidationException = false;
-		try{
-			surveillanceController.updateSurveillance(survRequest);
-		} catch(ValidationException e){
-			causedValidationException = true;
-			assertFalse(e.getErrorMessages().contains("User must have authority for " + Authority.ROLE_ONC_STAFF + " or " 
-					+ Authority.ROLE_ACB_ADMIN));
-			assertFalse(e.getErrorMessages().contains("A surveillance authority is required but was null."));
-			assertFalse(e.getErrorMessages().contains("No user permission id exists with authority "));
-			
+		Surveillance insertedSurv;
+		try {
+			insertedSurv = surveillanceController.createSurveillance(surv);
+			assertNotNull(insertedSurv);
+			Surveillance got = survManager.getById(insertedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ONC_STAFF);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
-		assertFalse(causedValidationException);
-		SurveillanceEntity survEntity = surveillanceDao.getSurveillanceById(survRequest.getId());
-		assertTrue(survEntity.getUserPermissionId().equals(7L));
-		
-		survRequest.setAuthority(Authority.ROLE_ACB_ADMIN);
-		causedValidationException = false;
-		try{
-			surveillanceController.updateSurveillance(survRequest);
-		} catch(ValidationException e){
-			causedValidationException = true;
-			assertFalse(e.getErrorMessages().contains("User must have authority for " + Authority.ROLE_ONC_STAFF + " or " 
-					+ Authority.ROLE_ACB_ADMIN));
-			assertFalse(e.getErrorMessages().contains("A surveillance authority is required but was null."));
-			assertFalse(e.getErrorMessages().contains("No user permission id exists with authority "));
-		}
-		assertFalse(causedValidationException);
-		survEntity = surveillanceDao.getSurveillanceById(-1L);
-		assertTrue(survEntity.getUserPermissionId().equals(2L));
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
 	}
+	
+	
+	/** 2. 
+	 * Given I am authenticated as ROLE_ONC_STAFF and ROLE_CMS_ADMIN
+	 * Given I have authority on the ACB
+	 * When I create a surveillance and pass in ROLE_ONC_STAFF authority to the API
+	 * Then openchpl.surveillance.user_permission_id matches the surveillance authority of ROLE_ONC_STAFF
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_createSurveillance_HaveOncAndAcb_passRoleOncStaff()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance insertedSurv;
+		try {
+			insertedSurv = surveillanceController.createSurveillance(surv);
+			assertNotNull(insertedSurv);
+			Surveillance got = survManager.getById(insertedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ONC_STAFF);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+	}
+	
+	
+	/** 3. 
+	 * Given I am authenticated as ROLE_ONC_STAFF and ROLE_CMS_ADMIN
+	 * Given I have authority on the ACB
+	 * When I create a surveillance and pass in ROLE_CMS_ADMIN authority to the API
+	 * Then openchpl.surveillance.user_permission_id matches the surveillance authority of ROLE_CMS_ADMIN
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_createSurveillance_HaveOncAndAcb_passRoleAcbAdmin()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance insertedSurv;
+		try {
+			insertedSurv = surveillanceController.createSurveillance(surv);
+			assertNotNull(insertedSurv);
+			Surveillance got = survManager.getById(insertedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+	}
+	
+	
+	/** 4. 
+	 * Given I am authenticated as ROLE_ONC_STAFF and ROLE_CMS_ADMIN
+	 * Given I have authority on the ACB
+	 * When I create a surveillance and pass in null authority to the API
+	 * Then the validator adds an error
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_createSurveillance_HaveOncAndAcb_passnull_returnsError()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(null);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		try {
+			surveillanceController.createSurveillance(surv);
+		} catch (ValidationException e) {
+			assertTrue(e.getErrorMessages().contains("User cannot have authority for " + Authority.ROLE_ONC_STAFF + 
+					" and " + Authority.ROLE_ACB_ADMIN + "."));
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+	}
+	
+	
+	/** 5. 
+	 * Given I am authenticated as ROLE_ACB_ADMIN
+	 * Given I have authority on the ACB
+	 * When I create a surveillance and pass in ROLE_ONC_STAFF authority to the API (or any role that <> user's role)
+	 * Then the validator adds an error
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_createSurveillance_HaveAcbAdmin_passRoleOncStaff_returnsError()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		try {
+			surveillanceController.createSurveillance(surv);
+		} catch (ValidationException e) {
+			assertTrue(e.getErrorMessages().contains("User must have authority " + Authority.ROLE_ONC_STAFF));
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+	}
+	
+	
+	/** 6. 
+	 * Given I am authenticated as only ROLE_ONC_STAFF
+	 * Given I have authority on the ACB
+	 * When I create a surveillance and pass in "foobar" authority to the API
+	 * Then the validator adds an error that the surveillance authority must be ROLE_ONC_STAFF or ROLE_ACB_ADMIN
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_createSurveillance_HaveOncStaff_passFoobar_returnsError()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority("foobar");
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		try {
+			surveillanceController.createSurveillance(surv);
+		} catch (ValidationException e) {
+			assertTrue(e.getErrorMessages().contains("Surveillance must have authority for " + Authority.ROLE_ONC_STAFF + " or " + Authority.ROLE_ACB_ADMIN));
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+	}
+	
+	
+	/** 7. 
+	 * Given I am authenticated as ROLE_ONC_STAFF
+	 * Given I have authority on the ACB
+	 * When I update a surveillance with authority ROLE_ACB_ADMIN
+	 * Then I am allowed to edit it
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_updateSurveillance_HaveOncStaff_passAcbAdmin_isPermitted()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance updatedSurv;
+		try {
+			updatedSurv = surveillanceController.updateSurveillance(surv);
+			assertNotNull(updatedSurv);
+			Surveillance got = survManager.getById(updatedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+	}
+	
+	
+	/** 8.
+	 * Given I am authenticated as ROLE_ONC_STAFF
+	 * Given I have authority on the ACB
+	 * When I update a surveillance with authority ROLE_ONC_STAFF
+	 * Then I am allowed to edit it
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_updateSurveillance_HaveOncStaff_passOncStaff_isPermitted()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance updatedSurv;
+		try {
+			updatedSurv = surveillanceController.updateSurveillance(surv);
+			assertNotNull(updatedSurv);
+			Surveillance got = survManager.getById(updatedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ONC_STAFF);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+	}
+	
+	
+	/** 9.
+	 * Given I am authenticated as ROLE_ACB_ADMIN
+	 * Given I have authority on the ACB
+	 * When I update a surveillance with authority ROLE_ONC_STAFF
+	 * Then I am NOT allowed to edit it
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_updateSurveillance_HaveAcbAdmin_passOncStaff_returnsError()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		try {
+			surveillanceController.updateSurveillance(surv);
+		} catch (ValidationException e) {
+			assertTrue(e.getErrorMessages().contains("User must have authority " + Authority.ROLE_ONC_STAFF));
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+	}
+	
+	/** 10. 
+	 * Given I am authenticated as ROLE_ACB_ADMIN
+	 * Given I have authority on the ACB
+	 * When I update a surveillance with authority ROLE_ACB_ADMIN
+	 * Then I am allowed to edit it
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_updateSurveillance_HaveAcbAdmin_passAcbAdmin_isPermitted()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance updatedSurv;
+		try {
+			updatedSurv = surveillanceController.updateSurveillance(surv);
+			assertNotNull(updatedSurv);
+			Surveillance got = survManager.getById(updatedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+	}
+	
+	
+	/** 11. 
+	 * Given I am authenticated as ROLE_ONC_STAFF
+	 * Given I have authority on the ACB
+	 * When I delete a surveillance that was created by ROLE_ACB_ADMIN
+	 * Then I am allowed to delete it
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_deleteSurveillance_HaveOncStaff_survCreatedByAcb_isPermitted()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance insertedSurv;
+		try {
+			insertedSurv = surveillanceController.createSurveillance(surv);
+			assertNotNull(insertedSurv);
+			Surveillance got = survManager.getById(insertedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+		
+		String result = null;
+		try{
+			result = surveillanceController.deleteSurveillance(surv.getId());
+			assertTrue(result.contains("true"));
+		} catch(Exception e){
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+	}
+	
+	
+	/** 12. 
+	 * Given I am authenticated as ROLE_ONC_STAFF
+	 * Given I have authority on the ACB
+	 * When I delete a surveillance that was created by ROLE_ONC_STAFF
+	 * Then I am allowed to delete it
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_deleteSurveillance_HaveOncStaff_survCreatedByOnc_isPermitted()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance insertedSurv;
+		try {
+			insertedSurv = surveillanceController.createSurveillance(surv);
+			assertNotNull(insertedSurv);
+			Surveillance got = survManager.getById(insertedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+		
+		String result = null;
+		try{
+			result = surveillanceController.deleteSurveillance(surv.getId());
+			assertTrue(result.contains("true"));
+		} catch(Exception e){
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+	}
+	
+	/** 13. 
+	 * 	Given I am authenticated as ROLE_ACB_ADMIN
+	 * Given I have authority on the ACB
+	 * When I delete a surveillance that was created by ROLE_ONC_STAFF
+	 * Then I am NOT allowed to delete it
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_deleteSurveillance_HaveAcbAdmin_survCreatedByOnc_returnsError()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance insertedSurv;
+		try {
+			insertedSurv = surveillanceController.createSurveillance(surv);
+			assertNotNull(insertedSurv);
+			Surveillance got = survManager.getById(insertedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ONC_STAFF);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+		
+		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
+		String result = null;
+		try{
+			result = surveillanceController.deleteSurveillance(surv.getId());
+			assertFalse(result.contains("true"));
+		} catch (ValidationException e) {
+			assertTrue(e.getErrorMessages().contains("Surveillance cannot have authority " + Authority.ROLE_ONC_STAFF + " for a user lacking " + Authority.ROLE_ONC_STAFF));
+		} catch(Exception e){
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+	}
+	
+
+	/** 14. 
+	 * Given I am authenticated as ROLE_ACB_ADMIN
+	 * Given I have authority on the ACB
+	 * When I delete a surveillance that was created by ROLE_ACB_ADMIN
+	 * Then I am allowed to delete it
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_deleteSurveillance_HaveAcbAdmin_survCreatedByAcb_isPermitted()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance insertedSurv;
+		try {
+			insertedSurv = surveillanceController.createSurveillance(surv);
+			assertNotNull(insertedSurv);
+			Surveillance got = survManager.getById(insertedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+		
+		String result = null;
+		try{
+			result = surveillanceController.deleteSurveillance(surv.getId());
+			assertTrue(result.contains("true"));
+		} catch (ValidationException e) {
+			assertTrue(e.getErrorMessages().contains("Surveillance cannot have authority " + Authority.ROLE_ONC_STAFF + " for a user lacking " + Authority.ROLE_ONC_STAFF));
+		} catch(Exception e){
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+	}
+	
 }

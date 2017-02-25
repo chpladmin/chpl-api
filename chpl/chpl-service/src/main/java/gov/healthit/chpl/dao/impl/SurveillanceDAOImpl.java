@@ -778,10 +778,6 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		if(from.getType() != null) {
 			to.setSurveillanceTypeId(from.getType().getId());
 		}
-		// Set default authority to ROLE_ACB_ADMIN
-		if(from.getAuthority() == null){
-			from.setAuthority(userPermissionDao.getPermissionFromAuthority(Authority.ROLE_ACB_ADMIN).getAuthority());
-		}
 		to.setUserPermissionId(userPermissionDao.getIdFromAuthority(from.getAuthority()));
 	}
 	
