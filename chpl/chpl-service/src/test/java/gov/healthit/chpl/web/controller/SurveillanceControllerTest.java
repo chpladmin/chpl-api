@@ -60,14 +60,14 @@ public class SurveillanceControllerTest {
 	@Autowired
 	private CertifiedProductDAO cpDao;
 	
-private static JWTAuthenticatedUser adminUser;
-private static JWTAuthenticatedUser acbAdmin;
-private static JWTAuthenticatedUser oncStaff;
-private static JWTAuthenticatedUser oncAndAcb;
+	private static JWTAuthenticatedUser adminUser;
+	private static JWTAuthenticatedUser acbAdmin;
+	private static JWTAuthenticatedUser oncStaff;
+	private static JWTAuthenticatedUser oncAndAcb;
 
-@Rule
-@Autowired
-public UnitTestRules cacheInvalidationRule;
+	@Rule
+	@Autowired
+	public UnitTestRules cacheInvalidationRule;
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
