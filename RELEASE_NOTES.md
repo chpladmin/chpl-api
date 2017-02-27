@@ -1,13 +1,14 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 8.1.0
+_27 February 2017_
 
 ### Features Added
 * Add basic search API endpoint to return all certified products
 * Add surveillance statistics to weekly email
 * Protect basic surveillance report and only allow download by ONC ADMIN and ONC STAFF
 * Add functionality to allow a "rolling cache" that refreshes the cache asynchronously while allowing the user to view currently available cached data
+* Make caches eternal so the user gets cached data more often
 * Add columns to surveillance reports (ACB Name, certification status, hyperlink to CHPL listing) and reformat dates (yyyy/mm/dd)
 * Add daily and weekly surveillance oversight reports to calculate which surveillance items have broken a given set of rules.
   * Environment properties have been added:

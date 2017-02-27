@@ -87,7 +87,12 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		survFields.add(data.getProduct().getName());
 		survFields.add(data.getVersion().getVersion());
 		survFields.add(data.getChplProductNumber());
-		survFields.add(props.getProperty("chplUrlBegin") + "#/product/" + data.getId());
+		String productDetailsUrl = props.getProperty("chplUrlBegin").trim();
+		if(!productDetailsUrl.endsWith("/")) {
+			productDetailsUrl += "/";
+		} 
+		productDetailsUrl += "#/product/" + data.getId();
+		survFields.add(productDetailsUrl);
 		survFields.add(data.getCertifyingBody().get("name").toString());
 		survFields.add(data.getCertificationStatus().get("name").toString());
 		Long lastCertificationChangeMillis = ((Date)data.getCertificationStatus().get("date")).getTime();
