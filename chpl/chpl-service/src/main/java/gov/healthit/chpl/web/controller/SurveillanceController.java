@@ -684,7 +684,7 @@ public class SurveillanceController {
 		Boolean hasOncAdmin = Util.isUserRoleAdmin();
 		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
 		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
-		if(surv.getAuthority() == null){
+		if(StringUtils.isEmpty(surv.getAuthority())){
 			if(hasOncAdmin){
 				surv.setAuthority(Authority.ROLE_ADMIN);
 			}

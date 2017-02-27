@@ -360,7 +360,7 @@ public class SurveillanceValidator {
 		Boolean hasOncAdmin = Util.isUserRoleAdmin();
 		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
 		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
-		if(surv.getAuthority() == null){
+		if(StringUtils.isEmpty(surv.getAuthority())){
 			// If user has ROLE_ADMIN and ROLE_ACB_ADMIN or ROLE_ACB_STAFF, return error
 			if(hasOncAdmin && (hasAcbStaff || hasAcbAdmin)){
 				surv.getErrorMessages().add("User cannot have authority for " + Authority.ROLE_ADMIN + 
