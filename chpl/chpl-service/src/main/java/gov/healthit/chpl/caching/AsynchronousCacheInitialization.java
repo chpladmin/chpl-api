@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationIdManager;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Component
@@ -21,6 +22,7 @@ public class AsynchronousCacheInitialization {
 	
 	@Autowired private CertificationIdManager certificationIdManager;
 	@Autowired private SearchMenuManager searchMenuManager;
+	@Autowired private CertifiedProductSearchManager certifiedProductSearchManager;
 	
 	@Async
 	@Transactional
@@ -39,6 +41,15 @@ public class AsynchronousCacheInitialization {
 		searchMenuManager.getCertificationCriterionNumbers(false);
 		searchMenuManager.getCertificationCriterionNumbers(true);
 		logger.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
+		return new AsyncResult<>(true);
+	}
+	
+	@Async
+	@Transactional
+	public Future<Boolean> initializeBasicSearch() throws IOException, EntityRetrievalException, InterruptedException {
+		logger.info("Starting cache initialization for CertifiedProductSearchManager.search()");
+		certifiedProductSearchManager.search();
+		logger.info("Finished cache initialization for CertifiedProductSearchManager.search()");
 		return new AsyncResult<>(true);
 	}
 	

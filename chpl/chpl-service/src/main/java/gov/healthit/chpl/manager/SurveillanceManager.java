@@ -1,5 +1,7 @@
 package gov.healthit.chpl.manager;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -11,6 +13,8 @@ import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public interface SurveillanceManager {
+	public File getDownloadFile(String filename) throws IOException;
+	public File getProtectedDownloadFile(String filename) throws IOException;
 	public void validate(Surveillance surveillance);
 	public void sendSuspiciousActivityEmail(Surveillance questionableSurv);
 	

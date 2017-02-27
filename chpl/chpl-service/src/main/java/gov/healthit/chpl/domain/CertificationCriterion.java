@@ -11,6 +11,7 @@ public class CertificationCriterion implements Serializable {
 	private String number;
 	private String title;
 	private Long certificationEditionId;
+	private String certificationEdition;
 	private String description;
 	
 	public CertificationCriterion() {}
@@ -18,9 +19,18 @@ public class CertificationCriterion implements Serializable {
 	public CertificationCriterion(CertificationCriterionDTO dto) {
 		this.id = dto.getId();
 		this.certificationEditionId = dto.getCertificationEditionId();
+		this.certificationEdition = dto.getCertificationEdition();
 		this.description = dto.getDescription();
 		this.number = dto.getNumber();
 		this.title = dto.getTitle();
+	}
+
+	public String getCertificationEdition() {
+		return certificationEdition;
+	}
+
+	public void setCertificationEdition(String certificationEdition) {
+		this.certificationEdition = certificationEdition;
 	}
 
 	public Long getId() {

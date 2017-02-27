@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
@@ -457,6 +459,22 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return result;
 	}
 	
+	@Transactional(readOnly=true)
+	public List<SurveillanceEntity> getAllSurveillance(){
+		Query query = entityManager.createQuery(
+				"from SurveillanceEntity where deleted <> true",
+				SurveillanceEntity.class);
+		return query.getResultList();
+	}
+	
+	@Transactional(readOnly=true)
+	public List<SurveillanceNonconformityEntity> getAllSurveillanceNonConformities(){
+		Query query = entityManager.createQuery(
+				"from SurveillanceNonconformityEntity where deleted <> true",
+				SurveillanceNonconformityEntity.class);
+		return query.getResultList();
+	}
+	
 	public List<SurveillanceRequirementType> getAllSurveillanceRequirementTypes() {
 		Query query = entityManager.createQuery(
 				"from SurveillanceRequirementTypeEntity where deleted <> true", 
@@ -471,7 +489,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 	
 	public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
-		logger.debug("Searchig for surveillance requirement type '" + type + "'.");
+		logger.debug("Searching for surveillance requirement type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
 			return null;
 		}
@@ -492,7 +510,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 	
 	public SurveillanceRequirementType findSurveillanceRequirementType(Long id) {
-		logger.debug("Searchig for surveillance requirement type by id '" + id + "'.");
+		logger.debug("Searching for surveillance requirement type by id '" + id + "'.");
 		if(id == null) {
 			return null;
 		}
@@ -627,10 +645,12 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 				+ "JOIN FETCH surv.surveillanceType "
 				+ "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "		
 				+ "LEFT OUTER JOIN FETCH reqs.surveillanceRequirementType "
-				+ "LEFT OUTER JOIN FETCH reqs.certificationCriterionEntity "
+				+ "LEFT OUTER JOIN FETCH reqs.certificationCriterionEntity cce "
+				+ "LEFT JOIN FETCH cce.certificationEdition "
 				+ "LEFT OUTER JOIN FETCH reqs.surveillanceResultTypeEntity "
 				+ "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
-				+ "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity "
+				+ "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
+				+ "LEFT JOIN FETCH cce2.certificationEdition "
 				+ "LEFT OUTER JOIN FETCH ncs.nonconformityStatus "
 				+ "LEFT OUTER JOIN FETCH ncs.documents "
 				+ "WHERE surv.deleted <> true "
@@ -653,10 +673,12 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 				+ "JOIN FETCH surv.surveillanceType "
 				+ "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "				
 				+ "LEFT OUTER JOIN FETCH reqs.surveillanceRequirementType "
-				+ "LEFT OUTER JOIN FETCH reqs.certificationCriterionEntity "
+				+ "LEFT OUTER JOIN FETCH reqs.certificationCriterionEntity cce "
+				+ "LEFT JOIN FETCH cce.certificationEdition "
 				+ "LEFT OUTER JOIN FETCH reqs.surveillanceResultTypeEntity "
 				+ "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
-				+ "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity "
+				+ "LEFT OUTER JOIN FETCH ncs.certificationCriterionEntity cce2 "
+				+ "LEFT JOIN FETCH cce2.certificationEdition "
 				+ "LEFT OUTER JOIN FETCH ncs.nonconformityStatus "
 				+ "LEFT OUTER JOIN FETCH ncs.documents "
 				+ "WHERE surv.deleted <> true "

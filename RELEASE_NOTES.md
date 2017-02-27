@@ -1,5 +1,40 @@
 # Release Notes
 
+## Version 8.1.0
+_27 February 2017_
+
+### Features Added
+* Add basic search API endpoint to return all certified products
+* Add surveillance statistics to weekly email
+* Protect basic surveillance report and only allow download by ONC ADMIN and ONC STAFF
+* Add functionality to allow a "rolling cache" that refreshes the cache asynchronously while allowing the user to view currently available cached data
+* Make caches eternal so the user gets cached data more often
+* Add columns to surveillance reports (ACB Name, certification status, hyperlink to CHPL listing) and reformat dates (yyyy/mm/dd)
+* Add daily and weekly surveillance oversight reports to calculate which surveillance items have broken a given set of rules.
+  * Environment properties have been added:
+ ```
+ #oversight email properties 
+ oversightEmailDailyTo=sample@email.com
+ oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
+ oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
+ oversightEmailWeeklyTo=sample@email.com
+ oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
+ oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
+ suspendedDaysAllowed=30
+ capApprovalDaysAllowed=75  
+ capStartDaysAllowed=10
+ ```
+  * To run the weekly report at 00:05 on Wednesdays, add a line like the below to crontab
+ ```
+ 5 0 * * 3 cd /chpl/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
+ ```
+  * To run the daily report at 00:05 every day, add a line like the below to crontab
+ ```
+ 5 0 * * * cd /chpl/chpl-api/chpl/chpl-service && ./generateDailySurveillanceOversightReport.sh
+ ```
+
+---
+
 ## Verison 8.0.0
 _7 February 2017_
 

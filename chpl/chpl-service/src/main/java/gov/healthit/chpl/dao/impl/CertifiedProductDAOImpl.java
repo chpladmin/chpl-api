@@ -200,7 +200,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	public List<CertifiedProductDetailsDTO> findWithSurveillance(){
 		
 		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery( 
-				"SELECT cp "
+				"SELECT DISTINCT cp "
 				+ "FROM CertifiedProductDetailsEntity cp, SurveillanceEntity surv "
 				+ "WHERE surv.certifiedProductId = cp.id "
 				+ "AND (NOT surv.deleted = true)", CertifiedProductDetailsEntity.class).getResultList();

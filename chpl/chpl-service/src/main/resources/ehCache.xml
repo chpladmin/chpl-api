@@ -6,13 +6,21 @@
 
 	<diskStore path="java.io.tmpdir" />
 	
+	<defaultCache
+		maxEntriesLocalHeap="10000"
+		eternal="true"
+		maxEntriesLocalDisk="10000000"
+		diskExpiryThreadIntervalSeconds="120"
+		memoryStoreEvictionPolicy="LRU">
+		<persistence strategy="localTempSwap"/>
+	</defaultCache>
+	
 	<!-- /certification_ids caching -->
 	<cache name="allCertIdsWithProducts"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -20,10 +28,9 @@
 	
 	<cache name="allCertIds"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -33,10 +40,9 @@
 	<!-- /search_options caching -->
 	<cache name="allDevelopers"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -44,10 +50,9 @@
 	
 	<cache name="allDevelopersIncludingDeleted"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -55,10 +60,9 @@
 	
 	<cache name="certBodyNames"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -66,10 +70,9 @@
 	
 	<cache name="editionNames"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -77,10 +80,9 @@
 	
 	<cache name="certificationStatuses"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -88,10 +90,9 @@
 	
 	<cache name="practiceTypeNames"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -99,10 +100,9 @@
 	
 	<cache name="classificationNames"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -110,10 +110,9 @@
 	
 	<cache name="productNames"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -121,10 +120,9 @@
 	
 	<cache name="developerNames"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -132,10 +130,9 @@
 	
 	<cache name="macrameasures"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -143,10 +140,9 @@
 	
 	<cache name="cqmCriterionNumbers"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -154,10 +150,19 @@
 	
 	<cache name="certificationCriterionNumbers"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+	<cache name="certificationCriterionWithEditions"
+		maxEntriesLocalHeap="1000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -165,12 +170,31 @@
 	<!-- end /search_options caching -->
 	
 	<!-- /search caching -->
+	<cache name="basicSearch"
+		maxEntriesLocalHeap="300000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+	<cache name="preFetchedBasicSearch"
+		maxEntriesLocalHeap="300000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
 	<cache name="search"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -178,10 +202,9 @@
 	
 	<cache name="countMultiFilterSearchResults"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
@@ -191,10 +214,9 @@
 	<!-- decertifications/certified_products/ -->
 	<cache name="getDecertifiedDevelopers"
 		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="100000"
-		eternal="false"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
 		diskSpoolBufferSizeMB="20"
-		timeToIdleSeconds="10800" timeToLiveSeconds="86400"
 		memoryStoreEvictionPolicy="LFU"
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />

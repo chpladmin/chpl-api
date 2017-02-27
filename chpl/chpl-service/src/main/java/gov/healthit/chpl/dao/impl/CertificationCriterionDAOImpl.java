@@ -45,11 +45,9 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 			entity.setCreationDate(dto.getCreationDate());
 			entity.setDeleted(dto.getDeleted());
 			entity.setDescription(dto.getDescription());
-			//entity.setId(dto.getId());
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setNumber(dto.getNumber());
-			entity.setParentCriterion(this.getEntityById(dto.getParentCriterionId()));
 			entity.setRequiresSed(dto.getRequiresSed());
 			entity.setTitle(dto.getTitle());
 			
@@ -70,10 +68,8 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		entity.setDeleted(dto.getDeleted());
 		entity.setDescription(dto.getDescription());
 		entity.setId(dto.getId());
-		//entity.setLastModifiedDate(result.getLastModifiedDate());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setNumber(dto.getNumber());
-		entity.setParentCriterion(this.getEntityById(dto.getParentCriterionId()));
 		entity.setRequiresSed(dto.getRequiresSed());
 		entity.setTitle(dto.getTitle());
 		update(entity);
@@ -178,7 +174,10 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 	
 	@Transactional
 	private List<CertificationCriterionEntity> getAllEntities() {
-		Query query = entityManager.createQuery("FROM CertificationCriterionEntity WHERE deleted = false",
+		Query query = entityManager.createQuery("SELECT cce "
+				+ "FROM CertificationCriterionEntity cce "
+				+ "LEFT JOIN FETCH cce.certificationEdition "
+				+ "WHERE cce.deleted = false",
 				CertificationCriterionEntity.class);
 		List<CertificationCriterionEntity> result = query.getResultList();
 		
@@ -204,7 +203,10 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		
 		if (id != null){
 		
-			Query query = entityManager.createQuery( "from CertificationCriterionEntity where (deleted <> true) AND (certification_criterion_id = :entityid) ", CertificationCriterionEntity.class );
+			Query query = entityManager.createQuery( "SELECT cce "
+					+ "FROM CertificationCriterionEntity cce "
+					+ "LEFT JOIN FETCH cce.certificationEdition "
+					+ "WHERE (cce.deleted <> true) AND (cce.id = :entityid) ", CertificationCriterionEntity.class );
 			query.setParameter("entityid", id);
 			List<CertificationCriterionEntity> result = query.getResultList();
 			
@@ -224,8 +226,10 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		
 		CertificationCriterionEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from CertificationCriterionEntity "
-				+ "where (NOT deleted = true) AND (number = :name) ", CertificationCriterionEntity.class );
+		Query query = entityManager.createQuery( "SELECT cce "
+				+ "FROM CertificationCriterionEntity cce "
+				+ "LEFT JOIN FETCH cce.certificationEdition "
+				+ "where (NOT cce.deleted = true) AND (cce.number = :name) ", CertificationCriterionEntity.class );
 		query.setParameter("name", name);
 		List<CertificationCriterionEntity> result = query.getResultList();
 		

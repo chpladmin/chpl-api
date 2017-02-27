@@ -1,6 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Set;
 
@@ -28,10 +28,12 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
+import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -374,7 +376,25 @@ public class SearchMenuManagerTest {
 				+ " millis or " + elapsedSecs + " seconds", timeLength < 100);
 	}
 	
-	
+	@Transactional(readOnly = true)
+	@Test
+	public void testGetAllCertificationCriterionWithEditions() {
+		Set<CertificationCriterion> results = searchMenuManager.getCertificationCriterion();
+		assertNotNull(results);
+		assertEquals(164, results.size());
+		for(CertificationCriterion crit : results) {
+			assertNotNull(crit.getNumber());
+			assertNotNull(crit.getCertificationEdition());
+			if(crit.getNumber().startsWith("170.314")) {
+				assertEquals("2014", crit.getCertificationEdition());
+			} else if(crit.getNumber().startsWith("170.315")) {
+				assertEquals("2015", crit.getCertificationEdition());
+			} else {
+				assertEquals("2011", crit.getCertificationEdition());
+			}
+		}
+		
+	}
 	
 	/** Description: Tests the getDeveloperNames() method
 	 * Verifies that getDeveloperNames() returns valid, non-null results

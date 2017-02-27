@@ -1,5 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.io.FileExistsException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ClearBasicSearch;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
@@ -118,6 +122,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
 	public Long createSurveillance(Long acbId, Surveillance surv) {
 		Long insertedId = null;
 		
@@ -155,6 +160,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
 	public void updateSurveillance(Long acbId, Surveillance surv) {
 		try {
 			survDao.updateSurveillance(surv);
@@ -170,6 +176,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
 	public void deleteSurveillance(Long acbId, Long survId) {		
 		Surveillance surv = new Surveillance();
 		surv.setId(survId);
@@ -317,6 +324,27 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		} catch(MessagingException me) {
 			logger.error("Could not send questionable activity email", me);
 		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	public File getProtectedDownloadFile(String filenameToDownload) throws IOException {
+		return getFileFromDownloadFolder(filenameToDownload);
+	}
+	
+	@Override
+	public File getDownloadFile(String filenameToDownload) throws IOException {
+		return getFileFromDownloadFolder(filenameToDownload);
+	}
+	
+	private File getFileFromDownloadFolder(String filenameToDownload) throws IOException {
+		String downloadFileLocation = env.getProperty("downloadFolderPath");
+		
+		File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
+		if(!downloadFile.exists() || !downloadFile.canRead()) {
+			throw new IOException("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
+		} 
+		return downloadFile;
 	}
 	
 	private Surveillance convertToDomain(PendingSurveillanceEntity pr) {
