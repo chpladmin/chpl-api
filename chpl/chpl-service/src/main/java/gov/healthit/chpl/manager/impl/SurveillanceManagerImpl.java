@@ -18,10 +18,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearBasicSearch;
@@ -127,6 +129,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@ClearBasicSearch
 	public Long createSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException {
 		Long insertedId = null;
+		checkSurveillanceAuthority(surv);
 		
 		try {
 			insertedId = survDao.insertSurveillance(surv);
@@ -164,6 +167,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
 	public void updateSurveillance(Long acbId, Surveillance surv) throws Exception {
+		checkSurveillanceAuthority(surv);
 		try {
 			survDao.updateSurveillance(surv);
 		} catch(Exception ex) {
@@ -182,6 +186,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	public void deleteSurveillance(Long acbId, Long survId) {		
 		Surveillance surv = new Surveillance();
 		surv.setId(survId);
+		checkSurveillanceAuthority(surv);
 		
 		try {
 			survDao.deleteSurveillance(surv);
@@ -532,5 +537,27 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			}
 		}
 		return surv;
+	}
+	
+	private void checkSurveillanceAuthority(Surveillance surv){
+		Boolean hasOncAdmin = Util.isUserRoleAdmin();
+		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
+		if(StringUtils.isEmpty(surv.getAuthority())){
+			// If user has ROLE_ADMIN and ROLE_ACB_ADMIN or ROLE_ACB_STAFF, return 403
+			if(hasOncAdmin && (hasAcbStaff || hasAcbAdmin)){
+				String errorMsg = "User " + Util.getUsername() + " cannot have ROLE_ADMIN and ROLE_ACB_ADMIN or ROLE_ACB_STAFF.";
+				logger.error(errorMsg);
+				throw new AccessDeniedException(errorMsg);	
+			}	
+		}
+		else {
+			// Cannot set surveillance authority to ROLE_ADMIN for user lacking ROLE_ADMIN
+		    if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin){
+		    	String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
+				logger.error(errorMsg);
+				throw new AccessDeniedException(errorMsg);	
+			}
+		}
 	}
 }

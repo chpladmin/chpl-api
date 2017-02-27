@@ -357,27 +357,12 @@ public class SurveillanceValidator {
 	}
 	
 	public void validateSurveillanceAuthority(Surveillance surv) {
-		Boolean hasOncAdmin = Util.isUserRoleAdmin();
-		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
-		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
-		if(StringUtils.isEmpty(surv.getAuthority())){
-			// If user has ROLE_ADMIN and ROLE_ACB_ADMIN or ROLE_ACB_STAFF, return error
-			if(hasOncAdmin && (hasAcbStaff || hasAcbAdmin)){
-				surv.getErrorMessages().add("User cannot have authority for " + Authority.ROLE_ADMIN + 
-						" and " + Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF + ".");
-			}	
-		}
-		else {
-			// Surveillance must have valid value of ROLE_ADMIN, ROLE_ACB_ADMIN or ROLE_ACB_STAFF
+		if(!StringUtils.isEmpty(surv.getAuthority())){
 			if(!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) 
 					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN) 
 					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)){
 				surv.getErrorMessages().add("Surveillance must have authority for " + Authority.ROLE_ADMIN 
 						+ " or " + Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF);
-			}
-			// Cannot set surveillance authority to ROLE_ADMIN for user lacking ROLE_ADMIN
-			else if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin){
-				surv.getErrorMessages().add("User must have authority " + Authority.ROLE_ADMIN);
 			}
 		}
 	}
