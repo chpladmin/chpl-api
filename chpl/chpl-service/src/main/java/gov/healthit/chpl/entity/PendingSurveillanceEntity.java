@@ -63,9 +63,6 @@ public class PendingSurveillanceEntity {
 	@Column(name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 	
-	@Column(name = "user_permission_id", insertable = false, updatable = true)
-	private Long userPermissionId;
-	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId"  )
 	@Basic( optional = false )
 	@Column( name = "pending_surveillance_id", nullable = false  )
@@ -174,13 +171,5 @@ public class PendingSurveillanceEntity {
 
 	public void setSurvFriendlyIdToReplace(String survFriendlyIdToReplace) {
 		this.survFriendlyIdToReplace = survFriendlyIdToReplace;
-	}
-	
-	public Long getUserPermissionId() {
-		return userPermissionId;
-	}
-
-	public void setUserPermissionId(Long userPermissionId) {
-		this.userPermissionId = userPermissionId;
 	}
 }

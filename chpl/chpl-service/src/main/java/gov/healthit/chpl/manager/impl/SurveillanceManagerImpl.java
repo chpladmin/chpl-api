@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearBasicSearch;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -124,12 +125,12 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public Long createSurveillance(Long acbId, Surveillance surv) throws Exception {
+	public Long createSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException {
 		Long insertedId = null;
 		
 		try {
 			insertedId = survDao.insertSurveillance(surv);
-		} catch(Exception ex) {
+		} catch(UserPermissionRetrievalException ex) {
 			logger.error("Error inserting surveillance.", ex);
 			throw ex;
 		}

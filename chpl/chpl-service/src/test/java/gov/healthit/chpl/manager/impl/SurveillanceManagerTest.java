@@ -379,6 +379,7 @@ public class SurveillanceManagerTest extends TestCase {
 		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
 		req.setResult(resType);
 		surv.getRequirements().add(req);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
 		
 		Long insertedId = survManager.createSurveillance(-1L, surv);
 		assertNotNull(insertedId);
@@ -480,6 +481,7 @@ public class SurveillanceManagerTest extends TestCase {
 		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
 		req.setResult(resType);
 		surv.getRequirements().add(req);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
 		
 		Long insertedId = survManager.createSurveillance(-1L, surv);
 		assertNotNull(insertedId);
@@ -552,6 +554,7 @@ public class SurveillanceManagerTest extends TestCase {
 		SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
 		nc.setStatus(ncStatus);
 		req.getNonconformities().add(nc);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
 		
 		Long insertedId = survManager.createSurveillance(-1L, surv);
 		assertNotNull(insertedId);
@@ -601,6 +604,7 @@ public class SurveillanceManagerTest extends TestCase {
 		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
 		req.setResult(resType);
 		surv.getRequirements().add(req);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
 		
 		Long insertedId = survManager.createSurveillance(-1L, surv);
 		assertNotNull(insertedId);

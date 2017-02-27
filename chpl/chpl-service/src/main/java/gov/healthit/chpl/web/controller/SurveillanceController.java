@@ -38,6 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.domain.Authority;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -159,8 +160,8 @@ public class SurveillanceController {
 	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance createSurveillance(
-			@RequestBody(required = true) Surveillance survToInsert) 
-		throws Exception {
+			@RequestBody(required = true) Surveillance survToInsert) throws ValidationException, EntityRetrievalException, 
+				CertificationBodyAccessException, UserPermissionRetrievalException, EntityCreationException, JsonProcessingException {
 		survToInsert.getErrorMessages().clear();
 		
 		//validate first. this ensures we have all the info filled in 
@@ -171,7 +172,7 @@ public class SurveillanceController {
 			throw new ValidationException(survToInsert.getErrorMessages(), null);
 		}
 		
-		updateAuthority(survToInsert);
+		updateNullAuthority(survToInsert);
 		
 		//look up the ACB
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
@@ -209,7 +210,7 @@ public class SurveillanceController {
 	public @ResponseBody String uploadNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
 			@PathVariable("nonconformityId") Long nonconformityId,
 			@RequestParam("file") MultipartFile file) throws 
-			InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
+			InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException, EntityCreationException, IOException {
 		if (file.isEmpty()) {
 			throw new InvalidArgumentsException("You cannot upload an empty file!");
 		}
@@ -267,8 +268,6 @@ public class SurveillanceController {
 			throw new ValidationException(survToUpdate.getErrorMessages(), null);
 		}
 		
-		updateAuthority(survToUpdate);
-		
 		//look up the ACB
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
@@ -315,7 +314,7 @@ public class SurveillanceController {
 			throw new ValidationException(survToDelete.getErrorMessages(), null);
 		}
 		
-		updateAuthority(survToDelete);
+		updateNullAuthority(survToDelete);
 
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
@@ -402,8 +401,8 @@ public class SurveillanceController {
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance confirmPendingSurveillance(
-			@RequestBody(required = true) Surveillance survToInsert) 
-		throws Exception {
+			@RequestBody(required = true) Surveillance survToInsert) throws ValidationException, EntityRetrievalException, 
+				EntityCreationException, JsonProcessingException, UserPermissionRetrievalException {
 		if(survToInsert == null || survToInsert.getId() == null) {
 			throw new ValidationException("An id must be provided in the request body.");
 		}
@@ -681,17 +680,19 @@ public class SurveillanceController {
 		}
 	}
 	
-	private void updateAuthority(Surveillance surv){
-		if(surv.getErrorMessages().size() < 1){
-			Boolean hasOncStaff = Util.isUserRoleOncStaff();
-			Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
-			if(surv.getAuthority() == null){
-				if(hasOncStaff){
-					surv.setAuthority(Authority.ROLE_ONC_STAFF);
-				}
-				else if(hasAcbAdmin){
-					surv.setAuthority(Authority.ROLE_ACB_ADMIN);
-				}
+	private void updateNullAuthority(Surveillance surv){
+		Boolean hasOncAdmin = Util.isUserRoleAdmin();
+		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
+		if(surv.getAuthority() == null){
+			if(hasOncAdmin){
+				surv.setAuthority(Authority.ROLE_ADMIN);
+			}
+			else if(hasAcbAdmin){
+				surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+			}
+			else if(hasAcbStaff){
+				surv.setAuthority(Authority.ROLE_ACB_STAFF);
 			}
 		}
 	}

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -218,6 +219,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		req.setResult(resType);
 		
 		surv.getRequirements().add(req);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		Long insertedId = survDao.insertSurveillance(surv);
 		assertNotNull(insertedId);
@@ -287,6 +289,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		req.setResult(resType);
 		
 		surv.getRequirements().add(req);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		Long insertedId = survDao.insertSurveillance(surv);
 		assertNotNull(insertedId);
@@ -377,6 +380,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
 		nc.setStatus(ncStatus);
 		req2.getNonconformities().add(nc);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		Long insertedId = survDao.insertSurveillance(surv);
 		assertNotNull(insertedId);

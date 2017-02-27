@@ -62,7 +62,7 @@ public class SurveillanceControllerTest {
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser acbAdmin;
-	private static JWTAuthenticatedUser oncStaff;
+	private static JWTAuthenticatedUser oncAdmin;
 	private static JWTAuthenticatedUser oncAndAcb;
 
 	@Rule
@@ -85,28 +85,28 @@ public class SurveillanceControllerTest {
 		acbAdmin.setSubjectName("testUser3");
 		acbAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
 		
-		oncStaff = new JWTAuthenticatedUser();
-		oncStaff.setFirstName("Test");
-		oncStaff.setId(3L);
-		oncStaff.setLastName("User");
-		oncStaff.setSubjectName("TESTUSER");
-		oncStaff.getPermissions().add(new GrantedPermission(Authority.ROLE_ONC_STAFF));
+		oncAdmin = new JWTAuthenticatedUser();
+		oncAdmin.setFirstName("Test");
+		oncAdmin.setId(3L);
+		oncAdmin.setLastName("User");
+		oncAdmin.setSubjectName("TESTUSER");
+		oncAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		
 		oncAndAcb = new JWTAuthenticatedUser();
 		oncAndAcb.setFirstName("Test");
 		oncAndAcb.setId(3L);
 		oncAndAcb.setLastName("User");
 		oncAndAcb.setSubjectName("TESTUSER");
-		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ONC_STAFF));
+		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
 	}
 	
 	/** 1. 
-	 * Given I am authenticated as only ROLE_ONC_STAFF
+	 * Given I am authenticated as only ROLE_ADMIN
 	 * Given I have authority on the ACB
 	 * When I create a surveillance and pass in null authority to the API
-	 * Then openchpl.surveillance.user_permission_id matches my user authority of ROLE_ONC_STAFF
-	 * Then survManager.getById(insertedSurv) returns the authority for ROLE_ONC_STAFF
+	 * Then openchpl.surveillance.user_permission_id matches my user authority of ROLE_ADMIN
+	 * Then survManager.getById(insertedSurv) returns the authority for ROLE_ADMIN
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
 	 * @throws JsonProcessingException
@@ -117,10 +117,10 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_createSurveillance_nullUsesUserObject_OncStaff()
+	public void test_createSurveillance_nullUsesUserObject_OncAdmin()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		SecurityContextHolder.getContext().setAuthentication(oncAdmin);
 		Surveillance surv = new Surveillance();
 		
 		CertifiedProductDTO cpDto = cpDao.getById(1L);
@@ -155,7 +155,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ONC_STAFF);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ADMIN);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -166,10 +166,10 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 2. 
-	 * Given I am authenticated as ROLE_ONC_STAFF and ROLE_CMS_ADMIN
+	 * Given I am authenticated as ROLE_ADMIN and ROLE_CMS_ADMIN
 	 * Given I have authority on the ACB
-	 * When I create a surveillance and pass in ROLE_ONC_STAFF authority to the API
-	 * Then openchpl.surveillance.user_permission_id matches the surveillance authority of ROLE_ONC_STAFF
+	 * When I create a surveillance and pass in ROLE_ADMIN authority to the API
+	 * Then openchpl.surveillance.user_permission_id matches the surveillance authority of ROLE_ADMIN
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
 	 * @throws JsonProcessingException
@@ -180,7 +180,7 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_createSurveillance_HaveOncAndAcb_passRoleOncStaff()
+	public void test_createSurveillance_HaveOncAndAcb_passRoleOncAdmin()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
@@ -196,7 +196,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -218,7 +218,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ONC_STAFF);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ADMIN);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -229,10 +229,10 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 3. 
-	 * Given I am authenticated as ROLE_ONC_STAFF and ROLE_CMS_ADMIN
+	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB_ADMIN
 	 * Given I have authority on the ACB
-	 * When I create a surveillance and pass in ROLE_CMS_ADMIN authority to the API
-	 * Then openchpl.surveillance.user_permission_id matches the surveillance authority of ROLE_CMS_ADMIN
+	 * When I create a surveillance and pass in ROLE_ACB_ADMIN authority to the API
+	 * Then openchpl.surveillance.user_permission_id matches the surveillance authority of ROLE_ACB_ADMIN
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
 	 * @throws JsonProcessingException
@@ -292,7 +292,7 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 4. 
-	 * Given I am authenticated as ROLE_ONC_STAFF and ROLE_CMS_ADMIN
+	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB_ADMIN
 	 * Given I have authority on the ACB
 	 * When I create a surveillance and pass in null authority to the API
 	 * Then the validator adds an error
@@ -336,8 +336,8 @@ public class SurveillanceControllerTest {
 		try {
 			surveillanceController.createSurveillance(surv);
 		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("User cannot have authority for " + Authority.ROLE_ONC_STAFF + 
-					" and " + Authority.ROLE_ACB_ADMIN + "."));
+			assertTrue(e.getErrorMessages().contains("User cannot have authority for " + Authority.ROLE_ADMIN + 
+					" and " + Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF + "."));
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -347,7 +347,7 @@ public class SurveillanceControllerTest {
 	/** 5. 
 	 * Given I am authenticated as ROLE_ACB_ADMIN
 	 * Given I have authority on the ACB
-	 * When I create a surveillance and pass in ROLE_ONC_STAFF authority to the API (or any role that <> user's role)
+	 * When I create a surveillance and pass in ROLE_ADMIN authority to the API (or any role that <> user's role)
 	 * Then the validator adds an error
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
@@ -375,7 +375,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -389,7 +389,7 @@ public class SurveillanceControllerTest {
 		try {
 			surveillanceController.createSurveillance(surv);
 		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("User must have authority " + Authority.ROLE_ONC_STAFF));
+			assertTrue(e.getErrorMessages().contains("User must have authority " + Authority.ROLE_ADMIN));
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -397,10 +397,10 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 6. 
-	 * Given I am authenticated as only ROLE_ONC_STAFF
+	 * Given I am authenticated as only ROLE_ADMIN
 	 * Given I have authority on the ACB
 	 * When I create a surveillance and pass in "foobar" authority to the API
-	 * Then the validator adds an error that the surveillance authority must be ROLE_ONC_STAFF or ROLE_ACB_ADMIN
+	 * Then the validator adds an error that the surveillance authority must be ROLE_ADMIN or ROLE_ACB_ADMIN
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
 	 * @throws JsonProcessingException
@@ -411,10 +411,10 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_createSurveillance_HaveOncStaff_passFoobar_returnsError()
+	public void test_createSurveillance_HaveOncAdmin_passFoobar_returnsError()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		SecurityContextHolder.getContext().setAuthentication(oncAdmin);
 		Surveillance surv = new Surveillance();
 		
 		CertifiedProductDTO cpDto = cpDao.getById(1L);
@@ -441,7 +441,8 @@ public class SurveillanceControllerTest {
 		try {
 			surveillanceController.createSurveillance(surv);
 		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("Surveillance must have authority for " + Authority.ROLE_ONC_STAFF + " or " + Authority.ROLE_ACB_ADMIN));
+			assertTrue(e.getErrorMessages().contains("Surveillance must have authority for " + Authority.ROLE_ADMIN 
+					+ " or " + Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF));
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -449,7 +450,7 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 7. 
-	 * Given I am authenticated as ROLE_ONC_STAFF
+	 * Given I am authenticated as ROLE_ADMIN
 	 * Given I have authority on the ACB
 	 * When I update a surveillance with authority ROLE_ACB_ADMIN
 	 * Then I am allowed to edit it
@@ -463,10 +464,10 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_updateSurveillance_HaveOncStaff_passAcbAdmin_isPermitted()
+	public void test_updateSurveillance_HaveOncAdmin_passAcbAdmin_isPermitted()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		SecurityContextHolder.getContext().setAuthentication(oncAdmin);
 		Surveillance surv = new Surveillance();
 		
 		CertifiedProductDTO cpDto = cpDao.getById(1L);
@@ -512,9 +513,9 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 8.
-	 * Given I am authenticated as ROLE_ONC_STAFF
+	 * Given I am authenticated as ROLE_ADMIN
 	 * Given I have authority on the ACB
-	 * When I update a surveillance with authority ROLE_ONC_STAFF
+	 * When I update a surveillance with authority ROLE_ADMIN
 	 * Then I am allowed to edit it
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
@@ -526,10 +527,10 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_updateSurveillance_HaveOncStaff_passOncStaff_isPermitted()
+	public void test_updateSurveillance_HaveOncAdmin_passOncAdmin_isPermitted()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		SecurityContextHolder.getContext().setAuthentication(oncAdmin);
 		Surveillance surv = new Surveillance();
 		
 		CertifiedProductDTO cpDto = cpDao.getById(1L);
@@ -542,7 +543,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -564,7 +565,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ONC_STAFF);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ADMIN);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -577,7 +578,7 @@ public class SurveillanceControllerTest {
 	/** 9.
 	 * Given I am authenticated as ROLE_ACB_ADMIN
 	 * Given I have authority on the ACB
-	 * When I update a surveillance with authority ROLE_ONC_STAFF
+	 * When I update a surveillance with authority ROLE_ADMIN
 	 * Then I am NOT allowed to edit it
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
@@ -589,7 +590,7 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_updateSurveillance_HaveAcbAdmin_passOncStaff_returnsError()
+	public void test_updateSurveillance_HaveAcbAdmin_passOncAdmin_returnsError()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
@@ -605,7 +606,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -619,7 +620,7 @@ public class SurveillanceControllerTest {
 		try {
 			surveillanceController.updateSurveillance(surv);
 		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("User must have authority " + Authority.ROLE_ONC_STAFF));
+			assertTrue(e.getErrorMessages().contains("User must have authority " + Authority.ROLE_ADMIN));
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -689,7 +690,7 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 11. 
-	 * Given I am authenticated as ROLE_ONC_STAFF
+	 * Given I am authenticated as ROLE_ADMIN
 	 * Given I have authority on the ACB
 	 * When I delete a surveillance that was created by ROLE_ACB_ADMIN
 	 * Then I am allowed to delete it
@@ -703,10 +704,10 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_deleteSurveillance_HaveOncStaff_survCreatedByAcb_isPermitted()
+	public void test_deleteSurveillance_HaveOncAdmin_survCreatedByAcb_isPermitted()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		SecurityContextHolder.getContext().setAuthentication(oncAdmin);
 		Surveillance surv = new Surveillance();
 		
 		CertifiedProductDTO cpDto = cpDao.getById(1L);
@@ -760,9 +761,9 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 12. 
-	 * Given I am authenticated as ROLE_ONC_STAFF
+	 * Given I am authenticated as ROLE_ADMIN
 	 * Given I have authority on the ACB
-	 * When I delete a surveillance that was created by ROLE_ONC_STAFF
+	 * When I delete a surveillance that was created by ROLE_ADMIN
 	 * Then I am allowed to delete it
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
@@ -774,10 +775,10 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_deleteSurveillance_HaveOncStaff_survCreatedByOnc_isPermitted()
+	public void test_deleteSurveillance_HaveOncAdmin_survCreatedByOnc_isPermitted()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		SecurityContextHolder.getContext().setAuthentication(oncAdmin);
 		Surveillance surv = new Surveillance();
 		
 		CertifiedProductDTO cpDto = cpDao.getById(1L);
@@ -790,7 +791,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -812,7 +813,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ADMIN);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -832,7 +833,7 @@ public class SurveillanceControllerTest {
 	/** 13. 
 	 * 	Given I am authenticated as ROLE_ACB_ADMIN
 	 * Given I have authority on the ACB
-	 * When I delete a surveillance that was created by ROLE_ONC_STAFF
+	 * When I delete a surveillance that was created by ROLE_ADMIN
 	 * Then I am NOT allowed to delete it
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
@@ -847,7 +848,7 @@ public class SurveillanceControllerTest {
 	public void test_deleteSurveillance_HaveAcbAdmin_survCreatedByOnc_returnsError()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(oncStaff);
+		SecurityContextHolder.getContext().setAuthentication(oncAdmin);
 		Surveillance surv = new Surveillance();
 		
 		CertifiedProductDTO cpDto = cpDao.getById(1L);
@@ -860,7 +861,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -882,7 +883,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ONC_STAFF);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ADMIN);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -896,7 +897,7 @@ public class SurveillanceControllerTest {
 			result = surveillanceController.deleteSurveillance(surv.getId());
 			assertFalse(result.contains("true"));
 		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("Surveillance cannot have authority " + Authority.ROLE_ONC_STAFF + " for a user lacking " + Authority.ROLE_ONC_STAFF));
+			assertTrue(e.getErrorMessages().contains("Surveillance cannot have authority " + Authority.ROLE_ADMIN + " for a user lacking " + Authority.ROLE_ADMIN));
 		} catch(Exception e){
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -969,7 +970,7 @@ public class SurveillanceControllerTest {
 			result = surveillanceController.deleteSurveillance(surv.getId());
 			assertTrue(result.contains("true"));
 		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("Surveillance cannot have authority " + Authority.ROLE_ONC_STAFF + " for a user lacking " + Authority.ROLE_ONC_STAFF));
+			assertTrue(e.getErrorMessages().contains("Surveillance cannot have authority " + Authority.ROLE_ADMIN + " for a user lacking " + Authority.ROLE_ADMIN));
 		} catch(Exception e){
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}

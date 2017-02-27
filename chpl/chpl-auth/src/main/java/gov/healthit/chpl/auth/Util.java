@@ -73,6 +73,19 @@ public class Util {
 		return false;
 	}
 
+	public static boolean isUserRoleAcbStaff() {
+		User user = getCurrentUser();
+		if (user == null) {
+			return false;
+		}
+		for (GrantedPermission perm : user.getPermissions()) {
+			if (perm.getAuthority().equals(Authority.ROLE_ACB_STAFF)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static User getCurrentUser() {
 
 		User user = null;

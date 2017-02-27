@@ -8,6 +8,7 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -18,7 +19,7 @@ public interface SurveillanceManager {
 	public void validate(Surveillance surveillance);
 	public void sendSuspiciousActivityEmail(Surveillance questionableSurv);
 	
-	public Long createSurveillance(Long abcId, Surveillance surv) throws Exception;
+	public Long createSurveillance(Long abcId, Surveillance surv) throws UserPermissionRetrievalException;
 	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc);
 	public void updateSurveillance(Long acbId, Surveillance surv) throws Exception;
 	public Surveillance getById(Long survId) throws EntityNotFoundException;
