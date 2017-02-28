@@ -339,8 +339,9 @@ public class SurveillanceManagerTest extends TestCase {
 		Long insertedId;
 		try {
 			insertedId = survManager.createSurveillance(-1L, surv);
+			Surveillance insertedSurv = survManager.getById(insertedId);
 			assertNotNull(insertedId);
-			survManager.deleteSurveillance(-1L, insertedId);
+			survManager.deleteSurveillance(-1L, insertedSurv);
 			boolean failed = false;
 			try {
 				survManager.getById(insertedId);
@@ -421,7 +422,7 @@ public class SurveillanceManagerTest extends TestCase {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ONC_STAFF);
+		surv.setAuthority(Authority.ROLE_ACB_STAFF);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -447,7 +448,6 @@ public class SurveillanceManagerTest extends TestCase {
 		assertEquals(2, got.getRequirements().size());
 		
 		got.getRequirements().remove(got.getRequirements().iterator().next());
-		
 		survManager.updateSurveillance(-1L, got);
 		got = survManager.getById(insertedId);
 		assertNotNull(got);

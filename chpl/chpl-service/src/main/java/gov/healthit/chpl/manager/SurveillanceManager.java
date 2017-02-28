@@ -26,7 +26,7 @@ public interface SurveillanceManager {
 	public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
 	public List<Surveillance> getByCertifiedProduct(Long cpId);
 	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents);
-	public void deleteSurveillance(Long acbId, Long survId);
+	public void deleteSurveillance(Long acbId, Surveillance surv);
 	public void deleteNonconformityDocument(Long acbId, Long documentId);
 	
 	public List<Surveillance> getPendingByAcb(Long acbId);

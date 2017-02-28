@@ -323,7 +323,7 @@ public class SurveillanceController {
 		
 		//delete it
 		try {
-			survManager.deleteSurveillance(owningAcb.getId(), survToDelete.getId());
+			survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
 			survManager.sendSuspiciousActivityEmail(survToDelete);
 		} catch(Exception ex) {
 			logger.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
@@ -443,7 +443,7 @@ public class SurveillanceController {
 						survToInsert.getCertifiedProduct().getId(),
 						survToInsert.getSurveillanceIdToReplace());
 				CertifiedProductDTO survToReplaceOwningCp = cpManager.getById(survToReplace.getCertifiedProduct().getId());
-				survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace.getId());
+				survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace);
 			}
 		} catch(Exception ex) {
 			logger.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
