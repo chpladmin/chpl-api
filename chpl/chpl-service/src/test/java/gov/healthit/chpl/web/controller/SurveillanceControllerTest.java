@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -64,6 +65,7 @@ public class SurveillanceControllerTest {
 	private static JWTAuthenticatedUser acbAdmin;
 	private static JWTAuthenticatedUser oncAdmin;
 	private static JWTAuthenticatedUser oncAndAcb;
+	private static JWTAuthenticatedUser oncAndAcbStaff;
 
 	@Rule
 	@Autowired
@@ -99,6 +101,14 @@ public class SurveillanceControllerTest {
 		oncAndAcb.setSubjectName("TESTUSER");
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
+		
+		oncAndAcbStaff = new JWTAuthenticatedUser();
+		oncAndAcbStaff.setFirstName("Test");
+		oncAndAcbStaff.setId(3L);
+		oncAndAcbStaff.setLastName("User");
+		oncAndAcbStaff.setSubjectName("TESTUSER");
+		oncAndAcbStaff.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
+		oncAndAcbStaff.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_STAFF));
 	}
 	
 	/** 1. 
@@ -335,9 +345,8 @@ public class SurveillanceControllerTest {
 		
 		try {
 			surveillanceController.createSurveillance(surv);
-		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("User cannot have authority for " + Authority.ROLE_ADMIN + 
-					" and " + Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF + "."));
+		} catch (AccessDeniedException e) {
+			assertTrue(e != null);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -388,8 +397,8 @@ public class SurveillanceControllerTest {
 		
 		try {
 			surveillanceController.createSurveillance(surv);
-		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("User must have authority " + Authority.ROLE_ADMIN));
+		} catch (AccessDeniedException e) {
+			assertTrue(e != null);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -440,9 +449,8 @@ public class SurveillanceControllerTest {
 		
 		try {
 			surveillanceController.createSurveillance(surv);
-		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("Surveillance must have authority for " + Authority.ROLE_ADMIN 
-					+ " or " + Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF));
+		} catch (AccessDeniedException e) {
+			assertTrue(e != null);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -619,8 +627,8 @@ public class SurveillanceControllerTest {
 		
 		try {
 			surveillanceController.updateSurveillance(surv);
-		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("User must have authority " + Authority.ROLE_ADMIN));
+		} catch (AccessDeniedException e) {
+			assertTrue(e != null);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -896,8 +904,8 @@ public class SurveillanceControllerTest {
 		try{
 			result = surveillanceController.deleteSurveillance(surv.getId());
 			assertFalse(result.contains("true"));
-		} catch (ValidationException e) {
-			assertTrue(e.getErrorMessages().contains("Surveillance cannot have authority " + Authority.ROLE_ADMIN + " for a user lacking " + Authority.ROLE_ADMIN));
+		} catch (AccessDeniedException e) {
+			assertTrue(e != null);
 		} catch(Exception e){
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -974,6 +982,68 @@ public class SurveillanceControllerTest {
 		} catch(Exception e){
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
+	}
+	
+	/** 15. 
+	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB_STAFF
+	 * Given I have authority on the ACB
+	 * When I create a surveillance and pass in null authority to the API
+	 * Then the surveillance authority is set to ROLE_ACB_STAFF
+	 * @throws ValidationException 
+	 * @throws EntityRetrievalException
+	 * @throws JsonProcessingException
+	 * @throws EntityCreationException
+	 * @throws InvalidArgumentsException
+	 * @throws ValidationException
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_createSurveillance_HaveOncAndAcb_passnull_authoritySetToAcbStaff()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncAndAcbStaff);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(null);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+		req.setResult(resType);
+		
+		surv.getRequirements().add(req);
+		
+		Surveillance insertedSurv;
+		try {
+			insertedSurv = surveillanceController.createSurveillance(surv);
+			assertNotNull(insertedSurv);
+			Surveillance got = survManager.getById(insertedSurv.getId());
+			assertNotNull(got);
+			assertNotNull(got.getCertifiedProduct());
+			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+			assertEquals(surv.getAuthority(), got.getAuthority());
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_STAFF);
+		} catch (Exception e) {
+			System.out.println(e.getClass() + ": " + e.getMessage());
+		}
+		assertEquals(1, surv.getRequirements().size());
+		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
 	}
 	
 }

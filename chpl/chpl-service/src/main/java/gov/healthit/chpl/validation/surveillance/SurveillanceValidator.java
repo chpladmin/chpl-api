@@ -356,6 +356,7 @@ public class SurveillanceValidator {
 	}
 	
 	public void validateSurveillanceAuthority(Surveillance surv) {
+		// non-null surveillance must be ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF
 		if(!StringUtils.isEmpty(surv.getAuthority())){
 			if(!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) 
 					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN) 

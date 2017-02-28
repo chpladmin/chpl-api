@@ -172,8 +172,6 @@ public class SurveillanceController {
 			throw new ValidationException(survToInsert.getErrorMessages(), null);
 		}
 		
-		updateNullAuthority(survToInsert);
-		
 		//look up the ACB
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
@@ -313,8 +311,6 @@ public class SurveillanceController {
 		if(survToDelete.getErrorMessages() != null && survToDelete.getErrorMessages().size() > 0) {
 			throw new ValidationException(survToDelete.getErrorMessages(), null);
 		}
-		
-		updateNullAuthority(survToDelete);
 
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
@@ -680,20 +676,5 @@ public class SurveillanceController {
 		}
 	}
 	
-	private void updateNullAuthority(Surveillance surv){
-		Boolean hasOncAdmin = Util.isUserRoleAdmin();
-		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
-		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
-		if(StringUtils.isEmpty(surv.getAuthority())){
-			if(hasOncAdmin){
-				surv.setAuthority(Authority.ROLE_ADMIN);
-			}
-			else if(hasAcbAdmin){
-				surv.setAuthority(Authority.ROLE_ACB_ADMIN);
-			}
-			else if(hasAcbStaff){
-				surv.setAuthority(Authority.ROLE_ACB_STAFF);
-			}
-		}
-	}
+
 }
