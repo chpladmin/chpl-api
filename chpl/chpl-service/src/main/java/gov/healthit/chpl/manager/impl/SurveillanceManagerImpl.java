@@ -166,11 +166,11 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public void updateSurveillance(Long acbId, Surveillance surv) throws Exception {
+	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException {
 		checkSurveillanceAuthority(surv);
 		try {
 			survDao.updateSurveillance(surv);
-		} catch(Exception ex) {
+		} catch(UserPermissionRetrievalException ex) {
 			logger.error("Error updating surveillance.", ex);
 			throw ex;
 		}

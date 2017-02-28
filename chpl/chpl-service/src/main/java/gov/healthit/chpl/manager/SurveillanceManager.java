@@ -21,7 +21,7 @@ public interface SurveillanceManager {
 	
 	public Long createSurveillance(Long abcId, Surveillance surv) throws UserPermissionRetrievalException;
 	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc);
-	public void updateSurveillance(Long acbId, Surveillance surv) throws Exception;
+	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException;
 	public Surveillance getById(Long survId) throws EntityNotFoundException;
 	public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
 	public List<Surveillance> getByCertifiedProduct(Long cpId);

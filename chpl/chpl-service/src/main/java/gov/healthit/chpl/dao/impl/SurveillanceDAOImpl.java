@@ -15,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
