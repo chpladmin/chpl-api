@@ -19,6 +19,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
 		
 	public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts() {
+		logger.info("Starting basic search query.");
 		Query query = entityManager.createQuery("SELECT cps "
 				+ "FROM CertifiedProductBasicSearchResultEntity cps "
 				, CertifiedProductBasicSearchResultEntity.class);

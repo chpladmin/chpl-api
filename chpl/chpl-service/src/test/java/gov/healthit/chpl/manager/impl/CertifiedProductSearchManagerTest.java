@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.caching.CacheEvictor;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
@@ -37,6 +38,9 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	
 	@Autowired
 	private CertifiedProductSearchManager certifiedProductSearchManager;
+	
+	@Autowired CacheEvictor cacheEvictor;
+	
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -259,5 +263,26 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		}
 		assertTrue(checkedCriteria);
 		assertTrue(checkedCqms);
+	}
+	
+
+	@Test
+	@Transactional(readOnly = true)
+	public void testBasicSearchCache() {
+		BasicSearchResponse response = certifiedProductSearchManager.search();
+		//basic search response should now be cached
+		BasicSearchResponse response2 = certifiedProductSearchManager.search();
+		//responses should be the same object
+		assertEquals(response, response2);
+		
+		//expect cache to clear properly the first time; prefetched cache was not cached
+		cacheEvictor.evictPreFetchedBasicSearch();
+		BasicSearchResponse response3 = certifiedProductSearchManager.search();
+		assertNotSame(response2, response3);
+		
+		//make sure the cache also clears the second time; prefetched cache was cached
+		cacheEvictor.evictPreFetchedBasicSearch();
+		BasicSearchResponse response4 = certifiedProductSearchManager.search();
+		assertNotSame(response3, response4);
 	}
 }
