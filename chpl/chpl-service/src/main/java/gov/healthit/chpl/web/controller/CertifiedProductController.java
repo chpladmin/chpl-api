@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +44,8 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -282,7 +287,20 @@ public class CertifiedProductController {
 	@RequestMapping(value="/pending", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {		
-		List<PendingCertifiedProductDTO> allProductDtos = pcpManager.getPending();
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		List<PendingCertifiedProductDTO> allProductDtos = new ArrayList<PendingCertifiedProductDTO>();
+
+		if (acbs != null) {
+			for (CertificationBodyDTO acb : acbs) {
+				try {
+					List<PendingCertifiedProductDTO> pendingCpsByAcb = pcpManager.getPendingCertifiedProductsByAcb(acb.getId());
+					allProductDtos.addAll(pendingCpsByAcb);
+				} catch (AccessDeniedException denied) {
+					logger.warn("Access denied to pending certified products for acb " + acb.getName() + " and user "
+							+ Util.getUsername());
+				}
+			}
+		}
 				
 		List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
 		for(PendingCertifiedProductDTO product : allProductDtos) {
@@ -300,8 +318,10 @@ public class CertifiedProductController {
 			notes="")
 	@RequestMapping(value="/pending/{pcpId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId) throws EntityRetrievalException {
-		PendingCertifiedProductDetails details = pcpManager.getById(pcpId);	
+	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId) 
+			throws EntityRetrievalException, EntityNotFoundException, AccessDeniedException {
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		PendingCertifiedProductDetails details = pcpManager.getById(acbs, pcpId);	
 		return details;
 	}
 	
@@ -310,8 +330,9 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		pcpManager.reject(id);
+	public @ResponseBody String deletePendingCertifiedProduct(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		pcpManager.deletePendingCertifiedProduct(acbs, id);
 		return "{\"success\" : true }";
 	}
 	
@@ -343,7 +364,7 @@ public class CertifiedProductController {
 		
 		Long acbId = new Long(acbIdStr);
 		CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
-		pcpManager.confirm(pendingCp.getId());
+		pcpManager.confirm(acbId, pendingCp.getId());
 		
 		CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
 		return result;

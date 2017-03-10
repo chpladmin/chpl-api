@@ -20,7 +20,6 @@ public class CacheEvictor {
 	@Autowired private PreFetchedCaches preFetchedCaches;
 	
 	@After("@annotation(ClearBasicSearch)")
-	@CacheEvict(value=CacheNames.PRE_FETCHED_BASIC_SEARCH, beforeInvocation=true, allEntries=true)
 	@Async
 	public void evictPreFetchedBasicSearch(){
 		CacheManager manager = cacheUtil.getMyCacheManager();
