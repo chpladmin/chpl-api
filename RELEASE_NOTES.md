@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 8.2.0
+_13 March 2017_
 
 ### Features Added
 * No longer use ACLs that were getting added to each pending product x ACB Admin.
