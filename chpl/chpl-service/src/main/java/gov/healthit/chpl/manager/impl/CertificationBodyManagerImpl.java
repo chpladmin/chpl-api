@@ -271,9 +271,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			mutableAclService.updateAcl(acl);
 			logger.debug("Added permission " + permission + " for Sid " + recipient
 					+ " acb " + acb);
-			
-			//now give them permission on all of the pending certified products for this ACB
-			pendingCpManager.addPermissionToAllPendingCertifiedProductsOnAcb(acb, user, permission);
 		}
 	}
 
@@ -298,9 +295,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			mutableAclService.updateAcl(acl);
 		}
 		logger.debug("Deleted acb " + acb + " ACL permission " + permission + " for recipient " + recipient);
-		
-		//now delete permission from all of the pending certified products for this ACB
-		pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, recipient);
 	}
 
 	@Transactional
@@ -325,9 +319,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 		mutableAclService.updateAcl(acl);
 		logger.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
-		
-		//now delete permission from all of the pending certified products for this ACB
-		pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, recipient);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')") 
@@ -349,9 +340,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 					permissions.remove(currEntry.getPermission());
 				}
 			}
-			
-			//now delete permission from all of the pending certified products for this ACB
-			pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, new PrincipalSid(userDto.getSubjectName()));
 		}
 	}
 	
