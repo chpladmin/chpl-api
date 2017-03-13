@@ -128,7 +128,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public Long createSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException {
+	public Long createSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		Long insertedId = null;
 		checkSurveillanceAuthority(surv);
 		updateNullAuthority(surv);
@@ -168,7 +168,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException {
+	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
 		try{
 			dbSurvEntity = survDao.getSurveillanceById(surv.getId());
@@ -195,7 +195,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public void deleteSurveillance(Long acbId, Surveillance surv) {
+	public void deleteSurveillance(Long acbId, Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
 		checkSurveillanceAuthority(surv);
 		
 		try {
@@ -549,7 +549,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		return surv;
 	}
 	
-	private void checkSurveillanceAuthority(Surveillance surv){
+	private void checkSurveillanceAuthority(Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
 		Boolean hasOncAdmin = Util.isUserRoleAdmin();
 		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
 		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
@@ -559,7 +559,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 				String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and " 
 						+ Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF;
 				logger.error(errorMsg);
-				throw new AccessDeniedException(errorMsg);
+				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
 			}
 		}
 		else {
@@ -567,7 +567,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		    if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin){
 		    	String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
 				logger.error(errorMsg);
-				throw new AccessDeniedException(errorMsg);	
+				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);	
 			}
 		    // Cannot have surveillance authority as ACB for user lacking ONC and ACB roles
 		    else if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN) 
@@ -575,7 +575,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		    	if(!hasOncAdmin && !hasAcbAdmin && !hasAcbStaff){
 		    		String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
 		    		logger.error(errorMsg);
-		    		throw new AccessDeniedException(errorMsg);
+		    		throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
 		    	}
 		    }
 		}

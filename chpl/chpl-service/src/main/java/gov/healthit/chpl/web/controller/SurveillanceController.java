@@ -52,6 +52,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -161,7 +162,7 @@ public class SurveillanceController {
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance createSurveillance(
 			@RequestBody(required = true) Surveillance survToInsert) throws ValidationException, EntityRetrievalException, 
-				CertificationBodyAccessException, UserPermissionRetrievalException, EntityCreationException, JsonProcessingException {
+				CertificationBodyAccessException, UserPermissionRetrievalException, EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 		survToInsert.getErrorMessages().clear();
 		
 		//validate first. this ensures we have all the info filled in 
@@ -185,7 +186,14 @@ public class SurveillanceController {
 		}
 		
 		//insert the surveillance
-		Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+		Long insertedSurv = null;
+		try{
+			insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+		} catch(SurveillanceAuthorityAccessDeniedException ex){
+			logger.error("User lacks authority to delete surveillance");
+			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
+		} 
+		
 		if(insertedSurv == null) {
 			throw new EntityCreationException("Error creating new surveillance.");
 		}
@@ -255,7 +263,7 @@ public class SurveillanceController {
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance updateSurveillance(
 			@RequestBody(required = true) Surveillance survToUpdate) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 		survToUpdate.getErrorMessages().clear();
 		
 		//validate first. this ensures we have all the info filled in 
@@ -279,9 +287,13 @@ public class SurveillanceController {
 		//update the surveillance
 		try {
 			survManager.updateSurveillance(owningAcb.getId(), survToUpdate);
+		} catch(SurveillanceAuthorityAccessDeniedException ex){
+			logger.error("User lacks authority to update surveillance");
+			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to update surveillance");
 		} catch(Exception ex) {
 			logger.error("Error updating surveillance with id " + survToUpdate.getId());
-		}
+		} 
+		  
 		
 		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
@@ -300,7 +312,7 @@ public class SurveillanceController {
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody String deleteSurveillance(
 			@PathVariable(value = "surveillanceId") Long surveillanceId) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 		Surveillance survToDelete = survManager.getById(surveillanceId);
 			
 		if(survToDelete == null) {
@@ -325,6 +337,9 @@ public class SurveillanceController {
 		try {
 			survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
 			survManager.sendSuspiciousActivityEmail(survToDelete);
+		} catch(SurveillanceAuthorityAccessDeniedException ex){
+			logger.error("User lacks authority to delete surveillance");
+			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
 		} catch(Exception ex) {
 			logger.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
 		}
@@ -398,7 +413,7 @@ public class SurveillanceController {
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance confirmPendingSurveillance(
 			@RequestBody(required = true) Surveillance survToInsert) throws ValidationException, EntityRetrievalException, 
-				EntityCreationException, JsonProcessingException, UserPermissionRetrievalException {
+				EntityCreationException, JsonProcessingException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		if(survToInsert == null || survToInsert.getId() == null) {
 			throw new ValidationException("An id must be provided in the request body.");
 		}

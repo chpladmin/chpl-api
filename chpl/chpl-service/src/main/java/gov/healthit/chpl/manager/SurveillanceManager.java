@@ -12,6 +12,7 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 
 public interface SurveillanceManager {
 	public File getDownloadFile(String filename) throws IOException;
@@ -19,14 +20,14 @@ public interface SurveillanceManager {
 	public void validate(Surveillance surveillance);
 	public void sendSuspiciousActivityEmail(Surveillance questionableSurv);
 	
-	public Long createSurveillance(Long abcId, Surveillance surv) throws UserPermissionRetrievalException;
+	public Long createSurveillance(Long abcId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
 	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc);
-	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException;
+	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
 	public Surveillance getById(Long survId) throws EntityNotFoundException;
 	public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
 	public List<Surveillance> getByCertifiedProduct(Long cpId);
 	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents);
-	public void deleteSurveillance(Long acbId, Surveillance surv);
+	public void deleteSurveillance(Long acbId, Surveillance surv) throws SurveillanceAuthorityAccessDeniedException;
 	public void deleteNonconformityDocument(Long acbId, Long documentId);
 	
 	public List<Surveillance> getPendingByAcb(Long acbId);
