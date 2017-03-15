@@ -10,14 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.ClearBasicSearch;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.search.BasicSearchResponse;
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;

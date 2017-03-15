@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -77,7 +78,7 @@ public class SurveillanceDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void insertSurveillanceWithoutNonconformities() throws EntityRetrievalException {
+	public void insertSurveillanceWithoutNonconformities() throws EntityRetrievalException, UserPermissionRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
@@ -100,6 +101,7 @@ public class SurveillanceDaoTest extends TestCase {
 		req.setResult(resType);
 		
 		surv.getRequirements().add(req);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		Long insertedId = survDao.insertSurveillance(surv);
 		assertNotNull(insertedId);
@@ -109,7 +111,7 @@ public class SurveillanceDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void insertSurveillanceWithNonconformities() throws EntityRetrievalException {
+	public void insertSurveillanceWithNonconformities() throws EntityRetrievalException, UserPermissionRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
@@ -154,6 +156,7 @@ public class SurveillanceDaoTest extends TestCase {
 		SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
 		nc.setStatus(ncStatus);
 		req2.getNonconformities().add(nc);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		Long insertedId = survDao.insertSurveillance(surv);
 		assertNotNull(insertedId);
@@ -163,7 +166,7 @@ public class SurveillanceDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateSurveillanceWithoutNonconformities() throws EntityRetrievalException {
+	public void updateSurveillanceWithoutNonconformities() throws EntityRetrievalException, UserPermissionRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
@@ -186,6 +189,7 @@ public class SurveillanceDaoTest extends TestCase {
 		req.setResult(resType);
 		
 		surv.getRequirements().add(req);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		Long insertedId = survDao.insertSurveillance(surv);
 		assertNotNull(insertedId);

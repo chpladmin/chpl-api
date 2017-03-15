@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -41,6 +43,7 @@ public class SurveillanceValidator {
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired CertificationResultDetailsDAO certResultDetailsDao;;
 	@Autowired CertificationCriterionDAO criterionDao;
+	@Autowired UserPermissionDAO userPermissionDao;
 
 	public void validate(Surveillance surv) {
 		CertifiedProductDetailsDTO cpDetails = null;
@@ -133,7 +136,8 @@ public class SurveillanceValidator {
 				surv.getErrorMessages().add("Number of randomized sites used is not applicable for " + surv.getType().getName() + " surveillance.");
 			}
 		}
-
+		
+		validateSurveillanceAuthority(surv);
 		validateSurveillanceRequirements(surv);
 		validateSurveillanceNonconformities(surv);
 	}
@@ -356,6 +360,18 @@ public class SurveillanceValidator {
 		}
         if(requiresCloseDate && surv.getEndDate() == null) {
 			surv.getErrorMessages().add("End date for surveillance is required when there are no open nonconformities.");
+		}
+	}
+	
+	public void validateSurveillanceAuthority(Surveillance surv) {
+		// non-null surveillance must be ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF
+		if(!StringUtils.isEmpty(surv.getAuthority())){
+			if(!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) 
+					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN) 
+					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)){
+				surv.getErrorMessages().add("Surveillance must have authority for " + Authority.ROLE_ADMIN 
+						+ " or " + Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF);
+			}
 		}
 	}
 }

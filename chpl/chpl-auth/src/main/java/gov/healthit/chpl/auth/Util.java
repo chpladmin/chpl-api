@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.User;
 
@@ -26,7 +27,7 @@ public class Util {
 			return false;
 		}
 		for (GrantedPermission perm : user.getPermissions()) {
-			if (perm.getAuthority().equals("ROLE_ADMIN")) {
+			if (perm.getAuthority().equals(Authority.ROLE_ADMIN)) {
 				return true;
 			}
 		}
@@ -39,7 +40,7 @@ public class Util {
 			return false;
 		}
 		for (GrantedPermission perm : user.getPermissions()) {
-			if (perm.getAuthority().equals("ROLE_ONC_STAFF")) {
+			if (perm.getAuthority().equals(Authority.ROLE_ONC_STAFF)) {
 				return true;
 			}
 		}
@@ -52,7 +53,33 @@ public class Util {
 			return false;
 		}
 		for (GrantedPermission perm : user.getPermissions()) {
-			if (perm.getAuthority().equals("ROLE_CMS_STAFF")) {
+			if (perm.getAuthority().equals(Authority.ROLE_CMS_STAFF)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isUserRoleAcbAdmin() {
+		User user = getCurrentUser();
+		if (user == null) {
+			return false;
+		}
+		for (GrantedPermission perm : user.getPermissions()) {
+			if (perm.getAuthority().equals(Authority.ROLE_ACB_ADMIN)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isUserRoleAcbStaff() {
+		User user = getCurrentUser();
+		if (user == null) {
+			return false;
+		}
+		for (GrantedPermission perm : user.getPermissions()) {
+			if (perm.getAuthority().equals(Authority.ROLE_ACB_STAFF)) {
 				return true;
 			}
 		}

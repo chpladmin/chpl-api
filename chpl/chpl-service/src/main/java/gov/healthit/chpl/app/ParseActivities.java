@@ -18,12 +18,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.mail.AuthenticationFailedException;
-import javax.mail.MessagingException;
-import javax.mail.SendFailedException;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

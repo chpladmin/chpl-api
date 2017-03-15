@@ -28,6 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.authentication.Authenticator;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.InvitationDTO;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
@@ -344,13 +345,13 @@ public class UserManagementController {
 			throw new InvalidArgumentsException("No user with name " + grantRoleObj.getSubjectName() + " exists in the system.");
 		}
 		
-		if(grantRoleObj.getRole().equals("ROLE_ADMIN")) {
+		if(grantRoleObj.getRole().equals(Authority.ROLE_ADMIN)) {
 			try {
 				userManager.removeAdmin(user.getSubjectName());
 			} catch(AccessDeniedException adEx) {
 				logger.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
 			}
-		} else if(grantRoleObj.getRole().equals("ROLE_ACB_ADMIN")) {
+		} else if(grantRoleObj.getRole().equals(Authority.ROLE_ACB_ADMIN)) {
 			try {
 				userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
 				

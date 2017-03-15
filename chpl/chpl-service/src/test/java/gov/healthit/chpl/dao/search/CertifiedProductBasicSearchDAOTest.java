@@ -20,7 +20,6 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import junit.framework.TestCase;
 
