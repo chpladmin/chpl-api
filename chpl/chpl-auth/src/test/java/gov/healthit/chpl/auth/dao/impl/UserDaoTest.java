@@ -181,8 +181,9 @@ public class UserDaoTest {
 	}
 
 	/**
-	 * Given the DAO is called When the passed in user id has been deleted Then
-	 * null is returned
+	 * Given the DAO is called 
+	 * When the passed in user id has been deleted 
+	 * Then null is returned
 	 * 
 	 * @throws UserRetrievalException
 	 */
@@ -194,8 +195,9 @@ public class UserDaoTest {
 	}
 
 	/**
-	 * Given the DAO is called When the passed in user id is valid/active Then a
-	 * result is returned
+	 * Given the DAO is called 
+	 * When the passed in user id is valid/active 
+	 * Then a result is returned
 	 * 
 	 * @throws UserRetrievalException
 	 */
