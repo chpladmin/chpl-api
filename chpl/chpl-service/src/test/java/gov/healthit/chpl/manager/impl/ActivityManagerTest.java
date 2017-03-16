@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import gov.healthit.chpl.JSONUtils;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
@@ -51,6 +53,10 @@ public class ActivityManagerTest extends TestCase {
 	private ActivityManager activityManager;
 	
 	private static JWTAuthenticatedUser adminUser;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	
 	@BeforeClass
@@ -94,7 +100,6 @@ public class ActivityManagerTest extends TestCase {
 		assertEquals(event.getActivityObjectId(), developer.getId());
 		
 		activityManager.deleteActivity(event.getId());
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	
@@ -132,7 +137,6 @@ public class ActivityManagerTest extends TestCase {
 		//assertEquals(event.getActivityDate(), timestamp);
 		
 		activityManager.deleteActivity(event.getId());
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	
@@ -141,7 +145,7 @@ public class ActivityManagerTest extends TestCase {
 	public void testGetAllActivity() throws JsonParseException, IOException{
 		
 		List<ActivityEvent> events = activityManager.getAllActivity(false);
-		assertEquals(5, events.size());
+		assertEquals(7, events.size());
 		
 	}
 	
@@ -174,8 +178,7 @@ public class ActivityManagerTest extends TestCase {
 		List<ActivityEvent> events = activityManager.getAllActivityInDateRange(false, fiveDaysAgo, null);
 		
 		activityManager.deleteActivity(events.get(0).getId());
-		assertEquals(1, events.size());
-		SecurityContextHolder.getContext().setAuthentication(null);
+		assertEquals(3, events.size());
 		
 	}
 	
@@ -225,7 +228,6 @@ public class ActivityManagerTest extends TestCase {
 		
 		activityManager.deleteActivity(events.get(0).getId());
 		assertEquals(1, events.size());
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -236,7 +238,7 @@ public class ActivityManagerTest extends TestCase {
 		assertEquals(4, events.size());
 		
 		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
-		assertEquals(1, events2.size());
+		assertEquals(3, events2.size());
 		
 		List<ActivityEvent> events3 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
 		assertEquals(0, events3.size());
@@ -247,7 +249,7 @@ public class ActivityManagerTest extends TestCase {
 	@Transactional
 	public void testGetActivityForConcept_developerNameIsFetched() throws JsonParseException, IOException{
 		List<ActivityEvent> events = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
-		assertEquals(1, events.size());
+		assertEquals(3, events.size());
 		assertTrue(events.get(0) instanceof ProductActivityEvent);
 		ProductActivityEvent event = (ProductActivityEvent)events.get(0);
 		assertNotNull(event.getDeveloper());
@@ -311,7 +313,6 @@ public class ActivityManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<ActivityEvent> eventsForUser = activityManager.getActivityForUser(1L);
 		assertEquals(5, eventsForUser.size());
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -328,7 +329,33 @@ public class ActivityManagerTest extends TestCase {
 			}
 		}
 		assertEquals(5, forUser.get(0).getEvents().size());
-		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	/**
+	 * Given the API call is made for /activity/user_activities?start=milliValue?end=milliValue
+	 * When an activity exists for a valid user
+	 * Then the authenticated user's activity is returned
+	 * @throws JsonParseException
+	 * @throws IOException
+	 * @throws UserRetrievalException
+	 */
+	@Test
+	@Transactional
+	public void testFindAllByUserInDateRange_returnsResult() throws JsonParseException, IOException, UserRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Date startDate = new Date(1489550400000L); // 2017-03-15
+		Date endDate = new Date(1489723200000L); // 2017-03-17
+		// Create a user activity for a user that does not exist
+		List<UserActivity> eventsForUser = activityManager.getActivityByUserInDateRange(startDate, endDate);
+		
+		List<UserActivity> forUser = new ArrayList<UserActivity>();
+		
+		for (UserActivity activity : eventsForUser){
+			if(activity.getUser().getUserId().equals(-2L)){
+				forUser.add(activity);
+			}
+		}
+		assertEquals(1, forUser.get(0).getEvents().size());
 	}
 	
 }

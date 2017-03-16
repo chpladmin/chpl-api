@@ -179,4 +179,30 @@ public class UserDaoTest {
 		assertEquals(1, found.getId().longValue());
 
 	}
+
+	/**
+	 * Given the DAO is called When the passed in user id has been deleted Then
+	 * null is returned
+	 * 
+	 * @throws UserRetrievalException
+	 */
+	@Test
+	public void testGetById_returnsNullForDeletedUser() throws UserRetrievalException {
+		UserDTO userDto = null;
+		userDto = dao.getById(-3L);
+		assertTrue(userDto == null);
+	}
+
+	/**
+	 * Given the DAO is called When the passed in user id is valid/active Then a
+	 * result is returned
+	 * 
+	 * @throws UserRetrievalException
+	 */
+	@Test
+	public void testGetById_returnsResultForActiveUser() throws UserRetrievalException {
+		UserDTO userDto = null;
+		userDto = dao.getById(-2L);
+		assertTrue(userDto != null);
+	}
 }

@@ -184,7 +184,7 @@ public class ActivityDaoTest extends TestCase {
 	public void testFindAll(){
 		
 		List<ActivityDTO> results = activityDAO.findAll(false);
-		assertEquals(5, results.size());
+		assertEquals(7, results.size());
 	}
 	
 	@Test
@@ -228,12 +228,12 @@ public class ActivityDaoTest extends TestCase {
 	public void testFindAllInLastNDays() throws EntityCreationException, EntityRetrievalException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
-		List<ActivityDTO> results = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date());
-		assertEquals(0,results.size());
+		Date fiveDaysAgo = new Date(1489699376931L - (5*24*60*60*1000)); // 3/16/2017 in millis - 5 days in millis
+		List<ActivityDTO> results = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date(1489699376931L));
+		assertEquals(2,results.size());
 		
 		List<ActivityDTO> results2 = activityDAO.findAllInDateRange(false, null, new Date());
-		assertEquals(5 ,results2.size());
+		assertEquals(7 ,results2.size());
 		
 		ActivityDTO recent = new ActivityDTO();
 		recent.setActivityDate(new Date());
@@ -246,7 +246,7 @@ public class ActivityDaoTest extends TestCase {
 		ActivityDTO created = activityDAO.create(recent);
 		
 		List<ActivityDTO> results3 = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date());
-		assertEquals(1, results3.size());
+		assertEquals(3, results3.size());
 		activityDAO.delete(created.getId());
 		ActivityDTO deleted = activityDAO.getById(created.getId());
 		assertNull(deleted);
