@@ -251,10 +251,15 @@ public class ActivityManagerTest extends TestCase {
 		List<ActivityEvent> events = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
 		assertEquals(3, events.size());
 		assertTrue(events.get(0) instanceof ProductActivityEvent);
-		ProductActivityEvent event = (ProductActivityEvent)events.get(0);
-		assertNotNull(event.getDeveloper());
-		assertNotNull(event.getDeveloper().getName());
-		assertEquals("Test Developer 1", event.getDeveloper().getName());
+		ProductActivityEvent myEvent = null;
+		for(ActivityEvent event : events){
+			if(event.getId().equals(-5L)){
+				myEvent = (ProductActivityEvent) event;
+			}
+		}
+		assertNotNull(myEvent.getDeveloper());
+		assertNotNull(myEvent.getDeveloper().getName());
+		assertEquals("Test Developer 1", myEvent.getDeveloper().getName());
 	}
 	
 	@Test
