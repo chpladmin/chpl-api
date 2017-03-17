@@ -282,19 +282,21 @@ public class ActivityManagerImpl implements ActivityManager {
 		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
 			
 			UserDTO userDto = userDAO.getById(userEntry.getKey());
-			User userObj = new User(userDto);
-			
-			List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-			
-			for (ActivityDTO userEventDTO : userEntry.getValue()){
-				ActivityEvent event = getActivityEventFromDTO(userEventDTO);
-				userActivityEvents.add(event);
+			if(userDto != null){
+				User userObj = new User(userDto);
+				
+				List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+				
+				for (ActivityDTO userEventDTO : userEntry.getValue()){
+					ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+					userActivityEvents.add(event);
+				}
+				
+				UserActivity userActivity = new UserActivity();
+				userActivity.setUser(userObj);
+				userActivity.setEvents(userActivityEvents);
+				userActivities.add(userActivity);
 			}
-			
-			UserActivity userActivity = new UserActivity();
-			userActivity.setUser(userObj);
-			userActivity.setEvents(userActivityEvents);
-			userActivities.add(userActivity);
 		}
 		return userActivities;
 	}
@@ -309,21 +311,22 @@ public class ActivityManagerImpl implements ActivityManager {
 		
 		
 		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
-			
 			UserDTO userDto = userDAO.getById(userEntry.getKey());
-			User userObj = new User(userDto);
-			
-			List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-			
-			for (ActivityDTO userEventDTO : userEntry.getValue()){
-				ActivityEvent event = getActivityEventFromDTO(userEventDTO);
-				userActivityEvents.add(event);
+			if(userDto != null){
+				User userObj = new User(userDto);
+				
+				List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+				
+				for (ActivityDTO userEventDTO : userEntry.getValue()){
+					ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+					userActivityEvents.add(event);
+				}
+				
+				UserActivity userActivity = new UserActivity();
+				userActivity.setUser(userObj);
+				userActivity.setEvents(userActivityEvents);
+				userActivities.add(userActivity);
 			}
-			
-			UserActivity userActivity = new UserActivity();
-			userActivity.setUser(userObj);
-			userActivity.setEvents(userActivityEvents);
-			userActivities.add(userActivity);
 		}
 		return userActivities;
 	}

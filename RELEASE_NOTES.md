@@ -7,6 +7,9 @@ _Date TBD_
 * Add authority to surveillance to allow end user to tell whether ONC or ACB created a surveillance activity
 * Disallow saving of Surveillance without close date but with no open Non-Conformities
 
+### Bugs Fixed
+* Fix an Internal Server Error when obtaining user activities and there exists a deleted user
+
 ---
 
 ## Version 8.2.0
