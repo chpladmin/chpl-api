@@ -730,6 +730,60 @@
     <pending_surveillance id="-1" surveillance_id_to_replace="-1" certified_product_id="10" certified_product_unique_id="CHP-024050" 
        start_date="2016-05-01 12:42:00.000" end_date="2016-06-01 12:42:00.000" type_value="1" creation_date="2016-05-01 12:42:00.000"
        last_modified_date="2016-05-01 12:42:00.000" last_modified_user="-1" deleted="FALSE" />
+    <pending_surveillance id="-2" surveillance_id_to_replace="-2" certified_product_id="17" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-3" surveillance_id_to_replace="-2" certified_product_id="1" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-4" surveillance_id_to_replace="-2" certified_product_id="2" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-5" surveillance_id_to_replace="-2" certified_product_id="3" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-6" surveillance_id_to_replace="-2" certified_product_id="4" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-7" surveillance_id_to_replace="-2" certified_product_id="5" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-8" surveillance_id_to_replace="-2" certified_product_id="6" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-9" surveillance_id_to_replace="-2" certified_product_id="7" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-10" surveillance_id_to_replace="-2" certified_product_id="8" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-11" surveillance_id_to_replace="-2" certified_product_id="9" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-12" surveillance_id_to_replace="-2" certified_product_id="10" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-13" surveillance_id_to_replace="-2" certified_product_id="11" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-14" surveillance_id_to_replace="-2" certified_product_id="12" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-15" surveillance_id_to_replace="-2" certified_product_id="13" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-16" surveillance_id_to_replace="-2" certified_product_id="14" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-17" surveillance_id_to_replace="-2" certified_product_id="15" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-18" surveillance_id_to_replace="-2" certified_product_id="16" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
+    <pending_surveillance id="-19" surveillance_id_to_replace="-2" certified_product_id="17" certified_product_unique_id="CHP-024051" 
+       start_date="2017-03-01 12:42:00.000" end_date="2017-04-01 12:42:00.000" type_value="1" creation_date="2017-03-01 12:42:00.000"
+       last_modified_date="2017-03-01 12:42:00.000" last_modified_user="-2" deleted="FALSE" />
 
 	<user user_id="-2" user_name="admin" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015" last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1" deleted="FALSE" contact_id="-2" />
 	<user user_id="-3" user_name="admin2" password="pwd" account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE" account_enabled="TRUE" creation_date="2017-03-14 12:43:00.015" last_modified_date="2017-03-14 12:43:00.015" last_modified_user="-3" deleted="TRUE" contact_id="-2" />

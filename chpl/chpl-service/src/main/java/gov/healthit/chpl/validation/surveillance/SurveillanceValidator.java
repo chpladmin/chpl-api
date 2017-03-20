@@ -136,13 +136,21 @@ public class SurveillanceValidator {
 				surv.getErrorMessages().add("Number of randomized sites used is not applicable for " + surv.getType().getName() + " surveillance.");
 			}
 		}
+		List<CertificationResultDetailsDTO> certResults = null;
+		if(surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
+			try {
+				certResults = certResultDetailsDao.getCertificationResultDetailsByCertifiedProductId(surv.getCertifiedProduct().getId());
+			} catch(EntityRetrievalException ex) {
+				logger.error("Could not find cert results for certified product " + surv.getCertifiedProduct().getId(), ex);
+			}
+		}
 		
 		validateSurveillanceAuthority(surv);
-		validateSurveillanceRequirements(surv);
-		validateSurveillanceNonconformities(surv);
+		validateSurveillanceRequirements(surv, certResults);
+		validateSurveillanceNonconformities(surv, certResults);
 	}
 
-	public void validateSurveillanceRequirements(Surveillance surv) {
+	public void validateSurveillanceRequirements(Surveillance surv, List<CertificationResultDetailsDTO> certResults) {
 		if(surv.getRequirements() == null || surv.getRequirements().size() == 0) {
 			surv.getErrorMessages().add("At least one surveillance requirement is required for CHPL product " + surv.getCertifiedProduct().getChplProductNumber() + ".");
 		} else {
@@ -176,20 +184,16 @@ public class SurveillanceValidator {
 
 						req.setRequirement(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(req.getRequirement()));
 						CertificationCriterionDTO criterion = null;
-						try {
-							//see if the nonconformity type is a criterion that the product has attested to
-							List<CertificationResultDetailsDTO> certResults = certResultDetailsDao.getCertificationResultDetailsByCertifiedProductId(surv.getCertifiedProduct().getId());
-							if(certResults != null && certResults.size() > 0) {
-								for(CertificationResultDetailsDTO certResult : certResults) {
-									if(!StringUtils.isEmpty(certResult.getNumber()) &&
-											certResult.getSuccess() != null && certResult.getSuccess() == Boolean.TRUE &&
-											certResult.getNumber().equals(req.getRequirement())) {
-										criterion = criterionDao.getByName(req.getRequirement());
-									}
+						//see if the nonconformity type is a criterion that the product has attested to
+						//List<CertificationResultDetailsDTO> certResults = certResultDetailsDao.getCertificationResultDetailsByCertifiedProductId(surv.getCertifiedProduct().getId());
+						if(certResults != null && certResults.size() > 0) {
+							for(CertificationResultDetailsDTO certResult : certResults) {
+								if(!StringUtils.isEmpty(certResult.getNumber()) &&
+										certResult.getSuccess() != null && certResult.getSuccess() == Boolean.TRUE &&
+										certResult.getNumber().equals(req.getRequirement())) {
+									criterion = criterionDao.getByName(req.getRequirement());
 								}
 							}
-						} catch(EntityRetrievalException ex) {
-							logger.error("Could not find cert results for certified product " + surv.getCertifiedProduct().getId(), ex);
 						}
 						if(criterion == null) {
 							surv.getErrorMessages().add("The requirement '" + req.getRequirement() + "' is not valid for requirement type '" + req.getType().getName() + "'. Valid values are any of the criterion this product has attested to.");
@@ -234,7 +238,7 @@ public class SurveillanceValidator {
 		}
 	}
 
-	public void validateSurveillanceNonconformities(Surveillance surv) {
+	public void validateSurveillanceNonconformities(Surveillance surv, List<CertificationResultDetailsDTO> certResults) {
 		if(surv.getRequirements() == null) {
 			return;
 		}
@@ -255,20 +259,15 @@ public class SurveillanceValidator {
 							CertificationCriterionDTO criterion = null;
 							if(surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
 								nc.setNonconformityType(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(nc.getNonconformityType()));
-								try {
-									//see if the nonconformity type is a criterion that the product has attested to
-									List<CertificationResultDetailsDTO> certResults = certResultDetailsDao.getCertificationResultDetailsByCertifiedProductId(surv.getCertifiedProduct().getId());
-									if(certResults != null && certResults.size() > 0) {
-										for(CertificationResultDetailsDTO certResult : certResults) {
-											if(!StringUtils.isEmpty(certResult.getNumber()) &&
-													certResult.getSuccess() != null && certResult.getSuccess() == Boolean.TRUE &&
-													certResult.getNumber().equals(nc.getNonconformityType())) {
-												criterion = criterionDao.getByName(nc.getNonconformityType());
-											}
+								//see if the nonconformity type is a criterion that the product has attested to
+								if(certResults != null && certResults.size() > 0) {
+									for(CertificationResultDetailsDTO certResult : certResults) {
+										if(!StringUtils.isEmpty(certResult.getNumber()) &&
+												certResult.getSuccess() != null && certResult.getSuccess() == Boolean.TRUE &&
+												certResult.getNumber().equals(nc.getNonconformityType())) {
+											criterion = criterionDao.getByName(nc.getNonconformityType());
 										}
 									}
-								} catch(EntityRetrievalException ex) {
-									logger.error("Could not find cert results for certified product " + surv.getCertifiedProduct().getId(), ex);
 								}
 							}
 							//if it could have matched a criterion but didn't, it has to be one of a few other values

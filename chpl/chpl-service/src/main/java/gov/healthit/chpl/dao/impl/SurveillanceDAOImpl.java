@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -490,6 +491,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return results;
 	}
 	
+	@Cacheable("findSurveillanceRequirementType")
 	public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
 		logger.debug("Searching for surveillance requirement type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
@@ -544,6 +546,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return results;
 	}
 	
+	@Cacheable("findSurveillanceResultType")
 	public SurveillanceResultType findSurveillanceResultType(String type) {
 		logger.debug("Searching for surveillance result type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
@@ -598,6 +601,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return results;
 	}
 	
+	@Cacheable("findSurveillanceNonconformityStatusType")
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
 		logger.debug("Searching for nonconformity status type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
