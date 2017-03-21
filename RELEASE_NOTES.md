@@ -6,6 +6,7 @@ _Date TBD_
 ### Features Added
 * Add authority to surveillance to allow end user to tell whether ONC or ACB created a surveillance activity
 * Disallow saving of Surveillance without close date but with no open Non-Conformities
+* Improve performance of /surveillance/pending by ~643%
 
 ### Bugs Fixed
 * Fix an Internal Server Error when obtaining user activities and there exists a deleted user

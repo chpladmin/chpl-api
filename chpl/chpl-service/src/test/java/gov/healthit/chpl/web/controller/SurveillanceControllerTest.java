@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.BeforeClass;
@@ -43,6 +44,7 @@ import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -63,6 +65,7 @@ public class SurveillanceControllerTest {
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser acbAdmin;
+	private static JWTAuthenticatedUser acbAdmin2;
 	private static JWTAuthenticatedUser oncAdmin;
 	private static JWTAuthenticatedUser oncAndAcb;
 	private static JWTAuthenticatedUser oncAndAcbStaff;
@@ -86,6 +89,13 @@ public class SurveillanceControllerTest {
 		acbAdmin.setLastName("User3");
 		acbAdmin.setSubjectName("testUser3");
 		acbAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
+		
+		acbAdmin2 = new JWTAuthenticatedUser();
+		acbAdmin2.setFirstName("TESTUSER");
+		acbAdmin2.setId(1L);
+		acbAdmin2.setLastName("User3");
+		acbAdmin2.setSubjectName("testUser3");
+		acbAdmin2.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
 		
 		oncAdmin = new JWTAuthenticatedUser();
 		oncAdmin.setFirstName("Test");
@@ -1044,6 +1054,36 @@ public class SurveillanceControllerTest {
 		assertEquals(1, surv.getRequirements().size());
 		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
 		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+	}
+	
+	/** 
+	 * Given an ACB Admin with authority for existing pending surveillances is authenticated
+	 * When an API call is made for /surveillance/pending
+	 * Then the second time the call is made, the result is returned faster due to caching
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_getAllPendingSurveillanceForAcbUser_performance() {
+		SecurityContextHolder.getContext().setAuthentication(acbAdmin2);
+		Long startTimeInMillis = Calendar.getInstance().getTimeInMillis();
+		
+		SurveillanceResults results = surveillanceController.getAllPendingSurveillanceForAcbUser();
+		Long endTimeInMillis = Calendar.getInstance().getTimeInMillis();
+		Long elapsedTime = endTimeInMillis - startTimeInMillis;
+		System.out.println("Performance Test 1 (before caching):");
+		System.out.println("Total pending surveillance: " + results.getPendingSurveillance().size());
+		System.out.println("Start time: " + new Date(startTimeInMillis) + " \nEnd time: " + new Date(endTimeInMillis) + " \nElapsed time: " + elapsedTime);
+		
+        Long startTimeInMillis2 = Calendar.getInstance().getTimeInMillis();
+        SurveillanceResults results2 = surveillanceController.getAllPendingSurveillanceForAcbUser();
+		Long endTimeInMillis2 = Calendar.getInstance().getTimeInMillis();
+		Long elapsedTime2 = endTimeInMillis2 - startTimeInMillis2;
+		System.out.println("Performance Test 2 (after caching):");
+		System.out.println("Total pending surveillance: " + results2.getPendingSurveillance().size());
+		System.out.println("Start time: " + new Date(startTimeInMillis2) + " \nEnd time: " + new Date(endTimeInMillis2) + " \nElapsed time: " + elapsedTime2);
+		
+		assertTrue(elapsedTime2 < elapsedTime);
 	}
 	
 }
