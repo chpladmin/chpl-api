@@ -321,7 +321,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				certifyingBody.add(cb);
 			}
 			
-			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getNumMeaningfulUse());
+			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getDecertificationDate(), dto.getNumMeaningfulUse());
 			decertifiedDeveloperResults.add(decertifiedDeveloper);
 		}
 		

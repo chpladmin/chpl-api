@@ -465,6 +465,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 							logger.debug("added acb " + e.getCertificationBodyId() + " to dto with dev id == " + dto.getDeveloperId());
 							dto.setDeveloperStatus(e.getDeveloperStatusName());
 							logger.debug("set dto dev status to " + e.getDeveloperStatusName());
+							dto.setDecertificationDate(e.getDeveloperStatusDate());
+							logger.debug("set dev decert date to " + e.getDeveloperStatusDate());
 							if(dto.getNumMeaningfulUse() != null){
 								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
 								logger.debug("adding numMeaningfulUse to dto with value " + e.getMeaningfulUseUsers());
@@ -491,7 +493,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			if(!dtoIsInList){
 				List<Long> acbList = new ArrayList<Long>();
 				acbList.add(e.getCertificationBodyId());
-				DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperId(), acbList, e.getDeveloperStatusName(), e.getMeaningfulUseUsers());
+				DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperId(), acbList, e.getDeveloperStatusName(), e.getDeveloperStatusDate(), e.getMeaningfulUseUsers());
 				dtoList.add(newDto);
 				logger.debug("adding newDto to list with values: " + e.getMeaningfulUseUsers());
 			}
