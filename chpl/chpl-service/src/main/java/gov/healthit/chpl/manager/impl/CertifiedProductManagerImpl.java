@@ -70,6 +70,7 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.DeveloperStatusHistory;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -103,6 +104,7 @@ import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
+import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
@@ -831,7 +833,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				if(devStatusDto == null) {
 					throw new EntityRetrievalException("Could not locate developer status for certification status " + updatedCertificationStatus.getStatus());
 				}
-				cpDeveloper.setStatus(devStatusDto);
+				DeveloperStatusHistoryDTO statusHistoryToAdd = new DeveloperStatusHistoryDTO();
+				statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
+				statusHistoryToAdd.setStatus(devStatusDto);
+				statusHistoryToAdd.setStatusDate(new Date());
+				cpDeveloper.getStatusHistory().add(statusHistoryToAdd);
 				developerManager.update(cpDeveloper);
 			} else if (!Util.isUserRoleAdmin()) {
 				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id " + dto.getId());

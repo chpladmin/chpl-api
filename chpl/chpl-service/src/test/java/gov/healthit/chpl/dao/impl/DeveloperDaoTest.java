@@ -32,6 +32,7 @@ import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import junit.framework.TestCase;
 
@@ -71,9 +72,11 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(results);
 		assertEquals(9, results.size());
 		DeveloperDTO first = results.get(0);
-		assertNotNull(first.getStatus());
-		assertNotNull(first.getStatus().getId());
-		assertNotNull(first.getStatus().getStatusName());
+		DeveloperStatusHistoryDTO status = first.getCurrentDeveloperStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
 	}
 
 	@Test
@@ -90,7 +93,11 @@ public class DeveloperDaoTest extends TestCase {
 		assertEquals(-1, developer.getId().longValue());
 		assertNotNull(developer.getAddress());
 		assertEquals(-1, developer.getAddress().getId().longValue());
-		assertNotNull(developer.getStatus());
+		DeveloperStatusHistoryDTO status = developer.getCurrentDeveloperStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -106,7 +113,11 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(developer);
 		assertEquals(-3, developer.getId().longValue());
 		assertNull(developer.getAddress());
-		assertNotNull(developer.getStatus());
+		DeveloperStatusHistoryDTO status = developer.getCurrentDeveloperStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -132,10 +143,14 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(result);
 		assertNotNull(result.getId());
 		assertTrue(result.getId() > 0L);
+		result = developerDao.getById(result.getId());
 		assertNull(result.getAddress());
-		assertNotNull(developerDao.getById(result.getId()));
-		assertNotNull(result.getStatus());
-		assertEquals(1, result.getStatus().getId().longValue());
+		DeveloperStatusHistoryDTO status = result.getCurrentDeveloperStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(1, status.getStatus().getId().longValue());
 	}
 	
 	@Test

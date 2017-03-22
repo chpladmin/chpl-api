@@ -53,6 +53,7 @@
 		<class>gov.healthit.chpl.entity.DeveloperCertificationStatusesEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperEntity</class>
 		<class>gov.healthit.chpl.entity.DeveloperStatusEntity</class>
+		<class>gov.healthit.chpl.entity.DeveloperStatusHistoryEntity</class>
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>

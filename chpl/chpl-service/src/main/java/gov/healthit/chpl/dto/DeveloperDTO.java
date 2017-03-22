@@ -7,6 +7,7 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.DeveloperEntity;
+import gov.healthit.chpl.entity.DeveloperStatusHistoryEntity;
 
 public class DeveloperDTO implements Serializable {
 	private static final long serialVersionUID = -2492373079266782228L;
@@ -14,18 +15,19 @@ public class DeveloperDTO implements Serializable {
 	private Long id;
 	private AddressDTO address;
 	private ContactDTO contact;
-	private DeveloperStatusDTO status;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private String name;
 	private String website;
+	private List<DeveloperStatusHistoryDTO> statusHistory;
 	private List<DeveloperACBMapDTO> transparencyAttestationMappings;
 	private Statuses statuses;
 	
 	public DeveloperDTO(){
 		this.transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
+		this.statusHistory = new ArrayList<DeveloperStatusHistoryDTO>();
 	}
 	
 	public DeveloperDTO(DeveloperEntity entity){
@@ -38,8 +40,10 @@ public class DeveloperDTO implements Serializable {
 		if(entity.getContact() != null) {
 			this.contact = new ContactDTO(entity.getContact());
 		}
-		if(entity.getStatus() != null) {
-			this.status = new DeveloperStatusDTO(entity.getStatus());
+		if(entity.getStatusHistory() != null && entity.getStatusHistory().size() > 0) {
+			for(DeveloperStatusHistoryEntity statusEntity : entity.getStatusHistory()) {
+				this.statusHistory.add(new DeveloperStatusHistoryDTO(statusEntity));
+			}
 		}
 		
 		this.creationDate = entity.getCreationDate();
@@ -142,12 +146,28 @@ public class DeveloperDTO implements Serializable {
 		this.statuses = statuses;
 	}
 
-	public DeveloperStatusDTO getStatus() {
-		return status;
+	public List<DeveloperStatusHistoryDTO> getStatusHistory() {
+		return statusHistory;
 	}
 
-	public void setStatus(DeveloperStatusDTO status) {
-		this.status = status;
+	public void setStatusHistory(List<DeveloperStatusHistoryDTO> statusHistory) {
+		this.statusHistory = statusHistory;
 	}
+	
+	public DeveloperStatusHistoryDTO getCurrentDeveloperStatus() {
+		DeveloperStatusHistoryDTO mostRecentStatus = null;
 
+		if(getStatusHistory() != null && getStatusHistory().size() > 0) {
+			for(DeveloperStatusHistoryDTO currStatusHistory : getStatusHistory()) {
+				if(mostRecentStatus == null) {
+					mostRecentStatus = currStatusHistory;
+				} else {
+					if(currStatusHistory.getStatusDate().getTime() > mostRecentStatus.getStatusDate().getTime()) {
+						mostRecentStatus = currStatusHistory;
+					}
+				}
+			}
+		}
+		return mostRecentStatus;
+	}
 }

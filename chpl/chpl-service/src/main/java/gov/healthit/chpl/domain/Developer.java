@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
 
 public class Developer implements Serializable {
 	private static final long serialVersionUID = 7341544844577617247L;
@@ -15,13 +16,14 @@ public class Developer implements Serializable {
 	private String website;
 	private Address address;
 	private Contact contact;
-	private DeveloperStatus status;
 	private String lastModifiedDate;
 	private Boolean deleted;
 	private List<TransparencyAttestationMap> transparencyAttestations;
+	private List<DeveloperStatusHistory> statusHistory;
 	
 	public Developer() {
 		this.transparencyAttestations = new ArrayList<TransparencyAttestationMap>();
+		this.statusHistory = new ArrayList<DeveloperStatusHistory>();
 	}
 	
 	public Developer(DeveloperDTO dto) {
@@ -37,7 +39,6 @@ public class Developer implements Serializable {
 		if(dto.getContact() != null) {
 			this.contact = new Contact(dto.getContact());
 		}
-		this.status = new DeveloperStatus(dto.getStatus());
 		
 		if(dto.getLastModifiedDate() != null) {
 			this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
@@ -50,6 +51,13 @@ public class Developer implements Serializable {
 				toAdd.setAcbName(map.getAcbName());
 				toAdd.setAttestation(map.getTransparencyAttestation());
 				this.transparencyAttestations.add(toAdd);
+			}
+		}
+		
+		if(dto.getStatusHistory() != null && dto.getStatusHistory().size() > 0) {
+			for(DeveloperStatusHistoryDTO historyItem : dto.getStatusHistory()) {
+				DeveloperStatusHistory toAdd = new DeveloperStatusHistory(historyItem);
+				this.statusHistory.add(toAdd);
 			}
 		}
 	}
@@ -109,20 +117,20 @@ public class Developer implements Serializable {
 	public void setTransparencyAttestations(List<TransparencyAttestationMap> transparencyAttestations) {
 		this.transparencyAttestations = transparencyAttestations;
 	}
-
-	public DeveloperStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(DeveloperStatus status) {
-		this.status = status;
-	}
-
+	
 	public Boolean getDeleted() {
 		return deleted;
 	}
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public List<DeveloperStatusHistory> getStatusHistory() {
+		return statusHistory;
+	}
+
+	public void setStatusHistory(List<DeveloperStatusHistory> statusHistory) {
+		this.statusHistory = statusHistory;
 	}
 }

@@ -21,6 +21,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatusHistory;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -28,6 +29,7 @@ import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
+import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -104,10 +106,16 @@ public class DeveloperController {
 			toCreate.setName(developerInfo.getDeveloper().getName());
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
 			
-			if(developerInfo.getDeveloper().getStatus() != null) {
-				DeveloperStatusDTO status = new DeveloperStatusDTO();
-				status.setStatusName(developerInfo.getDeveloper().getStatus().getStatus());
-				toCreate.setStatus(status);
+			if(developerInfo.getDeveloper().getStatusHistory() != null && 
+					developerInfo.getDeveloper().getStatusHistory().size() > 0) {
+				for(DeveloperStatusHistory providedStatusHistory : developerInfo.getDeveloper().getStatusHistory()) {
+					DeveloperStatusDTO status = new DeveloperStatusDTO();
+					status.setStatusName(providedStatusHistory.getStatus().getStatus());
+					DeveloperStatusHistoryDTO toCreateHistory = new DeveloperStatusHistoryDTO();
+					toCreateHistory.setStatus(status);
+					toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
+					toCreate.getStatusHistory().add(toCreateHistory);
+				}
 			}
 			
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
@@ -149,10 +157,16 @@ public class DeveloperController {
 				toUpdate.getTransparencyAttestationMappings().add(devMap);
 			}	
 			
-			if(developerInfo.getDeveloper().getStatus() != null) {
-				DeveloperStatusDTO status = new DeveloperStatusDTO();
-				status.setStatusName(developerInfo.getDeveloper().getStatus().getStatus());
-				toUpdate.setStatus(status);
+			if(developerInfo.getDeveloper().getStatusHistory() != null && 
+					developerInfo.getDeveloper().getStatusHistory().size() > 0) {
+				for(DeveloperStatusHistory providedStatusHistory : developerInfo.getDeveloper().getStatusHistory()) {
+					DeveloperStatusDTO status = new DeveloperStatusDTO();
+					status.setStatusName(providedStatusHistory.getStatus().getStatus());
+					DeveloperStatusHistoryDTO toCreateHistory = new DeveloperStatusHistoryDTO();
+					toCreateHistory.setStatus(status);
+					toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
+					toUpdate.getStatusHistory().add(toCreateHistory);
+				}
 			}
 			
 			if(developerInfo.getDeveloper().getAddress() != null) {

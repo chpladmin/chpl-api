@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -31,6 +32,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
+import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
@@ -185,7 +187,11 @@ public class ProductManagerTest extends TestCase {
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
 		DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
-		developer.setStatus(newStatus);
+		DeveloperStatusHistoryDTO newStatusHistory = new DeveloperStatusHistoryDTO();
+		newStatusHistory.setDeveloperId(developer.getId());
+		newStatusHistory.setStatus(newStatus);
+		newStatusHistory.setStatusDate(new Date());
+		developer.getStatusHistory().add(newStatusHistory);
 		
 		boolean failed = false;
 		try {
@@ -195,8 +201,12 @@ public class ProductManagerTest extends TestCase {
 			failed = true;
 		}
 		assertFalse(failed);
-		assertNotNull(developer.getStatus());
-		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), developer.getStatus().getStatusName());
+		DeveloperStatusHistoryDTO status = developer.getCurrentDeveloperStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 		
 		//try to update product
 		ProductDTO product = productManager.getById(-1L);
