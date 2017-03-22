@@ -132,6 +132,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to update an inactive developer.");
 		} 
 		
+		//if the status history has been modified, the user must be role admin
+		if(isStatusHistoryUpdated(beforeDev, developer)) {
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN but may have tried to change history for the developer " + beforeDev.getName());
+			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status history.");
+		}
+				
 		//determine if the status flag has been changed.
 		//only users with ROLE_ADMIN are allowed to change it
 		if(!currDevStatus.getStatus().getStatusName().equals(newDevStatus.getStatus().getStatusName()) && 
@@ -144,6 +150,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			//if the developer is not active and not going to be active
 			//only its status can be updated
 			developerDao.updateStatus(newDevStatus);
+			return getById(developer.getId());
 		}
 		
 		//if either the before or updated statuses are active and the user is ROLE_ADMIN
@@ -337,27 +344,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			sendMsg = true;
 		}
 		
-		if( (original.getStatusHistory() != null && changed.getStatusHistory() == null) || 
-			(original.getStatusHistory() == null && changed.getStatusHistory() != null) || 
-			(original.getStatusHistory().size() != changed.getStatusHistory().size())) {
-			sendMsg = true;
-		} else {
-			//neither status history is null and they have the same size history arrays
-			//so now check for any differences in the values of each
-			for(DeveloperStatusHistoryDTO origStatusHistory : original.getStatusHistory()) {
-				boolean foundMatchInChanged = false;
-				for(DeveloperStatusHistoryDTO changedStatusHistory : changed.getStatusHistory()) {
-					if(origStatusHistory.getId().longValue() == changedStatusHistory.getId().longValue() && 
-						origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId().longValue() && 
-						origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate().getTime()) {
-						foundMatchInChanged = true;
-					}
-				}
-				if(!sendMsg) {
-					sendMsg = !foundMatchInChanged;
-				}
-			}
-		}
+		sendMsg = sendMsg || isStatusHistoryUpdated(original, changed);
 		
 		if(sendMsg) {
 			String emailAddr = env.getProperty("questionableActivityEmail");
@@ -368,6 +355,30 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				logger.error("Could not send questionable activity email", me);
 			}
 		}	
+	}
+	
+	private boolean isStatusHistoryUpdated(DeveloperDTO original, DeveloperDTO changed) {
+		boolean hasChanged = false;
+		if( (original.getStatusHistory() != null && changed.getStatusHistory() == null) || 
+				(original.getStatusHistory() == null && changed.getStatusHistory() != null) || 
+				(original.getStatusHistory().size() != changed.getStatusHistory().size())) {
+			hasChanged = true;
+			} else {
+				//neither status history is null and they have the same size history arrays
+				//so now check for any differences in the values of each
+				for(DeveloperStatusHistoryDTO origStatusHistory : original.getStatusHistory()) {
+					boolean foundMatchInChanged = false;
+					for(DeveloperStatusHistoryDTO changedStatusHistory : changed.getStatusHistory()) {
+						if(origStatusHistory.getId().longValue() == changedStatusHistory.getId().longValue() && 
+							origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId().longValue() && 
+							origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate().getTime()) {
+							foundMatchInChanged = true;
+						}
+					}
+					hasChanged = hasChanged || !foundMatchInChanged;
+				}
+			}
+		return hasChanged;
 	}
 	
 	private List<DeveloperDTO> addTransparencyMappings(List<DeveloperDTO> developers) {
