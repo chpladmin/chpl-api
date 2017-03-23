@@ -235,6 +235,7 @@ public class DeveloperDaoTest extends TestCase {
 	@Transactional
 	@Rollback
 	public void updateDeveloper() {
+		SecurityContextHolder.getContext().setAuthentication(authUser);
 		DeveloperDTO developer = developerDao.findAll().get(0);
 		developer.setName("UPDATED NAME");
 		
@@ -242,8 +243,8 @@ public class DeveloperDaoTest extends TestCase {
 		try {
 			result = developerDao.update(developer);
 		} catch(Exception ex) {
+			ex.printStackTrace();
 			fail("could not update developer!");
-			System.out.println(ex.getStackTrace());
 		}
 		assertNotNull(result);
 
@@ -251,9 +252,10 @@ public class DeveloperDaoTest extends TestCase {
 			DeveloperDTO updatedDeveloper = developerDao.getById(developer.getId());
 			assertEquals("UPDATED NAME", updatedDeveloper.getName());
 		} catch(Exception ex) {
+			ex.printStackTrace();
 			fail("could not find developer!");
-			System.out.println(ex.getStackTrace());
 		}
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
