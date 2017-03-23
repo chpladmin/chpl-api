@@ -95,7 +95,8 @@ public class DeveloperController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public Developer updateDeveloper(@RequestBody(required=true) UpdateDevelopersRequest developerInfo) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+	public Developer updateDeveloper(@RequestBody(required=true) UpdateDevelopersRequest developerInfo) 
+			throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		DeveloperDTO result = null;
 		
 		if(developerInfo.getDeveloperIds().size() > 1) {
@@ -116,6 +117,8 @@ public class DeveloperController {
 					toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
 					toCreate.getStatusEvents().add(toCreateHistory);
 				}
+				//if no history is passed in, an Active status gets added in the DAO
+				//when the new developer is created
 			}
 			
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
@@ -170,6 +173,8 @@ public class DeveloperController {
 					toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
 					toUpdate.getStatusEvents().add(toCreateHistory);
 				}
+			} else {
+				throw new InvalidArgumentsException("The developer must have a current status specified.");
 			}
 			
 			if(developerInfo.getDeveloper().getAddress() != null) {

@@ -238,7 +238,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		
 		//delete existing developer status history
 		for(DeveloperStatusHistoryEntity existingDeveloperStatusHistory : entity.getStatusHistory()) {
-			entityManager.remove(existingDeveloperStatusHistory);
+			existingDeveloperStatusHistory.setDeleted(true);
+			existingDeveloperStatusHistory.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.merge(existingDeveloperStatusHistory);
 		}
 		entityManager.flush();
 		
