@@ -122,6 +122,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     		statusObj.setStatusName(entity.getDeveloperStatusName());
     		developerCurrentStatus.setStatus(statusObj);
     		developerCurrentStatus.setStatusDate(entity.getDeveloperStatusDate());
+    		this.developer.getStatusHistory().add(developerCurrentStatus);
     	}
     	
     	if(entity.getAddressId() != null) {

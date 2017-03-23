@@ -369,8 +369,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				for(DeveloperStatusHistoryDTO origStatusHistory : original.getStatusHistory()) {
 					boolean foundMatchInChanged = false;
 					for(DeveloperStatusHistoryDTO changedStatusHistory : changed.getStatusHistory()) {
-						if(origStatusHistory.getId().longValue() == changedStatusHistory.getId().longValue() && 
-							origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId().longValue() && 
+						if(origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId().longValue() && 
 							origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate().getTime()) {
 							foundMatchInChanged = true;
 						}

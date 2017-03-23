@@ -106,9 +106,9 @@ public class DeveloperController {
 			toCreate.setName(developerInfo.getDeveloper().getName());
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
 			
-			if(developerInfo.getDeveloper().getStatusHistory() != null && 
-					developerInfo.getDeveloper().getStatusHistory().size() > 0) {
-				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusHistory()) {
+			if(developerInfo.getDeveloper().getStatusEvents() != null && 
+					developerInfo.getDeveloper().getStatusEvents().size() > 0) {
+				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
 					status.setStatusName(providedStatusHistory.getStatus().getStatus());
 					DeveloperStatusHistoryDTO toCreateHistory = new DeveloperStatusHistoryDTO();
@@ -157,12 +157,15 @@ public class DeveloperController {
 				toUpdate.getTransparencyAttestationMappings().add(devMap);
 			}	
 			
-			if(developerInfo.getDeveloper().getStatusHistory() != null && 
-					developerInfo.getDeveloper().getStatusHistory().size() > 0) {
-				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusHistory()) {
+			if(developerInfo.getDeveloper().getStatusEvents() != null && 
+					developerInfo.getDeveloper().getStatusEvents().size() > 0) {
+				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
+					status.setId(providedStatusHistory.getStatus().getId());
 					status.setStatusName(providedStatusHistory.getStatus().getStatus());
 					DeveloperStatusHistoryDTO toCreateHistory = new DeveloperStatusHistoryDTO();
+					toCreateHistory.setId(providedStatusHistory.getId());
+					toCreateHistory.setDeveloperId(providedStatusHistory.getDeveloperId());
 					toCreateHistory.setStatus(status);
 					toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
 					toUpdate.getStatusHistory().add(toCreateHistory);
