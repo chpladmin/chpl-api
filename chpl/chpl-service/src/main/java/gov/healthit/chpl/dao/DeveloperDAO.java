@@ -5,7 +5,7 @@ import java.util.List;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 
 public interface DeveloperDAO {
 
@@ -13,7 +13,7 @@ public interface DeveloperDAO {
 	public DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto);
 
 	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException;
-	public void updateStatus(DeveloperStatusHistoryDTO newStatusHistory) throws EntityCreationException;	
+	public void updateStatus(DeveloperStatusEventDTO newStatusHistory) throws EntityCreationException;	
 	public void delete(Long id) throws EntityRetrievalException;
 
 	public List<DeveloperDTO> findAll();

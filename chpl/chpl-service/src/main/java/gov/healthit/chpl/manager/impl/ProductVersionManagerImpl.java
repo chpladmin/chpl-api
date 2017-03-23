@@ -28,7 +28,7 @@ import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
@@ -91,7 +91,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + prod.getDeveloperId());
 		}
-		DeveloperStatusHistoryDTO currDevStatus = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 		if(currDevStatus == null || currDevStatus.getStatus() == null) {
 			String msg = "The version " + dto.getVersion()+ " cannot be created since the status of developer " + dev.getName() + " cannot be determined.";
 			logger.error(msg);
@@ -120,7 +120,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer of version id " + before.getId());
 		}
-		DeveloperStatusHistoryDTO currDevStatus = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 		if(currDevStatus == null || currDevStatus.getStatus() == null) {
 			String msg = "The version " + before.getVersion()+ " cannot be updated since the status of developer " + dev.getName() + " cannot be determined.";
 			logger.error(msg);
@@ -157,7 +157,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 			if(dev == null) {
 				throw new EntityRetrievalException("Cannot find developer of version id " + version.getId());
 			}
-			DeveloperStatusHistoryDTO currDevStatus = dev.getCurrentDeveloperStatus();
+			DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 			if(currDevStatus == null || currDevStatus.getStatus() == null) {
 				String msg = "The version " + version.getVersion()+ " cannot be merged since the status of developer " + dev.getName() + " cannot be determined.";
 				logger.error(msg);

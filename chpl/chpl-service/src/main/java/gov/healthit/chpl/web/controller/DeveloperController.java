@@ -29,7 +29,7 @@ import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -111,10 +111,10 @@ public class DeveloperController {
 				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
 					status.setStatusName(providedStatusHistory.getStatus().getStatus());
-					DeveloperStatusHistoryDTO toCreateHistory = new DeveloperStatusHistoryDTO();
+					DeveloperStatusEventDTO toCreateHistory = new DeveloperStatusEventDTO();
 					toCreateHistory.setStatus(status);
 					toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
-					toCreate.getStatusHistory().add(toCreateHistory);
+					toCreate.getStatusEvents().add(toCreateHistory);
 				}
 			}
 			
@@ -163,12 +163,12 @@ public class DeveloperController {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
 					status.setId(providedStatusHistory.getStatus().getId());
 					status.setStatusName(providedStatusHistory.getStatus().getStatus());
-					DeveloperStatusHistoryDTO toCreateHistory = new DeveloperStatusHistoryDTO();
+					DeveloperStatusEventDTO toCreateHistory = new DeveloperStatusEventDTO();
 					toCreateHistory.setId(providedStatusHistory.getId());
 					toCreateHistory.setDeveloperId(providedStatusHistory.getDeveloperId());
 					toCreateHistory.setStatus(status);
 					toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
-					toUpdate.getStatusHistory().add(toCreateHistory);
+					toUpdate.getStatusEvents().add(toCreateHistory);
 				}
 			}
 			

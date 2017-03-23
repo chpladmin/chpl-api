@@ -40,7 +40,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String certificationBodyCode;
     private String productClassificationName;
     private DeveloperDTO developer;
-    private DeveloperStatusHistoryDTO developerCurrentStatus;
+    private DeveloperStatusEventDTO developerCurrentStatus;
     private ProductDTO product;
     private ProductVersionDTO version;
     private Date creationDate;
@@ -115,14 +115,14 @@ public class CertifiedProductDetailsDTO implements Serializable {
     	this.developer.setWebsite(entity.getDeveloperWebsite());
     	
     	if(entity.getDeveloperStatusId() != null) {
-    		developerCurrentStatus = new DeveloperStatusHistoryDTO();
+    		developerCurrentStatus = new DeveloperStatusEventDTO();
     		developerCurrentStatus.setDeveloperId(entity.getDeveloperId());
     		DeveloperStatusDTO statusObj = new DeveloperStatusDTO();
     		statusObj.setId(entity.getDeveloperStatusId());
     		statusObj.setStatusName(entity.getDeveloperStatusName());
     		developerCurrentStatus.setStatus(statusObj);
     		developerCurrentStatus.setStatusDate(entity.getDeveloperStatusDate());
-    		this.developer.getStatusHistory().add(developerCurrentStatus);
+    		this.developer.getStatusEvents().add(developerCurrentStatus);
     	}
     	
     	if(entity.getAddressId() != null) {
@@ -586,11 +586,11 @@ public class CertifiedProductDetailsDTO implements Serializable {
 		this.decertificationDate = decertificationDate;
 	}
 
-	public DeveloperStatusHistoryDTO getDeveloperCurrentStatus() {
+	public DeveloperStatusEventDTO getDeveloperCurrentStatus() {
 		return developerCurrentStatus;
 	}
 
-	public void setDeveloperCurrentStatus(DeveloperStatusHistoryDTO developerCurrentStatus) {
+	public void setDeveloperCurrentStatus(DeveloperStatusEventDTO developerCurrentStatus) {
 		this.developerCurrentStatus = developerCurrentStatus;
 	}
 }

@@ -21,13 +21,13 @@ public class DeveloperDTO implements Serializable {
 	private Long lastModifiedUser;
 	private String name;
 	private String website;
-	private List<DeveloperStatusHistoryDTO> statusHistory;
+	private List<DeveloperStatusEventDTO> statusEvents;
 	private List<DeveloperACBMapDTO> transparencyAttestationMappings;
 	private Statuses statuses;
 	
 	public DeveloperDTO(){
 		this.transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
-		this.statusHistory = new ArrayList<DeveloperStatusHistoryDTO>();
+		this.statusEvents = new ArrayList<DeveloperStatusEventDTO>();
 	}
 	
 	public DeveloperDTO(DeveloperEntity entity){
@@ -42,7 +42,7 @@ public class DeveloperDTO implements Serializable {
 		}
 		if(entity.getStatusHistory() != null && entity.getStatusHistory().size() > 0) {
 			for(DeveloperStatusHistoryEntity statusEntity : entity.getStatusHistory()) {
-				this.statusHistory.add(new DeveloperStatusHistoryDTO(statusEntity));
+				this.statusEvents.add(new DeveloperStatusEventDTO(statusEntity));
 			}
 		}
 		
@@ -146,19 +146,19 @@ public class DeveloperDTO implements Serializable {
 		this.statuses = statuses;
 	}
 
-	public List<DeveloperStatusHistoryDTO> getStatusHistory() {
-		return statusHistory;
+	public List<DeveloperStatusEventDTO> getStatusEvents() {
+		return statusEvents;
 	}
 
-	public void setStatusHistory(List<DeveloperStatusHistoryDTO> statusHistory) {
-		this.statusHistory = statusHistory;
+	public void setStatusEvents(List<DeveloperStatusEventDTO> statusEvents) {
+		this.statusEvents = statusEvents;
 	}
 	
-	public DeveloperStatusHistoryDTO getCurrentDeveloperStatus() {
-		DeveloperStatusHistoryDTO mostRecentStatus = null;
+	public DeveloperStatusEventDTO getStatus() {
+		DeveloperStatusEventDTO mostRecentStatus = null;
 
-		if(getStatusHistory() != null && getStatusHistory().size() > 0) {
-			for(DeveloperStatusHistoryDTO currStatusHistory : getStatusHistory()) {
+		if(getStatusEvents() != null && getStatusEvents().size() > 0) {
+			for(DeveloperStatusEventDTO currStatusHistory : getStatusEvents()) {
 				if(mostRecentStatus == null) {
 					mostRecentStatus = currStatusHistory;
 				} else {

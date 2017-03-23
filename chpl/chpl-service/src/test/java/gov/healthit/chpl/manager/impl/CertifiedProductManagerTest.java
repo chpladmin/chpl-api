@@ -40,7 +40,7 @@ import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -120,7 +120,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		DeveloperStatusHistoryDTO status = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = dev.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());
@@ -149,7 +149,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		DeveloperStatusHistoryDTO status = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = dev.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());
@@ -178,7 +178,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		DeveloperStatusHistoryDTO status = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = dev.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());
@@ -201,7 +201,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		DeveloperStatusHistoryDTO status = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = dev.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());
@@ -224,7 +224,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		DeveloperStatusHistoryDTO status = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = dev.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());
@@ -253,7 +253,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		DeveloperStatusHistoryDTO status = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = dev.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());

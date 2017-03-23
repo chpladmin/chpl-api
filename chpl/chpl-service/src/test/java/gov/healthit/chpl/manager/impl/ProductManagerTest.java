@@ -32,7 +32,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
@@ -187,11 +187,11 @@ public class ProductManagerTest extends TestCase {
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
 		DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
-		DeveloperStatusHistoryDTO newStatusHistory = new DeveloperStatusHistoryDTO();
+		DeveloperStatusEventDTO newStatusHistory = new DeveloperStatusEventDTO();
 		newStatusHistory.setDeveloperId(developer.getId());
 		newStatusHistory.setStatus(newStatus);
 		newStatusHistory.setStatusDate(new Date());
-		developer.getStatusHistory().add(newStatusHistory);
+		developer.getStatusEvents().add(newStatusHistory);
 		
 		boolean failed = false;
 		try {
@@ -201,7 +201,7 @@ public class ProductManagerTest extends TestCase {
 			failed = true;
 		}
 		assertFalse(failed);
-		DeveloperStatusHistoryDTO status = developer.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = developer.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());

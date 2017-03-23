@@ -6,7 +6,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 
 public class Developer implements Serializable {
 	private static final long serialVersionUID = 7341544844577617247L;
@@ -55,13 +55,13 @@ public class Developer implements Serializable {
 			}
 		}
 		
-		if(dto.getStatusHistory() != null && dto.getStatusHistory().size() > 0) {
-			for(DeveloperStatusHistoryDTO historyItem : dto.getStatusHistory()) {
+		if(dto.getStatusEvents() != null && dto.getStatusEvents().size() > 0) {
+			for(DeveloperStatusEventDTO historyItem : dto.getStatusEvents()) {
 				DeveloperStatusEvent toAdd = new DeveloperStatusEvent(historyItem);
 				this.statusEvents.add(toAdd);
 			}
 			
-			this.status = new DeveloperStatus(dto.getCurrentDeveloperStatus().getStatus());
+			this.status = new DeveloperStatus(dto.getStatus().getStatus());
 		}
 	}
 	public Long getDeveloperId() {

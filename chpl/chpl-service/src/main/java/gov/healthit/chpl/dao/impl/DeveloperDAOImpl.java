@@ -23,7 +23,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.ContactEntity;
@@ -107,7 +107,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			create(entity);
 			
 			//create a status history entry - will be Active by default
-			if(dto.getStatusHistory() == null || dto.getStatusHistory().size() == 0) {
+			if(dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
 				DeveloperStatusHistoryEntity initialDeveloperStatus = new DeveloperStatusHistoryEntity();
 				initialDeveloperStatus.setDeveloperId(entity.getId());
 				DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
@@ -118,7 +118,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				entityManager.persist(initialDeveloperStatus);
 				entityManager.flush();
 			} else {
-				for(DeveloperStatusHistoryDTO providedDeveloperStatusHistory : dto.getStatusHistory()) {
+				for(DeveloperStatusEventDTO providedDeveloperStatusHistory : dto.getStatusEvents()) {
 					if(providedDeveloperStatusHistory.getStatus() != null && 
 						!StringUtils.isEmpty(providedDeveloperStatusHistory.getStatus().getStatusName()) && 
 						providedDeveloperStatusHistory.getStatusDate() != null) {
@@ -243,7 +243,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		entityManager.flush();
 		
 		//add passed-in developer status history
-		for(DeveloperStatusHistoryDTO providedDeveloperStatusHistory : dto.getStatusHistory()) {
+		for(DeveloperStatusEventDTO providedDeveloperStatusHistory : dto.getStatusEvents()) {
 			if(providedDeveloperStatusHistory.getStatus() != null && 
 				!StringUtils.isEmpty(providedDeveloperStatusHistory.getStatus().getStatusName()) && 
 				providedDeveloperStatusHistory.getStatusDate() != null) {
@@ -274,7 +274,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 
 	@Override
-	public void updateStatus(DeveloperStatusHistoryDTO newStatusHistory) throws EntityCreationException {
+	public void updateStatus(DeveloperStatusEventDTO newStatusHistory) throws EntityCreationException {
 		//create a new status history entry
 		if(newStatusHistory.getStatus() != null && 
 			!StringUtils.isEmpty(newStatusHistory.getStatus().getStatusName()) && 

@@ -36,7 +36,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.AttestationType;
@@ -116,8 +116,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO beforeDev = getById(developer.getId());
-		DeveloperStatusHistoryDTO newDevStatus = developer.getCurrentDeveloperStatus();
-		DeveloperStatusHistoryDTO currDevStatus = beforeDev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO newDevStatus = developer.getStatus();
+		DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
 		if(currDevStatus == null || currDevStatus.getStatus() == null) {
 			String msg = "The developer " + beforeDev.getName()+ " cannot be updated since it's current status cannot be determined.";
 			logger.error(msg);
@@ -235,7 +235,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		//check for any non-active developers and throw an error if any are found
 		for(DeveloperDTO beforeDeveloper : beforeDevelopers) {
-			DeveloperStatusHistoryDTO currDeveloperStatus = beforeDeveloper.getCurrentDeveloperStatus();
+			DeveloperStatusEventDTO currDeveloperStatus = beforeDeveloper.getStatus();
 			if(currDeveloperStatus == null || currDeveloperStatus.getStatus() == null) {
 				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " because their current status cannot be determined.";
 				logger.error(msg);
@@ -359,16 +359,16 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	
 	private boolean isStatusHistoryUpdated(DeveloperDTO original, DeveloperDTO changed) {
 		boolean hasChanged = false;
-		if( (original.getStatusHistory() != null && changed.getStatusHistory() == null) || 
-				(original.getStatusHistory() == null && changed.getStatusHistory() != null) || 
-				(original.getStatusHistory().size() != changed.getStatusHistory().size())) {
+		if( (original.getStatusEvents() != null && changed.getStatusEvents() == null) || 
+				(original.getStatusEvents() == null && changed.getStatusEvents() != null) || 
+				(original.getStatusEvents().size() != changed.getStatusEvents().size())) {
 			hasChanged = true;
 			} else {
 				//neither status history is null and they have the same size history arrays
 				//so now check for any differences in the values of each
-				for(DeveloperStatusHistoryDTO origStatusHistory : original.getStatusHistory()) {
+				for(DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
 					boolean foundMatchInChanged = false;
-					for(DeveloperStatusHistoryDTO changedStatusHistory : changed.getStatusHistory()) {
+					for(DeveloperStatusEventDTO changedStatusHistory : changed.getStatusEvents()) {
 						if(origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId().longValue() && 
 							origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate().getTime()) {
 							foundMatchInChanged = true;

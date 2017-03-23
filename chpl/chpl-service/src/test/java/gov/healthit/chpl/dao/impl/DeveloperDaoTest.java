@@ -32,7 +32,7 @@ import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import junit.framework.TestCase;
 
@@ -72,7 +72,7 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(results);
 		assertEquals(9, results.size());
 		DeveloperDTO first = results.get(0);
-		DeveloperStatusHistoryDTO status = first.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = first.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());
@@ -93,7 +93,7 @@ public class DeveloperDaoTest extends TestCase {
 		assertEquals(-1, developer.getId().longValue());
 		assertNotNull(developer.getAddress());
 		assertEquals(-1, developer.getAddress().getId().longValue());
-		DeveloperStatusHistoryDTO status = developer.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = developer.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());
@@ -113,7 +113,7 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(developer);
 		assertEquals(-3, developer.getId().longValue());
 		assertNull(developer.getAddress());
-		DeveloperStatusHistoryDTO status = developer.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = developer.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());
@@ -145,7 +145,7 @@ public class DeveloperDaoTest extends TestCase {
 		assertTrue(result.getId() > 0L);
 		result = developerDao.getById(result.getId());
 		assertNull(result.getAddress());
-		DeveloperStatusHistoryDTO status = result.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO status = result.getStatus();
 		assertNotNull(status);
 		assertNotNull(status.getId());
 		assertNotNull(status.getStatus());

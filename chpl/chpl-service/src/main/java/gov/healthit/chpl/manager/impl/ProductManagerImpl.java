@@ -26,7 +26,7 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -87,7 +87,7 @@ public class ProductManagerImpl implements ProductManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
 		}
-		DeveloperStatusHistoryDTO currDevStatus = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 		if(currDevStatus == null || currDevStatus.getStatus() == null) {
 			String msg = "The product " + dto.getName()+ " cannot be created since the status of developer " + dev.getName() + " cannot be determined.";
 			logger.error(msg);
@@ -122,7 +122,7 @@ public class ProductManagerImpl implements ProductManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
 		}
-		DeveloperStatusHistoryDTO currDevStatus = dev.getCurrentDeveloperStatus();
+		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 		if(currDevStatus == null || currDevStatus.getStatus() == null) {
 			String msg = "The product " + dto.getName()+ " cannot be updated since the status of developer " + dev.getName() + " cannot be determined.";
 			logger.error(msg);
@@ -162,7 +162,7 @@ public class ProductManagerImpl implements ProductManager {
 		for(ProductDTO beforeProduct : beforeProducts) {
 			Long devId = beforeProduct.getDeveloperId();
 			DeveloperDTO dev = devDao.getById(devId);
-			DeveloperStatusHistoryDTO currDevStatus = dev.getCurrentDeveloperStatus();
+			DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 			if(currDevStatus == null || currDevStatus.getStatus() == null) {
 				String msg = "The product " + beforeProduct.getName()+ " cannot be merged since the status of developer " + dev.getName() + " cannot be determined.";
 				logger.error(msg);

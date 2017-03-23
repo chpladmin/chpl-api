@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 
 public class DeveloperStatusEvent implements Serializable {
 	private static final long serialVersionUID = -7303257499336378800L;
@@ -15,7 +15,7 @@ public class DeveloperStatusEvent implements Serializable {
 	public DeveloperStatusEvent() {
 	}
 	
-	public DeveloperStatusEvent(DeveloperStatusHistoryDTO dto) {
+	public DeveloperStatusEvent(DeveloperStatusEventDTO dto) {
 		this.id = dto.getId();
 		this.developerId = dto.getDeveloperId();
 		this.status = new DeveloperStatus(dto.getStatus());
