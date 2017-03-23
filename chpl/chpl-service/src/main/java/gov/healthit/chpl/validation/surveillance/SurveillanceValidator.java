@@ -304,6 +304,11 @@ public class SurveillanceValidator {
 								nc.setStatus(ncStatus);
 							}
 						}
+						
+						if(!StringUtils.isEmpty(nc.getCapApprovalDate()) && StringUtils.isEmpty(nc.getCapMustCompleteDate())){
+							surv.getErrorMessages().add("Date Corrective Action Plan Must Be Completed is required for requirement " 
+						+ req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + " when there is an entry for Date Corrective Action Plan Was Approved.");
+						}
 
 						if(nc.getDateOfDetermination() == null) {
 							surv.getErrorMessages().add("Date of determination is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
