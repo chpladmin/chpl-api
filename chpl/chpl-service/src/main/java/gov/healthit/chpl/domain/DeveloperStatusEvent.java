@@ -5,17 +5,17 @@ import java.util.Date;
 
 import gov.healthit.chpl.dto.DeveloperStatusHistoryDTO;
 
-public class DeveloperStatusHistory implements Serializable {
+public class DeveloperStatusEvent implements Serializable {
 	private static final long serialVersionUID = -7303257499336378800L;
 	private Long id;
 	private Long developerId;
 	private DeveloperStatus status;
 	private Date statusDate;
 	
-	public DeveloperStatusHistory() {
+	public DeveloperStatusEvent() {
 	}
 	
-	public DeveloperStatusHistory(DeveloperStatusHistoryDTO dto) {
+	public DeveloperStatusEvent(DeveloperStatusHistoryDTO dto) {
 		this.id = dto.getId();
 		this.developerId = dto.getDeveloperId();
 		this.status = new DeveloperStatus(dto.getStatus());

@@ -21,7 +21,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatusHistory;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -108,7 +108,7 @@ public class DeveloperController {
 			
 			if(developerInfo.getDeveloper().getStatusHistory() != null && 
 					developerInfo.getDeveloper().getStatusHistory().size() > 0) {
-				for(DeveloperStatusHistory providedStatusHistory : developerInfo.getDeveloper().getStatusHistory()) {
+				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusHistory()) {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
 					status.setStatusName(providedStatusHistory.getStatus().getStatus());
 					DeveloperStatusHistoryDTO toCreateHistory = new DeveloperStatusHistoryDTO();
@@ -159,7 +159,7 @@ public class DeveloperController {
 			
 			if(developerInfo.getDeveloper().getStatusHistory() != null && 
 					developerInfo.getDeveloper().getStatusHistory().size() > 0) {
-				for(DeveloperStatusHistory providedStatusHistory : developerInfo.getDeveloper().getStatusHistory()) {
+				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusHistory()) {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
 					status.setStatusName(providedStatusHistory.getStatus().getStatus());
 					DeveloperStatusHistoryDTO toCreateHistory = new DeveloperStatusHistoryDTO();
