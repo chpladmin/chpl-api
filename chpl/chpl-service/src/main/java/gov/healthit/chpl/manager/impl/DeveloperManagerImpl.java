@@ -133,7 +133,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		} 
 		
 		//if the status history has been modified, the user must be role admin
-		if(isStatusHistoryUpdated(beforeDev, developer)) {
+		if(isStatusHistoryUpdated(beforeDev, developer) && !Util.isUserRoleAdmin()) {
 			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN but may have tried to change history for the developer " + beforeDev.getName());
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status history.");
 		}
