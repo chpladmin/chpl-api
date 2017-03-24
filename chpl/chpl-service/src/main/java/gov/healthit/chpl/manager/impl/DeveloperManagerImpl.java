@@ -31,10 +31,12 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
+import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.AttestationType;
@@ -114,40 +116,53 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO beforeDev = getById(developer.getId());
-		DeveloperDTO updatedDeveloper = null;
+		DeveloperStatusEventDTO newDevStatus = developer.getStatus();
+		DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
+		if(currDevStatus == null || currDevStatus.getStatus() == null) {
+			String msg = "The developer " + beforeDev.getName()+ " cannot be updated since it's current status cannot be determined.";
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
 		
 		//if the before status is not Active and the user is not ROLE_ADMIN
 		//then nothing can be changed
-		if(!beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
+		if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
 				!Util.isUserRoleAdmin()) {
 			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " because its status is not Active.");
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to update an inactive developer.");
 		} 
 		
+		//if the status history has been modified, the user must be role admin
+		if(isStatusHistoryUpdated(beforeDev, developer) && !Util.isUserRoleAdmin()) {
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN but may have tried to change history for the developer " + beforeDev.getName());
+			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status history.");
+		}
+				
 		//determine if the status flag has been changed.
 		//only users with ROLE_ADMIN are allowed to change it
-		if(!beforeDev.getStatus().getStatusName().equals(developer.getStatus().getStatusName()) && 
+		if(!currDevStatus.getStatus().getStatusName().equals(newDevStatus.getStatus().getStatusName()) && 
 				!Util.isUserRoleAdmin()) {
-			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " status from " + beforeDev.getStatus().getStatusName() + " to " + developer.getStatus().getStatusName());
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " status from " + currDevStatus.getStatus().getStatusName() + " to " + currDevStatus.getStatus().getStatusName());
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status.");
-		} else if(!beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
-				  !developer.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) &&
+		} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
+				  !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) &&
 				  Util.isUserRoleAdmin()) {
 			//if the developer is not active and not going to be active
 			//only its status can be updated
-			updatedDeveloper = developerDao.updateStatus(developer);
+			developerDao.updateStatus(newDevStatus);
+			return getById(developer.getId());
 		}
 		
 		//if either the before or updated statuses are active and the user is ROLE_ADMIN
 		//OR if before status is active and user is not ROLE_ADMIN - proceed
-		if( ((beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) 
-				|| developer.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) 
+		if( ((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) 
+				|| newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) 
 			  && Util.isUserRoleAdmin()) 
 			||
-			(beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
+			(currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
 					!Util.isUserRoleAdmin())) {
 			
-			updatedDeveloper = developerDao.update(developer);
+			developerDao.update(developer);
 			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 			if(availableAcbs != null && availableAcbs.size() > 0) {
 				for(CertificationBodyDTO acb : availableAcbs) {
@@ -174,7 +189,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			}
 		}
 		
-		DeveloperDTO after = getById(updatedDeveloper.getId());
+		DeveloperDTO after = getById(developer.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", beforeDev, after);
 		checkSuspiciousActivity(beforeDev, after);
 		return after;
@@ -220,8 +235,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		//check for any non-active developers and throw an error if any are found
 		for(DeveloperDTO beforeDeveloper : beforeDevelopers) {
-			if(!beforeDeveloper.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of " + beforeDeveloper.getStatus().getStatusName();
+			DeveloperStatusEventDTO currDeveloperStatus = beforeDeveloper.getStatus();
+			if(currDeveloperStatus == null || currDeveloperStatus.getStatus() == null) {
+				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " because their current status cannot be determined.";
+				logger.error(msg);
+				throw new EntityCreationException(msg);
+			} else if(!currDeveloperStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of " + currDeveloperStatus.getStatus().getStatusName();
 				logger.error(msg);
 				throw new EntityCreationException(msg);
 			}
@@ -301,7 +321,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				certifyingBody.add(cb);
 			}
 			
-			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getNumMeaningfulUse());
+			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getDecertificationDate(), dto.getNumMeaningfulUse());
 			decertifiedDeveloperResults.add(decertifiedDeveloper);
 		}
 		
@@ -324,11 +344,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			sendMsg = true;
 		}
 		
-		if( (original.getStatus().getId() != null && changed.getStatus().getId() == null) || 
-			(original.getStatus().getId() == null && changed.getStatus().getId() != null) ||
-			(original.getStatus().getId().longValue() != changed.getStatus().getId().longValue())) {
-			sendMsg = true;
-		}
+		sendMsg = sendMsg || isStatusHistoryUpdated(original, changed);
 		
 		if(sendMsg) {
 			String emailAddr = env.getProperty("questionableActivityEmail");
@@ -339,6 +355,29 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				logger.error("Could not send questionable activity email", me);
 			}
 		}	
+	}
+	
+	private boolean isStatusHistoryUpdated(DeveloperDTO original, DeveloperDTO changed) {
+		boolean hasChanged = false;
+		if( (original.getStatusEvents() != null && changed.getStatusEvents() == null) || 
+				(original.getStatusEvents() == null && changed.getStatusEvents() != null) || 
+				(original.getStatusEvents().size() != changed.getStatusEvents().size())) {
+			hasChanged = true;
+			} else {
+				//neither status history is null and they have the same size history arrays
+				//so now check for any differences in the values of each
+				for(DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
+					boolean foundMatchInChanged = false;
+					for(DeveloperStatusEventDTO changedStatusHistory : changed.getStatusEvents()) {
+						if(origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId().longValue() && 
+							origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate().getTime()) {
+							foundMatchInChanged = true;
+						}
+					}
+					hasChanged = hasChanged || !foundMatchInChanged;
+				}
+			}
+		return hasChanged;
 	}
 	
 	private List<DeveloperDTO> addTransparencyMappings(List<DeveloperDTO> developers) {

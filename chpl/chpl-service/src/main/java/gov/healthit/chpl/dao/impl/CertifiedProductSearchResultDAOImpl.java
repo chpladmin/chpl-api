@@ -87,6 +87,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "vendor_website, " 
 			+ "vendor_status_id, "
 			+ "vendor_status_name, "
+			+ "last_vendor_status_change, "
 			+ "address_id, "
 			+ "street_line_1, "
 			+ "street_line_2, " 

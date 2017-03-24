@@ -26,6 +26,7 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -86,13 +87,17 @@ public class ProductManagerImpl implements ProductManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
 		}
-		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "The product " + dto.getName()+ " cannot be created since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
+		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+		if(currDevStatus == null || currDevStatus.getStatus() == null) {
+			String msg = "The product " + dto.getName()+ " cannot be created since the status of developer " + dev.getName() + " cannot be determined.";
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The product " + dto.getName()+ " cannot be created since the developer " + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
 			
-		
 		ProductDTO result = productDao.create(dto);
 		String activityMsg = "Product "+dto.getName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, null, result);
@@ -117,8 +122,13 @@ public class ProductManagerImpl implements ProductManager {
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
 		}
-		if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "The product " + beforeDTO.getName()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
+		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+		if(currDevStatus == null || currDevStatus.getStatus() == null) {
+			String msg = "The product " + dto.getName()+ " cannot be updated since the status of developer " + dev.getName() + " cannot be determined.";
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+			String msg = "The product " + dto.getName()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -152,8 +162,13 @@ public class ProductManagerImpl implements ProductManager {
 		for(ProductDTO beforeProduct : beforeProducts) {
 			Long devId = beforeProduct.getDeveloperId();
 			DeveloperDTO dev = devDao.getById(devId);
-			if(!dev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-				String msg = "The product " + beforeProduct.getName()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + dev.getStatus().getStatusName();
+			DeveloperStatusEventDTO currDevStatus = dev.getStatus();
+			if(currDevStatus == null || currDevStatus.getStatus() == null) {
+				String msg = "The product " + beforeProduct.getName()+ " cannot be merged since the status of developer " + dev.getName() + " cannot be determined.";
+				logger.error(msg);
+				throw new EntityCreationException(msg);
+			} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+				String msg = "The product " + beforeProduct.getName()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
 				logger.error(msg);
 				throw new EntityCreationException(msg);
 			}
