@@ -5,6 +5,7 @@ _Date TBD_
 
 ### Features Added
 * Show error to ONC-ACB during upload and edit when Surveillance Activity has a nonconformity with an entry for "Date Corrective Action Plan Was Approved" but no entry for "Date Corrective Action Plan Must Be Completed" 
+* Show error to ONC-ACB during upload and edit for a Surveillance Activity nonconformity that violates business rules for "Corrective Action Plan End Date"
 
 ## Version TBD
 _Date TBD_
