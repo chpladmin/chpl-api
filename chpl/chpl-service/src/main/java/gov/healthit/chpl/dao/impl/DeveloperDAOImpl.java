@@ -236,6 +236,14 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 		update(entity);
 		
+		//update the status history 
+		//check to make sure at least 1 status event was passed in, we can't delete them all
+		if(dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
+			String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer " + entity.getName();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+		
 		//delete existing developer status history
 		for(DeveloperStatusEventEntity existingDeveloperStatusEvent : entity.getStatusEvents()) {
 			DeveloperStatusEventDTO newDeveloperStatusEvent = null;
@@ -284,10 +292,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 					logger.error(msg);
 					throw new EntityCreationException(msg);
 				}
-			} else {
-				String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer " + entity.getName();
-				logger.error(msg);
-				throw new EntityCreationException(msg);
 			}
 		}
 		
@@ -296,28 +300,28 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 
 	@Override
-	public void updateStatus(DeveloperStatusEventDTO newStatusHistory) throws EntityCreationException {
+	public void updateStatus(DeveloperStatusEventDTO newStatusEvent) throws EntityCreationException {
 		//create a new status history entry
-		if(newStatusHistory.getStatus() != null && 
-			!StringUtils.isEmpty(newStatusHistory.getStatus().getStatusName()) && 
-			newStatusHistory.getStatusDate() != null) {
+		if(newStatusEvent.getStatus() != null && 
+			!StringUtils.isEmpty(newStatusEvent.getStatus().getStatusName()) && 
+			newStatusEvent.getStatusDate() != null) {
 			DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
-			currDevStatus.setDeveloperId(newStatusHistory.getDeveloperId());
-			DeveloperStatusEntity defaultStatus = getStatusByName(newStatusHistory.getStatus().getStatusName());
+			currDevStatus.setDeveloperId(newStatusEvent.getDeveloperId());
+			DeveloperStatusEntity defaultStatus = getStatusByName(newStatusEvent.getStatus().getStatusName());
 			if(defaultStatus != null) {
 				currDevStatus.setDeveloperStatusId(defaultStatus.getId());
-				currDevStatus.setStatusDate(newStatusHistory.getStatusDate());
+				currDevStatus.setStatusDate(newStatusEvent.getStatusDate());
 				currDevStatus.setDeleted(false);
 				currDevStatus.setLastModifiedUser(Util.getCurrentUser().getId());
 				entityManager.persist(currDevStatus);
 				entityManager.flush();
 			} else {
-				String msg = "Could not find status with name " + newStatusHistory.getStatus().getStatusName() + "; cannot insert this status history entry for developer with id " + newStatusHistory.getDeveloperId();
+				String msg = "Could not find status with name " + newStatusEvent.getStatus().getStatusName() + "; cannot insert this status history entry for developer with id " + newStatusEvent.getDeveloperId();
 				logger.error(msg);
 				throw new EntityCreationException(msg);
 			}
 		} else {
-			String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer with id " + newStatusHistory.getDeveloperId();
+			String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer with id " + newStatusEvent.getDeveloperId();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
@@ -539,7 +543,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusHistory "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents "
 				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
 				+ "where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
 		return result;
@@ -550,7 +554,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusHistory "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents "
 				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses ", DeveloperEntity.class).getResultList();
 		return result;
 	}
@@ -563,7 +567,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusHistory "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents "
 				+ "where (NOT v.deleted = true) AND (v.id = :entityid) ", DeveloperEntity.class );
 		query.setParameter("entityid", id);
 		List<DeveloperEntity> result = query.getResultList();
@@ -583,7 +587,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusHistory "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents "
 				+ "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class );
 		query.setParameter("name", name);
 		List<DeveloperEntity> result = query.getResultList();
@@ -603,7 +607,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusHistory "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents "
 				+ "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class );
 		query.setParameter("code", code);
 		List<DeveloperEntity> result = query.getResultList();
