@@ -151,6 +151,9 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "vendor_status_name")
     private String developerStatusName;
     
+    @Column(name = "last_vendor_status_change")
+    private Date developerStatusDate;
+    
     @Column(name = "address_id")
     private Long addressId;
     
@@ -843,5 +846,13 @@ public class CertifiedProductDetailsEntity {
 
 	public void setDecertificationDate(Date decertificationDate) {
 		this.decertificationDate = decertificationDate;
+	}
+
+	public Date getDeveloperStatusDate() {
+		return developerStatusDate;
+	}
+
+	public void setDeveloperStatusDate(Date developerStatusDate) {
+		this.developerStatusDate = developerStatusDate;
 	}	
 }

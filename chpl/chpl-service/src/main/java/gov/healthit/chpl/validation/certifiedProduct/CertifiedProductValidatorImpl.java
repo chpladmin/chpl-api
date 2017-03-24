@@ -24,6 +24,7 @@ import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -150,9 +151,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			if(product.getDeveloperId() != null && !developerCode.matches("X+")) {
 				DeveloperDTO developer = developerDao.getById(product.getDeveloperId());
 				if(developer != null) {
-					if(!developer.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-						product.getErrorMessages().add("The developer " + developer.getName() + " has a status of " + developer.getStatus().getStatusName() + ". Certified products belonging to this developer cannot be created until its status returns to Active.");
+					DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
+					if(mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
+						product.getErrorMessages().add("The current status of the developer " + developer.getName() + " cannot be determined. A developer must be listed as Active in order to create certified products belongong to it.");
+					} else if(!mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+						product.getErrorMessages().add("The developer " + developer.getName() + " has a status of " + mostRecentStatus.getStatus().getStatusName() + ". Certified products belonging to this developer cannot be created until its status returns to Active.");
 					}
+					
 					if(!developer.getDeveloperCode().equals(developerCode)) {
 						product.getErrorMessages().add("The developer code '" + developerCode + "' does not match the assigned developer code for " + product.getDeveloperName() + ": '" + developer.getDeveloperCode() + "'.");
 					}
@@ -270,8 +275,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				if(product.getDeveloper() != null && product.getDeveloper().getDeveloperId() != null) {
 					DeveloperDTO developer = developerDao.getById(product.getDeveloper().getDeveloperId());
 					if(developer != null) {
-						if(!developer.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-							product.getErrorMessages().add("The developer " + developer.getName() + " has a status of " + developer.getStatus().getStatusName() + ". Certified products belonging to this developer cannot be created or updated until its status returns to Active.");
+						DeveloperStatusEventDTO mostRecentStatus = developer.getStatus();
+						if(mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
+							product.getErrorMessages().add("The current status of the developer " + developer.getName() + " cannot be determined. A developer must be listed as Active in order to create certified products belongong to it.");
+						} else if(!mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+							product.getErrorMessages().add("The developer " + developer.getName() + " has a status of " + mostRecentStatus.getStatus().getStatusName() + ". Certified products belonging to this developer cannot be created until its status returns to Active.");
 						}
 					} else {
 						product.getErrorMessages().add("Could not find developer with id " + product.getDeveloper().getDeveloperId());

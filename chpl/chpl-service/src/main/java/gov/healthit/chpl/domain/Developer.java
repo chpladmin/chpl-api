@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 
 public class Developer implements Serializable {
 	private static final long serialVersionUID = 7341544844577617247L;
@@ -15,13 +16,15 @@ public class Developer implements Serializable {
 	private String website;
 	private Address address;
 	private Contact contact;
-	private DeveloperStatus status;
 	private String lastModifiedDate;
 	private Boolean deleted;
 	private List<TransparencyAttestationMap> transparencyAttestations;
+	private List<DeveloperStatusEvent> statusEvents;
+	private DeveloperStatus status;
 	
 	public Developer() {
 		this.transparencyAttestations = new ArrayList<TransparencyAttestationMap>();
+		this.statusEvents = new ArrayList<DeveloperStatusEvent>();
 	}
 	
 	public Developer(DeveloperDTO dto) {
@@ -37,7 +40,6 @@ public class Developer implements Serializable {
 		if(dto.getContact() != null) {
 			this.contact = new Contact(dto.getContact());
 		}
-		this.status = new DeveloperStatus(dto.getStatus());
 		
 		if(dto.getLastModifiedDate() != null) {
 			this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
@@ -51,6 +53,15 @@ public class Developer implements Serializable {
 				toAdd.setAttestation(map.getTransparencyAttestation());
 				this.transparencyAttestations.add(toAdd);
 			}
+		}
+		
+		if(dto.getStatusEvents() != null && dto.getStatusEvents().size() > 0) {
+			for(DeveloperStatusEventDTO historyItem : dto.getStatusEvents()) {
+				DeveloperStatusEvent toAdd = new DeveloperStatusEvent(historyItem);
+				this.statusEvents.add(toAdd);
+			}
+			
+			this.status = new DeveloperStatus(dto.getStatus().getStatus());
 		}
 	}
 	public Long getDeveloperId() {
@@ -109,6 +120,14 @@ public class Developer implements Serializable {
 	public void setTransparencyAttestations(List<TransparencyAttestationMap> transparencyAttestations) {
 		this.transparencyAttestations = transparencyAttestations;
 	}
+	
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
 
 	public DeveloperStatus getStatus() {
 		return status;
@@ -118,11 +137,11 @@ public class Developer implements Serializable {
 		this.status = status;
 	}
 
-	public Boolean getDeleted() {
-		return deleted;
+	public List<DeveloperStatusEvent> getStatusEvents() {
+		return statusEvents;
 	}
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
+	public void setStatusEvents(List<DeveloperStatusEvent> statusEvents) {
+		this.statusEvents = statusEvents;
 	}
 }
