@@ -2,6 +2,8 @@ package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,6 +111,11 @@ public class DeveloperController {
 			
 			if(developerInfo.getDeveloper().getStatusEvents() != null && 
 					developerInfo.getDeveloper().getStatusEvents().size() > 0) {
+				List<String> statusErrors = validateDeveloperStatusEvents(developerInfo.getDeveloper().getStatusEvents());
+				if(statusErrors != null && statusErrors.size() > 0) {
+					//can only have one error message here for the status text so just pick the first one
+					throw new InvalidArgumentsException(statusErrors.get(0));
+				}				
 				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
 					status.setStatusName(providedStatusHistory.getStatus().getStatus());
@@ -162,6 +169,12 @@ public class DeveloperController {
 			
 			if(developerInfo.getDeveloper().getStatusEvents() != null && 
 					developerInfo.getDeveloper().getStatusEvents().size() > 0) {
+				List<String> statusErrors = validateDeveloperStatusEvents(developerInfo.getDeveloper().getStatusEvents());
+				if(statusErrors != null && statusErrors.size() > 0) {
+					//can only have one error message here for the status text so just pick the first one
+					throw new InvalidArgumentsException(statusErrors.get(0));
+				}
+				
 				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
 					status.setId(providedStatusHistory.getStatus().getId());
@@ -207,5 +220,50 @@ public class DeveloperController {
 		}
 		Developer restResult = new Developer(result);
 		return restResult;
+	}
+	
+	private List<String> validateDeveloperStatusEvents(List<DeveloperStatusEvent> statusEvents) {
+		List<String> errors = new ArrayList<String>();
+		if(statusEvents == null || statusEvents.size() == 0) {
+			errors.add("The developer must have at least a current status specified.");
+		} else {
+			//sort the status events by date
+			statusEvents.sort(new Comparator<DeveloperStatusEvent>() {
+
+				@Override
+				public int compare(DeveloperStatusEvent o1, DeveloperStatusEvent o2) {
+					if(o1 == null && o2 != null) {
+						return -1;
+					} else if(o1 != null && o2 == null) {
+						return 1;
+					} else if(o1 == null && o2 == null) {
+						return 0;
+					} else {
+						//neither are null, compare the dates
+						return o1.getStatusDate().compareTo(o2.getStatusDate());
+					}
+				}
+			});
+			
+			//now that the list is sorted by date, make sure no two statuses next to each other are the same
+			Iterator<DeveloperStatusEvent> iter = statusEvents.iterator();
+			DeveloperStatusEvent prev = null, curr = null;
+			while(iter.hasNext()) {
+				if(prev == null) {
+					prev = iter.next();
+				} else if(curr == null){
+					curr = iter.next();
+				} else {
+					prev = curr;
+					curr = iter.next();
+				}
+				
+				if(prev != null && curr != null && 
+					prev.getStatus().getStatus().equalsIgnoreCase(curr.getStatus().getStatus())) {
+					errors.add("The status '" + prev.getStatus().getStatus() + "' cannot be listed twice in a row.");
+				}
+			}
+		}
+		return errors;
 	}
 }
