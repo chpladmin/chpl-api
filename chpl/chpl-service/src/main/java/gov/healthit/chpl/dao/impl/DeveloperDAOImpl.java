@@ -31,7 +31,7 @@ import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity;
 import gov.healthit.chpl.entity.DeveloperEntity;
 import gov.healthit.chpl.entity.DeveloperStatusEntity;
-import gov.healthit.chpl.entity.DeveloperStatusHistoryEntity;
+import gov.healthit.chpl.entity.DeveloperStatusEventEntity;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 
 @Repository("developerDAO")
@@ -108,7 +108,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			
 			//create a status history entry - will be Active by default
 			if(dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
-				DeveloperStatusHistoryEntity initialDeveloperStatus = new DeveloperStatusHistoryEntity();
+				DeveloperStatusEventEntity initialDeveloperStatus = new DeveloperStatusEventEntity();
 				initialDeveloperStatus.setDeveloperId(entity.getId());
 				DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
 				initialDeveloperStatus.setDeveloperStatusId(defaultStatus.getId());
@@ -118,22 +118,22 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				entityManager.persist(initialDeveloperStatus);
 				entityManager.flush();
 			} else {
-				for(DeveloperStatusEventDTO providedDeveloperStatusHistory : dto.getStatusEvents()) {
-					if(providedDeveloperStatusHistory.getStatus() != null && 
-						!StringUtils.isEmpty(providedDeveloperStatusHistory.getStatus().getStatusName()) && 
-						providedDeveloperStatusHistory.getStatusDate() != null) {
-						DeveloperStatusHistoryEntity currDevStatus = new DeveloperStatusHistoryEntity();
+				for(DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
+					if(providedDeveloperStatusEvent.getStatus() != null && 
+						!StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName()) && 
+						providedDeveloperStatusEvent.getStatusDate() != null) {
+						DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
 						currDevStatus.setDeveloperId(entity.getId());
-						DeveloperStatusEntity defaultStatus = getStatusByName(providedDeveloperStatusHistory.getStatus().getStatusName());
+						DeveloperStatusEntity defaultStatus = getStatusByName(providedDeveloperStatusEvent.getStatus().getStatusName());
 						if(defaultStatus != null) {
 							currDevStatus.setDeveloperStatusId(defaultStatus.getId());
-							currDevStatus.setStatusDate(providedDeveloperStatusHistory.getStatusDate());
+							currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
 							currDevStatus.setDeleted(false);
 							currDevStatus.setLastModifiedUser(entity.getLastModifiedUser());
 							entityManager.persist(currDevStatus);
 							entityManager.flush();
 						} else {
-							String msg = "Could not find status with name " + providedDeveloperStatusHistory.getStatus().getStatusName() + "; cannot insert this status history entry for developer " + entity.getName();
+							String msg = "Could not find status with name " + providedDeveloperStatusEvent.getStatus().getStatusName() + "; cannot insert this status history entry for developer " + entity.getName();
 							logger.error(msg);
 							throw new EntityCreationException(msg);
 						}
@@ -237,30 +237,50 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		update(entity);
 		
 		//delete existing developer status history
-		for(DeveloperStatusHistoryEntity existingDeveloperStatusHistory : entity.getStatusHistory()) {
-			existingDeveloperStatusHistory.setDeleted(true);
-			existingDeveloperStatusHistory.setLastModifiedUser(Util.getCurrentUser().getId());
-			entityManager.merge(existingDeveloperStatusHistory);
+		for(DeveloperStatusEventEntity existingDeveloperStatusEvent : entity.getStatusEvents()) {
+			DeveloperStatusEventDTO newDeveloperStatusEvent = null;
+			for(DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
+				if(providedDeveloperStatusEvent.getId() != null && providedDeveloperStatusEvent.getId().longValue() == existingDeveloperStatusEvent.getId().longValue()) {
+					newDeveloperStatusEvent = providedDeveloperStatusEvent;
+				}
+			}
+			if(newDeveloperStatusEvent != null) {
+				//update with new values
+				if(newDeveloperStatusEvent.getStatus() != null && newDeveloperStatusEvent.getStatus().getStatusName() != null) {
+					DeveloperStatusEntity newStatus = getStatusByName(newDeveloperStatusEvent.getStatus().getStatusName());
+					if(newStatus != null && newStatus.getId() != null) {
+						existingDeveloperStatusEvent.setDeveloperStatus(newStatus);
+						existingDeveloperStatusEvent.setDeveloperStatusId(newStatus.getId());
+					}
+					existingDeveloperStatusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
+				}
+			} else {
+				//delete
+				existingDeveloperStatusEvent.setDeleted(true);
+			}
+			existingDeveloperStatusEvent.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.merge(existingDeveloperStatusEvent);
 		}
 		entityManager.flush();
 		
 		//add passed-in developer status history
-		for(DeveloperStatusEventDTO providedDeveloperStatusHistory : dto.getStatusEvents()) {
-			if(providedDeveloperStatusHistory.getStatus() != null && 
-				!StringUtils.isEmpty(providedDeveloperStatusHistory.getStatus().getStatusName()) && 
-				providedDeveloperStatusHistory.getStatusDate() != null) {
-				DeveloperStatusHistoryEntity currDevStatus = new DeveloperStatusHistoryEntity();
+		for(DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
+			if(providedDeveloperStatusEvent.getId() == null && 
+				providedDeveloperStatusEvent.getStatus() != null && 
+				!StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName()) && 
+				providedDeveloperStatusEvent.getStatusDate() != null) {
+				DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
 				currDevStatus.setDeveloperId(entity.getId());
-				DeveloperStatusEntity defaultStatus = getStatusByName(providedDeveloperStatusHistory.getStatus().getStatusName());
-				if(defaultStatus != null) {
-					currDevStatus.setDeveloperStatusId(defaultStatus.getId());
-					currDevStatus.setStatusDate(providedDeveloperStatusHistory.getStatusDate());
+				DeveloperStatusEntity providedStatus = getStatusByName(providedDeveloperStatusEvent.getStatus().getStatusName());
+				if(providedStatus != null) {
+					currDevStatus.setDeveloperStatusId(providedStatus.getId());
+					currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
 					currDevStatus.setDeleted(false);
 					currDevStatus.setLastModifiedUser(entity.getLastModifiedUser());
 					entityManager.persist(currDevStatus);
 					entityManager.flush();
 				} else {
-					String msg = "Could not find status with name " + providedDeveloperStatusHistory.getStatus().getStatusName() + "; cannot insert this status history entry for developer " + entity.getName();
+					String msg = "Could not find status with name " + providedDeveloperStatusEvent.getStatus().getStatusName() + "; cannot insert this status history entry for developer " + entity.getName();
 					logger.error(msg);
 					throw new EntityCreationException(msg);
 				}
@@ -281,7 +301,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		if(newStatusHistory.getStatus() != null && 
 			!StringUtils.isEmpty(newStatusHistory.getStatus().getStatusName()) && 
 			newStatusHistory.getStatusDate() != null) {
-			DeveloperStatusHistoryEntity currDevStatus = new DeveloperStatusHistoryEntity();
+			DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
 			currDevStatus.setDeveloperId(newStatusHistory.getDeveloperId());
 			DeveloperStatusEntity defaultStatus = getStatusByName(newStatusHistory.getStatus().getStatusName());
 			if(defaultStatus != null) {

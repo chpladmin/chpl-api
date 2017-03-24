@@ -3,7 +3,7 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.DeveloperStatusHistoryEntity;
+import gov.healthit.chpl.entity.DeveloperStatusEventEntity;
 
 public class DeveloperStatusEventDTO implements Serializable {
 	private static final long serialVersionUID = -2492374479266782228L;
@@ -16,7 +16,7 @@ public class DeveloperStatusEventDTO implements Serializable {
 	public DeveloperStatusEventDTO(){
 	}
 	
-	public DeveloperStatusEventDTO(DeveloperStatusHistoryEntity entity){
+	public DeveloperStatusEventDTO(DeveloperStatusEventEntity entity){
 		this();
 		this.id = entity.getId();
 		this.developerId = entity.getDeveloperId();

@@ -19,7 +19,7 @@ import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "vendor_status_history")
-public class DeveloperStatusHistoryEntity implements Cloneable, Serializable {
+public class DeveloperStatusEventEntity implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1730728043307135377L;
 
 	@Id 

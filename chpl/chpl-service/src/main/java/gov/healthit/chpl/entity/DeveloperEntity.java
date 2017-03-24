@@ -80,7 +80,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@Basic( optional = false )
 	@Column( name = "vendor_id", nullable = false  )
 	@Where(clause="deleted <> 'true'")
-	private Set<DeveloperStatusHistoryEntity> statusHistory = new LinkedHashSet<DeveloperStatusHistoryEntity>();
+	private Set<DeveloperStatusEventEntity> statusEvents = new LinkedHashSet<DeveloperStatusEventEntity>();
 
 	/**
 	 * Default constructor, mainly for hibernate use.
@@ -281,12 +281,12 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	}
 	
 	
-	public Set<DeveloperStatusHistoryEntity> getStatusHistory() {
-		return statusHistory;
+	public Set<DeveloperStatusEventEntity> getStatusEvents() {
+		return statusEvents;
 	}
 
-	public void setStatusHistory(Set<DeveloperStatusHistoryEntity> statusHistory) {
-		this.statusHistory = statusHistory;
+	public void setStatusEvents(Set<DeveloperStatusEventEntity> statusEvents) {
+		this.statusEvents = statusEvents;
 	}
 
 	@Override

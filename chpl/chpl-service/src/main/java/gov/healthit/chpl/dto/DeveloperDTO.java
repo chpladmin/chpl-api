@@ -7,7 +7,7 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.DeveloperEntity;
-import gov.healthit.chpl.entity.DeveloperStatusHistoryEntity;
+import gov.healthit.chpl.entity.DeveloperStatusEventEntity;
 
 public class DeveloperDTO implements Serializable {
 	private static final long serialVersionUID = -2492373079266782228L;
@@ -40,8 +40,8 @@ public class DeveloperDTO implements Serializable {
 		if(entity.getContact() != null) {
 			this.contact = new ContactDTO(entity.getContact());
 		}
-		if(entity.getStatusHistory() != null && entity.getStatusHistory().size() > 0) {
-			for(DeveloperStatusHistoryEntity statusEntity : entity.getStatusHistory()) {
+		if(entity.getStatusEvents() != null && entity.getStatusEvents().size() > 0) {
+			for(DeveloperStatusEventEntity statusEntity : entity.getStatusEvents()) {
 				this.statusEvents.add(new DeveloperStatusEventDTO(statusEntity));
 			}
 		}
