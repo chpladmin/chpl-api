@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD (Next)
-_Date TBD (Next)_
+## Version TBD
+_Date TBD_
 
 ### Features Added
 * Show error to ONC-ACB during upload and edit when Surveillance Activity has a nonconformity with an entry for "Date Corrective Action Plan Was Approved" but no entry for "Date Corrective Action Plan Must Be Completed" 
@@ -10,8 +10,8 @@ _Date TBD (Next)_
 
 ---
 
-## Version TBD
-_Date TBD_
+## Version 8.3.0
+_27 March 2017_
 
 ### Features Added
 * Add authority to surveillance to allow end user to tell whether ONC or ACB created a surveillance activity
