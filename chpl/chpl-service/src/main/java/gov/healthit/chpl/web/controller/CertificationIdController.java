@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -52,7 +53,7 @@ public class CertificationIdController {
 	//
 	// Retrieves all CMS Certification IDs and their date of creation.
 	//**********************************************************************************************************
-	@Secured({"ROLE_ADMIN", "ROLE_CMS_STAFF", "ROLE_ONC_STAFF"})
+	@Secured({Authority.ROLE_ADMIN, Authority.ROLE_CMS_STAFF, Authority.ROLE_ONC_STAFF})
 	@ApiOperation(value="Retrieves a list of all CMS EHR Certification IDs along with the date they were created.")
 	@RequestMapping(value="/", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
 	public List<SimpleCertificationId> getAll() throws IOException {

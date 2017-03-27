@@ -8,10 +8,10 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 @Component(value="capCompletedComplianceChecker")
 public class CapCompletedComplianceChecker implements RuleComplianceChecker {

@@ -222,5 +222,37 @@
 		<persistence strategy="localTempSwap" />
 	</cache>
 	<!-- end decertifications/certified_products/ -->
+	
+	<!-- /surveillance/pending -->
+	<cache name="findSurveillanceRequirementType"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+	<cache name="findSurveillanceResultType"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+	<cache name="findSurveillanceNonconformityStatusType"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	<!-- end /surveillance/pending -->
 
 </ehcache>

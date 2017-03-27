@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 8.3.0
+_Date 27 March 2017_
+
+### Features Added
+* Add authority to surveillance to allow end user to tell whether ONC or ACB created a surveillance activity
+* Disallow saving of Surveillance without close date but with no open Non-Conformities
+* Improve performance of /surveillance/pending by ~643%
+
+### Bugs Fixed
+* Fix an Internal Server Error when obtaining user activities and there exists a deleted user
+
+---
+
 ## Version 8.2.0
 _13 March 2017_
 
@@ -21,7 +34,7 @@ _27 February 2017_
 * Add daily and weekly surveillance oversight reports to calculate which surveillance items have broken a given set of rules.
   * Environment properties have been added:
  ```
- #oversight email properties 
+ #oversight email properties
  oversightEmailDailyTo=sample@email.com
  oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
  oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
@@ -29,7 +42,7 @@ _27 February 2017_
  oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
  oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
  suspendedDaysAllowed=30
- capApprovalDaysAllowed=75  
+ capApprovalDaysAllowed=75
  capStartDaysAllowed=10
  ```
   * To run the weekly report at 00:05 on Wednesdays, add a line like the below to crontab

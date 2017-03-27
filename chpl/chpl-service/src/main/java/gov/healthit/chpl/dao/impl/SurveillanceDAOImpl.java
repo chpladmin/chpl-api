@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -10,11 +9,14 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.Surveillance;
@@ -43,8 +45,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	private static final Logger logger = LogManager.getLogger(SurveillanceDAOImpl.class);
 	
 	@Autowired CertificationCriterionDAO criterionDao;
+	@Autowired UserPermissionDAO userPermissionDao;
 	
-	public Long insertSurveillance(Surveillance surv) {
+	public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
 		SurveillanceEntity toInsert = new SurveillanceEntity();
 		populateSurveillanceEntity(toInsert, surv);
 		toInsert.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -90,7 +93,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return docEntity.getId();
 	}
 	
-	public Long updateSurveillance(Surveillance newSurv) {
+	public Long updateSurveillance(Surveillance newSurv) throws UserPermissionRetrievalException {
 		SurveillanceEntity oldSurv = fetchSurveillanceById(newSurv.getId());
 		populateSurveillanceEntity(oldSurv, newSurv);
 		oldSurv.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -488,6 +491,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return results;
 	}
 	
+	@Cacheable("findSurveillanceRequirementType")
 	public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
 		logger.debug("Searching for surveillance requirement type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
@@ -542,6 +546,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return results;
 	}
 	
+	@Cacheable("findSurveillanceResultType")
 	public SurveillanceResultType findSurveillanceResultType(String type) {
 		logger.debug("Searching for surveillance result type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
@@ -596,6 +601,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return results;
 	}
 	
+	@Cacheable("findSurveillanceNonconformityStatusType")
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
 		logger.debug("Searching for nonconformity status type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
@@ -765,7 +771,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return result;
 	}
 	
-	private void populateSurveillanceEntity(SurveillanceEntity to, Surveillance from) {
+	private void populateSurveillanceEntity(SurveillanceEntity to, Surveillance from) throws UserPermissionRetrievalException {
 		if(from.getCertifiedProduct() != null) {
 			to.setCertifiedProductId(from.getCertifiedProduct().getId());
 		}
@@ -775,6 +781,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		if(from.getType() != null) {
 			to.setSurveillanceTypeId(from.getType().getId());
 		}
+		to.setUserPermissionId(userPermissionDao.getIdFromAuthority(from.getAuthority()));
 	}
 	
 	private void populateSurveillanceRequirementEntity(SurveillanceRequirementEntity to, SurveillanceRequirement from) {
