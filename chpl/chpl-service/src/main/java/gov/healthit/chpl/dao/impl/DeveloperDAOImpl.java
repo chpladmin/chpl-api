@@ -543,7 +543,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusEvents "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
 				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
 				+ "where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
 		return result;
@@ -554,7 +555,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusEvents "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
 				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses ", DeveloperEntity.class).getResultList();
 		return result;
 	}
@@ -567,7 +569,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusEvents "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
 				+ "where (NOT v.deleted = true) AND (v.id = :entityid) ", DeveloperEntity.class );
 		query.setParameter("entityid", id);
 		List<DeveloperEntity> result = query.getResultList();
@@ -587,7 +590,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusEvents "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
 				+ "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class );
 		query.setParameter("name", name);
 		List<DeveloperEntity> result = query.getResultList();
@@ -607,7 +611,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.statusEvents "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
 				+ "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class );
 		query.setParameter("code", code);
 		List<DeveloperEntity> result = query.getResultList();
