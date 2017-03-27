@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 8.3.0
+_Date 27 March 2017_
 
 ### Features Added
 * Add authority to surveillance to allow end user to tell whether ONC or ACB created a surveillance activity
