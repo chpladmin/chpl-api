@@ -309,6 +309,26 @@ public class SurveillanceValidator {
 							surv.getErrorMessages().add("Date Corrective Action Plan Must Be Completed is required for requirement " 
 						+ req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + " when there is an entry for Date Corrective Action Plan Was Approved.");
 						}
+						
+						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())){
+							surv.getErrorMessages().add("Date Corrective Action Plan Start Date is required for requirement " 
+									+ req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + " when there is an entry for Date Corrective Action Plan End Date.");
+						}
+						
+						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())){
+							surv.getErrorMessages().add("Date Corrective Action Plan Approval Date is required for requirement " 
+									+ req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + " when there is an entry for Date Corrective Action Plan End Date.");
+						}
+						
+						if(!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate()) && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0){
+							surv.getErrorMessages().add("Date Corrective Action Plan End Date must be greater than Date Corrective Action Plan Start Date for requirement " 
+									+ req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
+						}
+						
+						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getResolution())){
+							surv.getErrorMessages().add("Resolution is required for requirement " 
+									+ req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + " when there is a Corrective Action Plan End Date");
+						}
 
 						if(nc.getDateOfDetermination() == null) {
 							surv.getErrorMessages().add("Date of determination is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
