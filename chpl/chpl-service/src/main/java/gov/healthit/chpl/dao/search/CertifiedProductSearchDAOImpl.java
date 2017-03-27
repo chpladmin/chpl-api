@@ -48,10 +48,9 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 			result.setVersion(dbResult.getVersion());
 			result.setCertificationDate(dbResult.getCertificationDate().getTime());
 			result.setCertificationStatus(dbResult.getCertificationStatus());
-			result.setHasOpenSurveillance(dbResult.getHasOpenSurveillance());
-			result.setHasClosedSurveillance(dbResult.getHasClosedSurveillance());
-			result.setHasOpenNonconformities(dbResult.getHasOpenNonconformities());
-			result.setHasClosedNonconformities(dbResult.getHasClosedNonconformities());
+			result.setSurveillanceCount(dbResult.getSurveillanceCount());
+			result.setOpenNonconformityCount(dbResult.getOpenNonconformityCount());
+			result.setClosedNonconformityCount(dbResult.getClosedNonconformityCount());
 			result.setCriteriaMet(dbResult.getCerts());
 			result.setCqmsMet(dbResult.getCqms());
 			result.setPreviousDevelopers(dbResult.getPreviousDevelopers());

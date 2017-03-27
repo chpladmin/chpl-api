@@ -16,10 +16,9 @@ public class CertifiedProductSearchResult implements Serializable {
 	private String version;
 	private Long certificationDate;
 	private String certificationStatus;
-	private boolean hasOpenSurveillance;
-	private boolean hasClosedSurveillance;
-	private boolean hasOpenNonconformities;
-	private boolean hasClosedNonconformities;
+	private Long surveillanceCount;
+	private Long openNonconformityCount;
+	private Long closedNonconformityCount;
 	
 	public CertifiedProductSearchResult() {
 	}
@@ -90,17 +89,24 @@ public class CertifiedProductSearchResult implements Serializable {
 	public void setCertificationStatus(String certificationStatus) {
 		this.certificationStatus = certificationStatus;
 	}
-	public boolean isHasOpenSurveillance() {
-		return hasOpenSurveillance;
+	public Long getSurveillanceCount() {
+		return surveillanceCount;
 	}
-	public void setHasOpenSurveillance(boolean hasOpenSurveillance) {
-		this.hasOpenSurveillance = hasOpenSurveillance;
+	public void setSurveillanceCount(Long surveillanceCount) {
+		this.surveillanceCount = surveillanceCount;
 	}
-	public boolean isHasOpenNonconformities() {
-		return hasOpenNonconformities;
+	public Long getOpenNonconformityCount() {
+		return openNonconformityCount;
 	}
-	public void setHasOpenNonconformities(boolean hasOpenNonconformities) {
-		this.hasOpenNonconformities = hasOpenNonconformities;
+	public void setOpenNonconformityCount(Long openNonconformityCount) {
+		this.openNonconformityCount = openNonconformityCount;
+	}
+
+	public Long getClosedNonconformityCount() {
+		return closedNonconformityCount;
+	}
+	public void setClosedNonconformityCount(Long closedNonconformityCount) {
+		this.closedNonconformityCount = closedNonconformityCount;
 	}
 	
 	public String getAcbCertificationId() {
@@ -109,21 +115,5 @@ public class CertifiedProductSearchResult implements Serializable {
 
 	public void setAcbCertificationId(String acbCertificationId) {
 		this.acbCertificationId = acbCertificationId;
-	}
-
-	public boolean isHasClosedSurveillance() {
-		return hasClosedSurveillance;
-	}
-
-	public void setHasClosedSurveillance(boolean hasClosedSurveillance) {
-		this.hasClosedSurveillance = hasClosedSurveillance;
-	}
-
-	public boolean isHasClosedNonconformities() {
-		return hasClosedNonconformities;
-	}
-
-	public void setHasClosedNonconformities(boolean hasClosedNonconformities) {
-		this.hasClosedNonconformities = hasClosedNonconformities;
 	}
 }
