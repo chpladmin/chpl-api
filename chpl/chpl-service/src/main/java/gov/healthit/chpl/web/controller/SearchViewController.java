@@ -96,8 +96,8 @@ public class SearchViewController {
 			ObjectMapper nonNullJsonMapper = new ObjectMapper();
 			nonNullJsonMapper.setSerializationInclusion(Include.NON_NULL);
 			
-			//create a copy of the search results since we will be manipulating them but
-			//do not want to overwrite the cached data
+			//create a copy of the search results since we will be manipulating them 
+			//by setting fields to null but do not want to overwrite the cached data
 			List<CertifiedProductFlatSearchResult> mutableSearchResults = new ArrayList<CertifiedProductFlatSearchResult>(cachedSearchResults.size());
 			for(CertifiedProductFlatSearchResult cachedSearchResult : cachedSearchResults) {
 				mutableSearchResults.add(new CertifiedProductFlatSearchResult(cachedSearchResult));
@@ -110,6 +110,7 @@ public class SearchViewController {
 				requiredFields.add(fieldNames[i].toUpperCase());
 			}
 			
+			//compare all the field names in the results with the required field names
 			List<Field> searchResultFields = getAllInheritedFields(CertifiedProductFlatSearchResult.class, new ArrayList<Field>());
 			for(Field searchResultField : searchResultFields) {
 				//is this searchResultField a required one?
