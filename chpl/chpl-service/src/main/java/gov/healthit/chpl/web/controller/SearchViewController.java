@@ -4,9 +4,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +30,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -38,6 +46,9 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.search.BasicSearchResponse;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
+import gov.healthit.chpl.domain.search.SearchViews;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -67,19 +78,90 @@ public class SearchViewController {
 	
 	@Autowired
 	private CertifiedProductSearchResultDAO certifiedProductSearchResultDao;
-	
+		
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
 	@ApiOperation(value="Get basic data about all certified products in the system.", 
 			notes="")
 	@RequestMapping(value="/certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody BasicSearchResponse getAllCertifiedProducts() {
+	public @ResponseBody String getAllCertifiedProducts(@RequestParam(value="fields", required=false) String delimitedFieldNames) 
+	throws JsonProcessingException {
 		
-		BasicSearchResponse response = certifiedProductSearchManager.search();
-		return response;
+		List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
+		
+		String result = "";		
+		if(!StringUtils.isEmpty(delimitedFieldNames)) {
+			//write out objects as json but do not include properties with a null value
+			ObjectMapper nonNullJsonMapper = new ObjectMapper();
+			nonNullJsonMapper.setSerializationInclusion(Include.NON_NULL);
+			
+			//create a copy of the search results since we will be manipulating them but
+			//do not want to overwrite the cached data
+			List<CertifiedProductFlatSearchResult> mutableSearchResults = new ArrayList<CertifiedProductFlatSearchResult>(cachedSearchResults.size());
+			for(CertifiedProductFlatSearchResult cachedSearchResult : cachedSearchResults) {
+				mutableSearchResults.add(new CertifiedProductFlatSearchResult(cachedSearchResult));
+			}
+			
+			//parse the field names that we want to send back
+			String[] fieldNames = delimitedFieldNames.split(",");
+			List<String> requiredFields = new ArrayList<String>(fieldNames.length);
+			for(int i = 0; i < fieldNames.length; i++) {
+				requiredFields.add(fieldNames[i].toUpperCase());
+			}
+			
+			List<Field> searchResultFields = getAllInheritedFields(CertifiedProductFlatSearchResult.class, new ArrayList<Field>());
+			for(Field searchResultField : searchResultFields) {
+				//is this searchResultField a required one?
+				boolean isSearchResultFieldRequired = false;
+				for(String requiredField : requiredFields) {
+					if(searchResultField.getName().equalsIgnoreCase(requiredField)) {
+						isSearchResultFieldRequired = true;
+					}
+				}
+				
+				//if the field is not required, set it to null
+				//assumes standard java bean getter/setter names
+				if(!isSearchResultFieldRequired && !searchResultField.getName().equalsIgnoreCase("serialVersionUID")) {
+					//what type is the field? String? Long?
+					Class searchResultFieldTypeClazz = searchResultField.getType();
+					//find the setter method that accepts the correct type
+					String firstUppercaseChar = searchResultField.getName().charAt(0)+"";
+					firstUppercaseChar = firstUppercaseChar.toUpperCase();
+					String setterMethodName = "set" + firstUppercaseChar + searchResultField.getName().substring(1);
+					try {
+						Method setter = CertifiedProductFlatSearchResult.class.getMethod(setterMethodName, searchResultFieldTypeClazz);
+						//call the setter method and set to null
+						if(setter != null) {
+							for(CertifiedProductSearchResult searchResult : mutableSearchResults) {
+								setter.invoke(searchResult, new Object[]{ null });
+							}
+						} else {
+							logger.error("No method with name " + setterMethodName + " was found for field " + searchResultField.getName() + " and argument type " + searchResultFieldTypeClazz.getName());
+						}
+					} catch(NoSuchMethodException ex) {
+						logger.error("No method with name " + setterMethodName + " was found for field " + searchResultField.getName() + " and argument type " + searchResultFieldTypeClazz.getName(), ex);
+					} catch(InvocationTargetException ex) {
+						logger.error("exception invoking method " + setterMethodName, ex);
+					} catch(IllegalArgumentException ex) {
+						logger.error("bad arguments to method " + setterMethodName, ex);
+					} catch(IllegalAccessException ex) {
+						logger.error("Cannot access method " + setterMethodName, ex);
+					}
+				}
+			}
+			BasicSearchResponse response = new BasicSearchResponse();
+			response.setResults(mutableSearchResults);
+			result = nonNullJsonMapper.writeValueAsString(response);
+		} else {
+			ObjectMapper viewMapper = new ObjectMapper();
+			BasicSearchResponse response = new BasicSearchResponse();
+			response.setResults(cachedSearchResults);
+			 result = viewMapper.writerWithView(SearchViews.Default.class).writeValueAsString(response);
+		}
+
+		return result;
 	}
-	
 	
 	@ApiOperation(value="Get all data about a certified product.", 
 			notes="")
@@ -615,4 +697,12 @@ public class SearchViewController {
 		return resp;
 	}
 	
+	private List<Field> getAllInheritedFields(Class clazz, List<Field> fields) {
+	    Class superClazz = clazz.getSuperclass();
+	    if(superClazz != null){
+	    	getAllInheritedFields(superClazz, fields);
+	    }
+	    fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+	    return fields;
+	}
 }

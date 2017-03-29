@@ -2,25 +2,75 @@ package gov.healthit.chpl.domain.search;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 public class CertifiedProductSearchResult implements Serializable {
 	private static final long serialVersionUID = -2547390525592841034L;
-	private Long id;
-	private String chplProductNumber;
-	private String edition;
-	private String atl;
-	private String acb;
-	private String acbCertificationId;
-	private String practiceType;
-	private String developer;
-	private String product;
-	private String version;
-	private Long certificationDate;
-	private String certificationStatus;
-	private Long surveillanceCount;
-	private Long openNonconformityCount;
-	private Long closedNonconformityCount;
+	
+	@JsonView({SearchViews.Default.class})
+	protected Long id;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String chplProductNumber;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String edition;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String atl;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String acb;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String acbCertificationId;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String practiceType;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String developer;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String product;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String version;
+	
+	@JsonView({SearchViews.Default.class})
+	protected Long certificationDate;
+	
+	@JsonView({SearchViews.Default.class})
+	protected String certificationStatus;
+	
+	@JsonView({SearchViews.Default.class})
+	protected Long surveillanceCount;
+	
+	@JsonView({SearchViews.Default.class})
+	protected Long openNonconformityCount;
+	
+	@JsonView({SearchViews.Default.class})
+	protected Long closedNonconformityCount;
 	
 	public CertifiedProductSearchResult() {
+	}
+	
+	public CertifiedProductSearchResult(CertifiedProductSearchResult other) {
+		this.id = other.getId();
+		this.chplProductNumber = other.getChplProductNumber();
+		this.edition = other.getEdition();
+		this.atl = other.getAtl();
+		this.acb = other.getAcb();
+		this.acbCertificationId = other.getAcbCertificationId();
+		this.practiceType = other.getPracticeType();
+		this.developer = other.getDeveloper();
+		this.product = other.getProduct();
+		this.version = other.getVersion();
+		this.certificationDate = other.getCertificationDate();
+		this.certificationStatus = other.getCertificationStatus();
+		this.surveillanceCount = other.getSurveillanceCount();
+		this.openNonconformityCount = other.getOpenNonconformityCount();
+		this.closedNonconformityCount = other.getClosedNonconformityCount();
 	}
 	
 	public Long getId() {
