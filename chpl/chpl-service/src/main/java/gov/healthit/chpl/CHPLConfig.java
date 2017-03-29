@@ -1,6 +1,8 @@
 package gov.healthit.chpl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +18,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -48,6 +52,16 @@ public class CHPLConfig implements EnvironmentAware {
 		logger.info("setEnvironment");
         this.env = environment;
     }
+	
+	@Bean
+	public MappingJackson2HttpMessageConverter jsonConverter(){
+		MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
+		bean.setPrefixJson(false);
+		List<MediaType> mediaTypes = new ArrayList<MediaType>();
+		mediaTypes.add(MediaType.APPLICATION_JSON);
+		bean.setSupportedMediaTypes(mediaTypes);
+		return bean;
+	}
 	
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){

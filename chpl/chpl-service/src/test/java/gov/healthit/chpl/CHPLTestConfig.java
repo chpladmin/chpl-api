@@ -42,6 +42,7 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
@@ -145,16 +146,13 @@ public class CHPLTestConfig implements EnvironmentAware {
 	
 	@Bean
 	public MappingJackson2HttpMessageConverter jsonConverter(){
-		
 		MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
-		
 		bean.setPrefixJson(false);
-		
 		List<MediaType> mediaTypes = new ArrayList<MediaType>();
 		mediaTypes.add(MediaType.APPLICATION_JSON);
-		
 		bean.setSupportedMediaTypes(mediaTypes);
-		
+		bean.getObjectMapper().setSerializationInclusion(Include.NON_NULL);
+
 		return bean;
 	}
 	
