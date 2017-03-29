@@ -31,6 +31,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		result.add("ONC-ACB");
 		result.add("Certification Status");
 		result.add("Date of Last Status Change");
+		result.add("Surveillance ID");
 		result.add("Date Surveillance Began");
 		result.add("Date Surveillance Ended");
 		result.add("Surveillance Type");
@@ -105,6 +106,12 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			survFields.add(dateFormatter.format(lastStatusChangeDate));
 		}
 		
+		if(surv.getFriendlyId() != null){
+			survFields.add(surv.getFriendlyId());
+		}
+		else{
+			survFields.add("");
+		}
 		if(surv.getStartDate() != null) {
 			LocalDateTime survStartDate = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(surv.getStartDate().getTime()), 
