@@ -9,6 +9,7 @@ _Date TBD_
 * Add statusEvents field to developers to track past status changes (Active, Suspended by Onc, etc) and the date on which each status change occurred. Provide create, read, update, and delete API functionality for developer status changes.
 * Add decertificationDate to the data returned in the banned developers API call.
 * Cache results of /certified_products/pending to improve view time by ~683%
+* Add Surveillance Friendly ID to Surveillance (Basic) CSV file download
 
 ---
 

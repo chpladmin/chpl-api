@@ -195,7 +195,7 @@ public class DownloadableResourceCreatorApp {
         ncCsvPresenter.setProps(props);
         ncCsvPresenter.presentAsFile(nonconformityCsvFile, allResults);
         
-      //write out a csv file containing surveillance basic report     
+        //write out a csv file containing surveillance basic report     
         String basicReportCsvName = downloadFolder.getAbsolutePath() + File.separator + 
         		"surveillance-basic-report.csv";
         File basicReportCsvFile = new File(basicReportCsvName);
