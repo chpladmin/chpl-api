@@ -22,11 +22,9 @@ public class PreFetchedCaches {
 	@Transactional
 	@CacheEvict(value=CacheNames.PRE_FETCHED_BASIC_SEARCH, beforeInvocation=true, allEntries=true)
 	@Cacheable(CacheNames.PRE_FETCHED_BASIC_SEARCH)
-	public BasicSearchResponse initializePreFetchedBasicSearch(){
+	public List<CertifiedProductFlatSearchResult> initializePreFetchedBasicSearch(){
 		logger.debug("Initializing PreFetchedBasicSearch");
-		BasicSearchResponse response = new BasicSearchResponse();
 		List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDao.getAllCertifiedProducts();
-		response.setResults(results);
-		return response;
+		return results;
 	}
 }

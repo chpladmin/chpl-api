@@ -6,15 +6,15 @@ import java.util.List;
 public class BasicSearchResponse implements Serializable {
 	private static final long serialVersionUID = 2569559170265522799L;
 
-	private List<? extends CertifiedProductSearchResult> results;
+	private List<CertifiedProductFlatSearchResult> results;
 	
 	public BasicSearchResponse() {}
 
-	public List<? extends CertifiedProductSearchResult> getResults() {
+	public List<CertifiedProductFlatSearchResult> getResults() {
 		return results;
 	}
 
-	public void setResults(List<? extends CertifiedProductSearchResult> results) {
+	public void setResults(List<CertifiedProductFlatSearchResult> results) {
 		this.results = results;
 	}
 }

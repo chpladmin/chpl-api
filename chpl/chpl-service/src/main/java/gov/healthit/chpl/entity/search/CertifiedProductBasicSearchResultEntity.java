@@ -52,17 +52,14 @@ public class CertifiedProductBasicSearchResultEntity {
 	@Column( name = "certification_status_name")
 	private String certificationStatus;
 	
-    @Column(name = "has_open_surveillance")
-    private Boolean hasOpenSurveillance;
-    
-    @Column(name = "has_closed_surveillance")
-    private Boolean hasClosedSurveillance;
+    @Column(name = "surveillance_count")
+    private Long surveillanceCount;
 
-    @Column(name = "has_open_nonconformities")
-    private Boolean hasOpenNonconformities;
+    @Column(name = "open_nonconformity_count")
+    private Long openNonconformityCount;
     
-    @Column(name = "has_closed_nonconformities")
-    private Boolean hasClosedNonconformities;
+    @Column(name = "closed_nonconformity_count")
+    private Long closedNonconformityCount;
   
     @Column(name = "certs")
     private String certs; // comma-separated list of all certification criteria met by the certified product
@@ -169,20 +166,28 @@ public class CertifiedProductBasicSearchResultEntity {
 		this.certificationStatus = certificationStatus;
 	}
 
-	public Boolean getHasOpenSurveillance() {
-		return hasOpenSurveillance;
+	public Long getSurveillanceCount() {
+		return surveillanceCount;
 	}
 
-	public void setHasOpenSurveillance(Boolean hasOpenSurveillance) {
-		this.hasOpenSurveillance = hasOpenSurveillance;
+	public void setSurveillanceCount(Long surveillanceCount) {
+		this.surveillanceCount = surveillanceCount;
 	}
 
-	public Boolean getHasOpenNonconformities() {
-		return hasOpenNonconformities;
+	public Long getOpenNonconformityCount() {
+		return openNonconformityCount;
 	}
 
-	public void setHasOpenNonconformities(Boolean hasOpenNonconformities) {
-		this.hasOpenNonconformities = hasOpenNonconformities;
+	public void setOpenNonconformityCount(Long openNonconformityCount) {
+		this.openNonconformityCount = openNonconformityCount;
+	}
+	
+	public Long getClosedNonconformityCount() {
+		return closedNonconformityCount;
+	}
+
+	public void setClosedNonconformityCount(Long closedNonconformityCount) {
+		this.closedNonconformityCount = closedNonconformityCount;
 	}
 
 	public String getCerts() {
@@ -207,21 +212,5 @@ public class CertifiedProductBasicSearchResultEntity {
 
 	public void setPreviousDevelopers(String previousDevelopers) {
 		this.previousDevelopers = previousDevelopers;
-	}
-
-	public Boolean getHasClosedSurveillance() {
-		return hasClosedSurveillance;
-	}
-
-	public void setHasClosedSurveillance(Boolean hasClosedSurveillance) {
-		this.hasClosedSurveillance = hasClosedSurveillance;
-	}
-
-	public Boolean getHasClosedNonconformities() {
-		return hasClosedNonconformities;
-	}
-
-	public void setHasClosedNonconformities(Boolean hasClosedNonconformities) {
-		this.hasClosedNonconformities = hasClosedNonconformities;
 	}
 }

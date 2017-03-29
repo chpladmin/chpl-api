@@ -8,8 +8,12 @@ _Date TBD_
 * Show error to ONC-ACB during upload and edit for a Surveillance Activity nonconformity that violates business rules for "Corrective Action Plan End Date"
 * Add statusEvents field to developers to track past status changes (Active, Suspended by Onc, etc) and the date on which each status change occurred. Provide create, read, update, and delete API functionality for developer status changes.
 * Add decertificationDate to the data returned in the banned developers API call.
+* Updated basic search objects that get returned:
+  * remove has open surveillance, has closed surveillance, has open nonconformities, has closed nonconformities
+  * add surveillanceCount, openNonconformityCount, closedNonconformityCount fields
 * Cache results of /certified_products/pending to improve view time by ~683%
 * Add Surveillance Friendly ID to Surveillance (Basic) CSV file download
+* Add optional "fields" parameter to /certified_products call to allow only sending back a custom list of fields
 
 ---
 
