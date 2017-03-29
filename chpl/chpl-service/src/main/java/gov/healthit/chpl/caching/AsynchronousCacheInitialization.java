@@ -1,6 +1,7 @@
 package gov.healthit.chpl.caching;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +12,10 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -23,6 +27,8 @@ public class AsynchronousCacheInitialization {
 	@Autowired private CertificationIdManager certificationIdManager;
 	@Autowired private SearchMenuManager searchMenuManager;
 	@Autowired private CertifiedProductSearchManager certifiedProductSearchManager;
+	@Autowired private PendingCertifiedProductDAO pendingCertifiedProductDAO;
+	@Autowired private CertificationBodyDAO certificationBodyDAO;
 	
 	@Async
 	@Transactional
@@ -77,6 +83,19 @@ public class AsynchronousCacheInitialization {
 		logger.info("Starting cache initialization for DeveloperManager.getDecertifiedDevelopers()");
 		certificationIdManager.getAllWithProducts();
 		logger.info("Finished cache initialization for DeveloperManager.getDecertifiedDevelopers()");
+		return new AsyncResult<>(true);
+	}
+	
+	@Async
+	@Transactional
+	public Future<Boolean> initializeFindByAcbId() throws IOException, EntityRetrievalException, InterruptedException {
+		logger.info("Starting cache initialization for PendingCertifiedProductDAO.findByAcbId()");
+		List<CertificationBodyDTO> cbs = certificationBodyDAO.findAll(false);
+		for(CertificationBodyDTO dto : cbs){
+			pendingCertifiedProductDAO.findByAcbId(dto.getId());
+		}
+		
+		logger.info("Finished cache initialization for PendingCertifiedProductDAO.findByAcbId()");
 		return new AsyncResult<>(true);
 	}
 	

@@ -11,6 +11,8 @@ _Date TBD_
 * Updated basic search objects that get returned:
   * remove has open surveillance, has closed surveillance, has open nonconformities, has closed nonconformities
   * add surveillanceCount, openNonconformityCount, closedNonconformityCount fields
+* Cache results of /certified_products/pending to improve view time by ~683%
+* Add optional "fields" parameter to /certified_products call to allow only sending back a custom list of fields
 
 ---
 

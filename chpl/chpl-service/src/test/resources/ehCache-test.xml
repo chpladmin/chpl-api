@@ -255,4 +255,15 @@
 	</cache>
 	<!-- end /surveillance/pending -->
 
+	<!-- /certified_products/pending -->
+	<cache name="findByAcbId"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	<!-- end /certified_products/pending -->
 </ehcache>

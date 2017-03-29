@@ -38,6 +38,7 @@ public class CacheInitializor {
 	private Future<Boolean> isInitializeCertificationIdsGetAllWithProductsDone;
 	private Future<Boolean> isInitializeDecertifiedDevelopers;
 	private Future<Boolean> isInitializeBasicSearch;
+	private Future<Boolean> isInitializeFindByAcbId;
 	private Properties props;
 	private String enableCacheInitializationValue;
 	
@@ -97,6 +98,11 @@ public class CacheInitializor {
 						isInitializeBasicSearch.cancel(true);
 					}
 					isInitializeBasicSearch = asynchronousCacheInitialization.initializeBasicSearch();
+					
+					if(isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()){
+						isInitializeFindByAcbId.cancel(true);
+					}
+					isInitializeFindByAcbId = asynchronousCacheInitialization.initializeFindByAcbId();
 				  }
 			} catch (Exception e) {
 				System.out.println("Caching failed to initialize");
@@ -133,6 +139,10 @@ public class CacheInitializor {
 			
 			if(isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()){
 								isInitializeBasicSearch.cancel(true);
+			}
+			
+			if(isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()){
+				isInitializeFindByAcbId.cancel(true);
 			}
 			
 			logger.info("Clearing all caches before @ClearAllCaches method execution.");

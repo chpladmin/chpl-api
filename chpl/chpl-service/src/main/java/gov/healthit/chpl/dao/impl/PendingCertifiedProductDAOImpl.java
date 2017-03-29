@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -313,6 +314,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		return new PendingCertifiedProductDTO(entity);
 	}
 	
+	@Cacheable("findByAcbId")
 	public List<PendingCertifiedProductDTO> findByAcbId(Long acbId) {
 		List<PendingCertifiedProductEntity> entities = getEntityByAcbId(acbId);
 		List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
