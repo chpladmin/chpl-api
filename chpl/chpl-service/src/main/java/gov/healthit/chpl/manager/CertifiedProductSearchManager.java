@@ -4,7 +4,6 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 
 

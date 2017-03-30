@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AccurateAsOfDate;
@@ -57,6 +59,10 @@ public class MeaningfulUseControllerTest extends TestCase {
 	private static final String CSV_SEPARATOR = ",";
 	
 	@Autowired MeaningfulUseController meaningfulUseController;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -274,36 +280,28 @@ public class MeaningfulUseControllerTest extends TestCase {
 		file.delete();
 		
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().size() + " but should return 5 results", apiResult.getMeaningfulUseUsers().size() == 5);
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getProductNumber() + " but should return CHP-024050", 
-				apiResult.getMeaningfulUseUsers().get(0).getProductNumber().equals("CHP-024050"));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getNumberOfUsers() + " but should return " + 10L, 
-				apiResult.getMeaningfulUseUsers().get(0).getNumberOfUsers().equals(10L));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(0).getCertifiedProductId() + " but should return " + 1L, 
-				apiResult.getMeaningfulUseUsers().get(0).getCertifiedProductId() == 1L);
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(1).getProductNumber() + " but should return CHP-024051", 
-				apiResult.getMeaningfulUseUsers().get(1).getProductNumber().equals("CHP-024051"));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(1).getNumberOfUsers() + " but should return " + 20L, 
-				apiResult.getMeaningfulUseUsers().get(1).getNumberOfUsers().equals(20L));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(1).getCertifiedProductId() + " but should return " + 2L, 
-				apiResult.getMeaningfulUseUsers().get(1).getCertifiedProductId() == 2L);
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(2).getProductNumber() + " but should return CHP-024052", 
-				apiResult.getMeaningfulUseUsers().get(2).getProductNumber().equals("CHP-024052"));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(2).getNumberOfUsers() + " but should return " + 30L, 
-				apiResult.getMeaningfulUseUsers().get(2).getNumberOfUsers().equals(30L));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(2).getCertifiedProductId() + " but should return " + 3L, 
-				apiResult.getMeaningfulUseUsers().get(2).getCertifiedProductId() == 3L);
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getProductNumber() + " but should return 15.01.01.1009.EIC08.36.1.1.160402", 
-				apiResult.getMeaningfulUseUsers().get(3).getProductNumber().equals("15.01.01.1009.EIC08.36.1.1.160402"));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getNumberOfUsers() + " but should return " + 40L, 
-				apiResult.getMeaningfulUseUsers().get(3).getNumberOfUsers().equals(40L));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getCertifiedProductId() + " but should return " + 5L, 
-				apiResult.getMeaningfulUseUsers().get(3).getCertifiedProductId() == 5L);
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(3).getProductNumber() + " but should return 14.01.01.1009.EIC08.36.1.1.160402", 
-				apiResult.getMeaningfulUseUsers().get(4).getProductNumber().equals("14.01.01.1009.EIC08.36.1.1.160402"));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(4).getNumberOfUsers() + " but should return " + 50L, 
-				apiResult.getMeaningfulUseUsers().get(4).getNumberOfUsers().equals(50L));
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().get(4).getCertifiedProductId() + " but should return " + 1L, 
-				apiResult.getMeaningfulUseUsers().get(4).getCertifiedProductId() == 1L);
+		for(MeaningfulUseUser muu : apiResult.getMeaningfulUseUsers()){
+			if(muu.getProductNumber().equals("CHP-024050")){
+				assertTrue(muu.getNumberOfUsers() == 10L);
+				assertTrue(muu.getCertifiedProductId() == 1L);
+			}
+			else if(muu.getProductNumber().equals("CHP-024051")){
+				assertTrue(muu.getNumberOfUsers() == 20L);
+				assertTrue(muu.getCertifiedProductId() == 2L);
+			}
+			else if(muu.getProductNumber().equals("CHP-024052")){
+				assertTrue(muu.getNumberOfUsers() == 30L);
+				assertTrue(muu.getCertifiedProductId() == 3L);
+			}
+			else if(muu.getProductNumber().equals("15.01.01.1009.EIC08.36.1.1.160402")){
+				assertTrue(muu.getNumberOfUsers() == 40L);
+				assertTrue(muu.getCertifiedProductId() == 5L);
+			}
+			else if(muu.getProductNumber().equals("14.01.01.1009.EIC08.36.1.1.160402")){
+				assertTrue(muu.getNumberOfUsers() == 50L);
+				assertTrue(muu.getCertifiedProductId() == 1L);
+			}
+		}
 	}
 	
 	/**
