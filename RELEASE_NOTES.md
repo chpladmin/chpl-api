@@ -16,6 +16,9 @@ _Date TBD_
 * Add optional "fields" parameter to /certified_products call to allow only sending back a custom list of fields
 * Add nonconformity status to daily and weekly surveillance broken rules reports. Only include values in the reports with Open nonconformities.
 
+### Bugs Fixed
+* Fix misaligned cells in nonconformity download file
+
 ---
 
 ## Version 8.3.0
