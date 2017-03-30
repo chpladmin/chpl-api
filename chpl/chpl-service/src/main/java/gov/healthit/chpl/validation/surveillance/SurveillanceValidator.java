@@ -329,6 +329,11 @@ public class SurveillanceValidator {
 							surv.getErrorMessages().add("Resolution is required for requirement " 
 									+ req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + " when there is a Corrective Action Plan End Date");
 						}
+						
+						if(!StringUtils.isEmpty(nc.getCapEndDate()) && nc.getStatus().getName().equalsIgnoreCase("Open")){
+							surv.getErrorMessages().add("Corrective Action Plan End Date cannot be completed for requirement " 
+									+ req.getRequirement() + ", nonconformity " + nc.getNonconformityType() + " when the Status = 'Open'");
+						}
 
 						if(nc.getDateOfDetermination() == null) {
 							surv.getErrorMessages().add("Date of determination is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
