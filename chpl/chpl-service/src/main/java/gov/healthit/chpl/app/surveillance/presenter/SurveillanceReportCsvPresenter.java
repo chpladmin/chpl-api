@@ -64,13 +64,14 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			result.add(row);
 		} else {
 			for(SurveillanceRequirement req : surv.getRequirements()) {	
-				if(req.getNonconformities() == null || req.getNonconformities().size() == 0) {
+				List<SurveillanceNonconformity> relevantNonconformities = getNonconformities(req);
+				if(relevantNonconformities == null || relevantNonconformities.size() == 0) {
 					List<String> row = new ArrayList<String>();
 					row.addAll(survFields);
 					row.addAll(getNoNonconformityFields(data, surv));
 					result.add(row);
 				} else {
-					for(SurveillanceNonconformity nc : req.getNonconformities()) {
+					for(SurveillanceNonconformity nc : relevantNonconformities) {
 						List<String> row = new ArrayList<String>();
 						row.addAll(survFields);
 						row.addAll(getNonconformityFields(data, surv, nc));
@@ -80,6 +81,10 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			}
 		}
 		return result;
+	}
+	
+	protected List<SurveillanceNonconformity> getNonconformities(SurveillanceRequirement req) {
+		return req.getNonconformities();
 	}
 	
 	protected List<String> getSurveillanceFields(CertifiedProductSearchDetails data, Surveillance surv) {

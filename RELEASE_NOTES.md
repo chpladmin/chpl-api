@@ -14,6 +14,7 @@ _Date TBD_
 * Cache results of /certified_products/pending to improve view time by ~683%
 * Add Surveillance Friendly ID to Surveillance (Basic) CSV file download
 * Add optional "fields" parameter to /certified_products call to allow only sending back a custom list of fields
+* Add nonconformity status to daily and weekly surveillance broken rules reports. Only include values in the reports with Open nonconformities.
 
 ---
 
