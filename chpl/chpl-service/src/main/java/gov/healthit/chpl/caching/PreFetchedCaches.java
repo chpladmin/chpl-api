@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
-import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 
 @Component

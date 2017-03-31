@@ -48,7 +48,6 @@ import junit.framework.TestCase;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class ActivityManagerTest extends TestCase {
-	
 	@Autowired
 	private ActivityManager activityManager;
 	
@@ -57,7 +56,6 @@ public class ActivityManagerTest extends TestCase {
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -68,7 +66,6 @@ public class ActivityManagerTest extends TestCase {
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
-	
 	
 	@Test
 	@Transactional

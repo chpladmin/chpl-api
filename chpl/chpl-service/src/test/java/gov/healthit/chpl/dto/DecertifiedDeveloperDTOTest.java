@@ -7,8 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -22,6 +24,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,6 +37,10 @@ import gov.healthit.chpl.entity.DeveloperStatusType;
 public class DecertifiedDeveloperDTOTest {
 	
 	private static JWTAuthenticatedUser authUser;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {

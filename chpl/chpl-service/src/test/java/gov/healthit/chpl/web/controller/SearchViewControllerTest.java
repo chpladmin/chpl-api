@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -34,7 +36,6 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
-import gov.healthit.chpl.domain.search.SearchViews;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import junit.framework.TestCase;
@@ -49,6 +50,10 @@ import junit.framework.TestCase;
 public class SearchViewControllerTest extends TestCase {
 	@Autowired
 	SearchViewController searchViewController = new SearchViewController();
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 
 	private static JWTAuthenticatedUser adminUser;
 	
