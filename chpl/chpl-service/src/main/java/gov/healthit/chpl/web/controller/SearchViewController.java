@@ -38,7 +38,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -283,16 +282,16 @@ public class SearchViewController {
 		    @ApiImplicitParam(name = "certificationStatuses", value = "A comma-separated list of certification statuses "
 		    		+ "(ex: \"Active,Retired,Withdrawn by Developer\")). Retired listings are excluded unless requested with this parameter."
 				      + " Defaults to \"Active,Suspended by ONC, Suspended by ONC-ACB\"", required = false, dataType = "string", paramType = "query"),
-		    @ApiImplicitParam(name = "certificationEditions", value = "A comma-separated list of certification editions (ex: \"2014,2015\")."
-				      + " Defaults to "\"2014,2015\"", required = false, dataType = "string", paramType = "query"),
-		    @ApiImplicitParam(name = "certificationCriteria", value = "A comma-separated list of certification criteria (ex: \"170.314 (a)(1),170.314 (a)(2)\").", 
+		    @ApiImplicitParam(name = "certificationEditions", value = "A comma-separated list of certification editions to be 'or'ed together (ex: \"2014,2015\" finds listings with either edition 2014 or 2015)."
+				      + " Defaults to \"2014,2015\"", required = false, dataType = "string", paramType = "query"),
+		    @ApiImplicitParam(name = "certificationCriteria", value = "A comma-separated list of certification criteria to be 'or'ed together (ex: \"170.314 (a)(1),170.314 (a)(2)\" finds listings attesting to either 170.314 (a)(1) or 170.314 (a(2)).", 
 		    	required = false, dataType = "string", paramType = "query"),
-		    @ApiImplicitParam(name = "cqms", value = "A comma-separated list of cqms (ex: \"CMS2,CMS9\").", 
+		    @ApiImplicitParam(name = "cqms", value = "A comma-separated list of cqms to be 'or'ed together (ex: \"CMS2,CMS9\" finds listings with either CMS2 or CMS9).", 
 		    	required = false, dataType = "string", paramType = "query"),
-		    @ApiImplicitParam(name = "certificationBodies", value = "A comma-separated list of certification body names (ex: \"Drummond,ICSA\").", 
+		    @ApiImplicitParam(name = "certificationBodies", value = "A comma-separated list of certification body names to be 'or'ed together (ex: \"Drummond,ICSA\" finds listings belonging to either Drummond or ICSA).", 
 		    	required = false, dataType = "string", paramType = "query"),
-		    @ApiImplicitParam(name = "surveillance", value = "A comma-separated list of surveillance options "
-		    	+ "(ex: \"OPEN_SURVEILLANCE,CLOSED_SURVEILLANCE,OPEN_NONCONFORMITY,CLOSED_NONCONFORMITY\").", 
+		    @ApiImplicitParam(name = "surveillance", value = "A comma-separated list of surveillance options to be 'or'ed together "
+		    	+ "(ex: \"OPEN_SURVEILLANCE,CLOSED_SURVEILLANCE,OPEN_NONCONFORMITY,CLOSED_NONCONFORMITY\" finds listings that have either open or closed surveillance with open or closed nonconformities).", 
 	    		required = false, dataType = "string", paramType = "query"),
 		    @ApiImplicitParam(name = "hasHadSurveillance", value = "True or False if a listing has ever had surveillance.", 
 	    		required = false, dataType = "boolean", paramType = "query"),
@@ -322,20 +321,20 @@ public class SearchViewController {
 	@RequestMapping(value="/search", method=RequestMethod.GET,
 			produces={"application/json; charset=utf-8", "application/xml"})
 	public @ResponseBody SearchResponse simpleSearch(
-			@RequestParam(value = "searchTerm", required=false) String searchTerm, 
+			@RequestParam(value = "searchTerm", required=false, defaultValue="") String searchTerm, 
 			@RequestParam(value = "certificationStatuses", required = false, defaultValue="Active,Suspended by ONC,Suspended by ONC-ACB") String certificationStatusesDelimited,
 			@RequestParam(value="certificationEditions", required=false, defaultValue="2014,2015") String certificationEditionsDelimited,
-			@RequestParam(value="certificationCriteria", required=false) String certificationCriteriaDelimited,
-			@RequestParam(value="cqms", required=false) String cqmsDelimited,
-			@RequestParam(value="certificationBodies", required=false) String certificationBodiesDelimited,
-			@RequestParam(value="surveillance", required=false) String surveillanceDelimited,
+			@RequestParam(value="certificationCriteria", required=false, defaultValue="") String certificationCriteriaDelimited,
+			@RequestParam(value="cqms", required=false, defaultValue="") String cqmsDelimited,
+			@RequestParam(value="certificationBodies", required=false, defaultValue="") String certificationBodiesDelimited,
+			@RequestParam(value="surveillance", required=false, defaultValue="") String surveillanceDelimited,
 			@RequestParam(value="hasHadSurveillance", required=false) Boolean hasHadSurveillance,
-			@RequestParam(value="developer", required=false) String developer,
-			@RequestParam(value="product", required=false) String product,
-			@RequestParam(value="version", required=false) String version,
-			@RequestParam(value="practiceType", required=false) String practiceType,
-			@RequestParam(value = "certificationDateStart", required = false) String certificationDateStart,
-			@RequestParam(value = "certificationDateEnd", required = false) String certificationDateEnd,
+			@RequestParam(value="developer", required=false, defaultValue="") String developer,
+			@RequestParam(value="product", required=false, defaultValue="") String product,
+			@RequestParam(value="version", required=false, defaultValue="") String version,
+			@RequestParam(value="practiceType", required=false, defaultValue="") String practiceType,
+			@RequestParam(value = "certificationDateStart", required = false, defaultValue="") String certificationDateStart,
+			@RequestParam(value = "certificationDateEnd", required = false, defaultValue="") String certificationDateEnd,
 			@RequestParam(value = "pageNumber", required = false, defaultValue="0") Integer pageNumber, 
 			@RequestParam(value = "pageSize", required = false, defaultValue="20") Integer pageSize,
 			@RequestParam(value = "orderBy", required = false, defaultValue="product") String orderBy,
@@ -343,210 +342,246 @@ public class SearchViewController {
 			) throws InvalidArgumentsException, EntityRetrievalException {
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setSearchTerm(searchTerm);
-		
-		if(!StringUtils.isEmpty(certificationStatusesDelimited)) {
-			String[] certificationStatusArr = certificationStatusesDelimited.split(",");
-			if(certificationStatusArr != null && certificationStatusArr.length > 0) {
-				List<String> certificationStatuses = new ArrayList<String>();
-				Set<KeyValueModel> availableCertificationStatuses = searchMenuManager.getCertificationStatuses();
-				
-				for(int i = 0; i < certificationStatusArr.length; i++) {
-					String certStatusParam = certificationStatusArr[i].trim();
-					boolean found = false;
-					for(KeyValueModel currAvailableCertStatus : availableCertificationStatuses) {
-						if(currAvailableCertStatus.getName().equalsIgnoreCase(certStatusParam)) {
-							found = true;
-						}
-					}
-					if(!found) {
-						logger.error("Could not find certification status with value " + certStatusParam);
-						throw new InvalidArgumentsException("Could not find certification status with value " + certStatusParam);
-					} else {
-						certificationStatuses.add(certStatusParam);
-					}
-				}
-				searchRequest.setCertificationStatuses(certificationStatuses);
-			}
+		if(searchTerm != null) {
+			searchRequest.setSearchTerm(searchTerm.trim());
 		}
 		
-		if(!StringUtils.isEmpty(certificationEditionsDelimited)) {
-			String[] certificationEditionsArr = certificationEditionsDelimited.split(",");
-			if(certificationEditionsArr != null && certificationEditionsArr.length > 0) {
-				List<String> certificationEditions = new ArrayList<String>();
-				Set<KeyValueModel> availableCertificationEditions = searchMenuManager.getEditionNames(false);
-				
-				for(int i = 0; i < certificationEditionsArr.length; i++) {
-					String certEditionParam = certificationEditionsArr[i].trim();
-					boolean found = false;
-					for(KeyValueModel currAvailableEdition : availableCertificationEditions) {
-						if(currAvailableEdition.getName().equalsIgnoreCase(certEditionParam)) {
-							found = true;
+		if(certificationStatusesDelimited != null) {
+			certificationStatusesDelimited = certificationStatusesDelimited.trim();
+			if(!StringUtils.isEmpty(certificationStatusesDelimited)) {
+				String[] certificationStatusArr = certificationStatusesDelimited.split(",");
+				if(certificationStatusArr != null && certificationStatusArr.length > 0) {
+					List<String> certificationStatuses = new ArrayList<String>();
+					Set<KeyValueModel> availableCertificationStatuses = searchMenuManager.getCertificationStatuses();
+					
+					for(int i = 0; i < certificationStatusArr.length; i++) {
+						String certStatusParam = certificationStatusArr[i].trim();
+						boolean found = false;
+						for(KeyValueModel currAvailableCertStatus : availableCertificationStatuses) {
+							if(currAvailableCertStatus.getName().equalsIgnoreCase(certStatusParam)) {
+								found = true;
+							}
 						}
-					}
-					if(!found) {
-						logger.error("Could not find certification edition with value " + certEditionParam);
-						throw new InvalidArgumentsException("Could not find certification edition with value " + certEditionParam);
-					} else {
-						certificationEditions.add(certEditionParam);
-					}
-				}
-				
-				searchRequest.setCertificationEditions(certificationEditions);
-			}
-		}
-		
-		if(!StringUtils.isEmpty(certificationCriteriaDelimited)) {
-			String[] certificationCriteriaArr = certificationCriteriaDelimited.split(",");
-			if(certificationCriteriaArr != null && certificationCriteriaArr.length > 0) {
-				List<String> certificationCriterion = new ArrayList<String>();
-				Set<DescriptiveModel> availableCriterion = searchMenuManager.getCertificationCriterionNumbers(false);
-				
-				for(int i = 0; i < certificationCriteriaArr.length; i++) {
-					String certCriteriaParam = certificationCriteriaArr[i].trim();
-					boolean found = false;
-					for(DescriptiveModel currAvailableCriteria : availableCriterion) {
-						if(currAvailableCriteria.getName().equalsIgnoreCase(certCriteriaParam)) {
-							found = true;
-						}
-					}
-					if(!found) {
-						logger.error("Could not find certification criterion with value " + certCriteriaParam);
-						throw new InvalidArgumentsException("Could not find certification criterion with value " + certCriteriaParam);
-					} else {
-						certificationCriterion.add(certCriteriaParam);
-					}
-				}
-				searchRequest.setCertificationCriteria(certificationCriterion);
-			}
-		}
-		
-		if(!StringUtils.isEmpty(cqmsDelimited)) {
-			String[] cqmsArr = cqmsDelimited.split(",");
-			if(cqmsArr != null && cqmsArr.length > 0) {
-				List<String> cqms = new ArrayList<String>();
-				Set<DescriptiveModel> availableCqms = searchMenuManager.getCQMCriterionNumbers(false);
-				
-				for(int i = 0; i < cqmsArr.length; i++) {
-					String cqmParam = cqmsArr[i].trim();
-					boolean found = false;
-					for(DescriptiveModel currAvailableCqm : availableCqms) {
-						if(currAvailableCqm.getName().equalsIgnoreCase(cqmParam)) {
-							found = true;
-						}
-					}
-					if(!found) {
-						logger.error("Could not find CQM with value " + cqmParam);
-						throw new InvalidArgumentsException("Could not find CQM with value " + cqmParam);
-					} else {
-						cqms.add(cqmParam.trim());
-					}
-				}
-				searchRequest.setCqms(cqms);
-			}
-		}
-		
-		if(!StringUtils.isEmpty(certificationBodiesDelimited)) {
-			String[] certificationBodiesArr = certificationBodiesDelimited.split(",");
-			if(certificationBodiesArr != null && certificationBodiesArr.length > 0) {
-				List<String> certBodies = new ArrayList<String>();
-				Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames();
-				
-				for(int i = 0; i < certificationBodiesArr.length; i++) {
-					String certBodyParam = certificationBodiesArr[i].trim();
-					boolean found = false;
-					for(KeyValueModel currAvailableCertBody : availableCertBodies) {
-						if(currAvailableCertBody.getName().equalsIgnoreCase(certBodyParam)) {
-							found = true;
-						}
-					}
-					if(!found) {
-						logger.error("Could not find certification body with value " + certBodyParam);
-						throw new InvalidArgumentsException("Could not find certification body with value " + certBodyParam);
-					} else {
-						certBodies.add(certBodyParam);
-					}
-				}
-				searchRequest.setCertificationBodies(certBodies);
-			}
-		}
-		
-		if(!StringUtils.isEmpty(surveillanceDelimited)) {
-			String[] surveillanceArr = surveillanceDelimited.split(",");
-			if(surveillanceArr != null && surveillanceArr.length > 0) {
-				Set<SurveillanceSearchOptions> surveillanceSearchOptions = new HashSet<SurveillanceSearchOptions>();
-				for(int i = 0; i < surveillanceArr.length; i++) {
-					String surveillanceParam = surveillanceArr[i].trim();
-					try {
-						SurveillanceSearchOptions searchOpt = SurveillanceSearchOptions.valueOf(surveillanceParam);
-						if(searchOpt != null) {
-							surveillanceSearchOptions.add(searchOpt);
+						if(!found) {
+							logger.error("Could not find certification status with value " + certStatusParam);
+							throw new InvalidArgumentsException("Could not find certification status with value " + certStatusParam);
 						} else {
-							logger.error("No surveillance search option for the string " + surveillanceParam);
+							certificationStatuses.add(certStatusParam);
+						}
+					}
+					searchRequest.setCertificationStatuses(certificationStatuses);
+				}
+			}
+		}
+		
+		if(certificationEditionsDelimited != null) {
+			certificationEditionsDelimited = certificationEditionsDelimited.trim();
+			if(!StringUtils.isEmpty(certificationEditionsDelimited)) {
+				String[] certificationEditionsArr = certificationEditionsDelimited.split(",");
+				if(certificationEditionsArr != null && certificationEditionsArr.length > 0) {
+					List<String> certificationEditions = new ArrayList<String>();
+					Set<KeyValueModel> availableCertificationEditions = searchMenuManager.getEditionNames(false);
+					
+					for(int i = 0; i < certificationEditionsArr.length; i++) {
+						String certEditionParam = certificationEditionsArr[i].trim();
+						boolean found = false;
+						for(KeyValueModel currAvailableEdition : availableCertificationEditions) {
+							if(currAvailableEdition.getName().equalsIgnoreCase(certEditionParam)) {
+								found = true;
+							}
+						}
+						if(!found) {
+							logger.error("Could not find certification edition with value " + certEditionParam);
+							throw new InvalidArgumentsException("Could not find certification edition with value " + certEditionParam);
+						} else {
+							certificationEditions.add(certEditionParam);
+						}
+					}
+					
+					searchRequest.setCertificationEditions(certificationEditions);
+				}
+			}
+		}
+		
+		if(certificationCriteriaDelimited != null) {
+			certificationCriteriaDelimited = certificationCriteriaDelimited.trim();
+			if(!StringUtils.isEmpty(certificationCriteriaDelimited)) {
+				String[] certificationCriteriaArr = certificationCriteriaDelimited.split(",");
+				if(certificationCriteriaArr != null && certificationCriteriaArr.length > 0) {
+					List<String> certificationCriterion = new ArrayList<String>();
+					Set<DescriptiveModel> availableCriterion = searchMenuManager.getCertificationCriterionNumbers(false);
+					
+					for(int i = 0; i < certificationCriteriaArr.length; i++) {
+						String certCriteriaParam = certificationCriteriaArr[i].trim();
+						boolean found = false;
+						for(DescriptiveModel currAvailableCriteria : availableCriterion) {
+							if(currAvailableCriteria.getName().equalsIgnoreCase(certCriteriaParam)) {
+								found = true;
+							}
+						}
+						if(!found) {
+							logger.error("Could not find certification criterion with value " + certCriteriaParam);
+							throw new InvalidArgumentsException("Could not find certification criterion with value " + certCriteriaParam);
+						} else {
+							certificationCriterion.add(certCriteriaParam);
+						}
+					}
+					searchRequest.setCertificationCriteria(certificationCriterion);
+				}
+			}
+		}
+		
+		if(cqmsDelimited != null) {
+			cqmsDelimited = cqmsDelimited.trim();
+			if(!StringUtils.isEmpty(cqmsDelimited)) {
+				String[] cqmsArr = cqmsDelimited.split(",");
+				if(cqmsArr != null && cqmsArr.length > 0) {
+					List<String> cqms = new ArrayList<String>();
+					Set<DescriptiveModel> availableCqms = searchMenuManager.getCQMCriterionNumbers(false);
+					
+					for(int i = 0; i < cqmsArr.length; i++) {
+						String cqmParam = cqmsArr[i].trim();
+						boolean found = false;
+						for(DescriptiveModel currAvailableCqm : availableCqms) {
+							if(currAvailableCqm.getName().equalsIgnoreCase(cqmParam)) {
+								found = true;
+							}
+						}
+						if(!found) {
+							logger.error("Could not find CQM with value " + cqmParam);
+							throw new InvalidArgumentsException("Could not find CQM with value " + cqmParam);
+						} else {
+							cqms.add(cqmParam.trim());
+						}
+					}
+					searchRequest.setCqms(cqms);
+				}
+			}
+		}
+		
+		if(certificationBodiesDelimited != null) {
+			certificationBodiesDelimited = certificationBodiesDelimited.trim();
+			if(!StringUtils.isEmpty(certificationBodiesDelimited)) {
+				String[] certificationBodiesArr = certificationBodiesDelimited.split(",");
+				if(certificationBodiesArr != null && certificationBodiesArr.length > 0) {
+					List<String> certBodies = new ArrayList<String>();
+					Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames();
+					
+					for(int i = 0; i < certificationBodiesArr.length; i++) {
+						String certBodyParam = certificationBodiesArr[i].trim();
+						boolean found = false;
+						for(KeyValueModel currAvailableCertBody : availableCertBodies) {
+							if(currAvailableCertBody.getName().equalsIgnoreCase(certBodyParam)) {
+								found = true;
+							}
+						}
+						if(!found) {
+							logger.error("Could not find certification body with value " + certBodyParam);
+							throw new InvalidArgumentsException("Could not find certification body with value " + certBodyParam);
+						} else {
+							certBodies.add(certBodyParam);
+						}
+					}
+					searchRequest.setCertificationBodies(certBodies);
+				}
+			}
+		}
+		
+		if(surveillanceDelimited != null) {
+			surveillanceDelimited = surveillanceDelimited.trim();
+			if(!StringUtils.isEmpty(surveillanceDelimited)) {
+				String[] surveillanceArr = surveillanceDelimited.split(",");
+				if(surveillanceArr != null && surveillanceArr.length > 0) {
+					Set<SurveillanceSearchOptions> surveillanceSearchOptions = new HashSet<SurveillanceSearchOptions>();
+					for(int i = 0; i < surveillanceArr.length; i++) {
+						String surveillanceParam = surveillanceArr[i].trim();
+						try {
+							SurveillanceSearchOptions searchOpt = SurveillanceSearchOptions.valueOf(surveillanceParam);
+							if(searchOpt != null) {
+								surveillanceSearchOptions.add(searchOpt);
+							} else {
+								logger.error("No surveillance search option for the string " + surveillanceParam);
+								throw new InvalidArgumentsException("No surveillance search option matches " + surveillanceParam);
+							}
+						} catch(Exception ex) {
+							logger.error("No surveillance search option for the string " + surveillanceParam, ex);
 							throw new InvalidArgumentsException("No surveillance search option matches " + surveillanceParam);
 						}
-					} catch(Exception ex) {
-						logger.error("No surveillance search option for the string " + surveillanceParam, ex);
-						throw new InvalidArgumentsException("No surveillance search option matches " + surveillanceParam);
 					}
+					searchRequest.setSurveillance(surveillanceSearchOptions);
 				}
-				searchRequest.setSurveillance(surveillanceSearchOptions);
 			}
 		}
 		
 		searchRequest.setHasHadSurveillance(hasHadSurveillance);
-		if(!StringUtils.isEmpty(developer)) {
-			searchRequest.setDeveloper(developer.trim());
-		}
-		
-		if(!StringUtils.isEmpty(product)) {
-			searchRequest.setProduct(product.trim());
-		}
-		
-		if(!StringUtils.isEmpty(version)) {
-			searchRequest.setVersion(version.trim());
-		}
-		
-		if(!StringUtils.isEmpty(practiceType)) {
-			practiceType = practiceType.trim();
-			Set<KeyValueModel> availablePracticeTypes = searchMenuManager.getPracticeTypeNames();
-			boolean found = false;
-			for(KeyValueModel currAvailablePracticeType : availablePracticeTypes) {
-				if(currAvailablePracticeType.getName().equalsIgnoreCase(practiceType)) {
-					found = true;
-				}
+
+		if(developer != null) {
+			developer = developer.trim();
+			if(!StringUtils.isEmpty(developer)) {
+				searchRequest.setDeveloper(developer.trim());
 			}
-			
-			if(!found) {
-				logger.error("No practice type exists with name " + practiceType);
-				throw new InvalidArgumentsException("No practice type exists with name " + practiceType);
-			} else {
-				searchRequest.setPracticeType(practiceType);
+		}
+		
+		if(product != null) {
+			product = product.trim();
+			if(!StringUtils.isEmpty(product)) {
+				searchRequest.setProduct(product.trim());
+			}
+		}
+		
+		if(version != null) {
+			version = version.trim();
+			if(!StringUtils.isEmpty(version)) {
+				searchRequest.setVersion(version.trim());
+			}
+		}
+		
+		if(practiceType != null) {
+			practiceType = practiceType.trim();
+			if(!StringUtils.isEmpty(practiceType)) {
+				Set<KeyValueModel> availablePracticeTypes = searchMenuManager.getPracticeTypeNames();
+				boolean found = false;
+				for(KeyValueModel currAvailablePracticeType : availablePracticeTypes) {
+					if(currAvailablePracticeType.getName().equalsIgnoreCase(practiceType)) {
+						found = true;
+					}
+				}
+				
+				if(!found) {
+					logger.error("No practice type exists with name " + practiceType);
+					throw new InvalidArgumentsException("No practice type exists with name " + practiceType);
+				} else {
+					searchRequest.setPracticeType(practiceType);
+				}
 			}
 		}
 		
 		//check date formats
 		SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-		if(!StringUtils.isEmpty(certificationDateStart)) {
+		if(certificationDateStart != null) {
 			certificationDateStart = certificationDateStart.trim();
-			try {
-				format.parse(certificationDateStart);
-			} catch(ParseException ex) {
-				logger.error("Could not parse " + certificationDateStart + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-				throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + certificationDateStart);
+			if(!StringUtils.isEmpty(certificationDateStart)) {
+				try {
+					format.parse(certificationDateStart);
+				} catch(ParseException ex) {
+					logger.error("Could not parse " + certificationDateStart + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+					throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + certificationDateStart);
+				}
+				searchRequest.setCertificationDateStart(certificationDateStart);
 			}
-			searchRequest.setCertificationDateStart(certificationDateStart);
 		}
 		
-		if(!StringUtils.isEmpty(certificationDateEnd)) {
+		if(certificationDateEnd != null) {
 			certificationDateEnd = certificationDateEnd.trim();
-			try {
-				format.parse(certificationDateEnd);
-			} catch(ParseException ex) {
-				logger.error("Could not parse " + certificationDateEnd + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-				throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + certificationDateEnd);
+			if(!StringUtils.isEmpty(certificationDateEnd)) {
+				try {
+					format.parse(certificationDateEnd);
+				} catch(ParseException ex) {
+					logger.error("Could not parse " + certificationDateEnd + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+					throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + certificationDateEnd);
+				}
+				searchRequest.setCertificationDateEnd(certificationDateEnd);
 			}
-			searchRequest.setCertificationDateEnd(certificationDateEnd);
 		}
 
 		searchRequest.setPageNumber(pageNumber);
