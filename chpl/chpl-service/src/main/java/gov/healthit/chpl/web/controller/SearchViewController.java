@@ -279,10 +279,12 @@ public class SearchViewController {
 			+ "Any parameter that can accept multiple things (i.e. certificationStatuses) expects a comma-delimited list of those things (i.e. certificationStatuses=Active,Suspended). "
 			+ "Date parameters are required to be in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
 	 @ApiImplicitParams({
-		    @ApiImplicitParam(name = "searchTerm", value = "CHPL ID, Developer Name, Product Name, ACB Certifiation ID", required = false, dataType = "string", paramType = "query"),
+		    @ApiImplicitParam(name = "searchTerm", value = "CHPL ID, Developer Name, Product Name, ONC-ACB Certification ID", required = false, dataType = "string", paramType = "query"),
 		    @ApiImplicitParam(name = "certificationStatuses", value = "A comma-separated list of certification statuses "
-		    		+ "(ex: \"Active,Retired,Withdrawn by Developer\")). Retired listings are excluded unless requested with this parameter.", required = false, dataType = "string", paramType = "query"),
-		    @ApiImplicitParam(name = "certificationEditions", value = "A comma-separated list of certification editions (ex: \"2014,2015\").", required = false, dataType = "string", paramType = "query"),
+		    		+ "(ex: \"Active,Retired,Withdrawn by Developer\")). Retired listings are excluded unless requested with this parameter."
+				      + " Defaults to \"Active,Suspended by ONC, Suspended by ONC-ACB\"", required = false, dataType = "string", paramType = "query"),
+		    @ApiImplicitParam(name = "certificationEditions", value = "A comma-separated list of certification editions (ex: \"2014,2015\")."
+				      + " Defaults to "\"2014,2015\"", required = false, dataType = "string", paramType = "query"),
 		    @ApiImplicitParam(name = "certificationCriteria", value = "A comma-separated list of certification criteria (ex: \"170.314 (a)(1),170.314 (a)(2)\").", 
 		    	required = false, dataType = "string", paramType = "query"),
 		    @ApiImplicitParam(name = "cqms", value = "A comma-separated list of cqms (ex: \"CMS2,CMS9\").", 
@@ -310,7 +312,7 @@ public class SearchViewController {
 				required = false, dataType = "string", paramType = "query"),
 		    @ApiImplicitParam(name = "pageSize", value = "Number of results to return used in concert with pageNumber. Defaults to 20.", 
 				required = false, dataType = "string", paramType = "query"),
-		    @ApiImplicitParam(name = "orderBy", value = "What to search by. Options are one of the following: " 
+		    @ApiImplicitParam(name = "orderBy", value = "What to order by. Options are one of the following: " 
 		    	+ "developer, product, version, certificationEdition, productClassification, certificationBody, "
 		    	+ "certificationDate, or practiceType. Defaults to product.",
 				required = false, dataType = "string", paramType = "query"),
@@ -321,8 +323,8 @@ public class SearchViewController {
 			produces={"application/json; charset=utf-8", "application/xml"})
 	public @ResponseBody SearchResponse simpleSearch(
 			@RequestParam(value = "searchTerm", required=false) String searchTerm, 
-			@RequestParam(value = "certificationStatuses", required = false) String certificationStatusesDelimited,
-			@RequestParam(value="certificationEditions", required=false) String certificationEditionsDelimited,
+			@RequestParam(value = "certificationStatuses", required = false, defaultValue="Active,Suspended by ONC,Suspended by ONC-ACB") String certificationStatusesDelimited,
+			@RequestParam(value="certificationEditions", required=false, defaultValue="2014,2015") String certificationEditionsDelimited,
 			@RequestParam(value="certificationCriteria", required=false) String certificationCriteriaDelimited,
 			@RequestParam(value="cqms", required=false) String cqmsDelimited,
 			@RequestParam(value="certificationBodies", required=false) String certificationBodiesDelimited,
