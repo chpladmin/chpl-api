@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD Next
-_Date TBD Next
+## Version TBD
+_Date TBD_
 
 ### Features Added
 * Update parameters for HTTP GET /search call. All the same options that were previously available only to POST exist for the GET. Updated related API documentation.
@@ -9,8 +9,8 @@ _Date TBD Next
 
 ---
 
-## Version TBD
-_Date TBD_
+## Version 9.0.0
+_10 April 2017_
 
 ### Features Added
 * Show error to ONC-ACB during upload and edit when Surveillance Activity has a nonconformity with an entry for "Date Corrective Action Plan Was Approved" but no entry for "Date Corrective Action Plan Must Be Completed" 
