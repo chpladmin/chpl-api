@@ -1,7 +1,28 @@
 # Release Notes
 
+## Version 9.0.0
+_10 April 2017_
+
+### Features Added
+* Show error to ONC-ACB during upload and edit when Surveillance Activity has a nonconformity with an entry for "Date Corrective Action Plan Was Approved" but no entry for "Date Corrective Action Plan Must Be Completed" 
+* Show error to ONC-ACB during upload and edit for a Surveillance Activity nonconformity that violates business rules for "Corrective Action Plan End Date"
+* Add statusEvents field to developers to track past status changes (Active, Suspended by Onc, etc) and the date on which each status change occurred. Provide create, read, update, and delete API functionality for developer status changes.
+* Add decertificationDate to the data returned in the banned developers API call.
+* Updated basic search objects that get returned:
+  * remove has open surveillance, has closed surveillance, has open nonconformities, has closed nonconformities
+  * add surveillanceCount, openNonconformityCount, closedNonconformityCount fields
+* Cache results of /certified_products/pending to improve view time by ~683%
+* Add Surveillance Friendly ID to Surveillance (Basic) CSV file download
+* Add optional "fields" parameter to /certified_products call to allow only sending back a custom list of fields
+* Add nonconformity status to daily and weekly surveillance broken rules reports. Only include values in the reports with Open nonconformities.
+
+### Bugs Fixed
+* Fix misaligned cells in nonconformity download file
+
+---
+
 ## Version 8.3.0
-_Date 27 March 2017_
+_27 March 2017_
 
 ### Features Added
 * Add authority to surveillance to allow end user to tell whether ONC or ACB created a surveillance activity

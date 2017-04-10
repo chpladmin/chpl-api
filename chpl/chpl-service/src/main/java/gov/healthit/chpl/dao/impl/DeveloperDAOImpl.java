@@ -23,6 +23,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.ContactEntity;
@@ -30,6 +31,7 @@ import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity;
 import gov.healthit.chpl.entity.DeveloperEntity;
 import gov.healthit.chpl.entity.DeveloperStatusEntity;
+import gov.healthit.chpl.entity.DeveloperStatusEventEntity;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 
 @Repository("developerDAO")
@@ -78,21 +80,6 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			entity.setName(dto.getName());
 			entity.setWebsite(dto.getWebsite());
 			
-			//set the status; will be Active by default
-			DeveloperStatusEntity statusResult = null;
-			if(dto.getStatus() == null || StringUtils.isEmpty(dto.getStatus().getStatusName())) {
-				statusResult = getStatusByName(DEFAULT_STATUS.toString());
-			} else {
-				statusResult = getStatusByName(dto.getStatus().getStatusName());
-			}
-			if(statusResult != null) {
-				entity.setStatus(statusResult);
-			} else {
-				String msg = "Could not find the " + DEFAULT_STATUS + " status to create the new developer " + dto.getName();
-				logger.error(msg);
-				throw new EntityCreationException(msg);
-			}
-			
 			if(dto.getDeleted() != null) {
 				entity.setDeleted(dto.getDeleted());
 			} else {
@@ -118,7 +105,49 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			}
 
 			create(entity);
-			return new DeveloperDTO(entity);
+			
+			//create a status history entry - will be Active by default
+			if(dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
+				DeveloperStatusEventEntity initialDeveloperStatus = new DeveloperStatusEventEntity();
+				initialDeveloperStatus.setDeveloperId(entity.getId());
+				DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
+				initialDeveloperStatus.setDeveloperStatusId(defaultStatus.getId());
+				initialDeveloperStatus.setStatusDate(entity.getCreationDate());
+				initialDeveloperStatus.setDeleted(false);
+				initialDeveloperStatus.setLastModifiedUser(entity.getLastModifiedUser());
+				entityManager.persist(initialDeveloperStatus);
+				entityManager.flush();
+			} else {
+				for(DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
+					if(providedDeveloperStatusEvent.getStatus() != null && 
+						!StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName()) && 
+						providedDeveloperStatusEvent.getStatusDate() != null) {
+						DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
+						currDevStatus.setDeveloperId(entity.getId());
+						DeveloperStatusEntity defaultStatus = getStatusByName(providedDeveloperStatusEvent.getStatus().getStatusName());
+						if(defaultStatus != null) {
+							currDevStatus.setDeveloperStatusId(defaultStatus.getId());
+							currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
+							currDevStatus.setDeleted(false);
+							currDevStatus.setLastModifiedUser(entity.getLastModifiedUser());
+							entityManager.persist(currDevStatus);
+							entityManager.flush();
+						} else {
+							String msg = "Could not find status with name " + providedDeveloperStatusEvent.getStatus().getStatusName() + "; cannot insert this status history entry for developer " + entity.getName();
+							logger.error(msg);
+							throw new EntityCreationException(msg);
+						}
+					} else {
+						String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer " + entity.getName();
+						logger.error(msg);
+						throw new EntityCreationException(msg);
+					}
+				}
+			}
+			
+			Long id = entity.getId();
+			entityManager.clear();
+			return getById(id);
 		}
 	}
 
@@ -138,22 +167,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 	
 	@Override
-	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException {
+	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException {
 		DeveloperEntity entity = this.getEntityById(dto.getId());
-
 		if(entity == null) {
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
 
-		if(dto.getStatus() != null) {
-			DeveloperStatusEntity status = getStatusByName(dto.getStatus().getStatusName());
-			if(status != null) {
-				entity.setStatus(status);
-			} else {
-				throw new EntityRetrievalException("No status with name " + dto.getStatus().getStatusName() + " was found to update developer id " + dto.getId());
-			}
-		}
-		
 		if(dto.getAddress() != null)
 		{
 			try {
@@ -216,26 +235,96 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 
 		update(entity);
-		return new DeveloperDTO(entity);
+		
+		//update the status history 
+		//check to make sure at least 1 status event was passed in, we can't delete them all
+		if(dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
+			String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer " + entity.getName();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
+		
+		//delete existing developer status history
+		for(DeveloperStatusEventEntity existingDeveloperStatusEvent : entity.getStatusEvents()) {
+			DeveloperStatusEventDTO newDeveloperStatusEvent = null;
+			for(DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
+				if(providedDeveloperStatusEvent.getId() != null && providedDeveloperStatusEvent.getId().longValue() == existingDeveloperStatusEvent.getId().longValue()) {
+					newDeveloperStatusEvent = providedDeveloperStatusEvent;
+				}
+			}
+			if(newDeveloperStatusEvent != null) {
+				//update with new values
+				if(newDeveloperStatusEvent.getStatus() != null && newDeveloperStatusEvent.getStatus().getStatusName() != null) {
+					DeveloperStatusEntity newStatus = getStatusByName(newDeveloperStatusEvent.getStatus().getStatusName());
+					if(newStatus != null && newStatus.getId() != null) {
+						existingDeveloperStatusEvent.setDeveloperStatus(newStatus);
+						existingDeveloperStatusEvent.setDeveloperStatusId(newStatus.getId());
+					}
+					existingDeveloperStatusEvent.setStatusDate(newDeveloperStatusEvent.getStatusDate());
+				}
+			} else {
+				//delete
+				existingDeveloperStatusEvent.setDeleted(true);
+			}
+			existingDeveloperStatusEvent.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.merge(existingDeveloperStatusEvent);
+		}
+		entityManager.flush();
+		
+		//add passed-in developer status history
+		for(DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
+			if(providedDeveloperStatusEvent.getId() == null && 
+				providedDeveloperStatusEvent.getStatus() != null && 
+				!StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName()) && 
+				providedDeveloperStatusEvent.getStatusDate() != null) {
+				DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
+				currDevStatus.setDeveloperId(entity.getId());
+				DeveloperStatusEntity providedStatus = getStatusByName(providedDeveloperStatusEvent.getStatus().getStatusName());
+				if(providedStatus != null) {
+					currDevStatus.setDeveloperStatusId(providedStatus.getId());
+					currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
+					currDevStatus.setDeleted(false);
+					currDevStatus.setLastModifiedUser(entity.getLastModifiedUser());
+					entityManager.persist(currDevStatus);
+					entityManager.flush();
+				} else {
+					String msg = "Could not find status with name " + providedDeveloperStatusEvent.getStatus().getStatusName() + "; cannot insert this status history entry for developer " + entity.getName();
+					logger.error(msg);
+					throw new EntityCreationException(msg);
+				}
+			}
+		}
+		
+		entityManager.clear();
+		return getById(dto.getId());
 	}
 
 	@Override
-	public DeveloperDTO updateStatus(DeveloperDTO toUpdate) throws EntityRetrievalException {
-		DeveloperEntity entityToUpdate = this.getEntityById(toUpdate.getId());
-		if(entityToUpdate == null) {
-			throw new EntityRetrievalException("Developer with id " + toUpdate.getId() + " does not exist");
-		}
-		
-		//set the status
-		DeveloperStatusEntity status = getStatusByName(toUpdate.getStatus().getStatusName());
-		if(status != null) {
-			entityToUpdate.setStatus(status);
+	public void updateStatus(DeveloperStatusEventDTO newStatusEvent) throws EntityCreationException {
+		//create a new status history entry
+		if(newStatusEvent.getStatus() != null && 
+			!StringUtils.isEmpty(newStatusEvent.getStatus().getStatusName()) && 
+			newStatusEvent.getStatusDate() != null) {
+			DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
+			currDevStatus.setDeveloperId(newStatusEvent.getDeveloperId());
+			DeveloperStatusEntity defaultStatus = getStatusByName(newStatusEvent.getStatus().getStatusName());
+			if(defaultStatus != null) {
+				currDevStatus.setDeveloperStatusId(defaultStatus.getId());
+				currDevStatus.setStatusDate(newStatusEvent.getStatusDate());
+				currDevStatus.setDeleted(false);
+				currDevStatus.setLastModifiedUser(Util.getCurrentUser().getId());
+				entityManager.persist(currDevStatus);
+				entityManager.flush();
+			} else {
+				String msg = "Could not find status with name " + newStatusEvent.getStatus().getStatusName() + "; cannot insert this status history entry for developer with id " + newStatusEvent.getDeveloperId();
+				logger.error(msg);
+				throw new EntityCreationException(msg);
+			}
 		} else {
-			throw new EntityRetrievalException("No status with name " + toUpdate.getStatus().getStatusName() + " was found to update developer id " + toUpdate.getId());
+			String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer with id " + newStatusEvent.getDeveloperId();
+			logger.error(msg);
+			throw new EntityCreationException(msg);
 		}
-		
-		update(entityToUpdate);
-		return new DeveloperDTO(entityToUpdate);
 	}
 	
 	@Override
@@ -402,6 +491,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 							logger.debug("added acb " + e.getCertificationBodyId() + " to dto with dev id == " + dto.getDeveloperId());
 							dto.setDeveloperStatus(e.getDeveloperStatusName());
 							logger.debug("set dto dev status to " + e.getDeveloperStatusName());
+							dto.setDecertificationDate(e.getDeveloperStatusDate());
+							logger.debug("set dev decert date to " + e.getDeveloperStatusDate());
 							if(dto.getNumMeaningfulUse() != null){
 								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
 								logger.debug("adding numMeaningfulUse to dto with value " + e.getMeaningfulUseUsers());
@@ -428,7 +519,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			if(!dtoIsInList){
 				List<Long> acbList = new ArrayList<Long>();
 				acbList.add(e.getCertificationBodyId());
-				DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperId(), acbList, e.getDeveloperStatusName(), e.getMeaningfulUseUsers());
+				DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperId(), acbList, e.getDeveloperStatusName(), e.getDeveloperStatusDate(), e.getMeaningfulUseUsers());
 				dtoList.add(newDto);
 				logger.debug("adding newDto to list with values: " + e.getMeaningfulUseUsers());
 			}
@@ -448,22 +539,24 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	}
 
 	private List<DeveloperEntity> getAllEntities() {
-		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from "
+		List<DeveloperEntity> result = entityManager.createQuery( "SELECT DISTINCT v from "
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.status "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
 				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
 				+ "where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
 		return result;
 	}
 	
 	private List<DeveloperEntity> getAllEntitiesIncludingDeleted() {
-		List<DeveloperEntity> result = entityManager.createQuery( "SELECT v from "
+		List<DeveloperEntity> result = entityManager.createQuery( "SELECT DISTINCT v from "
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.status "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
 				+ "LEFT OUTER JOIN FETCH v.developerCertificationStatuses ", DeveloperEntity.class).getResultList();
 		return result;
 	}
@@ -472,18 +565,17 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 		DeveloperEntity entity = null;
 
-		Query query = entityManager.createQuery( "SELECT v from "
+		Query query = entityManager.createQuery( "SELECT DISTINCT v from "
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.status "
-				+ "where (NOT v.deleted = true) AND (vendor_id = :entityid) ", DeveloperEntity.class );
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
+				+ "where (NOT v.deleted = true) AND (v.id = :entityid) ", DeveloperEntity.class );
 		query.setParameter("entityid", id);
 		List<DeveloperEntity> result = query.getResultList();
 
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate developer id in database.");
-		} else if(result.size() == 1) {
+		if (result.size() > 0){
 			entity = result.get(0);
 		}
 
@@ -494,11 +586,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 		DeveloperEntity entity = null;
 
-		Query query = entityManager.createQuery( "SELECT v from "
+		Query query = entityManager.createQuery( "SELECT DISTINCT v from "
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.status "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
 				+ "where (NOT v.deleted = true) AND (v.name = :name) ", DeveloperEntity.class );
 		query.setParameter("name", name);
 		List<DeveloperEntity> result = query.getResultList();
@@ -514,11 +607,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 		DeveloperEntity entity = null;
 
-		Query query = entityManager.createQuery( "SELECT v from "
+		Query query = entityManager.createQuery( "SELECT DISTINCT v from "
 				+ "DeveloperEntity v "
 				+ "LEFT OUTER JOIN FETCH v.address "
 				+ "LEFT OUTER JOIN FETCH v.contact "
-				+ "LEFT OUTER JOIN FETCH v.status "
+				+ "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
+				+ "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
 				+ "where (NOT v.deleted = true) AND (v.developerCode = :code) ", DeveloperEntity.class );
 		query.setParameter("code", code);
 		List<DeveloperEntity> result = query.getResultList();

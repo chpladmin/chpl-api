@@ -40,6 +40,7 @@ import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -119,8 +120,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), dev.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -144,8 +149,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -169,8 +178,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -188,8 +201,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), dev.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -207,8 +224,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), dev.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -232,8 +253,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
 	}
 	
 	@Test

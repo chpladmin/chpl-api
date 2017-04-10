@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
-import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 
 @Component
@@ -22,11 +21,9 @@ public class PreFetchedCaches {
 	@Transactional
 	@CacheEvict(value=CacheNames.PRE_FETCHED_BASIC_SEARCH, beforeInvocation=true, allEntries=true)
 	@Cacheable(CacheNames.PRE_FETCHED_BASIC_SEARCH)
-	public BasicSearchResponse initializePreFetchedBasicSearch(){
+	public List<CertifiedProductFlatSearchResult> initializePreFetchedBasicSearch(){
 		logger.debug("Initializing PreFetchedBasicSearch");
-		BasicSearchResponse response = new BasicSearchResponse();
 		List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDao.getAllCertifiedProducts();
-		response.setResults(results);
-		return response;
+		return results;
 	}
 }

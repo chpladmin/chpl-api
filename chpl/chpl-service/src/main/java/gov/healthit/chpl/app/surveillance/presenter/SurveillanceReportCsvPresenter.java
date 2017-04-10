@@ -31,6 +31,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		result.add("ONC-ACB");
 		result.add("Certification Status");
 		result.add("Date of Last Status Change");
+		result.add("Surveillance ID");
 		result.add("Date Surveillance Began");
 		result.add("Date Surveillance Ended");
 		result.add("Surveillance Type");
@@ -63,13 +64,14 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			result.add(row);
 		} else {
 			for(SurveillanceRequirement req : surv.getRequirements()) {	
-				if(req.getNonconformities() == null || req.getNonconformities().size() == 0) {
+				List<SurveillanceNonconformity> relevantNonconformities = getNonconformities(req);
+				if(relevantNonconformities == null || relevantNonconformities.size() == 0) {
 					List<String> row = new ArrayList<String>();
 					row.addAll(survFields);
 					row.addAll(getNoNonconformityFields(data, surv));
 					result.add(row);
 				} else {
-					for(SurveillanceNonconformity nc : req.getNonconformities()) {
+					for(SurveillanceNonconformity nc : relevantNonconformities) {
 						List<String> row = new ArrayList<String>();
 						row.addAll(survFields);
 						row.addAll(getNonconformityFields(data, surv, nc));
@@ -79,6 +81,10 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			}
 		}
 		return result;
+	}
+	
+	protected List<SurveillanceNonconformity> getNonconformities(SurveillanceRequirement req) {
+		return req.getNonconformities();
 	}
 	
 	protected List<String> getSurveillanceFields(CertifiedProductSearchDetails data, Surveillance surv) {
@@ -105,6 +111,12 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			survFields.add(dateFormatter.format(lastStatusChangeDate));
 		}
 		
+		if(surv.getFriendlyId() != null){
+			survFields.add(surv.getFriendlyId());
+		}
+		else{
+			survFields.add("");
+		}
 		if(surv.getStartDate() != null) {
 			LocalDateTime survStartDate = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(surv.getStartDate().getTime()), 

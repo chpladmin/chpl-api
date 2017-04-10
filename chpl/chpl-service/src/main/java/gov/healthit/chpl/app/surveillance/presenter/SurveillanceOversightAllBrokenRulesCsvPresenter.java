@@ -3,6 +3,7 @@ package gov.healthit.chpl.app.surveillance.presenter;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +21,9 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.OversightRuleResult;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
+import gov.healthit.chpl.domain.SurveillanceRequirement;
 
 /**
  * writes out only surveillance records that broke a certain set of rules
@@ -34,10 +37,11 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 	private Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts;
 	
 	protected static final int CHPL_PRODUCT_OFFSET = 3;
-	protected static final int LONG_SUSPENSION_COL_OFFSET = 11;
-	protected static final int CAP_APPROVE_COL_OFFSET = 12;
-	protected static final int CAP_START_COL_OFFSET = 13;
-	protected static final int CAP_COMPLETE_COL_OFFSET = 14;
+	protected static final int LONG_SUSPENSION_COL_OFFSET = 12;
+	protected static final int CAP_APPROVE_COL_OFFSET = 13;
+	protected static final int CAP_START_COL_OFFSET = 14;
+	protected static final int CAP_COMPLETE_COL_OFFSET = 15;
+	protected static final int NONCONFORMITY_STATUS_COL_OFFSET = 17;
 	
 	@Autowired private RuleComplianceCalculator ruleCalculator;
 	
@@ -56,6 +60,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		result.add(CAP_APPROVE_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle());
 		result.add(CAP_START_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_STARTED.getTitle());
 		result.add(CAP_COMPLETE_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle());
+		result.add(NONCONFORMITY_STATUS_COL_OFFSET, "Nonconformity Status");
 		return result;
 	}
 
@@ -104,6 +109,16 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		return results;
 	}
 	
+	protected List<SurveillanceNonconformity> getNonconformities(SurveillanceRequirement req) {
+		List<SurveillanceNonconformity> openNonconformities = new ArrayList<SurveillanceNonconformity>();
+		for(SurveillanceNonconformity nonconformity : req.getNonconformities()) {
+			if(nonconformity.getStatus().getName().equalsIgnoreCase(SurveillanceNonconformityStatus.OPEN)) {
+				openNonconformities.add(nonconformity);
+			}
+		}
+		return openNonconformities;
+	}
+	
 	@Override
 	protected List<String> getNoNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<String> ncFields = super.getNoNonconformityFields(data, surv);
@@ -119,10 +134,12 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 			ncFields.add(0, "");
 		}
 		
-		//no caps on this row so these next rules are all n/a
+		//no CAPs on this row so these next rules are all n/a
 		ncFields.add(1, "");
 		ncFields.add(2, "");
 		ncFields.add(3, "");
+		//no nonconformity was found so there is no status
+		ncFields.add(5, "");
 		return ncFields;
 	}
 	
@@ -150,6 +167,8 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 				ncFields.add(3, dateBrokenStr);
 			}
 		}
+		
+		ncFields.add(5, nc.getStatus().getName());
 		return ncFields;
 	}
 	

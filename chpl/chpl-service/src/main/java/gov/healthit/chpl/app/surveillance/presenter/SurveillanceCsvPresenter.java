@@ -162,6 +162,8 @@ public class SurveillanceCsvPresenter {
 					reqRow.add("");
 					reqRow.add("");
 					reqRow.add("");
+					reqRow.add("");
+					reqRow.add("");
 					reqRow.addAll(reqValues);
 					result.add(reqRow);
 				}

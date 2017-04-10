@@ -1,5 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.List;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +22,6 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
@@ -226,15 +227,15 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	@Test
 	@Transactional(readOnly = true)
 	public void testBasicSearch() {
-		BasicSearchResponse response = certifiedProductSearchManager.search();
+		List<CertifiedProductFlatSearchResult> response = certifiedProductSearchManager.search();
 		
 		assertNotNull(response);
-		assertNotNull(response.getResults());
-		assertEquals(16, response.getResults().size());
+		assertNotNull(response);
+		assertEquals(16, response.size());
 		
 		boolean checkedCriteria = false;
 		boolean checkedCqms = false;
-		for(gov.healthit.chpl.domain.search.CertifiedProductSearchResult result : response.getResults()) {
+		for(gov.healthit.chpl.domain.search.CertifiedProductSearchResult result : response) {
 			if(result instanceof CertifiedProductBasicSearchResult) {
 				CertifiedProductBasicSearchResult basicResult = (CertifiedProductBasicSearchResult) result;
 				if(result.getId().longValue() == 1L) {
@@ -269,20 +270,20 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	@Test
 	@Transactional(readOnly = true)
 	public void testBasicSearchCache() {
-		BasicSearchResponse response = certifiedProductSearchManager.search();
+		List<CertifiedProductFlatSearchResult> response = certifiedProductSearchManager.search();
 		//basic search response should now be cached
-		BasicSearchResponse response2 = certifiedProductSearchManager.search();
+		List<CertifiedProductFlatSearchResult> response2 = certifiedProductSearchManager.search();
 		//responses should be the same object
 		assertEquals(response, response2);
 		
 		//expect cache to clear properly the first time; prefetched cache was not cached
 		cacheEvictor.evictPreFetchedBasicSearch();
-		BasicSearchResponse response3 = certifiedProductSearchManager.search();
+		List<CertifiedProductFlatSearchResult> response3 = certifiedProductSearchManager.search();
 		assertNotSame(response2, response3);
 		
 		//make sure the cache also clears the second time; prefetched cache was cached
 		cacheEvictor.evictPreFetchedBasicSearch();
-		BasicSearchResponse response4 = certifiedProductSearchManager.search();
+		List<CertifiedProductFlatSearchResult> response4 = certifiedProductSearchManager.search();
 		assertNotSame(response3, response4);
 	}
 }
