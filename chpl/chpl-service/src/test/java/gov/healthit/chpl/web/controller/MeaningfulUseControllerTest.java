@@ -39,10 +39,13 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AccurateAsOfDate;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import junit.framework.TestCase;
 
@@ -59,6 +62,7 @@ public class MeaningfulUseControllerTest extends TestCase {
 	private static final String CSV_SEPARATOR = ",";
 	
 	@Autowired MeaningfulUseController meaningfulUseController;
+	@Autowired CertifiedProductDAO cpDao;
 	
 	@Rule
     @Autowired
@@ -170,43 +174,47 @@ public class MeaningfulUseControllerTest extends TestCase {
 		
 		for(MeaningfulUseUser muu : apiResult.getMeaningfulUseUsers()){
 			if(muu.getProductNumber().equals("CHP-024050")){
-				assertTrue(muu.getNumberOfUsers() == 10L);
-				assertTrue(muu.getCertifiedProductId() == 1L);
+				assertEquals(10, muu.getNumberOfUsers().longValue());
+				assertEquals(1, muu.getCertifiedProductId().longValue());
 			}
 			else if(muu.getProductNumber().equals("CHP-024051")){
-				assertTrue(muu.getNumberOfUsers() == 20L);
-				assertTrue(muu.getCertifiedProductId() == 2L);
+				assertEquals(20, muu.getNumberOfUsers().longValue());
+				assertEquals(2, muu.getCertifiedProductId().longValue());
 			}
 			else if(muu.getProductNumber().equals("CHP-024052")){
-				assertTrue(muu.getNumberOfUsers() == 30L);
-				assertTrue(muu.getCertifiedProductId() == 3L);
+				assertEquals(30, muu.getNumberOfUsers().longValue());
+				assertEquals(3, muu.getCertifiedProductId().longValue());
 			}
 			else if(muu.getProductNumber().equals("15.01.01.1009.EIC08.36.1.1.160402")){
-				assertTrue(muu.getNumberOfUsers() == 40L);
-				assertTrue(muu.getCertifiedProductId() == 5L);
+				assertEquals(40, muu.getNumberOfUsers().longValue());
+				assertEquals(5, muu.getCertifiedProductId().longValue());
 			}
 			else if(muu.getProductNumber().equals("14.01.01.1009.EIC08.36.1.1.160402")){
-				assertTrue(muu.getNumberOfUsers() == 50L);
-				assertTrue(muu.getCertifiedProductId() == 1L);
+				assertEquals(50, muu.getNumberOfUsers().longValue());
+				assertEquals(1, muu.getCertifiedProductId().longValue());
 			}
 		}
 		
 		for(MeaningfulUseUser muu : apiResult.getErrors()){
 			Boolean hasError = false;
 			if(muu.getProductNumber().equals("wrongChplProductNumber")){
-				assertTrue(muu.getNumberOfUsers() == 50L);
+				assertEquals(50L, muu.getNumberOfUsers().longValue());
+				assertNotNull(muu.getError());
 				hasError=true;
 			}
 			else if(muu.getProductNumber().equals("CHPL-024053")){
-				assertTrue(muu.getNumberOfUsers() == 60L);
+				assertEquals(60, muu.getNumberOfUsers().longValue());
+				assertNotNull(muu.getError());
 				hasError=true;
 			}
 			else if(muu.getProductNumber().equals("15.02.03.9876.AB01.01.0.1.123456")){
-				assertTrue(muu.getNumberOfUsers() == 70L);
+				assertEquals(70, muu.getNumberOfUsers().longValue());
+				assertNotNull(muu.getError());
 				hasError=true;
 			}
 			else if(muu.getProductNumber().equals("15.01.01.1009.EIC08.36.1.1.160402")){
-				assertTrue(muu.getNumberOfUsers() == 70L);
+				assertEquals(70, muu.getNumberOfUsers().longValue());
+				assertNotNull(muu.getError());
 				hasError=true;
 			}
 			assertTrue(hasError);
@@ -233,8 +241,11 @@ public class MeaningfulUseControllerTest extends TestCase {
 		MeaningfulUseUser meaningfulUseUser1 = new MeaningfulUseUser("CHP-024050", 10L);
 		MeaningfulUseUser meaningfulUseUser2 = new MeaningfulUseUser("CHP-024051", 20L);
 		MeaningfulUseUser meaningfulUseUser3 = new MeaningfulUseUser("CHP-024052", 30L);
-		MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser("15.01.01.1009.EIC08.36.1.1.160402", 40L);
-		MeaningfulUseUser meaningfulUseUser5 = new MeaningfulUseUser("14.01.01.1009.EIC08.36.1.1.160402", 50L);
+		//get some 2015 CHPL IDs we can use
+		CertifiedProduct cp1 = new CertifiedProduct(cpDao.getDetailsById(17L));
+		CertifiedProduct cp2 = new CertifiedProduct(cpDao.getDetailsById(15L));
+		MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser(cp1.getChplProductNumber(), 40L);
+		MeaningfulUseUser meaningfulUseUser5 = new MeaningfulUseUser(cp2.getChplProductNumber(), 50L);
 		logger.info("Created 5 of MeaningfulUseUser to be updated in the database");
 		
 		List<MeaningfulUseUser> meaningfulUseUserList = new ArrayList<MeaningfulUseUser>();
@@ -283,12 +294,7 @@ public class MeaningfulUseControllerTest extends TestCase {
 		
 		input.close();
 		file.delete();
-		
-		if(apiResult.getErrors() != null && apiResult.getErrors().size() > 0) {
-			for(MeaningfulUseUser error : apiResult.getErrors()) {
-				logger.info(error.getError());
-			}
-		}
+
 		assertEquals(0, apiResult.getErrors().size());
 		assertEquals(5, apiResult.getMeaningfulUseUsers().size());
 		for(MeaningfulUseUser muu : apiResult.getMeaningfulUseUsers()){
@@ -304,13 +310,13 @@ public class MeaningfulUseControllerTest extends TestCase {
 				assertEquals(30, muu.getNumberOfUsers().longValue());
 				assertEquals(3, muu.getCertifiedProductId().longValue());
 			}
-			else if(muu.getProductNumber().equals("15.01.01.1009.EIC08.36.1.1.160402")){
+			else if(muu.getProductNumber().equals(cp1.getChplProductNumber())){
 				assertEquals(40, muu.getNumberOfUsers().longValue());
-				assertEquals(5, muu.getCertifiedProductId().longValue());
+				assertEquals(cp1.getId().longValue(), muu.getCertifiedProductId().longValue());
 			}
-			else if(muu.getProductNumber().equals("14.01.01.1009.EIC08.36.1.1.160402")){
+			else if(muu.getProductNumber().equals(cp2.getChplProductNumber())){
 				assertEquals(50, muu.getNumberOfUsers().longValue());
-				assertEquals(1, muu.getCertifiedProductId().longValue());
+				assertEquals(cp2.getId().longValue(), muu.getCertifiedProductId().longValue());
 			}
 		}
 	}
