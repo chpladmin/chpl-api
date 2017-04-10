@@ -287,24 +287,24 @@ public class MeaningfulUseControllerTest extends TestCase {
 		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().size() + " but should return 5 results", apiResult.getMeaningfulUseUsers().size() == 5);
 		for(MeaningfulUseUser muu : apiResult.getMeaningfulUseUsers()){
 			if(muu.getProductNumber().equals("CHP-024050")){
-				assertTrue(muu.getNumberOfUsers() == 10L);
-				assertTrue(muu.getCertifiedProductId() == 1L);
+				assertEquals(10, muu.getNumberOfUsers().longValue());
+				assertEquals(1, muu.getCertifiedProductId().longValue());
 			}
 			else if(muu.getProductNumber().equals("CHP-024051")){
-				assertTrue(muu.getNumberOfUsers() == 20L);
-				assertTrue(muu.getCertifiedProductId() == 2L);
+				assertEquals(20, muu.getNumberOfUsers().longValue());
+				assertEquals(2, muu.getCertifiedProductId().longValue());
 			}
 			else if(muu.getProductNumber().equals("CHP-024052")){
-				assertTrue(muu.getNumberOfUsers() == 30L);
-				assertTrue(muu.getCertifiedProductId() == 3L);
+				assertEquals(30, muu.getNumberOfUsers().longValue());
+				assertEquals(3, muu.getCertifiedProductId().longValue());
 			}
 			else if(muu.getProductNumber().equals("15.01.01.1009.EIC08.36.1.1.160402")){
-				assertTrue(muu.getNumberOfUsers() == 40L);
-				assertTrue(muu.getCertifiedProductId() == 5L);
+				assertEquals(40, muu.getNumberOfUsers().longValue());
+				assertEquals(5, muu.getCertifiedProductId().longValue());
 			}
 			else if(muu.getProductNumber().equals("14.01.01.1009.EIC08.36.1.1.160402")){
-				assertTrue(muu.getNumberOfUsers() == 50L);
-				assertTrue(muu.getCertifiedProductId() == 1L);
+				assertEquals(50, muu.getNumberOfUsers().longValue());
+				assertEquals(1, muu.getCertifiedProductId().longValue());
 			}
 		}
 	}
