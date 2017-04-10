@@ -284,7 +284,13 @@ public class MeaningfulUseControllerTest extends TestCase {
 		input.close();
 		file.delete();
 		
-		assertTrue("MeaningfulUseUserResults returned " + apiResult.getMeaningfulUseUsers().size() + " but should return 5 results", apiResult.getMeaningfulUseUsers().size() == 5);
+		if(apiResult.getErrors() != null && apiResult.getErrors().size() > 0) {
+			for(MeaningfulUseUser error : apiResult.getErrors()) {
+				logger.info(error.getError());
+			}
+		}
+		assertEquals(0, apiResult.getErrors().size());
+		assertEquals(5, apiResult.getMeaningfulUseUsers().size());
 		for(MeaningfulUseUser muu : apiResult.getMeaningfulUseUsers()){
 			if(muu.getProductNumber().equals("CHP-024050")){
 				assertEquals(10, muu.getNumberOfUsers().longValue());
