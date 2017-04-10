@@ -10,7 +10,7 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 
-class LocalContext extends InitialContext implements InitialContextFactoryBuilder, InitialContextFactory {
+public class LocalContext extends InitialContext implements InitialContextFactoryBuilder, InitialContextFactory {
 
 	Map<Object,Object> dataSources;
 	

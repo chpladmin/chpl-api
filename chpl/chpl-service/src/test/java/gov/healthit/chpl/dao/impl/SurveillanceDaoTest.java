@@ -276,7 +276,7 @@ public class SurveillanceDaoTest extends TestCase {
 	public void testGetAllSurveillance() {
 		List<SurveillanceEntity> results = survDao.getAllSurveillance();
 		assertNotNull(results);
-		assertEquals(3, results.size());
+		assertEquals(4, results.size());
 	}
 	
 	@Test
