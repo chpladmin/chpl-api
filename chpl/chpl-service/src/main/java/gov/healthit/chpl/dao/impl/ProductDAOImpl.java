@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -92,14 +93,16 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			//in the list of previous owners.
 			for(ProductOwnerDTO updatedProductPrevOwner : dto.getOwnerHistory()) {
 				boolean alreadyExists = false;
-				for(int i = 0; i < entity.getOwnerHistory().size() && !alreadyExists; i++) {
-					ProductActiveOwnerEntity existingProductPreviousOwner = entity.getOwnerHistory().get(i);
+				
+				Iterator<ProductActiveOwnerEntity> ownerHistoryIter = entity.getOwnerHistory().iterator();
+				while(ownerHistoryIter.hasNext()) {
+					ProductActiveOwnerEntity existingProductPreviousOwner = ownerHistoryIter.next();
 					if(existingProductPreviousOwner.getDeveloper() != null && 
-						updatedProductPrevOwner.getDeveloper() != null && 
-							existingProductPreviousOwner.getDeveloper().getId().longValue() == 
-							updatedProductPrevOwner.getDeveloper().getId().longValue()) {
-						alreadyExists = true;
-					}
+							updatedProductPrevOwner.getDeveloper() != null && 
+								existingProductPreviousOwner.getDeveloper().getId().longValue() == 
+								updatedProductPrevOwner.getDeveloper().getId().longValue()) {
+							alreadyExists = true;
+						}
 				}
 				
 				if(!alreadyExists) {
@@ -229,7 +232,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	
 	@Transactional(readOnly=true)
 	public List<ProductDTO> getByDeveloper(Long developerId) {		
-		Query query = entityManager.createQuery( "SELECT distinct pe "
+		Query query = entityManager.createQuery( "SELECT DISTINCT pe "
 				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
@@ -248,7 +251,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	
 	@Transactional(readOnly=true)
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
-		Query query = entityManager.createQuery( "SELECT distinct pe "
+		Query query = entityManager.createQuery( "SELECT DISTINCT pe "
 				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
@@ -330,7 +333,8 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	private List<ProductEntity> getAllEntitiesIncludingDeleted() {
-		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
+		List<ProductEntity> result = entityManager.createQuery( "SELECT DISTINCT pe "
+				+ "FROM ProductEntity pe "
 				+ "LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
 				+ "LEFT OUTER JOIN FETCH pe.productVersions ",
@@ -342,7 +346,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	private ProductEntity getEntityById(Long id) throws EntityRetrievalException {
 		ProductEntity entity = null;
 
-		Query query = entityManager.createQuery( "SELECT distinct pe "
+		Query query = entityManager.createQuery( "SELECT DISTINCT pe "
 				+ "FROM ProductEntity pe "
 				+ "LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "

@@ -275,6 +275,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	
 	@Override
 	@Transactional(readOnly = true)
+	public List<CertifiedProductDetailsDTO> getByProduct(Long productId) {
+		return cpDao.getDetailsByProductId(productId);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId) {
 		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser(false);
 		if(userAcbs == null || userAcbs.size() == 0) {

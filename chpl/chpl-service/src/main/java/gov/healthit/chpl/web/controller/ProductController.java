@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,18 +23,22 @@ import com.sun.mail.imap.OlderTerm;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.SplitProductsRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.results.ProductResults;
+import gov.healthit.chpl.web.controller.results.SplitProductResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -42,6 +49,7 @@ public class ProductController {
 	
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
+	@Autowired CertifiedProductManager cpManager;
 	
 	@ApiOperation(value="List all products", 
 			notes="Either list all products or optionally just all products belonging to a specific developer.")
@@ -177,7 +185,7 @@ public class ProductController {
 	@RequestMapping(value="/split", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public void splitProduct(@RequestBody(required=true) SplitProductsRequest splitRequest) throws EntityCreationException, 
+	public ResponseEntity<SplitProductResponse> splitProduct(@RequestBody(required=true) SplitProductsRequest splitRequest) throws EntityCreationException, 
 		EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
 		if(splitRequest.getNewProductCode() != null) {
 			splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());
@@ -209,6 +217,27 @@ public class ProductController {
 			newVersion.setVersion(requestVersion.getVersion());
 			newProductVersions.add(newVersion);
 		}
-		productManager.split(oldProduct, newProduct, splitRequest.getNewProductCode(), newProductVersions);
+		ProductDTO splitProductNew = productManager.split(oldProduct, newProduct, splitRequest.getNewProductCode(), newProductVersions);
+		ProductDTO splitProductOld = productManager.getById(oldProduct.getId());
+		SplitProductResponse response = new SplitProductResponse();
+		response.setNewProduct(new Product(splitProductNew));
+		response.setOldProduct(new Product(splitProductOld));
+		
+		//find out which CHPL product numbers would have changed (only new-style ones) 
+		// and add them to the response header
+		List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getId());
+		StringBuffer buf = new StringBuffer();
+		for(CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
+			if(!StringUtils.isEmpty(possibleChanged.getChplProductNumber()) && 
+					possibleChanged.getChplProductNumber().split("\\.").length > 1) {
+				if(buf.length() > 0) {
+					buf.append(",");
+				}
+				buf.append(possibleChanged.getChplProductNumber());
+			}
+		}
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("CHPL-Id-Changed", buf.toString());
+		return new ResponseEntity<SplitProductResponse>(response, responseHeaders, HttpStatus.OK);
 	}
 }

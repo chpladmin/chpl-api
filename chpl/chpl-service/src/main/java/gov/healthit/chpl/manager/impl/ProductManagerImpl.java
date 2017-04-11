@@ -252,7 +252,7 @@ public class ProductManagerImpl implements ProductManager {
 			
 			//make sure the updated CHPL product number would not be a duplicate
 			String chplNumber = beforeProduct.getChplProductNumber();
-			String[] splitChplNumber = chplNumber.split(".");
+			String[] splitChplNumber = chplNumber.split("\\.");
 			if(splitChplNumber.length > 1) {
 				String potentialChplNumber = splitChplNumber[0] + "." + splitChplNumber[1] + "." + splitChplNumber[2] + 
 						"." + splitChplNumber[3] + "." + newProductCode + "." + splitChplNumber[5] + 
