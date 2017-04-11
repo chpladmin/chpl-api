@@ -10,6 +10,7 @@ import java.util.Set;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.ProductVersionEntity;
 
 public class ProductDTO implements Serializable {
 	private static final long serialVersionUID = -5440560685496661764L;
@@ -51,6 +52,13 @@ public class ProductDTO implements Serializable {
 				this.ownerHistory.add(ownerDto);
 			}
 		}
+		if(entity.getProductVersions() != null) {
+			for(ProductVersionEntity version : entity.getProductVersions()) {
+				ProductVersionDTO versionDto = new ProductVersionDTO(version);
+				this.productVersions.add(versionDto);
+			}
+		}
+		
 		if(entity.getProductCertificationStatusesEntity() != null){
 			this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(), 
 					entity.getProductCertificationStatusesEntity().getRetired(), 

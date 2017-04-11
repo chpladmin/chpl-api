@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,12 +31,15 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import junit.framework.TestCase;
@@ -51,6 +55,7 @@ public class ProductManagerTest extends TestCase {
 	
 	@Autowired private ProductManager productManager;
 	@Autowired private DeveloperManager developerManager;
+	@Autowired private CertifiedProductDetailsManager cpdManager;
 	@Autowired private DeveloperStatusDAO devStatusDao;
 	@Rule
     @Autowired
@@ -221,5 +226,72 @@ public class ProductManagerTest extends TestCase {
 		}
 		assertTrue(failed);
 		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback
+	public void testProductSplitFailsWithoutAuthentication() throws EntityRetrievalException {
+		ProductDTO origProduct = productManager.getById(-2L);
+		ProductDTO newProduct = new ProductDTO();
+		newProduct.setName("Split Product");
+		newProduct.setDeveloperId(origProduct.getDeveloperId());
+		List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
+		ProductVersionDTO newProductVersion = new ProductVersionDTO();
+		newProductVersion.setId(5L);
+		newProductVersions.add(newProductVersion);
+		boolean failedAuth = false;
+		try {
+			productManager.split(origProduct, newProduct, "SPLIT", newProductVersions);
+		} catch(AuthenticationCredentialsNotFoundException ex) {
+			failedAuth = true;
+		} catch(Exception ex) {
+			fail(ex.getMessage());
+		}
+		
+		assertTrue(failedAuth);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback
+	public void testProductSplit() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		String name = "Split Product";
+		String code = "SPLIT";
+		
+		ProductDTO origProduct = productManager.getById(-2L);
+		assertNotNull(origProduct.getProductVersions());
+		assertEquals(3, origProduct.getProductVersions().size());
+		CertifiedProductSearchDetails cpDetails = cpdManager.getCertifiedProductDetails(7L);
+		assertFalse(cpDetails.getChplProductNumber().contains(code));
+		
+		ProductDTO newProduct = new ProductDTO();
+		newProduct.setName(name);
+		newProduct.setDeveloperId(origProduct.getDeveloperId());
+		List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
+		ProductVersionDTO newProductVersion = new ProductVersionDTO();
+		newProductVersion.setId(7L);
+		newProductVersions.add(newProductVersion);
+		ProductDTO updatedNewProduct = null;
+		try {
+			updatedNewProduct = productManager.split(origProduct, newProduct, code, newProductVersions);
+		} catch(Exception ex) {
+			fail(ex.getMessage());
+			ex.printStackTrace();
+		}
+		
+		ProductDTO updatedOrigProduct = productManager.getById(origProduct.getId());
+		assertNotNull(updatedOrigProduct.getProductVersions());
+		assertEquals(2, updatedOrigProduct.getProductVersions().size());
+		
+		assertNotNull(updatedNewProduct);
+		assertEquals(name, updatedNewProduct.getName());
+		assertNotNull(updatedNewProduct.getProductVersions());
+		assertEquals(1, updatedNewProduct.getProductVersions().size());
+		SecurityContextHolder.getContext().setAuthentication(null);
+		cpDetails = cpdManager.getCertifiedProductDetails(7L);
+		assertTrue(cpDetails.getChplProductNumber().contains(code));
 	}
 }

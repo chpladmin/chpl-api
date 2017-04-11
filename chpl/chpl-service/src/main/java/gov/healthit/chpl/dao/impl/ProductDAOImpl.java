@@ -233,6 +233,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT OUTER JOIN FETCH pe.productVersions "
 				+ "WHERE (pe.developerId = :entityid) "
 				+ "AND (NOT pe.deleted = true)", ProductEntity.class );
 		query.setParameter("entityid", developerId);
@@ -251,6 +252,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT OUTER JOIN FETCH pe.productVersions "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND pe.developerId IN (:idList) ", ProductEntity.class );
 		query.setParameter("idList", developerIds);
@@ -269,6 +271,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "FROM ProductEntity pe "
 				+ " LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT OUTER JOIN FETCH pe.productVersions "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND (pe.developerId = :developerId) and "
 				+ "(pe.name = :name)", ProductEntity.class );
@@ -301,6 +304,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "FROM ProductEntity pe "
 				+ "LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT OUTER JOIN FETCH pe.productVersions "
 				+ "LEFT OUTER JOIN FETCH pe.productCertificationStatuses "
 				+ "where (NOT pe.deleted = true) ", 
 				ProductEntity.class).getResultList();
@@ -328,7 +332,8 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	private List<ProductEntity> getAllEntitiesIncludingDeleted() {
 		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
 				+ "LEFT OUTER JOIN FETCH pe.developer "
-				+ "LEFT OUTER JOIN FETCH pe.ownerHistory ",
+				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT OUTER JOIN FETCH pe.productVersions ",
 				ProductEntity.class).getResultList();
 		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
@@ -341,6 +346,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "FROM ProductEntity pe "
 				+ "LEFT OUTER JOIN FETCH pe.developer "
 				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT OUTER JOIN FETCH pe.productVersions "
 				+ "WHERE (NOT pe.deleted = true) "
 				+ "AND (pe.id = :entityid) ", ProductEntity.class );
 		query.setParameter("entityid", id);
