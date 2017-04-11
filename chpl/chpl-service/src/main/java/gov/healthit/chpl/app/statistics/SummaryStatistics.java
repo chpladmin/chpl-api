@@ -14,11 +14,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.app.ActivitiesOutput;
@@ -78,6 +84,8 @@ public class SummaryStatistics {
 //	private TimePeriod summaryTimePeriod;
 	private List<File> files;
 	private StatisticsDAO statisticsDAO;
+	private AsynchronousStatisticsInitializor asynchronousStatisticsInitializor;
+	private AsynchronousStatistics asynchronousStatistics;
 	
 	public SummaryStatistics(){
 	}
@@ -103,7 +111,10 @@ public class SummaryStatistics {
 //		 summaryStats.setNumDaysInSummaryEmail(summaryStats.getNumDaysInSummaryEmail());
 //		 summaryStats.setSummaryTimePeriod(summaryStats.getSummaryTimePeriod());
 		 DateRange dateRange = new DateRange(startDate, endDate);
-		 Statistics emailBodyStats = summaryStats.getStatistics(dateRange);
+		 Statistics emailBodyStats = new Statistics();
+		 emailBodyStats.setDateRange(dateRange);
+		 Future<Statistics> futureEmailBodyStats = summaryStats.asynchronousStatisticsInitializor.getStatisticsForEmailBody(dateRange);
+		 emailBodyStats = futureEmailBodyStats.get();
 //		 summaryStats.getEmailBodyCounts();
 //		 summaryStats.setActivitiesList(summaryStats.getActivitiesByPeriodUsingStartAndEndDate());
 //		 summaryStats.setTableHeaders(summaryStats.getTableHeaders());
@@ -113,15 +124,18 @@ public class SummaryStatistics {
 //		 summaryStats.setSummaryOutputTable(summaryStats.getFormattedTable(summaryStats.summaryActivitiesList, 
 //				 summaryStats.tableHeaders));
 //		 summaryStats.setFiles(summaryStats.getFiles());
+		 System.out.println("Finished getting statistics");
 		 summaryStats.setEmailProperties(emailBodyStats);
+		 System.out.println("Finished setting email properties");
 		 summaryStats.email.sendEmail(summaryStats.email.getEmailTo(), summaryStats.email.getEmailSubject(), 
 						 summaryStats.email.getEmailMessage(), 
 						  summaryStats.email.getProps());
-//		 summaryStats.email.sendEmail(summaryStats.email.getEmailTo(), summaryStats.email.getEmailSubject(), 
-//				 summaryStats.email.getEmailMessage(), 
-//				  summaryStats.email.getProps(), summaryStats.email.getFiles());
-		 logger.info("Completed SummaryStatistics execution.");
+//				 summaryStats.email.sendEmail(summaryStats.email.getEmailTo(), summaryStats.email.getEmailSubject(), 
+//						 summaryStats.email.getEmailMessage(), 
+//						  summaryStats.email.getProps(), summaryStats.email.getFiles());
+		 System.out.println("Completed SummaryStatistics execution.");
 		 context.close();
+		 
 	}
 	
 	/**
@@ -380,10 +394,16 @@ public class SummaryStatistics {
 //		 setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
 //		 setProductDAO((ProductDAO)context.getBean("productDAO"));
 //		 setSurveillanceDAO((SurveillanceDAO)context.getBean("surveillanceDAO"));
+		 setAsynchronousStatisticsInitializor((AsynchronousStatisticsInitializor)context.getBean("asynchronousStatisticsInitializor"));
+		 setAsynchronousStatistics((AsynchronousStatistics)context.getBean("asynchronousStatistics"));
 		 setStatisticsDAO((StatisticsDAO)context.getBean("statisticsDAO"));
 		 setEmail((Email)context.getBean("email"));
 	}
 	
+	private void setAsynchronousStatistics(AsynchronousStatistics asynchronousStatistics) {
+		this.asynchronousStatistics = asynchronousStatistics;
+	}
+
 	/**
 	 * Set the ParseActivities.Properties (props) to prepare for sending an email
 	 * @param parseActivities
@@ -652,9 +672,9 @@ public class SummaryStatistics {
 		this.statisticsDAO = statisticsDAO;
 	}
 	
-	public Statistics getStatistics(DateRange dateRange){
-		return statisticsDAO.calculateStatistics(dateRange);
-	}
+//	public Statistics getStatistics(DateRange dateRange){
+//		return statisticsDAO.calculateStatistics(dateRange);
+//	}
 	
 //	public ProductDAO getProductDAO() {
 //		return productDAO;
@@ -667,6 +687,10 @@ public class SummaryStatistics {
 //	public void setSurveillanceDAO(SurveillanceDAO surveillanceDAO){
 //		this.surveillanceDAO = surveillanceDAO;
 //	}
+	
+	public void setAsynchronousStatisticsInitializor(AsynchronousStatisticsInitializor asynchronousStatisticsInitializor){
+		this.asynchronousStatisticsInitializor = asynchronousStatisticsInitializor;
+	}
 
 	public Email getEmail() {
 		return email;
