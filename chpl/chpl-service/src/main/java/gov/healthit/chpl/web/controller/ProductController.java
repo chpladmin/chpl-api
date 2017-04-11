@@ -182,10 +182,11 @@ public class ProductController {
 	
 	@ApiOperation(value="Split a product - some versions stay with the existing product and some versions are moved to a new product.", 
 			notes="The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
-	@RequestMapping(value="/split", method= RequestMethod.POST, 
+	@RequestMapping(value="/{productId}/split", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public ResponseEntity<SplitProductResponse> splitProduct(@RequestBody(required=true) SplitProductsRequest splitRequest) throws EntityCreationException, 
+	public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") Long productId, 
+			@RequestBody(required=true) SplitProductsRequest splitRequest) throws EntityCreationException, 
 		EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
 		if(splitRequest.getNewProductCode() != null) {
 			splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());
@@ -204,6 +205,12 @@ public class ProductController {
 		}
 		if(splitRequest.getOldProduct() == null || splitRequest.getOldProduct().getProductId() == null) {
 			throw new InvalidArgumentsException("An 'oldProduct' ID is required.");
+		}
+		if(splitRequest.getOldVersions() == null || splitRequest.getOldVersions().size() == 0) {
+			throw new InvalidArgumentsException("At least one version must remain with the original product. No 'oldVersion's were found.");
+		}
+		if(productId.longValue() != splitRequest.getOldProduct().getProductId().longValue()) {
+			throw new InvalidArgumentsException("The productId passed into the URL (" + productId + ") does not match the product id specified in the request body (" + splitRequest.getOldProduct().getProductId() + ").");
 		}
 		
 		ProductDTO oldProduct = productManager.getById(splitRequest.getOldProduct().getProductId());

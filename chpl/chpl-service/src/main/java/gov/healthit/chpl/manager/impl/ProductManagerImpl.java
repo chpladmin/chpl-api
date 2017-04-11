@@ -214,7 +214,7 @@ public class ProductManagerImpl implements ProductManager {
 	public ProductDTO split(ProductDTO oldProduct, ProductDTO newProduct, String newProductCode, List<ProductVersionDTO> newProductVersions)
 		throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		// what ACB does the user have??
-		List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
+		List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(true);
 		
 		//create the new product and log activity 
 		//this method checks that the related developer is Active and will throw an exception if they aren't
