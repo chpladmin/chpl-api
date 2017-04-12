@@ -17,8 +17,8 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	@Override
 	public Long getTotalDevelopers(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM DeveloperEntity "
-				+ "WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) ");
+				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (Long) query.getSingleResult();
@@ -265,7 +265,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 
 	@Override
 	public Statistics calculateStatistics(DateRange dateRange) {
-		return new Statistics(dateRange, getTotalDevelopers(dateRange), getTotalDevelopersWith2014Listings(dateRange), getTotalDevelopersWith2015Listings(dateRange),
+		return new Statistics(getTotalDevelopers(dateRange), getTotalDevelopersWith2014Listings(dateRange), getTotalDevelopersWith2015Listings(dateRange),
 				getTotalCertifiedProducts(dateRange), getTotalCPsActive2014Listings(dateRange), getTotalCPsActive2015Listings(dateRange),
 				getTotalCPsActiveListings(dateRange), getTotalListings(dateRange), getTotalActive2014Listings(dateRange), getTotalActive2015Listings(dateRange),
 				getTotal2014Listings(dateRange), getTotal2015Listings(dateRange), getTotal2011Listings(dateRange), getTotalSurveillanceActivities(dateRange),

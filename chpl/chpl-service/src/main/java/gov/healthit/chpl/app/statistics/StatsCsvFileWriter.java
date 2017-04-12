@@ -1,0 +1,84 @@
+package gov.healthit.chpl.app.statistics;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+
+public class StatsCsvFileWriter {
+	//Delimiter used in CSV file
+	private static final String NEW_LINE_SEPARATOR = "\n";
+		
+    //CSV file header
+    private static final Object [] FILE_HEADER = {"date","totalDevelopers","totalDevelopersWith2014Listings","totalDevelopersWith2015Listings","totalCertifiedProducts",
+    		"totalProductsWithActive2014Listings","totalProductsWithActive2015Listings","totalProductsWithActiveListings",
+    		"totalListings", "total2014Listings", "total2015Listings", "total2011Listings","totalSurveillanceActivities","totalOpenSurveillanceActivities",
+    		"totalClosedSurveillanceActivities","totalNonConformities","totalOpenNonConformities","totalClosedNonConformities"};
+    
+    public static void writeCsvFile(String fileName, List<StatisticsCSVOutput> statsCsvOutput){
+    	FileWriter fileWriter = null;
+    	
+    	CSVPrinter csvFilePrinter = null;
+    	
+    	CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
+    	
+    	try {
+    		// initialize FileWriter object
+    		fileWriter = new FileWriter(fileName);
+    		
+    		// initialize CSVPrinter object
+    		csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
+    		
+    		csvFilePrinter.printRecord(FILE_HEADER);
+    		
+    		// Write a new StatisticsCSVOutput object list to the CSV file
+    		for (StatisticsCSVOutput stat : statsCsvOutput){
+    			List<String> statRecord = new ArrayList<String>();
+    			SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
+   			 	dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+   			 	String dateString = dateFormat.format(stat.getDate());
+    			statRecord.add(dateString);
+    			statRecord.add(String.valueOf(stat.getTotalDevelopers()));
+    			statRecord.add(String.valueOf(stat.getTotalDevelopersWith2014Listings()));
+    			statRecord.add(String.valueOf(stat.getTotalDevelopersWith2015Listings()));
+    			statRecord.add(String.valueOf(stat.getTotalCertifiedProducts()));
+    			statRecord.add(String.valueOf(stat.getTotalCPsActive2014Listings()));
+    			statRecord.add(String.valueOf(stat.getTotalCPsActive2015Listings()));
+    			statRecord.add(String.valueOf(stat.getTotalCPsActiveListings()));
+    			statRecord.add(String.valueOf(stat.getTotalListings()));
+    			statRecord.add(String.valueOf(stat.getTotal2014Listings()));
+    			statRecord.add(String.valueOf(stat.getTotal2015Listings()));
+    			statRecord.add(String.valueOf(stat.getTotal2011Listings()));
+    			statRecord.add(String.valueOf(stat.getTotalSurveillanceActivities()));
+    			statRecord.add(String.valueOf(stat.getTotalOpenSurveillanceActivities()));
+    			statRecord.add(String.valueOf(stat.getTotalClosedSurveillanceActivities()));
+    			statRecord.add(String.valueOf(stat.getTotalNonConformities()));
+    			statRecord.add(String.valueOf(stat.getTotalOpenNonconformities()));
+    			statRecord.add(String.valueOf(stat.getTotalClosedNonconformities()));
+    			csvFilePrinter.printRecord(statRecord);
+    		}
+    		
+    		System.out.println("CSV file was created successfully!");
+    		
+    	} catch (Exception e){
+    		System.out.println("Error in CsvFileWriter!");
+    		e.printStackTrace();
+    	} finally {
+    		try {
+    			fileWriter.flush();
+    			fileWriter.close();
+    			csvFilePrinter.close();
+    		} catch (IOException e) {
+    			System.out.println("Error while flushing/closing fileWriter/csvPrinter!");
+    			e.printStackTrace();
+    		}
+    	}
+    	
+    }
+    
+}

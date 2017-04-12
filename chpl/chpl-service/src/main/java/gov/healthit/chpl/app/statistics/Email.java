@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app;
+package gov.healthit.chpl.app.statistics;
 
 import java.io.File;
 import java.util.ArrayList;

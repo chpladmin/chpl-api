@@ -1,9 +1,9 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.app.statistics;
 
-import java.io.Serializable;
+import java.util.Date;
 
-public class Statistics implements Serializable {
-	private static final long serialVersionUID = 6977674702447513779L;
+public class StatisticsCSVOutput {
+	Date date;
 	Long totalDevelopers;
 	Long totalDevelopersWith2014Listings;
 	Long totalDevelopersWith2015Listings;
@@ -12,8 +12,6 @@ public class Statistics implements Serializable {
 	Long totalCPsActive2015Listings;
 	Long totalCPsActiveListings;
 	Long totalListings;
-	Long totalActive2014Listings;
-	Long totalActive2015Listings;
 	Long total2014Listings;
 	Long total2015Listings;
 	Long total2011Listings;
@@ -24,33 +22,37 @@ public class Statistics implements Serializable {
 	Long totalOpenNonconformities;
 	Long totalClosedNonconformities;
 	
-	public Statistics(){}
-	
-	public Statistics(Long totalDevelopers, Long totalDevelopersWith2014Listings, Long totalDevelopersWith2015Listings, Long totalCertifiedProducts,
-	Long totalCPsActive2014Listings, Long totalCPsActive2015Listings, Long totalCPsActiveListings, Long totalListings, Long totalActive2014Listings, 
-	Long totalActive2015Listings, Long total2014Listings, Long total2015Listings, Long total2011Listings, Long totalSurveillanceActivities, 
-	Long totalOpenSurveillanceActivities, Long totalClosedSurveillanceActivities, Long totalNonConformities, Long totalOpenNonconformities, Long totalClosedNonconformities){
-		setTotalDevelopers(totalDevelopers);
-		setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings);
-		setTotalDevelopersWith2015Listings(totalDevelopersWith2015Listings); 
-		setTotalCertifiedProducts(totalCertifiedProducts);
-		setTotalCPsActive2014Listings(totalCPsActive2014Listings); 
-		setTotalCPsActive2015Listings(totalCPsActive2015Listings); 
-		setTotalCPsActiveListings(totalCPsActiveListings); 
-		setTotalListings(totalListings); 
-		setTotalActive2014Listings(totalActive2014Listings); 
-		setTotalActive2015Listings(totalActive2015Listings); 
-		setTotal2014Listings(total2014Listings); 
-		setTotal2015Listings(total2015Listings); 
-		setTotal2011Listings(total2011Listings); 
-		setTotalSurveillanceActivities(totalSurveillanceActivities);
-		setTotalOpenSurveillanceActivities(totalOpenSurveillanceActivities); 
-		setTotalClosedSurveillanceActivities(totalClosedSurveillanceActivities); 
-		setTotalNonConformities(totalNonConformities); 
-		setTotalOpenNonconformities(totalOpenNonconformities); 
-		setTotalClosedNonconformities(totalClosedNonconformities);
+	public StatisticsCSVOutput(Date date, Long totalDevelopers, Long totalDevelopersWith2014Listings, Long totalDevelopersWith2015Listings, Long totalCertifiedProducts,
+	Long totalCPsActive2014Listings, Long totalCPsActive2015Listings, Long totalCPsActiveListings, Long totalListings, Long total2014Listings, Long total2015Listings, 
+	Long total2011Listings, Long totalSurveillanceActivities, Long totalOpenSurveillanceActivities, Long totalClosedSurveillanceActivities, Long totalNonConformities, 
+	Long totalOpenNonconformities, Long totalClosedNonconformities) {
+		super();
+		this.date = date;
+		this.totalDevelopers = totalDevelopers;
+		this.totalDevelopersWith2014Listings = totalDevelopersWith2014Listings;
+		this.totalDevelopersWith2015Listings = totalDevelopersWith2015Listings;
+		this.totalCertifiedProducts = totalCertifiedProducts;
+		this.totalCPsActive2014Listings = totalCPsActive2014Listings;
+		this.totalCPsActive2015Listings = totalCPsActive2015Listings;
+		this.totalCPsActiveListings = totalCPsActiveListings;
+		this.totalListings = totalListings;
+		this.total2014Listings = total2014Listings;
+		this.total2015Listings = total2015Listings;
+		this.total2011Listings = total2011Listings;
+		this.totalSurveillanceActivities = totalSurveillanceActivities;
+		this.totalOpenSurveillanceActivities = totalOpenSurveillanceActivities;
+		this.totalClosedSurveillanceActivities = totalClosedSurveillanceActivities;
+		this.totalNonConformities = totalNonConformities;
+		this.totalOpenNonconformities = totalOpenNonconformities;
+		this.totalClosedNonconformities = totalClosedNonconformities;
 	}
 	
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
 	public Long getTotalDevelopers() {
 		return totalDevelopers;
 	}
@@ -98,18 +100,6 @@ public class Statistics implements Serializable {
 	}
 	public void setTotalListings(Long totalListings) {
 		this.totalListings = totalListings;
-	}
-	public Long getTotalActive2014Listings() {
-		return totalActive2014Listings;
-	}
-	public void setTotalActive2014Listings(Long totalActive2014Listings) {
-		this.totalActive2014Listings = totalActive2014Listings;
-	}
-	public Long getTotalActive2015Listings() {
-		return totalActive2015Listings;
-	}
-	public void setTotalActive2015Listings(Long totalActive2015Listings) {
-		this.totalActive2015Listings = totalActive2015Listings;
 	}
 	public Long getTotal2014Listings() {
 		return total2014Listings;
@@ -166,4 +156,16 @@ public class Statistics implements Serializable {
 		this.totalClosedNonconformities = totalClosedNonconformities;
 	}
 	
+	 @Override
+    public String toString() {
+        return "StatisticsCSVOutput [date=" + date + ", totalDevelopers=" + totalDevelopers
+                + ", totalDevelopersWith2014Listings=" + totalDevelopersWith2014Listings + ", totalDevelopersWith2015Listings=" + totalDevelopersWith2015Listings + 
+                ", totalCertifiedProducts=" + totalCertifiedProducts + ", totalCPsActive2014Listings=" + totalCPsActive2014Listings 
+                + ", totalCPsActive2015Listings=" + totalCPsActive2015Listings + ", totalCPsActiveListings=" + totalCPsActiveListings
+                + ", totalListings=" + totalListings + ", total2014Listings=" + total2014Listings + ", total2015Listings=" + total2015Listings 
+                + ", total2011Listings=" + total2011Listings + ", totalSurveillanceActivities=" + totalSurveillanceActivities 
+                + ", totalOpenSurveillanceActivities=" + totalOpenSurveillanceActivities + ", totalClosedSurveillanceActivities=" + totalClosedSurveillanceActivities 
+                + ", totalNonConformities=" + totalNonConformities + ", totalOpenNonconformities=" + totalOpenNonconformities
+                + ", totalClosedNonconformities=" + totalClosedNonconformities + "]";
+    }
 }

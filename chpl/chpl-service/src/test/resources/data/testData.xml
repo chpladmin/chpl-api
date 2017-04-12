@@ -41,7 +41,7 @@
 		last_modified_user="-2" deleted="false"></vendor>
 	<vendor vendor_id="-9" vendor_status_id="1" vendor_code="1005"
 		address_id="-1" name="FutureVendorDeleted" website="http://www.4medica.com"
-		creation_date="2017-01-01 01:02:03.123" last_modified_date="2017-01-02 01:02:03.123"
+		creation_date="2016-02-01 01:02:03.123" last_modified_date="2017-01-02 01:02:03.123"
 		last_modified_user="-2" deleted="true"></vendor>
 	<vendor vendor_id="-10" vendor_status_id="2" vendor_code="1006"
 		address_id="-1" name="VendorSuspended" website="http://www.4medica.com"
@@ -53,7 +53,7 @@
 		last_modified_user="-2" deleted="false"></vendor>
 	<vendor vendor_id="-12" vendor_status_id="3" vendor_code="1008"
 		address_id="-1" name="VendorBannedDeleted" website="http://www.4medica.com"
-		creation_date="2016-01-01 01:02:03.123" last_modified_date="2017-01-02 01:02:03.123"
+		creation_date="2016-01-01 01:02:03.123" last_modified_date="2016-12-02 01:02:03.123"
 		last_modified_user="-2" deleted="true"></vendor>
 
 	<vendor_status_history vendor_status_history_id="-1"

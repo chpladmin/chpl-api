@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -94,11 +95,11 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalDevelopers_filterDateRange_endDateFiltersResults() {
 		Calendar cal = Calendar.getInstance();
-		cal.set(2016, 0, 1);
+		cal.set(2016, 0, 1, 0, 0);
 		DateRange dateRange = new DateRange(new Date(0), new Date(cal.getTimeInMillis()));
 		Long totalDevelopers = statisticsDao.getTotalDevelopers(dateRange);
 		assertNotNull(totalDevelopers);
-		assertEquals(6L, totalDevelopers.longValue()); 
+		assertEquals(4L, totalDevelopers.longValue()); 
 	}
 	
 	/**
@@ -110,11 +111,11 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalDevelopers_filterDateRange_startDateFiltersResults() {
 		Calendar cal = Calendar.getInstance();
-		cal.set(2016, 0, 1);
+		cal.set(2016, 0, 1, 0, 0);
 		DateRange dateRange = new DateRange(new Date(cal.getTimeInMillis()), new Date());
 		Long totalDevelopers = statisticsDao.getTotalDevelopers(dateRange);
 		assertNotNull(totalDevelopers);
-		assertEquals(4L, totalDevelopers.longValue()); 
+		assertEquals(5L, totalDevelopers.longValue()); 
 	}
 	
 	/**
@@ -126,12 +127,14 @@ public class StatisticsDAOTest extends TestCase {
 	@Test
 	@Transactional(readOnly = true)
 	public void getTotalDevelopers_filterDateRange_lastModifiedDateFiltersResults() {
-		Calendar cal = Calendar.getInstance();
-		cal.set(2016, 11, 31);
-		DateRange dateRange = new DateRange(new Date(0), new Date(cal.getTimeInMillis()));
+		Calendar calEnd2016 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		calEnd2016.set(2017, 0, 1, 0, 0);
+		Calendar calStart2016 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		calStart2016.set(2016, 0, 1, 0, 0);
+		DateRange dateRange = new DateRange(new Date(calStart2016.getTimeInMillis()), new Date(calEnd2016.getTimeInMillis()));
 		Long totalDevelopers = statisticsDao.getTotalDevelopers(dateRange);
 		assertNotNull(totalDevelopers);
-		assertEquals(7L, totalDevelopers.longValue()); 
+		assertEquals(3L, totalDevelopers.longValue()); 
 	}
 	
 	/**
