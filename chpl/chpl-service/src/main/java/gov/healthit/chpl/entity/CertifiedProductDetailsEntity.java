@@ -128,6 +128,24 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "product_name")
     private String productName;
     
+    @Column(name = "product_contact_id")
+    private Long productContactId;
+    
+    @Column(name = "product_contact_first_name")
+    private String productFirstName;
+    
+    @Column(name = "product_contact_last_name")
+    private String productLastName;
+    
+    @Column(name = "product_contact_email")
+    private String productEmail;
+    
+    @Column(name = "product_contact_phone_number")
+    private String productPhoneNumber;
+    
+    @Column(name = "product_contact_title")
+    private String productTitle;
+    
     @Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", unique=true, nullable = true, insertable=false, updatable=false)
@@ -175,23 +193,23 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "country")
     private String country;
     
-    @Column(name = "contact_id")
-    private Long contactId;
+    @Column(name = "vendor_contact_id")
+    private Long developerContactId;
     
-    @Column(name = "first_name")
-    private String firstName;
+    @Column(name = "vendor_contact_first_name")
+    private String developerFirstName;
     
-    @Column(name = "last_name")
-    private String lastName;
+    @Column(name = "vendor_contact_last_name")
+    private String developerLastName;
     
-    @Column(name = "email")
-    private String email;
+    @Column(name = "vendor_contact_email")
+    private String developerEmail;
     
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @Column(name = "vendor_contact_phone_number")
+    private String developerPhoneNumber;
     
-    @Column(name = "title")
-    private String title;
+    @Column(name = "vendor_contact_title")
+    private String developerTitle;
     
     @Column(name = "creation_date")
     private Date creationDate;
@@ -720,52 +738,52 @@ public class CertifiedProductDetailsEntity {
 		this.country = country;
 	}
 
-	public Long getContactId() {
-		return contactId;
+	public Long getDeveloperContactId() {
+		return developerContactId;
 	}
 
-	public void setContactId(Long contactId) {
-		this.contactId = contactId;
+	public void setDeveloperContactId(Long contactId) {
+		this.developerContactId = contactId;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getDeveloperFirstName() {
+		return developerFirstName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setDeveloperFirstName(String firstName) {
+		this.developerFirstName = firstName;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getDeveloperLastName() {
+		return developerLastName;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setDeveloperLastName(String lastName) {
+		this.developerLastName = lastName;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getDeveloperEmail() {
+		return developerEmail;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setDeveloperEmail(String email) {
+		this.developerEmail = email;
 	}
 
-	public String getPhoneNumber() {
-		return phoneNumber;
+	public String getDeveloperPhoneNumber() {
+		return developerPhoneNumber;
 	}
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public void setDeveloperPhoneNumber(String phoneNumber) {
+		this.developerPhoneNumber = phoneNumber;
 	}
 
-	public String getTitle() {
-		return title;
+	public String getDeveloperTitle() {
+		return developerTitle;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setDeveloperTitle(String title) {
+		this.developerTitle = title;
 	}
 
 	public Long getDeveloperStatusId() {
@@ -854,5 +872,53 @@ public class CertifiedProductDetailsEntity {
 
 	public void setDeveloperStatusDate(Date developerStatusDate) {
 		this.developerStatusDate = developerStatusDate;
+	}
+
+	public Long getProductContactId() {
+		return productContactId;
+	}
+
+	public void setProductContactId(Long productContactId) {
+		this.productContactId = productContactId;
+	}
+
+	public String getProductFirstName() {
+		return productFirstName;
+	}
+
+	public void setProductFirstName(String productFirstName) {
+		this.productFirstName = productFirstName;
+	}
+
+	public String getProductLastName() {
+		return productLastName;
+	}
+
+	public void setProductLastName(String productLastName) {
+		this.productLastName = productLastName;
+	}
+
+	public String getProductEmail() {
+		return productEmail;
+	}
+
+	public void setProductEmail(String productEmail) {
+		this.productEmail = productEmail;
+	}
+
+	public String getProductPhoneNumber() {
+		return productPhoneNumber;
+	}
+
+	public void setProductPhoneNumber(String productPhoneNumber) {
+		this.productPhoneNumber = productPhoneNumber;
+	}
+
+	public String getProductTitle() {
+		return productTitle;
+	}
+
+	public void setProductTitle(String productTitle) {
+		this.productTitle = productTitle;
 	}	
 }

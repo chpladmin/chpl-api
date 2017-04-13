@@ -20,6 +20,7 @@ public class ProductDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private String name;
+	private ContactDTO contact;
 	private Set<ProductVersionDTO> productVersions = new HashSet<ProductVersionDTO>();
 	private String reportFileLocation;
 	private Long developerId;
@@ -41,6 +42,9 @@ public class ProductDTO implements Serializable {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.name = entity.getName();
 		this.reportFileLocation = entity.getReportFileLocation();
+		if(entity.getContact() != null) {
+			this.contact = new ContactDTO(entity.getContact());
+		}
 		this.developerId = entity.getDeveloperId();
 		if(entity.getDeveloper() != null) {
 			this.developerName = entity.getDeveloper().getName();
@@ -147,6 +151,12 @@ public class ProductDTO implements Serializable {
 	}
 	public void setDeveloperCode(String developerCode) {
 		this.developerCode = developerCode;
+	}
+	public ContactDTO getContact() {
+		return contact;
+	}
+	public void setContact(ContactDTO contact) {
+		this.contact = contact;
 	}
 	
 }

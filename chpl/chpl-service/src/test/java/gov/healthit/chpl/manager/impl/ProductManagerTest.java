@@ -33,6 +33,7 @@ import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -138,6 +139,46 @@ public class ProductManagerTest extends TestCase {
 		products = productManager.getByDevelopers(developerIds);
 		assertNotNull(products);
 		assertEquals(4, products.size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void createProductWithContact() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		ProductDTO toCreate = new ProductDTO();
+		toCreate.setName("New Product");
+		toCreate.setDeveloperId(-1L);
+		toCreate.setReportFileLocation("http://www.google.com");
+		ContactDTO contact = new ContactDTO();
+		String firstName = "Testfirstname";
+		String lastName = "Testlastname";
+		String phoneNumber = "4445556666";
+		String title = "Mrs.";
+		String email = "test.email@domain.com";
+		contact.setFirstName(firstName);
+		contact.setLastName(lastName);
+		contact.setPhoneNumber(phoneNumber);
+		contact.setTitle(title);
+		contact.setEmail(email);
+		toCreate.setContact(contact);
+		
+		ProductDTO created = null;
+		try {
+			created = productManager.create(toCreate);
+		} catch(Exception ex) {
+			fail(ex.getMessage());
+		}
+		assertNotNull(created.getId());
+		assertNotNull(created.getContact());
+		assertNotNull(created.getContact().getId());
+		assertEquals(firstName, created.getContact().getFirstName());
+		assertEquals(lastName, created.getContact().getLastName());
+		assertEquals(phoneNumber, created.getContact().getPhoneNumber());
+		assertEquals(title, created.getContact().getTitle());
+		assertEquals(email, created.getContact().getEmail());
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
