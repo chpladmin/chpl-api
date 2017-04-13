@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.StatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.Statistics;
 
 @Repository("statisticsDAO")
 public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
@@ -345,19 +344,6 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (Long) query.getSingleResult();
-	}
-
-	@Override
-	public Statistics calculateStatistics(DateRange dateRange) {
-		return new Statistics(getTotalDevelopers(dateRange), getTotalDevelopersWith2014Listings(dateRange), getTotalDevelopersWith2015Listings(dateRange),
-				getTotalCertifiedProducts(dateRange), getTotalCPsActive2014Listings(dateRange), getTotalCPsActive2015Listings(dateRange),
-				getTotalCPsActiveListings(dateRange), getTotalListings(dateRange), getTotalActive2014Listings(dateRange), 
-				getTotalActive2014ListingsCertifiedByDrummond(dateRange), getTotalActive2014ListingsCertifiedByICSALabs(dateRange), 
-				getTotalActive2014ListingsCertifiedByInfoGard(dateRange), getTotalActive2015Listings(dateRange), getTotalActive2015ListingsCertifiedByDrummond(dateRange), 
-				getTotalActive2015ListingsCertifiedByICSALabs(dateRange), getTotalActive2015ListingsCertifiedByInfoGard(dateRange),
-				getTotal2014Listings(dateRange), getTotal2015Listings(dateRange), getTotal2011Listings(dateRange), getTotalSurveillanceActivities(dateRange),
-				getTotalOpenSurveillanceActivities(dateRange), getTotalClosedSurveillanceActivities(dateRange), getTotalNonConformities(dateRange),
-				getTotalOpenNonconformities(dateRange), getTotalClosedNonconformities(dateRange));
 	}
 
 }

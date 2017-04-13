@@ -32,39 +32,6 @@ public class Statistics implements Serializable {
 	
 	public Statistics(){}
 	
-	public Statistics(Long totalDevelopers, Long totalDevelopersWith2014Listings, Long totalDevelopersWith2015Listings, Long totalCertifiedProducts,
-	Long totalCPsActive2014Listings, Long totalCPsActive2015Listings, Long totalCPsActiveListings, Long totalListings, Long totalActive2014Listings, 
-	Long totalActive2014ListingsCertifiedByDrummond, Long totalActive2014ListingsCertifiedByICSALabs, Long totalActive2014ListingsCertifiedByInfoGard,
-	Long totalActive2015Listings, Long totalActive2015ListingsCertifiedByDrummond, Long totalActive2015ListingsCertifiedByICSALabs,
-	Long totalActive2015ListingsCertifiedByInfoGard, Long total2014Listings, Long total2015Listings, Long total2011Listings, Long totalSurveillanceActivities, 
-	Long totalOpenSurveillanceActivities, Long totalClosedSurveillanceActivities, Long totalNonConformities, Long totalOpenNonconformities, Long totalClosedNonconformities){
-		setTotalDevelopers(totalDevelopers);
-		setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings);
-		setTotalDevelopersWith2015Listings(totalDevelopersWith2015Listings); 
-		setTotalCertifiedProducts(totalCertifiedProducts);
-		setTotalCPsActive2014Listings(totalCPsActive2014Listings); 
-		setTotalCPsActive2015Listings(totalCPsActive2015Listings); 
-		setTotalCPsActiveListings(totalCPsActiveListings); 
-		setTotalListings(totalListings); 
-		setTotalActive2014Listings(totalActive2014Listings); 
-		setTotalActive2014ListingsCertifiedByDrummond(totalActive2014ListingsCertifiedByDrummond);
-		setTotalActive2014ListingsCertifiedByICSALabs(totalActive2014ListingsCertifiedByICSALabs);
-		setTotalActive2014ListingsCertifiedByInfoGard(totalActive2014ListingsCertifiedByInfoGard);
-		setTotalActive2015Listings(totalActive2015Listings); 
-		setTotalActive2015ListingsCertifiedByDrummond(totalActive2015ListingsCertifiedByDrummond);
-		setTotalActive2015ListingsCertifiedByICSALabs(totalActive2015ListingsCertifiedByICSALabs);
-		setTotalActive2015ListingsCertifiedByInfoGard(totalActive2015ListingsCertifiedByInfoGard);
-		setTotal2014Listings(total2014Listings); 
-		setTotal2015Listings(total2015Listings); 
-		setTotal2011Listings(total2011Listings); 
-		setTotalSurveillanceActivities(totalSurveillanceActivities);
-		setTotalOpenSurveillanceActivities(totalOpenSurveillanceActivities); 
-		setTotalClosedSurveillanceActivities(totalClosedSurveillanceActivities); 
-		setTotalNonConformities(totalNonConformities); 
-		setTotalOpenNonconformities(totalOpenNonconformities); 
-		setTotalClosedNonconformities(totalClosedNonconformities);
-	}
-	
 	public Long getTotalDevelopers() {
 		return totalDevelopers;
 	}
