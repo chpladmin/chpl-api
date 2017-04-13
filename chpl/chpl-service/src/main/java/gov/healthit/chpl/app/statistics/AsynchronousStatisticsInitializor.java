@@ -35,7 +35,13 @@ public class AsynchronousStatisticsInitializor {
 		Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(dateRange);
 		Future<Long> totalListings = asyncStats.getTotalListings(dateRange);
 		Future<Long> totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
+		Future<Long> totalActive2014ListingsCertifiedByDrummond = asyncStats.getTotalActive2014ListingsCertifiedByDrummond(dateRange);
+		Future<Long> totalActive2014ListingsCertifiedByInfoGard = asyncStats.getTotalActive2014ListingsCertifiedByInfoGard(dateRange);
+		Future<Long> totalActive2014ListingsCertifiedByICSALabs = asyncStats.getTotalActive2015ListingsCertifiedByICSALabs(dateRange);
 		Future<Long> totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
+		Future<Long> totalActive2015ListingsCertifiedByDrummond = asyncStats.getTotalActive2015ListingsCertifiedByDrummond(dateRange);
+		Future<Long> totalActive2015ListingsCertifiedByInfoGard = asyncStats.getTotalActive2015ListingsCertifiedByInfoGard(dateRange);
+		Future<Long> totalActive2015ListingsCertifiedByICSALabs = asyncStats.getTotalActive2015ListingsCertifiedByICSALabs(dateRange);
 		Future<Long> total2014Listings = asyncStats.getTotal2014Listings(dateRange);
 		Future<Long> total2015Listings = asyncStats.getTotal2015Listings(dateRange);
 		Future<Long> total2011Listings = asyncStats.getTotal2011Listings(dateRange);
@@ -55,7 +61,13 @@ public class AsynchronousStatisticsInitializor {
 		stats.setTotalCPsActiveListings(totalCPsActiveListings.get());
 		stats.setTotalListings(totalListings.get());
 		stats.setTotalActive2014Listings(totalActive2014Listings.get());
+		stats.setTotalActive2014ListingsCertifiedByDrummond(totalActive2014ListingsCertifiedByDrummond.get());
+		stats.setTotalActive2014ListingsCertifiedByInfoGard(totalActive2014ListingsCertifiedByInfoGard.get());
+		stats.setTotalActive2014ListingsCertifiedByICSALabs(totalActive2014ListingsCertifiedByICSALabs.get());
 		stats.setTotalActive2015Listings(totalActive2015Listings.get());
+		stats.setTotalActive2015ListingsCertifiedByDrummond(totalActive2015ListingsCertifiedByDrummond.get());
+		stats.setTotalActive2015ListingsCertifiedByInfoGard(totalActive2015ListingsCertifiedByInfoGard.get());
+		stats.setTotalActive2015ListingsCertifiedByICSALabs(totalActive2015ListingsCertifiedByICSALabs.get());
 		stats.setTotal2014Listings(total2014Listings.get());
 		stats.setTotal2015Listings(total2015Listings.get());
 		stats.setTotal2011Listings(total2011Listings.get());

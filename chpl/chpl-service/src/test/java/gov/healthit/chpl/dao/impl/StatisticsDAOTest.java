@@ -252,6 +252,49 @@ public class StatisticsDAOTest extends TestCase {
 		assertEquals(2L, totalActive2014Listings.longValue()); 
 	}
 	
+	
+	/**
+	 * Given that getTotalActive2014ListingsCertifiedByInfoGard(DateRange) is called 
+	 * When the start date is set to the beginning of time and endDate is set to now()
+	 * Then all 2014 active listings for InfoGard are returned
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void getTotalActive2014ListingsCertifiedByInfoGard_filterDateRange_allDates() {
+		DateRange dateRange = new DateRange(new Date(0), new Date());
+		Long totalActive2014Listings = statisticsDao.getTotalActive2014ListingsCertifiedByInfoGard(dateRange);
+		assertNotNull(totalActive2014Listings);
+		assertEquals(2L, totalActive2014Listings.longValue()); 
+	}
+	
+	/**
+	 * Given that getTotalActive2014ListingsCertifiedByDrummond(DateRange) is called 
+	 * When the start date is set to the beginning of time and endDate is set to now()
+	 * Then all 2014 active listings for Drummond Group Inc. are returned
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void getTotalActive2014ListingsCertifiedByDrummond_filterDateRange_allDates() {
+		DateRange dateRange = new DateRange(new Date(0), new Date());
+		Long totalActive2014Listings = statisticsDao.getTotalActive2014ListingsCertifiedByDrummond(dateRange);
+		assertNotNull(totalActive2014Listings);
+		assertEquals(0L, totalActive2014Listings.longValue()); 
+	}
+	
+	/**
+	 * Given that getTotalActive2014ListingsCertifiedByICSALabs(DateRange) is called 
+	 * When the start date is set to the beginning of time and endDate is set to now()
+	 * Then all 2014 active listings for ICSA Labs are returned
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void getTotalActive2014ListingsCertifiedByICSALabs_filterDateRange_allDates() {
+		DateRange dateRange = new DateRange(new Date(0), new Date());
+		Long totalActive2014Listings = statisticsDao.getTotalActive2014ListingsCertifiedByICSALabs(dateRange);
+		assertNotNull(totalActive2014Listings);
+		assertEquals(0L, totalActive2014Listings.longValue()); 
+	}
+	
 	/**
 	 * Given that getTotalActive2015Listings(DateRange) is called 
 	 * When the start date is set to the beginning of time and endDate is set to now()
@@ -264,6 +307,48 @@ public class StatisticsDAOTest extends TestCase {
 		Long totalActive2015Listings = statisticsDao.getTotalActive2015Listings(dateRange);
 		assertNotNull(totalActive2015Listings);
 		assertEquals(3L, totalActive2015Listings.longValue()); 
+	}
+	
+	/**
+	 * Given that getTotalActive2015ListingsCertifiedByInfoGard(DateRange) is called 
+	 * When the start date is set to the beginning of time and endDate is set to now()
+	 * Then all 2015 active listings for InfoGard are returned
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void getTotalActive2015ListingsCertifiedByInfoGard_filterDateRange_allDates() {
+		DateRange dateRange = new DateRange(new Date(0), new Date());
+		Long totalActive2015Listings = statisticsDao.getTotalActive2015ListingsCertifiedByInfoGard(dateRange);
+		assertNotNull(totalActive2015Listings);
+		assertEquals(2L, totalActive2015Listings.longValue()); 
+	}
+	
+	/**
+	 * Given that getTotalActive2015ListingsCertifiedByDrummond(DateRange) is called 
+	 * When the start date is set to the beginning of time and endDate is set to now()
+	 * Then all 2015 active listings for Drummond Group Inc. are returned
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void getTotalActive2015ListingsCertifiedByDrummond_filterDateRange_allDates() {
+		DateRange dateRange = new DateRange(new Date(0), new Date());
+		Long totalActive2015Listings = statisticsDao.getTotalActive2015ListingsCertifiedByDrummond(dateRange);
+		assertNotNull(totalActive2015Listings);
+		assertEquals(0L, totalActive2015Listings.longValue()); 
+	}
+	
+	/**
+	 * Given that getTotalActive2015ListingsCertifiedByICSALabs(DateRange) is called 
+	 * When the start date is set to the beginning of time and endDate is set to now()
+	 * Then all 2015 active listings for ICSA Labs are returned
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	public void getTotalActive2015ListingsCertifiedByICSALabs_filterDateRange_allDates() {
+		DateRange dateRange = new DateRange(new Date(0), new Date());
+		Long totalActive2015Listings = statisticsDao.getTotalActive2015ListingsCertifiedByICSALabs(dateRange);
+		assertNotNull(totalActive2015Listings);
+		assertEquals(0L, totalActive2015Listings.longValue()); 
 	}
 	
 	/**

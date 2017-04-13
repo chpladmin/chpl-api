@@ -131,6 +131,48 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (Long) query.getSingleResult();
 	}
+	
+	/**
+	 * Total # of Active (Including Suspended) 2014 Listings
+	 */
+	@Override
+	public Long getTotalActive2014ListingsCertifiedByDrummond(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2014' AND certificationBodyName = 'Drummond Group Inc.' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (Long) query.getSingleResult();
+	}
+	
+	/**
+	 * Total # of Active (Including Suspended) 2014 Listings
+	 */
+	@Override
+	public Long getTotalActive2014ListingsCertifiedByICSALabs(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2014' AND certificationBodyName = 'ICSA Labs' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (Long) query.getSingleResult();
+	}
+	
+	/**
+	 * Total # of Active (Including Suspended) 2014 Listings
+	 */
+	@Override
+	public Long getTotalActive2014ListingsCertifiedByInfoGard(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2014' AND certificationBodyName = 'InfoGard' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (Long) query.getSingleResult();
+	}
 
 	/**
 	 * Total # of Active (Including Suspended) 2015 Listings
@@ -139,6 +181,48 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	public Long getTotalActive2015Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
 				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (Long) query.getSingleResult();
+	}
+	
+	/**
+	 * Total # of Active (Including Suspended) 2015 Listings
+	 */
+	@Override
+	public Long getTotalActive2015ListingsCertifiedByInfoGard(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2015' AND certificationBodyName = 'InfoGard' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (Long) query.getSingleResult();
+	}
+	
+	/**
+	 * Total # of Active (Including Suspended) 2015 Listings
+	 */
+	@Override
+	public Long getTotalActive2015ListingsCertifiedByICSALabs(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2015' AND certificationBodyName = 'ICSA Labs' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (Long) query.getSingleResult();
+	}
+	
+	/**
+	 * Total # of Active (Including Suspended) 2015 Listings
+	 */
+	@Override
+	public Long getTotalActive2015ListingsCertifiedByDrummond(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2015' AND certificationBodyName = 'Drummond Group Inc.' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -267,7 +351,10 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	public Statistics calculateStatistics(DateRange dateRange) {
 		return new Statistics(getTotalDevelopers(dateRange), getTotalDevelopersWith2014Listings(dateRange), getTotalDevelopersWith2015Listings(dateRange),
 				getTotalCertifiedProducts(dateRange), getTotalCPsActive2014Listings(dateRange), getTotalCPsActive2015Listings(dateRange),
-				getTotalCPsActiveListings(dateRange), getTotalListings(dateRange), getTotalActive2014Listings(dateRange), getTotalActive2015Listings(dateRange),
+				getTotalCPsActiveListings(dateRange), getTotalListings(dateRange), getTotalActive2014Listings(dateRange), 
+				getTotalActive2014ListingsCertifiedByDrummond(dateRange), getTotalActive2014ListingsCertifiedByICSALabs(dateRange), 
+				getTotalActive2014ListingsCertifiedByInfoGard(dateRange), getTotalActive2015Listings(dateRange), getTotalActive2015ListingsCertifiedByDrummond(dateRange), 
+				getTotalActive2015ListingsCertifiedByICSALabs(dateRange), getTotalActive2015ListingsCertifiedByInfoGard(dateRange),
 				getTotal2014Listings(dateRange), getTotal2015Listings(dateRange), getTotal2011Listings(dateRange), getTotalSurveillanceActivities(dateRange),
 				getTotalOpenSurveillanceActivities(dateRange), getTotalClosedSurveillanceActivities(dateRange), getTotalNonConformities(dateRange),
 				getTotalOpenNonconformities(dateRange), getTotalClosedNonconformities(dateRange));

@@ -2,8 +2,6 @@ package gov.healthit.chpl.app.statistics;
 
 import java.util.concurrent.Future;
 
-import javax.persistence.Query;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +100,35 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalActive2014Listings(DateRange dateRange) {
 		return new AsyncResult<>(statisticsDAO.getTotalActive2014Listings(dateRange));
 	}
+	
+	/**
+	 * Total # of Active (Including Suspended) 2014 Listings Certified By Drummond
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalActive2014ListingsCertifiedByDrummond(DateRange dateRange) {
+		return new AsyncResult<>(statisticsDAO.getTotalActive2014ListingsCertifiedByDrummond(dateRange));
+	}
+	
+	
+	/**
+	 * Total # of Active (Including Suspended) 2014 Listings Certified By ICSA Labs
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalActive2014ListingsCertifiedByICSALabs(DateRange dateRange) {
+		return new AsyncResult<>(statisticsDAO.getTotalActive2014ListingsCertifiedByICSALabs(dateRange));
+	}
+	
+	
+	/**
+	 * Total # of Active (Including Suspended) 2014 Listings Certified By InfoGard
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalActive2014ListingsCertifiedByInfoGard(DateRange dateRange) {
+		return new AsyncResult<>(statisticsDAO.getTotalActive2014ListingsCertifiedByInfoGard(dateRange));
+	}
 
 	/**
 	 * Total # of Active (Including Suspended) 2015 Listings
@@ -110,6 +137,35 @@ public class AsynchronousStatistics {
 	@Transactional
 	public Future<Long> getTotalActive2015Listings(DateRange dateRange) {
 		return new AsyncResult<>(statisticsDAO.getTotalActive2015Listings(dateRange));
+	}
+	
+	/**
+	 * Total # of Active (Including Suspended) 2014 Listings Certified By Drummond
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalActive2015ListingsCertifiedByDrummond(DateRange dateRange) {
+		return new AsyncResult<>(statisticsDAO.getTotalActive2015ListingsCertifiedByDrummond(dateRange));
+	}
+	
+	
+	/**
+	 * Total # of Active (Including Suspended) 2014 Listings Certified By ICSA Labs
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalActive2015ListingsCertifiedByICSALabs(DateRange dateRange) {
+		return new AsyncResult<>(statisticsDAO.getTotalActive2015ListingsCertifiedByICSALabs(dateRange));
+	}
+	
+	
+	/**
+	 * Total # of Active (Including Suspended) 2014 Listings Certified By InfoGard
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalActive2015ListingsCertifiedByInfoGard(DateRange dateRange) {
+		return new AsyncResult<>(statisticsDAO.getTotalActive2015ListingsCertifiedByInfoGard(dateRange));
 	}
 
 	/**

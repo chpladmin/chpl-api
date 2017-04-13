@@ -60,8 +60,8 @@ public class SummaryStatistics {
 		 Statistics emailBodyStats = futureEmailBodyStats.get();
 		 List<StatisticsCSVOutput> csvStats = new ArrayList<StatisticsCSVOutput>();
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		 calendarCounter.setTime(endDate); 
-		 while(startDate.before(calendarCounter.getTime())){
+		 calendarCounter.setTime(startDate); 
+		 while(endDate.compareTo(calendarCounter.getTime()) >= 0){
 			 logger.info("Getting csvRecord for start date " + startDate.toString() + " end date " + calendarCounter.getTime().toString());
 			 DateRange csvRange = new DateRange(startDate, new Date(calendarCounter.getTimeInMillis()));
 			 Future<Statistics> futureEmailCsvStats = summaryStats.asynchronousStatisticsInitializor.getStatisticsForCsv(csvRange);
@@ -74,7 +74,7 @@ public class SummaryStatistics {
 					 csvStat.getTotalClosedNonconformities());
 			 csvStats.add(record);
 			 logger.info("Finished getting csvRecord for start date " + startDate.toString() + " end date " + calendarCounter.getTime().toString());
-			 calendarCounter.add(Calendar.DATE, -numDaysInPeriod);
+			 calendarCounter.add(Calendar.DATE, numDaysInPeriod);
 		 }
 		 logger.info("Finished getting statistics");
 		 StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + "\\" + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
@@ -197,7 +197,13 @@ public class SummaryStatistics {
 				 emailMessage.append("<li>3. Total # of unique  Products with Active Listings (Including Suspended) (Regardless of Edition) - " + stats.getTotalCPsActiveListings() + "</li></ul>");
 				 emailMessage.append("<li>3. Total # of Listings (Regardless of Status or Edition) -  " + stats.getTotalListings() + "</li>");
 				 emailMessage.append("<ul><li>1. Total # of Active (Including Suspended) 2014 Listings - " + stats.getTotalActive2014Listings() + "</li>");
+				 emailMessage.append("<ul><li>1. Certified by Drummond Group - " + stats.getTotalActive2014ListingsCertifiedByDrummond() + "</li>");
+				 emailMessage.append("<li>2. Certified by ICSA Labs - " + stats.getTotalActive2014ListingsCertifiedByICSALabs() + "</li>");
+				 emailMessage.append("<li>3. Certified by InfoGard - " + stats.getTotalActive2014ListingsCertifiedByInfoGard() + "</li></ul>");
 				 emailMessage.append("<li>2. Total # of Active (Including Suspended) 2015 Listings - " + stats.getTotalActive2015Listings() + "</li>");
+				 emailMessage.append("<ul><li>1. Certified by Drummond Group - " + stats.getTotalActive2015ListingsCertifiedByDrummond() + "</li>");
+				 emailMessage.append("<li>2. Certified by ICSA Labs - " + stats.getTotalActive2015ListingsCertifiedByICSALabs() + "</li>");
+				 emailMessage.append("<li>3. Certified by InfoGard - " + stats.getTotalActive2015ListingsCertifiedByInfoGard() + "</li></ul>");
 				 emailMessage.append("<li>3. Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
 				 emailMessage.append("<li>4. Total # of 2015 Listings (Regardless of Status) - " + stats.getTotal2015Listings() + "</li>");
 				 emailMessage.append("<li>5. Total # of 2011 Listings (Regardless of Status) - " + stats.getTotal2011Listings() + "</li></ul>");

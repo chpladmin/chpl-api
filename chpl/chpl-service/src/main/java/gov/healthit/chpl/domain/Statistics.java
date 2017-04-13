@@ -13,7 +13,13 @@ public class Statistics implements Serializable {
 	Long totalCPsActiveListings;
 	Long totalListings;
 	Long totalActive2014Listings;
+	Long totalActive2014ListingsCertifiedByDrummond;
+	Long totalActive2014ListingsCertifiedByICSALabs;
+	Long totalActive2014ListingsCertifiedByInfoGard;
 	Long totalActive2015Listings;
+	Long totalActive2015ListingsCertifiedByDrummond;
+	Long totalActive2015ListingsCertifiedByICSALabs;
+	Long totalActive2015ListingsCertifiedByInfoGard;
 	Long total2014Listings;
 	Long total2015Listings;
 	Long total2011Listings;
@@ -28,7 +34,9 @@ public class Statistics implements Serializable {
 	
 	public Statistics(Long totalDevelopers, Long totalDevelopersWith2014Listings, Long totalDevelopersWith2015Listings, Long totalCertifiedProducts,
 	Long totalCPsActive2014Listings, Long totalCPsActive2015Listings, Long totalCPsActiveListings, Long totalListings, Long totalActive2014Listings, 
-	Long totalActive2015Listings, Long total2014Listings, Long total2015Listings, Long total2011Listings, Long totalSurveillanceActivities, 
+	Long totalActive2014ListingsCertifiedByDrummond, Long totalActive2014ListingsCertifiedByICSALabs, Long totalActive2014ListingsCertifiedByInfoGard,
+	Long totalActive2015Listings, Long totalActive2015ListingsCertifiedByDrummond, Long totalActive2015ListingsCertifiedByICSALabs,
+	Long totalActive2015ListingsCertifiedByInfoGard, Long total2014Listings, Long total2015Listings, Long total2011Listings, Long totalSurveillanceActivities, 
 	Long totalOpenSurveillanceActivities, Long totalClosedSurveillanceActivities, Long totalNonConformities, Long totalOpenNonconformities, Long totalClosedNonconformities){
 		setTotalDevelopers(totalDevelopers);
 		setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings);
@@ -39,7 +47,13 @@ public class Statistics implements Serializable {
 		setTotalCPsActiveListings(totalCPsActiveListings); 
 		setTotalListings(totalListings); 
 		setTotalActive2014Listings(totalActive2014Listings); 
+		setTotalActive2014ListingsCertifiedByDrummond(totalActive2014ListingsCertifiedByDrummond);
+		setTotalActive2014ListingsCertifiedByICSALabs(totalActive2014ListingsCertifiedByICSALabs);
+		setTotalActive2014ListingsCertifiedByInfoGard(totalActive2014ListingsCertifiedByInfoGard);
 		setTotalActive2015Listings(totalActive2015Listings); 
+		setTotalActive2015ListingsCertifiedByDrummond(totalActive2015ListingsCertifiedByDrummond);
+		setTotalActive2015ListingsCertifiedByICSALabs(totalActive2015ListingsCertifiedByICSALabs);
+		setTotalActive2015ListingsCertifiedByInfoGard(totalActive2015ListingsCertifiedByInfoGard);
 		setTotal2014Listings(total2014Listings); 
 		setTotal2015Listings(total2015Listings); 
 		setTotal2011Listings(total2011Listings); 
@@ -164,6 +178,54 @@ public class Statistics implements Serializable {
 	}
 	public void setTotalClosedNonconformities(Long totalClosedNonconformities) {
 		this.totalClosedNonconformities = totalClosedNonconformities;
+	}
+
+	public Long getTotalActive2014ListingsCertifiedByDrummond() {
+		return totalActive2014ListingsCertifiedByDrummond;
+	}
+
+	public void setTotalActive2014ListingsCertifiedByDrummond(Long totalActive2014ListingsCertifiedByDrummond) {
+		this.totalActive2014ListingsCertifiedByDrummond = totalActive2014ListingsCertifiedByDrummond;
+	}
+
+	public Long getTotalActive2014ListingsCertifiedByICSALabs() {
+		return totalActive2014ListingsCertifiedByICSALabs;
+	}
+
+	public void setTotalActive2014ListingsCertifiedByICSALabs(Long totalActive2014ListingsCertifiedByICSALabs) {
+		this.totalActive2014ListingsCertifiedByICSALabs = totalActive2014ListingsCertifiedByICSALabs;
+	}
+
+	public Long getTotalActive2014ListingsCertifiedByInfoGard() {
+		return totalActive2014ListingsCertifiedByInfoGard;
+	}
+
+	public void setTotalActive2014ListingsCertifiedByInfoGard(Long totalActive2014ListingsCertifiedByInfoGard) {
+		this.totalActive2014ListingsCertifiedByInfoGard = totalActive2014ListingsCertifiedByInfoGard;
+	}
+
+	public Long getTotalActive2015ListingsCertifiedByDrummond() {
+		return totalActive2015ListingsCertifiedByDrummond;
+	}
+
+	public void setTotalActive2015ListingsCertifiedByDrummond(Long totalActive2015ListingsCertifiedByDrummond) {
+		this.totalActive2015ListingsCertifiedByDrummond = totalActive2015ListingsCertifiedByDrummond;
+	}
+
+	public Long getTotalActive2015ListingsCertifiedByICSALabs() {
+		return totalActive2015ListingsCertifiedByICSALabs;
+	}
+
+	public void setTotalActive2015ListingsCertifiedByICSALabs(Long totalActive2015ListingsCertifiedByICSALabs) {
+		this.totalActive2015ListingsCertifiedByICSALabs = totalActive2015ListingsCertifiedByICSALabs;
+	}
+
+	public Long getTotalActive2015ListingsCertifiedByInfoGard() {
+		return totalActive2015ListingsCertifiedByInfoGard;
+	}
+
+	public void setTotalActive2015ListingsCertifiedByInfoGard(Long totalActive2015ListingsCertifiedByInfoGard) {
+		this.totalActive2015ListingsCertifiedByInfoGard = totalActive2015ListingsCertifiedByInfoGard;
 	}
 	
 }

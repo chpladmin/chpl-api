@@ -24,4 +24,10 @@ public interface StatisticsDAO {
 	public Long getTotalOpenNonconformities(DateRange dateRange);
 	public Long getTotalClosedNonconformities(DateRange dateRange);
 	public Statistics calculateStatistics(DateRange dateRange);
+	Long getTotalActive2014ListingsCertifiedByDrummond(DateRange dateRange);
+	Long getTotalActive2014ListingsCertifiedByICSALabs(DateRange dateRange);
+	Long getTotalActive2014ListingsCertifiedByInfoGard(DateRange dateRange);
+	Long getTotalActive2015ListingsCertifiedByInfoGard(DateRange dateRange);
+	Long getTotalActive2015ListingsCertifiedByICSALabs(DateRange dateRange);
+	Long getTotalActive2015ListingsCertifiedByDrummond(DateRange dateRange);
 }
