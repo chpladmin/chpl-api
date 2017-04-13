@@ -30,6 +30,7 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.SplitProductsRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
@@ -149,6 +150,16 @@ public class ProductController {
 				toUpdate.setId(productInfo.getProductIds().get(0));
 				toUpdate.setName(productInfo.getProduct().getName());
 				toUpdate.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
+				if(productInfo.getProduct().getContact() != null) {
+					ContactDTO contact = new ContactDTO();
+					contact.setId(productInfo.getProduct().getContact().getContactId());
+					contact.setFirstName(productInfo.getProduct().getContact().getFirstName());
+					contact.setLastName(productInfo.getProduct().getContact().getLastName());
+					contact.setTitle(productInfo.getProduct().getContact().getTitle());
+					contact.setEmail(productInfo.getProduct().getContact().getEmail());
+					contact.setPhoneNumber(productInfo.getProduct().getContact().getPhoneNumber());
+					toUpdate.setContact(contact);
+				}
 				//update the developer if an id is supplied
 				if(productInfo.newDeveloperId() != null) {
 					toUpdate.setDeveloperId(productInfo.newDeveloperId());

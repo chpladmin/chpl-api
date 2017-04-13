@@ -136,14 +136,14 @@ public class CertifiedProductDetailsDTO implements Serializable {
     		developerAddress.setCountry(entity.getCountry());
     		this.developer.setAddress(developerAddress);
     	}
-    	if(entity.getDeveloperContactId() != null) {
+    	if(entity.getContactId() != null) {
     		ContactDTO developerContact = new ContactDTO();
-    		developerContact.setId(entity.getDeveloperContactId());
-    		developerContact.setFirstName(entity.getDeveloperFirstName());
-    		developerContact.setLastName(entity.getDeveloperLastName());
-    		developerContact.setEmail(entity.getDeveloperEmail());
-    		developerContact.setPhoneNumber(entity.getDeveloperPhoneNumber());
-    		developerContact.setTitle(entity.getDeveloperTitle());
+    		developerContact.setId(entity.getContactId());
+    		developerContact.setFirstName(entity.getFirstName());
+    		developerContact.setLastName(entity.getLastName());
+    		developerContact.setEmail(entity.getEmail());
+    		developerContact.setPhoneNumber(entity.getPhoneNumber());
+    		developerContact.setTitle(entity.getTitle());
     		this.developer.setContact(developerContact);
     	}
     	

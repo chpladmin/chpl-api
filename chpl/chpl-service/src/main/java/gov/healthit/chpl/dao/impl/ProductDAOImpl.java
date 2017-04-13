@@ -58,14 +58,16 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 
 			if(dto.getContact() != null) {
 				if(dto.getContact().getId() != null) {
-					ContactDTO contact = contactDao.getById(dto.getContact().getId());
+					ContactEntity contact = contactDao.getEntityById(dto.getContact().getId());
 					if(contact != null && contact.getId() != null) {
 						entity.setContactId(contact.getId());
+						entity.setContact(contact);
 					}
 				} else {
 					ContactEntity contact = contactDao.create(dto.getContact());
 					if(contact != null) {
 						entity.setContactId(contact.getId());
+						entity.setContact(contact);
 					}
 				}
 			}
@@ -86,7 +88,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	@Override
-	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException {
+	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
 		ProductEntity entity = this.getEntityById(dto.getId());
 		//update product data
 		entity.setReportFileLocation(dto.getReportFileLocation());
@@ -97,17 +99,23 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		if(dto.getContact() != null) {
 			if(dto.getContact().getId() == null) {
 				//if there is not contact id then it must not exist - create it
-				ContactDTO contact = contactDao.getById(dto.getContact().getId());
+				ContactEntity contact = contactDao.create(dto.getContact());
 				if(contact != null && contact.getId() != null) {
 					entity.setContactId(contact.getId());
+					entity.setContact(contact);
 				}
 			} else {
 				//if there is a contact id then set that on the object
-				entity.setContactId(dto.getContact().getId());				
+				ContactEntity contact = contactDao.update(dto.getContact());
+				if(contact != null) {
+					entity.setContactId(dto.getContact().getId());
+					entity.setContact(contact);
+				}
 			}
 		} else {
 			//if there's no contact at all, set the id to null
 			entity.setContactId(null);
+			entity.setContact(null);
 		}
 		
 		update(entity);

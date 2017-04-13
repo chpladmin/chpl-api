@@ -112,7 +112,7 @@ public class ProductManagerImpl implements ProductManager {
 		ProductDTO result = productDao.create(dto);
 		String activityMsg = "Product "+dto.getName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, null, result);
-		return result;
+		return getById(result.getId());
 	}
 
 	@Override

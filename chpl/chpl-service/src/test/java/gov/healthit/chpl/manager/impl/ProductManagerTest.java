@@ -33,6 +33,7 @@ import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
@@ -144,7 +145,7 @@ public class ProductManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createProductWithContact() {
+	public void createProductWithNewContact() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		ProductDTO toCreate = new ProductDTO();
@@ -178,6 +179,129 @@ public class ProductManagerTest extends TestCase {
 		assertEquals(phoneNumber, created.getContact().getPhoneNumber());
 		assertEquals(title, created.getContact().getTitle());
 		assertEquals(email, created.getContact().getEmail());
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void createProductWithExistingContact() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		ProductDTO toCreate = new ProductDTO();
+		toCreate.setName("New Product");
+		toCreate.setDeveloperId(-1L);
+		toCreate.setReportFileLocation("http://www.google.com");
+		Long contactId = 1L;
+		ContactDTO contact = new ContactDTO();
+		contact.setId(contactId);
+		toCreate.setContact(contact);
+		
+		ProductDTO created = null;
+		try {
+			created = productManager.create(toCreate);
+		} catch(Exception ex) {
+			fail(ex.getMessage());
+		}
+		assertNotNull(created.getId());
+		assertNotNull(created.getContact());
+		assertNotNull(created.getContact().getId());
+		assertEquals(contactId.longValue(), created.getContact().getId().longValue());
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void updateProductWithNewContact() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		ProductDTO toUpdate = productManager.getById(-1L);
+		ContactDTO contact = new ContactDTO();
+		String firstName = "Testfirstname";
+		String lastName = "Testlastname";
+		String phoneNumber = "4445556666";
+		String title = "Mrs.";
+		String email = "test.email@domain.com";
+		contact.setFirstName(firstName);
+		contact.setLastName(lastName);
+		contact.setPhoneNumber(phoneNumber);
+		contact.setTitle(title);
+		contact.setEmail(email);
+		toUpdate.setContact(contact);
+		
+		ProductDTO updated = null;
+		try {
+			updated = productManager.update(toUpdate, false);
+		} catch(Exception ex) {
+			fail(ex.getMessage());
+		}
+		assertNotNull(updated.getId());
+		assertNotNull(updated.getContact());
+		assertNotNull(updated.getContact().getId());
+		assertEquals(firstName, updated.getContact().getFirstName());
+		assertEquals(lastName, updated.getContact().getLastName());
+		assertEquals(phoneNumber, updated.getContact().getPhoneNumber());
+		assertEquals(title, updated.getContact().getTitle());
+		assertEquals(email, updated.getContact().getEmail());
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void updateProductWithExistingContact() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		ProductDTO toUpdate = productManager.getById(-1L);
+		ContactDTO contact = new ContactDTO();
+		Long contactId = 1L;
+		contact.setId(1L);
+		toUpdate.setContact(contact);
+		
+		ProductDTO updated = null;
+		try {
+			updated = productManager.update(toUpdate, false);
+		} catch(Exception ex) {
+			fail(ex.getMessage());
+		}
+		assertNotNull(updated.getId());
+		assertNotNull(updated.getContact());
+		assertNotNull(updated.getContact().getId());
+		assertEquals(contactId.longValue(), updated.getContact().getId().longValue());
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void getCertifiedProductDetailsWithProductContact() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		ProductDTO toUpdate = productManager.getById(-1L);
+		ContactDTO contact = new ContactDTO();
+		Long contactId = 1L;
+		contact.setId(1L);
+		toUpdate.setContact(contact);
+		
+		ProductDTO updated = null;
+		try {
+			updated = productManager.update(toUpdate, false);
+		} catch(Exception ex) {
+			fail(ex.getMessage());
+		}
+		assertNotNull(updated.getId());
+		assertNotNull(updated.getContact());
+		assertNotNull(updated.getContact().getId());
+		assertEquals(contactId.longValue(), updated.getContact().getId().longValue());
+		
+		CertifiedProductSearchDetails deets = cpdManager.getCertifiedProductDetails(1L);
+		assertNotNull(deets);
+		assertNotNull(deets.getProduct());
+		assertEquals(-1, deets.getProduct().getProductId().longValue());
+		assertNotNull(deets.getProduct().getContact());
+		assertNotNull(deets.getProduct().getContact().getContactId());
+		assertEquals(1, deets.getProduct().getContact().getContactId().longValue());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
