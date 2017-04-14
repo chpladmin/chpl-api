@@ -47,7 +47,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of Certified Unique Products (Regardless of Status or Edition ñ Including 2011) 
+	 * Total # of Certified Unique Products (Regardless of Status or Edition ‚Äì Including 2011) 
 	 */
 	@Async
 	@Transactional
@@ -56,7 +56,7 @@ public class AsynchronousStatistics {
 	}
 	
 	/**
-	 * Total # of ìuniqueî Products with Active (Including Suspended) 2014 Listings
+	 * Total # of ‚Äúunique‚Äù Products with Active (Including Suspended) 2014 Listings
 	 */
 	@Async
 	@Transactional
@@ -65,7 +65,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of ìuniqueî Products with Active (Including Suspended) 2015 Listings
+	 * Total # of ‚Äúunique‚Äù Products with Active (Including Suspended) 2015 Listings
 	 */
 	@Async
 	@Transactional
@@ -74,7 +74,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of ìuniqueî Products with Active Listings (Including Suspended) (Regardless of Edition)
+	 * Total # of ‚Äúunique‚Äù Products with Active Listings (Including Suspended) (Regardless of Edition)
 	 */
 	@Async
 	@Transactional

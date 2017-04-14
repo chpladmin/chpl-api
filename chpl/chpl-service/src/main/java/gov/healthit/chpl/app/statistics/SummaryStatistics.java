@@ -192,7 +192,7 @@ public class SummaryStatistics {
 				 emailMessage.append("<li>1. Total # of Unique Developers (Regardless of Edition) -  " + stats.getTotalDevelopers() + "</li>");
 				 emailMessage.append("<ul><li>1. Total # of Developers with 2014 Listings - " + stats.getTotalDevelopersWith2014Listings() + "</li>");
 				 emailMessage.append("<li>\t2. Total # of Developers with 2015 Listings - " + stats.getTotalDevelopersWith2015Listings() + "</li></ul>");
-				 emailMessage.append("<li>2. Total # of Certified Unique Products (Regardless of Status or Edition – Including 2011) -  " + stats.getTotalCertifiedProducts() + "</li>");
+				 emailMessage.append("<li>2. Total # of Certified Unique Products (Regardless of Status or Edition â€“ Including 2011) -  " + stats.getTotalCertifiedProducts() + "</li>");
 				 emailMessage.append("<ul><li>1. Total # of unique Products with Active (Including Suspended) 2014 Listings - " + stats.getTotalCPsActive2014Listings() + "</li>");
 				 emailMessage.append("<li>2. Total # of unique Products with Active (Including Suspended) 2015 Listings - " + stats.getTotalCPsActive2015Listings() + "</li>");
 				 emailMessage.append("<li>3. Total # of unique  Products with Active Listings (Including Suspended) (Regardless of Edition) - " + stats.getTotalCPsActiveListings() + "</li></ul>");
