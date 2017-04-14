@@ -22,10 +22,9 @@ public class StatsCsvFileWriter {
     
     public static void writeCsvFile(String fileName, List<StatisticsCSVOutput> statsCsvOutput){
     	FileWriter fileWriter = null;
-    	
     	CSVPrinter csvFilePrinter = null;
-    	
     	CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
     	
     	try {
     		// initialize FileWriter object
@@ -39,7 +38,6 @@ public class StatsCsvFileWriter {
     		// Write a new StatisticsCSVOutput object list to the CSV file
     		for (StatisticsCSVOutput stat : statsCsvOutput){
     			List<String> statRecord = new ArrayList<String>();
-    			SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
    			 	dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
    			 	String dateString = dateFormat.format(stat.getDate());
     			statRecord.add(dateString);
@@ -78,7 +76,6 @@ public class StatsCsvFileWriter {
     			e.printStackTrace();
     		}
     	}
-    	
     }
     
 }
