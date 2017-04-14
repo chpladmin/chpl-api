@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Statistics implements Serializable {
 	private static final long serialVersionUID = 6977674702447513779L;
@@ -13,13 +14,8 @@ public class Statistics implements Serializable {
 	Long totalCPsActiveListings;
 	Long totalListings;
 	Long totalActive2014Listings;
-	Long totalActive2014ListingsCertifiedByDrummond;
-	Long totalActive2014ListingsCertifiedByICSALabs;
-	Long totalActive2014ListingsCertifiedByInfoGard;
 	Long totalActive2015Listings;
-	Long totalActive2015ListingsCertifiedByDrummond;
-	Long totalActive2015ListingsCertifiedByICSALabs;
-	Long totalActive2015ListingsCertifiedByInfoGard;
+	List<CertifiedBodyStatistics> totalActiveListingsByCertifiedBody;
 	Long total2014Listings;
 	Long total2015Listings;
 	Long total2011Listings;
@@ -92,6 +88,14 @@ public class Statistics implements Serializable {
 	public void setTotalActive2015Listings(Long totalActive2015Listings) {
 		this.totalActive2015Listings = totalActive2015Listings;
 	}
+	public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody() {
+		return totalActiveListingsByCertifiedBody;
+	}
+
+	public void setTotalActiveListingsByCertifiedBody(List<CertifiedBodyStatistics> totalActiveListingsByCertifiedBody) {
+		this.totalActiveListingsByCertifiedBody = totalActiveListingsByCertifiedBody;
+	}
+
 	public Long getTotal2014Listings() {
 		return total2014Listings;
 	}
@@ -145,54 +149,6 @@ public class Statistics implements Serializable {
 	}
 	public void setTotalClosedNonconformities(Long totalClosedNonconformities) {
 		this.totalClosedNonconformities = totalClosedNonconformities;
-	}
-
-	public Long getTotalActive2014ListingsCertifiedByDrummond() {
-		return totalActive2014ListingsCertifiedByDrummond;
-	}
-
-	public void setTotalActive2014ListingsCertifiedByDrummond(Long totalActive2014ListingsCertifiedByDrummond) {
-		this.totalActive2014ListingsCertifiedByDrummond = totalActive2014ListingsCertifiedByDrummond;
-	}
-
-	public Long getTotalActive2014ListingsCertifiedByICSALabs() {
-		return totalActive2014ListingsCertifiedByICSALabs;
-	}
-
-	public void setTotalActive2014ListingsCertifiedByICSALabs(Long totalActive2014ListingsCertifiedByICSALabs) {
-		this.totalActive2014ListingsCertifiedByICSALabs = totalActive2014ListingsCertifiedByICSALabs;
-	}
-
-	public Long getTotalActive2014ListingsCertifiedByInfoGard() {
-		return totalActive2014ListingsCertifiedByInfoGard;
-	}
-
-	public void setTotalActive2014ListingsCertifiedByInfoGard(Long totalActive2014ListingsCertifiedByInfoGard) {
-		this.totalActive2014ListingsCertifiedByInfoGard = totalActive2014ListingsCertifiedByInfoGard;
-	}
-
-	public Long getTotalActive2015ListingsCertifiedByDrummond() {
-		return totalActive2015ListingsCertifiedByDrummond;
-	}
-
-	public void setTotalActive2015ListingsCertifiedByDrummond(Long totalActive2015ListingsCertifiedByDrummond) {
-		this.totalActive2015ListingsCertifiedByDrummond = totalActive2015ListingsCertifiedByDrummond;
-	}
-
-	public Long getTotalActive2015ListingsCertifiedByICSALabs() {
-		return totalActive2015ListingsCertifiedByICSALabs;
-	}
-
-	public void setTotalActive2015ListingsCertifiedByICSALabs(Long totalActive2015ListingsCertifiedByICSALabs) {
-		this.totalActive2015ListingsCertifiedByICSALabs = totalActive2015ListingsCertifiedByICSALabs;
-	}
-
-	public Long getTotalActive2015ListingsCertifiedByInfoGard() {
-		return totalActive2015ListingsCertifiedByInfoGard;
-	}
-
-	public void setTotalActive2015ListingsCertifiedByInfoGard(Long totalActive2015ListingsCertifiedByInfoGard) {
-		this.totalActive2015ListingsCertifiedByInfoGard = totalActive2015ListingsCertifiedByInfoGard;
 	}
 	
 }

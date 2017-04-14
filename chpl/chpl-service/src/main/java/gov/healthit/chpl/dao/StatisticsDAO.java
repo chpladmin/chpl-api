@@ -1,5 +1,8 @@
 package gov.healthit.chpl.dao;
 
+import java.util.List;
+
+import gov.healthit.chpl.domain.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.DateRange;
 
 public interface StatisticsDAO {
@@ -12,13 +15,8 @@ public interface StatisticsDAO {
 	public Long getTotalCPsActiveListings(DateRange dateRange);
 	public Long getTotalListings(DateRange dateRange);
 	public Long getTotalActive2014Listings(DateRange dateRange);
-	public Long getTotalActive2014ListingsCertifiedByDrummond(DateRange dateRange);
-	public Long getTotalActive2014ListingsCertifiedByICSALabs(DateRange dateRange);
-	public Long getTotalActive2014ListingsCertifiedByInfoGard(DateRange dateRange);
 	public Long getTotalActive2015Listings(DateRange dateRange);
-	public Long getTotalActive2015ListingsCertifiedByInfoGard(DateRange dateRange);
-	public Long getTotalActive2015ListingsCertifiedByICSALabs(DateRange dateRange);
-	public Long getTotalActive2015ListingsCertifiedByDrummond(DateRange dateRange);
+	public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange);
 	public Long getTotal2014Listings(DateRange dateRange);
 	public Long getTotal2015Listings(DateRange dateRange);
 	public Long getTotal2011Listings(DateRange dateRange);

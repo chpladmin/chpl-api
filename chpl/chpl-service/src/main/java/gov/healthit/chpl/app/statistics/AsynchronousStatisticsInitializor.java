@@ -1,5 +1,6 @@
 package gov.healthit.chpl.app.statistics;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -12,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.domain.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.Statistics;
 
@@ -23,7 +25,7 @@ public class AsynchronousStatisticsInitializor {
 	
 	@Transactional
 	@Async
-	public Future<Statistics> getStatisticsForEmailBody(DateRange dateRange) throws InterruptedException, ExecutionException{
+	public Future<Statistics> getStatistics(DateRange dateRange, Boolean includeActiveStats) throws InterruptedException, ExecutionException{
 		Statistics stats = new Statistics();
 		logger.info("Getting statistics for start date " + dateRange.getStartDate() + " end date " + dateRange.getEndDate());
 		Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(dateRange);
@@ -32,16 +34,16 @@ public class AsynchronousStatisticsInitializor {
 		Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(dateRange);
 		Future<Long> totalCPsActive2014Listings = asyncStats.getTotalCPsActive2014Listings(dateRange);
 		Future<Long> totalCPsActive2015Listings = asyncStats.getTotalCPsActive2015Listings(dateRange);
+		if(includeActiveStats){
+			Future<Long> totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
+			Future<Long> totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
+			Future<List<CertifiedBodyStatistics>> totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(dateRange);
+			stats.setTotalActive2014Listings(totalActive2014Listings.get());
+			stats.setTotalActive2015Listings(totalActive2015Listings.get());
+			stats.setTotalActiveListingsByCertifiedBody(totalActiveListingsByCertifiedBody.get());
+		}
 		Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(dateRange);
 		Future<Long> totalListings = asyncStats.getTotalListings(dateRange);
-		Future<Long> totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
-		Future<Long> totalActive2014ListingsCertifiedByDrummond = asyncStats.getTotalActive2014ListingsCertifiedByDrummond(dateRange);
-		Future<Long> totalActive2014ListingsCertifiedByInfoGard = asyncStats.getTotalActive2014ListingsCertifiedByInfoGard(dateRange);
-		Future<Long> totalActive2014ListingsCertifiedByICSALabs = asyncStats.getTotalActive2015ListingsCertifiedByICSALabs(dateRange);
-		Future<Long> totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
-		Future<Long> totalActive2015ListingsCertifiedByDrummond = asyncStats.getTotalActive2015ListingsCertifiedByDrummond(dateRange);
-		Future<Long> totalActive2015ListingsCertifiedByInfoGard = asyncStats.getTotalActive2015ListingsCertifiedByInfoGard(dateRange);
-		Future<Long> totalActive2015ListingsCertifiedByICSALabs = asyncStats.getTotalActive2015ListingsCertifiedByICSALabs(dateRange);
 		Future<Long> total2014Listings = asyncStats.getTotal2014Listings(dateRange);
 		Future<Long> total2015Listings = asyncStats.getTotal2015Listings(dateRange);
 		Future<Long> total2011Listings = asyncStats.getTotal2011Listings(dateRange);
@@ -56,18 +58,10 @@ public class AsynchronousStatisticsInitializor {
 		stats.setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings.get());
 		stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
 		stats.setTotalCertifiedProducts(totalCertifiedProducts.get());
+		stats.setTotalCPsActiveListings(totalCPsActiveListings.get());
 		stats.setTotalCPsActive2014Listings(totalCPsActive2014Listings.get());
 		stats.setTotalCPsActive2015Listings(totalCPsActive2015Listings.get());
-		stats.setTotalCPsActiveListings(totalCPsActiveListings.get());
 		stats.setTotalListings(totalListings.get());
-		stats.setTotalActive2014Listings(totalActive2014Listings.get());
-		stats.setTotalActive2014ListingsCertifiedByDrummond(totalActive2014ListingsCertifiedByDrummond.get());
-		stats.setTotalActive2014ListingsCertifiedByInfoGard(totalActive2014ListingsCertifiedByInfoGard.get());
-		stats.setTotalActive2014ListingsCertifiedByICSALabs(totalActive2014ListingsCertifiedByICSALabs.get());
-		stats.setTotalActive2015Listings(totalActive2015Listings.get());
-		stats.setTotalActive2015ListingsCertifiedByDrummond(totalActive2015ListingsCertifiedByDrummond.get());
-		stats.setTotalActive2015ListingsCertifiedByInfoGard(totalActive2015ListingsCertifiedByInfoGard.get());
-		stats.setTotalActive2015ListingsCertifiedByICSALabs(totalActive2015ListingsCertifiedByICSALabs.get());
 		stats.setTotal2014Listings(total2014Listings.get());
 		stats.setTotal2015Listings(total2015Listings.get());
 		stats.setTotal2011Listings(total2011Listings.get());
@@ -81,48 +75,98 @@ public class AsynchronousStatisticsInitializor {
 		return new AsyncResult<>(stats);
 	}
 	
-	@Transactional
-	@Async
-	public Future<Statistics> getStatisticsForCsv(DateRange dateRange) throws InterruptedException, ExecutionException{
-		Statistics stats = new Statistics();
-		logger.info("Getting statistics for start date " + dateRange.getStartDate() + " end date " + dateRange.getEndDate());
-		Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(dateRange);
-		Future<Long> totalDevelopersWith2014Listings = asyncStats.getTotalDevelopersWith2014Listings(dateRange);
-		Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(dateRange);
-		Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(dateRange);
-		Future<Long> totalCPsActive2014Listings = asyncStats.getTotalCPsActive2014Listings(dateRange);
-		Future<Long> totalCPsActive2015Listings = asyncStats.getTotalCPsActive2015Listings(dateRange);
-		Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(dateRange);
-		Future<Long> totalListings = asyncStats.getTotalListings(dateRange);
-		Future<Long> total2014Listings = asyncStats.getTotal2014Listings(dateRange);
-		Future<Long> total2015Listings = asyncStats.getTotal2015Listings(dateRange);
-		Future<Long> total2011Listings = asyncStats.getTotal2011Listings(dateRange);
-		Future<Long> totalSurveillanceActivities = asyncStats.getTotalSurveillanceActivities(dateRange);
-		Future<Long> totalOpenSurveillanceActivities = asyncStats.getTotalOpenSurveillanceActivities(dateRange);
-		Future<Long> totalClosedSurveillanceActivities = asyncStats.getTotalClosedSurveillanceActivities(dateRange);
-		Future<Long> totalNonConformities = asyncStats.getTotalNonConformities(dateRange);
-		Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(dateRange);
-		Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(dateRange);
-		
-		stats.setTotalDevelopers(totalDevelopers.get());
-		stats.setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings.get());
-		stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
-		stats.setTotalCertifiedProducts(totalCertifiedProducts.get());
-		stats.setTotalCPsActive2014Listings(totalCPsActive2014Listings.get());
-		stats.setTotalCPsActive2015Listings(totalCPsActive2015Listings.get());
-		stats.setTotalCPsActiveListings(totalCPsActiveListings.get());
-		stats.setTotalListings(totalListings.get());
-		stats.setTotal2014Listings(total2014Listings.get());
-		stats.setTotal2015Listings(total2015Listings.get());
-		stats.setTotal2011Listings(total2011Listings.get());
-		stats.setTotalSurveillanceActivities(totalSurveillanceActivities.get());
-		stats.setTotalOpenSurveillanceActivities(totalOpenSurveillanceActivities.get());
-		stats.setTotalClosedSurveillanceActivities(totalClosedSurveillanceActivities.get());
-		stats.setTotalNonConformities(totalNonConformities.get());
-		stats.setTotalOpenNonconformities(totalOpenNonConformities.get());
-		stats.setTotalClosedNonconformities(totalClosedNonConformities.get());
-		
-		return new AsyncResult<>(stats);
-	}
+//	@Transactional
+//	@Async
+//	public Future<Statistics> getStatisticsForEmailBody(DateRange dateRange) throws InterruptedException, ExecutionException{
+//		Statistics stats = new Statistics();
+//		logger.info("Getting statistics for start date " + dateRange.getStartDate() + " end date " + dateRange.getEndDate());
+//		Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(dateRange);
+//		Future<Long> totalDevelopersWith2014Listings = asyncStats.getTotalDevelopersWith2014Listings(dateRange);
+//		Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(dateRange);
+//		Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(dateRange);
+//		Future<Long> totalCPsActive2014Listings = asyncStats.getTotalCPsActive2014Listings(dateRange);
+//		Future<Long> totalCPsActive2015Listings = asyncStats.getTotalCPsActive2015Listings(dateRange);
+//		Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(dateRange);
+//		Future<Long> totalListings = asyncStats.getTotalListings(dateRange);
+//		Future<Long> totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
+//		Future<List<CertifiedBodyStatistics>> totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(dateRange);
+//		Future<Long> totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
+//		Future<Long> total2014Listings = asyncStats.getTotal2014Listings(dateRange);
+//		Future<Long> total2015Listings = asyncStats.getTotal2015Listings(dateRange);
+//		Future<Long> total2011Listings = asyncStats.getTotal2011Listings(dateRange);
+//		Future<Long> totalSurveillanceActivities = asyncStats.getTotalSurveillanceActivities(dateRange);
+//		Future<Long> totalOpenSurveillanceActivities = asyncStats.getTotalOpenSurveillanceActivities(dateRange);
+//		Future<Long> totalClosedSurveillanceActivities = asyncStats.getTotalClosedSurveillanceActivities(dateRange);
+//		Future<Long> totalNonConformities = asyncStats.getTotalNonConformities(dateRange);
+//		Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(dateRange);
+//		Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(dateRange);
+//		
+//		stats.setTotalDevelopers(totalDevelopers.get());
+//		stats.setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings.get());
+//		stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
+//		stats.setTotalCertifiedProducts(totalCertifiedProducts.get());
+//		stats.setTotalCPsActive2014Listings(totalCPsActive2014Listings.get());
+//		stats.setTotalCPsActive2015Listings(totalCPsActive2015Listings.get());
+//		stats.setTotalCPsActiveListings(totalCPsActiveListings.get());
+//		stats.setTotalListings(totalListings.get());
+//		stats.setTotalActive2014Listings(totalActive2014Listings.get());
+//		stats.setTotalActive2015Listings(totalActive2015Listings.get());
+//		stats.setTotalActiveListingsByCertifiedBody(totalActiveListingsByCertifiedBody.get());
+//		stats.setTotal2014Listings(total2014Listings.get());
+//		stats.setTotal2015Listings(total2015Listings.get());
+//		stats.setTotal2011Listings(total2011Listings.get());
+//		stats.setTotalSurveillanceActivities(totalSurveillanceActivities.get());
+//		stats.setTotalOpenSurveillanceActivities(totalOpenSurveillanceActivities.get());
+//		stats.setTotalClosedSurveillanceActivities(totalClosedSurveillanceActivities.get());
+//		stats.setTotalNonConformities(totalNonConformities.get());
+//		stats.setTotalOpenNonconformities(totalOpenNonConformities.get());
+//		stats.setTotalClosedNonconformities(totalClosedNonConformities.get());
+//		
+//		return new AsyncResult<>(stats);
+//	}
+//	
+//	@Transactional
+//	@Async
+//	public Future<Statistics> getStatisticsForCsv(DateRange dateRange) throws InterruptedException, ExecutionException{
+//		Statistics stats = new Statistics();
+//		logger.info("Getting statistics for start date " + dateRange.getStartDate() + " end date " + dateRange.getEndDate());
+//		Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(dateRange);
+//		Future<Long> totalDevelopersWith2014Listings = asyncStats.getTotalDevelopersWith2014Listings(dateRange);
+//		Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(dateRange);
+//		Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(dateRange);
+//		Future<Long> totalCPsActive2014Listings = asyncStats.getTotalCPsActive2014Listings(dateRange);
+//		Future<Long> totalCPsActive2015Listings = asyncStats.getTotalCPsActive2015Listings(dateRange);
+//		Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(dateRange);
+//		Future<Long> totalListings = asyncStats.getTotalListings(dateRange);
+//		Future<Long> total2014Listings = asyncStats.getTotal2014Listings(dateRange);
+//		Future<Long> total2015Listings = asyncStats.getTotal2015Listings(dateRange);
+//		Future<Long> total2011Listings = asyncStats.getTotal2011Listings(dateRange);
+//		Future<Long> totalSurveillanceActivities = asyncStats.getTotalSurveillanceActivities(dateRange);
+//		Future<Long> totalOpenSurveillanceActivities = asyncStats.getTotalOpenSurveillanceActivities(dateRange);
+//		Future<Long> totalClosedSurveillanceActivities = asyncStats.getTotalClosedSurveillanceActivities(dateRange);
+//		Future<Long> totalNonConformities = asyncStats.getTotalNonConformities(dateRange);
+//		Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(dateRange);
+//		Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(dateRange);
+//		
+//		stats.setTotalDevelopers(totalDevelopers.get());
+//		stats.setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings.get());
+//		stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
+//		stats.setTotalCertifiedProducts(totalCertifiedProducts.get());
+//		stats.setTotalCPsActive2014Listings(totalCPsActive2014Listings.get());
+//		stats.setTotalCPsActive2015Listings(totalCPsActive2015Listings.get());
+//		stats.setTotalCPsActiveListings(totalCPsActiveListings.get());
+//		stats.setTotalListings(totalListings.get());
+//		stats.setTotal2014Listings(total2014Listings.get());
+//		stats.setTotal2015Listings(total2015Listings.get());
+//		stats.setTotal2011Listings(total2011Listings.get());
+//		stats.setTotalSurveillanceActivities(totalSurveillanceActivities.get());
+//		stats.setTotalOpenSurveillanceActivities(totalOpenSurveillanceActivities.get());
+//		stats.setTotalClosedSurveillanceActivities(totalClosedSurveillanceActivities.get());
+//		stats.setTotalNonConformities(totalNonConformities.get());
+//		stats.setTotalOpenNonconformities(totalOpenNonConformities.get());
+//		stats.setTotalClosedNonconformities(totalClosedNonConformities.get());
+//		
+//		return new AsyncResult<>(stats);
+//	}
 	
 }

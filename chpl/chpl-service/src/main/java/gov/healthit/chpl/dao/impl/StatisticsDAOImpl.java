@@ -1,10 +1,14 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.StatisticsDAO;
+import gov.healthit.chpl.domain.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.DateRange;
 
 @Repository("statisticsDAO")
@@ -135,42 +139,25 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	 * Total # of Active (Including Suspended) 2014 Listings
 	 */
 	@Override
-	public Long getTotalActive2014ListingsCertifiedByDrummond(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND certificationBodyName = 'Drummond Group Inc.' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+	public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT certificationBodyName, year, count(*) FROM CertifiedProductDetailsEntity "
+				+ " WHERE UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
+				+ " GROUP BY certificationBodyName, year "
+				+ " ORDER BY certificationBodyName ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-	
-	/**
-	 * Total # of Active (Including Suspended) 2014 Listings
-	 */
-	@Override
-	public Long getTotalActive2014ListingsCertifiedByICSALabs(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND certificationBodyName = 'ICSA Labs' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
-				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-	
-	/**
-	 * Total # of Active (Including Suspended) 2014 Listings
-	 */
-	@Override
-	public Long getTotalActive2014ListingsCertifiedByInfoGard(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND certificationBodyName = 'InfoGard' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
-				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
+		List<Object[]> results = query.getResultList();
+		List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
+		for(Object[] obj : results){
+			CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+			stat.setName(obj[0].toString());
+			stat.setYear(Integer.valueOf(obj[1].toString()));
+			stat.setCount(Long.valueOf(obj[2].toString()));
+			cbStats.add(stat);
+		}
+		return cbStats;
 	}
 
 	/**
@@ -180,48 +167,6 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	public Long getTotalActive2015Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
 				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
-				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-	
-	/**
-	 * Total # of Active (Including Suspended) 2015 Listings
-	 */
-	@Override
-	public Long getTotalActive2015ListingsCertifiedByInfoGard(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2015' AND certificationBodyName = 'InfoGard' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
-				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-	
-	/**
-	 * Total # of Active (Including Suspended) 2015 Listings
-	 */
-	@Override
-	public Long getTotalActive2015ListingsCertifiedByICSALabs(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2015' AND certificationBodyName = 'ICSA Labs' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
-				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-	
-	/**
-	 * Total # of Active (Including Suspended) 2015 Listings
-	 */
-	@Override
-	public Long getTotalActive2015ListingsCertifiedByDrummond(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2015' AND certificationBodyName = 'Drummond Group Inc.' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());

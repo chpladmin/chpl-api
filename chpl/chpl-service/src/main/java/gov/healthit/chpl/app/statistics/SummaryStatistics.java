@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.app.AppConfig;
 import gov.healthit.chpl.app.LocalContext;
 import gov.healthit.chpl.app.LocalContextFactory;
+import gov.healthit.chpl.domain.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.Statistics;
 
@@ -56,7 +57,7 @@ public class SummaryStatistics {
 				 summaryStats.props.getProperty("dataSourceUsername"), summaryStats.props.getProperty("dataSourcePassword"));
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		 summaryStats.initializeSpringClasses(context);
-		 Future<Statistics> futureEmailBodyStats = summaryStats.asynchronousStatisticsInitializor.getStatisticsForEmailBody(new DateRange(startDate, endDate));
+		 Future<Statistics> futureEmailBodyStats = summaryStats.asynchronousStatisticsInitializor.getStatistics(new DateRange(startDate, endDate), true);
 		 Statistics emailBodyStats = futureEmailBodyStats.get();
 		 List<StatisticsCSVOutput> csvStats = new ArrayList<StatisticsCSVOutput>();
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -64,7 +65,7 @@ public class SummaryStatistics {
 		 while(endDate.compareTo(calendarCounter.getTime()) >= 0){
 			 logger.info("Getting csvRecord for start date " + startDate.toString() + " end date " + calendarCounter.getTime().toString());
 			 DateRange csvRange = new DateRange(startDate, new Date(calendarCounter.getTimeInMillis()));
-			 Future<Statistics> futureEmailCsvStats = summaryStats.asynchronousStatisticsInitializor.getStatisticsForCsv(csvRange);
+			 Future<Statistics> futureEmailCsvStats = summaryStats.asynchronousStatisticsInitializor.getStatistics(csvRange, false);
 			 Statistics csvStat = futureEmailCsvStats.get();
 			 StatisticsCSVOutput record = new StatisticsCSVOutput(calendarCounter.getTime(), csvStat.getTotalDevelopers(), csvStat.getTotalDevelopersWith2014Listings(),
 					 csvStat.getTotalDevelopersWith2015Listings(), csvStat.getTotalCertifiedProducts(), csvStat.getTotalCPsActive2014Listings(), 
@@ -197,13 +198,35 @@ public class SummaryStatistics {
 				 emailMessage.append("<li>3. Total # of unique  Products with Active Listings (Including Suspended) (Regardless of Edition) - " + stats.getTotalCPsActiveListings() + "</li></ul>");
 				 emailMessage.append("<li>3. Total # of Listings (Regardless of Status or Edition) -  " + stats.getTotalListings() + "</li>");
 				 emailMessage.append("<ul><li>1. Total # of Active (Including Suspended) 2014 Listings - " + stats.getTotalActive2014Listings() + "</li>");
-				 emailMessage.append("<ul><li>1. Certified by Drummond Group - " + stats.getTotalActive2014ListingsCertifiedByDrummond() + "</li>");
-				 emailMessage.append("<li>2. Certified by ICSA Labs - " + stats.getTotalActive2014ListingsCertifiedByICSALabs() + "</li>");
-				 emailMessage.append("<li>3. Certified by InfoGard - " + stats.getTotalActive2014ListingsCertifiedByInfoGard() + "</li></ul>");
+				 Integer statCounter2014 = 1;
+				 for(CertifiedBodyStatistics stat : stats.getTotalActiveListingsByCertifiedBody()){
+					 if(stat.getYear() != 2014){
+						 continue;
+					 }
+					 if(statCounter2014 == 1){
+						 emailMessage.append("<ul><li>" + statCounter2014 + ". Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
+					 } else{
+						 emailMessage.append("<li>" + statCounter2014 + ". Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
+					 }
+					 
+					 statCounter2014++;
+				 }
+				 emailMessage.append("</ul>");
 				 emailMessage.append("<li>2. Total # of Active (Including Suspended) 2015 Listings - " + stats.getTotalActive2015Listings() + "</li>");
-				 emailMessage.append("<ul><li>1. Certified by Drummond Group - " + stats.getTotalActive2015ListingsCertifiedByDrummond() + "</li>");
-				 emailMessage.append("<li>2. Certified by ICSA Labs - " + stats.getTotalActive2015ListingsCertifiedByICSALabs() + "</li>");
-				 emailMessage.append("<li>3. Certified by InfoGard - " + stats.getTotalActive2015ListingsCertifiedByInfoGard() + "</li></ul>");
+				 Integer statCounter2015 = 1;
+				 for(CertifiedBodyStatistics stat : stats.getTotalActiveListingsByCertifiedBody()){
+					 if(stat.getYear() != 2015){
+						 continue;
+					 }
+					 if(statCounter2015 == 1){
+						 emailMessage.append("<ul><li>" + statCounter2015 + ". Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
+					 } else {
+						 emailMessage.append("<li>" + statCounter2015 + ". Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
+					 }
+					 
+					 statCounter2015++;
+				 }
+				 emailMessage.append("</ul>");
 				 emailMessage.append("<li>3. Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
 				 emailMessage.append("<li>4. Total # of 2015 Listings (Regardless of Status) - " + stats.getTotal2015Listings() + "</li>");
 				 emailMessage.append("<li>5. Total # of 2011 Listings (Regardless of Status) - " + stats.getTotal2011Listings() + "</li></ul>");

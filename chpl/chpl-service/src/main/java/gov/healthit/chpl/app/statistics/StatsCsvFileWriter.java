@@ -15,10 +15,10 @@ public class StatsCsvFileWriter {
 	private static final String NEW_LINE_SEPARATOR = "\n";
 		
     //CSV file header
-    private static final Object [] FILE_HEADER = {"date","totalDevelopers","totalDevelopersWith2014Listings","totalDevelopersWith2015Listings","totalCertifiedProducts",
-    		"totalProductsWithActive2014Listings","totalProductsWithActive2015Listings","totalProductsWithActiveListings",
-    		"totalListings", "total2014Listings", "total2015Listings", "total2011Listings","totalSurveillanceActivities","totalOpenSurveillanceActivities",
-    		"totalClosedSurveillanceActivities","totalNonConformities","totalOpenNonConformities","totalClosedNonConformities"};
+    private static final Object [] FILE_HEADER = {"Date","Total Developers","Total Developers With 2014 Listings","Total Developers With 2015 Listings","Total Unique Products",
+    		"Total Products With Active 2014 Listings","Total Products With Active 2015 Listings","Total Products With Active Listings",
+    		"Total Listings", "Total 2014 Listings", "Total 2015 Listings", "Total 2011 Listings","Total Surveillance Activities","Total Open Surveillance Activities",
+    		"Total Closed Surveillance Activities","Total NonConformities","Total Open NonConformities","Total Closed NonConformities"};
     
     public static void writeCsvFile(String fileName, List<StatisticsCSVOutput> statsCsvOutput){
     	FileWriter fileWriter = null;
