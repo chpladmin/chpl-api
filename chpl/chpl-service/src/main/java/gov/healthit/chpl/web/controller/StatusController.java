@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.CacheReplacer;
 import gov.healthit.chpl.caching.CacheStatus;
 import gov.healthit.chpl.caching.CacheUtil;
 import io.swagger.annotations.Api;

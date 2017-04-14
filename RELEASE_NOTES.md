@@ -6,6 +6,7 @@ _Date TBD_
 ### Features Added
 * Update parameters for HTTP GET /search call. All the same options that were previously available only to POST exist for the GET. Updated related API documentation.
 * Add /cache_status endpoint. Returns a status of OK or INITIALIZING based on whether the basic search cache has been loaded.
+* Add statistics to ONC weekly email body and csv file
 
 ---
 
