@@ -1,4 +1,4 @@
-﻿package gov.healthit.chpl.app.statistics;
+package gov.healthit.chpl.app.statistics;
 
 import java.util.List;
 import java.util.concurrent.Future;
