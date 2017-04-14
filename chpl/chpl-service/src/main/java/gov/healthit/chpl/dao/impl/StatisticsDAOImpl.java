@@ -54,7 +54,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 
 	/**
-	 * Total # of Certified Unique Products (Regardless of Status or Edition ñ Including 2011) 
+	 * Total # of Certified Unique Products (Regardless of Status or Edition ‚Äì Including 2011) 
 	 */
 	@Override
 	public Long getTotalCertifiedProducts(DateRange dateRange) {
@@ -67,7 +67,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 
 	/**
-	 * Total # of ìuniqueî Products with Active (Including Suspended) 2014 Listings
+	 * Total # of ‚Äúunique‚Äù Products with Active (Including Suspended) 2014 Listings
 	 */
 	@Override
 	public Long getTotalCPsActive2014Listings(DateRange dateRange) {
@@ -81,7 +81,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 
 	/**
-	 * Total # of ìuniqueî Products with Active (Including Suspended) 2015 Listings
+	 * Total # of ‚Äúunique‚Äù Products with Active (Including Suspended) 2015 Listings
 	 */
 	@Override
 	public Long getTotalCPsActive2015Listings(DateRange dateRange) {
@@ -95,7 +95,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 
 	/**
-	 * Total # of ìuniqueî Products with Active Listings (Including Suspended) (Regardless of Edition)
+	 * Total # of ‚Äúunique‚Äù Products with Active Listings (Including Suspended) (Regardless of Edition)
 	 */
 	@Override
 	public Long getTotalCPsActiveListings(DateRange dateRange) {
