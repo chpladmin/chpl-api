@@ -341,12 +341,14 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	private void update(ProductEntity entity) {
 		
 		entityManager.merge(entity);	
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	private List<ProductEntity> getAllEntities() {

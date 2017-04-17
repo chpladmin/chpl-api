@@ -230,7 +230,7 @@ public class ProductManagerImpl implements ProductManager {
 			affectedVersion.setProductName(newProduct.getName());
 			versionDao.update(affectedVersion);
 			ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, afterVersion.getId(), "Product Version "+afterVersion.getVersion()+" product owner updated to "+afterVersion.getProductId(), beforeVersion, afterVersion);
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, afterVersion.getId(), "Product Version "+afterVersion.getVersion()+" product owner updated to "+afterVersion.getProductName(), beforeVersion, afterVersion);
 			affectedVersionIds.add(affectedVersion.getId());
 		}
 		

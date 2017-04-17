@@ -408,6 +408,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		
 		entityManager.persist(product);
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	@Transactional(readOnly=false)
@@ -415,6 +416,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		
 		entityManager.merge(product);	
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	@Transactional(readOnly=true)
