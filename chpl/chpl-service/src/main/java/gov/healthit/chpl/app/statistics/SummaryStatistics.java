@@ -78,9 +78,9 @@ public class SummaryStatistics {
 			 calendarCounter.add(Calendar.DATE, numDaysInPeriod);
 		 }
 		 logger.info("Finished getting statistics");
-		 StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + "\\" + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
+		 StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 		 List<File> files = new ArrayList<File>();
-		 File csvFile = new File(props.getProperty("downloadFolderPath") + "\\" + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
+		 File csvFile = new File(props.getProperty("downloadFolderPath") + File.separator + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
 		 files.add(csvFile);
 		 summaryStats.setEmailProperties(emailBodyStats, files);
 		 summaryStats.email.sendEmail(summaryStats.email.getEmailTo(), summaryStats.email.getEmailSubject(), 
