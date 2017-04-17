@@ -1,6 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.caching.CacheEvictor;
+import gov.healthit.chpl.caching.CacheUpdater;
+import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.CacheUtil;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.SearchRequest;
@@ -26,6 +30,8 @@ import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import junit.framework.TestCase;
+import net.sf.ehcache.CacheException;
+import net.sf.ehcache.CacheManager;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,7 +46,9 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	@Autowired
 	private CertifiedProductSearchManager certifiedProductSearchManager;
 	
-	@Autowired CacheEvictor cacheEvictor;
+	@Autowired private CacheUtil cacheUtil;
+	
+	@Autowired private CacheUpdater cacheUpdater;
 	
 	@Rule
     @Autowired
@@ -269,7 +277,10 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 
 	@Test
 	@Transactional(readOnly = true)
-	public void testBasicSearchCache() {
+	public void testBasicSearchCache() throws IllegalStateException, CacheException, ClassCastException, InterruptedException, ExecutionException {
+		CacheManager manager = cacheUtil.getMyCacheManager();
+		assertEquals(0, manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize());
+		assertEquals(0, manager.getCache(CacheNames.BASIC_SEARCH).getSize());
 		List<CertifiedProductFlatSearchResult> response = certifiedProductSearchManager.search();
 		//basic search response should now be cached
 		List<CertifiedProductFlatSearchResult> response2 = certifiedProductSearchManager.search();
@@ -277,13 +288,29 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		assertEquals(response, response2);
 		
 		//expect cache to clear properly the first time; prefetched cache was not cached
-		cacheEvictor.evictPreFetchedBasicSearch();
+		Future<Boolean> isEvictDone = cacheUpdater.updateBasicSearch(); 
+		isEvictDone.get();
+		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
+		// Verify that the preFetchedCache gets populated
+		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
 		List<CertifiedProductFlatSearchResult> response3 = certifiedProductSearchManager.search();
-		assertNotSame(response2, response3);
+		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
+		assertNotSame(response2, response3); 
 		
 		//make sure the cache also clears the second time; prefetched cache was cached
-		cacheEvictor.evictPreFetchedBasicSearch();
+		isEvictDone = cacheUpdater.updateBasicSearch();
+		isEvictDone.get();
+		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
+		// Verify that the preFetchedCache gets populated
+		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
 		List<CertifiedProductFlatSearchResult> response4 = certifiedProductSearchManager.search();
+		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
 		assertNotSame(response3, response4);
 	}
 }
