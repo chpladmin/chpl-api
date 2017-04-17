@@ -362,6 +362,21 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	@Transactional(readOnly=true)
+	public List<CertifiedProductDetailsDTO> getDetailsByProductId(Long productId) {
+		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity deets "
+				+ "LEFT OUTER JOIN FETCH deets.product "
+				+ "WHERE deets.productId = :productId)", CertifiedProductDetailsEntity.class );
+		query.setParameter("productId", productId);
+		List<CertifiedProductDetailsEntity> results = query.getResultList();
+		
+		List<CertifiedProductDetailsDTO> dtoResults = new ArrayList<CertifiedProductDetailsDTO>();
+		for(CertifiedProductDetailsEntity result : results) {
+			dtoResults.add(new CertifiedProductDetailsDTO(result));
+		}
+		return dtoResults;
+	}
+	
+	@Transactional(readOnly=true)
 	public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds) {
 		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity where (NOT deleted = true) and certification_body_id IN :idList", CertifiedProductDetailsEntity.class );
 		query.setParameter("idList", acbIds);
@@ -393,6 +408,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		
 		entityManager.persist(product);
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	@Transactional(readOnly=false)
@@ -400,6 +416,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		
 		entityManager.merge(product);	
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	@Transactional(readOnly=true)

@@ -28,6 +28,7 @@ public interface CertifiedProductDAO {
 	
 	public List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers);
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId);
+	public List<CertifiedProductDetailsDTO> getDetailsByProductId(Long productId);
 	public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds);
 	public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
 	

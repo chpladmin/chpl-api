@@ -20,6 +20,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -66,14 +67,15 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			}
 			if(dto.getContact() != null) {
 				if(dto.getContact().getId() != null) {
-					Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
-					query.setParameter("entityid", dto.getContact().getId());
-					List<ContactEntity> result = query.getResultList();
-					if(result != null && result.size() > 0) {
-						entity.setContact(result.get(0));
+					ContactDTO contact = contactDao.getById(dto.getContact().getId());
+					if(contact != null && contact.getId() != null) {
+						entity.setContactId(contact.getId());
 					}
 				} else {
-					entity.setContact(contactDao.create(dto.getContact()));
+					ContactEntity contact = contactDao.create(dto.getContact());
+					if(contact != null) {
+						entity.setContactId(contact.getId());
+					}				
 				}
 			}
 
@@ -186,31 +188,19 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 
 		if(dto.getContact() != null) {
-			if(dto.getContact().getId() != null) {
-				Query query = entityManager.createQuery("from ContactEntity a where (NOT deleted = true) AND (contact_id = :entityid) ", ContactEntity.class );
-				query.setParameter("entityid", dto.getContact().getId());
-				List<ContactEntity> result = query.getResultList();
-				if(result != null && result.size() > 0) {
-					entity.setContact(result.get(0));
+			if(dto.getContact().getId() == null) {
+				//if there is not contact id then it must not exist - create it
+				ContactDTO contact = contactDao.getById(dto.getContact().getId());
+				if(contact != null && contact.getId() != null) {
+					entity.setContactId(contact.getId());
 				}
 			} else {
-				try {
-					if(StringUtils.isEmpty(dto.getContact().getFirstName())) {
-						dto.getContact().setFirstName("");
-					}
-					if(StringUtils.isEmpty(dto.getContact().getEmail())) {
-						dto.getContact().setEmail("");
-					}
-					if(StringUtils.isEmpty(dto.getContact().getPhoneNumber())) {
-						dto.getContact().setPhoneNumber("");
-					}
-					entity.setContact(contactDao.create(dto.getContact()));
-				} catch(EntityCreationException ex) {
-					logger.error("could not create contact.", ex);
-				}
+				//if there is a contact id then set that on the object
+				entity.setContactId(dto.getContact().getId());				
 			}
 		} else {
-			entity.setContact(null);
+			//if there's no contact at all, set the id to null
+			entity.setContactId(null);
 		}
 
 		entity.setWebsite(dto.getWebsite());

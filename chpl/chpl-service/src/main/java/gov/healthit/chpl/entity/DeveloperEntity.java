@@ -48,9 +48,13 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@JoinColumn(name = "address_id", unique=true, nullable = true)
 	private AddressEntity address;
 	
+	@Basic(optional = true) 
+	@Column(name = "contact_id")
+	private Long contactId;
+	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contact_id", unique=true, nullable = true)
+	@JoinColumn(name = "contact_id", unique=true, nullable = true,  insertable = false, updatable = false)
 	private ContactEntity contact;
 	
 	@Basic( optional = false )
@@ -301,6 +305,14 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		sb.append("name: " + this.getName() + ", ");
 		sb.append("website: " + this.getWebsite());
 		return sb.toString();		
+	}
+
+	public Long getContactId() {
+		return contactId;
+	}
+
+	public void setContactId(Long contactId) {
+		this.contactId = contactId;
 	}
 
 }

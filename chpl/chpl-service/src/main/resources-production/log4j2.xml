@@ -25,7 +25,7 @@
     <Logger name="org.springframework" level="ERROR" additivity="false">
       <AppenderRef ref="FILE"/>
     </Logger>
-    <Logger name="gov.healthit.chpl" level="WARN" additivity="false">
+    <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
       <AppenderRef ref="FILE"/>
     </Logger>
     <Root level="WARN">

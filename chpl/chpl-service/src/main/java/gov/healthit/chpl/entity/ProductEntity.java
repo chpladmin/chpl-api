@@ -52,6 +52,15 @@ public class ProductEntity implements Serializable {
 	@Column( name = "name")
 	private String name;
 	
+	@Basic(optional = true) 
+	@Column(name = "contact_id")
+	private Long contactId;
+	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "contact_id", unique=true, nullable = true, insertable = false, updatable = false)
+	private ContactEntity contact;
+	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "productId"  )
 	@Basic( optional = false )
 	@Column( name = "product_id", nullable = false  )
@@ -78,7 +87,7 @@ public class ProductEntity implements Serializable {
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="productId")
 	@Basic(optional=true)
 	@Column( name = "product_id", nullable = false  )
-	private List<ProductActiveOwnerEntity> ownerHistory = new ArrayList<ProductActiveOwnerEntity>();
+	private Set<ProductActiveOwnerEntity> ownerHistory = new HashSet<ProductActiveOwnerEntity>();
 	
 	 /**
 	 * Return the value associated with the column: creationDate.
@@ -253,12 +262,28 @@ public class ProductEntity implements Serializable {
 		this.developer = developer;
 	}
 
-	public List<ProductActiveOwnerEntity> getOwnerHistory() {
+	public Set<ProductActiveOwnerEntity> getOwnerHistory() {
 		return ownerHistory;
 	}
 
-	public void setOwnerHistory(List<ProductActiveOwnerEntity> ownerHistory) {
+	public void setOwnerHistory(Set<ProductActiveOwnerEntity> ownerHistory) {
 		this.ownerHistory = ownerHistory;
+	}
+
+	public ContactEntity getContact() {
+		return contact;
+	}
+
+	public void setContact(ContactEntity contact) {
+		this.contact = contact;
+	}
+
+	public Long getContactId() {
+		return contactId;
+	}
+
+	public void setContactId(Long contactId) {
+		this.contactId = contactId;
 	}
 
 //	public List<ProductOwnerEntity> getOwnerHistory() {

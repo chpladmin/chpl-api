@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class UpdateProductsRequest implements Serializable {
-	private static final long serialVersionUID = -5814308900559692235L;
+	private static final long serialVersionUID = -5814847900559692235L;
 	private List<Long> productIds;
 	private Product product;
 	private Long newDeveloperId;

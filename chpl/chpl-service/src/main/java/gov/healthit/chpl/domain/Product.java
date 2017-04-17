@@ -12,6 +12,7 @@ public class Product implements Serializable {
 	private Long productId;
 	private String name;
 	private String reportFileLocation;
+	private Contact contact;
 	private String lastModifiedDate;
 	private Developer owner;
 	private List<ProductOwner> ownerHistory;
@@ -27,6 +28,9 @@ public class Product implements Serializable {
 		this.reportFileLocation = dto.getReportFileLocation();
 		if(dto.getLastModifiedDate() != null) {
 			this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		}
+		if(dto.getContact() != null) {
+			this.contact = new Contact(dto.getContact());
 		}
 		if(dto.getDeveloperId() != null) {
 			this.owner = new Developer();
@@ -88,6 +92,14 @@ public class Product implements Serializable {
 
 	public void setOwnerHistory(List<ProductOwner> ownerHistory) {
 		this.ownerHistory = ownerHistory;
+	}
+
+	public Contact getContact() {
+		return contact;
+	}
+
+	public void setContact(Contact contact) {
+		this.contact = contact;
 	}
 	
 
