@@ -29,6 +29,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -60,6 +61,8 @@ public class ProductManagerTest extends TestCase {
 	@Autowired private DeveloperManager developerManager;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
 	@Autowired private DeveloperStatusDAO devStatusDao;
+	@Autowired private ContactDAO contactDao;
+	
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -254,9 +257,8 @@ public class ProductManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		ProductDTO toUpdate = productManager.getById(-1L);
-		ContactDTO contact = new ContactDTO();
 		Long contactId = 1L;
-		contact.setId(1L);
+		ContactDTO contact = contactDao.getById(contactId);
 		toUpdate.setContact(contact);
 		
 		ProductDTO updated = null;
@@ -279,9 +281,8 @@ public class ProductManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		ProductDTO toUpdate = productManager.getById(-1L);
-		ContactDTO contact = new ContactDTO();
 		Long contactId = 1L;
-		contact.setId(1L);
+		ContactDTO contact = contactDao.getById(contactId);
 		toUpdate.setContact(contact);
 		
 		ProductDTO updated = null;
