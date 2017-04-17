@@ -23,6 +23,7 @@ import com.sun.mail.imap.OlderTerm;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
@@ -243,19 +244,22 @@ public class ProductController {
 		
 		//find out which CHPL product numbers would have changed (only new-style ones) 
 		// and add them to the response header
-		List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getId());
-		StringBuffer buf = new StringBuffer();
-		for(CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
-			if(!StringUtils.isEmpty(possibleChanged.getChplProductNumber()) && 
-					possibleChanged.getChplProductNumber().split("\\.").length > 1) {
-				if(buf.length() > 0) {
-					buf.append(",");
-				}
-				buf.append(possibleChanged.getChplProductNumber());
-			}
-		}
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set("CHPL-Id-Changed", buf.toString());
+		List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getId());
+		if(possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
+			StringBuffer buf = new StringBuffer();
+			for(CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
+				CertifiedProduct prodWithChplNumber = new CertifiedProduct(possibleChanged);
+				if(!StringUtils.isEmpty(prodWithChplNumber.getChplProductNumber()) && 
+						prodWithChplNumber.getChplProductNumber().split("\\.").length > 1) {
+					if(buf.length() > 0) {
+						buf.append(",");
+					}
+					buf.append(prodWithChplNumber.getChplProductNumber());
+				}
+			}
+			responseHeaders.set("CHPL-Id-Changed", buf.toString());
+		}
 		return new ResponseEntity<SplitProductResponse>(response, responseHeaders, HttpStatus.OK);
 	}
 }
