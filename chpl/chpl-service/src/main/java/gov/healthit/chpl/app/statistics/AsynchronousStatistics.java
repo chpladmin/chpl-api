@@ -56,7 +56,7 @@ public class AsynchronousStatistics {
 	}
 	
 	/**
-	 * Total # of “unique” Products with Active (Including Suspended) 2014 Listings
+	 * Total # of unique Products with Active (Including Suspended) 2014 Listings
 	 */
 	@Async
 	@Transactional
@@ -65,7 +65,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of “unique” Products with Active (Including Suspended) 2015 Listings
+	 * Total # of unique Products with Active (Including Suspended) 2015 Listings
 	 */
 	@Async
 	@Transactional
@@ -74,7 +74,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of “unique” Products with Active Listings (Including Suspended) (Regardless of Edition)
+	 * Total # of unique Products with Active Listings (Including Suspended) (Regardless of Edition)
 	 */
 	@Async
 	@Transactional
