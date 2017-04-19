@@ -8,8 +8,8 @@ public interface CertifiedProductValidator {
 	static final long INPATIENT_CQM_TYPE_ID = 2;
 	static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
 
-		
-	
+	public boolean validateUniqueId(String uniqueId);
+	public boolean validateProductCodeCharacters(String uniqueId);
 	public void validate(PendingCertifiedProductDTO product);
 	public void validate(CertifiedProductSearchDetails product);
 }
