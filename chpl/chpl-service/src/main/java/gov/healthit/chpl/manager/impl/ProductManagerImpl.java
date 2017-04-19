@@ -41,6 +41,8 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
 
 @Service
 public class ProductManagerImpl implements ProductManager {
@@ -55,6 +57,7 @@ public class ProductManagerImpl implements ProductManager {
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	@Autowired CertificationBodyManager acbManager;
+	@Autowired CertifiedProductValidatorFactory cpValidatorFactory;
 
 	@Autowired
 	ActivityManager activityManager;
@@ -250,16 +253,19 @@ public class ProductManagerImpl implements ProductManager {
 				throw new AccessDeniedException("Access is denied to update certified product " + beforeProduct.getChplProductNumber() + " because it is owned by " + beforeProduct.getCertifyingBody().get("name") + ".");
 			}
 			
-			//make sure the updated CHPL product number would not be a duplicate
+			//make sure the updated CHPL product number is valid
 			String chplNumber = beforeProduct.getChplProductNumber();
 			String[] splitChplNumber = chplNumber.split("\\.");
 			if(splitChplNumber.length > 1) {
 				String potentialChplNumber = splitChplNumber[0] + "." + splitChplNumber[1] + "." + splitChplNumber[2] + 
 						"." + splitChplNumber[3] + "." + newProductCode + "." + splitChplNumber[5] + 
 						"." + splitChplNumber[6] + "." + splitChplNumber[7] + "." + splitChplNumber[8];
-				CertifiedProductDetailsDTO foundDuplicateChplNumber = cpDao.getByChplUniqueId(potentialChplNumber);
-				if(foundDuplicateChplNumber != null) {
+				CertifiedProductValidator validator = cpValidatorFactory.getValidator(beforeProduct);
+				if(!validator.validateUniqueId(potentialChplNumber)) {
 					throw new EntityCreationException("Cannot update certified product " + chplNumber + " to " + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
+				}
+				if(!validator.validateProductCodeCharacters(potentialChplNumber)) {
+					throw new EntityCreationException("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 				}
 			}
 			

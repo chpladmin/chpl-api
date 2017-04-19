@@ -17,4 +17,14 @@ public class CertifiedProductAllowedValidator implements CertifiedProductValidat
 	public void validate(CertifiedProductSearchDetails product) {
 		//does nothing, everything is valid
 	}
+	
+	@Override
+	public boolean validateUniqueId(String uniqueId) {
+		return true;
+	}
+	
+	@Override
+	public boolean validateProductCodeCharacters(String uniqueId) {
+		return true;
+	}
 }

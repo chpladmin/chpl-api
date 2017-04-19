@@ -65,23 +65,30 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	public CertifiedProductValidatorImpl() {
 		urlRegex = Pattern.compile(URL_PATTERN);
 	}
-	
-	private void validateUniqueId(PendingCertifiedProductDTO product) {
+
+	@Override
+	public boolean validateUniqueId(String chplProductNumber) {
 		try {
-			CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(product.getUniqueId());
+			CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(chplProductNumber);
 			if(dup != null) {
-				product.getErrorMessages().add("The id " + product.getUniqueId() + " must be unique among all other certified products but one already exists with this ID.");
+				return false;
 			}
 		} catch(EntityRetrievalException ex) {}
+		return true;
 	}
 	
-	private void validateUniqueId(CertifiedProductSearchDetails product) {
-		try {
-			CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(product.getChplProductNumber());
-			if(dup != null) {
-				product.getErrorMessages().add("The id " + product.getChplProductNumber() + " must be unique among all other certified products but one already exists with this ID.");
+	@Override
+	public boolean validateProductCodeCharacters(String chplProductNumber) {
+		String[] uniqueIdParts = chplProductNumber.split("\\.");
+		if(uniqueIdParts != null && uniqueIdParts.length == CHPL_PRODUCT_ID_PARTS) {
+			
+			//validate that these pieces match up with data
+			String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
+			if(StringUtils.isEmpty(productCode) || !productCode.matches("^\\w+$")) {
+				return false;
 			}
-		} catch(EntityRetrievalException ex) {}
+		}
+		return true;
 	}
 	
 	private void updateChplProductNumber(CertifiedProductSearchDetails product, int productNumberIndex, String newValue) {
@@ -187,7 +194,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add(ex.getMessage());
 		}
 		
-		if(StringUtils.isEmpty(productCode) || !productCode.matches("^\\w+$")) {
+		if(!validateProductCodeCharacters(product.getUniqueId())) {
 			product.getErrorMessages().add("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 		}
 		
@@ -242,7 +249,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		
 		//make sure the unique id is really uniqiue
-		validateUniqueId(product);
+		if(!validateUniqueId(product.getUniqueId())) {
+			product.getErrorMessages().add("The id " + product.getUniqueId() + " must be unique among all other certified products but one already exists with this ID.");
+		}
 		
 		validateDemographics(product);
 		
@@ -289,7 +298,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("Could not find distinct developer with id " + product.getDeveloper().getDeveloperId());
 			}
 			
-			if(StringUtils.isEmpty(productCode) || !productCode.matches("^\\w+$")) {
+			if(!validateProductCodeCharacters(product.getChplProductNumber())) {
 				product.getErrorMessages().add("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 			}
 			
@@ -346,7 +355,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(productIdChanged) {
 			//make sure the unique id is really unique - only check this if we know it changed
 			//because if it hasn't changes there will be 1 product with its id
-			validateUniqueId(product);
+			if(!validateUniqueId(product.getChplProductNumber())) {
+				product.getErrorMessages().add("The id " + product.getChplProductNumber() + " must be unique among all other certified products but one already exists with this ID.");
+			}
 		}
 		
 		validateDemographics(product);
