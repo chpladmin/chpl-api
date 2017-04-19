@@ -210,9 +210,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.CERT_BODY_NAMES)
-	public Set<KeyValueModel> getCertBodyNames() {
+	public Set<KeyValueModel> getCertBodyNames(Boolean showDeleted) {
 		
-		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(false);
+		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(showDeleted);
 		Set<KeyValueModel> acbNames = new HashSet<KeyValueModel>();
 		
 		for (CertificationBodyDTO dto : dtos) {

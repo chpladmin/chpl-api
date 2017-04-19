@@ -394,7 +394,7 @@ public class SearchViewControllerTest extends TestCase {
 	@Test
 	public void test_getPopulateSearchOptions_CachesData() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		long startTime = System.currentTimeMillis();
-		PopulateSearchOptions results = searchViewController.getPopulateSearchData(false);
+		PopulateSearchOptions results = searchViewController.getPopulateSearchData(false, true);
 		// getCertificationCriterionNumbers should now be cached
 		long endTime = System.currentTimeMillis();
 		long timeLength = endTime - startTime;
@@ -416,7 +416,7 @@ public class SearchViewControllerTest extends TestCase {
 		
 		// now compare cached time vs non-cached time
 		startTime = System.currentTimeMillis();
-		results = searchViewController.getPopulateSearchData(false);
+		results = searchViewController.getPopulateSearchData(false, true);
 		endTime = System.currentTimeMillis();
 		timeLength = endTime - startTime;
 		elapsedSecs = timeLength / 1000.0;
@@ -436,7 +436,7 @@ public class SearchViewControllerTest extends TestCase {
 	public void test_getPopulateSearchData_simpleAsTrue_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		long getPopulateSearchDataStartTime = System.currentTimeMillis();
 		Boolean required = true;
-		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required);
+		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required, true);
 		long getPopulateSearchDataEndTime = System.currentTimeMillis();
 		long getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
 		double getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
@@ -449,7 +449,7 @@ public class SearchViewControllerTest extends TestCase {
 		
 		// now try again to test caching
 		getPopulateSearchDataStartTime = System.currentTimeMillis();
-		results = searchViewController.getPopulateSearchData(required);
+		results = searchViewController.getPopulateSearchData(required, true);
 		getPopulateSearchDataEndTime = System.currentTimeMillis();
 		getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
 		getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
@@ -471,7 +471,7 @@ public class SearchViewControllerTest extends TestCase {
 	public void test_getPopulateSearchData_simpleAsFalse_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		long getPopulateSearchDataStartTime = System.currentTimeMillis();
 		Boolean required = false;
-		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required);
+		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required, true);
 		long getPopulateSearchDataEndTime = System.currentTimeMillis();
 		long getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
 		double getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
@@ -484,7 +484,7 @@ public class SearchViewControllerTest extends TestCase {
 		
 		// now try again to test caching
 		getPopulateSearchDataStartTime = System.currentTimeMillis();
-		results = searchViewController.getPopulateSearchData(required);
+		results = searchViewController.getPopulateSearchData(required, true);
 		getPopulateSearchDataEndTime = System.currentTimeMillis();
 		getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
 		getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
