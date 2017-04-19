@@ -67,7 +67,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 
 	/**
-	 * Total # of “unique” Products with Active (Including Suspended) 2014 Listings
+	 * Total # of unique Products with Active (Including Suspended) 2014 Listings
 	 */
 	@Override
 	public Long getTotalCPsActive2014Listings(DateRange dateRange) {
@@ -81,7 +81,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 
 	/**
-	 * Total # of “unique” Products with Active (Including Suspended) 2015 Listings
+	 * Total # of unique Products with Active (Including Suspended) 2015 Listings
 	 */
 	@Override
 	public Long getTotalCPsActive2015Listings(DateRange dateRange) {
@@ -95,7 +95,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 
 	/**
-	 * Total # of “unique” Products with Active Listings (Including Suspended) (Regardless of Edition)
+	 * Total # of unique Products with Active Listings (Including Suspended) (Regardless of Edition)
 	 */
 	@Override
 	public Long getTotalCPsActiveListings(DateRange dateRange) {
