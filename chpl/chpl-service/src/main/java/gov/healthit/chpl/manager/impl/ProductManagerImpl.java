@@ -265,7 +265,7 @@ public class ProductManagerImpl implements ProductManager {
 					throw new EntityCreationException("Cannot update certified product " + chplNumber + " to " + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
 				}
 				if(!validator.validateProductCodeCharacters(potentialChplNumber)) {
-					throw new EntityCreationException("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
+					throw new EntityCreationException("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
 				}
 			}
 			

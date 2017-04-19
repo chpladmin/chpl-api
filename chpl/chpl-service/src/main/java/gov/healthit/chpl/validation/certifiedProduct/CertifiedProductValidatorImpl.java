@@ -84,7 +84,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			
 			//validate that these pieces match up with data
 			String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
-			if(StringUtils.isEmpty(productCode) || !productCode.matches("^\\w+$")) {
+			if(StringUtils.isEmpty(productCode) || productCode.length() > 16 || !productCode.matches("^\\w+$")) {
 				return false;
 			}
 		}
@@ -195,7 +195,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		
 		if(!validateProductCodeCharacters(product.getUniqueId())) {
-			product.getErrorMessages().add("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
+			product.getErrorMessages().add("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
 		}
 		
 		if(StringUtils.isEmpty(versionCode) || !versionCode.matches("^\\w+$")) {
@@ -299,7 +299,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 			
 			if(!validateProductCodeCharacters(product.getChplProductNumber())) {
-				product.getErrorMessages().add("The product code is required and may only contain the characters A-Z, a-z, 0-9, and _");
+				product.getErrorMessages().add("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
 			}
 			
 			if(StringUtils.isEmpty(versionCode) || !versionCode.matches("^\\w+$")) {
