@@ -78,9 +78,9 @@ public class SummaryStatistics {
 			 calendarCounter.add(Calendar.DATE, numDaysInPeriod);
 		 }
 		 logger.info("Finished getting statistics");
-		 StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + "\\" + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
+		 StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 		 List<File> files = new ArrayList<File>();
-		 File csvFile = new File(props.getProperty("downloadFolderPath") + "\\" + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
+		 File csvFile = new File(props.getProperty("downloadFolderPath") + File.separator + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
 		 files.add(csvFile);
 		 summaryStats.setEmailProperties(emailBodyStats, files);
 		 summaryStats.email.sendEmail(summaryStats.email.getEmailTo(), summaryStats.email.getEmailSubject(), 
@@ -188,54 +188,52 @@ public class SummaryStatistics {
 		 email.setEmailSubject("CHPL - Weekly Summary Statistics Report");
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		 StringBuilder emailMessage = new StringBuilder();
-				 emailMessage.append("<ul><li>Date: " + calendarCounter.getTime() + "</li>");
-				 emailMessage.append("<li>1. Total # of Unique Developers (Regardless of Edition) -  " + stats.getTotalDevelopers() + "</li>");
-				 emailMessage.append("<ul><li>1. Total # of Developers with 2014 Listings - " + stats.getTotalDevelopersWith2014Listings() + "</li>");
-				 emailMessage.append("<li>\t2. Total # of Developers with 2015 Listings - " + stats.getTotalDevelopersWith2015Listings() + "</li></ul>");
-				 emailMessage.append("<li>2. Total # of Certified Unique Products (Regardless of Status or Edition – Including 2011) -  " + stats.getTotalCertifiedProducts() + "</li>");
-				 emailMessage.append("<ul><li>1. Total # of unique Products with Active (Including Suspended) 2014 Listings - " + stats.getTotalCPsActive2014Listings() + "</li>");
-				 emailMessage.append("<li>2. Total # of unique Products with Active (Including Suspended) 2015 Listings - " + stats.getTotalCPsActive2015Listings() + "</li>");
-				 emailMessage.append("<li>3. Total # of unique  Products with Active Listings (Including Suspended) (Regardless of Edition) - " + stats.getTotalCPsActiveListings() + "</li></ul>");
-				 emailMessage.append("<li>3. Total # of Listings (Regardless of Status or Edition) -  " + stats.getTotalListings() + "</li>");
-				 emailMessage.append("<ul><li>1. Total # of Active (Including Suspended) 2014 Listings - " + stats.getTotalActive2014Listings() + "</li>");
+				 emailMessage.append("Date: " + calendarCounter.getTime());
+				 emailMessage.append("<ul><li>Total # of Unique Developers (Regardless of Edition) -  " + stats.getTotalDevelopers());
+				 emailMessage.append("<ul><li>Total # of Developers with 2014 Listings - " + stats.getTotalDevelopersWith2014Listings() + "</li>");
+				 emailMessage.append("<li>Total # of Developers with 2015 Listings - " + stats.getTotalDevelopersWith2015Listings() + "</li></ul></li>");
+				 emailMessage.append("<li>Total # of Certified Unique Products (Regardless of Status or Edition - Including 2011) -  " + stats.getTotalCertifiedProducts());
+				 emailMessage.append("<ul><li>Total # of unique Products with Active (Including Suspended) 2014 Listings - " + stats.getTotalCPsActive2014Listings() + "</li>");
+				 emailMessage.append("<li>Total # of unique Products with Active (Including Suspended) 2015 Listings - " + stats.getTotalCPsActive2015Listings() + "</li>");
+				 emailMessage.append("<li>Total # of unique  Products with Active Listings (Including Suspended) (Regardless of Edition) - " + stats.getTotalCPsActiveListings() + "</li></ul></li>");
+				 emailMessage.append("<li>Total # of Listings (Regardless of Status or Edition) -  " + stats.getTotalListings());
+				 emailMessage.append("<ul><li>Total # of Active (Including Suspended) 2014 Listings - " + stats.getTotalActive2014Listings());
 				 Integer statCounter2014 = 1;
 				 for(CertifiedBodyStatistics stat : stats.getTotalActiveListingsByCertifiedBody()){
 					 if(stat.getYear() != 2014){
 						 continue;
 					 }
 					 if(statCounter2014 == 1){
-						 emailMessage.append("<ul><li>" + statCounter2014 + ". Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
+						 emailMessage.append("<ul><li>Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
 					 } else{
-						 emailMessage.append("<li>" + statCounter2014 + ". Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
+						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
 					 }
-					 
 					 statCounter2014++;
 				 }
-				 emailMessage.append("</ul>");
-				 emailMessage.append("<li>2. Total # of Active (Including Suspended) 2015 Listings - " + stats.getTotalActive2015Listings() + "</li>");
+				 emailMessage.append("</ul></li>");
+				 emailMessage.append("<li>Total # of Active (Including Suspended) 2015 Listings - " + stats.getTotalActive2015Listings());
 				 Integer statCounter2015 = 1;
 				 for(CertifiedBodyStatistics stat : stats.getTotalActiveListingsByCertifiedBody()){
 					 if(stat.getYear() != 2015){
 						 continue;
 					 }
 					 if(statCounter2015 == 1){
-						 emailMessage.append("<ul><li>" + statCounter2015 + ". Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
+						 emailMessage.append("<ul><li>Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
 					 } else {
-						 emailMessage.append("<li>" + statCounter2015 + ". Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
+						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + stat.getCount() + "</li>");
 					 }
-					 
 					 statCounter2015++;
 				 }
-				 emailMessage.append("</ul>");
-				 emailMessage.append("<li>3. Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
-				 emailMessage.append("<li>4. Total # of 2015 Listings (Regardless of Status) - " + stats.getTotal2015Listings() + "</li>");
-				 emailMessage.append("<li>5. Total # of 2011 Listings (Regardless of Status) - " + stats.getTotal2011Listings() + "</li></ul>");
-				 emailMessage.append("<li>4. Total # of Surveillance Activities -  " + stats.getTotalSurveillanceActivities() + "</li>");
-				 emailMessage.append("<ul><li>1. Open Surveillance Activities - " + stats.getTotalOpenSurveillanceActivities() + "</li>");
-				 emailMessage.append("<li>2. Closed Surveillance Activities - " + stats.getTotalClosedSurveillanceActivities() + "</li></ul>");
-				 emailMessage.append("<li>5. Total # of NCs -  " + stats.getTotalNonConformities() + "</li>");
-				 emailMessage.append("<ul><li>1. Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
-				 emailMessage.append("<li>2. Closed NCs - " + stats.getTotalClosedNonconformities() + "</li></ul>");
+				 emailMessage.append("</ul></li>");
+				 emailMessage.append("<li>Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
+				 emailMessage.append("<li>Total # of 2015 Listings (Regardless of Status) - " + stats.getTotal2015Listings() + "</li>");
+				 emailMessage.append("<li>Total # of 2011 Listings (Regardless of Status) - " + stats.getTotal2011Listings() + "</li></ul></li>");
+				 emailMessage.append("<li>Total # of Surveillance Activities -  " + stats.getTotalSurveillanceActivities());
+				 emailMessage.append("<ul><li>Open Surveillance Activities - " + stats.getTotalOpenSurveillanceActivities() + "</li>");
+				 emailMessage.append("<li>Closed Surveillance Activities - " + stats.getTotalClosedSurveillanceActivities() + "</li></ul></li>");
+				 emailMessage.append("<li>Total # of NCs -  " + stats.getTotalNonConformities());
+				 emailMessage.append("<ul><li>Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
+				 emailMessage.append("<li>Closed NCs - " + stats.getTotalClosedNonconformities() + "</li></ul></li>");
 		 email.setEmailMessage(emailMessage.toString());
 		 logger.info(emailMessage.toString());
 		 email.setProps(props);
