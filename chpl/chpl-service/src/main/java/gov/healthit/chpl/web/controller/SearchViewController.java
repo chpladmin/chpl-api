@@ -464,7 +464,7 @@ public class SearchViewController {
 				String[] certificationBodiesArr = certificationBodiesDelimited.split(",");
 				if(certificationBodiesArr != null && certificationBodiesArr.length > 0) {
 					List<String> certBodies = new ArrayList<String>();
-					Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames();
+					Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames(true);
 					
 					for(int i = 0; i < certificationBodiesArr.length; i++) {
 						String certBodyParam = certificationBodiesArr[i].trim();
@@ -676,7 +676,7 @@ public class SearchViewController {
 	@RequestMapping(value="/data/certification_bodies", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody Set<KeyValueModel> getCertBodyNames() {
-		return searchMenuManager.getCertBodyNames();
+		return searchMenuManager.getCertBodyNames(false);
 	}
 	
 	@ApiOperation(value="Get all possible education types in the CHPL", 
@@ -878,14 +878,15 @@ public class SearchViewController {
 	@RequestMapping(value="/data/search_options", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PopulateSearchOptions getPopulateSearchData(
-			@RequestParam(value = "simple", required = false) Boolean simple
+			@RequestParam(value = "simple", required = false) Boolean simple,
+			@RequestParam(value = "showDeleted", required = false, defaultValue="false") Boolean showDeleted
 			) throws EntityRetrievalException {
 		if (simple == null){
 			simple = false;
 		}
 		
 		PopulateSearchOptions searchOptions = new PopulateSearchOptions();
-		searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames());
+		searchOptions.setCertBodyNames(searchMenuManager.getCertBodyNames(showDeleted));
 		searchOptions.setEditions(searchMenuManager.getEditionNames(simple));
 		searchOptions.setCertificationStatuses(searchMenuManager.getCertificationStatuses());
 		searchOptions.setPracticeTypeNames(searchMenuManager.getPracticeTypeNames());

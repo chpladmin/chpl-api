@@ -34,7 +34,7 @@ public class AsynchronousCacheInitialization {
 	@Transactional
 	public Future<Boolean> initializeSearchOptions() throws EntityRetrievalException{
 		logger.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
-		searchMenuManager.getCertBodyNames();
+		searchMenuManager.getCertBodyNames(true);
 		searchMenuManager.getEditionNames(false);
 		searchMenuManager.getEditionNames(true);
 		searchMenuManager.getCertificationStatuses();

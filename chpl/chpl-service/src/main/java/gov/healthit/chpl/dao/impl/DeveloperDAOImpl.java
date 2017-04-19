@@ -190,17 +190,23 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		if(dto.getContact() != null) {
 			if(dto.getContact().getId() == null) {
 				//if there is not contact id then it must not exist - create it
-				ContactDTO contact = contactDao.getById(dto.getContact().getId());
+				ContactEntity contact = contactDao.create(dto.getContact());
 				if(contact != null && contact.getId() != null) {
 					entity.setContactId(contact.getId());
+					entity.setContact(contact);
 				}
 			} else {
 				//if there is a contact id then set that on the object
-				entity.setContactId(dto.getContact().getId());				
+				ContactEntity contact = contactDao.update(dto.getContact());
+				if(contact != null) {
+					entity.setContactId(dto.getContact().getId());
+					entity.setContact(contact);
+				}			
 			}
 		} else {
 			//if there's no contact at all, set the id to null
 			entity.setContactId(null);
+			entity.setContact(null);
 		}
 
 		entity.setWebsite(dto.getWebsite());

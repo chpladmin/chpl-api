@@ -9,6 +9,10 @@ _Date TBD_
 * Add statistics to ONC weekly email body and csv file
 * Add endpoint /{productId}/split to allow splitting of products and moving versions to the old or new product.
 * Add optional contact information for a product that can be changed by ONC or ACB Admins.
+* Add optional showDeleted flag to the /data/search_options call. Defaults to false but setting to true will include deleted ACBs in the response.
+
+### Bugs Fixed
+* Fix error saving developer with updated contact information.
 
 ---
 

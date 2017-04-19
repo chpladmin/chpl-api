@@ -79,7 +79,7 @@ public class SearchMenuManagerTest {
 	public void test_getCertBodyNames_CachesData() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		long startTime = System.currentTimeMillis();
 		Boolean required = false;
-		Set<KeyValueModel> results = searchMenuManager.getCertBodyNames();
+		Set<KeyValueModel> results = searchMenuManager.getCertBodyNames(true);
 		// certBodyNames should now be cached
 		long endTime = System.currentTimeMillis();
 		long timeLength = endTime - startTime;
@@ -93,7 +93,7 @@ public class SearchMenuManagerTest {
 		
 		// now compare cached time vs non-cached time
 		startTime = System.currentTimeMillis();
-		results = searchMenuManager.getCertBodyNames();
+		results = searchMenuManager.getCertBodyNames(true);
 		endTime = System.currentTimeMillis();
 		timeLength = endTime - startTime;
 		elapsedSecs = timeLength / 1000.0;

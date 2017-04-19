@@ -18,7 +18,7 @@ public interface SearchMenuManager {
 	public Set<KeyValueModel> getPracticeTypeNames();
 	public Set<KeyValueModelStatuses> getProductNames();
 	public Set<KeyValueModelStatuses> getDeveloperNames();
-	public Set<KeyValueModel> getCertBodyNames();
+	public Set<KeyValueModel> getCertBodyNames(Boolean showDeleted);
 	public Set<KeyValueModel> getAccessibilityStandards();
 	public Set<KeyValueModel> getUcdProcesses();
 	public Set<KeyValueModel> getQmsStandards();
