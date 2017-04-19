@@ -47,7 +47,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of Certified Unique Products (Regardless of Status or Edition – Including 2011) 
+	 * Total # of Certified Unique Products (Regardless of Status or Edition - Including 2011) 
 	 */
 	@Async
 	@Transactional
