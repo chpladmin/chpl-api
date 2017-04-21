@@ -567,8 +567,8 @@ public class ProductManagerTest extends TestCase {
 		try {
 			updatedNewProduct = productManager.split(origProduct, newProduct, code, newProductVersions);
 		} catch(Exception ex) {
-			fail(ex.getMessage());
 			ex.printStackTrace();
+			fail(ex.getMessage());
 		}
 		
 		ProductDTO updatedOrigProduct = productManager.getById(origProduct.getId());
@@ -581,6 +581,39 @@ public class ProductManagerTest extends TestCase {
 		assertEquals(1, updatedNewProduct.getProductVersions().size());
 		cpDetails = cpdManager.getCertifiedProductDetails(7L);
 		assertTrue(cpDetails.getChplProductNumber().contains(code));
+
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback
+	public void testProductSplitNotAllowedBadProductCodeAsAcbAdmin() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(testUser3);
+
+		String name = "Split Product";
+		String code = "%%%$$$%%%";
+		
+		ProductDTO origProduct = productManager.getById(-2L);
+		assertNotNull(origProduct.getProductVersions());
+		assertEquals(3, origProduct.getProductVersions().size());
+		CertifiedProductSearchDetails cpDetails = cpdManager.getCertifiedProductDetails(7L);
+		assertFalse(cpDetails.getChplProductNumber().contains(code));
+		
+		ProductDTO newProduct = new ProductDTO();
+		newProduct.setName(name);
+		newProduct.setDeveloperId(origProduct.getDeveloperId());
+		List<ProductVersionDTO> newProductVersions = new ArrayList<ProductVersionDTO>();
+		ProductVersionDTO newProductVersion = new ProductVersionDTO();
+		newProductVersion.setId(7L);
+		newProductVersions.add(newProductVersion);
+		boolean failed = false;
+		try {
+			productManager.split(origProduct, newProduct, code, newProductVersions);
+		} catch(Exception ex) {
+			failed = true;
+		}		
+		assertTrue(failed);
 
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
