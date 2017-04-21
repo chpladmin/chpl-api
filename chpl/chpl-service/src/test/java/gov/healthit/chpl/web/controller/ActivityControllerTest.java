@@ -3,13 +3,16 @@ package gov.healthit.chpl.web.controller;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -39,6 +42,8 @@ import gov.healthit.chpl.domain.ActivityEvent;
 public class ActivityControllerTest {
 	private static JWTAuthenticatedUser adminUser;
 	
+	@Autowired Environment env;
+	
 	@Autowired ActivityController activityController;
 	
 	@Rule
@@ -58,10 +63,11 @@ public class ActivityControllerTest {
 	/** 
 	 * Tests that listActivity returns results for a Certified Product
 	 * @throws IOException 
+	 * @throws ValidationException 
 	 */
 	@Transactional
 	@Test
-	public void test_listActivity() throws EntityRetrievalException, EntityCreationException, IOException{
+	public void test_listActivity() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		// Note: certification_criterion_id="59" has testTool="true", number 170.315 (h)(1) and title "Direct Project"
 		Long cpId = 1L; // this CP has ics_code = "1" & associated certification_result_id = 8 with certification_criterion_id="59"
@@ -75,46 +81,72 @@ public class ActivityControllerTest {
 	}
 	
 	/** 
-	 * Tests that 
+	 * GIVEN a user is looking at activity
+	 * WHEN they try to search for more than configurable days (set to 60)
+	 * THEN they should not be able to make the call
 	 * @throws IOException 
+	 * @throws ValidationException 
 	 */
 	@Transactional
-	@Test
-	public void test_dateValidation_outOfRangeThrowsException() throws EntityRetrievalException, EntityCreationException, IOException{
+	@Test(expected=ValidationException.class)
+	public void test_dateValidation_outOfRangeThrowsException() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		activityController.activityForACBs(0L, cal.getTimeInMillis(), false);
 	}
 	
 	/** 
-	 * Tests that 
+	 * GIVEN a user is looking at activity
+	 * WHEN they try to search for a date range within the configurable days (set to 60)
+	 * THEN they should be able to make the call
 	 * @throws IOException 
+	 * @throws ValidationException 
 	 */
 	@Transactional
 	@Test
-	public void test_dateValidation_insideRangeDoesNotThrowException() throws EntityRetrievalException, EntityCreationException, IOException{
+	public void test_dateValidation_insideRangeDoesNotThrowException() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
+		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
+		calStart.add(Calendar.DATE, -maxActivityRangeInDays + 1);
+		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
 	}
 	
 	/** 
-	 * Tests that 
+	 * GIVEN a user is looking at activity
+	 * WHEN they try to search for a date range equal to the max number of days (set to 60)
+	 * THEN they should be able to make the call
 	 * @throws IOException 
+	 * @throws ValidationException 
 	 */
 	@Transactional
 	@Test
-	public void test_dateValidation_startDate_edgeCase() throws EntityRetrievalException, EntityCreationException, IOException{
+	public void test_dateValidation_allowsSixtyDays() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
+		calStart.add(Calendar.DATE, -maxActivityRangeInDays);
+		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
 	}
 	
 	/** 
-	 * Tests that 
+	 * GIVEN a user is looking at activity
+	 * WHEN they try to search for a date range greater than the max number of days (set to 60)
+	 * THEN they should not be able to make the call
 	 * @throws IOException 
+	 * @throws ValidationException 
 	 */
 	@Transactional
-	@Test
-	public void test_dateValidation_endDate_edgeCase() throws EntityRetrievalException, EntityCreationException, IOException{
+	@Test(expected=ValidationException.class)
+	public void test_dateValidation_ExceptionForSixtyOneDays() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		calStart.add(Calendar.DATE, -61);
+		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
 	}
 }

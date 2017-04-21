@@ -9,6 +9,7 @@ questionableActivityThresholdDays=0
 summaryEmail=dlucas@ainq.com
 summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
+maxActivityRangeInDays=60
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
