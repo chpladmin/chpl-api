@@ -12,7 +12,7 @@ cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
 
 #chpl/app/statistics/SummaryStatistics properties
-summaryEmail=dlucas@ainq.com
+summaryEmail=chpl@ainq.com
 summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 
