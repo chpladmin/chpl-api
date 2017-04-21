@@ -45,6 +45,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -196,7 +197,9 @@ public class CertifiedProductControllerTest {
 		updateRequest.setIcs(false); // Inherited Status = product.getIcs();
 		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
 		try {
-			certifiedProductController.updateCertifiedProduct(updateRequest);
+			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+			listingUpdateRequest.setListing(updateRequest);
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
@@ -208,7 +211,9 @@ public class CertifiedProductControllerTest {
 		
 		updateRequest.setIcs(true);
 		try {
-			certifiedProductController.updateCertifiedProduct(updateRequest);
+			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+			listingUpdateRequest.setListing(updateRequest);
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
@@ -229,7 +234,9 @@ public class CertifiedProductControllerTest {
 		updateRequest.setCertificationEdition(certificationEdition2014);
 		updateRequest.setIcs(false);
 		try {
-			certifiedProductController.updateCertifiedProduct(updateRequest);
+			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+			listingUpdateRequest.setListing(updateRequest);
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
@@ -241,7 +248,9 @@ public class CertifiedProductControllerTest {
 		
 		updateRequest.setIcs(true);
 		try {
-			certifiedProductController.updateCertifiedProduct(updateRequest);
+			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+			listingUpdateRequest.setListing(updateRequest);
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {

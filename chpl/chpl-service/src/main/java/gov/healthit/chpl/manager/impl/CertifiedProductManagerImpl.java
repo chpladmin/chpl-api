@@ -70,6 +70,7 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -814,7 +815,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.SEARCH, 
 			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, CertifiedProductSearchDetails updateRequest) 
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, ListingUpdateRequest updateRequest) 
 			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {		
 		//if the updated certification status was suspended by onc or terminated by onc, 
 		//change the status of the related developer
@@ -831,19 +832,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
 					devStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
 				} else if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString()) ||
-						updatedCertificationStatus.getStatus().equals(CertificationStatusType.WithdrawnByDeveloperUnderReview.toString())) {
+						(updatedCertificationStatus.getStatus().equals(CertificationStatusType.WithdrawnByDeveloperUnderReview.toString())
+						&& updateRequest.getBanDeveloper() != null && updateRequest.getBanDeveloper().booleanValue() == true)) {
 					devStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
 				} 
 				//update the developer status
-				if(devStatusDto == null) {
-					throw new EntityRetrievalException("Could not locate developer status for certification status " + updatedCertificationStatus.getStatus());
+				if(devStatusDto != null) {
+					DeveloperStatusEventDTO statusHistoryToAdd = new DeveloperStatusEventDTO();
+					statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
+					statusHistoryToAdd.setStatus(devStatusDto);
+					statusHistoryToAdd.setStatusDate(new Date());
+					cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
+					developerManager.update(cpDeveloper);
 				}
-				DeveloperStatusEventDTO statusHistoryToAdd = new DeveloperStatusEventDTO();
-				statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
-				statusHistoryToAdd.setStatus(devStatusDto);
-				statusHistoryToAdd.setStatusDate(new Date());
-				cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
-				developerManager.update(cpDeveloper);
 			} else if (!Util.isUserRoleAdmin()) {
 				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id " + dto.getId());
 				throw new AccessDeniedException("User does not have admin permission to change related developer status.");	
@@ -855,10 +856,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		
 		CertifiedProductDTO result = cpDao.update(dto);	
 		
-		if(updateRequest != null){
+		CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+		if(updatedListing != null){
 			//update qms standards used
 			List<CertifiedProductQmsStandardDTO> qmsStandardsToUpdate = new ArrayList<CertifiedProductQmsStandardDTO>();
-			for(CertifiedProductQmsStandard newQms : updateRequest.getQmsStandards()) {
+			for(CertifiedProductQmsStandard newQms : updatedListing.getQmsStandards()) {
 				CertifiedProductQmsStandardDTO cpQmsdto = new CertifiedProductQmsStandardDTO();
 				cpQmsdto.setId(newQms.getId());
 				cpQmsdto.setApplicableCriteria(newQms.getApplicableCriteria());
@@ -872,7 +874,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			
 			//update targeted users
 			List<CertifiedProductTargetedUserDTO> targetedUsersToUpdate = new ArrayList<CertifiedProductTargetedUserDTO>();
-			for(CertifiedProductTargetedUser newTu : updateRequest.getTargetedUsers()) {
+			for(CertifiedProductTargetedUser newTu : updatedListing.getTargetedUsers()) {
 				CertifiedProductTargetedUserDTO cptdto = new CertifiedProductTargetedUserDTO();
 				cptdto.setId(newTu.getId());
 				cptdto.setCertifiedProductId(dto.getId());
@@ -884,7 +886,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			
 			//update accessibility standards
 			List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardsToUpdate = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
-			for(CertifiedProductAccessibilityStandard newStd : updateRequest.getAccessibilityStandards()) {
+			for(CertifiedProductAccessibilityStandard newStd : updatedListing.getAccessibilityStandards()) {
 				CertifiedProductAccessibilityStandardDTO cpasdto = new CertifiedProductAccessibilityStandardDTO();
 				cpasdto.setId(newStd.getId());
 				cpasdto.setCertifiedProductId(dto.getId());
@@ -895,17 +897,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			updateAccessibilityStandards(acbId, dto, accessibilityStandardsToUpdate);
 			
 			//update certification date
-			updateCertificationDate(acbId, dto, new Date(updateRequest.getCertificationDate()));
+			updateCertificationDate(acbId, dto, new Date(updatedListing.getCertificationDate()));
 			
 			//possibly add something to certification status event
 			updateCertificationStatusEvents(acbId, dto);
 			
 			//update product certifications
-			updateCertifications(acbId, dto, updateRequest.getCertificationResults());
+			updateCertifications(acbId, dto, updatedListing.getCertificationResults());
 			
 			//update CQMs
 			List<CQMResultDetailsDTO> cqmDtos = new ArrayList<CQMResultDetailsDTO>();
-			for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
+			for(CQMResultDetails cqm : updatedListing.getCqmResults()) {
 				if(!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null && cqm.getSuccessVersions().size() > 0) {
 					for(String version : cqm.getSuccessVersions()) {
 						CQMResultDetailsDTO cqmDto = new CQMResultDetailsDTO();
