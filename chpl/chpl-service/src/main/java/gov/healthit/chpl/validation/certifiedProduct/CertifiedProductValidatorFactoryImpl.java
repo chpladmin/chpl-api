@@ -100,6 +100,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 		} else {
 			product.getErrorMessages().add("The product is not listed as 2014 or 2015 so it cannot be validated.");
 			logger.info("Cannot find validator for certification edition '" + product.getCertificationEdition() + "'.");
+			return allowedValidator;
 		}
 		return null;
 	}
