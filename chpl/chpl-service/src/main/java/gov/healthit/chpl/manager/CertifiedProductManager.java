@@ -11,6 +11,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
@@ -33,7 +34,7 @@ public interface CertifiedProductManager {
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
 	
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, CertifiedProductSearchDetails updateRequest) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, ListingUpdateRequest updateRequest) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	
