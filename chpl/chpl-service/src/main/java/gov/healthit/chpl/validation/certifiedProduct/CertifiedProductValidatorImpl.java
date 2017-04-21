@@ -34,16 +34,6 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
-	protected static final int CHPL_PRODUCT_ID_PARTS = 9;
-	protected static final int EDITION_CODE_INDEX = 0;
-	protected static final int ATL_CODE_INDEX = 1;
-	protected static final int ACB_CODE_INDEX = 2;
-	protected static final int DEVELOPER_CODE_INDEX = 3;
-	protected static final int PRODUCT_CODE_INDEX = 4;
-	protected static final int VERSION_CODE_INDEX = 5;
-	protected static final int ICS_CODE_INDEX = 6;
-	protected static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
-	protected static final int CERTIFIED_DATE_CODE_INDEX = 8;
 	
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired CertifiedProductManager cpManager;
