@@ -71,7 +71,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	 */
 	@Override
 	public Long getTotalCPsActive2014Listings(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(productName, developerName) FROM CertifiedProductDetailsEntity "
+		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
 				+ " WHERE year = '2014' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
@@ -85,7 +85,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	 */
 	@Override
 	public Long getTotalCPsActive2015Listings(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(productName, developerName) FROM CertifiedProductDetailsEntity "
+		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
 				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
@@ -99,7 +99,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	 */
 	@Override
 	public Long getTotalCPsActiveListings(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(productName, developerName) FROM CertifiedProductDetailsEntity "
+		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
 				+ " WHERE UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
