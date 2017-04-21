@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD Next
+_Date TBD Next_
+
+### Features Added
+* Allow users to specify a condition in the listing update request whether or not the developer status should be changed. Only applicable if listing status is changing to Withdrawn Under Surveillance by ONC-ACB. Not backwards compatible!
+
+---
+
 ## Version TBD
 _Date TBD_
 
