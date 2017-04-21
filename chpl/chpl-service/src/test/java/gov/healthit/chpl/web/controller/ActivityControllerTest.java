@@ -73,4 +73,48 @@ public class ActivityControllerTest {
 		List<ActivityEvent> cp2ActivityEvents = activityController.activityForCertifiedProductById(cpId2, null, null);
 		assertTrue(cp2ActivityEvents.size() == 0);
 	}
+	
+	/** 
+	 * Tests that 
+	 * @throws IOException 
+	 */
+	@Transactional
+	@Test
+	public void test_dateValidation_outOfRangeThrowsException() throws EntityRetrievalException, EntityCreationException, IOException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+	}
+	
+	/** 
+	 * Tests that 
+	 * @throws IOException 
+	 */
+	@Transactional
+	@Test
+	public void test_dateValidation_insideRangeDoesNotThrowException() throws EntityRetrievalException, EntityCreationException, IOException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+	}
+	
+	/** 
+	 * Tests that 
+	 * @throws IOException 
+	 */
+	@Transactional
+	@Test
+	public void test_dateValidation_startDate_edgeCase() throws EntityRetrievalException, EntityCreationException, IOException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+	}
+	
+	/** 
+	 * Tests that 
+	 * @throws IOException 
+	 */
+	@Transactional
+	@Test
+	public void test_dateValidation_endDate_edgeCase() throws EntityRetrievalException, EntityCreationException, IOException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+	}
 }

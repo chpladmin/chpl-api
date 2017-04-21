@@ -1009,4 +1009,10 @@ public class ActivityController {
 	private List<ActivityEvent> getActivityEventsForObject(boolean showDeleted, ActivityConcept concept, Long objectId, Date startDate, Date endDate) throws JsonParseException, IOException{
 		return activityManager.getActivityForObject(showDeleted, concept, objectId, startDate, endDate);
 	}
+	
+	private void validateActivityDates(Long startDate, Long endDate){
+		
+	}
+	
+	
 }
