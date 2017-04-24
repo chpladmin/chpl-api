@@ -149,4 +149,22 @@ public class ActivityControllerTest {
 		calStart.add(Calendar.DATE, -61);
 		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
 	}
+	
+	/** 
+	 * GIVEN a user is looking at activity
+	 * WHEN they try to search for a date range with the start date > end date
+	 * THEN they should not be able to make the call
+	 * @throws IOException 
+	 * @throws ValidationException 
+	 */
+	@Transactional
+	@Test(expected=ValidationException.class)
+	public void test_dateValidation_startDateAfterEndDate() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Calendar calEnd = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		calStart.add(Calendar.DATE, 20);
+		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
+	}
 }

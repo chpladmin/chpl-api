@@ -1042,6 +1042,10 @@ public class ActivityController {
 		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
 		calendarCounter.setTime(new Date(endDate));
+		if(new Date(startDate).compareTo(calendarCounter.getTime()) > 0){
+			throw new ValidationException("Cannot search an activity with a start date greater than the end date");
+		}
+		
 		calendarCounter.add(Calendar.DATE, -maxActivityRangeInDays);
 		if(new Date(startDate).compareTo(calendarCounter.getTime()) < 0){
 			throw new ValidationException("Cannot search an activity with a date range more than " + maxActivityRangeInDays + " days.");
