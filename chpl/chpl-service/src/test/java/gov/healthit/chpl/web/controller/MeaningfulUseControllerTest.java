@@ -213,7 +213,7 @@ public class MeaningfulUseControllerTest extends TestCase {
 				hasError=true;
 			}
 			else if(muu.getProductNumber().equals("15.01.01.1009.EIC08.36.1.1.160402")){
-				assertEquals(70, muu.getNumberOfUsers().longValue());
+				assertEquals(40, muu.getNumberOfUsers().longValue());
 				assertNotNull(muu.getError());
 				hasError=true;
 			}
