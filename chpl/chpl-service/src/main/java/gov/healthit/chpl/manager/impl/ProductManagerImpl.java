@@ -261,16 +261,17 @@ public class ProductManagerImpl implements ProductManager {
 						"." + splitChplNumber[3] + "." + newProductCode + "." + splitChplNumber[5] + 
 						"." + splitChplNumber[6] + "." + splitChplNumber[7] + "." + splitChplNumber[8];
 				CertifiedProductValidator validator = cpValidatorFactory.getValidator(beforeProduct);
-				if(!validator.validateUniqueId(potentialChplNumber)) {
+				if(validator != null && !validator.validateUniqueId(potentialChplNumber)) {
 					throw new EntityCreationException("Cannot update certified product " + chplNumber + " to " + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
 				}
-				if(!validator.validateProductCodeCharacters(potentialChplNumber)) {
+				if(validator != null && !validator.validateProductCodeCharacters(potentialChplNumber)) {
 					throw new EntityCreationException("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
 				}
+				
+				affectedCp.setProductCode(newProductCode);	
 			}
 			
 			//do the update and add activity
-			affectedCp.setProductCode(newProductCode);	
 			cpDao.update(affectedCp);
 			CertifiedProductSearchDetails afterProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());			
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeProduct.getId(), "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct, afterProduct);

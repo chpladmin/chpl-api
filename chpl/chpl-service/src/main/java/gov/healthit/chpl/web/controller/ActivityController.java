@@ -1,13 +1,16 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +35,8 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/activity")
 public class ActivityController {
 	private static final Logger logger = LogManager.getLogger(ActivityController.class);
+	
+	@Autowired Environment env;
 
 	@Autowired
 	private ActivityManager activityManager;
@@ -44,7 +49,7 @@ public class ActivityController {
 	@RequestMapping(value="/acbs", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForACBs(@RequestParam(required=false) Long start,
 			@RequestParam(required=false) Long end,
-			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
+			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException, ValidationException{
 
 		if(!Util.isUserRoleAdmin() && showDeleted){
 			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACBs");
@@ -61,6 +66,7 @@ public class ActivityController {
 				if(end != null) {
 					endDate = new Date(end);
 				}
+				validateActivityDates(start, end);
 				return getActivityEventsForACBs(showDeleted, startDate, endDate);
 			}
 		}
@@ -74,7 +80,7 @@ public class ActivityController {
 	public List<ActivityEvent> activityForACBById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
 			@RequestParam(required=false) Long end,
-			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
+			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException, ValidationException{
 
 		if(!Util.isUserRoleAdmin() && showDeleted){
 			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACB " + id);
@@ -91,6 +97,7 @@ public class ActivityController {
 				if(end != null) {
 					endDate = new Date(end);
 				}
+				validateActivityDates(start, end);
 				return getActivityEventsForACBs(showDeleted, id, startDate, endDate);
 			}
 		}
@@ -101,7 +108,7 @@ public class ActivityController {
 					+ "The default behavior is to return announcement activity across all dates.")
 	@RequestMapping(value="/announcements", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForAnnoucements(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		if (start == null && end == null){
 			return getActivityEventsForAnnouncements();
 		} else {
@@ -113,6 +120,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForAnnouncements(startDate, endDate);
 		}
 	}
@@ -123,7 +131,7 @@ public class ActivityController {
 	@RequestMapping(value="/announcements/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		if (start == null && end == null){
 			return getActivityEventsForAnnouncements(id);
 		} else {
@@ -135,6 +143,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForAnnouncements(id, startDate, endDate);
 		}
 	}
@@ -147,7 +156,7 @@ public class ActivityController {
 	@RequestMapping(value="/atls", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityforATLs(@RequestParam(required=false) Long start,
 			@RequestParam(required=false) Long end,
-			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
+			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException, ValidationException{
 
 		if(!Util.isUserRoleAdmin() && showDeleted){
 			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATLs");
@@ -164,6 +173,7 @@ public class ActivityController {
 				if(end != null) {
 					endDate = new Date(end);
 				}
+				validateActivityDates(start, end);
 				return getActivityEventsForATLs(showDeleted, startDate, endDate);
 			}
 		}
@@ -177,7 +187,7 @@ public class ActivityController {
 	public List<ActivityEvent> activityForATLById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
 			@RequestParam(required=false) Long end,
-			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException{
+			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException, ValidationException{
 
 		if(!Util.isUserRoleAdmin() && showDeleted){
 			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATL " + id);
@@ -194,6 +204,7 @@ public class ActivityController {
 				if(end != null) {
 					endDate = new Date(end);
 				}
+				validateActivityDates(start, end);
 				return getActivityEventsForATLs(showDeleted, id, startDate, endDate);
 			}
 		}
@@ -204,7 +215,7 @@ public class ActivityController {
 				+ "The default behavior is to return API key activity across all dates.")
 	@RequestMapping(value="/api_keys", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForApiKeys(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException {
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException {
 		
 		if (start == null && end == null){
 			return getActivityEventsForApiKeys();
@@ -217,6 +228,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForApiKeys(startDate, endDate);
 		}
 	}
@@ -226,7 +238,7 @@ public class ActivityController {
 				+ "The default behavior is to return certified product activity across all dates.")
 	@RequestMapping(value="/certified_products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertifiedProducts(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForCertifiedProducts();
@@ -239,6 +251,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForCertifiedProducts(startDate, endDate);
 		}
 	}
@@ -249,7 +262,7 @@ public class ActivityController {
 	@RequestMapping(value="/certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForCertifiedProducts(id);
@@ -262,6 +275,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForCertifiedProducts(id, startDate, endDate);
 		}
 	}
@@ -271,7 +285,7 @@ public class ActivityController {
 				+ "The default behavior is to return activity for all certifications across all dates.")
 	@RequestMapping(value="/certifications", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertifications(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForCertifications();
@@ -284,6 +298,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForCertifications(startDate, endDate);
 		}
 	}
@@ -294,7 +309,7 @@ public class ActivityController {
 	@RequestMapping(value="/certifications/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForCertifications(id);
@@ -307,6 +322,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForCertifications(id, startDate, endDate);
 		}
 	}
@@ -316,7 +332,7 @@ public class ActivityController {
 				+ "The default behavior is to return activity for all pending certified products across all dates.")
 	@RequestMapping(value="/pending_certified_products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForPendingCertifiedProducts();
@@ -329,6 +345,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForPendingCertifiedProducts(startDate, endDate);
 		}
 	}
@@ -339,7 +356,7 @@ public class ActivityController {
 	@RequestMapping(value="/pending_certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForPendingCertifiedProducts(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForPendingCertifiedProducts(id);
@@ -352,6 +369,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForPendingCertifiedProducts(id, startDate, endDate);
 		}
 	}
@@ -361,7 +379,7 @@ public class ActivityController {
 				+ "The default behavior is to return activity for all products across all dates.")
 	@RequestMapping(value="/products", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForProducts(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForProducts();
@@ -374,6 +392,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForProducts(startDate, endDate);
 		}
 	}
@@ -384,7 +403,7 @@ public class ActivityController {
 	@RequestMapping(value="/products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForProducts(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForProducts(id);
@@ -397,6 +416,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForProducts(id, startDate, endDate);
 		}
 	}
@@ -406,7 +426,7 @@ public class ActivityController {
 				+ "The default behavior is to return activity for all versions across all dates.")
 	@RequestMapping(value="/versions", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForVersions(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForVersions();
@@ -419,6 +439,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForVersions(startDate, endDate);
 		}
 	}
@@ -429,7 +450,7 @@ public class ActivityController {
 	@RequestMapping(value="/versions/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForVersions(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForVersions(id);
@@ -442,6 +463,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForVersions(id, startDate, endDate);
 		}
 	}
@@ -451,7 +473,7 @@ public class ActivityController {
 				+ "The default behavior is to return activity for all CHPL user across all dates.")
 	@RequestMapping(value="/users", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForUsers(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForUsers();
@@ -464,6 +486,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForUsers(startDate, endDate);
 		}
 	}
@@ -474,7 +497,7 @@ public class ActivityController {
 	@RequestMapping(value="/users/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForUsers(id);
@@ -487,6 +510,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForUsers(id, startDate, endDate);
 		}
 	}
@@ -496,7 +520,7 @@ public class ActivityController {
 				+ "The default behavior is to return the all developer activity across all dates.")
 	@RequestMapping(value="/developers", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForDevelopers(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForDevelopers();
@@ -509,6 +533,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForDevelopers(startDate, endDate);
 		}
 	}
@@ -519,7 +544,7 @@ public class ActivityController {
 	@RequestMapping(value="/developers/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForDevelopers(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return getActivityEventsForDevelopers(id);
@@ -532,6 +557,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return getActivityEventsForDevelopers(id, startDate, endDate);
 		}
 	}
@@ -542,7 +568,7 @@ public class ActivityController {
 				+ "The default behavior is to return the all user activity across all dates.")
 	@RequestMapping(value="/user_activities", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<UserActivity> activityByUser(@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, UserRetrievalException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, UserRetrievalException, ValidationException{
 		
 		if (start == null && end == null){
 			return activityManager.getActivityByUser();
@@ -555,6 +581,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return activityManager.getActivityByUserInDateRange(startDate, endDate);
 		}
 	}
@@ -566,7 +593,7 @@ public class ActivityController {
 	@RequestMapping(value="/user_activities/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException{
+			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
 		
 		if (start == null && end == null){
 			return activityManager.getActivityForUser(id);
@@ -579,6 +606,7 @@ public class ActivityController {
 			if(end != null) {
 				endDate = new Date(end);
 			}
+			validateActivityDates(start, end);
 			return activityManager.getActivityForUserInDateRange(id, startDate, endDate);
 		}
 	}
@@ -1009,4 +1037,19 @@ public class ActivityController {
 	private List<ActivityEvent> getActivityEventsForObject(boolean showDeleted, ActivityConcept concept, Long objectId, Date startDate, Date endDate) throws JsonParseException, IOException{
 		return activityManager.getActivityForObject(showDeleted, concept, objectId, startDate, endDate);
 	}
+	
+	private void validateActivityDates(Long startDate, Long endDate) throws ValidationException{
+		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
+		calendarCounter.setTime(new Date(endDate));
+		if(new Date(startDate).compareTo(calendarCounter.getTime()) > 0){
+			throw new ValidationException("Cannot search for activity with the start date after the end date");
+		}
+		
+		calendarCounter.add(Calendar.DATE, -maxActivityRangeInDays);
+		if(new Date(startDate).compareTo(calendarCounter.getTime()) < 0){
+			throw new ValidationException("Cannot search for activity with a date range more than " + maxActivityRangeInDays + " days.");
+		}
+	}
+	
 }
