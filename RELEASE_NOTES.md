@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 9.1.0
+_24 April 2017_
 
 ### Features Added
 * Update parameters for HTTP GET /search call. All the same options that were previously available only to POST exist for the GET. Updated related API documentation.
