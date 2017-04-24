@@ -854,5 +854,6 @@ public class CertifiedProductDetailsEntity {
 
 	public void setDeveloperStatusDate(Date developerStatusDate) {
 		this.developerStatusDate = developerStatusDate;
-	}	
+	}
+
 }

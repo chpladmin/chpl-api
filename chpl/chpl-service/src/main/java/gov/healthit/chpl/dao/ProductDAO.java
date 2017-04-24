@@ -10,7 +10,7 @@ public interface ProductDAO {
 	public ProductDTO create(ProductDTO dto) throws EntityCreationException, EntityRetrievalException;
 	public ProductOwnerDTO addOwnershipHistory(ProductOwnerDTO toAdd);
 	public void deletePreviousOwner(Long previousOwnershipId) throws EntityRetrievalException;
-	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException;
+	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException;
 	
 	public void delete(Long id) throws EntityRetrievalException;
 	

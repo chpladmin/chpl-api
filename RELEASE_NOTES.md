@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 9.1.0
+_24 April 2017_
+
+### Features Added
+* Update parameters for HTTP GET /search call. All the same options that were previously available only to POST exist for the GET. Updated related API documentation.
+* Add /cache_status endpoint. Returns a status of OK or INITIALIZING based on whether the basic search cache has been loaded.
+* Add statistics to ONC weekly email body and csv file
+* Add endpoint /{productId}/split to allow splitting of products and moving versions to the old or new product.
+* Add optional contact information for a product that can be changed by ONC or ACB Admins.
+* Add optional showDeleted flag to the /data/search_options call. Defaults to false but setting to true will include deleted ACBs in the response.
+
+### Bugs Fixed
+* Fix error saving developer with updated contact information.
+
+---
+
 ## Version 9.0.0
 _10 April 2017_
 

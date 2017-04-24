@@ -21,7 +21,7 @@ ENDDATE=$(date "+%F")
 echo "Generate summary email at: " $TIMESTAMP >> $log
 echo "####################################" >> $log
 # ParseActivities application takes three parameters: startDate, endDate, numDaysInPeriod. The dates have this format: yyyy-mm-dd
-java -Xmx800m -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.ParseActivities 2016-04-01 $ENDDATE 7 2>&1 >> $log
+java -Xmx800m -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.statistics.SummaryStatistics 2016-04-01 $ENDDATE 7 2>&1 >> $log
 echo "####################################" >> $log
 
 # restore filename delimiters

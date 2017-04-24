@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +20,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearBasicSearch;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -32,7 +38,11 @@ import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
+import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
 
 @Service
 public class ProductManagerImpl implements ProductManager {
@@ -44,6 +54,10 @@ public class ProductManagerImpl implements ProductManager {
 	@Autowired ProductDAO productDao;
 	@Autowired ProductVersionDAO versionDao;
 	@Autowired DeveloperDAO devDao;
+	@Autowired CertifiedProductDAO cpDao;
+	@Autowired CertifiedProductDetailsManager cpdManager;
+	@Autowired CertificationBodyManager acbManager;
+	@Autowired CertifiedProductValidatorFactory cpValidatorFactory;
 
 	@Autowired
 	ActivityManager activityManager;
@@ -101,7 +115,7 @@ public class ProductManagerImpl implements ProductManager {
 		ProductDTO result = productDao.create(dto);
 		String activityMsg = "Product "+dto.getName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, null, result);
-		return result;
+		return getById(result.getId());
 	}
 
 	@Override
@@ -193,6 +207,77 @@ public class ProductManagerImpl implements ProductManager {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, createdProduct.getId(), activityMsg, beforeProducts , createdProduct);
 		
 		return createdProduct;
+	}
+	
+	@Override
+	@Transactional(readOnly = false)
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN', 'ROLE_ACB_STAFF')")
+	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
+	public ProductDTO split(ProductDTO oldProduct, ProductDTO newProduct, String newProductCode, List<ProductVersionDTO> newProductVersions)
+		throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		// what ACB does the user have??
+		List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(true);
+		
+		//create the new product and log activity 
+		//this method checks that the related developer is Active and will throw an exception if they aren't
+		newProduct = create(newProduct);
+
+		
+		//re-assign versions to the new product and log activity for each
+		List<Long> affectedVersionIds = new ArrayList<Long>();
+		for(ProductVersionDTO affectedVersion : newProductVersions) {
+			//get before and after for activity; update product owner
+			ProductVersionDTO beforeVersion = versionDao.getById(affectedVersion.getId());
+			affectedVersion.setProductId(newProduct.getId());
+			affectedVersion.setProductName(newProduct.getName());
+			versionDao.update(affectedVersion);
+			ProductVersionDTO afterVersion = versionDao.getById(affectedVersion.getId());
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, afterVersion.getId(), "Product Version "+afterVersion.getVersion()+" product owner updated to "+afterVersion.getProductName(), beforeVersion, afterVersion);
+			affectedVersionIds.add(affectedVersion.getId());
+		}
+		
+		//update product code on all associated certified products and log activity for each
+		List<CertifiedProductDTO> affectedCps = cpDao.getByVersionIds(affectedVersionIds);
+		for(CertifiedProductDTO affectedCp : affectedCps) {
+			//have to get the cpdetails for before and after code update because that is object sent into activity reports
+			CertifiedProductSearchDetails beforeProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
+			//make sure each cp listing associated with the newProduct -> version is owned by an ACB the user has access to
+			boolean hasAccessToAcb = false;
+			for(CertificationBodyDTO allowedAcb : allowedAcbs) {
+				if(allowedAcb.getId().longValue() == affectedCp.getCertificationBodyId().longValue()) {
+					hasAccessToAcb = true;
+				}
+			}
+			if(!hasAccessToAcb) {
+				throw new AccessDeniedException("Access is denied to update certified product " + beforeProduct.getChplProductNumber() + " because it is owned by " + beforeProduct.getCertifyingBody().get("name") + ".");
+			}
+			
+			//make sure the updated CHPL product number is valid
+			String chplNumber = beforeProduct.getChplProductNumber();
+			String[] splitChplNumber = chplNumber.split("\\.");
+			if(splitChplNumber.length > 1) {
+				String potentialChplNumber = splitChplNumber[0] + "." + splitChplNumber[1] + "." + splitChplNumber[2] + 
+						"." + splitChplNumber[3] + "." + newProductCode + "." + splitChplNumber[5] + 
+						"." + splitChplNumber[6] + "." + splitChplNumber[7] + "." + splitChplNumber[8];
+				CertifiedProductValidator validator = cpValidatorFactory.getValidator(beforeProduct);
+				if(!validator.validateUniqueId(potentialChplNumber)) {
+					throw new EntityCreationException("Cannot update certified product " + chplNumber + " to " + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
+				}
+				if(!validator.validateProductCodeCharacters(potentialChplNumber)) {
+					throw new EntityCreationException("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
+				}
+			}
+			
+			//do the update and add activity
+			affectedCp.setProductCode(newProductCode);	
+			cpDao.update(affectedCp);
+			CertifiedProductSearchDetails afterProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());			
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeProduct.getId(), "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct, afterProduct);
+		}	
+		
+		checkSuspiciousActivity(oldProduct, newProduct);
+		return getById(newProduct.getId());
 	}
 	
 	@Override

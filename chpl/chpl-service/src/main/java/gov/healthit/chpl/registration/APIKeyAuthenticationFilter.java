@@ -21,7 +21,7 @@ import gov.healthit.chpl.manager.ApiKeyManager;
 
 public class APIKeyAuthenticationFilter extends GenericFilterBean {
 	
-	private static final String[] ALLOWED_REQUEST_PATHS = {"/api-docs", "/status"};
+	private static final String[] ALLOWED_REQUEST_PATHS = {"/api-docs", "/status", "/cache_status"};
 	
 	@Autowired
 	private ApiKeyManager apiKeyManager;

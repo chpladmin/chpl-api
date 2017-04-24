@@ -2,21 +2,26 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
+import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.ProductInsertableOwnerEntity;
@@ -24,6 +29,8 @@ import gov.healthit.chpl.entity.ProductInsertableOwnerEntity;
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
+	
+	@Autowired private ContactDAO contactDao;
 	
 	@Override
 	public ProductDTO create(ProductDTO dto) throws EntityCreationException,
@@ -48,8 +55,25 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			entity.setDeveloperId(dto.getDeveloperId());
 			entity.setDeleted(false);
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			create(entity);	
 
+			if(dto.getContact() != null) {
+				if(dto.getContact().getId() != null) {
+					ContactEntity contact = contactDao.getEntityById(dto.getContact().getId());
+					if(contact != null && contact.getId() != null) {
+						entity.setContactId(contact.getId());
+						entity.setContact(contact);
+					}
+				} else {
+					ContactEntity contact = contactDao.create(dto.getContact());
+					if(contact != null) {
+						entity.setContactId(contact.getId());
+						entity.setContact(contact);
+					}
+				}
+			}
+			
+			create(entity);	
+			
 			ProductDTO result = new ProductDTO(entity);
 			if(dto.getOwnerHistory() != null && dto.getOwnerHistory().size() > 0) {
 				for(ProductOwnerDTO prevOwner : dto.getOwnerHistory()) {
@@ -64,7 +88,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	@Override
-	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException {
+	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
 		ProductEntity entity = this.getEntityById(dto.getId());
 		//update product data
 		entity.setReportFileLocation(dto.getReportFileLocation());
@@ -72,6 +96,28 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		entity.setDeveloperId(dto.getDeveloperId());
 		entity.setDeleted(dto.getDeleted() == null ? false : dto.getDeleted());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		if(dto.getContact() != null) {
+			if(dto.getContact().getId() == null) {
+				//if there is not contact id then it must not exist - create it
+				ContactEntity contact = contactDao.create(dto.getContact());
+				if(contact != null && contact.getId() != null) {
+					entity.setContactId(contact.getId());
+					entity.setContact(contact);
+				}
+			} else {
+				//if there is a contact id then set that on the object
+				ContactEntity contact = contactDao.update(dto.getContact());
+				if(contact != null) {
+					entity.setContactId(dto.getContact().getId());
+					entity.setContact(contact);
+				}
+			}
+		} else {
+			//if there's no contact at all, set the id to null
+			entity.setContactId(null);
+			entity.setContact(null);
+		}
+		
 		update(entity);
 
 		//update ownership history
@@ -92,14 +138,16 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			//in the list of previous owners.
 			for(ProductOwnerDTO updatedProductPrevOwner : dto.getOwnerHistory()) {
 				boolean alreadyExists = false;
-				for(int i = 0; i < entity.getOwnerHistory().size() && !alreadyExists; i++) {
-					ProductActiveOwnerEntity existingProductPreviousOwner = entity.getOwnerHistory().get(i);
+				
+				Iterator<ProductActiveOwnerEntity> ownerHistoryIter = entity.getOwnerHistory().iterator();
+				while(ownerHistoryIter.hasNext()) {
+					ProductActiveOwnerEntity existingProductPreviousOwner = ownerHistoryIter.next();
 					if(existingProductPreviousOwner.getDeveloper() != null && 
-						updatedProductPrevOwner.getDeveloper() != null && 
-							existingProductPreviousOwner.getDeveloper().getId().longValue() == 
-							updatedProductPrevOwner.getDeveloper().getId().longValue()) {
-						alreadyExists = true;
-					}
+							updatedProductPrevOwner.getDeveloper() != null && 
+								existingProductPreviousOwner.getDeveloper().getId().longValue() == 
+								updatedProductPrevOwner.getDeveloper().getId().longValue()) {
+							alreadyExists = true;
+						}
 				}
 				
 				if(!alreadyExists) {
@@ -229,10 +277,12 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	
 	@Transactional(readOnly=true)
 	public List<ProductDTO> getByDeveloper(Long developerId) {		
-		Query query = entityManager.createQuery( "SELECT distinct pe "
+		Query query = entityManager.createQuery( "SELECT DISTINCT pe "
 				+ "FROM ProductEntity pe "
-				+ " LEFT OUTER JOIN FETCH pe.developer "
-				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.developer "
+				+ "LEFT JOIN FETCH pe.contact "
+				+ "LEFT JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.productVersions "
 				+ "WHERE (pe.developerId = :entityid) "
 				+ "AND (NOT pe.deleted = true)", ProductEntity.class );
 		query.setParameter("entityid", developerId);
@@ -247,10 +297,12 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	
 	@Transactional(readOnly=true)
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
-		Query query = entityManager.createQuery( "SELECT distinct pe "
+		Query query = entityManager.createQuery( "SELECT DISTINCT pe "
 				+ "FROM ProductEntity pe "
-				+ " LEFT OUTER JOIN FETCH pe.developer "
-				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.developer "
+				+ "LEFT JOIN FETCH pe.contact "
+				+ "LEFT JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.productVersions "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND pe.developerId IN (:idList) ", ProductEntity.class );
 		query.setParameter("idList", developerIds);
@@ -267,8 +319,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	public ProductDTO getByDeveloperAndName(Long developerId, String name) {
 		Query query = entityManager.createQuery( "SELECT distinct pe "
 				+ "FROM ProductEntity pe "
-				+ " LEFT OUTER JOIN FETCH pe.developer "
-				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.developer "
+				+ "LEFT JOIN FETCH pe.contact "
+				+ "LEFT JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.productVersions "
 				+ "where (NOT pe.deleted = true) "
 				+ "AND (pe.developerId = :developerId) and "
 				+ "(pe.name = :name)", ProductEntity.class );
@@ -287,21 +341,25 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		
 		entityManager.persist(entity);
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	private void update(ProductEntity entity) {
 		
 		entityManager.merge(entity);	
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	private List<ProductEntity> getAllEntities() {
 		
 		List<ProductEntity> result = entityManager.createQuery( "SELECT distinct pe "
 				+ "FROM ProductEntity pe "
-				+ "LEFT OUTER JOIN FETCH pe.developer "
-				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
-				+ "LEFT OUTER JOIN FETCH pe.productCertificationStatuses "
+				+ "LEFT JOIN FETCH pe.developer "
+				+ "LEFT JOIN FETCH pe.contact "
+				+ "LEFT JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.productVersions "
+				+ "LEFT JOIN FETCH pe.productCertificationStatuses "
 				+ "where (NOT pe.deleted = true) ", 
 				ProductEntity.class).getResultList();
 		
@@ -326,9 +384,12 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	}
 	
 	private List<ProductEntity> getAllEntitiesIncludingDeleted() {
-		List<ProductEntity> result = entityManager.createQuery( "from ProductEntity pe "
-				+ "LEFT OUTER JOIN FETCH pe.developer "
-				+ "LEFT OUTER JOIN FETCH pe.ownerHistory ",
+		List<ProductEntity> result = entityManager.createQuery( "SELECT DISTINCT pe "
+				+ "FROM ProductEntity pe "
+				+ "LEFT JOIN FETCH pe.developer "
+				+ "LEFT JOIN FETCH pe.contact "
+				+ "LEFT JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.productVersions ",
 				ProductEntity.class).getResultList();
 		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
@@ -337,10 +398,12 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	private ProductEntity getEntityById(Long id) throws EntityRetrievalException {
 		ProductEntity entity = null;
 
-		Query query = entityManager.createQuery( "SELECT distinct pe "
+		Query query = entityManager.createQuery( "SELECT DISTINCT pe "
 				+ "FROM ProductEntity pe "
-				+ "LEFT OUTER JOIN FETCH pe.developer "
-				+ "LEFT OUTER JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.developer "
+				+ "LEFT JOIN FETCH pe.contact "
+				+ "LEFT JOIN FETCH pe.ownerHistory "
+				+ "LEFT JOIN FETCH pe.productVersions "
 				+ "WHERE (NOT pe.deleted = true) "
 				+ "AND (pe.id = :entityid) ", ProductEntity.class );
 		query.setParameter("entityid", id);

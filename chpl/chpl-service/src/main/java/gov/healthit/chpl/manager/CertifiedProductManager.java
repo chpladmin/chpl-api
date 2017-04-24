@@ -28,6 +28,7 @@ public interface CertifiedProductManager {
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getAll();
 	public List<CertifiedProductDetailsDTO> getAllWithEditPermission();
+	public List<CertifiedProductDetailsDTO> getByProduct(Long productId);
 	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId);
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
 	

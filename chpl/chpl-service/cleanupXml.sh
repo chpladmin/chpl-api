@@ -6,7 +6,7 @@
 # This will run it at 0515 UTC, which (depending on DST) is 0015 EST
 
 #find the folder that has the XML files
-xmlFolder=$(cat target/chpl-service/WEB-INF/classes/environment.properties | grep downloadFolderPath | cut -d '=' -f2)
+xmlFolder=$(cat environment.properties | grep downloadFolderPath | cut -d '=' -f2)
 
 echo "Deleting files from $xmlFolder";
 
