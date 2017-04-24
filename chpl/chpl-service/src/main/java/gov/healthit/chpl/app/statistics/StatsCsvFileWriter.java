@@ -3,6 +3,7 @@ package gov.healthit.chpl.app.statistics;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -20,7 +21,7 @@ public class StatsCsvFileWriter {
     		"Total Listings", "Total 2014 Listings", "Total 2015 Listings", "Total 2011 Listings","Total Surveillance Activities","Total Open Surveillance Activities",
     		"Total Closed Surveillance Activities","Total NonConformities","Total Open NonConformities","Total Closed NonConformities"};
     
-    public static void writeCsvFile(String fileName, List<StatisticsCSVOutput> statsCsvOutput){
+    public static void writeCsvFile(String fileName, List<HistoricalStatistics> statsCsvOutput){
     	FileWriter fileWriter = null;
     	CSVPrinter csvFilePrinter = null;
     	CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
@@ -36,10 +37,10 @@ public class StatsCsvFileWriter {
     		csvFilePrinter.printRecord(FILE_HEADER);
     		
     		// Write a new StatisticsCSVOutput object list to the CSV file
-    		for (StatisticsCSVOutput stat : statsCsvOutput){
+    		for (HistoricalStatistics stat : statsCsvOutput){
     			List<String> statRecord = new ArrayList<String>();
-   			 	dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-   			 	String dateString = dateFormat.format(stat.getDate());
+   			 	dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+   			 	String dateString = dateFormat.format(stat.getDateRange().getEndDate());
     			statRecord.add(dateString);
     			statRecord.add(String.valueOf(stat.getTotalDevelopers()));
     			statRecord.add(String.valueOf(stat.getTotalDevelopersWith2014Listings()));
