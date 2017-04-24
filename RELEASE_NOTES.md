@@ -1,14 +1,20 @@
 # Release Notes
 
-## OCD-1439 (feature)
-* Allow users to specify a condition in the listing update request whether or not the developer status should be changed. Only applicable if listing status is changing to Withdrawn Under Surveillance by ONC-ACB. Not backwards compatible!
-## OCD-1428 (feature)
+## Version TBD
+_Date TBD_
+
+### Major features
+ (backwards compatibility breaking changes)
+* Allow users to specify a condition in the listing update request whether or not the developer status should be changed. Only applicable if listing status is changing to Withdrawn Under 
+Surveillance by ONC-ACB
+
+### Features Added
 * Limit activity searches to a configurable max date range (currently set to 60 days)
 
 ---
 
-## Version TBD
-_Date TBD_
+## Version 9.1.0
+_24 April 2017_
 
 ### Features Added
 * Update parameters for HTTP GET /search call. All the same options that were previously available only to POST exist for the GET. Updated related API documentation.
