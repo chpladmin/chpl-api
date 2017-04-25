@@ -11,6 +11,8 @@ import java.util.TimeZone;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
+import gov.healthit.chpl.domain.Statistics;
+
 public class StatsCsvFileWriter {
 	//Delimiter used in CSV file
 	private static final String NEW_LINE_SEPARATOR = "\n";
@@ -21,7 +23,7 @@ public class StatsCsvFileWriter {
     		"Total Listings", "Total 2014 Listings", "Total 2015 Listings", "Total 2011 Listings","Total Surveillance Activities","Total Open Surveillance Activities",
     		"Total Closed Surveillance Activities","Total NonConformities","Total Open NonConformities","Total Closed NonConformities"};
     
-    public static void writeCsvFile(String fileName, List<HistoricalStatistics> statsCsvOutput){
+    public static void writeCsvFile(String fileName, List<Statistics> statsCsvOutput){
     	FileWriter fileWriter = null;
     	CSVPrinter csvFilePrinter = null;
     	CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
@@ -37,7 +39,7 @@ public class StatsCsvFileWriter {
     		csvFilePrinter.printRecord(FILE_HEADER);
     		
     		// Write a new StatisticsCSVOutput object list to the CSV file
-    		for (HistoricalStatistics stat : statsCsvOutput){
+    		for (Statistics stat : statsCsvOutput){
     			List<String> statRecord = new ArrayList<String>();
    			 	dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
    			 	String dateString = dateFormat.format(stat.getDateRange().getEndDate());

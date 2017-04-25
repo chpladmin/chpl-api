@@ -25,8 +25,19 @@ public class AsynchronousStatisticsInitializor {
 	
 	@Transactional
 	@Async
-	public Future<Statistics> getStatistics(DateRange dateRange, Statistics stats) throws InterruptedException, ExecutionException{
+	public Future<Statistics> getStatistics(DateRange dateRange, Boolean includeActiveStatistics) throws InterruptedException, ExecutionException{
 		logger.info("Getting statistics for start date " + dateRange.getStartDate() + " end date " + dateRange.getEndDate());
+		Statistics stats = new Statistics();
+		stats.setDateRange(dateRange);
+		Future<Long> totalActive2014Listings = null;
+		Future<Long> totalActive2015Listings = null;
+		Future<List<CertifiedBodyStatistics>> totalActiveListingsByCertifiedBody = null;
+		
+		if(includeActiveStatistics){
+			totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
+			totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
+			totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(dateRange);
+ 		}
 		Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(dateRange);
 		Future<Long> totalDevelopersWith2014Listings = asyncStats.getTotalDevelopersWith2014Listings(dateRange);
 		Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(dateRange);
@@ -45,15 +56,10 @@ public class AsynchronousStatisticsInitializor {
 		Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(dateRange);
 		Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(dateRange);
 		
-		if(stats instanceof CurrentStatistics){
-			Future<Long> totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
-			Future<Long> totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
-			Future<List<CertifiedBodyStatistics>> totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(dateRange);
-			
-			CurrentStatistics currentStats = (CurrentStatistics) stats;
-			currentStats.setTotalActive2014Listings(totalActive2014Listings.get());
-			currentStats.setTotalActive2015Listings(totalActive2015Listings.get());
-			currentStats.setTotalActiveListingsByCertifiedBody(totalActiveListingsByCertifiedBody.get());
+		if(includeActiveStatistics){
+			stats.setTotalActive2014Listings(totalActive2014Listings.get());
+			stats.setTotalActive2015Listings(totalActive2015Listings.get());
+			stats.setTotalActiveListingsByCertifiedBody(totalActiveListingsByCertifiedBody.get());
  		}
 		stats.setTotalDevelopers(totalDevelopers.get());
 		stats.setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings.get());

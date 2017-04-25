@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Statistics implements Serializable {
 	private static final long serialVersionUID = 6977674702447513779L;
+	private DateRange dateRange;
 	private Long totalDevelopers;
 	private Long totalDevelopersWith2014Listings;
 	private Long totalDevelopersWith2015Listings;
@@ -147,6 +148,14 @@ public class Statistics implements Serializable {
 	}
 	public void setTotalClosedNonconformities(Long totalClosedNonconformities) {
 		this.totalClosedNonconformities = totalClosedNonconformities;
+	}
+
+	public DateRange getDateRange() {
+		return dateRange;
+	}
+
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
 	}
 	
 }
