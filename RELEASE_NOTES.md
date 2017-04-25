@@ -10,6 +10,7 @@ Surveillance by ONC-ACB
 
 ### Features Added
 * Limit activity searches to a configurable max date range (currently set to 60 days)
+* Validate the privacy and security framework users enter for listing criteria
 
 ---
 

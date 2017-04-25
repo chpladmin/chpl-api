@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -184,6 +185,18 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add(ex.getMessage());
 		}
 		
+		for(PendingCertificationResultDTO cr : product.getCertificationCriterion()){
+			if(!StringUtils.isEmpty(cr.getPrivacySecurityFramework())){
+				String trimmedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim();
+				if(!trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.toString())
+						&& !trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.toString())
+						&& !trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.toString())){
+					product.getErrorMessages().add("Certification " + cr.getNumber() + " contains Privacy and Security Framework value '" + 
+						trimmedPrivacyAndSecurityFramework + "' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'");
+				}
+			}
+		}
+		
 		if(!validateProductCodeCharacters(product.getUniqueId())) {
 			product.getErrorMessages().add("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
 		}
@@ -322,6 +335,19 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				if(!additionalSoftwareCode.equals(desiredAdditionalSoftwareCode)) {
 					updateChplProductNumber(product, ADDITIONAL_SOFTWARE_CODE_INDEX, desiredAdditionalSoftwareCode);
 					productIdChanged = true;
+				}
+			}
+			
+			for(CertificationResult cr : product.getCertificationResults()){
+				if(!StringUtils.isEmpty(cr.getPrivacySecurityFramework())){
+					String trimmedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim();
+					if(!trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.toString())
+							&& !trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.toString())
+							&& !trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.toString())){
+						product.getErrorMessages().add("Certification " + cr.getNumber() + 
+								" contains Privacy and Security Framework value '" + trimmedPrivacyAndSecurityFramework + 
+								"' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'");
+					}
 				}
 			}
 			
