@@ -1,7 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -465,7 +464,7 @@ public class CertifiedProductControllerTest {
 		cr.setG2Success(false);
 		cr.setGap(null);
 		cr.setNumber("170.314 (g)(4)");
-		cr.setPrivacySecurityFramework("Approach 1, Approach 2"); // bad value
+		cr.setPrivacySecurityFramework("Approach 1 Approach 2"); // bad value
 		cr.setSed(null);
 		cr.setSuccess(true);
 		cr.setTestDataUsed(null);
@@ -530,7 +529,7 @@ public class CertifiedProductControllerTest {
 			assertNotNull(e);
 			Boolean hasError = false;
 			for(String error : e.getErrorMessages()){
-				if(error.equalsIgnoreCase("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1, Approach 2' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'")){
+				if(error.equalsIgnoreCase("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1 Approach 2' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'")){
 					hasError = true;
 				}
 			}
@@ -551,6 +550,104 @@ public class CertifiedProductControllerTest {
 	@Rollback(true)
 	@Test
 	public void test_updatePendingCertifiedProductDTO_privacyAndSecurityFramework_badValueShowsError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		PendingCertifiedProductDTO pcpDTO = new PendingCertifiedProductDTO();
+		String certDateString = "11-09-2016";
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		Date inputDate = dateFormat.parse(certDateString);
+		pcpDTO.setCertificationDate(inputDate);
+		pcpDTO.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
+		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
+		CertificationResultTestTool crtt = new CertificationResultTestTool();
+		crtt.setId(1L);
+		crtt.setRetired(true);
+		crtt.setTestToolId(2L);
+		crtt.setTestToolName("Transport Test Tool");
+		crttList.add(crtt);
+		List<PendingCertificationResultDTO> pcrDTOs = new ArrayList<PendingCertificationResultDTO>();
+		PendingCertificationResultDTO pcpCertResultDTO1 = new PendingCertificationResultDTO();
+		pcpCertResultDTO1.setPendingCertifiedProductId(1L);
+		pcpCertResultDTO1.setId(1L);
+		pcpCertResultDTO1.setAdditionalSoftware(null);
+		pcpCertResultDTO1.setApiDocumentation(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setGap(null);
+		pcpCertResultDTO1.setNumber("170.314 (g)(4)");
+		pcpCertResultDTO1.setPrivacySecurityFramework("Approach 1 Approach 2");
+		pcpCertResultDTO1.setSed(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setTestData(null);
+		pcpCertResultDTO1.setTestFunctionality(null);
+		pcpCertResultDTO1.setTestProcedures(null);
+		pcpCertResultDTO1.setTestStandards(null);
+		pcpCertResultDTO1.setTestTasks(null);
+		pcpCertResultDTO1.setMeetsCriteria(true);
+		List<PendingCertificationResultTestToolDTO> pcprttdtoList = new ArrayList<PendingCertificationResultTestToolDTO>();
+		PendingCertificationResultTestToolDTO pcprttdto1 = new PendingCertificationResultTestToolDTO();
+		pcprttdto1.setId(2L);
+		pcprttdto1.setName("Transport Test Tool");
+		pcprttdto1.setPendingCertificationResultId(1L);
+		pcprttdto1.setTestToolId(2L);
+		pcprttdto1.setVersion(null);
+		PendingCertificationResultTestToolDTO pcprttdto2 = new PendingCertificationResultTestToolDTO();
+		pcprttdto2.setId(3L);
+		pcprttdto2.setName("Transport Test Tool");
+		pcprttdto2.setPendingCertificationResultId(1L);
+		pcprttdto2.setTestToolId(3L);
+		pcprttdto2.setVersion(null);
+		pcprttdtoList.add(pcprttdto1);
+		pcprttdtoList.add(pcprttdto2);
+		pcpCertResultDTO1.setTestTools(pcprttdtoList);
+		pcrDTOs.add(pcpCertResultDTO1);
+		pcpDTO.setCertificationCriterion(pcrDTOs);
+		List<PendingCqmCriterionDTO> cqmCriterionDTOList = new ArrayList<PendingCqmCriterionDTO>();
+		PendingCqmCriterionDTO cqm = new PendingCqmCriterionDTO();
+		cqm.setVersion("v0");;
+		cqm.setCmsId("CMS60");
+		cqm.setCqmCriterionId(0L);
+		cqm.setCqmNumber(null); 
+		cqm.setDomain(null);
+		cqm.setId(0L);
+		cqm.setNqfNumber("0164");
+		cqm.setTitle("Fibrinolytic Therapy Received Within 30 Minutes of Hospital Arrival");
+		cqm.setTypeId(2L);
+		cqmCriterionDTOList.add(cqm);
+		pcpDTO.setCqmCriterion(cqmCriterionDTOList);
+		String certEdition = "2015";
+		pcpDTO.setCertificationEdition(certEdition);
+		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
+		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
+		pcpDTO.setUniqueId("15.07.07.2642.EIC04.36.0.1.160402");
+		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+		if(validator != null) {
+			validator.validate(pcpDTO);
+		}
+		
+		Boolean hasError = false;
+		for(String error : pcpDTO.getErrorMessages()){
+			if(error.equalsIgnoreCase("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1 Approach 2' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'")){
+				hasError = true;
+			}
+		}
+		assertTrue(hasError);
+	}
+	
+	/** 
+	 * GIVEN A user edits a certified product
+	 * WHEN they view their pending products
+	 * WHEN the user edits the privacy and security framework value to be 'Approach 1, Approach 2'
+	 * THEN they should see no error for the privacy and security framework value
+	 * (Note: Validation should be generous with case and whitespace)
+	 * @throws IOException 
+	 * @throws ParseException 
+	 * @throws JSONException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_updatePendingCertifiedProductDTO_privacyAndSecurityFramework_validValueShowsNoError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		PendingCertifiedProductDTO pcpDTO = new PendingCertifiedProductDTO();
 		String certDateString = "11-09-2016";
@@ -628,11 +725,11 @@ public class CertifiedProductControllerTest {
 		
 		Boolean hasError = false;
 		for(String error : pcpDTO.getErrorMessages()){
-			if(error.equalsIgnoreCase("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1, Approach 2' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'")){
+			if(error.contains("Privacy and Security Framework")){
 				hasError = true;
 			}
 		}
-		assertTrue(hasError);
+		assertFalse(hasError);
 	}
 	
 	/** 

@@ -187,12 +187,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		
 		for(PendingCertificationResultDTO cr : product.getCertificationCriterion()){
 			if(!StringUtils.isEmpty(cr.getPrivacySecurityFramework())){
-				String trimmedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim();
-				if(!trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.toString())
-						&& !trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.toString())
-						&& !trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.toString())){
+				String formattedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim().replace(",", ";").replace("; ", ";");
+				if(!formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName())
+						&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName())
+						&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName())){
 					product.getErrorMessages().add("Certification " + cr.getNumber() + " contains Privacy and Security Framework value '" + 
-						trimmedPrivacyAndSecurityFramework + "' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'");
+						formattedPrivacyAndSecurityFramework + "' which must match either '" + 
+							PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName() + "', '" + 
+							PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName() + "', or '" +
+							PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName() + "'");
 				}
 			}
 		}
@@ -340,13 +343,16 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			
 			for(CertificationResult cr : product.getCertificationResults()){
 				if(!StringUtils.isEmpty(cr.getPrivacySecurityFramework())){
-					String trimmedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim();
-					if(!trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.toString())
-							&& !trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.toString())
-							&& !trimmedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.toString())){
+					String formattedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim().replace(",", ";").replace("; ", ";");
+					if(!formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName())
+							&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName())
+							&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName())){
 						product.getErrorMessages().add("Certification " + cr.getNumber() + 
-								" contains Privacy and Security Framework value '" + trimmedPrivacyAndSecurityFramework + 
-								"' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'");
+								" contains Privacy and Security Framework value '" + 
+								formattedPrivacyAndSecurityFramework + "' which must match either '" + 
+								PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName() + "', '" + 
+								PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName() + "', or '" +
+								PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName() + "'");
 					}
 				}
 			}
