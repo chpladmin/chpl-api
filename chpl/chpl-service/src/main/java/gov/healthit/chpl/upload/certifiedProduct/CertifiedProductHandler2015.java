@@ -767,7 +767,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						cert.setGap(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "PRIVACY AND SECURITY FRAMEWORK":
-						cert.setPrivacySecurityFramework(firstRow.get(currIndex++).trim());
+						cert.setPrivacySecurityFramework(firstRow.get(currIndex++).trim().replace(",", ";").replace("; ", ";"));
 						break;
 					case "API DOCUMENTATION LINK":
 						cert.setApiDocumentation(firstRow.get(currIndex++).trim());
