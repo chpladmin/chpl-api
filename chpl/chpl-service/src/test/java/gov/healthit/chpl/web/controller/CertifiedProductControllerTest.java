@@ -1,6 +1,8 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.DateFormat;

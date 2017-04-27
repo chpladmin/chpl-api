@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -1039,7 +1040,7 @@ public class ActivityController {
 	}
 	
 	private void validateActivityDates(Long startDate, Long endDate) throws ValidationException{
-		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
 		Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
 		calendarCounter.setTime(new Date(endDate));
 		if(new Date(startDate).compareTo(calendarCounter.getTime()) > 0){
