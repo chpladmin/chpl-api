@@ -132,20 +132,35 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		} 
 		
 		//if the status history has been modified, the user must be role admin
-		if(isStatusHistoryUpdated(beforeDev, developer) && !Util.isUserRoleAdmin()) {
+		//except that an acb admin can change to UnderCertificationBanByOnc 
+		//triggered by listing status update
+		boolean devStatusHistoryUpdated = isStatusHistoryUpdated(beforeDev, developer);
+		if(devStatusHistoryUpdated && newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && 
+			!(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN but may "
+					+ "have tried to change status history for the developer " + beforeDev.getName() + " to include " + DeveloperStatusType.UnderCertificationBanByOnc.toString());
+			throw new EntityCreationException("User cannot change developer status to " + DeveloperStatusType.UnderCertificationBanByOnc.toString() + " without ROLE_ADMIN or ROLE_ACB_ADMIN.");
+		} else if(devStatusHistoryUpdated && !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && 
+				!Util.isUserRoleAdmin()) {
 			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN but may have tried to change history for the developer " + beforeDev.getName());
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status history.");
 		}
 				
-		//determine if the status flag has been changed.
-		//only users with ROLE_ADMIN are allowed to change it
-		if(!currDevStatus.getStatus().getStatusName().equals(newDevStatus.getStatus().getStatusName()) && 
+		//determine if the status has been changed
+		//in most cases only allowed by ROLE_ADMIN but ROLE_ACB_ADMIN
+		//can change it to UnderCertificationBanByOnc
+		boolean currentStatusChanged = !currDevStatus.getStatus().getStatusName().equals(newDevStatus.getStatus().getStatusName());
+		if(currentStatusChanged && newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && 
+				!(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
+				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN but may "
+						+ "have tried to change status for the developer " + beforeDev.getName() + " to include " + DeveloperStatusType.UnderCertificationBanByOnc.toString());
+				throw new EntityCreationException("User cannot change developer status to " + DeveloperStatusType.UnderCertificationBanByOnc.toString() + " without ROLE_ADMIN or ROLE_ACB_ADMIN.");
+		} else if(currentStatusChanged &&  !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && 
 				!Util.isUserRoleAdmin()) {
 			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " status from " + currDevStatus.getStatus().getStatusName() + " to " + currDevStatus.getStatus().getStatusName());
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status.");
 		} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
-				  !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) &&
-				  Util.isUserRoleAdmin()) {
+				  !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
 			//if the developer is not active and not going to be active
 			//only its status can be updated
 			developerDao.updateStatus(newDevStatus);
