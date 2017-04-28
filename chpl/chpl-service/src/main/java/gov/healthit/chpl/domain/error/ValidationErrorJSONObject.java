@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.error;
 
 import java.io.Serializable;
 import java.util.Collection;

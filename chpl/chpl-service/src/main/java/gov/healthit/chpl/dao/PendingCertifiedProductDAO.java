@@ -9,11 +9,11 @@ import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 public interface PendingCertifiedProductDAO {
 	
 	public PendingCertifiedProductDTO create(PendingCertifiedProductEntity product) throws EntityCreationException;
-	public void delete(Long pendingProductId) throws EntityRetrievalException;
-	public void updateStatus(Long pendingProductId, CertificationStatusDTO reason) throws EntityRetrievalException;
+	public void delete(Long pendingProductId, Boolean checkIfDeletedEntityExists) throws EntityRetrievalException;
+	public void updateStatus(Long pendingProductId, CertificationStatusDTO reason, Boolean includeDeleted) throws EntityRetrievalException;
 	public List<PendingCertifiedProductDTO> findAll();
 	public List<PendingCertifiedProductDTO> findByStatus(Long statusId);
 	public Long findIdByOncId(String id) throws EntityRetrievalException;
-	public PendingCertifiedProductDTO findById(Long pcpId) throws EntityRetrievalException;
+	public PendingCertifiedProductDTO findById(Long pcpId, Boolean includeDeleted) throws EntityRetrievalException;
 	public List<PendingCertifiedProductDTO> findByAcbId(Long acbId);
 }

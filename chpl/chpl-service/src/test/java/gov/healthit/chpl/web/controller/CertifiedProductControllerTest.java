@@ -31,6 +31,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -39,18 +40,22 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -68,6 +73,9 @@ public class CertifiedProductControllerTest {
 	CertifiedProductController certifiedProductController;
 	
 	@Autowired
+	PendingCertifiedProductDAO pcpDAO;
+	
+	@Autowired
 	CertifiedProductValidatorFactory validatorFactory;
 	
 	private static JWTAuthenticatedUser adminUser;
@@ -80,6 +88,7 @@ public class CertifiedProductControllerTest {
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+		adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
 	}
 	
 	/** 
@@ -732,6 +741,66 @@ public class CertifiedProductControllerTest {
 			}
 		}
 		assertFalse(hasError);
+	}
+	
+	/** 
+	 * GIVEN a user is on the Pending CPs page
+	 * WHEN they reject a pending CP that was already deleted because it was rejected or confirmed
+	 * THEN the API returns a 400 BAD REQUEST with the lastModifiedUser's Contact info
+	 * @throws EntityCreationException 
+	 * @throws EntityRetrievalException 
+	 * @throws JsonProcessingException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_rejectPendingCP_isAlreadyDeleted_returnsBadRequest() throws JsonProcessingException, EntityRetrievalException, EntityCreationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Boolean hasError = false;
+		try{
+			certifiedProductController.deletePendingCertifiedProduct(-1L);
+		} catch (ObjectMissingValidationException e){
+			for(String error : e.getErrorMessages()){
+				if(error.contains("has already been confirmed/rejected")){
+					hasError = true;
+				}
+			}
+			assertTrue(e.getContact() != null);
+		}
+		assertTrue(hasError);
+	}
+	
+	/** 
+	 * GIVEN a user is on the Pending CPs page
+	 * WHEN they confirm a pending CP that was already deleted because it was rejected or confirmed
+	 * THEN the API returns a 400 BAD REQUEST with the lastModifiedUser's Contact info
+	 * @throws EntityCreationException 
+	 * @throws EntityRetrievalException 
+	 * @throws JsonProcessingException 
+	 * @throws ValidationException 
+	 * @throws InvalidArgumentsException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_confirmPendingCP_isAlreadyDeleted_returnsBadRequest() throws JsonProcessingException, EntityRetrievalException, EntityCreationException, InvalidArgumentsException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		PendingCertifiedProductDTO pcpDTO = null;
+		PendingCertifiedProductDetails pcpDetails = null;
+		pcpDTO = pcpDAO.findById(-1L, true);
+		pcpDetails = new PendingCertifiedProductDetails(pcpDTO);
+		Boolean hasError = false;
+		try{
+			certifiedProductController.confirmPendingCertifiedProduct(pcpDetails);
+		} catch (ObjectMissingValidationException e){
+			for(String error : e.getErrorMessages()){
+				if(error.contains("has already been confirmed/rejected")){
+					hasError = true;
+				}
+			}
+			assertTrue(e.getContact() != null);
+		}
+		assertTrue(hasError);
 	}
 	
 	/** 
