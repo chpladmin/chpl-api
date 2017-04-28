@@ -144,6 +144,32 @@ public class NotificationManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
+	public void createNotificationAsAdminUserForExistingRegistrant() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		List<RecipientWithSubscriptionsDTO> origRecipMappings = notificationManager.getAll();
+
+		NotificationTypeRecipientMapDTO mapping = new NotificationTypeRecipientMapDTO();
+		RecipientDTO recip = new RecipientDTO();
+		recip.setEmailAddress("katy@ainq.com");
+		mapping.setRecipient(recip);
+		SubscriptionDTO notification = new SubscriptionDTO();
+		notification.setAcb(null);
+		NotificationTypeDTO type = adminNotificationTypes.get(0);
+		notification.setNotificationType(type);
+		mapping.setNotification(notification);
+		
+		NotificationTypeRecipientMapDTO addedMapping = notificationManager.addRecipientNotificationMap(mapping);
+		assertNotNull(addedMapping);
+		assertNotNull(addedMapping.getId());
+		
+		List<RecipientWithSubscriptionsDTO> queriedRecipients = notificationManager.getAll();
+		assertNotNull(queriedRecipients);
+		assertEquals(origRecipMappings.size(), queriedRecipients.size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void createNotificationAsAcbAdminUserForAllowedAcb() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(acbUser);
 		List<RecipientWithSubscriptionsDTO> origRecipMappings = notificationManager.getAll();
