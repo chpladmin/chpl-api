@@ -11,6 +11,7 @@ Surveillance by ONC-ACB
 ### Features Added
 * Limit activity searches to a configurable max date range (currently set to 60 days)
 * Validate the privacy and security framework users enter for listing criteria
+* Return exception with last modified user's contact info when deleting or confirming a pending Certified Product that has already been deleted or confirmed
 
 ---
 
