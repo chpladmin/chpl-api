@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Set;
 
 import org.junit.BeforeClass;
@@ -11,6 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -547,5 +550,30 @@ public class SearchMenuManagerTest {
 				+ " millis or " + elapsedSecs + " seconds");
 		
 		assertTrue("firstResult should not match secondResult", firstResult.size() != secondResult.size());
+	}
+	
+	@Transactional
+	@Test
+	public void testGetNotificationTypesForAdminUser() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Set<DescriptiveModel> results = searchMenuManager.getNotificationTypes();
+		assertNotNull(results);
+		assertEquals(4, results.size());
+	}
+	
+	@Transactional
+	@Test
+	public void testGetNotificationTypesForAcbUser() {
+		SecurityContextHolder.getContext().setAuthentication(testUser3);
+		Set<DescriptiveModel> results = searchMenuManager.getNotificationTypes();
+		assertNotNull(results);
+		assertEquals(2, results.size());
+	}
+	
+	@Transactional
+	@Test(expected = AuthenticationCredentialsNotFoundException.class)
+	public void testGetNotificationTypesAllowedForUnauthenticatedUser() {
+		SecurityContextHolder.getContext().setAuthentication(null);
+		searchMenuManager.getNotificationTypes();
 	}
 }

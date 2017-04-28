@@ -1,14 +1,23 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.domain.Authority;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
@@ -22,6 +31,7 @@ import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -65,6 +75,7 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Service
@@ -110,8 +121,19 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	private DeveloperDAO developerDAO;
 	
 	@Autowired private MacraMeasureDAO macraDao;
+	@Autowired private NotificationDAO notificationDao;
 	
-	
+	@Transactional
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+	public Set<DescriptiveModel> getNotificationTypes() {
+		List<NotificationTypeDTO> notificationTypes = notificationDao.getAllNotificationTypes(Util.getCurrentUser().getPermissions());
+		Set<DescriptiveModel> notificationTypeNames = new HashSet<DescriptiveModel>();
+		for(NotificationTypeDTO dto : notificationTypes) {
+			notificationTypeNames.add(new DescriptiveModel(dto.getId(), dto.getName(), dto.getDescription()));
+		}
+		return notificationTypeNames;
+	}
+
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.CLASSIFICATION_NAMES)
